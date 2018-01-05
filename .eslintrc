@@ -1,0 +1,22 @@
+{
+  "extends": ["airbnb"],
+  "quotes": [2, "single", "avoid-escape"],
+  "plugins": ["meteor", "jsx-a11y"],
+  "env": {
+    "meteor": true,
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "react/prefer-es6-class": 0,
+    "no-confusing-arrow": 0
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    }
+  }
+}

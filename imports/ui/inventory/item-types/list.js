@@ -35,7 +35,30 @@ class List extends Component {
     {
       title: 'Measurement Unit',
       dataIndex: 'unitOfMeasurement',
-      key: 'unitOfMeasurement'
+      key: 'unitOfMeasurement',
+      render: (text, record) => {
+        let uom = null;
+        switch (text) {
+          case 'quantity':
+            uom = 'Quantity';
+            break;
+          case 'ft':
+            uom = 'Length (ft)';
+            break;
+          case 'm':
+            uom = 'Length (m)';
+            break;
+          case 'kg':
+            uom = 'Weight (kg)';
+            break;
+          case 'lbs':
+            uom = 'Weight (lbs)';
+            break;
+          default:
+            break;
+        }
+        return uom;
+      }
     },
     {
       title: 'Single Use',

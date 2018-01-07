@@ -1,19 +1,29 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
 
 import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
 class NewForm extends React.Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object
+    form: PropTypes.object,
+    setBreadcrumbs: PropTypes.func
   };
+
+  componentWillMount() {
+    const { setBreadcrumbs } = this.props;
+    setBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New']);
+  }
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresNewFormPath);
+    history.push(paths.physicalStoresPath);
   };
 
   handleSubmit = e => {
@@ -74,7 +84,9 @@ class NewForm extends React.Component {
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Row type="flex" justify="end">
-            <Button type="secondary">Cancel</Button>
+            <Button type="secondary" onClick={this.handleCancel}>
+              Cancel
+            </Button>
             &nbsp;
             <Button type="primary" htmlType="submit">
               Submit
@@ -86,4 +98,12 @@ class NewForm extends React.Component {
   }
 }
 
-export default Form.create()(NewForm);
+const mapDispatchToProps = dispatch => {
+  return {
+    setBreadcrumbs: breadcrumbs => {
+      dispatch(GlobalActionsCreator.setBreadcrumbs(breadcrumbs));
+    }
+  };
+};
+
+export default merge(Form.create(), connect(null, mapDispatchToProps))(NewForm);

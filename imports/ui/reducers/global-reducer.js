@@ -1,5 +1,17 @@
 import { ActionNames } from '../constants';
 
+export function breadcrumbs(previousValue, action) {
+  let newValue;
+  if (!previousValue) newValue = [];
+  else newValue = previousValue;
+
+  if (action.type === ActionNames.GLOBAL_SET_BREADCRUMB) {
+    newValue = action.breadcrumbs;
+  }
+
+  return newValue;
+}
+
 export function activeModuleName(previousValue, action) {
   let newValue;
   if (!previousValue) newValue = null;

@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
-import { activeModuleName, activeSubModuleName } from './global-reducer';
+import { activeModuleName, activeSubModuleName, breadcrumbs } from './global-reducer';
 
 const combinedReducer = combineReducers({
   activeModuleName: activeModuleName,
-  activeSubModuleName: activeSubModuleName
+  activeSubModuleName: activeSubModuleName,
+  breadcrumbs: breadcrumbs
 });
 
 export default combinedReducer;

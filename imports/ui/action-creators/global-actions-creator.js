@@ -16,6 +16,13 @@ class GlobalActionsCreator {
       activeSubModuleName: subModuleName
     };
   }
+
+  setBreadcrumbs(breadcrumbs) {
+    return {
+      type: ActionNames.GLOBAL_SET_BREADCRUMB,
+      breadcrumbs: breadcrumbs
+    };
+  }
 }
 
 export default new GlobalActionsCreator();

@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import { PhysicalStores } from '/imports/lib/collections/inventory';
 
 class Container extends React.Component {
@@ -25,6 +28,11 @@ class Container extends React.Component {
       key: 'address'
     }
   ];
+
+  componentWillMount() {
+    const { setBreadcrumbs } = this.props;
+    setBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List']);
+  }
 
   handleNewClicked = () => {
     const { history } = this.props;
@@ -59,4 +67,12 @@ function dataLoader(props, onData) {
   }
 }
 
-export default composeWithTracker(dataLoader)(Container);
+const mapDispatchToProps = dispatch => {
+  return {
+    setBreadcrumbs: breadcrumbs => {
+      dispatch(GlobalActionsCreator.setBreadcrumbs(breadcrumbs));
+    }
+  };
+};
+
+export default merge(composeWithTracker(dataLoader), connect(null, mapDispatchToProps))(Container);

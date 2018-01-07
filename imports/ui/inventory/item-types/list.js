@@ -2,18 +2,19 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Button, Table } from 'antd';
+import { Button, Checkbox, Table } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
-import { ItemTypes } from '/imports/lib/collections/inventory';
+import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    itemTypes: PropTypes.array
+    itemTypes: PropTypes.array,
+    itemCategories: PropTypes.array
   };
 
   columns = [
@@ -22,8 +23,36 @@ class List extends Component {
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
+    },
+    {
+      title: 'Category',
+      dataIndex: 'itemCategoryId',
+      key: 'itemCategoryId',
+      render: (text, record) => {
+        return this.getItemCategoryName(text);
+      }
+    },
+    {
+      title: 'Measurement Unit',
+      dataIndex: 'unitOfMeasurement',
+      key: 'unitOfMeasurement'
+    },
+    {
+      title: 'Single Use',
+      dataIndex: 'singleUse',
+      key: 'singleUse',
+      render: (value, record) => <Checkbox checked={value} disabled />
     }
   ];
+
+  getItemCategoryName(itemCategoryId) {
+    const itemCategory = ItemCategories.findOne(itemCategoryId);
+    if (itemCategory) {
+      return itemCategory.name;
+    } else {
+      return null;
+    }
+  }
 
   handleNewClicked = () => {
     const { history } = this.props;
@@ -51,10 +80,12 @@ class List extends Component {
 }
 
 function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/itemTypes#all');
-  if (subscription.ready()) {
+  const categoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
+  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
+  if (categoriesSubscription.ready() && itemTypesSubscription.ready()) {
     const itemTypes = ItemTypes.find({}).fetch();
-    onData(null, { itemTypes });
+    const itemCategories = ItemCategories.find({}).fetch();
+    onData(null, { itemTypes, itemCategories });
   }
 }
 

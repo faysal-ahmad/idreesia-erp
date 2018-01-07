@@ -5,7 +5,7 @@ import { Form, Input, Button, Row, Select, Switch } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { ItemTypes, ItemCategories, PhysicalStores } from '/imports/lib/collections/inventory';
+import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
 
 class NewForm extends Component {
@@ -13,7 +13,6 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    physicalStores: PropTypes.array,
     itemCategories: PropTypes.array
   };
 
@@ -157,12 +156,10 @@ class NewForm extends Component {
 }
 
 function dataLoader(props, onData) {
-  const storesSubscription = Meteor.subscribe('inventory/physicalStores#all');
-  const categoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
-  if (storesSubscription.ready() && categoriesSubscription.ready()) {
+  const subscription = Meteor.subscribe('inventory/itemCategories#all');
+  if (subscription.ready()) {
     const itemCategories = ItemCategories.find({}).fetch();
-    const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { itemCategories, physicalStores });
+    onData(null, { itemCategories });
   }
 }
 

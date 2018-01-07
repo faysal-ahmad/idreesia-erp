@@ -38,8 +38,9 @@ class NewForm extends React.Component {
       };
 
       Meteor.call('inventory/physicalStores.create', { doc }, (error, result) => {
-        debugger;
         if (error) return;
+        const { history } = this.props;
+        history.push(paths.physicalStoresPath);
       });
     });
   };

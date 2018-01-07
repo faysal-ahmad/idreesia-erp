@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { Menu, Icon } from 'antd';
 
 import { InventorySubModuleNames, InventorySubModulePaths as paths } from '../constants';

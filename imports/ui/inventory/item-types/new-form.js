@@ -26,17 +26,21 @@ class NewForm extends Component {
     e.preventDefault();
     const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
-      debugger;
       if (err) return;
 
       const doc = {
-        name: fieldsValue.name
+        name: fieldsValue.name,
+        description: fieldsValue.description,
+        itemCategoryId: fieldsValue.itemCategoryId,
+        unitOfMeasurement: fieldsValue.unitOfMeasurement,
+        singleUse: fieldsValue.singleUse
       };
 
-      Meteor.call('inventory/ItemTypes.create', { doc }, (error, result) => {
+      Meteor.call('inventory/itemTypes.create', { doc }, (error, result) => {
+        debugger;
         if (error) return;
         const { history } = this.props;
-        history.push(paths.ItemTypesPath);
+        history.push(paths.itemTypesPath);
       });
     });
   };

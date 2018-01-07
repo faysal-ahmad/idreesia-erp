@@ -2,11 +2,6 @@
  * Base structure
  */
 
-/* Move down content because we have a fixed navbar that is 3.5rem tall */
-body {
-  padding-top: 3.5rem;
-}
-
 /*
  * Typography
  */
@@ -93,4 +88,12 @@ form {
   flex-flow: row nowrap;
   justify-content: flex-end;
   width: 100%;
+}
+
+#components-layout-demo-top-side-2 .logo {
+  width: 120px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px 28px 16px 0;
+  float: left;
 }

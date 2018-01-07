@@ -6,16 +6,9 @@ export default new SimpleSchema({
   name: {
     type: String
   },
-  category: {
+  address: {
     type: String,
-    allowedValues: ['Electrical', 'Sanitary Wares']
-  },
-  minStockLevel: {
-    type: Number,
     optional: true
-  },
-  currentStockLevel: {
-    type: Number
   }
 })
   .extend(identifiable)

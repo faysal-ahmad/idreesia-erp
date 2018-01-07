@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
+import { Switch, Route } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { Provider } from 'react-redux';
 
-import { Header, Sidebar, Main } from './main-layout';
+import combinedReducer from './reducers/combined-reducer';
+import { LoggedInRoute } from './main-layout';
+
+const store = createStore(combinedReducer, applyMiddleware(thunkMiddleware));
 
 class App extends Component {
   render() {
     return (
-      <React.Fragment>
-        <Header />
-        <div className="container-fluid">
-          <div className="row">
-            <Sidebar />
-            <Main />
-          </div>
-        </div>
-      </React.Fragment>
+      <Provider store={store}>
+        <Switch>
+          <Route path="/" component={LoggedInRoute} />;
+        </Switch>
+      </Provider>
     );
   }
 }

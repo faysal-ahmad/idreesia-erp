@@ -1,10 +1,9 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom';
 
-import 'bootstrap';
-import '../node_modules/bootstrap/dist/css/bootstrap.css';
+import '../node_modules/antd/dist/antd.css';
 
 import App from '../imports/ui/app.js';
 

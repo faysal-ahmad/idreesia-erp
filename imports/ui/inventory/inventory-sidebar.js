@@ -1,53 +1,126 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { Menu, Icon } from 'antd';
 
-const basePath = '/inventory';
-const itemTypesPath = `${basePath}/item-types`;
-const issuanceFormsPath = `${basePath}/issuance-forms`;
-const receivalFormsPath = `${basePath}/receival-forms`;
-const reportsPath = `${basePath}/reports`;
+import { InventorySubModuleNames, InventorySubModulePaths as paths } from '../constants';
+import { GlobalActionsCreator } from '../action-creators';
+
+const { SubMenu } = Menu;
 
 class InventorySidebar extends Component {
   static propTypes = {
-    location: PropTypes.object
+    history: PropTypes.object,
+    activeModuleName: PropTypes.string,
+    setActiveSubModuleName: PropTypes.func
   };
 
-  getClassNamesForPath(path) {
-    const currentPath = this.props.location.pathname;
-    if (currentPath.startsWith(path)) {
-      return 'nav-link active';
-    } else {
-      return 'nav-link';
+  handleMenuItemSelected = ({ item, key, selectedKeys }) => {
+    const { history, setActiveSubModuleName } = this.props;
+
+    switch (key) {
+      case 'home':
+        break;
+
+      case 'issuance-forms':
+        setActiveSubModuleName(InventorySubModuleNames.issuanceForms);
+        history.push(paths.issuanceFormsPath);
+        break;
+
+      case 'receival-forms':
+        setActiveSubModuleName(InventorySubModuleNames.receivalForms);
+        history.push(paths.receivalFormsPath);
+        break;
+
+      case 'disposal-forms':
+        setActiveSubModuleName(InventorySubModuleNames.disposalForms);
+        history.push(paths.disposalFormsPath);
+        break;
+
+      case 'lost-item-forms':
+        setActiveSubModuleName(InventorySubModuleNames.lostItemForms);
+        history.push(paths.lostItemFormsPath);
+        break;
+
+      case 'purchase-order-forms':
+        setActiveSubModuleName(InventorySubModuleNames.purchaseOrderForms);
+        history.push(paths.purchaseOrderFormsPath);
+        break;
+
+      case 'item-types':
+        setActiveSubModuleName(InventorySubModuleNames.itemTypes);
+        history.push(paths.itemTypesPath);
+        break;
+
+      case 'item-categories':
+        setActiveSubModuleName(InventorySubModuleNames.itemCategories);
+        history.push(paths.itemCategoriesPath);
+        break;
+
+      case 'physical-stores':
+        setActiveSubModuleName(InventorySubModuleNames.physicalStores);
+        history.push(paths.physicalStoresPath);
+        break;
+
+      default:
+        break;
     }
-  }
+  };
 
   render() {
     return (
-      <React.Fragment>
-        <li className="nav-item">
-          <Link className={this.getClassNamesForPath(itemTypesPath)} to={itemTypesPath}>
-            Item Types
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className={this.getClassNamesForPath(issuanceFormsPath)} to={issuanceFormsPath}>
-            Issuance Forms
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className={this.getClassNamesForPath(receivalFormsPath)} to={receivalFormsPath}>
-            Receival Forms
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className={this.getClassNamesForPath(reportsPath)} to={reportsPath}>
-            Reports
-          </Link>
-        </li>
-      </React.Fragment>
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={['home']}
+        style={{ height: '100%', borderRight: 0 }}
+        onSelect={this.handleMenuItemSelected}
+      >
+        <Menu.Item key="home">Home</Menu.Item>
+        <SubMenu
+          key="forms"
+          title={
+            <span>
+              <Icon type="file-text" />Forms
+            </span>
+          }
+        >
+          <Menu.Item key="issuance-forms">Issuance Forms</Menu.Item>
+          <Menu.Item key="receival-forms">Receival Forms</Menu.Item>
+          <Menu.Item key="disposal-forms">Disposal Forms</Menu.Item>
+          <Menu.Item key="lost-item-forms">Lost Item Forms</Menu.Item>
+          <Menu.Item key="purchase-order-forms">Purchase Order Forms</Menu.Item>
+        </SubMenu>
+        <SubMenu
+          key="setup"
+          title={
+            <span>
+              <Icon type="laptop" />Setup
+            </span>
+          }
+        >
+          <Menu.Item key="item-types">Item Types</Menu.Item>
+          <Menu.Item key="item-categories">Item Categories</Menu.Item>
+          <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
+        </SubMenu>
+      </Menu>
     );
   }
 }
 
-export default InventorySidebar;
+const mapStateToProps = state => {
+  return {
+    activeModuleName: state.activeModuleName
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setActiveSubModuleName: subModuleName => {
+      dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
+    }
+  };
+};
+
+const InventorySidebarContainer = connect(null, mapDispatchToProps)(InventorySidebar);
+export default InventorySidebarContainer;

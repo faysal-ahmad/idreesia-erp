@@ -10,13 +10,13 @@ export default new SimpleSchema({
     type: String,
     optional: true
   },
-  categoryId: {
+  itemCategoryId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
-  storeId: {
+  unitOfMeasurement: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    allowedValues: ['quantity', 'ft', 'm', 'weight (kg)', 'weight (lbs)']
   },
   singleUse: {
     type: Boolean

@@ -1,25 +1,18 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
 
+import { WithBreadcrumbs } from '/imports/ui/composers';
 import { PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
-class NewForm extends React.Component {
+class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
-    setBreadcrumbs: PropTypes.func
+    form: PropTypes.object
   };
-
-  componentWillMount() {
-    const { setBreadcrumbs } = this.props;
-    setBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New']);
-  }
 
   handleCancel = () => {
     const { history } = this.props;
@@ -65,7 +58,6 @@ class NewForm extends React.Component {
   }
 
   render() {
-    const props = this.props;
     const formItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 }
@@ -99,12 +91,7 @@ class NewForm extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setBreadcrumbs: breadcrumbs => {
-      dispatch(GlobalActionsCreator.setBreadcrumbs(breadcrumbs));
-    }
-  };
-};
-
-export default merge(Form.create(), connect(null, mapDispatchToProps))(NewForm);
+export default merge(
+  Form.create(),
+  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New'])
+)(NewForm);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Container extends React.Component {
+class Container extends Component {
   render() {
     return <h2>Edit Form</h2>;
   }

@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
+import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import { ItemCategories } from '/imports/lib/collections/inventory';
 
-class List extends React.Component {
+class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -25,11 +24,6 @@ class List extends React.Component {
       render: (text, record) => <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
     }
   ];
-
-  componentWillMount() {
-    const { setBreadcrumbs } = this.props;
-    setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List']);
-  }
 
   handleNewClicked = () => {
     const { history } = this.props;
@@ -64,12 +58,7 @@ function dataLoader(props, onData) {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setBreadcrumbs: breadcrumbs => {
-      dispatch(GlobalActionsCreator.setBreadcrumbs(breadcrumbs));
-    }
-  };
-};
-
-export default merge(composeWithTracker(dataLoader), connect(null, mapDispatchToProps))(List);
+export default merge(
+  composeWithTracker(dataLoader),
+  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List'])
+)(List);

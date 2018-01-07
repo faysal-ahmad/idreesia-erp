@@ -7,13 +7,13 @@ import { Button, Table } from 'antd';
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { ItemTypes } from '/imports/lib/collections/inventory';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    physicalStores: PropTypes.array
+    itemTypes: PropTypes.array
   };
 
   columns = [
@@ -21,32 +21,27 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address'
+      render: (text, record) => <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
     }
   ];
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresNewFormPath);
+    history.push(paths.itemTypesNewFormPath);
   };
 
   render() {
-    const { physicalStores } = this.props;
+    const { itemTypes } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={physicalStores}
+        dataSource={itemTypes}
         columns={this.columns}
         bordered
         title={() => {
           return (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Physical Store
+              New Item Type
             </Button>
           );
         }}
@@ -56,14 +51,14 @@ class List extends Component {
 }
 
 function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/physicalStores#all');
+  const subscription = Meteor.subscribe('inventory/itemTypes#all');
   if (subscription.ready()) {
-    const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { physicalStores });
+    const itemTypes = ItemTypes.find({}).fetch();
+    onData(null, { itemTypes });
   }
 }
 
 export default merge(
   composeWithTracker(dataLoader),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List'])
+  WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'List'])
 )(List);

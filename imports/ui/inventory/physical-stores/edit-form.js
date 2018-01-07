@@ -1,28 +1,21 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
+import { WithBreadcrumbs } from '/imports/ui/composers';
 import { PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
-class EditForm extends React.Component {
+class EditForm extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    physicalStore: PropTypes.object,
-    setBreadcrumbs: PropTypes.func
+    physicalStore: PropTypes.object
   };
-
-  componentWillMount() {
-    const { setBreadcrumbs } = this.props;
-    setBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'Edit']);
-  }
 
   handleCancel = () => {
     const { history } = this.props;
@@ -118,16 +111,8 @@ function dataLoader(props, onData) {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setBreadcrumbs: breadcrumbs => {
-      dispatch(GlobalActionsCreator.setBreadcrumbs(breadcrumbs));
-    }
-  };
-};
-
 export default merge(
   Form.create(),
   composeWithTracker(dataLoader),
-  connect(null, mapDispatchToProps)
+  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'Edit'])
 )(EditForm);

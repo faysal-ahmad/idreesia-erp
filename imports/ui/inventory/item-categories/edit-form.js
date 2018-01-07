@@ -5,7 +5,7 @@ import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { ItemCategories } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
 import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
@@ -15,18 +15,18 @@ class EditForm extends React.Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    physicalStore: PropTypes.object,
+    itemCategory: PropTypes.object,
     setBreadcrumbs: PropTypes.func
   };
 
   componentWillMount() {
     const { setBreadcrumbs } = this.props;
-    setBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'Edit']);
+    setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit']);
   }
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresPath);
+    history.push(paths.itemCategoriesPath);
   };
 
   handleSubmit = e => {
@@ -35,42 +35,31 @@ class EditForm extends React.Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const { physicalStore } = this.props;
-      const doc = Object.assign({}, physicalStore, {
-        name: fieldsValue.name,
-        address: fieldsValue.address
+      const { itemCategory } = this.props;
+      const doc = Object.assign({}, itemCategory, {
+        name: fieldsValue.name
       });
 
-      Meteor.call('inventory/physicalStores.update', { doc }, (error, result) => {
+      Meteor.call('inventory/itemCategories.update', { doc }, (error, result) => {
         if (error) return;
         const { history } = this.props;
-        history.push(paths.physicalStoresPath);
+        history.push(paths.itemCategoriesPath);
       });
     });
   };
 
   getNameField() {
-    const { physicalStore } = this.props;
+    const { itemCategory } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = physicalStore.name;
+    const initialValue = itemCategory.name;
     const rules = [
       {
         required: true,
-        message: 'Please input a name for the physical store.'
+        message: 'Please input a name for the item category.'
       }
     ];
     return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Physical store name" />
-    );
-  }
-
-  getAddressField() {
-    const { physicalStore } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = physicalStore.address;
-    const rules = [];
-    return getFieldDecorator('address', { initialValue, rules })(
-      <Input.TextArea rows={5} placeholder="Physical store address" />
+      <Input placeholder="Item category name" />
     );
   }
 
@@ -88,9 +77,6 @@ class EditForm extends React.Component {
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <Form.Item label="Name" {...formItemLayout}>
           {this.getNameField()}
-        </Form.Item>
-        <Form.Item label="Address" {...formItemLayout}>
-          {this.getAddressField()}
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Row type="flex" justify="end">
@@ -110,11 +96,11 @@ class EditForm extends React.Component {
 
 function dataLoader(props, onData) {
   const { match } = props;
-  const { physicalStoreId } = match.params;
-  const subscription = Meteor.subscribe('inventory/physicalStores#byId', { id: physicalStoreId });
+  const { itemCategoryId } = match.params;
+  const subscription = Meteor.subscribe('inventory/itemCategories#byId', { id: itemCategoryId });
   if (subscription.ready()) {
-    const physicalStore = PhysicalStores.findOne(physicalStoreId);
-    onData(null, { physicalStore });
+    const itemCategory = ItemCategories.findOne(itemCategoryId);
+    onData(null, { itemCategory });
   }
 }
 

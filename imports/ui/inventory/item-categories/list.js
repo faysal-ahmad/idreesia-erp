@@ -8,13 +8,13 @@ import { Button, Table } from 'antd';
 import { composeWithTracker } from '/imports/ui/utils';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
 import { GlobalActionsCreator } from '/imports/ui/action-creators';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { ItemCategories } from '/imports/lib/collections/inventory';
 
 class List extends React.Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    physicalStores: PropTypes.array
+    itemCategories: PropTypes.array
   };
 
   columns = [
@@ -22,37 +22,32 @@ class List extends React.Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address'
+      render: (text, record) => <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
     }
   ];
 
   componentWillMount() {
     const { setBreadcrumbs } = this.props;
-    setBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List']);
+    setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List']);
   }
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresNewFormPath);
+    history.push(paths.itemCategoriesNewFormPath);
   };
 
   render() {
-    const { physicalStores } = this.props;
+    const { itemCategories } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={physicalStores}
+        dataSource={itemCategories}
         columns={this.columns}
         bordered
         title={() => {
           return (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Physical Store
+              New Item Category
             </Button>
           );
         }}
@@ -62,10 +57,10 @@ class List extends React.Component {
 }
 
 function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/physicalStores#all');
+  const subscription = Meteor.subscribe('inventory/itemCategories#all');
   if (subscription.ready()) {
-    const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { physicalStores });
+    const itemCategories = ItemCategories.find({}).fetch();
+    onData(null, { itemCategories });
   }
 }
 

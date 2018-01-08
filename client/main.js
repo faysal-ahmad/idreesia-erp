@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import '../node_modules/antd/dist/antd.css';
 
-import App from '../imports/ui/app.js';
+import App from '../imports/ui/app';
 
 Meteor.startup(() => {
   render(

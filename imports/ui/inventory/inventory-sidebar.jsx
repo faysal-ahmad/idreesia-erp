@@ -19,7 +19,9 @@ class InventorySidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case 'home':
+      case 'stock-levels':
+        setActiveSubModuleName(InventorySubModuleNames.stockLevels);
+        history.push(paths.stockLevelsPath);
         break;
 
       case 'issuance-forms':
@@ -75,7 +77,7 @@ class InventorySidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
-        <Menu.Item key="home">Home</Menu.Item>
+        <Menu.Item key="stock-levels">Stock Levels</Menu.Item>
         <SubMenu
           key="forms"
           title={

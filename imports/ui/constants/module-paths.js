@@ -6,6 +6,11 @@ export class ModulePaths {
 
 export class InventorySubModulePaths {
   // *************************************************************************************
+  // Dashboard/Home Routes
+  // *************************************************************************************
+  static stockLevelsPath = `${ModulePaths.inventory}/stock-levels`;
+
+  // *************************************************************************************
   // Data Setup Routes
   // *************************************************************************************
   static itemTypesPath = `${ModulePaths.inventory}/item-types`;

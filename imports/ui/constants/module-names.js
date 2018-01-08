@@ -5,7 +5,7 @@ export class ModuleNames {
 }
 
 export class InventorySubModuleNames {
-  static stockLevels = 'Stock Levels';
+  static stockItems = 'Stock Items';
 
   static issuanceForms = 'Issuance Forms';
   static receivalForms = 'Receival Forms';

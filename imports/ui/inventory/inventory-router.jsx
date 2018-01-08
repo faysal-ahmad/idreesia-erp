@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { ModulePaths, InventorySubModulePaths as paths } from '../constants';
-import { StockLevelsList } from './stock-levels';
+import { StockItemsNewForm, StockItemsList } from './stock-items';
 import { ItemTypesNewForm, ItemTypesEditForm, ItemTypesList } from './item-types';
 import {
   ItemCategoriesNewForm,
@@ -25,7 +25,8 @@ class InventoryRouter extends Component {
   render() {
     return (
       <Switch>
-        <Route path={paths.stockLevelsPath} component={StockLevelsList} />
+        <Route path={paths.stockItemsNewFormPath} component={StockItemsNewForm} />
+        <Route path={paths.stockItemsPath} component={StockItemsList} />
 
         <Route path={paths.itemTypesNewFormPath} component={ItemTypesNewForm} />
         <Route path={paths.itemTypesEditFormPath} component={ItemTypesEditForm} />

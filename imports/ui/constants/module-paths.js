@@ -5,10 +5,9 @@ export class ModulePaths {
 }
 
 export class InventorySubModulePaths {
-  // *************************************************************************************
-  // Dashboard/Home Routes
-  // *************************************************************************************
-  static stockLevelsPath = `${ModulePaths.inventory}/stock-levels`;
+  static stockItemsPath = `${ModulePaths.inventory}/stock-items`;
+  static stockItemsNewFormPath = `${InventorySubModulePaths.stockItemsPath}/new`;
+  static stockItemsEditFormPath = `${InventorySubModulePaths.stockItemsPath}/:stockItemId`;
 
   // *************************************************************************************
   // Data Setup Routes

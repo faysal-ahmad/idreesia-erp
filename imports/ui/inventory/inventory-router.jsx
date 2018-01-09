@@ -14,12 +14,15 @@ import {
   PhysicalStoresEditForm,
   PhysicalStoresList
 } from './physical-stores';
-import { default as IssuanceForm } from './issuance-form/container';
-import { default as ReceivalForm } from './receival-form/container';
-import { default as DisposalForm } from './disposal-form/container';
-import { default as LostItemForm } from './lost-item-form/container';
-import { default as PurchaseOrderForm } from './purchase-order-form/container';
-import { default as Report } from './reports/container';
+import { IssuanceFormsNewForm, IssuanceFormsEditForm, IssuanceFormsList } from './issuance-forms';
+import { ReceivalFormsNewForm, ReceivalFormsEditForm, ReceivalFormsList } from './receival-forms';
+import { DisposalFormsNewForm, DisposalFormsEditForm, DisposalFormsList } from './disposal-forms';
+import { LostItemFormsNewForm, LostItemFormsEditForm, LostItemFormsList } from './lost-item-forms';
+import {
+  PurchaseOrderFormsNewForm,
+  PurchaseOrderFormsEditForm,
+  PurchaseOrderFormsList
+} from './purchase-order-forms';
 
 class InventoryRouter extends Component {
   render() {
@@ -40,12 +43,25 @@ class InventoryRouter extends Component {
         <Route path={paths.physicalStoresEditFormPath} component={PhysicalStoresEditForm} />
         <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
-        <Route path={`${ModulePaths.inventoryPath}/issue`} component={IssuanceForm} />
-        <Route path={`${ModulePaths.inventoryPath}/receive`} component={ReceivalForm} />
-        <Route path={`${ModulePaths.inventoryPath}/purchase`} component={PurchaseOrderForm} />
-        <Route path={`${ModulePaths.inventoryPath}/dispose`} component={DisposalForm} />
-        <Route path={`${ModulePaths.inventoryPath}/lost`} component={LostItemForm} />
-        <Route path={`${ModulePaths.inventoryPath}/report`} component={Report} />
+        <Route path={paths.issuanceFormsNewFormPath} component={IssuanceFormsNewForm} />
+        <Route path={paths.issuanceFormsEditFormPath} component={IssuanceFormsEditForm} />
+        <Route path={paths.issuanceFormsPath} component={IssuanceFormsList} />
+
+        <Route path={paths.receivalFormsNewFormPath} component={ReceivalFormsNewForm} />
+        <Route path={paths.receivalFormsEditFormPath} component={ReceivalFormsEditForm} />
+        <Route path={paths.receivalFormsPath} component={ReceivalFormsList} />
+
+        <Route path={paths.disposalFormsNewFormPath} component={DisposalFormsNewForm} />
+        <Route path={paths.disposalFormsEditFormPath} component={DisposalFormsEditForm} />
+        <Route path={paths.disposalFormsPath} component={DisposalFormsList} />
+
+        <Route path={paths.lostItemFormsNewFormPath} component={LostItemFormsNewForm} />
+        <Route path={paths.lostItemFormsEditFormPath} component={LostItemFormsEditForm} />
+        <Route path={paths.lostItemFormsPath} component={LostItemFormsList} />
+
+        <Route path={paths.purchaseOrderFormsNewFormPath} component={PurchaseOrderFormsNewForm} />
+        <Route path={paths.purchaseOrderFormsEditFormPath} component={PurchaseOrderFormsEditForm} />
+        <Route path={paths.purchaseOrderFormsPath} component={PurchaseOrderFormsList} />
       </Switch>
     );
   }

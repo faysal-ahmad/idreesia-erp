@@ -3,8 +3,8 @@ import { Mongo } from 'meteor/mongo';
 import { ItemCategory as ItemCategorySchema } from '../../schemas/inventory';
 
 class ItemCategories extends Mongo.Collection {
-  constructor(name, options = {}) {
-    const itemCategories = super('inventory-item-categories', options);
+  constructor(name = 'inventory-item-categories', options = {}) {
+    const itemCategories = super(name, options);
     itemCategories.attachSchema(ItemCategorySchema);
     return itemCategories;
   }

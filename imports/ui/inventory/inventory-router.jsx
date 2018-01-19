@@ -43,25 +43,25 @@ class InventoryRouter extends Component {
         <Route path={paths.physicalStoresEditFormPath} component={PhysicalStoresEditForm} />
         <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
+        <Route path={paths.issuanceFormsListPath} component={IssuanceFormsList} />
         <Route path={paths.issuanceFormsNewFormPath} component={IssuanceFormsNewForm} />
         <Route path={paths.issuanceFormsEditFormPath} component={IssuanceFormsEditForm} />
-        <Route path={paths.issuanceFormsPath} component={IssuanceFormsList} />
 
         <Route path={paths.receivalFormsNewFormPath} component={ReceivalFormsNewForm} />
         <Route path={paths.receivalFormsEditFormPath} component={ReceivalFormsEditForm} />
-        <Route path={paths.receivalFormsPath} component={ReceivalFormsList} />
+        <Route path={paths.receivalFormsListPath} component={ReceivalFormsList} />
 
         <Route path={paths.disposalFormsNewFormPath} component={DisposalFormsNewForm} />
         <Route path={paths.disposalFormsEditFormPath} component={DisposalFormsEditForm} />
-        <Route path={paths.disposalFormsPath} component={DisposalFormsList} />
+        <Route path={paths.disposalFormsListPath} component={DisposalFormsList} />
 
         <Route path={paths.lostItemFormsNewFormPath} component={LostItemFormsNewForm} />
         <Route path={paths.lostItemFormsEditFormPath} component={LostItemFormsEditForm} />
-        <Route path={paths.lostItemFormsPath} component={LostItemFormsList} />
+        <Route path={paths.lostItemFormsListPath} component={LostItemFormsList} />
 
         <Route path={paths.purchaseOrderFormsNewFormPath} component={PurchaseOrderFormsNewForm} />
         <Route path={paths.purchaseOrderFormsEditFormPath} component={PurchaseOrderFormsEditForm} />
-        <Route path={paths.purchaseOrderFormsPath} component={PurchaseOrderFormsList} />
+        <Route path={paths.purchaseOrderFormsListPath} component={PurchaseOrderFormsList} />
       </Switch>
     );
   }

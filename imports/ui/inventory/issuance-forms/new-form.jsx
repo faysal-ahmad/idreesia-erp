@@ -1,17 +1,49 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import moment from 'moment';
+import { DatePicker, Form, Input, Button, Row, Select } from 'antd';
 
+import { ItemsList } from '../common/items-list';
+import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { ItemCategories } from '/imports/lib/collections/inventory';
+import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/constants';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object
+    form: PropTypes.object,
+    physicalStores: PropTypes.array
+  };
+
+  formItemLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 14 }
+  };
+
+  formItemExtendedLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 }
+  };
+
+  buttonItemLayout = {
+    wrapperCol: { span: 18, offset: 6 }
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedPhysicalStoreId: null
+    };
+  }
+
+  handleStoreChanged = value => {
+    const state = Object.assign({}, this.state, {
+      selectedPhysicalStoreId: value
+    });
+    this.setState(state);
   };
 
   handleCancel = () => {
@@ -37,33 +69,85 @@ class NewForm extends Component {
     });
   };
 
-  getNameField() {
+  getIssueDateField() {
+    const { getFieldDecorator } = this.props.form;
+    const initialValue = moment();
+    const rules = [
+      {
+        required: true,
+        message: 'Please input an issue date.'
+      }
+    ];
+    return getFieldDecorator('issueDate', { initialValue, rules })(
+      <DatePicker format="DD MMM, YYYY" />
+    );
+  }
+
+  getIssuedToField() {
     const { getFieldDecorator } = this.props.form;
     const rules = [
       {
         required: true,
-        message: 'Please input a name for the item category.'
+        message: 'Please input a name for issued to.'
       }
     ];
-    return getFieldDecorator('name', { rules })(<Input placeholder="Item category name" />);
+    return getFieldDecorator('issuedTo', { rules })(<Input placeholder="Issued to" />);
+  }
+
+  getPhysicalStoreField() {
+    const { physicalStores } = this.props;
+    const { getFieldDecorator } = this.props.form;
+    const rules = [
+      {
+        required: true,
+        message: 'Please select a physical store.'
+      }
+    ];
+    const options = [];
+    physicalStores.forEach(physicalStore => {
+      options.push(
+        <Select.Option key={physicalStore._id} value={physicalStore._id}>
+          {physicalStore.name}
+        </Select.Option>
+      );
+    });
+
+    return getFieldDecorator('physicalStoreId', { rules })(
+      <Select placeholder="Physical store" onChange={this.handleStoreChanged}>
+        {options}
+      </Select>
+    );
+  }
+
+  getItemsField() {
+    const { getFieldDecorator } = this.props.form;
+    const rules = [
+      {
+        required: true,
+        message: 'Please select some items.'
+      }
+    ];
+    return getFieldDecorator('items', { rules })(
+      <ItemsList physicalStoreId={this.state.selectedPhysicalStoreId} />
+    );
   }
 
   render() {
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
-
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField()}
+        <Form.Item label="Issue Date" {...this.formItemLayout}>
+          {this.getIssueDateField()}
         </Form.Item>
-        <Form.Item {...buttonItemLayout}>
+        <Form.Item label="Issued To" {...this.formItemLayout}>
+          {this.getIssuedToField()}
+        </Form.Item>
+        <Form.Item label="Physical Store" {...this.formItemLayout}>
+          {this.getPhysicalStoreField()}
+        </Form.Item>
+        <Form.Item label="Issued Items" {...this.formItemExtendedLayout}>
+          {this.getItemsField()}
+        </Form.Item>
+        <Form.Item {...this.buttonItemLayout}>
           <Row type="flex" justify="end">
             <Button type="secondary" onClick={this.handleCancel}>
               Cancel
@@ -79,7 +163,16 @@ class NewForm extends Component {
   }
 }
 
+function dataLoader(props, onData) {
+  const subscription = Meteor.subscribe('inventory/physicalStores#all');
+  if (subscription.ready()) {
+    const physicalStores = PhysicalStores.find({}).fetch();
+    onData(null, { physicalStores });
+  }
+}
+
 export default merge(
   Form.create(),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
+  composeWithTracker(dataLoader),
+  WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'New'])
 )(NewForm);

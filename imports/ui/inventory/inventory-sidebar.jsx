@@ -26,27 +26,28 @@ class InventorySidebar extends Component {
 
       case 'issuance-forms':
         setActiveSubModuleName(InventorySubModuleNames.issuanceForms);
-        history.push(paths.issuanceFormsPath);
+        const issuanceFormsListPath = paths.issuanceFormsListPath.replace(':pageId', '1');
+        history.push(issuanceFormsListPath);
         break;
 
       case 'receival-forms':
         setActiveSubModuleName(InventorySubModuleNames.receivalForms);
-        history.push(paths.receivalFormsPath);
+        history.push(paths.receivalFormsListPath);
         break;
 
       case 'disposal-forms':
         setActiveSubModuleName(InventorySubModuleNames.disposalForms);
-        history.push(paths.disposalFormsPath);
+        history.push(paths.disposalFormsListPath);
         break;
 
       case 'lost-item-forms':
         setActiveSubModuleName(InventorySubModuleNames.lostItemForms);
-        history.push(paths.lostItemFormsPath);
+        history.push(paths.lostItemFormsListPath);
         break;
 
       case 'purchase-order-forms':
         setActiveSubModuleName(InventorySubModuleNames.purchaseOrderForms);
-        history.push(paths.purchaseOrderFormsPath);
+        history.push(paths.purchaseOrderFormsListPath);
         break;
 
       case 'item-types':

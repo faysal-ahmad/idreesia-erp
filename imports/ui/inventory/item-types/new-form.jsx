@@ -36,7 +36,6 @@ class NewForm extends Component {
       };
 
       Meteor.call('inventory/itemTypes.create', { doc }, (error, result) => {
-        debugger;
         if (error) return;
         const { history } = this.props;
         history.push(paths.itemTypesPath);

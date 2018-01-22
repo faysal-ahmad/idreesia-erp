@@ -34,8 +34,12 @@ class NewForm extends Component {
 
   constructor(props) {
     super(props);
+    const { physicalStores } = this.props;
+    const physicalStoreId =
+      physicalStores && physicalStores.length > 0 ? physicalStores[0]._id : null;
+
     this.state = {
-      selectedPhysicalStoreId: null
+      selectedPhysicalStoreId: physicalStoreId
     };
   }
 
@@ -55,8 +59,9 @@ class NewForm extends Component {
     e.preventDefault();
     const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
+      debugger;
       if (err) return;
-
+      /*
       const doc = {
         name: fieldsValue.name
       };
@@ -66,6 +71,7 @@ class NewForm extends Component {
         const { history } = this.props;
         history.push(paths.itemCategoriesPath);
       });
+*/
     });
   };
 
@@ -88,7 +94,7 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input a name for issued to.'
+        message: 'Please input a name in issued to.'
       }
     ];
     return getFieldDecorator('issuedTo', { rules })(<Input placeholder="Issued to" />);
@@ -97,6 +103,7 @@ class NewForm extends Component {
   getPhysicalStoreField() {
     const { physicalStores } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const initialValue = this.state.selectedPhysicalStoreId;
     const rules = [
       {
         required: true,
@@ -112,7 +119,7 @@ class NewForm extends Component {
       );
     });
 
-    return getFieldDecorator('physicalStoreId', { rules })(
+    return getFieldDecorator('physicalStoreId', { rules, initialValue })(
       <Select placeholder="Physical store" onChange={this.handleStoreChanged}>
         {options}
       </Select>
@@ -124,7 +131,7 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please select some items.'
+        message: 'Please add some items.'
       }
     ];
     return getFieldDecorator('items', { rules })(

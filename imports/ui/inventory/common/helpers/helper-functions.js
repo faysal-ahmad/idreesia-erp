@@ -1,4 +1,4 @@
-import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
+import { ItemTypes, ItemCategories, ItemStocks } from '/imports/lib/collections/inventory';
 
 export function getItemTypeName(itemTypeId) {
   let retVal = null;
@@ -18,5 +18,21 @@ export function getItemCategoryName(itemTypeId) {
     if (itemCategory) retVal = itemCategory.name;
   }
 
+  return retVal;
+}
+
+export function getItemDisplayNameFromItemStockId(itemStockId) {
+  let retVal = null;
+
+  const itemStock = ItemStocks.findOne(itemStockId);
+  if (!itemStock) return retVal;
+
+  const itemType = ItemTypes.findOne(itemStock.itemTypeId);
+  if (!itemType) return retVal;
+
+  const itemCategory = ItemCategories.findOne(itemType.itemCategoryId);
+  if (!itemCategory) return retVal;
+
+  retVal = `${itemCategory.name} - ${itemType.name}`;
   return retVal;
 }

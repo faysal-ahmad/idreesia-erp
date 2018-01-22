@@ -1,1 +1,5 @@
-export { getItemTypeName, getItemCategoryName } from './helper-functions';
+export {
+  getItemTypeName,
+  getItemCategoryName,
+  getItemDisplayNameFromItemStockId
+} from './helper-functions';

@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table, Modal } from 'antd';
 import { merge } from 'react-komposer';
+import { filter, find } from 'lodash';
 
 import { composeWithTracker } from '/imports/ui/utils';
-import { ItemStocks } from '/imports/lib/collections/inventory';
+import { ItemTypes, ItemCategories, ItemStocks } from '/imports/lib/collections/inventory';
 import { default as ItemForm } from './item-form';
-import { getItemTypeName, getItemCategoryName } from '../helpers';
+import { getItemDisplayNameFromItemStockId } from '../helpers';
 
 const ButtonBarStyle = {
   display: 'flex',
@@ -18,27 +19,36 @@ const ButtonBarStyle = {
 class ItemsList extends Component {
   static propTypes = {
     physicalStoreId: PropTypes.string,
-    itemStocks: PropTypes.array
+    itemTypes: PropTypes.array,
+    itemCategories: PropTypes.array,
+
+    value: PropTypes.array,
+    onChange: PropTypes.func
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      showForm: false
+      showForm: false,
+      itemStocks: props.value ? props.value : [],
+      selectedItemStockIds: []
     };
   }
+
+  itemForm = null;
+  stockItemsTable = null;
 
   columns = [
     {
       title: 'Item Name',
-      dataIndex: 'itemTypeId',
-      key: 'name',
-      render: (text, record) => `${getItemCategoryName(text)} - ${getItemTypeName(text)}`
+      dataIndex: 'itemStockId',
+      key: 'itemStockId',
+      render: (text, record) => getItemDisplayNameFromItemStockId(text)
     },
     {
       title: 'Issued',
-      dataIndex: 'stockLevel',
-      key: 'stockLevel'
+      dataIndex: 'issued',
+      key: 'issued'
     }
   ];
 
@@ -47,27 +57,84 @@ class ItemsList extends Component {
     this.setState(state);
   };
 
-  handleFormCancelled = () => {
+  handleRemoveItemClicked = () => {
+    const { itemStocks, selectedItemStockIds } = this.state;
+    if (selectedItemStockIds && selectedItemStockIds.length > 0) {
+      const updatedItemStocks = filter(itemStocks, itemStock => {
+        return selectedItemStockIds.indexOf(itemStock.itemStockId) === -1;
+      });
+
+      const state = Object.assign({}, this.state, {
+        itemStocks: updatedItemStocks,
+        selectedItemStockIds: []
+      });
+      this.setState(state);
+
+      const { onChange } = this.props;
+      if (onChange) {
+        onChange(updatedItemStocks);
+      }
+    }
+  };
+
+  handleNewItemFormCancelled = () => {
     const state = Object.assign({}, this.state, { showForm: false });
     this.setState(state);
   };
 
-  handleFormSaved = () => {};
+  handleNewItemFormSaved = () => {
+    this.itemForm.validateFields(null, (errors, values) => {
+      if (!errors) {
+        const { itemStockId, issued } = values;
+        const { itemStocks } = this.state;
+        // If we have an existing item against this itemStockId, then add the issued
+        // count to the existing item instead of adding a new item.
+        const existingItem = find(itemStocks, { itemStockId });
+        if (!existingItem) {
+          itemStocks.push({ itemStockId, issued });
+        } else {
+          existingItem.issued += issued;
+        }
 
-  rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-    }
+        const state = Object.assign({}, this.state, {
+          showForm: false,
+          itemStocks
+        });
+        this.setState(state);
+
+        const { onChange } = this.props;
+        if (onChange) {
+          onChange(itemStocks);
+        }
+      }
+    });
+  };
+
+  handleRowSelectionChanged = (selectedRowKeys, selectedRows) => {
+    const state = Object.assign({}, this.state, {
+      selectedItemStockIds: selectedRowKeys
+    });
+    this.setState(state);
   };
 
   render() {
-    const { showForm } = this.state;
+    const { showForm, selectedItemStockIds } = this.state;
+    const { itemTypes, itemCategories, itemStocks } = this.props;
+    const rowSelection = {
+      selectedRowKeys: selectedItemStockIds,
+      onChange: this.handleRowSelectionChanged
+    };
+
     return (
       <React.Fragment>
         <Table
-          rowSelection={this.rowSelection}
+          ref={t => (this.stockItemsTable = t)}
+          rowKey="itemStockId"
+          rowSelection={rowSelection}
           columns={this.columns}
           bordered
+          pagination={false}
+          dataSource={this.state.itemStocks}
           footer={() => {
             return (
               <div style={ButtonBarStyle}>
@@ -90,9 +157,16 @@ class ItemsList extends Component {
           visible={showForm}
           title="Add New Item"
           okText="Save"
-          onCancel={this.handleFormCancelled}
+          destroyOnClose={true}
+          onOk={this.handleNewItemFormSaved}
+          onCancel={this.handleNewItemFormCancelled}
         >
-          <ItemForm />
+          <ItemForm
+            ref={f => (this.itemForm = f)}
+            itemTypes={itemTypes}
+            itemCategories={itemCategories}
+            itemStocks={itemStocks}
+          />
         </Modal>
       </React.Fragment>
     );
@@ -101,10 +175,23 @@ class ItemsList extends Component {
 
 function dataLoader(props, onData) {
   const { physicalStoreId } = props;
-  const subscription = Meteor.subscribe('inventory/itemStocks#byStore', { physicalStoreId });
-  if (subscription.ready()) {
-    const itemStocks = ItemStocks.find({}).fetch();
-    onData(null, { itemStocks });
+  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
+  const itemCategoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
+  const itemStocksSubscription = Meteor.subscribe('inventory/itemStocks#byStore', {
+    physicalStoreId
+  });
+
+  if (
+    itemTypesSubscription.ready() &&
+    itemCategoriesSubscription.ready() &&
+    itemStocksSubscription.ready()
+  ) {
+    const itemTypes = ItemTypes.find({}).fetch();
+    const itemCategories = ItemCategories.find({}).fetch();
+    const itemStocks = ItemStocks.find({
+      physicalStoreId: { $eq: physicalStoreId }
+    }).fetch();
+    onData(null, { itemTypes, itemCategories, itemStocks });
   }
 }
 

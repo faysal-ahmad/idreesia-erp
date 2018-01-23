@@ -10,9 +10,9 @@ import { GlobalActionsCreator } from '../action-creators';
 const { Header } = Layout;
 
 const modulePathsMapping = {};
+modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
 modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
-modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 
 class HeaderContent extends Component {
   static propTypes = {

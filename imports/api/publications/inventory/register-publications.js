@@ -1,0 +1,23 @@
+import { default as issuanceFormsById } from './issuance-forms/by-id';
+import { default as issuanceFormsAll } from './issuance-forms/all';
+import { default as itemCategoriesById } from './item-categories/by-id';
+import { default as itemCategoriesAll } from './item-categories/all';
+import { default as itemStocksById } from './item-stocks/by-id';
+import { default as itemStocksByStore } from './item-stocks/by-store';
+import { default as itemStocksAll } from './item-stocks/all';
+import { default as itemTypesById } from './item-types/by-id';
+import { default as itemTypesAll } from './item-types/all';
+import { default as physicalStoresById } from './physical-stores/by-id';
+import { default as physicalStoresAll } from './physical-stores/all';
+
+Meteor.publish('inventory/issuanceForms#byId', issuanceFormsById);
+Meteor.publish('inventory/issuanceForms#all', issuanceFormsAll);
+Meteor.publish('inventory/itemCategories#byId', itemCategoriesById);
+Meteor.publish('inventory/itemCategories#all', itemCategoriesAll);
+Meteor.publish('inventory/itemStocks#byId', itemStocksById);
+Meteor.publish('inventory/itemStocks#byStore', itemStocksByStore);
+Meteor.publish('inventory/itemStocks#all', itemStocksAll);
+Meteor.publish('inventory/itemTypes#byId', itemTypesById);
+Meteor.publish('inventory/itemTypes#all', itemTypesAll);
+Meteor.publish('inventory/physicalStores#byId', physicalStoresById);
+Meteor.publish('inventory/physicalStores#all', physicalStoresAll);

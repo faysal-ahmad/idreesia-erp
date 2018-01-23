@@ -7,40 +7,40 @@ import { Button, Table } from 'antd';
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
-import { Profiles } from '/imports/lib/collections/admin';
+import { Departments } from '/imports/lib/collections/admin';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    profiles: PropTypes.array
+    departments: PropTypes.array
   };
 
   columns = [
     {
-      title: 'First Name',
-      dataIndex: 'firstName',
-      key: 'firstName',
-      render: (text, record) => <Link to={`${paths.profilesPath}/${record._id}`}>{text}</Link>
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, record) => <Link to={`${paths.departmentsPath}/${record._id}`}>{text}</Link>
     },
     {
-      title: 'Last Name',
-      dataIndex: 'lastName',
-      key: 'lastName'
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description'
     }
   ];
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.profilesNewFormPath);
+    history.push(paths.departmentsNewFormPath);
   };
 
   render() {
-    const { profiles } = this.props;
+    const { departments } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={profiles}
+        dataSource={departments}
         columns={this.columns}
         bordered
         title={() => {
@@ -56,14 +56,14 @@ class List extends Component {
 }
 
 function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('admin/profiles#all');
+  const subscription = Meteor.subscribe('admin/departments#all');
   if (subscription.ready()) {
-    const profiles = Profiles.find({}).fetch();
-    onData(null, { profiles });
+    const departments = Departments.find({}).fetch();
+    onData(null, { departments });
   }
 }
 
 export default merge(
   composeWithTracker(dataLoader),
-  WithBreadcrumbs(['Admin', 'Setup', 'Profiles', 'List'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Departments', 'List'])
 )(List);

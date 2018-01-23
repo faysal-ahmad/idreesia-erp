@@ -25,6 +25,11 @@ class AdminSidebar extends Component {
         history.push(paths.profilesPath);
         break;
 
+      case 'departments':
+        setActiveSubModuleName(SubModuleNames.departments);
+        history.push(paths.departmentsPath);
+        break;
+
       default:
         break;
     }
@@ -47,6 +52,7 @@ class AdminSidebar extends Component {
           }
         >
           <Menu.Item key="profiles">Profiles</Menu.Item>
+          <Menu.Item key="departments">Departments</Menu.Item>
         </SubMenu>
       </Menu>
     );

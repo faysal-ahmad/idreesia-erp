@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 
 import { ModuleNames } from '../constants';
+import { AdminSidebar } from '../modules/admin';
 import { InventorySidebar } from '../modules/inventory';
 
 const { Sider } = Layout;
@@ -20,6 +21,10 @@ class SidebarContent extends Component {
     const { history, activeModuleName } = this.props;
 
     switch (activeModuleName) {
+      case ModuleNames.admin:
+        sidebar = <AdminSidebar history={history} />;
+        break;
+
       case ModuleNames.inventory:
         sidebar = <InventorySidebar history={history} />;
         break;

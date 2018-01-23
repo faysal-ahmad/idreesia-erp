@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 
 import { ModuleNames } from '../constants';
+import { AdminRouter } from '../modules/admin';
 import { InventoryRouter } from '../modules/inventory';
 
 const { Content } = Layout;
@@ -21,6 +22,10 @@ class MainContent extends Component {
     const { activeModuleName } = this.props;
 
     switch (activeModuleName) {
+      case ModuleNames.admin:
+        main = <AdminRouter />;
+        break;
+
       case ModuleNames.inventory:
         main = <InventoryRouter />;
         break;

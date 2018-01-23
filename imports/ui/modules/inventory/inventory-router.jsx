@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import { ModulePaths, InventorySubModulePaths as paths } from '../constants';
+import { default as paths } from './submodule-paths';
+import { ModulePaths } from '/imports/ui/constants';
 import { StockItemsNewForm, StockItemsList } from './stock-items';
 import { ItemTypesNewForm, ItemTypesEditForm, ItemTypesList } from './item-types';
 import {
@@ -16,8 +17,11 @@ import {
 } from './physical-stores';
 import { IssuanceFormsNewForm, IssuanceFormsEditForm, IssuanceFormsList } from './issuance-forms';
 import { ReceivalFormsNewForm, ReceivalFormsEditForm, ReceivalFormsList } from './receival-forms';
-import { DisposalFormsNewForm, DisposalFormsEditForm, DisposalFormsList } from './disposal-forms';
-import { LostItemFormsNewForm, LostItemFormsEditForm, LostItemFormsList } from './lost-item-forms';
+import {
+  AdjustmentFormsNewForm,
+  AdjustmentFormsEditForm,
+  AdjustmentFormsList
+} from './adjustment-forms';
 import {
   PurchaseOrderFormsNewForm,
   PurchaseOrderFormsEditForm,
@@ -51,13 +55,9 @@ class InventoryRouter extends Component {
         <Route path={paths.receivalFormsEditFormPath} component={ReceivalFormsEditForm} />
         <Route path={paths.receivalFormsListPath} component={ReceivalFormsList} />
 
-        <Route path={paths.disposalFormsNewFormPath} component={DisposalFormsNewForm} />
-        <Route path={paths.disposalFormsEditFormPath} component={DisposalFormsEditForm} />
-        <Route path={paths.disposalFormsListPath} component={DisposalFormsList} />
-
-        <Route path={paths.lostItemFormsNewFormPath} component={LostItemFormsNewForm} />
-        <Route path={paths.lostItemFormsEditFormPath} component={LostItemFormsEditForm} />
-        <Route path={paths.lostItemFormsListPath} component={LostItemFormsList} />
+        <Route path={paths.adjustmentFormsNewFormPath} component={AdjustmentFormsNewForm} />
+        <Route path={paths.adjustmentFormsEditFormPath} component={AdjustmentFormsEditForm} />
+        <Route path={paths.adjustmentFormsListPath} component={AdjustmentFormsList} />
 
         <Route path={paths.purchaseOrderFormsNewFormPath} component={PurchaseOrderFormsNewForm} />
         <Route path={paths.purchaseOrderFormsEditFormPath} component={PurchaseOrderFormsEditForm} />

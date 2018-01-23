@@ -8,7 +8,7 @@ import { ItemsList } from '../common/items-list';
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class NewForm extends Component {
   static propTypes = {

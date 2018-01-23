@@ -6,14 +6,14 @@ import { Button, Table } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { ItemCategories } from '/imports/lib/collections/inventory';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    physicalStores: PropTypes.array
+    itemCategories: PropTypes.array
   };
 
   columns = [
@@ -21,32 +21,27 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address'
+      render: (text, record) => <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
     }
   ];
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresNewFormPath);
+    history.push(paths.itemCategoriesNewFormPath);
   };
 
   render() {
-    const { physicalStores } = this.props;
+    const { itemCategories } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={physicalStores}
+        dataSource={itemCategories}
         columns={this.columns}
         bordered
         title={() => {
           return (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Physical Store
+              New Item Category
             </Button>
           );
         }}
@@ -56,14 +51,14 @@ class List extends Component {
 }
 
 function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/physicalStores#all');
+  const subscription = Meteor.subscribe('inventory/itemCategories#all');
   if (subscription.ready()) {
-    const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { physicalStores });
+    const itemCategories = ItemCategories.find({}).fetch();
+    onData(null, { itemCategories });
   }
 }
 
 export default merge(
   composeWithTracker(dataLoader),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List'])
+  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List'])
 )(List);

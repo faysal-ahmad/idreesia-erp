@@ -6,15 +6,13 @@ import { Form, Input, Button, Row, Select, Switch } from 'antd';
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
-class EditForm extends Component {
+class NewForm extends Component {
   static propTypes = {
-    match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    itemType: PropTypes.object,
     itemCategories: PropTypes.array
   };
 
@@ -29,16 +27,15 @@ class EditForm extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const { itemType } = this.props;
-      const doc = Object.assign({}, itemType, {
+      const doc = {
         name: fieldsValue.name,
         description: fieldsValue.description,
         itemCategoryId: fieldsValue.itemCategoryId,
         unitOfMeasurement: fieldsValue.unitOfMeasurement,
         singleUse: fieldsValue.singleUse
-      });
+      };
 
-      Meteor.call('inventory/itemTypes.update', { doc }, (error, result) => {
+      Meteor.call('inventory/itemTypes.create', { doc }, (error, result) => {
         if (error) return;
         const { history } = this.props;
         history.push(paths.itemTypesPath);
@@ -47,33 +44,27 @@ class EditForm extends Component {
   };
 
   getNameField() {
-    const { itemType } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = itemType.name;
     const rules = [
       {
         required: true,
         message: 'Please input a name for the item type.'
       }
     ];
-    return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Item type name" />
-    );
+    return getFieldDecorator('name', { rules })(<Input placeholder="Item type name" />);
   }
 
   getDescriptionField() {
-    const { itemType } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = itemType.description;
-    return getFieldDecorator('description', { initialValue })(
+    const rules = [];
+    return getFieldDecorator('description', { rules })(
       <Input.TextArea rows={5} placeholder="Item type description" />
     );
   }
 
   getCategoryField() {
-    const { itemType, itemCategories } = this.props;
+    const { itemCategories } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = itemType.itemCategoryId;
     const rules = [
       {
         required: true,
@@ -89,15 +80,13 @@ class EditForm extends Component {
       );
     });
 
-    return getFieldDecorator('itemCategoryId', { rules, initialValue })(
+    return getFieldDecorator('itemCategoryId', { rules })(
       <Select placeholder="Please select an item category.">{options}</Select>
     );
   }
 
   getUnitOfMeasurementField() {
-    const { itemType } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = itemType.unitOfMeasurement;
     const rules = [
       {
         required: true,
@@ -105,7 +94,7 @@ class EditForm extends Component {
       }
     ];
 
-    return getFieldDecorator('unitOfMeasurement', { initialValue, rules })(
+    return getFieldDecorator('unitOfMeasurement', { rules })(
       <Select placeholder="Please select a unit of measurement.">
         <Select.Option value="quantity">Quantity</Select.Option>
         <Select.Option value="ft">Length (ft)</Select.Option>
@@ -117,12 +106,9 @@ class EditForm extends Component {
   }
 
   getSingleUseField() {
-    const { itemType } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = itemType.singleUse;
-    return getFieldDecorator('singleUse', { initialValue })(
-      <Switch defaultChecked={initialValue} />
-    );
+    const initialValue = true;
+    return getFieldDecorator('singleUse', { initialValue })(<Switch defaultChecked />);
   }
 
   render() {
@@ -169,19 +155,15 @@ class EditForm extends Component {
 }
 
 function dataLoader(props, onData) {
-  const { match } = props;
-  const { itemTypeId } = match.params;
-  const categoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
-  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#byId', { id: itemTypeId });
-  if (categoriesSubscription.ready() && itemTypesSubscription.ready()) {
-    const itemType = ItemTypes.findOne(itemTypeId);
+  const subscription = Meteor.subscribe('inventory/itemCategories#all');
+  if (subscription.ready()) {
     const itemCategories = ItemCategories.find({}).fetch();
-    onData(null, { itemType, itemCategories });
+    onData(null, { itemCategories });
   }
 }
 
 export default merge(
   Form.create(),
   composeWithTracker(dataLoader),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'Edit'])
-)(EditForm);
+  WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'New'])
+)(NewForm);

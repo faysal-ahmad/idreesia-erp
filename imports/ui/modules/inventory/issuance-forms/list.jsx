@@ -7,7 +7,7 @@ import { get } from 'lodash';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
 
 const ToolbarStyle = {

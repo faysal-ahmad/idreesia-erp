@@ -12,7 +12,7 @@ import {
   ItemCategories,
   PhysicalStores
 } from '/imports/lib/collections/inventory';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class NewForm extends Component {
   static propTypes = {

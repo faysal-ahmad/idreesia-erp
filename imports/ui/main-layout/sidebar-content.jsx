@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 
 import { ModuleNames } from '../constants';
-import { InventorySidebar } from '../inventory';
+import { InventorySidebar } from '../modules/inventory';
 
 const { Sider } = Layout;
 

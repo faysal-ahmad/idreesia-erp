@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Menu, Icon } from 'antd';
 
-import { InventorySubModuleNames, InventorySubModulePaths as paths } from '../constants';
-import { GlobalActionsCreator } from '../action-creators';
+import { GlobalActionsCreator } from '/imports/ui/action-creators';
+import SubModuleNames from './submodule-names';
+import { default as paths } from './submodule-paths';
 
 const { SubMenu } = Menu;
 
@@ -20,48 +21,43 @@ class InventorySidebar extends Component {
 
     switch (key) {
       case 'stock-items':
-        setActiveSubModuleName(InventorySubModuleNames.stockItems);
+        setActiveSubModuleName(SubModuleNames.stockItems);
         history.push(paths.stockItemsPath);
         break;
 
       case 'issuance-forms':
-        setActiveSubModuleName(InventorySubModuleNames.issuanceForms);
+        setActiveSubModuleName(SubModuleNames.issuanceForms);
         const issuanceFormsListPath = paths.issuanceFormsListPath.replace(':pageId', '1');
         history.push(issuanceFormsListPath);
         break;
 
       case 'receival-forms':
-        setActiveSubModuleName(InventorySubModuleNames.receivalForms);
+        setActiveSubModuleName(SubModuleNames.receivalForms);
         history.push(paths.receivalFormsListPath);
         break;
 
-      case 'disposal-forms':
-        setActiveSubModuleName(InventorySubModuleNames.disposalForms);
-        history.push(paths.disposalFormsListPath);
-        break;
-
-      case 'lost-item-forms':
-        setActiveSubModuleName(InventorySubModuleNames.lostItemForms);
-        history.push(paths.lostItemFormsListPath);
+      case 'adjustment-forms':
+        setActiveSubModuleName(SubModuleNames.adjustmentForms);
+        history.push(paths.adjustmentFormsListPath);
         break;
 
       case 'purchase-order-forms':
-        setActiveSubModuleName(InventorySubModuleNames.purchaseOrderForms);
+        setActiveSubModuleName(SubModuleNames.purchaseOrderForms);
         history.push(paths.purchaseOrderFormsListPath);
         break;
 
       case 'item-types':
-        setActiveSubModuleName(InventorySubModuleNames.itemTypes);
+        setActiveSubModuleName(SubModuleNames.itemTypes);
         history.push(paths.itemTypesPath);
         break;
 
       case 'item-categories':
-        setActiveSubModuleName(InventorySubModuleNames.itemCategories);
+        setActiveSubModuleName(SubModuleNames.itemCategories);
         history.push(paths.itemCategoriesPath);
         break;
 
       case 'physical-stores':
-        setActiveSubModuleName(InventorySubModuleNames.physicalStores);
+        setActiveSubModuleName(SubModuleNames.physicalStores);
         history.push(paths.physicalStoresPath);
         break;
 
@@ -89,8 +85,7 @@ class InventorySidebar extends Component {
         >
           <Menu.Item key="issuance-forms">Issuance Forms</Menu.Item>
           <Menu.Item key="receival-forms">Receival Forms</Menu.Item>
-          <Menu.Item key="disposal-forms">Disposal Forms</Menu.Item>
-          <Menu.Item key="lost-item-forms">Lost Item Forms</Menu.Item>
+          <Menu.Item key="adjustment-forms">Adjsutment Forms</Menu.Item>
           <Menu.Item key="purchase-order-forms">Purchase Order Forms</Menu.Item>
         </SubMenu>
         <SubMenu

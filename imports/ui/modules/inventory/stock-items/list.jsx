@@ -6,7 +6,7 @@ import { Button, Table, Select } from 'antd';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   ItemStocks,
   ItemTypes,

@@ -4,8 +4,8 @@ import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { ItemCategories } from '/imports/lib/collections/inventory';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class NewForm extends Component {
   static propTypes = {
@@ -16,7 +16,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    history.push(paths.physicalStoresPath);
   };
 
   handleSubmit = e => {
@@ -26,13 +26,14 @@ class NewForm extends Component {
       if (err) return;
 
       const doc = {
-        name: fieldsValue.name
+        name: fieldsValue.name,
+        address: fieldsValue.address
       };
 
-      Meteor.call('inventory/itemCategories.create', { doc }, (error, result) => {
+      Meteor.call('inventory/physicalStores.create', { doc }, (error, result) => {
         if (error) return;
         const { history } = this.props;
-        history.push(paths.itemCategoriesPath);
+        history.push(paths.physicalStoresPath);
       });
     });
   };
@@ -42,10 +43,18 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input a name for the item category.'
+        message: 'Please input a name for the physical store.'
       }
     ];
-    return getFieldDecorator('name', { rules })(<Input placeholder="Item category name" />);
+    return getFieldDecorator('name', { rules })(<Input placeholder="Physical store name" />);
+  }
+
+  getAddressField() {
+    const { getFieldDecorator } = this.props.form;
+    const rules = [];
+    return getFieldDecorator('address', { rules })(
+      <Input.TextArea rows={5} placeholder="Physical store address" />
+    );
   }
 
   render() {
@@ -62,6 +71,9 @@ class NewForm extends Component {
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <Form.Item label="Name" {...formItemLayout}>
           {this.getNameField()}
+        </Form.Item>
+        <Form.Item label="Address" {...formItemLayout}>
+          {this.getAddressField()}
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Row type="flex" justify="end">
@@ -81,5 +93,5 @@ class NewForm extends Component {
 
 export default merge(
   Form.create(),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
+  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New'])
 )(NewForm);

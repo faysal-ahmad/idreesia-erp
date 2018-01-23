@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 
 import { ModuleNames } from '../constants';
-import { InventoryRouter } from '../inventory';
+import { InventoryRouter } from '../modules/inventory';
 
 const { Content } = Layout;
 

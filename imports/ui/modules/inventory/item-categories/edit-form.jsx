@@ -6,7 +6,7 @@ import { Form, Input, Button, Row } from 'antd';
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { ItemCategories } from '/imports/lib/collections/inventory';
-import { InventorySubModulePaths as paths } from '/imports/ui/constants';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class EditForm extends Component {
   static propTypes = {

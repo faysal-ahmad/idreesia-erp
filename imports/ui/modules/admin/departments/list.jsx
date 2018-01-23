@@ -46,7 +46,7 @@ class List extends Component {
         title={() => {
           return (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Profile
+              New Department
             </Button>
           );
         }}

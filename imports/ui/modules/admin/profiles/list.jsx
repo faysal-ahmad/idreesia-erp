@@ -18,17 +18,17 @@ class List extends Component {
 
   columns = [
     {
-      title: 'First Name',
-      dataIndex: 'firstName',
-      key: 'firstName',
-      render: (text, record) => <Link to={`${paths.profilesPath}/${record._id}`}>{text}</Link>
-    },
-    {
-      title: 'Last Name',
-      dataIndex: 'lastName',
-      key: 'lastName'
+      title: 'Name',
+      key: 'name',
+      render: (text, record) => (
+        <Link to={`${paths.profilesPath}/${record._id}`}>{this.getFullName(record)}</Link>
+      )
     }
   ];
+
+  getFullName(profile) {
+    return `${profile.firstName} ${profile.lastName}`;
+  }
 
   handleNewClicked = () => {
     const { history } = this.props;

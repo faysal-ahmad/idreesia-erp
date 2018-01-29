@@ -70,5 +70,5 @@ function dataLoader(props, onData) {
 
 export default merge(
   composeWithTracker(dataLoader),
-  WithBreadcrumbs(['Admin', 'Setup', 'Profiles', 'List'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Accounts', 'List'])
 )(List);

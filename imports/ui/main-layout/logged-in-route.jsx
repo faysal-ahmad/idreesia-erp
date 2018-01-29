@@ -2,10 +2,21 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Layout, Breadcrumb } from 'antd';
+import { Row, Col } from 'antd';
 
 const { Content } = Layout;
 
-import { HeaderContent, SidebarContent, MainContent } from './';
+import { HeaderContent, SidebarContent, MainContent, LoginForm } from './';
+
+const loginFormWrapperStyle = {
+  width: '300px',
+  height: '200px',
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  marginTop: '-100px',
+  marginLeft: '-150px'
+};
 
 class LoggedInRoute extends Component {
   static propTypes = {
@@ -31,19 +42,28 @@ class LoggedInRoute extends Component {
 
   render() {
     const { location, history } = this.props;
+    const userId = Meteor.userId();
 
-    return (
-      <Layout>
-        <HeaderContent location={location} history={history} />
+    if (userId) {
+      return (
         <Layout>
-          <SidebarContent location={location} history={history} />
-          <Layout style={{ padding: '0 24px 24px' }}>
-            {this.getBreadcrumbs()}
-            <MainContent location={location} history={history} />
+          <HeaderContent location={location} history={history} />
+          <Layout>
+            <SidebarContent location={location} history={history} />
+            <Layout style={{ padding: '0 24px 24px' }}>
+              {this.getBreadcrumbs()}
+              <MainContent location={location} history={history} />
+            </Layout>
           </Layout>
         </Layout>
-      </Layout>
-    );
+      );
+    } else {
+      return (
+        <div style={loginFormWrapperStyle}>
+          <LoginForm location={location} history={history} />
+        </div>
+      );
+    }
   }
 }
 

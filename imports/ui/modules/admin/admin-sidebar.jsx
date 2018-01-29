@@ -20,6 +20,11 @@ class AdminSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
+      case 'accounts':
+        setActiveSubModuleName(SubModuleNames.accounts);
+        history.push(paths.accountsPath);
+        break;
+
       case 'profiles':
         setActiveSubModuleName(SubModuleNames.profiles);
         history.push(paths.profilesPath);
@@ -51,6 +56,7 @@ class AdminSidebar extends Component {
             </span>
           }
         >
+          <Menu.Item key="accounts">Accounts</Menu.Item>
           <Menu.Item key="profiles">Profiles</Menu.Item>
           <Menu.Item key="departments">Departments</Menu.Item>
         </SubMenu>

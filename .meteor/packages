@@ -19,3 +19,4 @@ shell-server@0.3.0            # Server-side component of the `meteor shell` comm
 aldeed:collection2-core
 alanning:roles
 mdg:validated-method
+accounts-password

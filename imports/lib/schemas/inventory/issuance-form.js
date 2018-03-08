@@ -15,6 +15,10 @@ export default new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
+  physicalStoreId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
   items: {
     type: Array
   },

@@ -2,19 +2,27 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Button, Table, Select } from 'antd';
+import { Button, Table, Select, DatePicker } from 'antd';
 import { get } from 'lodash';
 
 import { composeWithTracker } from '/imports/ui/utils';
-import { WithBreadcrumbs } from '/imports/ui/composers';
+import { WithBreadcrumbs, WithListData } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
+import { Find as FindIssuanceForms } from '/imports/api/methods/inventory/issuance-forms';
+
+import ListFilter from './list-filter';
 
 const ToolbarStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
+  alignItems: 'center',
   width: '100%'
+};
+
+const FilterStyle = {
+  width: '400px'
 };
 
 const StoreSelectStyle = {
@@ -26,7 +34,10 @@ class List extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     physicalStores: PropTypes.array,
-    issuanceForms: PropTypes.array
+    issuanceForms: PropTypes.array,
+
+    data: PropTypes.array,
+    pageCount: PropTypes.number
   };
 
   columns = [
@@ -75,43 +86,47 @@ class List extends Component {
     this.setState(state);
   };
 
+  handleDateRangeChange = (dates, dateStrings) => {
+    console.log(dateStrings);
+  };
+
   getTableHeader = () => {
     const { physicalStores } = this.props;
-    const { selectedStoreId } = this.state;
-    const options = [];
-    physicalStores.forEach(physicalStore => {
-      options.push(
-        <Select.Option key={physicalStore._id} value={physicalStore._id}>
-          {physicalStore.name}
-        </Select.Option>
-      );
-    });
 
     return (
       <div style={ToolbarStyle}>
         <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
           New Issuance Form
         </Button>
-        <div>
-          Select Store:&nbsp;
-          <Select
-            defaultValue={selectedStoreId}
-            style={StoreSelectStyle}
-            onChange={this.handleStoreChanged}
-          >
-            {options}
-          </Select>
-        </div>
+        <ListFilter filterCriteria={{}} physicalStores={physicalStores} />
+        {/*
+            <div style={FilterBoxStyle}>
+              <div>
+                Physical Store:&nbsp;
+                <Select
+                  defaultValue={selectedStoreId}
+                  style={StoreSelectStyle}
+                  onChange={this.handleStoreChanged}
+                >
+                  {options}
+                </Select>
+              </div>
+              <div>
+                Issue Dates:&nbsp;
+                <DatePicker.RangePicker onChange={this.handleDateRangeChange} />
+              </div>
+            </div>
+           */}
       </div>
     );
   };
 
   render() {
-    const { issuanceForms } = this.props;
+    const { data } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={issuanceForms}
+        dataSource={data}
         columns={this.columns}
         bordered
         title={this.getTableHeader}
@@ -121,15 +136,18 @@ class List extends Component {
 }
 
 function dataLoader(props, onData) {
-  const pageId = get(props, ['match', 'params', 'pageId'], 1);
+  const { pageNumber, filterCriteria } = props;
   const physicalStoresSubscription = Meteor.subscribe('inventory/physicalStores#all');
-  const issuanceFormsSubscription = Meteor.subscribe('inventory/issuanceForms#all', { pageId });
+  const issuanceFormsSubscription = Meteor.subscribe('inventory/issuanceForms#all', {
+    pageNumber,
+    filterCriteria
+  });
   if (physicalStoresSubscription.ready() && issuanceFormsSubscription.ready()) {
     const physicalStores = PhysicalStores.find({}).fetch();
     const issuanceForms = IssuanceForms.find(
       {},
       {
-        skip: 10 * (pageId - 1),
+        skip: 10 * (pageNumber - 1),
         limit: 10
       }
     ).fetch();
@@ -139,5 +157,6 @@ function dataLoader(props, onData) {
 
 export default merge(
   composeWithTracker(dataLoader),
+  WithListData('IssuanceForms', FindIssuanceForms),
   WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'List'])
 )(List);

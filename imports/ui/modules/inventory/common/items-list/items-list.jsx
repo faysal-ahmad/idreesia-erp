@@ -85,15 +85,15 @@ class ItemsList extends Component {
   handleNewItemFormSaved = () => {
     this.itemForm.validateFields(null, (errors, values) => {
       if (!errors) {
-        const { itemStockId, issued } = values;
+        const { itemStockId, quantity } = values;
         const { itemStocks } = this.state;
         // If we have an existing item against this itemStockId, then add the issued
         // count to the existing item instead of adding a new item.
         const existingItem = find(itemStocks, { itemStockId });
         if (!existingItem) {
-          itemStocks.push({ itemStockId, issued });
+          itemStocks.push({ itemStockId, quantity });
         } else {
-          existingItem.issued += issued;
+          existingItem.quantity += quantity;
         }
 
         const state = Object.assign({}, this.state, {

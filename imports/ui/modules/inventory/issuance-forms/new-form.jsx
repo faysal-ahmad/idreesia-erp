@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import moment from 'moment';
-import { DatePicker, Form, Input, Button, Row, Select } from 'antd';
+import { get } from 'lodash';
+import { AutoComplete, DatePicker, Form, Input, Button, Row, Select } from 'antd';
 
 import { ItemsList } from '../common/items-list';
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
+import { Profiles } from '/imports/lib/collections/admin';
 import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
@@ -15,6 +17,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    profiles: PropTypes.array,
     physicalStores: PropTypes.array
   };
 
@@ -52,7 +55,8 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    const issuanceFormsListPath = paths.issuanceFormsListPath.replace(':pageId', '1');
+    history.push(issuanceFormsListPath);
   };
 
   handleSubmit = e => {
@@ -61,17 +65,20 @@ class NewForm extends Component {
     form.validateFields((err, fieldsValue) => {
       debugger;
       if (err) return;
-      /*
+
       const doc = {
-        name: fieldsValue.name
+        issueDate: fieldsValue.issueDate.toDate(),
+        issuedBy: fieldsValue.issuedBy,
+        issuedTo: fieldsValue.issuedTo,
+        physicalStoreId: fieldsValue.physicalStoreId,
+        items: fieldsValue.items
       };
 
-      Meteor.call('inventory/itemCategories.create', { doc }, (error, result) => {
+      Meteor.call('inventory/issuanceForms.create', { doc }, (error, result) => {
         if (error) return;
         const { history } = this.props;
-        history.push(paths.itemCategoriesPath);
+        history.push(paths.issuanceFormsListPath);
       });
-*/
     });
   };
 
@@ -90,14 +97,79 @@ class NewForm extends Component {
   }
 
   getIssuedToField() {
+    const { profiles } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const children = [];
+
+    profiles.forEach(profile => {
+      children.push(
+        <AutoComplete.Option key={profile._id} value={profile._id} text={profile.name}>
+          {profile.name}
+        </AutoComplete.Option>
+      );
+    });
+
     const rules = [
       {
         required: true,
         message: 'Please input a name in issued to.'
       }
     ];
-    return getFieldDecorator('issuedTo', { rules })(<Input placeholder="Issued to" />);
+
+    const filterOption = (inputValue, option) => {
+      const optionText = get(option, ['props', 'text'], '');
+      return optionText.indexOf(inputValue) !== -1;
+    };
+
+    return getFieldDecorator('issuedTo', { rules })(
+      <AutoComplete
+        placeholder="Issued to"
+        filterOption={true}
+        optionLabelProp="text"
+        backfill={true}
+        filterOption={filterOption}
+      >
+        {children}
+      </AutoComplete>
+    );
+  }
+
+  getIssuedByField() {
+    const { profiles } = this.props;
+    const { getFieldDecorator } = this.props.form;
+    const children = [];
+
+    profiles.forEach(profile => {
+      children.push(
+        <AutoComplete.Option key={profile._id} value={profile._id} text={profile.name}>
+          {profile.name}
+        </AutoComplete.Option>
+      );
+    });
+
+    const rules = [
+      {
+        required: true,
+        message: 'Please input a name in issued by.'
+      }
+    ];
+
+    const filterOption = (inputValue, option) => {
+      const optionText = get(option, ['props', 'text'], '');
+      return optionText.indexOf(inputValue) !== -1;
+    };
+
+    return getFieldDecorator('issuedBy', { rules })(
+      <AutoComplete
+        placeholder="Issued by"
+        filterOption={true}
+        optionLabelProp="text"
+        backfill={true}
+        filterOption={filterOption}
+      >
+        {children}
+      </AutoComplete>
+    );
   }
 
   getPhysicalStoreField() {
@@ -145,6 +217,9 @@ class NewForm extends Component {
         <Form.Item label="Issue Date" {...this.formItemLayout}>
           {this.getIssueDateField()}
         </Form.Item>
+        <Form.Item label="Issued By" {...this.formItemLayout}>
+          {this.getIssuedByField()}
+        </Form.Item>
         <Form.Item label="Issued To" {...this.formItemLayout}>
           {this.getIssuedToField()}
         </Form.Item>
@@ -171,10 +246,12 @@ class NewForm extends Component {
 }
 
 function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/physicalStores#all');
-  if (subscription.ready()) {
+  const profilesSubscription = Meteor.subscribe('admin/profiles#all');
+  const physicalStoresSubscription = Meteor.subscribe('inventory/physicalStores#all');
+  if (profilesSubscription.ready() && physicalStoresSubscription.ready()) {
+    const profiles = Profiles.find({}).fetch();
     const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { physicalStores });
+    onData(null, { profiles, physicalStores });
   }
 }
 

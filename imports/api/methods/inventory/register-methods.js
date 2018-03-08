@@ -1,3 +1,7 @@
+import './issuance-forms/find';
+import './issuance-forms/create';
+import './issuance-forms/update';
+
 import './item-categories/create';
 import './item-categories/update';
 

@@ -72,15 +72,15 @@ class ItemForm extends Component {
     );
   }
 
-  getIssuedField() {
+  getQuantityField() {
     const { getFieldDecorator } = this.props.form;
     const rules = [
       {
         required: true,
-        message: 'Please input a numeric value for issued.'
+        message: 'Please input a numeric value for quantity.'
       }
     ];
-    return getFieldDecorator('issued', { rules })(<InputNumber min={0} placeholder="0" />);
+    return getFieldDecorator('quantity', { rules })(<InputNumber min={0} placeholder="0" />);
   }
 
   render() {
@@ -94,8 +94,8 @@ class ItemForm extends Component {
         <Form.Item label="Name" {...formItemLayout}>
           {this.getNameField()}
         </Form.Item>
-        <Form.Item label="Issued" {...formItemLayout}>
-          {this.getIssuedField()}
+        <Form.Item label="Quantity" {...formItemLayout}>
+          {this.getQuantityField()}
         </Form.Item>
       </Form>
     );

@@ -2,7 +2,8 @@
   "name": "idreesia-erp",
   "private": true,
   "scripts": {
-    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor run"
+    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor run",
+    "test": "jest"
   },
   "dependencies": {
     "antd": "^3.1.0",
@@ -25,11 +26,26 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^8.1.2",
+    "babel-jest": "^22.4.1",
     "babel-plugin-import": "^1.6.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "eslint": "^4.14.0"
+    "eslint": "^4.14.0",
+    "husky": "^0.14.3",
+    "jest": "^22.4.2",
+    "lint-staged": "^7.0.0",
+    "prettier": "^1.10.2",
+    "regenerator-runtime": "^0.11.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint",
+      "git add"
+    ]
   }
 }

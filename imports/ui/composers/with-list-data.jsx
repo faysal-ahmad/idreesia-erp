@@ -19,6 +19,11 @@ export default (listName, finderMethod) => WrappedComponent => {
       setListParams: PropTypes.func
     };
 
+    componentWillMount() {
+      const { pageNumber, itemsCount, filterCriteria, setListParams } = this.props;
+      setListParams(pageNumber, itemsCount, filterCriteria);
+    }
+
     render() {
       return <WrappedComponent {...this.props} />;
     }

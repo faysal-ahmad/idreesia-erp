@@ -1,5 +1,6 @@
 export {
   getItemTypeName,
   getItemCategoryName,
-  getItemDisplayNameFromItemStockId
+  getItemDisplayNameFromItemStockId,
+  getNameFromProfileId
 } from './helper-functions';

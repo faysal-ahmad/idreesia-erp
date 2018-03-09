@@ -7,6 +7,10 @@ export default new ValidatedMethod({
   name: 'inventory/issuanceForms.find',
   validate: null,
   run({ pageNumber, itemsCount, filterCriteria }) {
-    return IssuanceForms.find({}).fetch();
+    const issuanceForms = IssuanceForms.find({}).fetch();
+    return {
+      data: issuanceForms,
+      pageCount: 10
+    };
   }
 });

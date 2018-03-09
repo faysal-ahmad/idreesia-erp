@@ -4,12 +4,16 @@ import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Table, Select, DatePicker } from 'antd';
 import { get } from 'lodash';
+import moment from 'moment';
 
 import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs, WithListData } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
+import { Profiles } from '/imports/lib/collections/admin';
+import { ItemStocks, ItemTypes, PhysicalStores } from '/imports/lib/collections/inventory';
 import { Find as FindIssuanceForms } from '/imports/api/methods/inventory/issuance-forms';
+
+import { getNameFromProfileId, getItemDisplayNameFromItemStockId } from '../common/helpers';
 
 import ListFilter from './list-filter';
 
@@ -34,10 +38,13 @@ class List extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     physicalStores: PropTypes.array,
-    issuanceForms: PropTypes.array,
+    itemStocks: PropTypes.array,
+    itemTypes: PropTypes.array,
+    profiles: PropTypes.array,
 
     data: PropTypes.array,
-    pageCount: PropTypes.number
+    pageCount: PropTypes.number,
+    setListParams: PropTypes.func
   };
 
   columns = [
@@ -46,7 +53,8 @@ class List extends Component {
       dataIndex: 'issueDate',
       key: 'issueDate',
       render: (text, record) => {
-        text;
+        const date = moment(text);
+        return date.format('DD MMM, YYYY');
       }
     },
     {
@@ -54,7 +62,18 @@ class List extends Component {
       dataIndex: 'issuedTo',
       key: 'issuedTo',
       render: (text, record) => {
-        text;
+        return getNameFromProfileId(text);
+      }
+    },
+    {
+      title: 'Items',
+      dataIndex: 'items',
+      key: 'items',
+      render: (items, record) => {
+        const formattedItems = items.map(item => {
+          return `${getItemDisplayNameFromItemStockId(item.itemStockId)} - ${item.quantity}`;
+        });
+        return formattedItems.join(',');
       }
     }
   ];
@@ -138,20 +157,21 @@ class List extends Component {
 function dataLoader(props, onData) {
   const { pageNumber, filterCriteria } = props;
   const physicalStoresSubscription = Meteor.subscribe('inventory/physicalStores#all');
-  const issuanceFormsSubscription = Meteor.subscribe('inventory/issuanceForms#all', {
-    pageNumber,
-    filterCriteria
-  });
-  if (physicalStoresSubscription.ready() && issuanceFormsSubscription.ready()) {
+  const itemStocksSubscription = Meteor.subscribe('inventory/itemStocks#all');
+  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
+  const profilesSubscription = Meteor.subscribe('admin/profiles#all');
+
+  if (
+    physicalStoresSubscription.ready() &&
+    itemStocksSubscription.ready() &&
+    itemTypesSubscription.ready() &&
+    profilesSubscription.ready()
+  ) {
     const physicalStores = PhysicalStores.find({}).fetch();
-    const issuanceForms = IssuanceForms.find(
-      {},
-      {
-        skip: 10 * (pageNumber - 1),
-        limit: 10
-      }
-    ).fetch();
-    onData(null, { physicalStores, issuanceForms });
+    const itemStocks = ItemStocks.find({}).fetch();
+    const itemTypes = ItemTypes.find({}).fetch();
+    const profiles = Profiles.find({}).fetch();
+    onData(null, { physicalStores, itemStocks, itemTypes, profiles });
   }
 }
 

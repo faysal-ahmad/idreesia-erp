@@ -1,0 +1,18 @@
+type ItemCategory {
+  _id: String
+  name: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type Query {
+  allItemCategories: [ItemCategory]
+  itemCategoryById(id: String!): ItemCategory
+}
+
+type Mutation {
+  createItemCategory(name: String!): ItemCategory
+  updateItemCategory(id: String!, name: String!): ItemCategory
+}

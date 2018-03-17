@@ -1,0 +1,12 @@
+type ItemType {
+  _id: String!
+  name: String!
+  # createdAt: Date!
+  createdBy: String
+  # updatedAt: Date!
+  updatedBy: String
+}
+
+extend type Query {
+  allItemTypes: [ItemType]
+}

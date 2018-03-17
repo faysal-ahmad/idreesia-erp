@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { ItemCategories } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class EditForm extends Component {
@@ -14,7 +14,9 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    itemCategory: PropTypes.object
+
+    itemCategoryById: PropTypes.object,
+    updateItemCategory: PropTypes.func
   };
 
   handleCancel = () => {
@@ -24,25 +26,27 @@ class EditForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
+    const { form, history, itemCategoryById, updateItemCategory } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const { itemCategory } = this.props;
-      const doc = Object.assign({}, itemCategory, {
-        name: fieldsValue.name
-      });
-
-      Meteor.call('inventory/itemCategories.update', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.itemCategoriesPath);
-      });
+      debugger;
+      updateItemCategory({
+        variables: {
+          id: itemCategoryById._id,
+          name: fieldsValue.name
+        }
+      })
+        .then(() => {
+          history.push(paths.itemCategoriesPath);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     });
   };
 
-  getNameField() {
-    const { itemCategory } = this.props;
+  getNameField(itemCategory) {
     const { getFieldDecorator } = this.props.form;
     const initialValue = itemCategory.name;
     const rules = [
@@ -57,6 +61,9 @@ class EditForm extends Component {
   }
 
   render() {
+    const { loading, itemCategoryById } = this.props;
+    if (loading) return null;
+
     const formItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 }
@@ -69,7 +76,7 @@ class EditForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField()}
+          {this.getNameField(itemCategoryById)}
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Row type="flex" justify="end">
@@ -87,18 +94,34 @@ class EditForm extends Component {
   }
 }
 
-function dataLoader(props, onData) {
-  const { match } = props;
-  const { itemCategoryId } = match.params;
-  const subscription = Meteor.subscribe('inventory/itemCategories#byId', { id: itemCategoryId });
-  if (subscription.ready()) {
-    const itemCategory = ItemCategories.findOne(itemCategoryId);
-    onData(null, { itemCategory });
+const formQuery = gql`
+  query itemCategoryById($id: String!) {
+    itemCategoryById(id: $id) {
+      _id
+      name
+    }
   }
-}
+`;
+
+const formMutation = gql`
+  mutation updateItemCategory($id: String!, $name: String!) {
+    updateItemCategory(id: $id, name: $name) {
+      _id
+    }
+  }
+`;
 
 export default merge(
   Form.create(),
-  composeWithTracker(dataLoader),
+  graphql(formMutation, {
+    name: 'updateItemCategory'
+  }),
+  graphql(formQuery, {
+    props: ({ data }) => ({ ...data }),
+    options: ({ match }) => {
+      const { itemCategoryId } = match.params;
+      return { variables: { id: itemCategoryId } };
+    }
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit'])
 )(EditForm);

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { merge } from 'react-komposer';
 import { Button, Table, Select, DatePicker } from 'antd';
-import { get } from 'lodash';
 import moment from 'moment';
 
 import { composeWithTracker } from '/imports/ui/utils';

@@ -2,16 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { ItemCategories } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object
+    form: PropTypes.object,
+    createItemCategory: PropTypes.func
   };
 
   handleCancel = () => {
@@ -21,19 +23,21 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
+    const { form, createItemCategory, history } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const doc = {
-        name: fieldsValue.name
-      };
-
-      Meteor.call('inventory/itemCategories.create', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.itemCategoriesPath);
-      });
+      createItemCategory({
+        variables: {
+          name: fieldsValue.name
+        }
+      })
+        .then(() => {
+          history.push(paths.itemCategoriesPath);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     });
   };
 
@@ -79,7 +83,18 @@ class NewForm extends Component {
   }
 }
 
+const newFormQuery = gql`
+  mutation createItemCategory($name: String!) {
+    createItemCategory(name: $name) {
+      _id
+    }
+  }
+`;
+
 export default merge(
   Form.create(),
+  graphql(newFormQuery, {
+    name: 'createItemCategory'
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
 )(NewForm);

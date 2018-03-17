@@ -4,16 +4,17 @@ import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
 
-import { composeWithTracker } from '/imports/ui/utils';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { ItemCategories } from '/imports/lib/collections/inventory';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    itemCategories: PropTypes.array
+    allItemCategories: PropTypes.array
   };
 
   columns = [
@@ -31,11 +32,11 @@ class List extends Component {
   };
 
   render() {
-    const { itemCategories } = this.props;
+    const { allItemCategories } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={itemCategories}
+        dataSource={allItemCategories}
         columns={this.columns}
         bordered
         title={() => {
@@ -50,15 +51,18 @@ class List extends Component {
   }
 }
 
-function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/itemCategories#all');
-  if (subscription.ready()) {
-    const itemCategories = ItemCategories.find({}).fetch();
-    onData(null, { itemCategories });
+const listQuery = gql`
+  query {
+    allItemCategories {
+      _id
+      name
+    }
   }
-}
+`;
 
 export default merge(
-  composeWithTracker(dataLoader),
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List'])
 )(List);

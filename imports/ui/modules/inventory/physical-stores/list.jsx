@@ -4,16 +4,17 @@ import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
 
-import { composeWithTracker } from '/imports/ui/utils';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    physicalStores: PropTypes.array
+    allPhysicalStores: PropTypes.array
   };
 
   columns = [
@@ -36,11 +37,11 @@ class List extends Component {
   };
 
   render() {
-    const { physicalStores } = this.props;
+    const { allPhysicalStores } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={physicalStores}
+        dataSource={allPhysicalStores}
         columns={this.columns}
         bordered
         title={() => {
@@ -55,15 +56,19 @@ class List extends Component {
   }
 }
 
-function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('inventory/physicalStores#all');
-  if (subscription.ready()) {
-    const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { physicalStores });
+const listQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+      address
+    }
   }
-}
+`;
 
 export default merge(
-  composeWithTracker(dataLoader),
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List'])
 )(List);

@@ -31,8 +31,15 @@ class List extends Component {
     history.push(paths.itemCategoriesNewFormPath);
   };
 
+  componentWillReceiveProps(newProps) {
+    console.log('componentWillReceiveProps called');
+    debugger;
+  }
+
   render() {
-    const { allItemCategories } = this.props;
+    const { allItemCategories, loading } = this.props;
+    if (loading) return null;
+
     return (
       <Table
         rowKey={'_id'}
@@ -52,7 +59,7 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query {
+  query allItemCategories {
     allItemCategories {
       _id
       name

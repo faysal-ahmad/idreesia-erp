@@ -1,0 +1,19 @@
+type PhysicalStore {
+  _id: String
+  name: String
+  address: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allPhysicalStores: [PhysicalStore]
+  physicalStoreById(id: String!): PhysicalStore
+}
+
+extend type Mutation {
+  createPhysicalStore(name: String!): PhysicalStore
+  updatePhysicalStore(id: String!, name: String!, address: String!): PhysicalStore
+}

@@ -83,18 +83,22 @@ class NewForm extends Component {
   }
 }
 
-const newFormQuery = gql`
+const formMutation = gql`
   mutation createItemCategory($name: String!) {
     createItemCategory(name: $name) {
       _id
+      name
     }
   }
 `;
 
 export default merge(
   Form.create(),
-  graphql(newFormQuery, {
-    name: 'createItemCategory'
+  graphql(formMutation, {
+    name: 'createItemCategory',
+    options: {
+      refetchQueries: ['allItemCategories']
+    }
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
 )(NewForm);

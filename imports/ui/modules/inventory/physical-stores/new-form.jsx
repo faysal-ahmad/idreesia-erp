@@ -2,16 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object
+    form: PropTypes.object,
+    createPhysicalStore: PropTypes.func
   };
 
   handleCancel = () => {
@@ -21,20 +23,21 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
+    const { form, createPhysicalStore, history } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
-      const doc = {
-        name: fieldsValue.name,
-        address: fieldsValue.address
-      };
-
-      Meteor.call('inventory/physicalStores.create', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.physicalStoresPath);
-      });
+      createPhysicalStore({
+        variables: {
+          name: fieldsValue.name,
+          address: fieldsValue.address
+        }
+      })
+        .then(() => {
+          history.push(paths.physicalStoresPath);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     });
   };
 
@@ -91,7 +94,23 @@ class NewForm extends Component {
   }
 }
 
+const formMutation = gql`
+  mutation createPhysicalStore($name: String!, $address: String!) {
+    createPhysicalStore(name: $name, address: $address) {
+      _id
+      name
+      address
+    }
+  }
+`;
+
 export default merge(
   Form.create(),
+  graphql(formMutation, {
+    name: 'createPhysicalStore',
+    options: {
+      refetchQueries: ['allPhysicalStores']
+    }
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New'])
 )(NewForm);

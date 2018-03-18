@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Form, Input, Button, Row } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class EditForm extends Component {
@@ -14,7 +14,9 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    physicalStore: PropTypes.object
+
+    physicalStoreById: PropTypes.object,
+    updatePhysicalStore: PropTypes.func
   };
 
   handleCancel = () => {
@@ -24,26 +26,27 @@ class EditForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
+    const { form, history, physicalStoreById, updatePhysicalStore } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const { physicalStore } = this.props;
-      const doc = Object.assign({}, physicalStore, {
-        name: fieldsValue.name,
-        address: fieldsValue.address
-      });
-
-      Meteor.call('inventory/physicalStores.update', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.physicalStoresPath);
-      });
+      updatePhysicalStore({
+        variables: {
+          id: physicalStoreById._id,
+          name: fieldsValue.name,
+          address: fieldsValue.address
+        }
+      })
+        .then(() => {
+          history.push(paths.physicalStoresPath);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     });
   };
 
-  getNameField() {
-    const { physicalStore } = this.props;
+  getNameField(physicalStore) {
     const { getFieldDecorator } = this.props.form;
     const initialValue = physicalStore.name;
     const rules = [
@@ -57,8 +60,7 @@ class EditForm extends Component {
     );
   }
 
-  getAddressField() {
-    const { physicalStore } = this.props;
+  getAddressField(physicalStore) {
     const { getFieldDecorator } = this.props.form;
     const initialValue = physicalStore.address;
     const rules = [];
@@ -68,6 +70,9 @@ class EditForm extends Component {
   }
 
   render() {
+    const { loading, physicalStoreById } = this.props;
+    if (loading) return null;
+
     const formItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 }
@@ -80,10 +85,10 @@ class EditForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField()}
+          {this.getNameField(physicalStoreById)}
         </Form.Item>
         <Form.Item label="Address" {...formItemLayout}>
-          {this.getAddressField()}
+          {this.getAddressField(physicalStoreById)}
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Row type="flex" justify="end">
@@ -101,18 +106,40 @@ class EditForm extends Component {
   }
 }
 
-function dataLoader(props, onData) {
-  const { match } = props;
-  const { physicalStoreId } = match.params;
-  const subscription = Meteor.subscribe('inventory/physicalStores#byId', { id: physicalStoreId });
-  if (subscription.ready()) {
-    const physicalStore = PhysicalStores.findOne(physicalStoreId);
-    onData(null, { physicalStore });
+const formQuery = gql`
+  query physicalStoreById($id: String!) {
+    physicalStoreById(id: $id) {
+      _id
+      name
+      address
+    }
   }
-}
+`;
+
+const formMutation = gql`
+  mutation updatePhysicalStore($id: String!, $name: String!, $address: String!) {
+    updatePhysicalStore(id: $id, name: $name, address: $address) {
+      _id
+      name
+      address
+    }
+  }
+`;
 
 export default merge(
   Form.create(),
-  composeWithTracker(dataLoader),
+  graphql(formMutation, {
+    name: 'updatePhysicalStore',
+    options: {
+      refetchQueries: ['allPhysicalStores']
+    }
+  }),
+  graphql(formQuery, {
+    props: ({ data }) => ({ ...data }),
+    options: ({ match }) => {
+      const { physicalStoreId } = match.params;
+      return { variables: { id: physicalStoreId } };
+    }
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'Edit'])
 )(EditForm);

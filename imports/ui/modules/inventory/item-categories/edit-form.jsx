@@ -30,7 +30,6 @@ class EditForm extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      debugger;
       updateItemCategory({
         variables: {
           id: itemCategoryById._id,
@@ -107,6 +106,7 @@ const formMutation = gql`
   mutation updateItemCategory($id: String!, $name: String!) {
     updateItemCategory(id: $id, name: $name) {
       _id
+      name
     }
   }
 `;
@@ -114,7 +114,10 @@ const formMutation = gql`
 export default merge(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateItemCategory'
+    name: 'updateItemCategory',
+    options: {
+      refetchQueries: ['allItemCategories']
+    }
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),

@@ -6,9 +6,12 @@ import ItemCategoryResolvers from './inventory/item-category/resolvers';
 import ItemTypeSchema from './inventory/item-type/item-type.graphql';
 import ItemTypeResolvers from './inventory/item-type/resolvers';
 
-const typeDefs = [ItemCategorySchema, ItemTypeSchema];
-const resolvers = merge(ItemCategoryResolvers, ItemTypeResolvers);
+import PhysicalStoreSchema from './inventory/physical-store/physical-store.graphql';
+import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 
-// dgdfgdfg
+const typeDefs = [ItemCategorySchema, ItemTypeSchema, PhysicalStoreSchema];
+const resolvers = merge(ItemCategoryResolvers, ItemTypeResolvers, PhysicalStoreResolvers);
+
+// dgdfgdfgsdf
 
 export { typeDefs, resolvers };

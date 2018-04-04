@@ -13,6 +13,7 @@ const modulePathsMapping = {};
 modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
 modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
+modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
 
 class HeaderContent extends Component {
   static propTypes = {

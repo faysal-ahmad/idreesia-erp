@@ -6,6 +6,7 @@ import { Layout } from 'antd';
 import { ModuleNames } from '../constants';
 import { AdminSidebar } from '../modules/admin';
 import { InventorySidebar } from '../modules/inventory';
+import { HRSidebar } from '../modules/hr';
 
 const { Sider } = Layout;
 
@@ -27,6 +28,10 @@ class SidebarContent extends Component {
 
       case ModuleNames.inventory:
         sidebar = <InventorySidebar history={history} />;
+        break;
+
+      case ModuleNames.hr:
+        sidebar = <HRSidebar history={history} />;
         break;
 
       default:

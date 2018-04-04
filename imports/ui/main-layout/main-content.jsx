@@ -6,6 +6,7 @@ import { Layout } from 'antd';
 import { ModuleNames } from '../constants';
 import { AdminRouter } from '../modules/admin';
 import { InventoryRouter } from '../modules/inventory';
+import { HRRouter } from '../modules/hr';
 
 const { Content } = Layout;
 
@@ -28,6 +29,10 @@ class MainContent extends Component {
 
       case ModuleNames.inventory:
         main = <InventoryRouter />;
+        break;
+
+      case ModuleNames.hr:
+        main = <HRRouter />;
         break;
 
       default:

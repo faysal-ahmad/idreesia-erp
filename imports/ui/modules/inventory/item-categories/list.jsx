@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
-
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -37,8 +36,7 @@ class List extends Component {
   }
 
   render() {
-    const { allItemCategories, loading } = this.props;
-    if (loading) return null;
+    const { allItemCategories } = this.props;
 
     return (
       <Table

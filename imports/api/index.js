@@ -12,6 +12,6 @@ import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 const typeDefs = [ItemCategorySchema, ItemTypeSchema, PhysicalStoreSchema];
 const resolvers = merge(ItemCategoryResolvers, ItemTypeResolvers, PhysicalStoreResolvers);
 
-// dgdfgdfgsdf
+// dgdfgdfgs
 
 export { typeDefs, resolvers };

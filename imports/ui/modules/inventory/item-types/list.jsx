@@ -3,18 +3,17 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Checkbox, Table } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    itemTypes: PropTypes.array,
-    itemCategories: PropTypes.array
+    allItemTypes: PropTypes.array
   };
 
   columns = [
@@ -26,39 +25,13 @@ class List extends Component {
     },
     {
       title: 'Category',
-      dataIndex: 'itemCategoryId',
-      key: 'itemCategoryId',
-      render: (text, record) => {
-        return this.getItemCategoryName(text);
-      }
+      dataIndex: 'itemCategoryName',
+      key: 'itemCategoryName'
     },
     {
       title: 'Measurement Unit',
-      dataIndex: 'unitOfMeasurement',
-      key: 'unitOfMeasurement',
-      render: (text, record) => {
-        let uom = null;
-        switch (text) {
-          case 'quantity':
-            uom = 'Quantity';
-            break;
-          case 'ft':
-            uom = 'Length (ft)';
-            break;
-          case 'm':
-            uom = 'Length (m)';
-            break;
-          case 'kg':
-            uom = 'Weight (kg)';
-            break;
-          case 'lbs':
-            uom = 'Weight (lbs)';
-            break;
-          default:
-            break;
-        }
-        return uom;
-      }
+      dataIndex: 'formattedUOM',
+      key: 'formattedUOM'
     },
     {
       title: 'Single Use',
@@ -68,31 +41,22 @@ class List extends Component {
     }
   ];
 
-  getItemCategoryName(itemCategoryId) {
-    const itemCategory = ItemCategories.findOne(itemCategoryId);
-    if (itemCategory) {
-      return itemCategory.name;
-    } else {
-      return null;
-    }
-  }
-
   handleNewClicked = () => {
     const { history } = this.props;
     history.push(paths.itemTypesNewFormPath);
   };
 
   render() {
-    const { itemTypes } = this.props;
+    const { allItemTypes } = this.props;
     return (
       <Table
         rowKey={'_id'}
-        dataSource={itemTypes}
+        dataSource={allItemTypes}
         columns={this.columns}
         bordered
         title={() => {
           return (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+            <Button type="primary" icon="plus-circle-o" onClick={this.handleTakePicture}>
               New Item Type
             </Button>
           );
@@ -102,17 +66,22 @@ class List extends Component {
   }
 }
 
-function dataLoader(props, onData) {
-  const categoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
-  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
-  if (categoriesSubscription.ready() && itemTypesSubscription.ready()) {
-    const itemTypes = ItemTypes.find({}).fetch();
-    const itemCategories = ItemCategories.find({}).fetch();
-    onData(null, { itemTypes, itemCategories });
+const listQuery = gql`
+  query allItemTypes {
+    allItemTypes {
+      _id
+      name
+      description
+      singleUse
+      formattedUOM
+      itemCategoryName
+    }
   }
-}
+`;
 
 export default merge(
-  composeWithTracker(dataLoader),
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'List'])
 )(List);

@@ -1,12 +1,36 @@
 type ItemType {
-  _id: String!
-  name: String!
-  # createdAt: Date!
+  _id: String
+  name: String
+  description: String
+  unitOfMeasurement: String
+  formattedUOM: String
+  singleUse: Boolean
+  itemCategoryId: String
+  itemCategoryName: String
+
+  createdAt: String
   createdBy: String
-  # updatedAt: Date!
+  updatedAt: String
   updatedBy: String
 }
 
 extend type Query {
-  allItemTypes: [ItemType]
+  allItemTypes(itemCategoryId: String): [ItemType]
+  itemTypeById(itemTypeId: String!): ItemType
+}
+
+extend type Mutation {
+  createItemType(
+    name: String!
+    description: String!
+    unitOfMeasurement: String!
+    singleUse: Boolean!
+    itemCategoryId: String!
+  ): ItemType
+  updateItemType(
+    name: String!
+    description: String!
+    unitOfMeasurement: String!
+    singleUse: Boolean!
+  ): ItemType
 }

@@ -6,34 +6,34 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createItemCategory: PropTypes.func
+    createDuty: PropTypes.func
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    history.push(paths.dutiesPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createItemCategory, history } = this.props;
+    const { form, createDuty, history } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      createItemCategory({
+      createDuty({
         variables: {
           name: fieldsValue.name
         }
       })
         .then(() => {
-          history.push(paths.itemCategoriesPath);
+          history.push(paths.dutiesPath);
         })
         .catch(error => {
           console.log(error);
@@ -46,10 +46,10 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input a name for the item category.'
+        message: 'Please input a name for the duty.'
       }
     ];
-    return getFieldDecorator('name', { rules })(<Input placeholder="Item category name" />);
+    return getFieldDecorator('name', { rules })(<Input placeholder="Duty name" />);
   }
 
   render() {
@@ -74,7 +74,7 @@ class NewForm extends Component {
             </Button>
             &nbsp;
             <Button type="primary" htmlType="submit">
-              Submit
+              Save
             </Button>
           </Row>
         </Form.Item>
@@ -84,8 +84,8 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createItemCategory($name: String!) {
-    createItemCategory(name: $name) {
+  mutation createDuty($name: String!) {
+    createDuty(name: $name) {
       _id
       name
     }
@@ -95,10 +95,10 @@ const formMutation = gql`
 export default merge(
   Form.create(),
   graphql(formMutation, {
-    name: 'createItemCategory',
+    name: 'createDuty',
     options: {
-      refetchQueries: ['allItemCategories']
+      refetchQueries: ['allDuties']
     }
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
+  WithBreadcrumbs(['Inventory', 'Setup', 'Duties', 'New'])
 )(NewForm);

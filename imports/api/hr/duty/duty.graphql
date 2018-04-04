@@ -1,0 +1,19 @@
+type DutyType {
+  _id: String
+  name: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allDuties: [DutyType]
+  dutyById(id: String!): DutyType
+}
+
+extend type Mutation {
+  createDuty(name: String!): DutyType
+  updateDuty(id: String!, name: String!): DutyType
+}

@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 class EditForm extends Component {
   static propTypes = {
@@ -15,29 +15,29 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    itemCategoryById: PropTypes.object,
-    updateItemCategory: PropTypes.func
+    dutyById: PropTypes.object,
+    updateDuty: PropTypes.func
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    history.push(paths.dutiesPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, itemCategoryById, updateItemCategory } = this.props;
+    const { form, history, dutyById, updateDuty } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      updateItemCategory({
+      updateDuty({
         variables: {
-          id: itemCategoryById._id,
+          id: dutyById._id,
           name: fieldsValue.name
         }
       })
         .then(() => {
-          history.push(paths.itemCategoriesPath);
+          history.push(paths.dutiesPath);
         })
         .catch(error => {
           console.log(error);
@@ -45,22 +45,20 @@ class EditForm extends Component {
     });
   };
 
-  getNameField(itemCategory) {
+  getNameField(duty) {
     const { getFieldDecorator } = this.props.form;
-    const initialValue = itemCategory.name;
+    const initialValue = duty.name;
     const rules = [
       {
         required: true,
-        message: 'Please input a name for the item category.'
+        message: 'Please input a name for the duty.'
       }
     ];
-    return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Item category name" />
-    );
+    return getFieldDecorator('name', { initialValue, rules })(<Input placeholder="Duty name" />);
   }
 
   render() {
-    const { loading, itemCategoryById } = this.props;
+    const { loading, dutyById } = this.props;
     if (loading) return null;
 
     const formItemLayout = {
@@ -75,7 +73,7 @@ class EditForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField(itemCategoryById)}
+          {this.getNameField(dutyById)}
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Row type="flex" justify="end">
@@ -84,7 +82,7 @@ class EditForm extends Component {
             </Button>
             &nbsp;
             <Button type="primary" htmlType="submit">
-              Submit
+              Save
             </Button>
           </Row>
         </Form.Item>
@@ -94,8 +92,8 @@ class EditForm extends Component {
 }
 
 const formQuery = gql`
-  query itemCategoryById($id: String!) {
-    itemCategoryById(id: $id) {
+  query dutyById($id: String!) {
+    dutyById(id: $id) {
       _id
       name
     }
@@ -103,8 +101,8 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updateItemCategory($id: String!, $name: String!) {
-    updateItemCategory(id: $id, name: $name) {
+  mutation updateDuty($id: String!, $name: String!) {
+    updateDuty(id: $id, name: $name) {
       _id
       name
     }
@@ -114,17 +112,17 @@ const formMutation = gql`
 export default merge(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateItemCategory',
+    name: 'updateDuty',
     options: {
-      refetchQueries: ['allItemCategories']
+      refetchQueries: ['allDuties']
     }
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
-      const { itemCategoryId } = match.params;
-      return { variables: { id: itemCategoryId } };
+      const { dutyId } = match.params;
+      return { variables: { id: dutyId } };
     }
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit'])
+  WithBreadcrumbs(['HR', 'Setup', 'Duties', 'Edit'])
 )(EditForm);

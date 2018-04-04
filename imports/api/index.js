@@ -6,6 +6,9 @@ import { merge } from 'lodash';
 import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
 import DutyLocationResolvers from './hr/duty-location/resolvers';
 
+import DutySchema from './hr/duty/duty.graphql';
+import DutyResolvers from './hr/duty/resolvers';
+
 /**
  * Schema and Resolvers for the Inventory module
  */
@@ -18,14 +21,21 @@ import ItemTypeResolvers from './inventory/item-type/resolvers';
 import PhysicalStoreSchema from './inventory/physical-store/physical-store.graphql';
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 
-const typeDefs = [DutyLocationSchema, ItemCategorySchema, ItemTypeSchema, PhysicalStoreSchema];
+const typeDefs = [
+  DutyLocationSchema,
+  DutySchema,
+  ItemCategorySchema,
+  ItemTypeSchema,
+  PhysicalStoreSchema
+];
 const resolvers = merge(
   DutyLocationResolvers,
+  DutyResolvers,
   ItemCategoryResolvers,
   ItemTypeResolvers,
   PhysicalStoreResolvers
 );
 
-// sadsadsdfsdsdsd
+// sadsadsdfsdsdsdds
 
 export { typeDefs, resolvers };

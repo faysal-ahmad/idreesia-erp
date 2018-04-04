@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 class List extends Component {
   static propTypes = {
@@ -21,33 +21,28 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => <Link to={`${paths.dutiesPath}/${record._id}`}>{text}</Link>
     }
   ];
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.itemCategoriesNewFormPath);
+    history.push(paths.dutiesNewFormPath);
   };
 
-  componentWillReceiveProps(newProps) {
-    console.log('componentWillReceiveProps called');
-    debugger;
-  }
-
   render() {
-    const { allItemCategories } = this.props;
+    const { allDuties } = this.props;
 
     return (
       <Table
         rowKey={'_id'}
-        dataSource={allItemCategories}
+        dataSource={allDuties}
         columns={this.columns}
         bordered
         title={() => {
           return (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Item Category
+              New Duty
             </Button>
           );
         }}
@@ -57,8 +52,8 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allItemCategories {
-    allItemCategories {
+  query allDuties {
+    allDuties {
       _id
       name
     }
@@ -69,5 +64,5 @@ export default merge(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data })
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List'])
+  WithBreadcrumbs(['HR', 'Setup', 'Duties', 'List'])
 )(List);

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -45,47 +46,22 @@ class EditForm extends Component {
     });
   };
 
-  getNameField(duty) {
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = duty.name;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the duty.'
-      }
-    ];
-    return getFieldDecorator('name', { initialValue, rules })(<Input placeholder="Duty name" />);
-  }
-
   render() {
     const { loading, dutyById } = this.props;
+    const { getFieldDecorator } = this.props.form;
     if (loading) return null;
-
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField(dutyById)}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Duty Name"
+          initialValue={dutyById.name}
+          required={true}
+          requiredMessage="Please input a name for the duty."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }

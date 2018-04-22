@@ -9,6 +9,9 @@ import DutyLocationResolvers from './hr/duty-location/resolvers';
 import DutySchema from './hr/duty/duty.graphql';
 import DutyResolvers from './hr/duty/resolvers';
 
+import KarkunSchema from './hr/karkuns/karkun.graphql';
+import KarkunResolvers from './hr/karkuns/resolvers';
+
 /**
  * Schema and Resolvers for the Inventory module
  */
@@ -24,6 +27,7 @@ import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 const typeDefs = [
   DutyLocationSchema,
   DutySchema,
+  KarkunSchema,
   ItemCategorySchema,
   ItemTypeSchema,
   PhysicalStoreSchema
@@ -31,11 +35,12 @@ const typeDefs = [
 const resolvers = merge(
   DutyLocationResolvers,
   DutyResolvers,
+  KarkunResolvers,
   ItemCategoryResolvers,
   ItemTypeResolvers,
   PhysicalStoreResolvers
 );
 
-// sadsadsdfsdsdsdds
+// werdasdsdfsdf
 
 export { typeDefs, resolvers };

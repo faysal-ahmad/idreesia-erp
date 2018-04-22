@@ -1,0 +1,35 @@
+type KarkunType {
+  _id: String
+  name: String
+  firstName: String
+  lastName: String
+  cnicNumber: String
+  address: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allKarkuns: [KarkunType]
+  karkunById(_id: String!): KarkunType
+}
+
+extend type Mutation {
+  createKarkun(
+    firstName: String!
+    lastName: String!
+    cnicNumber: String!
+    address: String
+  ): KarkunType
+
+  updateKarkun(
+    _id: String!
+    firstName: String!
+    lastName: String!
+    cnicNumber: String!
+    address: String
+  ): KarkunType
+}

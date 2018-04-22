@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import {
+  InputTextField,
+  InputTextAreaField,
+  FormButtonsSaveCancel
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -15,29 +20,32 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    itemCategoryById: PropTypes.object,
-    updateItemCategory: PropTypes.func
+    karkunById: PropTypes.object,
+    updateKarkun: PropTypes.func
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    history.push(paths.karkunsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, itemCategoryById, updateItemCategory } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    const { form, history, karkunById, updateKarkun } = this.props;
+    form.validateFields((err, { firstName, lastName, cnicNumber, address }) => {
       if (err) return;
 
-      updateItemCategory({
+      updateKarkun({
         variables: {
-          id: itemCategoryById._id,
-          name: fieldsValue.name
+          _id: karkunById._id,
+          firstName,
+          lastName,
+          cnicNumber,
+          address
         }
       })
         .then(() => {
-          history.push(paths.itemCategoriesPath);
+          history.push(paths.karkunsPath);
         })
         .catch(error => {
           console.log(error);
@@ -45,68 +53,87 @@ class EditForm extends Component {
     });
   };
 
-  getNameField(itemCategory) {
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = itemCategory.name;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the item category.'
-      }
-    ];
-    return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Item category name" />
-    );
-  }
-
   render() {
-    const { loading, itemCategoryById } = this.props;
+    const { loading, karkunById } = this.props;
+    const { getFieldDecorator } = this.props.form;
     if (loading) return null;
-
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField(itemCategoryById)}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="firstName"
+          fieldLabel="First Name"
+          initialValue={karkunById.firstName}
+          required={true}
+          requiredMessage="Please input the first name for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="lastName"
+          fieldLabel="Last Name"
+          initialValue={karkunById.lastName}
+          required={true}
+          requiredMessage="Please input the last name for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="cnicNumber"
+          fieldLabel="CNIC Number"
+          initialValue={karkunById.cnicNumber}
+          required={true}
+          requiredMessage="Please input the CNIC for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextAreaField
+          fieldName="address"
+          fieldLabel="Address"
+          initialValue={karkunById.address}
+          required={false}
+          requiredMessage="Please input the address for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }
 }
 
 const formQuery = gql`
-  query itemCategoryById($id: String!) {
-    itemCategoryById(id: $id) {
+  query karkunById($_id: String!) {
+    karkunById(_id: $_id) {
       _id
-      name
+      firstName
+      lastName
+      cnicNumber
+      address
     }
   }
 `;
 
 const formMutation = gql`
-  mutation updateItemCategory($id: String!, $name: String!) {
-    updateItemCategory(id: $id, name: $name) {
+  mutation updateKarkun(
+    $_id: String!
+    $firstName: String!
+    $lastName: String!
+    $cnicNumber: String!
+    $address: String
+  ) {
+    updateKarkun(
+      _id: $_id
+      firstName: $firstName
+      lastName: $lastName
+      cnicNumber: $cnicNumber
+      address: $address
+    ) {
       _id
-      name
+      firstName
+      lastName
+      cnicNumber
+      address
     }
   }
 `;
@@ -114,17 +141,17 @@ const formMutation = gql`
 export default merge(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateItemCategory',
+    name: 'updateKarkun',
     options: {
-      refetchQueries: ['allItemCategories']
+      refetchQueries: ['allKarkuns']
     }
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
-      const { itemCategoryId } = match.params;
-      return { variables: { id: itemCategoryId } };
+      const { karkunId } = match.params;
+      return { variables: { _id: karkunId } };
     }
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit'])
+  WithBreadcrumbs(['HR', 'Karkuns', 'Edit'])
 )(EditForm);

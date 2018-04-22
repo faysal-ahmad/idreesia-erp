@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
@@ -41,43 +42,19 @@ class NewForm extends Component {
     });
   };
 
-  getNameField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the duty.'
-      }
-    ];
-    return getFieldDecorator('name', { rules })(<Input placeholder="Duty name" />);
-  }
-
   render() {
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField()}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Duty Name"
+          required={true}
+          requiredMessage="Please input a name for the duty."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }
@@ -100,5 +77,5 @@ export default merge(
       refetchQueries: ['allDuties']
     }
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Duties', 'New'])
+  WithBreadcrumbs(['HR', 'Setup', 'Duties', 'New'])
 )(NewForm);

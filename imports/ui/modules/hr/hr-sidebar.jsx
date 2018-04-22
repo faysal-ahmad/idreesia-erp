@@ -48,6 +48,7 @@ class HRSidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
+        <Menu.Item key="karkuns">Karkuns</Menu.Item>
         <SubMenu
           key="setup"
           title={
@@ -56,7 +57,6 @@ class HRSidebar extends Component {
             </span>
           }
         >
-          <Menu.Item key="karkuns">Karkuns</Menu.Item>
           <Menu.Item key="duties">Duties</Menu.Item>
           <Menu.Item key="duty-locations">Duty Locations</Menu.Item>
         </SubMenu>

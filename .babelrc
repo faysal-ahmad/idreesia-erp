@@ -1,4 +1,10 @@
 {
-  "presets": ["env", "react"],
-  "plugins": ["babel-plugin-inline-import", "transform-class-properties"]
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./"]
+      }
+    ]
+  ]
 }

@@ -32,13 +32,15 @@ export default {
       { karkunId, dutyId, locationId, startTime, endTime, startDate, endDate, daysOfWeek },
       { userId }
     ) {
-      const existingKarkunDuty = KarkunDuties.findOne({
-        karkunId: { $eq: karkunId },
-        dutyId: { $eq: dutyId }
-      });
-      if (existingKarkunDuty) {
-        throw Error('This duty is already assigned to the karkun.');
-      }
+      /*
+        const existingKarkunDuty = KarkunDuties.findOne({
+          karkunId: { $eq: karkunId },
+          dutyId: { $eq: dutyId }
+        });
+        if (existingKarkunDuty) {
+          throw Error('This duty is already assigned to the karkun.');
+        }
+      */
 
       const mStartDate = moment(startDate);
       const mEndDate = moment(endDate);
@@ -64,13 +66,15 @@ export default {
       { _id, karkunId, dutyId, locationId, startTime, endTime, daysOfWeek },
       { userId }
     ) {
-      const existingKarkunDuty = KarkunDuties.findOne({
-        karkunId: { $eq: karkunId },
-        dutyId: { $eq: dutyId }
-      });
-      if (existingKarkunDuty && existingKarkunDuty._id !== _id) {
-        throw Error('This duty is already assigned to the karkun.');
-      }
+      /*
+        const existingKarkunDuty = KarkunDuties.findOne({
+          karkunId: { $eq: karkunId },
+          dutyId: { $eq: dutyId }
+        });
+        if (existingKarkunDuty && existingKarkunDuty._id !== _id) {
+          throw Error('This duty is already assigned to the karkun.');
+        }
+      */
 
       KarkunDuties.update(_id, {
         $set: {

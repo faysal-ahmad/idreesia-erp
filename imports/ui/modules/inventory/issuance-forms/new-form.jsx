@@ -62,7 +62,6 @@ class NewForm extends Component {
     e.preventDefault();
     const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
-      debugger;
       if (err) return;
 
       const doc = {

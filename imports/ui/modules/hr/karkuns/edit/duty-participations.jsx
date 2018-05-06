@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { merge } from 'react-komposer';
-import { Button, Table, Modal } from 'antd';
+import { Button, Divider, Icon, Table, Modal } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -18,14 +18,19 @@ class DutyParticipation extends Component {
     karkunDutiesByKarkunId: PropTypes.array,
     allDuties: PropTypes.array,
     allDutyLocations: PropTypes.array,
-    createKarkunDuty: PropTypes.func
+    createKarkunDuty: PropTypes.func,
+    updateKarkunDuty: PropTypes.func,
+    removeKarkunDuty: PropTypes.func
   };
 
   state = {
-    showForm: false
+    showNewForm: false,
+    showEditForm: false,
+    defaultValues: {}
   };
 
-  dutyForm;
+  newDutyForm;
+  editDutyForm;
 
   columns = [
     {
@@ -56,32 +61,107 @@ class DutyParticipation extends Component {
         const endTime = moment(text);
         return endTime.isValid() ? endTime.format('h:mm a') : null;
       }
+    },
+    {
+      title: 'Days of Week',
+      dataIndex: 'daysOfWeek',
+      key: 'daysOfWeek',
+      render: (textArray, record) => (textArray ? textArray.join() : null)
+    },
+    {
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <a href="javascript:;">
+            <Icon
+              type="edit"
+              onClick={() => {
+                this.handleEditClicked(record);
+              }}
+            />
+          </a>
+          <Divider type="vertical" />
+          <a href="javascript:;">
+            <Icon
+              type="delete"
+              onClick={() => {
+                this.handleDeleteClicked(record);
+              }}
+            />
+          </a>
+        </span>
+      )
     }
   ];
 
   handleNewClicked = () => {
-    this.setState({ showForm: true });
+    this.setState({ showNewForm: true });
+  };
+
+  handleEditClicked = record => {
+    this.setState({ showEditForm: true, defaultValues: record });
+  };
+
+  handleDeleteClicked = record => {
+    const { removeKarkunDuty } = this.props;
+    debugger;
+    removeKarkunDuty({
+      variables: {
+        _id: record._id
+      }
+    }).catch(error => {
+      console.log(error);
+    });
   };
 
   handleNewDutyFormCancelled = () => {
-    this.setState({ showForm: false });
+    this.setState({ showNewForm: false });
+  };
+
+  handleEditDutyFormCancelled = () => {
+    this.setState({ showEditForm: false });
   };
 
   handleNewDutyFormSaved = () => {
     const { karkunId, createKarkunDuty } = this.props;
-    this.dutyForm.validateFields(null, (errors, values) => {
+    this.newDutyForm.validateFields(null, (errors, values) => {
       if (!errors) {
-        this.setState({ showForm: false });
-        debugger;
+        this.setState({ showNewForm: false });
         createKarkunDuty({
           variables: {
             karkunId,
             dutyId: values.dutyId,
             locationId: values.locationId,
-            startTime: values.startTime.format(),
-            endTime: values.endTime.format(),
-            startDate: values.startDate.format(),
-            endDate: values.endDate.format()
+            startTime: values.startTime ? values.startTime.format() : null,
+            endTime: values.endTime ? values.endTime.format() : null,
+            startDate: values.startDate ? values.startDate.format() : null,
+            endDate: values.endDate ? values.endDate.format() : null,
+            daysOfWeek: values.weekDays
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      }
+    });
+  };
+
+  handleEditDutyFormSaved = () => {
+    const { _id } = this.state.defaultValues;
+    const { karkunId, updateKarkunDuty } = this.props;
+    this.editDutyForm.validateFields(null, (errors, values) => {
+      if (!errors) {
+        this.setState({ showEditForm: false });
+        updateKarkunDuty({
+          variables: {
+            _id,
+            karkunId,
+            dutyId: values.dutyId,
+            locationId: values.locationId,
+            startTime: values.startTime ? values.startTime.format() : null,
+            endTime: values.endTime ? values.endTime.format() : null,
+            startDate: values.startDate ? values.startDate.format() : null,
+            endDate: values.endDate ? values.endDate.format() : null,
+            daysOfWeek: values.weekDays
           }
         }).catch(error => {
           console.log(error);
@@ -91,7 +171,7 @@ class DutyParticipation extends Component {
   };
 
   render() {
-    const { showForm } = this.state;
+    const { showNewForm, showEditForm, defaultValues } = this.state;
     const { karkunId, karkunDutiesByKarkunId, allDuties, allDutyLocations } = this.props;
 
     return (
@@ -111,7 +191,7 @@ class DutyParticipation extends Component {
         />
 
         <Modal
-          visible={showForm}
+          visible={showNewForm}
           title="Add Duty"
           okText="Save"
           width={600}
@@ -120,8 +200,25 @@ class DutyParticipation extends Component {
           onCancel={this.handleNewDutyFormCancelled}
         >
           <DutyForm
-            ref={f => (this.dutyForm = f)}
-            karkunId={karkunId}
+            ref={f => (this.newDutyForm = f)}
+            defaultValues={defaultValues}
+            allDuties={allDuties}
+            allDutyLocations={allDutyLocations}
+          />
+        </Modal>
+
+        <Modal
+          visible={showEditForm}
+          title="Edit Duty"
+          okText="Save"
+          width={600}
+          destroyOnClose={true}
+          onOk={this.handleEditDutyFormSaved}
+          onCancel={this.handleEditDutyFormCancelled}
+        >
+          <DutyForm
+            ref={f => (this.editDutyForm = f)}
+            defaultValues={defaultValues}
             allDuties={allDuties}
             allDutyLocations={allDutyLocations}
           />
@@ -135,7 +232,9 @@ const listQuery = gql`
   query karkunDutiesByKarkunId($karkunId: String!) {
     karkunDutiesByKarkunId(karkunId: $karkunId) {
       _id
+      dutyId
       dutyName
+      locationId
       locationName
       startTime
       endTime
@@ -162,7 +261,7 @@ const dutiesListQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const createKarkunDutyMutation = gql`
   mutation createKarkunDuty(
     $karkunId: String!
     $dutyId: String!
@@ -184,12 +283,55 @@ const formMutation = gql`
       daysOfWeek: $daysOfWeek
     ) {
       _id
+      dutyId
       dutyName
+      locationId
       locationName
       startTime
       endTime
       daysOfWeek
     }
+  }
+`;
+
+const updateKarkunDutyMutation = gql`
+  mutation updateKarkunDuty(
+    $_id: String!
+    $karkunId: String!
+    $dutyId: String!
+    $locationId: String
+    $startTime: String
+    $endTime: String
+    $startDate: String
+    $endDate: String
+    $daysOfWeek: [String]
+  ) {
+    updateKarkunDuty(
+      _id: $_id
+      karkunId: $karkunId
+      dutyId: $dutyId
+      locationId: $locationId
+      startTime: $startTime
+      endTime: $endTime
+      startDate: $startDate
+      endDate: $endDate
+      daysOfWeek: $daysOfWeek
+    ) {
+      _id
+      dutyId
+      dutyName
+      locationId
+      locationName
+      startTime
+      endTime
+      daysOfWeek
+    }
+  }
+`;
+
+const removeKarkunDutyMutation = gql`
+  mutation removeKarkunDuty($_id: String!) {
+    removeKarkunDuty(_id: $_id)
   }
 `;
 
@@ -207,8 +349,20 @@ export default merge(
   graphql(dutiesListQuery, {
     props: ({ data }) => ({ ...data })
   }),
-  graphql(formMutation, {
+  graphql(createKarkunDutyMutation, {
     name: 'createKarkunDuty',
+    options: {
+      refetchQueries: ['karkunDutiesByKarkunId']
+    }
+  }),
+  graphql(updateKarkunDutyMutation, {
+    name: 'updateKarkunDuty',
+    options: {
+      refetchQueries: ['karkunDutiesByKarkunId']
+    }
+  }),
+  graphql(removeKarkunDutyMutation, {
+    name: 'removeKarkunDuty',
     options: {
       refetchQueries: ['karkunDutiesByKarkunId']
     }

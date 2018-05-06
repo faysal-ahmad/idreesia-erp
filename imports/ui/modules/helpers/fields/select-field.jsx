@@ -10,6 +10,8 @@ const formItemLayout = {
 
 /**
  * data: Array of objects (containing text and value)
+ * getDataValue: Function that returns the "value" from the above data object
+ * getDataText: Function that returns the "text" from the above data object
  * fieldName: Name of the property in which the form field value would be saved.
  * fieldLabel: Label to display before the form field.
  * placeholder: Placeholder text to show in the form field.

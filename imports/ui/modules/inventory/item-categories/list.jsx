@@ -32,7 +32,6 @@ class List extends Component {
 
   componentWillReceiveProps(newProps) {
     console.log('componentWillReceiveProps called');
-    debugger;
   }
 
   render() {

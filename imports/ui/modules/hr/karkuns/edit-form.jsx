@@ -1,157 +1,37 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form } from 'antd';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { get } from 'lodash';
+import { Tabs } from 'antd';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import {
-  InputTextField,
-  InputTextAreaField,
-  FormButtonsSaveCancel
-} from '/imports/ui/modules/helpers/fields';
+import GeneralInfo from './edit/general-info';
+import ProfilePicture from './edit/profile-picture';
+import DutyParticipation from './edit/duty-participations';
 
 class EditForm extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
-    location: PropTypes.object,
-    form: PropTypes.object,
-
-    karkunById: PropTypes.object,
-    updateKarkun: PropTypes.func
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.karkunsPath);
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, karkunById, updateKarkun } = this.props;
-    form.validateFields((err, { firstName, lastName, cnicNumber, address }) => {
-      if (err) return;
-
-      updateKarkun({
-        variables: {
-          _id: karkunById._id,
-          firstName,
-          lastName,
-          cnicNumber,
-          address
-        }
-      })
-        .then(() => {
-          history.push(paths.karkunsPath);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    });
+    location: PropTypes.object
   };
 
   render() {
-    const { loading, karkunById } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    if (loading) return null;
-
+    const karkunId = get(this.props, ['match', 'params', 'karkunId'], null);
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="firstName"
-          fieldLabel="First Name"
-          initialValue={karkunById.firstName}
-          required={true}
-          requiredMessage="Please input the first name for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="lastName"
-          fieldLabel="Last Name"
-          initialValue={karkunById.lastName}
-          required={true}
-          requiredMessage="Please input the last name for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="cnicNumber"
-          fieldLabel="CNIC Number"
-          initialValue={karkunById.cnicNumber}
-          required={true}
-          requiredMessage="Please input the CNIC for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          initialValue={karkunById.address}
-          required={false}
-          requiredMessage="Please input the address for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Tabs defaultActiveKey="1">
+        <Tabs.TabPane tab="General Info" key="1">
+          <GeneralInfo karkunId={karkunId} {...this.props} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Profile Picture" key="2">
+          <ProfilePicture karkunId={karkunId} {...this.props} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Duty Participation" key="3">
+          <DutyParticipation karkunId={karkunId} {...this.props} />
+        </Tabs.TabPane>
+      </Tabs>
     );
   }
 }
 
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      firstName
-      lastName
-      cnicNumber
-      address
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateKarkun(
-    $_id: String!
-    $firstName: String!
-    $lastName: String!
-    $cnicNumber: String!
-    $address: String
-  ) {
-    updateKarkun(
-      _id: $_id
-      firstName: $firstName
-      lastName: $lastName
-      cnicNumber: $cnicNumber
-      address: $address
-    ) {
-      _id
-      firstName
-      lastName
-      cnicNumber
-      address
-    }
-  }
-`;
-
-export default merge(
-  Form.create(),
-  graphql(formMutation, {
-    name: 'updateKarkun',
-    options: {
-      refetchQueries: ['allKarkuns']
-    }
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    }
-  }),
-  WithBreadcrumbs(['HR', 'Karkuns', 'Edit'])
-)(EditForm);
+export default WithBreadcrumbs(['HR', 'Karkuns', 'Edit'])(EditForm);

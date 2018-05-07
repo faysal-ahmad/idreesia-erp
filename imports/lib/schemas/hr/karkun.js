@@ -20,6 +20,10 @@ export default new SimpleSchema({
   address: {
     type: String,
     optional: true
+  },
+  profilePicture: {
+    type: String,
+    optional: true
   }
 })
   .extend(identifiable)

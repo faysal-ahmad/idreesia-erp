@@ -65,6 +65,19 @@ export default {
       });
 
       return Karkuns.findOne(_id);
+    },
+
+    setProfilePicture(obj, { _id, profilePicture }, { userId }) {
+      const date = new Date();
+      Karkuns.update(_id, {
+        $set: {
+          profilePicture,
+          updatedAt: date,
+          updatedBy: userId
+        }
+      });
+
+      return Karkuns.findOne(_id);
     }
   }
 };

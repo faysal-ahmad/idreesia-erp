@@ -5,6 +5,7 @@ type KarkunType {
   lastName: String
   cnicNumber: String
   address: String
+  profilePicture: String
 
   createdAt: String
   createdBy: String
@@ -32,4 +33,6 @@ extend type Mutation {
     cnicNumber: String!
     address: String
   ): KarkunType
+
+  setProfilePicture(_id: String!, profilePicture: String!): KarkunType
 }

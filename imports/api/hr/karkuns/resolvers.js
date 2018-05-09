@@ -1,9 +1,26 @@
-import { Karkuns } from '/imports/lib/collections/hr';
+import { Duties, Karkuns, KarkunDuties } from '/imports/lib/collections/hr';
 
 export default {
   KarkunType: {
     name: karkunType => {
       return `${karkunType.firstName} ${karkunType.lastName}`;
+    },
+    duties: karkunType => {
+      const karkunDuties = KarkunDuties.find({
+        karkunId: { $eq: karkunType._id }
+      }).fetch();
+
+      if (karkunDuties.length > 0) {
+        const dutyIds = karkunDuties.map(karkunDuty => karkunDuty.dutyId);
+        const duties = Duties.find({
+          _id: { $in: dutyIds }
+        }).fetch();
+
+        const dutyNames = duties.map(duty => duty.name);
+        return dutyNames.join(', ');
+      } else {
+        return null;
+      }
     }
   },
 

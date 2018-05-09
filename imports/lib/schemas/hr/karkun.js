@@ -21,6 +21,14 @@ export default new SimpleSchema({
     type: String,
     optional: true
   },
+  primaryContactNumber: {
+    type: String,
+    optional: true
+  },
+  secondaryContactNumber: {
+    type: String,
+    optional: true
+  },
   profilePicture: {
     type: String,
     optional: true

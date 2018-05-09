@@ -6,6 +6,7 @@ type KarkunType {
   cnicNumber: String
   address: String
   profilePicture: String
+  duties: String
 
   createdAt: String
   createdBy: String

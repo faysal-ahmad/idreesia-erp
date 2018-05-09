@@ -87,6 +87,22 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <InputTextField
+          fieldName="primaryContactNumber"
+          fieldLabel="Contact No. 1"
+          initialValue={karkunById.primaryContactNumber}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="secondaryContactNumber"
+          fieldLabel="Contact No. 2"
+          initialValue={karkunById.secondaryContactNumber}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <InputTextAreaField
           fieldName="address"
           fieldLabel="Address"

@@ -9,6 +9,16 @@ import { graphql } from 'react-apollo';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
+import ListFilter from './list-filter';
+
+const ToolbarStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%'
+};
+
 const NameDivStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
@@ -21,7 +31,8 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allKarkuns: PropTypes.array
+    allKarkuns: PropTypes.array,
+    allDuties: PropTypes.array
   };
 
   columns = [
@@ -71,8 +82,22 @@ class List extends Component {
     history.push(paths.karkunsNewFormPath);
   };
 
+  getTableHeader = () => {
+    const { allDuties } = this.props;
+
+    return (
+      <div style={ToolbarStyle}>
+        <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+          New Karkun
+        </Button>
+        <ListFilter filterCriteria={{}} allDuties={allDuties} />
+      </div>
+    );
+  };
+
   render() {
-    const { allKarkuns } = this.props;
+    const { loading, allKarkuns } = this.props;
+    if (loading) return null;
 
     return (
       <Table
@@ -80,13 +105,7 @@ class List extends Component {
         dataSource={allKarkuns}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Karkun
-            </Button>
-          );
-        }}
+        title={this.getTableHeader}
       />
     );
   }
@@ -107,8 +126,20 @@ const listQuery = gql`
   }
 `;
 
+const allDutiesListQuery = gql`
+  query allDuties {
+    allDuties {
+      _id
+      name
+    }
+  }
+`;
+
 export default merge(
   graphql(listQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
+  graphql(allDutiesListQuery, {
     props: ({ data }) => ({ ...data })
   }),
   WithBreadcrumbs(['HR', 'Karkuns', 'List'])

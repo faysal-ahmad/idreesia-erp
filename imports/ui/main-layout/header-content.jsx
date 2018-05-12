@@ -61,8 +61,7 @@ class HeaderContent extends Component {
     });
 
     return (
-      <Header className="header">
-        <div className="logo" />
+      <Header>
         <Menu
           theme="dark"
           mode="horizontal"

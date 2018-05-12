@@ -25,7 +25,12 @@ export default {
   },
 
   Query: {
-    allKarkuns() {
+    allKarkuns(obj, { name, cnicNumber, duties }, context) {
+      // db.coll.find({$expr:{$eq:["value", {$concat:["$field1", "$field2"]}]}})
+      let filterCriteria = {};
+
+      if (duties) {
+      }
       return Karkuns.find({}).fetch();
     },
     karkunById(obj, { _id }, context) {

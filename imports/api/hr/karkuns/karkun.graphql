@@ -15,7 +15,7 @@ type KarkunType {
 }
 
 extend type Query {
-  allKarkuns: [KarkunType]
+  allKarkuns(name: String, cnicNumber: String, duties: [String]): [KarkunType]
   karkunById(_id: String!): KarkunType
 }
 

@@ -6,8 +6,15 @@ import { keys, forEach } from 'lodash';
 
 import { ModuleNames, ModulePaths } from '../constants';
 import { GlobalActionsCreator } from '../action-creators';
+import { UserMenu } from './';
 
-const { Header } = Layout;
+const ContainerStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%'
+};
 
 const modulePathsMapping = {};
 modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
@@ -49,7 +56,8 @@ class HeaderContent extends Component {
   render() {
     const menuItems = [];
     const selectedMenuItemKey = [];
-    const { pathname } = this.props.location;
+    const { history, location } = this.props;
+    const { pathname } = location;
 
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName, index) => {
@@ -61,17 +69,20 @@ class HeaderContent extends Component {
     });
 
     return (
-      <Header>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={selectedMenuItemKey}
-          style={{ lineHeight: '64px' }}
-          onSelect={this.handleMenuItemSelected}
-        >
-          {menuItems}
-        </Menu>
-      </Header>
+      <Layout.Header>
+        <div style={ContainerStyle}>
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            defaultSelectedKeys={selectedMenuItemKey}
+            style={{ lineHeight: '64px' }}
+            onSelect={this.handleMenuItemSelected}
+          >
+            {menuItems}
+          </Menu>
+          <UserMenu history={history} location={location} />
+        </div>
+      </Layout.Header>
     );
   }
 }

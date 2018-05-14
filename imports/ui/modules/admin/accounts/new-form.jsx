@@ -1,126 +1,121 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { Profiles } from '/imports/lib/collections/admin';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import {
+  InputTextField,
+  SelectField,
+  FormButtonsSaveCancel
+} from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object
+    form: PropTypes.object,
+    createAccount: PropTypes.func,
+    allkarkunsWithNoAccounts: PropTypes.array
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.profilesPath);
+    history.push(paths.accountsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
+    const { form, createAccount, history } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const doc = {
-        firstName: fieldsValue.firstName,
-        lastName: fieldsValue.lastName,
-        cnicNumber: fieldsValue.cnicNumber,
-        address: fieldsValue.address
-      };
-
-      Meteor.call('admin/profiles.create', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.profilesPath);
-      });
+      debugger;
+      createAccount({
+        variables: {
+          karkunId: fieldsValue.karkunId,
+          userName: fieldsValue.userName,
+          password: fieldsValue.password
+        }
+      })
+        .then(() => {
+          history.push(paths.accountsPath);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     });
   };
 
-  getFirstNameField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a first name.'
-      }
-    ];
-    return getFieldDecorator('firstName', { rules })(<Input placeholder="First name" />);
-  }
-
-  getLastNameField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a last name.'
-      }
-    ];
-    return getFieldDecorator('lastName', { rules })(<Input placeholder="Last name" />);
-  }
-
-  getCnicNumberField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a CNIC number.'
-      }
-    ];
-    return getFieldDecorator('cnicNumber', { rules })(<Input placeholder="CNIN number" />);
-  }
-
-  getAddressField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [];
-    return getFieldDecorator('address', { rules })(
-      <Input.TextArea rows={4} placeholder="Address" />
-    );
-  }
-
   render() {
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 6 }
-    };
+    const { getFieldDecorator } = this.props.form;
+    const { allkarkunsWithNoAccounts } = this.props;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="First Name" {...formItemLayout}>
-          {this.getFirstNameField()}
-        </Form.Item>
-        <Form.Item label="Last Name" {...formItemLayout}>
-          {this.getLastNameField()}
-        </Form.Item>
-        <Form.Item label="CNIC Number" {...formItemLayout}>
-          {this.getCnicNumberField()}
-        </Form.Item>
-        <Form.Item label="Address" {...formItemLayout}>
-          {this.getAddressField()}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Row>
-        </Form.Item>
+        <SelectField
+          data={allkarkunsWithNoAccounts}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="karkunId"
+          fieldLabel="Karkun Name"
+          required={true}
+          requiredMessage="Please select a karkun for creating the account."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="userName"
+          fieldLabel="User name"
+          required={true}
+          requiredMessage="Please specify a user name."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="password"
+          fieldLabel="Password"
+          required={true}
+          requiredMessage="Please specify a password."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }
 }
 
-export default merge(Form.create(), WithBreadcrumbs(['Admin', 'Setup', 'Profiles', 'New']))(
-  NewForm
-);
+const formMutation = gql`
+  mutation createAccount($karkunId: String!, $userName: String!, $password: String!) {
+    createAccount(karkunId: $karkunId, userName: $userName, password: $password) {
+      _id
+    }
+  }
+`;
+
+const listQuery = gql`
+  query allkarkunsWithNoAccounts {
+    allkarkunsWithNoAccounts {
+      _id
+      name
+    }
+  }
+`;
+
+export default merge(
+  Form.create(),
+  graphql(formMutation, {
+    name: 'createAccount',
+    options: {
+      refetchQueries: ['allAccounts']
+    }
+  }),
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
+  WithBreadcrumbs(['Admin', 'Setup', 'Account', 'New'])
+)(NewForm);

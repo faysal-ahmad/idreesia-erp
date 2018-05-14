@@ -1,0 +1,23 @@
+type PermissionType {
+  moduleName: String
+  permissionName: String
+}
+
+type AccountType {
+  _id: String
+  username: String
+  permissions: [PermissionType]
+  karkun: KarkunType
+}
+
+extend type Query {
+  allAccounts: [AccountType]
+  accountById(id: String!): AccountType
+  allkarkunsWithNoAccounts: [KarkunType]
+}
+
+extend type Mutation {
+  createAccount(karkunId: String!, userName: String!, password: String!): AccountType
+  addPermission(moduleName: String!, permissionName: String!): AccountType
+  removePermission(moduleName: String!, permissionName: String!): AccountType
+}

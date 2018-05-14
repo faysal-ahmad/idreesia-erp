@@ -3,55 +3,51 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
-import { Profiles } from '/imports/lib/collections/admin';
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    profiles: PropTypes.array
+    allAccounts: PropTypes.array
   };
 
   columns = [
     {
-      title: 'Name',
-      key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.profilesPath}/${record._id}`}>{this.getFullName(record)}</Link>
-      )
+      title: 'Karkun name',
+      dataIndex: 'karkun.name',
+      key: 'karkunName',
+      render: (text, record) => <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
     },
     {
-      title: 'CNIC Number',
-      dataIndex: 'cnicNumber',
-      key: 'cnicNumber'
+      title: 'User name',
+      dataIndex: 'username',
+      key: 'username'
     }
   ];
 
-  getFullName(profile) {
-    return `${profile.firstName} ${profile.lastName}`;
-  }
-
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.profilesNewFormPath);
+    history.push(paths.accountsNewFormPath);
   };
 
   render() {
-    const { profiles } = this.props;
+    const { allAccounts } = this.props;
+
     return (
       <Table
         rowKey={'_id'}
-        dataSource={profiles}
+        dataSource={allAccounts}
         columns={this.columns}
         bordered
         title={() => {
           return (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Profile
+              New Account
             </Button>
           );
         }}
@@ -60,15 +56,22 @@ class List extends Component {
   }
 }
 
-function dataLoader(props, onData) {
-  const subscription = Meteor.subscribe('admin/profiles#all');
-  if (subscription.ready()) {
-    const profiles = Profiles.find({}).fetch();
-    onData(null, { profiles });
+const listQuery = gql`
+  query allAccounts {
+    allAccounts {
+      _id
+      username
+      karkun {
+        _id
+        name
+      }
+    }
   }
-}
+`;
 
 export default merge(
-  composeWithTracker(dataLoader),
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
   WithBreadcrumbs(['Admin', 'Setup', 'Accounts', 'List'])
 )(List);

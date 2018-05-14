@@ -7,8 +7,6 @@ import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-const { SubMenu } = Menu;
-
 class AdminSidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -25,16 +23,6 @@ class AdminSidebar extends Component {
         history.push(paths.accountsPath);
         break;
 
-      case 'profiles':
-        setActiveSubModuleName(SubModuleNames.profiles);
-        history.push(paths.profilesPath);
-        break;
-
-      case 'departments':
-        setActiveSubModuleName(SubModuleNames.departments);
-        history.push(paths.departmentsPath);
-        break;
-
       default:
         break;
     }
@@ -48,7 +36,7 @@ class AdminSidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
-        <SubMenu
+        <Menu.SubMenu
           key="setup"
           title={
             <span>
@@ -57,9 +45,7 @@ class AdminSidebar extends Component {
           }
         >
           <Menu.Item key="accounts">Accounts</Menu.Item>
-          <Menu.Item key="profiles">Profiles</Menu.Item>
-          <Menu.Item key="departments">Departments</Menu.Item>
-        </SubMenu>
+        </Menu.SubMenu>
       </Menu>
     );
   }

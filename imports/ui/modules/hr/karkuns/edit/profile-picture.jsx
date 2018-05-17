@@ -29,7 +29,6 @@ class ProfilePicture extends Component {
   };
 
   handlePictureFormSaved = () => {
-    debugger;
     const { karkunId, setProfilePicture } = this.props;
     const profilePicture = this.pictureForm.state.imageSrc;
     this.setState({ showForm: false });

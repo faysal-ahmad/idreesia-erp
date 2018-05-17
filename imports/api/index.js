@@ -3,8 +3,8 @@ import { merge } from 'lodash';
 /**
  * Schema and Resolvers for the Admin module
  */
-import AccountSchema from './admin/account/account.graphql';
-import AccountResolvers from './admin/account/resolvers';
+// import AccountSchema from './admin/account/account.graphql';
+// import AccountResolvers from './admin/account/resolvers';
 
 /**
  * Schema and Resolvers for the HR module
@@ -34,7 +34,6 @@ import PhysicalStoreSchema from './inventory/physical-store/physical-store.graph
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 
 const typeDefs = [
-  AccountSchema,
   DutyLocationSchema,
   DutySchema,
   KarkunSchema,
@@ -45,7 +44,6 @@ const typeDefs = [
 ];
 
 const resolvers = merge(
-  AccountResolvers,
   DutyLocationResolvers,
   DutyResolvers,
   KarkunResolvers,

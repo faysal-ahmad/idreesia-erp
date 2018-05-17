@@ -1,3 +1,9 @@
+type UserType {
+  _id: String
+  username: String
+  permissions: [String]
+}
+
 type KarkunType {
   _id: String
   name: String
@@ -7,6 +13,8 @@ type KarkunType {
   address: String
   profilePicture: String
   duties: String
+  userId: String
+  user: UserType
 
   createdAt: String
   createdBy: String
@@ -15,6 +23,8 @@ type KarkunType {
 }
 
 extend type Query {
+  allKarkunsWithAccounts: [KarkunType]
+  allKarkunsWithNoAccounts: [KarkunType]
   allKarkuns(name: String, cnicNumber: String, duties: [String]): [KarkunType]
   karkunById(_id: String!): KarkunType
 }
@@ -36,4 +46,8 @@ extend type Mutation {
   ): KarkunType
 
   setProfilePicture(_id: String!, profilePicture: String!): KarkunType
+
+  createAccount(karkunId: String!, userName: String!, password: String!): KarkunType
+  deleteAccount(karkunId: String!, karkunUserId: String!): KarkunType
+  setPermissions(karkunId: String!, karkunUserId: String!, permissions: [String]!): KarkunType
 }

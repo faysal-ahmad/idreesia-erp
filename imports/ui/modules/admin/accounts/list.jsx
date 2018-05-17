@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Button, Divider, Icon, Table } from 'antd';
+import { Button, Icon, Table } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -13,20 +13,25 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allAccounts: PropTypes.array,
+    allKarkunsWithAccounts: PropTypes.array,
     deleteAccount: PropTypes.func
   };
 
   columns = [
     {
       title: 'Karkun name',
-      dataIndex: 'karkun.name',
-      key: 'karkunName',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
     },
     {
+      title: 'CNIC number',
+      dataIndex: 'cnicNumber',
+      key: 'cnicNumber'
+    },
+    {
       title: 'User name',
-      dataIndex: 'username',
+      dataIndex: 'user.username',
       key: 'username'
     },
     {
@@ -35,16 +40,8 @@ class List extends Component {
         <span>
           <a href="javascript:;">
             <Icon
-              type="edit"
-              onClick={() => {
-                this.handleEditClicked(record);
-              }}
-            />
-          </a>
-          <Divider type="vertical" />
-          <a href="javascript:;">
-            <Icon
               type="delete"
+              style={{ fontSize: 20 }}
               onClick={() => {
                 this.handleDeleteClicked(record);
               }}
@@ -60,11 +57,8 @@ class List extends Component {
     history.push(paths.accountsNewFormPath);
   };
 
-  handleEditClicked = record => {};
-
   handleDeleteClicked = record => {
     const { deleteAccount } = this.props;
-    debugger;
     deleteAccount({
       variables: {
         karkunId: record.karkun._id,
@@ -76,12 +70,12 @@ class List extends Component {
   };
 
   render() {
-    const { allAccounts } = this.props;
+    const { allKarkunsWithAccounts } = this.props;
 
     return (
       <Table
         rowKey={'_id'}
-        dataSource={allAccounts}
+        dataSource={allKarkunsWithAccounts}
         columns={this.columns}
         bordered
         title={() => {
@@ -103,13 +97,14 @@ const formMutation = gql`
 `;
 
 const listQuery = gql`
-  query allAccounts {
-    allAccounts {
+  query allKarkunsWithAccounts {
+    allKarkunsWithAccounts {
       _id
-      username
-      karkun {
+      name
+      cnicNumber
+      user {
         _id
-        name
+        username
       }
     }
   }
@@ -119,7 +114,7 @@ export default merge(
   graphql(formMutation, {
     name: 'deleteAccount',
     options: {
-      refetchQueries: ['allAccounts']
+      refetchQueries: ['allkarkunsWithAccounts']
     }
   }),
   graphql(listQuery, {

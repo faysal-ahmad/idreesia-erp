@@ -6,5 +6,5 @@ export default class SubModulePaths {
   // *************************************************************************************
   static accountsPath = `${ModulePaths.admin}/accounts`;
   static accountsNewFormPath = `${SubModulePaths.accountsPath}/new`;
-  static accountsEditFormPath = `${SubModulePaths.accountsPath}/:accountId`;
+  static accountsEditFormPath = `${SubModulePaths.accountsPath}/:karkunId`;
 }

@@ -5,6 +5,10 @@ export default {
     name: karkunType => {
       return `${karkunType.firstName} ${karkunType.lastName}`;
     },
+    user: karkunType => {
+      if (!karkunType.userId) return null;
+      return Meteor.users.findOne(karkunType.userId);
+    },
     duties: karkunType => {
       const karkunDuties = KarkunDuties.find({
         karkunId: { $eq: karkunType._id }
@@ -25,6 +29,17 @@ export default {
   },
 
   Query: {
+    allKarkunsWithAccounts() {
+      return Karkuns.find({
+        userId: { $ne: null }
+      }).fetch();
+    },
+    allKarkunsWithNoAccounts() {
+      return Karkuns.find({
+        userId: { $eq: null }
+      }).fetch();
+    },
+
     allKarkuns(obj, { name, cnicNumber, duties }, context) {
       // db.coll.find({$expr:{$eq:["value", {$concat:["$field1", "$field2"]}]}})
       let filterCriteria = {};
@@ -33,6 +48,7 @@ export default {
       }
       return Karkuns.find({}).fetch();
     },
+
     karkunById(obj, { _id }, context) {
       return Karkuns.findOne(_id);
     }
@@ -100,6 +116,46 @@ export default {
       });
 
       return Karkuns.findOne(_id);
+    },
+
+    createAccount(obj, { karkunId, userName, password }, { userId }) {
+      const existingUser = Accounts.findUserByUsername(userName);
+      if (existingUser) {
+        throw new Error(`User name '${userName}' is already in use.`);
+      }
+
+      const newUserId = Accounts.createUser({
+        username: userName,
+        password
+      });
+
+      const time = Date.now();
+      Karkuns.update(karkunId, {
+        $set: {
+          userId: newUserId,
+          updatedAt: time
+        }
+      });
+
+      return Karkuns.findOne(karkunId);
+    },
+
+    deleteAccount(obj, { karkunId, karkunUserId }, { userId }) {
+      const time = Date.now();
+      Karkuns.update(karkunId, {
+        $set: {
+          userId: null,
+          updatedAt: time
+        }
+      });
+
+      Meteor.users.remove(karkunUserId);
+      return Karkuns.findOne(karkunId);
+    },
+
+    setPermissions(obj, { karkunId, karkunUserId, permissions }, { userId }) {
+      Meteor.users.update(karkunUserId, { $set: { permissions } });
+      return Karkuns.findOne(karkunId);
     }
   }
 };

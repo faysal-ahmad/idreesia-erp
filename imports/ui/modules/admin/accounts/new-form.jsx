@@ -19,7 +19,7 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     createAccount: PropTypes.func,
-    allkarkunsWithNoAccounts: PropTypes.array
+    allKarkunsWithNoAccounts: PropTypes.array
   };
 
   handleCancel = () => {
@@ -33,7 +33,6 @@ class NewForm extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      debugger;
       createAccount({
         variables: {
           karkunId: fieldsValue.karkunId,
@@ -52,12 +51,12 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allkarkunsWithNoAccounts } = this.props;
+    const { allKarkunsWithNoAccounts } = this.props;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <SelectField
-          data={allkarkunsWithNoAccounts}
+          data={allKarkunsWithNoAccounts}
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
           fieldName="karkunId"
@@ -98,8 +97,8 @@ const formMutation = gql`
 `;
 
 const listQuery = gql`
-  query allkarkunsWithNoAccounts {
-    allkarkunsWithNoAccounts {
+  query allKarkunsWithNoAccounts {
+    allKarkunsWithNoAccounts {
       _id
       name
     }
@@ -111,7 +110,7 @@ export default merge(
   graphql(formMutation, {
     name: 'createAccount',
     options: {
-      refetchQueries: ['allAccounts']
+      refetchQueries: ['allkarkunsWithAccounts']
     }
   }),
   graphql(listQuery, {

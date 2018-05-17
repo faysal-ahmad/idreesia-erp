@@ -104,7 +104,6 @@ class DutyParticipation extends Component {
 
   handleDeleteClicked = record => {
     const { removeKarkunDuty } = this.props;
-    debugger;
     removeKarkunDuty({
       variables: {
         _id: record._id

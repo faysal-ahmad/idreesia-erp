@@ -53,6 +53,18 @@ export default {
       return Accounts.findUserByUsername(userName);
     },
 
+    deleteAccount(obj, { karkunId, karkunUserId }, { userId }) {
+      const time = Date.now();
+      Karkuns.update(karkunId, {
+        $set: {
+          userId: null,
+          updatedAt: time
+        }
+      });
+
+      return Meteor.users.remove(karkunUserId);
+    },
+
     addPermission(obj, { moduleName, permissionName }, { userId }) {
       const user = Meteor.users.findOne(userId);
       const { permissions } = user.permissions || [];

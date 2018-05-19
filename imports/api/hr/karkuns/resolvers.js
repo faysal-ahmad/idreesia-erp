@@ -61,6 +61,12 @@ export default {
 
     karkunById(obj, { _id }, context) {
       return Karkuns.findOne(_id);
+    },
+
+    karkunByUserId(obj, { userId }, context) {
+      return Karkuns.findOne({
+        userId: { $eq: userId }
+      });
     }
   },
 

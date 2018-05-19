@@ -27,6 +27,7 @@ extend type Query {
   allKarkunsWithNoAccounts: [KarkunType]
   allKarkuns(name: String, cnicNumber: String, duties: [String]): [KarkunType]
   karkunById(_id: String!): KarkunType
+  karkunByUserId(userId: String!): KarkunType
 }
 
 extend type Mutation {

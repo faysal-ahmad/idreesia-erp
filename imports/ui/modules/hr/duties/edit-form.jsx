@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form } from 'antd';
+import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -41,7 +41,7 @@ class EditForm extends Component {
           history.push(paths.dutiesPath);
         })
         .catch(error => {
-          console.log(error);
+          message.error(error.message, 5);
         });
     });
   };

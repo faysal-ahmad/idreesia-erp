@@ -29,6 +29,11 @@ class ListFilter extends Component {
     allDuties: PropTypes.array
   };
 
+  static defaultProps = {
+    filterCriteria: {},
+    allDuties: []
+  };
+
   getDutiesField() {
     const { allDuties, filterCriteria } = this.props;
     const { getFieldDecorator } = this.props.form;

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { merge } from 'react-komposer';
-import { Button, Divider, Icon, Table, Modal } from 'antd';
+import { Button, Divider, Icon, Table, Modal, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -109,7 +109,7 @@ class DutyParticipation extends Component {
         _id: record._id
       }
     }).catch(error => {
-      console.log(error);
+      message.error(error.message, 5);
     });
   };
 
@@ -138,7 +138,7 @@ class DutyParticipation extends Component {
             daysOfWeek: values.weekDays
           }
         }).catch(error => {
-          console.log(error);
+          message.error(error.message, 5);
         });
       }
     });
@@ -163,7 +163,7 @@ class DutyParticipation extends Component {
             daysOfWeek: values.weekDays
           }
         }).catch(error => {
-          console.log(error);
+          message.error(error.message, 5);
         });
       }
     });

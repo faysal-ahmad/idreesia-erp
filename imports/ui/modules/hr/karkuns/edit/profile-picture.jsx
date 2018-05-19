@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Button, Modal, Row, Col } from 'antd';
+import { Button, Modal, Row, Col, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -38,7 +38,7 @@ class ProfilePicture extends Component {
         profilePicture
       }
     }).catch(error => {
-      console.log(error);
+      message.error(error.message, 5);
     });
   };
 

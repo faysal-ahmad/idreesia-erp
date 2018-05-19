@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form, Input, Button, Row, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -36,7 +36,7 @@ class NewForm extends Component {
           history.push(paths.dutyLocationsPath);
         })
         .catch(error => {
-          console.log(error);
+          message.error(error.message, 5);
         });
     });
   };

@@ -1,4 +1,6 @@
 import { Duties, Karkuns, KarkunDuties } from '/imports/lib/collections/hr';
+import { hasOnePermission } from '/imports/api/security';
+import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   KarkunType: {
@@ -29,7 +31,11 @@ export default {
   },
 
   Query: {
-    allKarkunsWithAccounts() {
+    allKarkunsWithAccounts(obj, params, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_ACCOUNTS])) {
+        return [];
+      }
+
       return Karkuns.find({
         userId: { $ne: null }
       }).fetch();
@@ -40,7 +46,11 @@ export default {
       }).fetch();
     },
 
-    allKarkuns(obj, { name, cnicNumber, duties }, context) {
+    allKarkuns(obj, { name, cnicNumber, duties }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_VIEW_KARKUNS])) {
+        return [];
+      }
+
       // db.coll.find({$expr:{$eq:["value", {$concat:["$field1", "$field2"]}]}})
       let filterCriteria = {};
 
@@ -56,9 +66,13 @@ export default {
 
   Mutation: {
     createKarkun(obj, { firstName, lastName, cnicNumber, address }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+        throw new Error('You do not have permission to manage Karkuns in the System.');
+      }
+
       const existingKarkun = Karkuns.findOne({ cnicNumber: { $eq: cnicNumber } });
       if (existingKarkun) {
-        throw Error(
+        throw new Error(
           `This CNIC number is already set for ${existingKarkun.firstName} ${
             existingKarkun.lastName
           }.`
@@ -81,9 +95,13 @@ export default {
     },
 
     updateKarkun(obj, { _id, firstName, lastName, cnicNumber, address }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+        throw new Error('You do not have permission to manage Karkuns in the System.');
+      }
+
       const existingKarkun = Karkuns.findOne({ cnicNumber: { $eq: cnicNumber } });
       if (existingKarkun && existingKarkun._id !== _id) {
-        throw Error(
+        throw new Error(
           `This CNIC number is already set for ${existingKarkun.firstName} ${
             existingKarkun.lastName
           }.`
@@ -106,6 +124,10 @@ export default {
     },
 
     setProfilePicture(obj, { _id, profilePicture }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+        throw new Error('You do not have permission to create Karkuns in the System.');
+      }
+
       const date = new Date();
       Karkuns.update(_id, {
         $set: {
@@ -119,6 +141,10 @@ export default {
     },
 
     createAccount(obj, { karkunId, userName, password }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])) {
+        throw new Error('You do not have permission to manage Accounts in the System.');
+      }
+
       const existingUser = Accounts.findUserByUsername(userName);
       if (existingUser) {
         throw new Error(`User name '${userName}' is already in use.`);
@@ -141,6 +167,10 @@ export default {
     },
 
     deleteAccount(obj, { karkunId, karkunUserId }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])) {
+        throw new Error('You do not have permission to manage Accounts in the System.');
+      }
+
       const time = Date.now();
       Karkuns.update(karkunId, {
         $set: {
@@ -154,6 +184,10 @@ export default {
     },
 
     setPermissions(obj, { karkunId, karkunUserId, permissions }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])) {
+        throw new Error('You do not have permission to manage Accounts in the System.');
+      }
+
       Meteor.users.update(karkunUserId, { $set: { permissions } });
       return Karkuns.findOne(karkunId);
     }

@@ -1,7 +1,7 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Button, Row, Tree } from 'antd';
+import { Button, Row, Tree, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { filter } from 'lodash';
@@ -104,7 +104,7 @@ class Permissions extends Component {
         history.push(paths.accountsPath);
       })
       .catch(error => {
-        console.log(error);
+        message.error(error.message, 5);
       });
   };
 

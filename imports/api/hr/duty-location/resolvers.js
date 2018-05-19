@@ -1,4 +1,6 @@
 import { DutyLocations } from '/imports/lib/collections/hr';
+import { hasOnePermission } from '/imports/api/security';
+import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   Query: {
@@ -12,6 +14,12 @@ export default {
 
   Mutation: {
     createDutyLocation(obj, { name }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
+        throw new Error(
+          'You do not have permission to manage Duty Locations Setup Data in the System.'
+        );
+      }
+
       const date = new Date();
       const dutyLocationId = DutyLocations.insert({
         name,
@@ -25,6 +33,12 @@ export default {
     },
 
     updateDutyLocation(obj, { id, name }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
+        throw new Error(
+          'You do not have permission to manage Duty Locations Setup Data in the System.'
+        );
+      }
+
       const date = new Date();
       DutyLocations.update(id, {
         $set: {

@@ -10,13 +10,12 @@ export default class UserMenu extends Component {
 
   handleMenuItemClicked = ({ item, key, keyPath }) => {
     const { history } = this.props;
-    const rootUrl = Meteor.absoluteUrl('/');
 
     switch (key) {
       case 'logout':
         Meteor.logout(error => {
           if (error) console.log(error);
-          history.push(rootUrl);
+          history.push('/');
         });
         break;
 

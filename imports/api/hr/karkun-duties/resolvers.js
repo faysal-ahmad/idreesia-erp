@@ -1,6 +1,8 @@
 import moment from 'moment';
 
 import { KarkunDuties, Duties, DutyLocations } from '/imports/lib/collections/hr';
+import { hasOnePermission } from '/imports/api/security';
+import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   KarkunDutyType: {
@@ -32,6 +34,10 @@ export default {
       { karkunId, dutyId, locationId, startTime, endTime, startDate, endDate, daysOfWeek },
       { userId }
     ) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUN_DUTIES])) {
+        throw new Error('You do not have permission to manage Karkun Duties in the System.');
+      }
+
       /*
         const existingKarkunDuty = KarkunDuties.findOne({
           karkunId: { $eq: karkunId },
@@ -66,6 +72,9 @@ export default {
       { _id, karkunId, dutyId, locationId, startTime, endTime, daysOfWeek },
       { userId }
     ) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUN_DUTIES])) {
+        throw new Error('You do not have permission to manage Karkun Duties in the System.');
+      }
       /*
         const existingKarkunDuty = KarkunDuties.findOne({
           karkunId: { $eq: karkunId },
@@ -91,6 +100,10 @@ export default {
     },
 
     removeKarkunDuty(obj, { _id }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUN_DUTIES])) {
+        throw new Error('You do not have permission to manage Karkun Duties in the System.');
+      }
+
       return KarkunDuties.remove(_id);
     }
   }

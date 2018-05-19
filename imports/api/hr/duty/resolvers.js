@@ -1,4 +1,6 @@
 import { Duties } from '/imports/lib/collections/hr';
+import { hasOnePermission } from '/imports/api/security';
+import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   Query: {
@@ -12,6 +14,10 @@ export default {
 
   Mutation: {
     createDuty(obj, { name }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
+        throw new Error('You do not have permission to manage Duty Setup Data in the System.');
+      }
+
       const date = new Date();
       const dutyId = Duties.insert({
         name,
@@ -25,6 +31,10 @@ export default {
     },
 
     updateDuty(obj, { id, name }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
+        throw new Error('You do not have permission to manage Duty Setup Data in the System.');
+      }
+
       const date = new Date();
       Duties.update(id, {
         $set: {

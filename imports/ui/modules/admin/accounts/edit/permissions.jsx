@@ -6,7 +6,9 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { filter } from 'lodash';
 
+import { Permissions as PermissionConstants } from '/imports/lib/constants';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+
 import {
   InputTextField,
   InputTextAreaField,
@@ -19,8 +21,12 @@ const permissionsData = [
     key: 'module-admin',
     children: [
       {
+        title: 'View Accounts',
+        key: PermissionConstants.ADMIN_VIEW_ACCOUNTS
+      },
+      {
         title: 'Manage Accounts',
-        key: 'admin-manage-accounts'
+        key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS
       }
     ]
   },
@@ -30,11 +36,15 @@ const permissionsData = [
     children: [
       {
         title: 'Manage Setup Data',
-        key: 'hr-manage-setup-data'
+        key: PermissionConstants.HR_MANAGE_SETUP_DATA
+      },
+      {
+        title: 'View Karkuns',
+        key: PermissionConstants.HR_VIEW_KARKUNS
       },
       {
         title: 'Manage Karkuns',
-        key: 'hr-manage-karkuns'
+        key: PermissionConstants.HR_MANAGE_KARKUNS
       }
     ]
   }

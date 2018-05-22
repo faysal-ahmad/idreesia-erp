@@ -1,8 +1,16 @@
-import { DutyLocations } from '/imports/lib/collections/hr';
+import { DutyLocations, KarkunDuties } from '/imports/lib/collections/hr';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
+  DutyLocationType: {
+    usedCount: dutyLocationType => {
+      return KarkunDuties.find({
+        locationId: { $eq: dutyLocationType._id }
+      }).count();
+    }
+  },
+
   Query: {
     allDutyLocations() {
       return DutyLocations.find({}).fetch();
@@ -49,6 +57,16 @@ export default {
       });
 
       return DutyLocations.findOne(id);
+    },
+
+    removeDutyLocation(obj, { _id }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
+        throw new Error(
+          'You do not have permission to manage Duty Locations Setup Data in the System.'
+        );
+      }
+
+      return DutyLocations.remove(_id);
     }
   }
 };

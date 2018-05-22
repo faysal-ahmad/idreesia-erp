@@ -7,6 +7,7 @@ import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -45,49 +46,22 @@ class EditForm extends Component {
     });
   };
 
-  getNameField(dutyLocation) {
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = dutyLocation.name;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the duty location.'
-      }
-    ];
-    return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Duty location name" />
-    );
-  }
-
   render() {
     const { loading, dutyLocationById } = this.props;
+    const { getFieldDecorator } = this.props.form;
     if (loading) return null;
-
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField(dutyLocationById)}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={dutyLocationById.name}
+          required={true}
+          requiredMessage="Please input a name for the duty location."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }

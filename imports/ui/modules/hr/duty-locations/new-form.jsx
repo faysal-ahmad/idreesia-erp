@@ -7,6 +7,7 @@ import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
@@ -41,43 +42,18 @@ class NewForm extends Component {
     });
   };
 
-  getNameField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the duty location.'
-      }
-    ];
-    return getFieldDecorator('name', { rules })(<Input placeholder="Duty location name" />);
-  }
-
   render() {
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
-
+    const { getFieldDecorator } = this.props.form;
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField()}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          required={true}
+          requiredMessage="Please input a name for the duty location."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }

@@ -1,6 +1,10 @@
 type DutyType {
   _id: String
   name: String
+  usedCount: Int
+
+  createdByName: String
+  updatedByName: String
 
   createdAt: String
   createdBy: String
@@ -16,4 +20,5 @@ extend type Query {
 extend type Mutation {
   createDuty(name: String!): DutyType
   updateDuty(id: String!, name: String!): DutyType
+  removeDuty(_id: String!): Int
 }

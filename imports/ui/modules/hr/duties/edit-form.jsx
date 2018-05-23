@@ -4,6 +4,7 @@ import { merge } from 'react-komposer';
 import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import moment from 'moment';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
@@ -61,6 +62,34 @@ class EditForm extends Component {
           requiredMessage="Please input a name for the duty."
           getFieldDecorator={getFieldDecorator}
         />
+        <InputTextField
+          disabled={true}
+          fieldName="createdByName"
+          fieldLabel="Created By"
+          initialValue={dutyById.createdByName}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          disabled={true}
+          fieldName="createdAt"
+          fieldLabel="Created At"
+          initialValue={moment(dutyById.createdAt).format('DD-MM-YYYY hh:mm a')}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          disabled={true}
+          fieldName="updatedByName"
+          fieldLabel="Updated By"
+          initialValue={dutyById.updatedByName}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          disabled={true}
+          fieldName="updatedAt"
+          fieldLabel="Updated At"
+          initialValue={moment(dutyById.updatedAt).format('DD-MM-YYYY hh:mm a')}
+          getFieldDecorator={getFieldDecorator}
+        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -72,6 +101,10 @@ const formQuery = gql`
     dutyById(id: $id) {
       _id
       name
+      createdAt
+      createdByName
+      updatedAt
+      updatedByName
     }
   }
 `;
@@ -81,6 +114,10 @@ const formMutation = gql`
     updateDuty(id: $id, name: $name) {
       _id
       name
+      createdAt
+      createdByName
+      updatedAt
+      updatedByName
     }
   }
 `;

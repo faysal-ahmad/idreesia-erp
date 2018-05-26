@@ -1,6 +1,14 @@
-import { ItemCategories } from '/imports/lib/collections/inventory';
+import { ItemCategories, ItemTypes } from '/imports/lib/collections/inventory';
 
 export default {
+  ItemCategory: {
+    itemTypeCount: itemCategory => {
+      return ItemTypes.find({
+        itemCategoryId: { $eq: itemCategory._id }
+      }).count();
+    }
+  },
+
   Query: {
     allItemCategories() {
       return ItemCategories.find({}).fetch();

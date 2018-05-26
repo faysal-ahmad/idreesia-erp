@@ -3,9 +3,11 @@ type ItemType {
   name: String
   description: String
   unitOfMeasurement: String
-  formattedUOM: String
   singleUse: Boolean
   itemCategoryId: String
+  pictures: String
+
+  formattedUOM: String
   itemCategoryName: String
 
   createdAt: String

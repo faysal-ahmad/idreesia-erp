@@ -1,6 +1,8 @@
 type ItemCategory {
   _id: String
   name: String
+  itemTypeCount: Int
+
   createdAt: String
   createdBy: String
   updatedAt: String

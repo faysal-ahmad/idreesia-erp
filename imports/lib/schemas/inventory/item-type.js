@@ -16,10 +16,14 @@ export default new SimpleSchema({
   },
   unitOfMeasurement: {
     type: String,
-    allowedValues: ['quantity', 'ft', 'm', 'weight (kg)', 'weight (lbs)']
+    allowedValues: ['quantity', 'ft', 'm', 'kg', 'lbs']
   },
   singleUse: {
     type: Boolean
+  },
+  picture: {
+    type: String,
+    optional: true
   }
 })
   .extend(identifiable)

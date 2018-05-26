@@ -22,6 +22,11 @@ class List extends Component {
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
+    },
+    {
+      title: 'Item Types Count',
+      dataIndex: 'itemTypeCount',
+      key: 'itemTypeCount'
     }
   ];
 
@@ -60,6 +65,7 @@ const listQuery = gql`
     allItemCategories {
       _id
       name
+      itemTypeCount
     }
   }
 `;

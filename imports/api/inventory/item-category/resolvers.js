@@ -1,4 +1,6 @@
 import { ItemCategories, ItemTypes } from '/imports/lib/collections/inventory';
+import { hasOnePermission } from '/imports/api/security';
+import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   ItemCategory: {
@@ -20,6 +22,10 @@ export default {
 
   Mutation: {
     createItemCategory(obj, { name }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
+        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      }
+
       const date = new Date();
       const itemCategoryId = ItemCategories.insert({
         name,
@@ -33,6 +39,10 @@ export default {
     },
 
     updateItemCategory(obj, { id, name }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
+        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      }
+
       const date = new Date();
       ItemCategories.update(id, {
         $set: {

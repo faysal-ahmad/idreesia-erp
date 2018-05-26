@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
 import { Button, Checkbox, Table } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
@@ -47,7 +47,10 @@ class List extends Component {
   };
 
   render() {
-    const { allItemTypes } = this.props;
+    const { loading, allItemTypes, error } = this.props;
+    if (loading) return null;
+    debugger;
+
     return (
       <Table
         rowKey={'_id'}
@@ -56,7 +59,7 @@ class List extends Component {
         bordered
         title={() => {
           return (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleTakePicture}>
+            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
               New Item Type
             </Button>
           );
@@ -79,8 +82,11 @@ const listQuery = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(listQuery, {
+    options: {
+      errorPolicy: 'all'
+    },
     props: ({ data }) => ({ ...data })
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'List'])

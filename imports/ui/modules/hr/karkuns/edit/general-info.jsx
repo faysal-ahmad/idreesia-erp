@@ -108,7 +108,6 @@ class GeneralInfo extends Component {
           fieldLabel="Address"
           initialValue={karkunById.address}
           required={false}
-          requiredMessage="Please input the address for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 

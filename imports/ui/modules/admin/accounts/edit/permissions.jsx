@@ -47,6 +47,28 @@ const permissionsData = [
         key: PermissionConstants.HR_MANAGE_KARKUNS
       }
     ]
+  },
+  {
+    title: 'Inventory',
+    key: 'module-inventory',
+    children: [
+      {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.IN_MANAGE_SETUP_DATA
+      },
+      {
+        title: 'View Stock Items',
+        key: PermissionConstants.IN_VIEW_STOCK_ITEMS
+      },
+      {
+        title: 'Manage Stock Items',
+        key: PermissionConstants.IN_MANAGE_STOCK_ITEMS
+      },
+      {
+        title: 'Approve Stock Modifications',
+        key: PermissionConstants.IN_APPROVE_STOCK_MODIFICATIONS
+      }
+    ]
   }
 ];
 

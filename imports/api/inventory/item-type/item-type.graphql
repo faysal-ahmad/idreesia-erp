@@ -5,7 +5,7 @@ type ItemType {
   unitOfMeasurement: String
   singleUse: Boolean
   itemCategoryId: String
-  pictures: String
+  picture: String
 
   formattedUOM: String
   itemCategoryName: String
@@ -17,22 +17,27 @@ type ItemType {
 }
 
 extend type Query {
-  allItemTypes(itemCategoryId: String): [ItemType]
-  itemTypeById(itemTypeId: String!): ItemType
+  allItemTypes: [ItemType]
+  itemTypeById(_id: String!): ItemType
 }
 
 extend type Mutation {
   createItemType(
     name: String!
-    description: String!
+    description: String
     unitOfMeasurement: String!
     singleUse: Boolean!
     itemCategoryId: String!
   ): ItemType
+
   updateItemType(
+    _id: String!
     name: String!
-    description: String!
+    description: String
     unitOfMeasurement: String!
     singleUse: Boolean!
+    itemCategoryId: String!
   ): ItemType
+
+  setPicture(_id: String!, picture: String!): ItemType
 }

@@ -35,10 +35,6 @@ class List extends Component {
     history.push(paths.itemCategoriesNewFormPath);
   };
 
-  componentWillReceiveProps(newProps) {
-    console.log('componentWillReceiveProps called');
-  }
-
   render() {
     const { allItemCategories } = this.props;
 

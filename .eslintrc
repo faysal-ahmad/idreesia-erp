@@ -1,8 +1,9 @@
 {
-  "extends": ["airbnb"],
+  "extends": ["airbnb", "prettier"],
   "quotes": [2, "single", "avoid-escape"],
   "plugins": ["meteor", "jsx-a11y"],
   "env": {
+    "browser": true,
     "meteor": true,
     "node": true,
     "mocha": true

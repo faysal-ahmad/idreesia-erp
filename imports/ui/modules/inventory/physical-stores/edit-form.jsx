@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import {
+  InputTextField,
+  InputTextAreaField,
+  FormButtonsSaveCancel
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -41,66 +46,34 @@ class EditForm extends Component {
           history.push(paths.physicalStoresPath);
         })
         .catch(error => {
-          console.log(error);
+          message.error(error.message, 5);
         });
     });
   };
 
-  getNameField(physicalStore) {
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = physicalStore.name;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the physical store.'
-      }
-    ];
-    return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Physical store name" />
-    );
-  }
-
-  getAddressField(physicalStore) {
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = physicalStore.address;
-    const rules = [];
-    return getFieldDecorator('address', { initialValue, rules })(
-      <Input.TextArea rows={5} placeholder="Physical store address" />
-    );
-  }
-
   render() {
     const { loading, physicalStoreById } = this.props;
     if (loading) return null;
-
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField(physicalStoreById)}
-        </Form.Item>
-        <Form.Item label="Address" {...formItemLayout}>
-          {this.getAddressField(physicalStoreById)}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={physicalStoreById.name}
+          required={true}
+          requiredMessage="Please input a name for the physical store."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextAreaField
+          fieldName="address"
+          fieldLabel="Address"
+          initialValue={physicalStoreById.address}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }

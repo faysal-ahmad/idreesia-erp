@@ -175,7 +175,10 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateItemType'
+    name: 'updateItemType',
+    options: {
+      refetchQueries: ['allItemTypes']
+    }
   }),
   graphql(listQuery, {
     name: 'listData'

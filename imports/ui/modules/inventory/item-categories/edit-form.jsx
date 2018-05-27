@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row } from 'antd';
+import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -27,67 +28,40 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, itemCategoryById, updateItemCategory } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields((err, { name }) => {
       if (err) return;
 
       updateItemCategory({
         variables: {
           id: itemCategoryById._id,
-          name: fieldsValue.name
+          name
         }
       })
         .then(() => {
           history.push(paths.itemCategoriesPath);
         })
         .catch(error => {
-          console.log(error);
+          message.error(error.message, 5);
         });
     });
   };
 
-  getNameField(itemCategory) {
-    const { getFieldDecorator } = this.props.form;
-    const initialValue = itemCategory.name;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the item category.'
-      }
-    ];
-    return getFieldDecorator('name', { initialValue, rules })(
-      <Input placeholder="Item category name" />
-    );
-  }
-
   render() {
     const { loading, itemCategoryById } = this.props;
     if (loading) return null;
-
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField(itemCategoryById)}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Row>
-        </Form.Item>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={itemCategoryById.name}
+          required={true}
+          requiredMessage="Please input a name for the item category."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }

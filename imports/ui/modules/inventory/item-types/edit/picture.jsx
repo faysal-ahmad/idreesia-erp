@@ -1,9 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
 import { Button, Modal, Row, Col, message } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import PictureForm from './picture-form';
 
@@ -97,7 +96,7 @@ const formMutation = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(formMutation, {
     name: 'setPicture',
     options: {

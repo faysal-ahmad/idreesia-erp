@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
 import { Form, message } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
@@ -99,7 +98,7 @@ const formMutation = gql`
   }
 `;
 
-export default merge(
+export default compose(
   Form.create(),
   graphql(formMutation, {
     name: 'updatePhysicalStore',

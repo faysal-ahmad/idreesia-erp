@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
 import { Button, Table } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
@@ -66,7 +65,7 @@ const listQuery = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data })
   }),

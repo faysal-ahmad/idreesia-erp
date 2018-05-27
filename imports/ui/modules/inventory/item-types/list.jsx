@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
-import { Button, Checkbox, Table } from 'antd';
+import { Avatar, Button, Checkbox, Table } from 'antd';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+
+const NameDivStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%'
+};
 
 class List extends Component {
   static propTypes = {
@@ -21,7 +28,25 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => {
+        if (record.picture) {
+          return (
+            <div style={NameDivStyle}>
+              <Avatar shape="square" size="large" src={record.picture} />
+              &nbsp;
+              <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
+            </div>
+          );
+        }
+
+        return (
+          <div style={NameDivStyle}>
+            <Avatar shape="square" size="large" icon="picture" />
+            &nbsp;
+            <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
+          </div>
+        );
+      }
     },
     {
       title: 'Category',
@@ -78,6 +103,7 @@ const listQuery = gql`
       singleUse
       formattedUOM
       itemCategoryName
+      picture
     }
   }
 `;

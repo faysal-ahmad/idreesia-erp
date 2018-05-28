@@ -12,7 +12,7 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allItemCategories: PropTypes.array
+    allItemCategories: PropTypes.array,
   };
 
   columns = [
@@ -20,13 +20,15 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => (
+        <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
+      ),
     },
     {
       title: 'Item Types Count',
       dataIndex: 'itemTypeCount',
-      key: 'itemTypeCount'
-    }
+      key: 'itemTypeCount',
+    },
   ];
 
   handleNewClicked = () => {
@@ -39,17 +41,15 @@ class List extends Component {
 
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allItemCategories}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
+        title={() => (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
               New Item Category
             </Button>
-          );
-        }}
+          )}
       />
     );
   }
@@ -67,7 +67,7 @@ const listQuery = gql`
 
 export default compose(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List'])
 )(List);

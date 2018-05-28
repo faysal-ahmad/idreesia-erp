@@ -10,7 +10,7 @@ import {
   ItemStocks,
   ItemTypes,
   ItemCategories,
-  PhysicalStores
+  PhysicalStores,
 } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
@@ -22,42 +22,16 @@ class NewForm extends Component {
     itemStocks: PropTypes.array,
     itemTypes: PropTypes.array,
     itemCategories: PropTypes.array,
-    physicalStores: PropTypes.array
+    physicalStores: PropTypes.array,
   };
 
   constructor(props) {
     super(props);
     this.state = {
       selectedPhysicalStoreId: null,
-      selectedItemCategoryId: null
+      selectedItemCategoryId: null,
     };
   }
-
-  handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.stockItemsPath);
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      const doc = {
-        itemTypeId: fieldsValue.itemTypeId,
-        physicalStoreId: fieldsValue.physicalStoreId,
-        minStockLevel: fieldsValue.minStockLevel,
-        currentStockLevel: fieldsValue.currentStockLevel
-      };
-
-      Meteor.call('inventory/itemStocks.create', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.stockItemsPath);
-      });
-    });
-  };
 
   getPhysicalStoreField() {
     const { physicalStores } = this.props;
@@ -65,8 +39,8 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please select a physical store.'
-      }
+        message: 'Please select a physical store.',
+      },
     ];
     const options = [];
     physicalStores.forEach(physicalStore => {
@@ -90,8 +64,8 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please select an item category.'
-      }
+        message: 'Please select an item category.',
+      },
     ];
     const options = [];
     itemCategories.forEach(itemCategory => {
@@ -116,7 +90,7 @@ class NewForm extends Component {
     if (selectedPhysicalStoreId && selectedItemCategoryId) {
       // Get all the item types for which we already have defined stock items in this store
       const existingStockItems = ItemStocks.find({
-        physicalStoreId: { $eq: selectedPhysicalStoreId }
+        physicalStoreId: { $eq: selectedPhysicalStoreId },
       }).fetch();
 
       const itemTypeIds = map(existingStockItems, stockItem => stockItem.itemTypeId);
@@ -124,7 +98,7 @@ class NewForm extends Component {
       // them by the selected item category.
       const unstockedItemTypes = ItemTypes.find({
         itemCategoryId: { $eq: selectedItemCategoryId },
-        _id: { $nin: itemTypeIds }
+        _id: { $nin: itemTypeIds },
       }).fetch();
 
       unstockedItemTypes.forEach(itemType => {
@@ -139,8 +113,8 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please select an item type.'
-      }
+        message: 'Please select an item type.',
+      },
     ];
 
     return getFieldDecorator('itemTypeId', { rules })(
@@ -162,26 +136,52 @@ class NewForm extends Component {
 
   handleStoreChanged = value => {
     const state = Object.assign({}, this.state, {
-      selectedPhysicalStoreId: value
+      selectedPhysicalStoreId: value,
     });
     this.setState(state);
   };
 
   handleCategoryChanged = value => {
     const state = Object.assign({}, this.state, {
-      selectedItemCategoryId: value
+      selectedItemCategoryId: value,
     });
     this.setState(state);
+  };
+
+  handleCancel = () => {
+    const { history } = this.props;
+    history.push(paths.stockItemsPath);
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      const doc = {
+        itemTypeId: fieldsValue.itemTypeId,
+        physicalStoreId: fieldsValue.physicalStoreId,
+        minStockLevel: fieldsValue.minStockLevel,
+        currentStockLevel: fieldsValue.currentStockLevel,
+      };
+
+      Meteor.call('inventory/itemStocks.create', { doc }, error => {
+        if (error) return;
+        const { history } = this.props;
+        history.push(paths.stockItemsPath);
+      });
+    });
   };
 
   render() {
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 14 }
+      wrapperCol: { span: 14 },
     };
 
     const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 6 }
+      wrapperCol: { span: 14, offset: 6 },
     };
 
     return (

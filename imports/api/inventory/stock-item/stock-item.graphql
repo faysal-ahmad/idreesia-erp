@@ -1,0 +1,32 @@
+type StockItem {
+  _id: String
+  itemTypeId: String
+  physicalStoreId: Int
+  minStockLevel: Float
+  currentStockLevel: Float
+  totalStockLevel: Float
+
+  itemTypeName: String
+  itemTypePicture: String
+  itemCategoryName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allStockItems: [StockItem]
+  stockItemById(id: String!): StockItem
+}
+
+extend type Mutation {
+  createStockItem(itemTypeId: String!, physicalStoreId: String!, minStockLevel: Float): StockItem
+  updateStockItem(
+    _id: String!
+    itemTypeId: String!
+    physicalStoreId: String!
+    minStockLevel: Float
+  ): StockItem
+}

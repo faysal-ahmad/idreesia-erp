@@ -16,7 +16,7 @@ const ToolbarStyle = {
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
   alignItems: 'center',
-  width: '100%'
+  width: '100%',
 };
 
 const NameDivStyle = {
@@ -24,15 +24,35 @@ const NameDivStyle = {
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  width: '100%'
+  width: '100%',
 };
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+
+    loading: PropTypes.bool,
     allKarkuns: PropTypes.array,
-    allDuties: PropTypes.array
+    allDuties: PropTypes.array,
+  };
+
+  getTableHeader = () => {
+    const { allDuties } = this.props;
+
+    return (
+      <div style={ToolbarStyle}>
+        <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+          New Karkun
+        </Button>
+        <ListFilter filterCriteria={{}} allDuties={allDuties} />
+      </div>
+    );
+  };
+
+  handleNewClicked = () => {
+    const { history } = this.props;
+    history.push(paths.karkunsNewFormPath);
   };
 
   columns = [
@@ -49,51 +69,32 @@ class List extends Component {
               <Link to={`${paths.karkunsPath}/${record._id}`}>{text}</Link>
             </div>
           );
-        } else {
-          return (
-            <div style={NameDivStyle}>
-              <Avatar shape="square" size="large" icon="user" />
-              &nbsp;
-              <Link to={`${paths.karkunsPath}/${record._id}`}>{text}</Link>
-            </div>
-          );
         }
-      }
+        return (
+          <div style={NameDivStyle}>
+            <Avatar shape="square" size="large" icon="user" />
+            &nbsp;
+            <Link to={`${paths.karkunsPath}/${record._id}`}>{text}</Link>
+          </div>
+        );
+      },
     },
     {
       title: 'CNIC Number',
       dataIndex: 'cnicNumber',
-      key: 'cnicNumber'
+      key: 'cnicNumber',
     },
     {
       title: 'Address',
       dataIndex: 'address',
-      key: 'address'
+      key: 'address',
     },
     {
       title: 'Duties',
       dataIndex: 'duties',
-      key: 'duties'
-    }
+      key: 'duties',
+    },
   ];
-
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.karkunsNewFormPath);
-  };
-
-  getTableHeader = () => {
-    const { allDuties } = this.props;
-
-    return (
-      <div style={ToolbarStyle}>
-        <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-          New Karkun
-        </Button>
-        <ListFilter filterCriteria={{}} allDuties={allDuties} />
-      </div>
-    );
-  };
 
   render() {
     const { loading, allKarkuns } = this.props;
@@ -101,7 +102,7 @@ class List extends Component {
 
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allKarkuns}
         columns={this.columns}
         bordered
@@ -137,10 +138,10 @@ const allDutiesListQuery = gql`
 
 export default merge(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   graphql(allDutiesListQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['HR', 'Karkuns', 'List'])
 )(List);

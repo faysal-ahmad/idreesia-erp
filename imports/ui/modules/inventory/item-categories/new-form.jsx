@@ -13,7 +13,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createItemCategory: PropTypes.func
+    createItemCategory: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -28,7 +28,7 @@ class NewForm extends Component {
       if (err) return;
 
       createItemCategory({
-        variables: { name }
+        variables: { name },
       })
         .then(() => {
           history.push(paths.itemCategoriesPath);
@@ -47,7 +47,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          required={true}
+          required
           requiredMessage="Please input a name for the item category."
           getFieldDecorator={getFieldDecorator}
         />
@@ -71,8 +71,8 @@ export default compose(
   graphql(formMutation, {
     name: 'createItemCategory',
     options: {
-      refetchQueries: ['allItemCategories']
-    }
+      refetchQueries: ['allItemCategories'],
+    },
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
 )(NewForm);

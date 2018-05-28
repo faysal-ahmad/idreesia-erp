@@ -33,6 +33,9 @@ import ItemTypeResolvers from './inventory/item-type/resolvers';
 import PhysicalStoreSchema from './inventory/physical-store/physical-store.graphql';
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 
+import StockItemsSchema from './inventory/stock-item/stock-item.graphql';
+import StockItemResolvers from './inventory/stock-item/resolvers';
+
 const typeDefs = [
   DutyLocationSchema,
   DutySchema,
@@ -40,7 +43,8 @@ const typeDefs = [
   KarkunDutySchema,
   ItemCategorySchema,
   ItemTypeSchema,
-  PhysicalStoreSchema
+  PhysicalStoreSchema,
+  StockItemsSchema,
 ];
 
 const resolvers = merge(
@@ -50,7 +54,8 @@ const resolvers = merge(
   KarkunDutyResolvers,
   ItemCategoryResolvers,
   ItemTypeResolvers,
-  PhysicalStoreResolvers
+  PhysicalStoreResolvers,
+  StockItemResolvers
 );
 
 // werwerefdgfdgdgd

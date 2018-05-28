@@ -7,7 +7,7 @@ import { GlobalActionsCreator } from '/imports/ui/action-creators';
 export default breadcrumbs => WrappedComponent => {
   class WithBreadcrumbs extends Component {
     static propTypes = {
-      setBreadcrumbs: PropTypes.func
+      setBreadcrumbs: PropTypes.func,
     };
 
     componentWillMount() {
@@ -20,13 +20,11 @@ export default breadcrumbs => WrappedComponent => {
     }
   }
 
-  const mapDispatchToProps = dispatch => {
-    return {
-      setBreadcrumbs: breadcrumbs => {
-        dispatch(GlobalActionsCreator.setBreadcrumbs(breadcrumbs));
-      }
-    };
-  };
+  const mapDispatchToProps = dispatch => ({
+    setBreadcrumbs: bc => {
+      dispatch(GlobalActionsCreator.setBreadcrumbs(bc));
+    },
+  });
 
   return connect(null, mapDispatchToProps)(WithBreadcrumbs);
 };

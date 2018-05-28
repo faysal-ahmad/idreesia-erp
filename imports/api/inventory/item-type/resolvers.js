@@ -30,16 +30,16 @@ export default {
           break;
       }
       return uom;
-    }
+    },
   },
 
   Query: {
     allItemTypes() {
       return ItemTypes.find({}).fetch();
     },
-    itemTypeById(obj, { _id }, context) {
+    itemTypeById(obj, { _id }) {
       return ItemTypes.findOne(_id);
-    }
+    },
   },
 
   Mutation: {
@@ -62,7 +62,7 @@ export default {
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
-        updatedBy: userId
+        updatedBy: userId,
       });
 
       return ItemTypes.findOne(itemTypeId);
@@ -86,8 +86,8 @@ export default {
           singleUse,
           itemCategoryId,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return ItemTypes.findOne(_id);
@@ -103,11 +103,11 @@ export default {
         $set: {
           picture,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return ItemTypes.findOne(_id);
-    }
-  }
+    },
+  },
 };

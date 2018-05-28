@@ -15,8 +15,9 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     itemCategoryById: PropTypes.object,
-    updateItemCategory: PropTypes.func
+    updateItemCategory: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -33,8 +34,8 @@ class EditForm extends Component {
       updateItemCategory({
         variables: {
           id: itemCategoryById._id,
-          name
-        }
+          name,
+        },
       })
         .then(() => {
           history.push(paths.itemCategoriesPath);
@@ -56,7 +57,7 @@ class EditForm extends Component {
           fieldName="name"
           fieldLabel="Name"
           initialValue={itemCategoryById.name}
-          required={true}
+          required
           requiredMessage="Please input a name for the item category."
           getFieldDecorator={getFieldDecorator}
         />
@@ -89,15 +90,15 @@ export default compose(
   graphql(formMutation, {
     name: 'updateItemCategory',
     options: {
-      refetchQueries: ['allItemCategories']
-    }
+      refetchQueries: ['allItemCategories'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { itemCategoryId } = match.params;
       return { variables: { id: itemCategoryId } };
-    }
+    },
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit'])
 )(EditForm);

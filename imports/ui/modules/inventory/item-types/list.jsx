@@ -13,14 +13,16 @@ const NameDivStyle = {
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  width: '100%'
+  width: '100%',
 };
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allItemTypes: PropTypes.array
+
+    loading: PropTypes.bool,
+    allItemTypes: PropTypes.array,
   };
 
   columns = [
@@ -46,24 +48,24 @@ class List extends Component {
             <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
           </div>
         );
-      }
+      },
     },
     {
       title: 'Category',
       dataIndex: 'itemCategoryName',
-      key: 'itemCategoryName'
+      key: 'itemCategoryName',
     },
     {
       title: 'Measurement Unit',
       dataIndex: 'formattedUOM',
-      key: 'formattedUOM'
+      key: 'formattedUOM',
     },
     {
       title: 'Single Use',
       dataIndex: 'singleUse',
       key: 'singleUse',
-      render: (value, record) => <Checkbox checked={value} disabled />
-    }
+      render: value => <Checkbox checked={value} disabled />,
+    },
   ];
 
   handleNewClicked = () => {
@@ -72,23 +74,20 @@ class List extends Component {
   };
 
   render() {
-    const { loading, allItemTypes, error } = this.props;
+    const { loading, allItemTypes } = this.props;
     if (loading) return null;
-    debugger;
 
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allItemTypes}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Item Type
-            </Button>
-          );
-        }}
+        title={() => (
+          <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+            New Item Type
+          </Button>
+        )}
       />
     );
   }
@@ -111,9 +110,9 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     options: {
-      errorPolicy: 'all'
+      errorPolicy: 'all',
     },
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'List'])
 )(List);

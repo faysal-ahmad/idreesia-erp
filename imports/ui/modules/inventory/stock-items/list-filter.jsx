@@ -25,22 +25,25 @@ class ListFilter extends Component {
 
     queryParams: PropTypes.object,
     allPhysicalStores: PropTypes.array,
+    allItemCategories: PropTypes.array,
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, location } = this.props;
-    form.validateFields((err, { physicalStoreId, itemTypeName }) => {
+    const { form, history, location, queryParams } = this.props;
+    const { pageIndex, pageSize } = queryParams;
+
+    form.validateFields((err, { physicalStoreId, itemCategoryId, itemTypeName }) => {
       if (err) return;
-      const path = `${
-        location.pathname
-      }?physicalStoreId=${physicalStoreId}&itemTypeName=${itemTypeName}`;
+      const path = `${location.pathname}?physicalStoreId=${physicalStoreId ||
+        ''}&itemCategoryId=${itemCategoryId || ''}&itemTypeName=${itemTypeName ||
+        ''}&pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}`;
       history.push(path);
     });
   };
 
   render() {
-    const { allPhysicalStores, queryParams } = this.props;
+    const { allPhysicalStores, allItemCategories, queryParams } = this.props;
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -55,6 +58,16 @@ class ListFilter extends Component {
               fieldLabel="Physical Store"
               fieldLayout={formItemLayout}
               initialValue={queryParams.physicalStoreId}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <SelectField
+              data={allItemCategories}
+              getDataValue={({ _id }) => _id}
+              getDataText={({ name }) => name}
+              fieldName="itemCategoryId"
+              fieldLabel="Item Category"
+              fieldLayout={formItemLayout}
+              initialValue={queryParams.itemCategoryId}
               getFieldDecorator={getFieldDecorator}
             />
             <InputTextField

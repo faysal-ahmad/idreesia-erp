@@ -2,6 +2,8 @@ import { ItemCategories, ItemTypes, StockItems } from '/imports/lib/collections/
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
+import getStockItems from './queries';
+
 export default {
   StockItem: {
     itemTypeName: stockItem => {
@@ -20,8 +22,8 @@ export default {
   },
 
   Query: {
-    allStockItems() {
-      return StockItems.find({}).fetch();
+    allStockItems(obj, { queryString }) {
+      return getStockItems(queryString);
     },
     stockItemById(obj, { _id }) {
       return StockItems.findOne(_id);

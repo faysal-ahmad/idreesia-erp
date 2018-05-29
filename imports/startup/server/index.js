@@ -1,4 +1,5 @@
 import './register-users';
+import './create-indexes';
 import '../../api/methods/register-methods';
 import '../../api/publications/register-publications';
 
@@ -9,7 +10,7 @@ import { typeDefs, resolvers } from '/imports/api';
 
 const schema = makeExecutableSchema({
   typeDefs,
-  resolvers
+  resolvers,
 });
 
 createApolloServer({ schema });

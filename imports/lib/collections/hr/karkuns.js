@@ -1,4 +1,3 @@
-import { Mongo } from 'meteor/mongo';
 import { assign } from 'lodash';
 
 import { AggregatableCollection } from '/imports/lib/collections';
@@ -12,7 +11,7 @@ class Karkuns extends AggregatableCollection {
       assign({}, options, {
         transform(doc) {
           return new KarkunModel(doc);
-        }
+        },
       })
     );
 

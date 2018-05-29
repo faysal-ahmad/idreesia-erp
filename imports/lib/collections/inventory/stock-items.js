@@ -1,8 +1,8 @@
-import { Mongo } from 'meteor/mongo';
+import { AggregatableCollection } from '/imports/lib/collections';
 
 import { StockItem as StockItemSchema } from '../../schemas/inventory';
 
-class StockItems extends Mongo.Collection {
+class StockItems extends AggregatableCollection {
   constructor(name = 'inventory-stock-items', options = {}) {
     const stockItems = super(name, options);
     stockItems.attachSchema(StockItemSchema);

@@ -16,8 +16,13 @@ type StockItem {
   updatedBy: String
 }
 
+type PagedStockItem {
+  totalResults: Int
+  stockItems: [StockItem]
+}
+
 extend type Query {
-  allStockItems: [StockItem]
+  allStockItems(queryString: String): PagedStockItem
   stockItemById(id: String!): StockItem
 }
 

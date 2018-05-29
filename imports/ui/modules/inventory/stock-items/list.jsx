@@ -33,29 +33,14 @@ class List extends Component {
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
 
+    loading: PropTypes.bool,
     allStockItems: PropTypes.array,
     allPhysicalStores: PropTypes.array,
+    allItemCategories: PropTypes.array,
   };
 
-  /*
-  componentWillMount() {
-    const { physicalStores } = this.props;
-    if (physicalStores.length > 0) {
-      const selectedStoreId = physicalStores[0]._id;
-      const itemStocks = ItemStocks.find({
-        physicalStoreId: { $eq: selectedStoreId },
-      }).fetch();
-
-      const state = {
-        selectedStoreId,
-        itemStocks,
-      };
-      this.setState(state);
-    }
-  }
-*/
   getTableHeader = () => {
-    const { history, location, queryParams, allPhysicalStores } = this.props;
+    const { history, location, queryParams, allPhysicalStores, allItemCategories } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -67,6 +52,7 @@ class List extends Component {
           location={location}
           queryParams={queryParams}
           allPhysicalStores={allPhysicalStores}
+          allItemCategories={allItemCategories}
         />
       </div>
     );
@@ -125,11 +111,13 @@ class List extends Component {
   ];
 
   render() {
-    const { allStockItems } = this.props;
+    const { allStockItems, loading } = this.props;
+    if (loading) return null;
+
     return (
       <Table
         rowKey="_id"
-        dataSource={allStockItems}
+        dataSource={allStockItems.stockItems}
         columns={this.columns}
         bordered
         title={this.getTableHeader}
@@ -139,15 +127,18 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allStockItems {
-    allStockItems {
-      _id
-      itemTypeName
-      itemTypePicture
-      itemCategoryName
-      minStockLevel
-      currentStockLevel
-      totalStockLevel
+  query allStockItems($queryString: String) {
+    allStockItems(queryString: $queryString) {
+      totalResults
+      stockItems {
+        _id
+        itemTypeName
+        itemTypePicture
+        itemCategoryName
+        minStockLevel
+        currentStockLevel
+        totalStockLevel
+      }
     }
   }
 `;
@@ -161,13 +152,26 @@ const physicalStoresListQuery = gql`
   }
 `;
 
+const itemCategoriesListQuery = gql`
+  query allItemCategories {
+    allItemCategories {
+      _id
+      name
+    }
+  }
+`;
+
 export default compose(
   WithQueryParams(),
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ ...data }),
   }),
+  graphql(itemCategoriesListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
+    options: ({ queryString }) => ({ variables: { queryString } }),
   }),
   WithBreadcrumbs(['Inventory', 'Stock Items', 'List'])
 )(List);

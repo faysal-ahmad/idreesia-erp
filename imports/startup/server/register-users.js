@@ -4,6 +4,6 @@ const adminUser = Accounts.findUserByUsername('erp-admin');
 if (!adminUser) {
   Accounts.createUser({
     username: 'erp-admin',
-    password: 'p@ssw0rd'
+    password: 'p@ssw0rd',
   });
 }

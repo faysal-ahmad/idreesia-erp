@@ -19,10 +19,9 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
     form: PropTypes.object,
 
+    refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
     allPhysicalStores: PropTypes.array,
     allItemCategories: PropTypes.array,
@@ -30,15 +29,15 @@ class ListFilter extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, location, queryParams } = this.props;
-    const { pageIndex, pageSize } = queryParams;
+    const { form, refreshPage } = this.props;
 
     form.validateFields((err, { physicalStoreId, itemCategoryId, itemTypeName }) => {
       if (err) return;
-      const path = `${location.pathname}?physicalStoreId=${physicalStoreId ||
-        ''}&itemCategoryId=${itemCategoryId || ''}&itemTypeName=${itemTypeName ||
-        ''}&pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}`;
-      history.push(path);
+      refreshPage({
+        physicalStoreId,
+        itemCategoryId,
+        itemTypeName,
+      });
     });
   };
 

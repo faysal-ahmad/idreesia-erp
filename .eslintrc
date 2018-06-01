@@ -74,6 +74,7 @@
     "react/no-unused-state": "off",
     "react/no-unused-prop-types": "off",
     "react/require-default-props": "off",
+    "react/sort-comp": "off",
     "react/prefer-stateless-function": ["error", { "ignorePureComponents": true }],
     "react/prefer-es6-class": "never"
   },

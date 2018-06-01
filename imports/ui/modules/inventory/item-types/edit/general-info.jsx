@@ -10,7 +10,7 @@ import {
   InputTextAreaField,
   SelectField,
   SwitchField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 import allUnitOfMeasurements from '../all-unit-of-measurements';
@@ -22,14 +22,15 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     itemTypeId: PropTypes.string,
     itemTypeById: PropTypes.object,
     updateItemType: PropTypes.func,
 
     listData: PropTypes.shape({
       loading: PropTypes.bool,
-      allItemCategories: PropTypes.array
-    })
+      allItemCategories: PropTypes.array,
+    }),
   };
 
   handleCancel = () => {
@@ -51,8 +52,8 @@ class GeneralInfo extends Component {
             description,
             itemCategoryId,
             unitOfMeasurement,
-            singleUse
-          }
+            singleUse,
+          },
         })
           .then(() => {
             history.push(paths.itemTypesPath);
@@ -65,7 +66,7 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { loading, error, itemTypeById, listData } = this.props;
+    const { loading, itemTypeById, listData } = this.props;
     const { allItemCategories, loading: listLoading } = listData;
     if (loading || listLoading) return null;
     const { getFieldDecorator } = this.props.form;
@@ -76,7 +77,7 @@ class GeneralInfo extends Component {
           fieldName="name"
           fieldLabel="Item Type Name"
           initialValue={itemTypeById.name}
-          required={true}
+          required
           requiredMessage="Please input a name for the item type."
           getFieldDecorator={getFieldDecorator}
         />
@@ -93,7 +94,7 @@ class GeneralInfo extends Component {
           getDataText={({ name }) => name}
           fieldName="itemCategoryId"
           fieldLabel="Category"
-          required={true}
+          required
           requiredMessage="Please select an item category."
           initialValue={itemTypeById.itemCategoryId}
           getFieldDecorator={getFieldDecorator}
@@ -104,7 +105,7 @@ class GeneralInfo extends Component {
           getDataText={({ name }) => name}
           fieldName="unitOfMeasurement"
           fieldLabel="Measurement Unit"
-          required={true}
+          required
           requiredMessage="Please select a unit of measurement."
           initialValue={itemTypeById.unitOfMeasurement}
           getFieldDecorator={getFieldDecorator}
@@ -177,17 +178,17 @@ export default compose(
   graphql(formMutation, {
     name: 'updateItemType',
     options: {
-      refetchQueries: ['allItemTypes']
-    }
+      refetchQueries: ['allItemTypes'],
+    },
   }),
   graphql(listQuery, {
-    name: 'listData'
+    name: 'listData',
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { itemTypeId } = match.params;
       return { variables: { _id: itemTypeId } };
-    }
+    },
   })
 )(GeneralInfo);

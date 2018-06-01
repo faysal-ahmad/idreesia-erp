@@ -13,7 +13,7 @@ const ButtonBarStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-end',
-  width: '100%'
+  width: '100%',
 };
 
 class ItemsList extends Component {
@@ -23,7 +23,7 @@ class ItemsList extends Component {
     itemCategories: PropTypes.array,
 
     value: PropTypes.array,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
   };
 
   constructor(props) {
@@ -31,7 +31,7 @@ class ItemsList extends Component {
     this.state = {
       showForm: false,
       itemStocks: props.value ? props.value : [],
-      selectedItemStockIds: []
+      selectedItemStockIds: [],
     };
   }
 
@@ -43,13 +43,13 @@ class ItemsList extends Component {
       title: 'Item Name',
       dataIndex: 'itemStockId',
       key: 'itemStockId',
-      render: (text, record) => getItemDisplayNameFromItemStockId(text)
+      render: (text, record) => getItemDisplayNameFromItemStockId(text),
     },
     {
       title: 'Issued',
       dataIndex: 'issued',
-      key: 'issued'
-    }
+      key: 'issued',
+    },
   ];
 
   handleNewItemClicked = () => {
@@ -60,13 +60,14 @@ class ItemsList extends Component {
   handleRemoveItemClicked = () => {
     const { itemStocks, selectedItemStockIds } = this.state;
     if (selectedItemStockIds && selectedItemStockIds.length > 0) {
-      const updatedItemStocks = filter(itemStocks, itemStock => {
-        return selectedItemStockIds.indexOf(itemStock.itemStockId) === -1;
-      });
+      const updatedItemStocks = filter(
+        itemStocks,
+        itemStock => selectedItemStockIds.indexOf(itemStock.itemStockId) === -1
+      );
 
       const state = Object.assign({}, this.state, {
         itemStocks: updatedItemStocks,
-        selectedItemStockIds: []
+        selectedItemStockIds: [],
       });
       this.setState(state);
 
@@ -98,7 +99,7 @@ class ItemsList extends Component {
 
         const state = Object.assign({}, this.state, {
           showForm: false,
-          itemStocks
+          itemStocks,
         });
         this.setState(state);
 
@@ -112,7 +113,7 @@ class ItemsList extends Component {
 
   handleRowSelectionChanged = (selectedRowKeys, selectedRows) => {
     const state = Object.assign({}, this.state, {
-      selectedItemStockIds: selectedRowKeys
+      selectedItemStockIds: selectedRowKeys,
     });
     this.setState(state);
   };
@@ -122,47 +123,45 @@ class ItemsList extends Component {
     const { itemTypes, itemCategories, itemStocks } = this.props;
     const rowSelection = {
       selectedRowKeys: selectedItemStockIds,
-      onChange: this.handleRowSelectionChanged
+      onChange: this.handleRowSelectionChanged,
     };
 
     return (
       <React.Fragment>
         <Table
-          ref={t => (this.stockItemsTable = t)}
+          ref={t => {
+            this.stockItemsTable = t;
+          }}
           rowKey="itemStockId"
           rowSelection={rowSelection}
           columns={this.columns}
           bordered
           pagination={false}
           dataSource={this.state.itemStocks}
-          footer={() => {
-            return (
-              <div style={ButtonBarStyle}>
-                <Button
-                  type="secondary"
-                  icon="minus-circle-o"
-                  onClick={this.handleRemoveItemClicked}
-                >
-                  Remove Item
-                </Button>
-                &nbsp;
-                <Button type="primary" icon="plus-circle-o" onClick={this.handleNewItemClicked}>
-                  Add Item
-                </Button>
-              </div>
-            );
-          }}
+          footer={() => (
+            <div style={ButtonBarStyle}>
+              <Button type="secondary" icon="minus-circle-o" onClick={this.handleRemoveItemClicked}>
+                Remove Item
+              </Button>
+              &nbsp;
+              <Button type="primary" icon="plus-circle-o" onClick={this.handleNewItemClicked}>
+                Add Item
+              </Button>
+            </div>
+          )}
         />
         <Modal
           visible={showForm}
           title="Add New Item"
           okText="Save"
-          destroyOnClose={true}
+          destroyOnClose
           onOk={this.handleNewItemFormSaved}
           onCancel={this.handleNewItemFormCancelled}
         >
           <ItemForm
-            ref={f => (this.itemForm = f)}
+            ref={f => {
+              this.itemForm = f;
+            }}
             itemTypes={itemTypes}
             itemCategories={itemCategories}
             itemStocks={itemStocks}
@@ -178,7 +177,7 @@ function dataLoader(props, onData) {
   const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
   const itemCategoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
   const itemStocksSubscription = Meteor.subscribe('inventory/itemStocks#byStore', {
-    physicalStoreId
+    physicalStoreId,
   });
 
   if (
@@ -189,7 +188,7 @@ function dataLoader(props, onData) {
     const itemTypes = ItemTypes.find({}).fetch();
     const itemCategories = ItemCategories.find({}).fetch();
     const itemStocks = ItemStocks.find({
-      physicalStoreId: { $eq: physicalStoreId }
+      physicalStoreId: { $eq: physicalStoreId },
     }).fetch();
     onData(null, { itemTypes, itemCategories, itemStocks });
   }

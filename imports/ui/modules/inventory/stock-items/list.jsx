@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Avatar, Button, Table } from 'antd';
+import { Avatar, Button, Table, Pagination } from 'antd';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
 
@@ -34,13 +34,16 @@ class List extends Component {
     queryParams: PropTypes.object,
 
     loading: PropTypes.bool,
-    allStockItems: PropTypes.array,
+    allStockItems: PropTypes.shape({
+      totalResults: PropTypes.number,
+      stockItems: PropTypes.array,
+    }),
     allPhysicalStores: PropTypes.array,
     allItemCategories: PropTypes.array,
   };
 
   getTableHeader = () => {
-    const { history, location, queryParams, allPhysicalStores, allItemCategories } = this.props;
+    const { queryParams, allPhysicalStores, allItemCategories } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -48,8 +51,7 @@ class List extends Component {
           New Stock Item
         </Button>
         <ListFilter
-          history={history}
-          location={location}
+          refreshPage={this.refreshPage}
           queryParams={queryParams}
           allPhysicalStores={allPhysicalStores}
           allItemCategories={allItemCategories}
@@ -58,9 +60,51 @@ class List extends Component {
     );
   };
 
+  refreshPage = ({ physicalStoreId, itemCategoryId, itemTypeName, pageIndex, pageSize }) => {
+    const { queryParams, history, location } = this.props;
+    let physicalStoreIdVal;
+    if (physicalStoreId !== undefined) physicalStoreIdVal = physicalStoreId;
+    else physicalStoreIdVal = queryParams.physicalStoreId || '';
+
+    let itemCategoryIdVal;
+    if (itemCategoryId !== undefined) itemCategoryIdVal = itemCategoryId;
+    else itemCategoryIdVal = queryParams.itemCategoryId || '';
+
+    let itemTypeNameVal;
+    if (itemTypeName !== undefined) itemTypeNameVal = itemTypeName;
+    else itemTypeNameVal = queryParams.itemTypeName || '';
+
+    let pageIndexVal;
+    if (pageIndex !== undefined) pageIndexVal = pageIndex;
+    else pageIndexVal = queryParams.pageIndex || 0;
+
+    let pageSizeVal;
+    if (pageSize !== undefined) pageSizeVal = pageSize;
+    else pageSizeVal = queryParams.pageSize || 10;
+
+    const path = `${
+      location.pathname
+    }?physicalStoreId=${physicalStoreIdVal}&itemCategoryId=${itemCategoryIdVal}&itemTypeName=${itemTypeNameVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    history.push(path);
+  };
+
   handleNewClicked = () => {
     const { history } = this.props;
     history.push(paths.stockItemsNewFormPath);
+  };
+
+  onChange = (pageIndex, pageSize) => {
+    this.refreshPage({
+      pageIndex: pageIndex - 1,
+      pageSize,
+    });
+  };
+
+  onShowSizeChange = (pageIndex, pageSize) => {
+    this.refreshPage({
+      pageIndex: pageIndex - 1,
+      pageSize,
+    });
   };
 
   columns = [
@@ -111,16 +155,33 @@ class List extends Component {
   ];
 
   render() {
-    const { allStockItems, loading } = this.props;
+    const { loading } = this.props;
     if (loading) return null;
+
+    const {
+      queryParams,
+      allStockItems: { totalResults, stockItems },
+    } = this.props;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allStockItems.stockItems}
+        dataSource={stockItems}
         columns={this.columns}
         bordered
+        pagination={false}
         title={this.getTableHeader}
+        footer={() => (
+          <Pagination
+            defaultCurrent={1}
+            defaultPageSize={10}
+            current={queryParams.pageIndex + 1}
+            pageSize={queryParams.pageSize}
+            showSizeChanger
+            onShowSizeChange={this.onShowSizeChange}
+            total={totalResults}
+          />
+        )}
       />
     );
   }

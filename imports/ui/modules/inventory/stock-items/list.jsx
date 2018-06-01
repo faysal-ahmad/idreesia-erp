@@ -159,7 +159,7 @@ class List extends Component {
     if (loading) return null;
 
     const {
-      queryParams,
+      queryParams: { pageIndex, pageSize },
       allStockItems: { totalResults, stockItems },
     } = this.props;
 
@@ -175,9 +175,10 @@ class List extends Component {
           <Pagination
             defaultCurrent={1}
             defaultPageSize={10}
-            current={queryParams.pageIndex + 1}
-            pageSize={queryParams.pageSize}
+            current={pageIndex ? pageIndex + 1 : 1}
+            pageSize={pageSize || 10}
             showSizeChanger
+            onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
             total={totalResults}
           />

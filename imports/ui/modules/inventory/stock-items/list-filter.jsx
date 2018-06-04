@@ -37,6 +37,7 @@ class ListFilter extends Component {
         physicalStoreId,
         itemCategoryId,
         itemTypeName,
+        pageIndex: 0,
       });
     });
   };

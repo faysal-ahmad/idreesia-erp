@@ -11,7 +11,7 @@ import {
   InputTextAreaField,
   SelectField,
   SwitchField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 import allUnitOfMeasurements from './all-unit-of-measurements';
@@ -22,8 +22,9 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     allItemCategories: PropTypes.array,
-    createItemType: PropTypes.func
+    createItemType: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -32,6 +33,7 @@ class NewForm extends Component {
   };
 
   handleSubmit = e => {
+    e.preventDefault();
     const { form, history, createItemType } = this.props;
     form.validateFields(
       (err, { name, description, itemCategoryId, unitOfMeasurement, singleUse }) => {
@@ -43,8 +45,8 @@ class NewForm extends Component {
             description,
             itemCategoryId,
             unitOfMeasurement,
-            singleUse
-          }
+            singleUse,
+          },
         })
           .then(() => {
             history.push(paths.itemTypesPath);
@@ -66,7 +68,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Item Type Name"
-          required={true}
+          required
           requiredMessage="Please input a name for the item type."
           getFieldDecorator={getFieldDecorator}
         />
@@ -82,7 +84,7 @@ class NewForm extends Component {
           getDataText={({ name }) => name}
           fieldName="itemCategoryId"
           fieldLabel="Category"
-          required={true}
+          required
           requiredMessage="Please select an item category."
           getFieldDecorator={getFieldDecorator}
         />
@@ -92,7 +94,7 @@ class NewForm extends Component {
           getDataText={({ name }) => name}
           fieldName="unitOfMeasurement"
           fieldLabel="Measurement Unit"
-          required={true}
+          required
           requiredMessage="Please select a unit of measurement."
           getFieldDecorator={getFieldDecorator}
         />
@@ -148,11 +150,11 @@ export default compose(
   graphql(formMutation, {
     name: 'createItemType',
     options: {
-      refetchQueries: ['allItemTypes']
-    }
+      refetchQueries: ['allItemTypes'],
+    },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'New'])
 )(NewForm);

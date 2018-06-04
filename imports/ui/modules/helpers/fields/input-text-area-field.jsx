@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Form } from 'antd';
-const { TextArea } = Input;
-import { get } from 'lodash';
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 14 }
+  wrapperCol: { span: 14 },
 };
 
 /**
@@ -27,12 +25,12 @@ export default class InputTextAreaField extends Component {
     initialValue: PropTypes.string,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func
+    getFieldDecorator: PropTypes.func,
   };
 
   static defaultProps = {
     initialValue: null,
-    fieldLayout: formItemLayout
+    fieldLayout: formItemLayout,
   };
 
   getField() {
@@ -42,17 +40,17 @@ export default class InputTextAreaField extends Component {
       required,
       requiredMessage,
       getFieldDecorator,
-      initialValue
+      initialValue,
     } = this.props;
     const rules = [
       {
         required,
-        message: requiredMessage
-      }
+        message: requiredMessage,
+      },
     ];
 
     return getFieldDecorator(fieldName, { initialValue, rules })(
-      <TextArea placeholder={placeholder} />
+      <Input.TextArea placeholder={placeholder} />
     );
   }
 

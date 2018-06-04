@@ -1,7 +1,7 @@
 type StockItem {
   _id: String
   itemTypeId: String
-  physicalStoreId: Int
+  physicalStoreId: String
   minStockLevel: Float
   currentStockLevel: Float
   totalStockLevel: Float
@@ -9,6 +9,7 @@ type StockItem {
   itemTypeName: String
   itemTypePicture: String
   itemCategoryName: String
+  physicalStoreName: String
 
   createdAt: String
   createdBy: String
@@ -22,16 +23,25 @@ type PagedStockItem {
 }
 
 extend type Query {
-  allStockItems(queryString: String): PagedStockItem
+  allStockItems(queryString: String): [StockItem]
+  pagedStockItems(queryString: String): PagedStockItem
   stockItemById(id: String!): StockItem
 }
 
 extend type Mutation {
-  createStockItem(itemTypeId: String!, physicalStoreId: String!, minStockLevel: Float): StockItem
+  createStockItem(
+    itemTypeId: String!
+    physicalStoreId: String!
+    minStockLevel: Float
+    currentStockLevel: Float
+    totalStockLevel: Float
+  ): StockItem
   updateStockItem(
     _id: String!
     itemTypeId: String!
     physicalStoreId: String!
     minStockLevel: Float
+    currentStockLevel: Float
+    totalStockLevel: Float
   ): StockItem
 }

@@ -8,13 +8,14 @@ import PictureForm from './picture-form';
 
 class Picture extends Component {
   static propTypes = {
+    loading: PropTypes.bool,
     itemTypeId: PropTypes.string,
     itemTypeById: PropTypes.object,
-    setPicture: PropTypes.func
+    setPicture: PropTypes.func,
   };
 
   state = {
-    showForm: false
+    showForm: false,
   };
 
   pictureForm;
@@ -34,15 +35,15 @@ class Picture extends Component {
     setPicture({
       variables: {
         _id: itemTypeId,
-        picture
-      }
+        picture,
+      },
     }).catch(error => {
       message.error(error.message, 5);
     });
   };
 
   render() {
-    const { showForm, imageSrc } = this.state;
+    const { showForm } = this.state;
     const { loading, itemTypeById } = this.props;
     if (loading) return null;
 
@@ -67,11 +68,15 @@ class Picture extends Component {
           title="Take Picture"
           okText="Save"
           width={400}
-          destroyOnClose={true}
+          destroyOnClose
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >
-          <PictureForm ref={f => (this.pictureForm = f)} />
+          <PictureForm
+            ref={f => {
+              this.pictureForm = f;
+            }}
+          />
         </Modal>
       </Fragment>
     );
@@ -100,14 +105,14 @@ export default compose(
   graphql(formMutation, {
     name: 'setPicture',
     options: {
-      refetchQueries: ['allItemTypes']
-    }
+      refetchQueries: ['allItemTypes'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { itemTypeId } = match.params;
       return { variables: { _id: itemTypeId } };
-    }
+    },
   })
 )(Picture);

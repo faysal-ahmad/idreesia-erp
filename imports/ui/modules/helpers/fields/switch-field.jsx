@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Form } from 'antd';
-import { get } from 'lodash';
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 14 }
+  wrapperCol: { span: 14 },
 };
 
 /**
@@ -20,16 +19,16 @@ export default class InputTextField extends Component {
     fieldLabel: PropTypes.string,
     fieldLayout: PropTypes.object,
     initialValue: PropTypes.bool,
-    getFieldDecorator: PropTypes.func
+    getFieldDecorator: PropTypes.func,
   };
 
   static defaultProps = {
     initialValue: false,
-    fieldLayout: formItemLayout
+    fieldLayout: formItemLayout,
   };
 
   getField() {
-    const { fieldName, placeholder, getFieldDecorator, initialValue } = this.props;
+    const { fieldName, getFieldDecorator, initialValue } = this.props;
 
     return getFieldDecorator(fieldName, { initialValue })(<Switch defaultChecked={initialValue} />);
   }

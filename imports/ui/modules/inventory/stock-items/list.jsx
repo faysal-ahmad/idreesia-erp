@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Avatar, Button, Table, Pagination } from 'antd';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
+import { isFinite, toSafeInteger } from 'lodash';
 
 import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
@@ -34,7 +35,7 @@ class List extends Component {
     queryParams: PropTypes.object,
 
     loading: PropTypes.bool,
-    allStockItems: PropTypes.shape({
+    pagedStockItems: PropTypes.shape({
       totalResults: PropTypes.number,
       stockItems: PropTypes.array,
     }),
@@ -60,26 +61,28 @@ class List extends Component {
     );
   };
 
-  refreshPage = ({ physicalStoreId, itemCategoryId, itemTypeName, pageIndex, pageSize }) => {
+  refreshPage = newParams => {
+    const { physicalStoreId, itemCategoryId, itemTypeName, pageIndex, pageSize } = newParams;
     const { queryParams, history, location } = this.props;
+
     let physicalStoreIdVal;
-    if (physicalStoreId !== undefined) physicalStoreIdVal = physicalStoreId;
+    if (newParams.hasOwnProperty('physicalStoreId')) physicalStoreIdVal = physicalStoreId || '';
     else physicalStoreIdVal = queryParams.physicalStoreId || '';
 
     let itemCategoryIdVal;
-    if (itemCategoryId !== undefined) itemCategoryIdVal = itemCategoryId;
+    if (newParams.hasOwnProperty('itemCategoryId')) itemCategoryIdVal = itemCategoryId || '';
     else itemCategoryIdVal = queryParams.itemCategoryId || '';
 
     let itemTypeNameVal;
-    if (itemTypeName !== undefined) itemTypeNameVal = itemTypeName;
+    if (newParams.hasOwnProperty('itemTypeName')) itemTypeNameVal = itemTypeName || '';
     else itemTypeNameVal = queryParams.itemTypeName || '';
 
     let pageIndexVal;
-    if (pageIndex !== undefined) pageIndexVal = pageIndex;
+    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (pageSize !== undefined) pageSizeVal = pageSize;
+    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 10;
     else pageSizeVal = queryParams.pageSize || 10;
 
     const path = `${
@@ -160,7 +163,7 @@ class List extends Component {
 
     const {
       queryParams: { pageIndex, pageSize },
-      allStockItems: { totalResults, stockItems },
+      pagedStockItems: { totalResults, stockItems },
     } = this.props;
 
     return (
@@ -175,8 +178,8 @@ class List extends Component {
           <Pagination
             defaultCurrent={1}
             defaultPageSize={10}
-            current={pageIndex ? pageIndex + 1 : 1}
-            pageSize={pageSize || 10}
+            current={isFinite(pageIndex) ? toSafeInteger(pageIndex) + 1 : 1}
+            pageSize={isFinite(pageSize) ? toSafeInteger(pageSize) : 10}
             showSizeChanger
             onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
@@ -189,8 +192,8 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allStockItems($queryString: String) {
-    allStockItems(queryString: $queryString) {
+  query pagedStockItems($queryString: String) {
+    pagedStockItems(queryString: $queryString) {
       totalResults
       stockItems {
         _id

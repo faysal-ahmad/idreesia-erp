@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox, Form } from 'antd';
-import { get } from 'lodash';
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 14 }
+  wrapperCol: { span: 14 },
 };
 
 /**
@@ -26,12 +25,12 @@ export default class WeekDaysField extends Component {
     initialValue: PropTypes.array,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func
+    getFieldDecorator: PropTypes.func,
   };
 
   static defaultProps = {
     initialValue: [],
-    fieldLayout: formItemLayout
+    fieldLayout: formItemLayout,
   };
 
   options = [
@@ -41,7 +40,7 @@ export default class WeekDaysField extends Component {
     { label: 'Tuesday', value: 'Tue' },
     { label: 'Wednesday', value: 'Wed' },
     { label: 'Thursday', value: 'Thu' },
-    { label: 'Friday', value: 'Fri' }
+    { label: 'Friday', value: 'Fri' },
   ];
 
   getField() {
@@ -49,8 +48,8 @@ export default class WeekDaysField extends Component {
     const rules = [
       {
         required,
-        message: requiredMessage
-      }
+        message: requiredMessage,
+      },
     ];
 
     return getFieldDecorator(fieldName, { initialValue, rules })(

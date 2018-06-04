@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Form } from 'antd';
+import { InputNumber, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -16,13 +16,15 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputTextField extends Component {
+export default class InputNumberField extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
-    initialValue: PropTypes.string,
+    initialValue: PropTypes.number,
+    minValue: PropTypes.number,
+    maxValue: PropTypes.number,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
@@ -42,8 +44,14 @@ export default class InputTextField extends Component {
       requiredMessage,
       getFieldDecorator,
       initialValue,
+      minValue,
+      maxValue,
       disabled,
     } = this.props;
+
+    const additionalProps = {};
+    if (minValue) additionalProps.minValue = minValue;
+    if (maxValue) additionalProps.maxValue = maxValue;
 
     if (!disabled) {
       const rules = [
@@ -54,11 +62,11 @@ export default class InputTextField extends Component {
       ];
 
       return getFieldDecorator(fieldName, { initialValue, rules })(
-        <Input placeholder={placeholder} />
+        <InputNumber placeholder={placeholder} {...additionalProps} />
       );
     }
 
-    return getFieldDecorator(fieldName, { initialValue })(<Input disabled />);
+    return getFieldDecorator(fieldName, { initialValue })(<InputNumber disabled />);
   }
 
   render() {

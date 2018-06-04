@@ -1,4 +1,9 @@
-import { ItemCategories, ItemTypes, StockItems } from '/imports/lib/collections/inventory';
+import {
+  PhysicalStores,
+  ItemCategories,
+  ItemTypes,
+  StockItems,
+} from '/imports/lib/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
@@ -19,10 +24,17 @@ export default {
       const itemCategory = ItemCategories.findOne(itemType.itemCategoryId);
       return itemCategory.name;
     },
+    physicalStoreName: stockItem => {
+      const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
+      return physicalStore.name;
+    },
   },
 
   Query: {
-    allStockItems(obj, { queryString }) {
+    allStockItems() {
+      return StockItems.find({}).fetch();
+    },
+    pagedStockItems(obj, { queryString }) {
       return getStockItems(queryString);
     },
     stockItemById(obj, { _id }) {
@@ -31,7 +43,11 @@ export default {
   },
 
   Mutation: {
-    createStockItem(obj, { itemTypeId, physicalStoreId, minStockLevel }, { userId }) {
+    createStockItem(
+      obj,
+      { itemTypeId, physicalStoreId, minStockLevel, currentStockLevel, totalStockLevel },
+      { userId }
+    ) {
       if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])) {
         throw new Error('You do not have permission to manage Stock Items in the System.');
       }
@@ -41,7 +57,8 @@ export default {
         itemTypeId,
         physicalStoreId,
         minStockLevel,
-        currentStockLevel: 0,
+        currentStockLevel,
+        totalStockLevel,
         createdAt: date,
         createdBy: userId,
         updatedAt: date,

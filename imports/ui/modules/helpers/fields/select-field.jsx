@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Select, Form } from 'antd';
-import { get } from 'lodash';
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 14 }
+  wrapperCol: { span: 14 },
 };
 
 /**
@@ -35,13 +34,13 @@ export default class SelectField extends Component {
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
     initialValue: PropTypes.string,
-    handleValueChanged: PropTypes.func
+    onChange: PropTypes.func,
   };
 
   static defaultProps = {
     data: [],
     initialValue: null,
-    fieldLayout: formItemLayout
+    fieldLayout: formItemLayout,
   };
 
   getField = () => {
@@ -54,8 +53,8 @@ export default class SelectField extends Component {
       requiredMessage,
       placeholder,
       getFieldDecorator,
-      handleValueChanged,
-      initialValue
+      onChange,
+      initialValue,
     } = this.props;
 
     const options = [];
@@ -73,13 +72,13 @@ export default class SelectField extends Component {
       ? [
           {
             required,
-            message: requiredMessage
-          }
+            message: requiredMessage,
+          },
         ]
       : null;
 
     return getFieldDecorator(fieldName, { rules, initialValue })(
-      <Select placeholder={placeholder} onChange={handleValueChanged} allowClear>
+      <Select placeholder={placeholder} onChange={onChange} allowClear>
         {options}
       </Select>
     );

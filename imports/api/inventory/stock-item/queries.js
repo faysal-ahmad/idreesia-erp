@@ -1,5 +1,6 @@
 import { parse } from 'query-string';
 import { ItemTypes, StockItems } from '/imports/lib/collections/inventory';
+import { get } from 'lodash';
 
 function getItemTypeIds(itemCategoryId, itemTypeName) {
   const pipeline = [];
@@ -68,6 +69,6 @@ export default function getStockItems(queryString) {
 
   return {
     stockItems: StockItems.aggregate(resultsPipeline),
-    totalResults: StockItems.aggregate(countingPipeline)[0].total,
+    totalResults: get(StockItems.aggregate(countingPipeline), ['0', 'total'], 0),
   };
 }

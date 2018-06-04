@@ -1,28 +1,29 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
-import { Form, InputNumber, Button, Row, Select } from 'antd';
-import { map } from 'lodash';
+import { Form, message } from 'antd';
+import { filter, keyBy } from 'lodash';
+import gql from 'graphql-tag';
+import { compose, graphql } from 'react-apollo';
 
-import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import {
-  ItemStocks,
-  ItemTypes,
-  ItemCategories,
-  PhysicalStores,
-} from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import {
+  InputNumberField,
+  SelectField,
+  FormButtonsSaveCancel,
+} from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    itemStocks: PropTypes.array,
-    itemTypes: PropTypes.array,
-    itemCategories: PropTypes.array,
-    physicalStores: PropTypes.array,
+
+    allItemTypes: PropTypes.array,
+    allPhysicalStores: PropTypes.array,
+    allItemCategories: PropTypes.array,
+    allStockItems: PropTypes.array,
+    createStockItem: PropTypes.func,
   };
 
   constructor(props) {
@@ -30,113 +31,35 @@ class NewForm extends Component {
     this.state = {
       selectedPhysicalStoreId: null,
       selectedItemCategoryId: null,
+      filteredItemTypes: [],
     };
   }
 
-  getPhysicalStoreField() {
-    const { physicalStores } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please select a physical store.',
-      },
-    ];
-    const options = [];
-    physicalStores.forEach(physicalStore => {
-      options.push(
-        <Select.Option key={physicalStore._id} value={physicalStore._id}>
-          {physicalStore.name}
-        </Select.Option>
+  getFilteredItemTypes = (physicalStoreId, itemCategoryId) => {
+    const { allItemTypes, allStockItems } = this.props;
+    let filteredItemTypes = [];
+
+    if (physicalStoreId && itemCategoryId) {
+      const stockItemsInSelectedPhysicalStore = filter(
+        allStockItems,
+        stockItem => stockItem.physicalStoreId === physicalStoreId
       );
-    });
 
-    return getFieldDecorator('physicalStoreId', { rules })(
-      <Select placeholder="Please select a physical store." onChange={this.handleStoreChanged}>
-        {options}
-      </Select>
-    );
-  }
-
-  getItemCategoryField() {
-    const { itemCategories } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please select an item category.',
-      },
-    ];
-    const options = [];
-    itemCategories.forEach(itemCategory => {
-      options.push(
-        <Select.Option key={itemCategory._id} value={itemCategory._id}>
-          {itemCategory.name}
-        </Select.Option>
-      );
-    });
-
-    return getFieldDecorator('itemCategoryId', { rules })(
-      <Select placeholder="Please select an item category." onChange={this.handleCategoryChanged}>
-        {options}
-      </Select>
-    );
-  }
-
-  getItemTypeField() {
-    const options = [];
-    const { getFieldDecorator } = this.props.form;
-    const { selectedPhysicalStoreId, selectedItemCategoryId } = this.state;
-    if (selectedPhysicalStoreId && selectedItemCategoryId) {
-      // Get all the item types for which we already have defined stock items in this store
-      const existingStockItems = ItemStocks.find({
-        physicalStoreId: { $eq: selectedPhysicalStoreId },
-      }).fetch();
-
-      const itemTypeIds = map(existingStockItems, stockItem => stockItem.itemTypeId);
-      // Get all the item types for which we don't yet have stock items in this store. Filter
-      // them by the selected item category.
-      const unstockedItemTypes = ItemTypes.find({
-        itemCategoryId: { $eq: selectedItemCategoryId },
-        _id: { $nin: itemTypeIds },
-      }).fetch();
-
-      unstockedItemTypes.forEach(itemType => {
-        options.push(
-          <Select.Option key={itemType._id} value={itemType._id}>
-            {itemType.name}
-          </Select.Option>
-        );
+      const stockItemsByItemTypeId = keyBy(stockItemsInSelectedPhysicalStore, 'itemTypeId');
+      filteredItemTypes = filter(allItemTypes, itemType => {
+        if (itemType.itemCategoryId !== itemCategoryId) return false;
+        if (stockItemsByItemTypeId[itemType._id]) return false;
+        return true;
       });
     }
 
-    const rules = [
-      {
-        required: true,
-        message: 'Please select an item type.',
-      },
-    ];
-
-    return getFieldDecorator('itemTypeId', { rules })(
-      <Select placeholder="Please select an item type.">{options}</Select>
-    );
-  }
-
-  getMinStockLevelField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [];
-    return getFieldDecorator('minStockLevel', { rules })(<InputNumber />);
-  }
-
-  getCurrentStockLevelField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [];
-    return getFieldDecorator('currentStockLevel', { rules })(<InputNumber />);
-  }
+    return filteredItemTypes;
+  };
 
   handleStoreChanged = value => {
     const state = Object.assign({}, this.state, {
       selectedPhysicalStoreId: value,
+      filteredItemTypes: this.getFilteredItemTypes(value, this.state.selectedItemCategoryId),
     });
     this.setState(state);
   };
@@ -144,6 +67,7 @@ class NewForm extends Component {
   handleCategoryChanged = value => {
     const state = Object.assign({}, this.state, {
       selectedItemCategoryId: value,
+      filteredItemTypes: this.getFilteredItemTypes(this.state.selectedPhysicalStoreId, value),
     });
     this.setState(state);
   };
@@ -155,90 +79,174 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
+    const { form, history, createStockItem } = this.props;
+    form.validateFields(
+      (err, { physicalStoreId, itemTypeId, minStockLevel, currentStockLevel, totalStockLevel }) => {
+        if (err) return;
 
-      const doc = {
-        itemTypeId: fieldsValue.itemTypeId,
-        physicalStoreId: fieldsValue.physicalStoreId,
-        minStockLevel: fieldsValue.minStockLevel,
-        currentStockLevel: fieldsValue.currentStockLevel,
-      };
-
-      Meteor.call('inventory/itemStocks.create', { doc }, error => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.stockItemsPath);
-      });
-    });
+        createStockItem({
+          variables: {
+            itemTypeId,
+            physicalStoreId,
+            minStockLevel,
+            currentStockLevel,
+            totalStockLevel,
+          },
+        })
+          .then(() => {
+            history.push(paths.stockItemsPath);
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   render() {
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14 },
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 6 },
-    };
+    const { getFieldDecorator } = this.props.form;
+    const { allPhysicalStores, allItemCategories } = this.props;
+    const { filteredItemTypes } = this.state;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <Form.Item label="Physical Store" {...formItemLayout}>
-          {this.getPhysicalStoreField()}
-        </Form.Item>
-        <Form.Item label="Item Category" {...formItemLayout}>
-          {this.getItemCategoryField()}
-        </Form.Item>
-        <Form.Item label="Item Type" {...formItemLayout}>
-          {this.getItemTypeField()}
-        </Form.Item>
-        <Form.Item label="Min Stock Level" {...formItemLayout}>
-          {this.getMinStockLevelField()}
-        </Form.Item>
-        <Form.Item label="Current Stock Level" {...formItemLayout}>
-          {this.getCurrentStockLevelField()}
-        </Form.Item>
-        <Form.Item {...buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Row>
-        </Form.Item>
+        <SelectField
+          data={allPhysicalStores}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="physicalStoreId"
+          fieldLabel="Physical Store"
+          required
+          requiredMessage="Please select a physical store."
+          onChange={this.handleStoreChanged}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={allItemCategories}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="itemCategoryId"
+          fieldLabel="Item Category"
+          required
+          requiredMessage="Please select an item category."
+          onChange={this.handleCategoryChanged}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={filteredItemTypes}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="itemTypeId"
+          fieldLabel="Item Type"
+          required
+          requiredMessage="Please select an item type."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputNumberField
+          fieldName="minStockLevel"
+          fieldLabel="Min Stock Level"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="currentStockLevel"
+          fieldLabel="Current Stock Level"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="totalStockLevel"
+          fieldLabel="Total Stock Level"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }
 }
 
-function dataLoader(props, onData) {
-  const physicalStoresSubscription = Meteor.subscribe('inventory/physicalStores#all');
-  const itemCategoriesSubscription = Meteor.subscribe('inventory/itemCategories#all');
-  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
-  const itemStocksSubscription = Meteor.subscribe('inventory/itemStocks#all');
-
-  if (
-    physicalStoresSubscription.ready() &&
-    itemCategoriesSubscription.ready() &&
-    itemTypesSubscription.ready() &&
-    itemStocksSubscription.ready()
-  ) {
-    const physicalStores = PhysicalStores.find({}).fetch();
-    const itemCategories = ItemCategories.find({}).fetch();
-    const itemTypes = ItemTypes.find({}).fetch();
-    const itemStocks = ItemStocks.find({}).fetch();
-    onData(null, { physicalStores, itemCategories, itemTypes, itemStocks });
+const physicalStoresListQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+    }
   }
-}
+`;
 
-export default merge(
+const itemCategoriesListQuery = gql`
+  query allItemCategories {
+    allItemCategories {
+      _id
+      name
+    }
+  }
+`;
+
+const itemTypesListQuery = gql`
+  query allItemTypes {
+    allItemTypes {
+      _id
+      name
+      itemCategoryId
+    }
+  }
+`;
+
+const stockItemsListQuery = gql`
+  query allStockItems {
+    allStockItems {
+      _id
+      itemTypeId
+      physicalStoreId
+    }
+  }
+`;
+
+const formMutation = gql`
+  mutation createStockItem(
+    $itemTypeId: String!
+    $physicalStoreId: String!
+    $minStockLevel: Float
+    $currentStockLevel: Float
+    $totalStockLevel: Float
+  ) {
+    createStockItem(
+      itemTypeId: $itemTypeId
+      physicalStoreId: $physicalStoreId
+      minStockLevel: $minStockLevel
+      currentStockLevel: $currentStockLevel
+      totalStockLevel: $totalStockLevel
+    ) {
+      _id
+      itemTypeName
+      itemTypePicture
+      itemCategoryName
+      minStockLevel
+      currentStockLevel
+      totalStockLevel
+    }
+  }
+`;
+
+export default compose(
   Form.create(),
-  composeWithTracker(dataLoader),
+  graphql(physicalStoresListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(itemCategoriesListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(itemTypesListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(stockItemsListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(formMutation, {
+    name: 'createStockItem',
+    options: {
+      refetchQueries: ['pagedStockItems'],
+    },
+  }),
   WithBreadcrumbs(['Inventory', 'Stock Items', 'New'])
 )(NewForm);

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TimePicker, Form } from 'antd';
-import { get } from 'lodash';
 import moment from 'moment';
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 14 }
+  wrapperCol: { span: 14 },
 };
 
 /**
@@ -27,12 +26,12 @@ export default class TimeField extends Component {
     initialValue: PropTypes.object,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func
+    getFieldDecorator: PropTypes.func,
   };
 
   static defaultProps = {
     initialValue: moment(),
-    fieldLayout: formItemLayout
+    fieldLayout: formItemLayout,
   };
 
   getField() {
@@ -40,8 +39,8 @@ export default class TimeField extends Component {
     const rules = [
       {
         required,
-        message: requiredMessage
-      }
+        message: requiredMessage,
+      },
     ];
 
     return getFieldDecorator(fieldName, { initialValue, rules })(

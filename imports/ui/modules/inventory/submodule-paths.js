@@ -24,22 +24,18 @@ export default class SubModulePaths {
   // Forms Routes
   // *************************************************************************************
   static issuanceFormsPath = `${ModulePaths.inventory}/issuance-forms`;
-  static issuanceFormsListPath = `${SubModulePaths.issuanceFormsPath}/list/:pageId`;
   static issuanceFormsNewFormPath = `${SubModulePaths.issuanceFormsPath}/new`;
   static issuanceFormsEditFormPath = `${SubModulePaths.issuanceFormsPath}/edit/:formId`;
 
   static receivalFormsPath = `${ModulePaths.inventory}/receival-forms`;
-  static receivalFormsListPath = `${SubModulePaths.receivalFormsPath}/list/:pageId`;
   static receivalFormsNewFormPath = `${SubModulePaths.receivalFormsPath}/new`;
   static receivalFormsEditFormPath = `${SubModulePaths.receivalFormsPath}/:formId`;
 
   static adjustmentFormsPath = `${ModulePaths.inventory}/adjustment-forms`;
-  static adjustmentFormsListPath = `${SubModulePaths.adjustmentFormsPath}/list/:pageId`;
   static adjustmentFormsNewFormPath = `${SubModulePaths.adjustmentFormsPath}/new`;
   static adjustmentFormsEditFormPath = `${SubModulePaths.adjustmentFormsPath}/:formId`;
 
   static purchaseOrderFormsPath = `${ModulePaths.inventory}/purchase-order-forms`;
-  static purchaseOrderFormsListPath = `${SubModulePaths.purchaseOrderFormsPath}/list/:pageId`;
   static purchaseOrderFormsNewFormPath = `${SubModulePaths.purchaseOrderFormsPath}/new`;
   static purchaseOrderFormsEditFormPath = `${SubModulePaths.purchaseOrderFormsPath}/:formId`;
 }

@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { AutoComplete, Form } from 'antd';
 import { get } from 'lodash';
 
-import { Profiles } from '/imports/lib/collections/admin';
-
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
@@ -18,8 +16,11 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class ProfileField extends Component {
+export default class AutoCompleteField extends Component {
   static propTypes = {
+    data: PropTypes.array,
+    getDataValue: PropTypes.func,
+    getDataText: PropTypes.func,
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
@@ -27,21 +28,38 @@ export default class ProfileField extends Component {
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
+    optionRenderer: PropTypes.func,
   };
 
   static defaultProps = {
+    data: [],
+    getDataValue: ({ _id }) => _id,
+    getDataText: ({ name }) => name,
+    initialValue: null,
     fieldLayout: formItemLayout,
+    optionRenderer: text => text,
   };
 
   getField() {
-    const { fieldName, required, requiredMessage, placeholder, getFieldDecorator } = this.props;
-    const children = [];
-    const profiles = Profiles.find({}).fetch();
+    const {
+      data,
+      getDataValue,
+      getDataText,
+      fieldName,
+      required,
+      requiredMessage,
+      placeholder,
+      getFieldDecorator,
+      optionRenderer,
+    } = this.props;
 
-    profiles.forEach(profile => {
-      children.push(
-        <AutoComplete.Option key={profile._id} value={profile._id} text={profile.name}>
-          {profile.name}
+    const options = [];
+    data.forEach(dataObj => {
+      const value = getDataValue(dataObj);
+      const text = getDataText(dataObj);
+      options.push(
+        <AutoComplete.Option key={value} value={value} text={text}>
+          {optionRenderer(text, dataObj)}
         </AutoComplete.Option>
       );
     });
@@ -67,7 +85,7 @@ export default class ProfileField extends Component {
         backfill
         filterOption={filterOption}
       >
-        {children}
+        {options}
       </AutoComplete>
     );
   }

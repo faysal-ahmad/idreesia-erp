@@ -1,105 +1,55 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { AutoComplete, Form, Input, InputNumber } from 'antd';
-import { keyBy } from 'lodash';
-
-import { ItemCategories } from '/imports/lib/collections/inventory';
+import { Form } from 'antd';
+import { AutoCompleteField, InputNumberField } from '/imports/ui/modules/helpers/fields';
 
 const OptionStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
-  width: '100%'
+  width: '100%',
 };
 
-class ItemForm extends Component {
-  static propTypes = {
-    form: PropTypes.object,
-    itemTypes: PropTypes.array,
-    itemCategories: PropTypes.array,
-    itemStocks: PropTypes.array
-  };
+const formItemLayout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 14 },
+};
 
-  getNameField() {
-    const { itemTypes, itemCategories, itemStocks } = this.props;
-    const itemStocksMap = keyBy(itemStocks, '_id');
-    const itemTypesMap = keyBy(itemTypes, '_id');
-    const itemCategoriesMap = keyBy(itemCategories, '_id');
+const ItemForm = ({ form: { getFieldDecorator }, stockItems }) => (
+  <Form layout="horizontal">
+    <AutoCompleteField
+      data={stockItems}
+      getDataValue={({ _id }) => _id}
+      getDataText={({ itemTypeName }) => itemTypeName}
+      fieldName="stockItemId"
+      fieldLabel="Name"
+      fieldLayout={formItemLayout}
+      required
+      requiredMessage="Please input a name for the item."
+      getFieldDecorator={getFieldDecorator}
+      optionRenderer={(text, dataObj) => (
+        <div style={OptionStyle}>
+          {dataObj.itemTypeName}
+          <span>{dataObj.currentStockLevel} Available</span>
+        </div>
+      )}
+    />
 
-    const { getFieldDecorator } = this.props.form;
-    const children = [];
+    <InputNumberField
+      fieldName="quantity"
+      fieldLabel="Quantity"
+      fieldLayout={formItemLayout}
+      required
+      requiredMessage="Please input a value for quantity."
+      minValue={0}
+      getFieldDecorator={getFieldDecorator}
+    />
+  </Form>
+);
 
-    itemStocks.forEach(itemStock => {
-      const itemType = itemTypesMap[itemStock.itemTypeId];
-      const itemCategory = itemCategoriesMap[itemType.itemCategoryId];
-      children.push(
-        <AutoComplete.Option key={itemStock._id} value={itemStock._id} text={itemType.name}>
-          <div style={OptionStyle}>
-            {itemType.name}
-            <span>{itemStock.currentStockLevel} Available</span>
-          </div>
-        </AutoComplete.Option>
-      );
-    });
-
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a name for the item.'
-      },
-      {
-        message: 'Please choose a valid item.',
-        validator: (rule, value, callback) => {
-          const selectItemStock = itemStocksMap[value];
-          if (!selectItemStock) {
-            const error = new Error('This is not a valid item.');
-            callback([error]);
-          }
-
-          callback();
-        }
-      }
-    ];
-    return getFieldDecorator('itemStockId', { rules })(
-      <AutoComplete
-        placeholder="Item name"
-        filterOption={true}
-        optionLabelProp="text"
-        backfill={true}
-      >
-        {children}
-      </AutoComplete>
-    );
-  }
-
-  getQuantityField() {
-    const { getFieldDecorator } = this.props.form;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input a numeric value for quantity.'
-      }
-    ];
-    return getFieldDecorator('quantity', { rules })(<InputNumber min={0} placeholder="0" />);
-  }
-
-  render() {
-    const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
-    };
-
-    return (
-      <Form layout="horizontal">
-        <Form.Item label="Name" {...formItemLayout}>
-          {this.getNameField()}
-        </Form.Item>
-        <Form.Item label="Quantity" {...formItemLayout}>
-          {this.getQuantityField()}
-        </Form.Item>
-      </Form>
-    );
-  }
-}
+ItemForm.propTypes = {
+  form: PropTypes.object,
+  stockItems: PropTypes.array,
+};
 
 export default Form.create()(ItemForm);

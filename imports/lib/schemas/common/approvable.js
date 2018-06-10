@@ -9,5 +9,5 @@ export default new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id,
     optional: true,
-  }
+  },
 });

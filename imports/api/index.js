@@ -24,6 +24,8 @@ import KarkunDutyResolvers from './hr/karkun-duties/resolvers';
 /**
  * Schema and Resolvers for the Inventory module
  */
+import CommonSchema from './inventory/common/common.graphql';
+
 import ItemCategorySchema from './inventory/item-category/item-category.graphql';
 import ItemCategoryResolvers from './inventory/item-category/resolvers';
 
@@ -33,18 +35,24 @@ import ItemTypeResolvers from './inventory/item-type/resolvers';
 import PhysicalStoreSchema from './inventory/physical-store/physical-store.graphql';
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 
-import StockItemsSchema from './inventory/stock-item/stock-item.graphql';
+import StockItemSchema from './inventory/stock-item/stock-item.graphql';
 import StockItemResolvers from './inventory/stock-item/resolvers';
+
+import IssuanceFormSchema from './inventory/issuance-form/issuance-form.graphql';
+import IssuanceFormResolvers from './inventory/issuance-form/resolvers';
 
 const typeDefs = [
   DutyLocationSchema,
   DutySchema,
   KarkunSchema,
   KarkunDutySchema,
+
+  CommonSchema,
   ItemCategorySchema,
   ItemTypeSchema,
   PhysicalStoreSchema,
-  StockItemsSchema,
+  StockItemSchema,
+  IssuanceFormSchema,
 ];
 
 const resolvers = merge(
@@ -55,7 +63,8 @@ const resolvers = merge(
   ItemCategoryResolvers,
   ItemTypeResolvers,
   PhysicalStoreResolvers,
-  StockItemResolvers
+  StockItemResolvers,
+  IssuanceFormResolvers
 );
 
 // werwerefdgfdgdgd

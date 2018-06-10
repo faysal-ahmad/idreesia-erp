@@ -4,30 +4,28 @@ import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   KarkunType: {
-    name: karkunType => {
-      return `${karkunType.firstName} ${karkunType.lastName}`;
-    },
+    name: karkunType => `${karkunType.firstName} ${karkunType.lastName}`,
     user: karkunType => {
       if (!karkunType.userId) return null;
       return Meteor.users.findOne(karkunType.userId);
     },
     duties: karkunType => {
       const karkunDuties = KarkunDuties.find({
-        karkunId: { $eq: karkunType._id }
+        karkunId: { $eq: karkunType._id },
       }).fetch();
 
       if (karkunDuties.length > 0) {
         const dutyIds = karkunDuties.map(karkunDuty => karkunDuty.dutyId);
         const duties = Duties.find({
-          _id: { $in: dutyIds }
+          _id: { $in: dutyIds },
         }).fetch();
 
         const dutyNames = duties.map(duty => duty.name);
         return dutyNames.join(', ');
-      } else {
+      } 
         return null;
-      }
-    }
+      
+    },
   },
 
   Query: {
@@ -37,37 +35,32 @@ export default {
       }
 
       return Karkuns.find({
-        userId: { $ne: null }
+        userId: { $ne: null },
       }).fetch();
     },
     allKarkunsWithNoAccounts() {
       return Karkuns.find({
-        userId: { $eq: null }
+        userId: { $eq: null },
       }).fetch();
     },
 
-    allKarkuns(obj, { name, cnicNumber, duties }, { userId }) {
+    allKarkuns(obj, params, { userId }) {
       if (!hasOnePermission(userId, [PermissionConstants.HR_VIEW_KARKUNS])) {
         return [];
       }
 
-      // db.coll.find({$expr:{$eq:["value", {$concat:["$field1", "$field2"]}]}})
-      let filterCriteria = {};
-
-      if (duties) {
-      }
       return Karkuns.find({}).fetch();
     },
 
-    karkunById(obj, { _id }, context) {
+    karkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
     },
 
-    karkunByUserId(obj, { userId }, context) {
+    karkunByUserId(obj, { userId }) {
       return Karkuns.findOne({
-        userId: { $eq: userId }
+        userId: { $eq: userId },
       });
-    }
+    },
   },
 
   Mutation: {
@@ -94,7 +87,7 @@ export default {
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
-        updatedBy: userId
+        updatedBy: userId,
       });
 
       return Karkuns.findOne(karkunId);
@@ -122,8 +115,8 @@ export default {
           cnicNumber,
           address,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return Karkuns.findOne(_id);
@@ -139,8 +132,8 @@ export default {
         $set: {
           profilePicture,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return Karkuns.findOne(_id);
@@ -158,15 +151,15 @@ export default {
 
       const newUserId = Accounts.createUser({
         username: userName,
-        password
+        password,
       });
 
       const time = Date.now();
       Karkuns.update(karkunId, {
         $set: {
           userId: newUserId,
-          updatedAt: time
-        }
+          updatedAt: time,
+        },
       });
 
       return Karkuns.findOne(karkunId);
@@ -181,8 +174,8 @@ export default {
       Karkuns.update(karkunId, {
         $set: {
           userId: null,
-          updatedAt: time
-        }
+          updatedAt: time,
+        },
       });
 
       Meteor.users.remove(karkunUserId);
@@ -196,6 +189,6 @@ export default {
 
       Meteor.users.update(karkunUserId, { $set: { permissions } });
       return Karkuns.findOne(karkunId);
-    }
-  }
+    },
+  },
 };

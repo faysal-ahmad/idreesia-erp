@@ -20,4 +20,9 @@ export default class Permissions {
   static IN_VIEW_STOCK_ITEMS = 'inventory-view-stock-items';
   static IN_MANAGE_STOCK_ITEMS = 'inventory-manage-stock-items';
   static IN_APPROVE_STOCK_MODIFICATIONS = 'inventory-approve-stock-modifications';
+
+  static IN_MANAGE_ISSUANCE_FORMS = 'inventory-manage-issuance-forms';
+  static IN_APPROVE_ISSUANCE_FORMS = 'inventory-approve-issuance-forms';
+  static IN_MANAGE_RECEIVAL_FORMS = 'inventory-manage-receival-forms';
+  static IN_APPROVE_RECEIVAL_FORMS = 'inventory-approve-receival-forms';
 }

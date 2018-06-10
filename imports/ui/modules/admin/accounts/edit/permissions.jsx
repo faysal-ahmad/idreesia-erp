@@ -9,12 +9,6 @@ import { filter } from 'lodash';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-import {
-  InputTextField,
-  InputTextAreaField,
-  FormButtonsSaveCancel
-} from '/imports/ui/modules/helpers/fields';
-
 const permissionsData = [
   {
     title: 'Admin',
@@ -22,13 +16,13 @@ const permissionsData = [
     children: [
       {
         title: 'View Accounts',
-        key: PermissionConstants.ADMIN_VIEW_ACCOUNTS
+        key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
       },
       {
         title: 'Manage Accounts',
-        key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS
-      }
-    ]
+        key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+      },
+    ],
   },
   {
     title: 'HR',
@@ -36,17 +30,17 @@ const permissionsData = [
     children: [
       {
         title: 'Manage Setup Data',
-        key: PermissionConstants.HR_MANAGE_SETUP_DATA
+        key: PermissionConstants.HR_MANAGE_SETUP_DATA,
       },
       {
         title: 'View Karkuns',
-        key: PermissionConstants.HR_VIEW_KARKUNS
+        key: PermissionConstants.HR_VIEW_KARKUNS,
       },
       {
         title: 'Manage Karkuns',
-        key: PermissionConstants.HR_MANAGE_KARKUNS
-      }
-    ]
+        key: PermissionConstants.HR_MANAGE_KARKUNS,
+      },
+    ],
   },
   {
     title: 'Inventory',
@@ -54,22 +48,22 @@ const permissionsData = [
     children: [
       {
         title: 'Manage Setup Data',
-        key: PermissionConstants.IN_MANAGE_SETUP_DATA
+        key: PermissionConstants.IN_MANAGE_SETUP_DATA,
       },
       {
         title: 'View Stock Items',
-        key: PermissionConstants.IN_VIEW_STOCK_ITEMS
+        key: PermissionConstants.IN_VIEW_STOCK_ITEMS,
       },
       {
         title: 'Manage Stock Items',
-        key: PermissionConstants.IN_MANAGE_STOCK_ITEMS
+        key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,
       },
       {
         title: 'Approve Stock Modifications',
-        key: PermissionConstants.IN_APPROVE_STOCK_MODIFICATIONS
-      }
-    ]
-  }
+        key: PermissionConstants.IN_APPROVE_STOCK_MODIFICATIONS,
+      },
+    ],
+  },
 ];
 
 class Permissions extends Component {
@@ -79,15 +73,16 @@ class Permissions extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
-    setPermissions: PropTypes.func
+    setPermissions: PropTypes.func,
   };
 
   state = {
     initDone: false,
     expandedKeys: [],
-    checkedKeys: []
+    checkedKeys: [],
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -95,7 +90,7 @@ class Permissions extends Component {
     if (karkunById && !prevState.initDone) {
       return {
         initDone: true,
-        checkedKeys: karkunById.user.permissions
+        checkedKeys: karkunById.user.permissions,
       };
     }
 
@@ -111,16 +106,14 @@ class Permissions extends Component {
     e.preventDefault();
     const { history, karkunById, setPermissions } = this.props;
     const { checkedKeys } = this.state;
-    const permissions = filter(checkedKeys, key => {
-      return !key.startsWith('module-');
-    });
+    const permissions = filter(checkedKeys, key => !key.startsWith('module-'));
 
     setPermissions({
       variables: {
         karkunId: karkunById._id,
         karkunUserId: karkunById.userId,
-        permissions
-      }
+        permissions,
+      },
     })
       .then(() => {
         history.push(paths.accountsPath);
@@ -133,7 +126,7 @@ class Permissions extends Component {
   onExpand = expandedKeys => {
     this.setState({
       expandedKeys,
-      autoExpandParent: false
+      autoExpandParent: false,
     });
   };
 
@@ -141,8 +134,8 @@ class Permissions extends Component {
     this.setState({ checkedKeys });
   };
 
-  renderTreeNodes = data => {
-    return data.map(item => {
+  renderTreeNodes = data =>
+    data.map(item => {
       if (item.children) {
         return (
           <Tree.TreeNode title={item.title} key={item.key} dataRef={item}>
@@ -153,10 +146,9 @@ class Permissions extends Component {
 
       return <Tree.TreeNode {...item} />;
     });
-  };
 
   render() {
-    const { loading, karkunById } = this.props;
+    const { loading } = this.props;
     if (loading) return null;
 
     return (
@@ -217,14 +209,14 @@ export default merge(
   graphql(formMutation, {
     name: 'setPermissions',
     options: {
-      refetchQueries: ['allkarkunsWithAccounts']
-    }
+      refetchQueries: ['allkarkunsWithAccounts'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
-    }
+    },
   })
 )(Permissions);

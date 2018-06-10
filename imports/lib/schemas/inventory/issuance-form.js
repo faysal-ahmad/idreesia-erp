@@ -5,26 +5,26 @@ import { approvable, identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   issueDate: {
-    type: Date
+    type: Date,
   },
   issuedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   issuedTo: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   items: {
-    type: Array
+    type: Array,
   },
   'items.$': {
-    type: ItemWithQuantity
-  }
+    type: ItemWithQuantity,
+  },
 })
   .extend(approvable)
   .extend(identifiable)

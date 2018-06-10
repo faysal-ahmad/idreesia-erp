@@ -14,7 +14,7 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    itemCategory: PropTypes.object
+    itemCategory: PropTypes.object,
   };
 
   handleCancel = () => {
@@ -30,7 +30,7 @@ class EditForm extends Component {
 
       const { itemCategory } = this.props;
       const doc = Object.assign({}, itemCategory, {
-        name: fieldsValue.name
+        name: fieldsValue.name,
       });
 
       Meteor.call('inventory/itemCategories.update', { doc }, (error, result) => {
@@ -48,8 +48,8 @@ class EditForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input a name for the item category.'
-      }
+        message: 'Please input a name for the item category.',
+      },
     ];
     return getFieldDecorator('name', { initialValue, rules })(
       <Input placeholder="Item category name" />
@@ -59,11 +59,11 @@ class EditForm extends Component {
   render() {
     const formItemLayout = {
       labelCol: { span: 4 },
-      wrapperCol: { span: 14 }
+      wrapperCol: { span: 14 },
     };
 
     const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
+      wrapperCol: { span: 14, offset: 4 },
     };
 
     return (

@@ -1,0 +1,15 @@
+type ItemWithQuantity {
+  stockItemId: String
+  quantity: Float
+}
+
+input ItemWithQuantityInput {
+  stockItemId: String
+  quantity: Float
+}
+
+type ItemWithQuantityAndPrice {
+  stockItemId: String
+  quantity: Float
+  price: Float
+}

@@ -1,99 +1,96 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
-import { Form, Input, Button, Row, Select } from 'antd';
+import { Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { compose, graphql } from 'react-apollo';
+import { filter } from 'lodash';
 
 import { ItemsList } from '../common/items-list';
-import { DateField, ProfileField, PhysicalStoreField } from '../common/fields';
-import { composeWithTracker } from '/imports/ui/utils';
 import { WithBreadcrumbs } from '/imports/ui/composers';
-import { Profiles } from '/imports/lib/collections/admin';
-import { IssuanceForms, PhysicalStores } from '/imports/lib/collections/inventory';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import {
+  AutoCompleteField,
+  DateField,
+  SelectField,
+  FormButtonsSaveCancel,
+} from '/imports/ui/modules/helpers/fields';
+
+const formItemExtendedLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    profiles: PropTypes.array,
-    physicalStores: PropTypes.array
+
+    loading: PropTypes.bool,
+    allKarkuns: PropTypes.array,
+    allPhysicalStores: PropTypes.array,
+    allStockItems: PropTypes.array,
+    createIssuanceForm: PropTypes.func,
   };
 
-  formItemLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 14 }
+  state = {
+    selectedPhysicalStoreId: null,
+    stockItemsBySelectedPhysicalStore: [],
   };
-
-  formItemExtendedLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 18 }
-  };
-
-  buttonItemLayout = {
-    wrapperCol: { span: 18, offset: 6 }
-  };
-
-  constructor(props) {
-    super(props);
-    const { physicalStores } = this.props;
-    const physicalStoreId =
-      physicalStores && physicalStores.length > 0 ? physicalStores[0]._id : null;
-
-    this.state = {
-      selectedPhysicalStoreId: physicalStoreId
-    };
-  }
 
   handleStoreChanged = value => {
-    const state = Object.assign({}, this.state, {
-      selectedPhysicalStoreId: value
+    const { allStockItems } = this.props;
+    this.setState({
+      selectedPhysicalStoreId: value,
+      stockItemsBySelectedPhysicalStore: filter(allStockItems, { physicalStoreId: value }),
     });
-    this.setState(state);
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    const issuanceFormsListPath = paths.issuanceFormsListPath.replace(':pageId', '1');
-    history.push(issuanceFormsListPath);
+    history.push(paths.issuanceFormsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    const { form, history, createIssuanceForm } = this.props;
+    form.validateFields((err, { issueDate, issuedBy, issuedTo, physicalStoreId, items }) => {
       if (err) return;
 
-      const doc = {
-        issueDate: fieldsValue.issueDate.toDate(),
-        issuedBy: fieldsValue.issuedBy,
-        issuedTo: fieldsValue.issuedTo,
-        physicalStoreId: fieldsValue.physicalStoreId,
-        items: fieldsValue.items
-      };
-
-      Meteor.call('inventory/issuanceForms.create', { doc }, (error, result) => {
-        if (error) return;
-        const { history } = this.props;
-        history.push(paths.issuanceFormsListPath);
-      });
+      createIssuanceForm({
+        variables: { issueDate, issuedBy, issuedTo, physicalStoreId, items },
+      })
+        .then(() => {
+          history.push(paths.issuanceFormsPath);
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
     });
   };
 
   getItemsField() {
     const { getFieldDecorator } = this.props.form;
+    const { selectedPhysicalStoreId, stockItemsBySelectedPhysicalStore } = this.state;
+
     const rules = [
       {
         required: true,
-        message: 'Please add some items.'
-      }
+        message: 'Please add some items.',
+      },
     ];
     return getFieldDecorator('items', { rules })(
-      <ItemsList physicalStoreId={this.state.selectedPhysicalStoreId} />
+      <ItemsList
+        physicalStoreId={selectedPhysicalStoreId}
+        stockItems={stockItemsBySelectedPhysicalStore}
+      />
     );
   }
 
   render() {
+    const { loading, allKarkuns, allPhysicalStores } = this.props;
+    if (loading) return null;
+
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -101,67 +98,124 @@ class NewForm extends Component {
         <DateField
           fieldName="issueDate"
           fieldLabel="Issue Date"
-          required={true}
+          required
           requiredMessage="Please input an issue date."
           getFieldDecorator={getFieldDecorator}
         />
-        <ProfileField
+        <AutoCompleteField
+          data={allKarkuns}
           fieldName="issuedBy"
           fieldLabel="Issued By"
           placeholder="Issued By"
-          required={true}
+          required
           requiredMessage="Please input a name in issued by."
           getFieldDecorator={getFieldDecorator}
         />
-        <ProfileField
+        <AutoCompleteField
+          data={allKarkuns}
           fieldName="issuedTo"
           fieldLabel="Issued To"
           placeholder="Issued To"
-          required={true}
+          required
           requiredMessage="Please input a name in issued to."
           getFieldDecorator={getFieldDecorator}
         />
-        <PhysicalStoreField
+        <SelectField
+          data={allPhysicalStores}
           fieldName="physicalStoreId"
           fieldLabel="Physical store"
           placeholder="Physical store"
-          required={true}
+          required
           requiredMessage="Please select a physical store."
           getFieldDecorator={getFieldDecorator}
           initialValue={this.state.selectedPhysicalStoreId}
-          handleValueChanged={this.handleStoreChanged}
+          onChange={this.handleStoreChanged}
         />
-        <Form.Item label="Issued Items" {...this.formItemExtendedLayout}>
+
+        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>
-        <Form.Item {...this.buttonItemLayout}>
-          <Row type="flex" justify="end">
-            <Button type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>
-            &nbsp;
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Row>
-        </Form.Item>
+
+        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
   }
 }
 
-function dataLoader(props, onData) {
-  const profilesSubscription = Meteor.subscribe('admin/profiles#all');
-  const physicalStoresSubscription = Meteor.subscribe('inventory/physicalStores#all');
-  if (profilesSubscription.ready() && physicalStoresSubscription.ready()) {
-    const profiles = Profiles.find({}).fetch();
-    const physicalStores = PhysicalStores.find({}).fetch();
-    onData(null, { profiles, physicalStores });
+const formMutation = gql`
+  mutation createIssuanceForm(
+    $issueDate: String!
+    $issuedBy: String!
+    $issuedTo: String!
+    $physicalStoreId: String!
+    $items: [ItemWithQuantityInput]
+  ) {
+    createIssuanceForm(
+      issueDate: $issueDate
+      issuedBy: $issuedBy
+      issuedTo: $issuedTo
+      physicalStoreId: $physicalStoreId
+      items: $items
+    ) {
+      _id
+      issueDate
+      issuedBy
+      issuedTo
+      physicalStoreId
+      items {
+        stockItemId
+        quantity
+      }
+    }
   }
-}
+`;
 
-export default merge(
+const karkunsListQuery = gql`
+  query allKarkuns {
+    allKarkuns {
+      _id
+      name
+    }
+  }
+`;
+
+const physicalStoresListQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+    }
+  }
+`;
+
+const allStockItemsLitsQuery = gql`
+  query allStockItems {
+    allStockItems {
+      _id
+      physicalStoreId
+      itemTypeName
+      itemCategoryName
+      currentStockLevel
+    }
+  }
+`;
+
+export default compose(
   Form.create(),
-  composeWithTracker(dataLoader),
+  graphql(formMutation, {
+    name: 'createIssuanceForm',
+    options: {
+      refetchQueries: ['pagedIssuanceForms'],
+    },
+  }),
+  graphql(physicalStoresListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(karkunsListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(allStockItemsLitsQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
   WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'New'])
 )(NewForm);

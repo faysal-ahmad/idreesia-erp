@@ -1,19 +1,16 @@
-import { get } from 'lodash';
-
 import { Duties, Karkuns, KarkunDuties } from '/imports/lib/collections/hr';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   DutyType: {
-    usedCount: dutyType => {
-      return KarkunDuties.find({
-        dutyId: { $eq: dutyType._id }
-      }).count();
-    },
+    usedCount: dutyType =>
+      KarkunDuties.find({
+        dutyId: { $eq: dutyType._id },
+      }).count(),
     createdByName: dutyType => {
       const karkun = Karkuns.findOne({
-        userId: { $eq: dutyType.createdBy }
+        userId: { $eq: dutyType.createdBy },
       });
 
       if (!karkun) return null;
@@ -21,21 +18,21 @@ export default {
     },
     updatedByName: dutyType => {
       const karkun = Karkuns.findOne({
-        userId: { $eq: dutyType.updatedBy }
+        userId: { $eq: dutyType.updatedBy },
       });
 
       if (!karkun) return null;
       return `${karkun.firstName} ${karkun.lastName}`;
-    }
+    },
   },
 
   Query: {
     allDuties() {
       return Duties.find({}).fetch();
     },
-    dutyById(obj, { id }, context) {
+    dutyById(obj, { id }) {
       return Duties.findOne(id);
-    }
+    },
   },
 
   Mutation: {
@@ -50,7 +47,7 @@ export default {
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
-        updatedBy: userId
+        updatedBy: userId,
       });
 
       return Duties.findOne(dutyId);
@@ -66,8 +63,8 @@ export default {
         $set: {
           name,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return Duties.findOne(id);
@@ -79,6 +76,6 @@ export default {
       }
 
       return Duties.remove(_id);
-    }
-  }
+    },
+  },
 };

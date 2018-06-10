@@ -12,11 +12,10 @@ const { SubMenu } = Menu;
 class InventorySidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
-    activeModuleName: PropTypes.string,
-    setActiveSubModuleName: PropTypes.func
+    setActiveSubModuleName: PropTypes.func,
   };
 
-  handleMenuItemSelected = ({ item, key, selectedKeys }) => {
+  handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
@@ -27,23 +26,22 @@ class InventorySidebar extends Component {
 
       case 'issuance-forms':
         setActiveSubModuleName(SubModuleNames.issuanceForms);
-        const issuanceFormsListPath = paths.issuanceFormsListPath.replace(':pageId', '1');
-        history.push(issuanceFormsListPath);
+        history.push(paths.issuanceFormsPath);
         break;
 
       case 'receival-forms':
         setActiveSubModuleName(SubModuleNames.receivalForms);
-        history.push(paths.receivalFormsListPath);
+        history.push(paths.receivalFormsPath);
         break;
 
       case 'adjustment-forms':
         setActiveSubModuleName(SubModuleNames.adjustmentForms);
-        history.push(paths.adjustmentFormsListPath);
+        history.push(paths.adjustmentFormsPath);
         break;
 
       case 'purchase-order-forms':
         setActiveSubModuleName(SubModuleNames.purchaseOrderForms);
-        history.push(paths.purchaseOrderFormsListPath);
+        history.push(paths.purchaseOrderFormsPath);
         break;
 
       case 'item-types':
@@ -105,19 +103,11 @@ class InventorySidebar extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    activeModuleName: state.activeModuleName
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setActiveSubModuleName: subModuleName => {
-      dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  setActiveSubModuleName: subModuleName => {
+    dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
+  },
+});
 
 const InventorySidebarContainer = connect(null, mapDispatchToProps)(InventorySidebar);
 export default InventorySidebarContainer;

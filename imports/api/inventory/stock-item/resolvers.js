@@ -34,6 +34,16 @@ export default {
     allStockItems() {
       return StockItems.find({}).fetch();
     },
+    allStockItemsByPhysicalStore(physicalStoreId) {
+      if (physicalStoreId) {
+        const stockItems = StockItems.find({
+          physicalStoreId: { $eq: physicalStoreId },
+        }).fetch();
+        return stockItems;
+      }
+
+      return [];
+    },
     pagedStockItems(obj, { queryString }) {
       return getStockItems(queryString);
     },

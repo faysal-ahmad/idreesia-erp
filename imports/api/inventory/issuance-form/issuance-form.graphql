@@ -1,0 +1,39 @@
+type IssuanceForm {
+  _id: String
+  issueDate: String
+  issuedBy: String
+  issuedTo: String
+  physicalStoreId: String
+  items: [ItemWithQuantity]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedIssuanceForm {
+  totalResults: Int
+  issuanceForms: [IssuanceForm]
+}
+
+extend type Query {
+  allIssuanceForms: [IssuanceForm]
+  pagedIssuanceForms(queryString: String): PagedIssuanceForm
+  issuanceFormById(id: String!): IssuanceForm
+}
+
+extend type Mutation {
+  createIssuanceForm(
+    issueDate: String!
+    issuedBy: String!
+    issuedTo: String!
+    physicalStoreId: String!
+    items: [ItemWithQuantityInput]
+  ): IssuanceForm
+  updateIssuanceForm(id: String!): IssuanceForm
+  approveIssuanceForm(id: String!): IssuanceForm
+  removeIssuanceForm(id: String!): Int
+}

@@ -39,6 +39,8 @@ export default class SelectField extends Component {
 
   static defaultProps = {
     data: [],
+    getDataValue: ({ _id }) => _id,
+    getDataText: ({ name }) => name,
     initialValue: null,
     fieldLayout: formItemLayout,
   };

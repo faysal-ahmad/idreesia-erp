@@ -1,4 +1,4 @@
-import { findIndex, forEach } from 'lodash';
+import { findIndex } from 'lodash';
 
 export default function hasOnePermission(userId, permissions) {
   const user = Meteor.users.findOne(userId);
@@ -15,6 +15,7 @@ export default function hasOnePermission(userId, permissions) {
       retVal = true;
       return false;
     }
+    return true;
   });
 
   return retVal;

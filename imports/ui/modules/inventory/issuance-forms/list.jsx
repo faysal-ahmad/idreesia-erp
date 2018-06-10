@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { merge } from 'react-komposer';
-import { Button, Table, Select, DatePicker } from 'antd';
+import { Button, Pagination, Table } from 'antd';
 import moment from 'moment';
+import gql from 'graphql-tag';
+import { compose, graphql } from 'react-apollo';
+import { isFinite, toSafeInteger } from 'lodash';
 
-import { composeWithTracker } from '/imports/ui/utils';
-import { WithBreadcrumbs, WithListData } from '/imports/ui/composers';
+import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { Profiles } from '/imports/lib/collections/admin';
-import { ItemStocks, ItemTypes, PhysicalStores } from '/imports/lib/collections/inventory';
-import { Find as FindIssuanceForms } from '/imports/api/methods/inventory/issuance-forms';
 
-import { getNameFromProfileId, getItemDisplayNameFromItemStockId } from '../common/helpers';
+import { getNameFromProfileId } from '../common/helpers';
 
 import ListFilter from './list-filter';
 
@@ -21,29 +19,23 @@ const ToolbarStyle = {
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
   alignItems: 'center',
-  width: '100%'
-};
-
-const FilterStyle = {
-  width: '400px'
-};
-
-const StoreSelectStyle = {
-  width: '300px'
+  width: '100%',
 };
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    physicalStores: PropTypes.array,
-    itemStocks: PropTypes.array,
-    itemTypes: PropTypes.array,
-    profiles: PropTypes.array,
 
-    data: PropTypes.array,
-    pageCount: PropTypes.number,
-    setListParams: PropTypes.func
+    queryString: PropTypes.string,
+    queryParams: PropTypes.object,
+
+    loading: PropTypes.bool,
+    pagedIssuanceForms: PropTypes.shape({
+      totalResults: PropTypes.number,
+      issuanceForms: PropTypes.array,
+    }),
+    allPhysicalStores: PropTypes.array,
   };
 
   columns = [
@@ -51,46 +43,35 @@ class List extends Component {
       title: 'Issue Date',
       dataIndex: 'issueDate',
       key: 'issueDate',
-      render: (text, record) => {
+      render: text => {
         const date = moment(text);
         return date.format('DD MMM, YYYY');
-      }
+      },
     },
     {
       title: 'Issued To',
       dataIndex: 'issuedTo',
       key: 'issuedTo',
-      render: (text, record) => {
-        return getNameFromProfileId(text);
-      }
+      render: text => getNameFromProfileId(text),
     },
-    {
+    /*    {
       title: 'Items',
       dataIndex: 'items',
       key: 'items',
       render: (items, record) => {
-        const formattedItems = items.map(item => {
-          return `${getItemDisplayNameFromItemStockId(item.itemStockId)} - ${item.quantity}`;
-        });
+        const formattedItems = items.map(
+          item => `${getItemDisplayNameFromItemStockId(item.itemStockId)} - ${item.quantity}`
+        );
         return formattedItems.join(',');
-      }
-    }
+      },
+    }, */
   ];
 
   constructor(props) {
     super(props);
     this.state = {
-      selectedStoreId: null
+      selectedStoreId: null,
     };
-  }
-
-  componentWillMount() {
-    const { physicalStores } = this.props;
-    if (physicalStores.length > 0) {
-      const selectedStoreId = physicalStores[0]._id;
-      const state = { selectedStoreId };
-      this.setState(state);
-    }
   }
 
   handleNewClicked = () => {
@@ -109,14 +90,14 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { physicalStores } = this.props;
+    const { allPhysicalStores } = this.props;
 
     return (
       <div style={ToolbarStyle}>
         <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
           New Issuance Form
         </Button>
-        <ListFilter filterCriteria={{}} physicalStores={physicalStores} />
+        <ListFilter filterCriteria={{}} physicalStores={allPhysicalStores} />
         {/*
             <div style={FilterBoxStyle}>
               <div>
@@ -140,42 +121,74 @@ class List extends Component {
   };
 
   render() {
-    const { data } = this.props;
+    const { loading } = this.props;
+    if (loading) return null;
+
+    const {
+      queryParams: { pageIndex, pageSize },
+      pagedIssuanceForms: { totalResults, issuanceForms },
+    } = this.props;
+
     return (
       <Table
-        rowKey={'_id'}
-        dataSource={data}
+        rowKey="_id"
+        dataSource={issuanceForms}
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        footer={() => (
+          <Pagination
+            defaultCurrent={1}
+            defaultPageSize={10}
+            current={isFinite(pageIndex) ? toSafeInteger(pageIndex) + 1 : 1}
+            pageSize={isFinite(pageSize) ? toSafeInteger(pageSize) : 10}
+            showSizeChanger
+            onChange={this.onChange}
+            onShowSizeChange={this.onShowSizeChange}
+            total={totalResults}
+          />
+        )}
       />
     );
   }
 }
 
-function dataLoader(props, onData) {
-  const { pageNumber, filterCriteria } = props;
-  const physicalStoresSubscription = Meteor.subscribe('inventory/physicalStores#all');
-  const itemStocksSubscription = Meteor.subscribe('inventory/itemStocks#all');
-  const itemTypesSubscription = Meteor.subscribe('inventory/itemTypes#all');
-  const profilesSubscription = Meteor.subscribe('admin/profiles#all');
-
-  if (
-    physicalStoresSubscription.ready() &&
-    itemStocksSubscription.ready() &&
-    itemTypesSubscription.ready() &&
-    profilesSubscription.ready()
-  ) {
-    const physicalStores = PhysicalStores.find({}).fetch();
-    const itemStocks = ItemStocks.find({}).fetch();
-    const itemTypes = ItemTypes.find({}).fetch();
-    const profiles = Profiles.find({}).fetch();
-    onData(null, { physicalStores, itemStocks, itemTypes, profiles });
+const listQuery = gql`
+  query pagedIssuanceForms($queryString: String) {
+    pagedIssuanceForms(queryString: $queryString) {
+      totalResults
+      issuanceForms {
+        _id
+        issueDate
+        issuedBy
+        issuedTo
+        physicalStoreId
+        items {
+          stockItemId
+          quantity
+        }
+      }
+    }
   }
-}
+`;
 
-export default merge(
-  composeWithTracker(dataLoader),
-  WithListData('IssuanceForms', FindIssuanceForms),
+const physicalStoresListQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+    }
+  }
+`;
+
+export default compose(
+  WithQueryParams(),
+  graphql(physicalStoresListQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data }),
+    options: ({ queryString }) => ({ variables: { queryString } }),
+  }),
   WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'List'])
 )(List);

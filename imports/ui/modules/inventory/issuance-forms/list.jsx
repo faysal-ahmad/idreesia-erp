@@ -10,8 +10,6 @@ import { isFinite, toSafeInteger } from 'lodash';
 import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
-import { getNameFromProfileId } from '../common/helpers';
-
 import ListFilter from './list-filter';
 
 const ToolbarStyle = {
@@ -50,9 +48,8 @@ class List extends Component {
     },
     {
       title: 'Issued To',
-      dataIndex: 'issuedTo',
-      key: 'issuedTo',
-      render: text => getNameFromProfileId(text),
+      dataIndex: 'issuedToName',
+      key: 'issuedToName',
     },
     /*    {
       title: 'Items',
@@ -74,6 +71,46 @@ class List extends Component {
     };
   }
 
+  refreshPage = newParams => {
+    const { physicalStoreId, approvalStatus, startDate, endDate, pageIndex, pageSize } = newParams;
+    const { queryParams, history, location } = this.props;
+
+    let physicalStoreIdVal;
+    if (newParams.hasOwnProperty('physicalStoreId')) physicalStoreIdVal = physicalStoreId || '';
+    else physicalStoreIdVal = queryParams.physicalStoreId || '';
+
+    let showApprovedVal;
+    let showUnapprovedVal;
+    if (newParams.hasOwnProperty('approvalStatus')) {
+      showApprovedVal = approvalStatus.indexOf('approved') !== -1 ? 'true' : 'false';
+      showUnapprovedVal = approvalStatus.indexOf('unapproved') !== -1 ? 'true' : 'false';
+    } else {
+      showApprovedVal = queryParams.showApproved || 'false';
+      showUnapprovedVal = queryParams.showUnapproved || 'false';
+    }
+
+    let startDateVal;
+    if (newParams.hasOwnProperty('startDate')) startDateVal = startDate.format('DD-MM-YYYY') || '';
+    else startDateVal = queryParams.startDateVal || '';
+
+    let endDateVal;
+    if (newParams.hasOwnProperty('endDate')) endDateVal = endDate.format('DD-MM-YYYY') || '';
+    else endDateVal = queryParams.endDateVal || '';
+
+    let pageIndexVal;
+    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
+    else pageIndexVal = queryParams.pageIndex || 0;
+
+    let pageSizeVal;
+    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 10;
+    else pageSizeVal = queryParams.pageSize || 10;
+
+    const path = `${
+      location.pathname
+    }?physicalStoreId=${physicalStoreIdVal}&showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    history.push(path);
+  };
+
   handleNewClicked = () => {
     const { history } = this.props;
     history.push(paths.issuanceFormsNewFormPath);
@@ -89,27 +126,35 @@ class List extends Component {
     console.log(dateStrings);
   };
 
+  onChange = (pageIndex, pageSize) => {
+    this.refreshPage({
+      pageIndex: pageIndex - 1,
+      pageSize,
+    });
+  };
+
+  onShowSizeChange = (pageIndex, pageSize) => {
+    this.refreshPage({
+      pageIndex: pageIndex - 1,
+      pageSize,
+    });
+  };
+
   getTableHeader = () => {
-    const { allPhysicalStores } = this.props;
+    const { queryParams, allPhysicalStores } = this.props;
 
     return (
       <div style={ToolbarStyle}>
         <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
           New Issuance Form
         </Button>
-        <ListFilter filterCriteria={{}} physicalStores={allPhysicalStores} />
+        <ListFilter
+          refreshPage={this.refreshPage}
+          queryParams={queryParams}
+          allPhysicalStores={allPhysicalStores}
+        />
         {/*
             <div style={FilterBoxStyle}>
-              <div>
-                Physical Store:&nbsp;
-                <Select
-                  defaultValue={selectedStoreId}
-                  style={StoreSelectStyle}
-                  onChange={this.handleStoreChanged}
-                >
-                  {options}
-                </Select>
-              </div>
               <div>
                 Issue Dates:&nbsp;
                 <DatePicker.RangePicker onChange={this.handleDateRangeChange} />
@@ -162,6 +207,8 @@ const listQuery = gql`
         issueDate
         issuedBy
         issuedTo
+        issuedByName
+        issuedToName
         physicalStoreId
         items {
           stockItemId

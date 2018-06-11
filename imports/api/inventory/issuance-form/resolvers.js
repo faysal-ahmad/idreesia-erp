@@ -1,8 +1,53 @@
+import { Karkuns } from '/imports/lib/collections/hr';
 import { IssuanceForms } from '/imports/lib/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
+  IssuanceForm: {
+    issuedByName: issuanceForm => {
+      const karkun = Karkuns.findOne({
+        _id: { $eq: issuanceForm.issuedBy },
+      });
+
+      if (!karkun) return null;
+      return `${karkun.firstName} ${karkun.lastName}`;
+    },
+    issuedToName: issuanceForm => {
+      const karkun = Karkuns.findOne({
+        _id: { $eq: issuanceForm.issuedTo },
+      });
+
+      if (!karkun) return null;
+      return `${karkun.firstName} ${karkun.lastName}`;
+    },
+    createdByName: issuanceForm => {
+      const karkun = Karkuns.findOne({
+        userId: { $eq: issuanceForm.createdBy },
+      });
+
+      if (!karkun) return null;
+      return `${karkun.firstName} ${karkun.lastName}`;
+    },
+    updatedByName: issuanceForm => {
+      const karkun = Karkuns.findOne({
+        userId: { $eq: issuanceForm.updatedBy },
+      });
+
+      if (!karkun) return null;
+      return `${karkun.firstName} ${karkun.lastName}`;
+    },
+    approvedByName: issuanceForm => {
+      if (!issuanceForm.approvedBy) return null;
+
+      const karkun = Karkuns.findOne({
+        userId: { $eq: issuanceForm.approvedBy },
+      });
+
+      if (!karkun) return null;
+      return `${karkun.firstName} ${karkun.lastName}`;
+    },
+  },
   Query: {
     allIssuanceForms() {
       return IssuanceForms.find({}).fetch();

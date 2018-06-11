@@ -6,6 +6,12 @@ type IssuanceForm {
   physicalStoreId: String
   items: [ItemWithQuantity]
 
+  issuedByName: String
+  issuedToName: String
+  createdByName: String
+  updatedByName: String
+  approvedByName: String
+
   createdAt: String
   createdBy: String
   updatedAt: String

@@ -159,8 +159,8 @@ const formMutation = gql`
     ) {
       _id
       issueDate
-      issuedBy
-      issuedTo
+      issuedByName
+      issuedToName
       physicalStoreId
       items {
         stockItemId

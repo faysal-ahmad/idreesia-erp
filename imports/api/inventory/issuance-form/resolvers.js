@@ -3,6 +3,8 @@ import { IssuanceForms } from '/imports/lib/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
+import getIssuanceForms from './queries';
+
 export default {
   IssuanceForm: {
     issuedByName: issuanceForm => {
@@ -53,10 +55,7 @@ export default {
       return IssuanceForms.find({}).fetch();
     },
     pagedIssuanceForms(obj, { queryString }) {
-      return {
-        totalResults: IssuanceForms.find({}).count(),
-        issuanceForms: IssuanceForms.find({}).fetch(),
-      };
+      return getIssuanceForms(queryString);
     },
     issuanceFormById(obj, { id }) {
       return IssuanceForms.findOne(id);

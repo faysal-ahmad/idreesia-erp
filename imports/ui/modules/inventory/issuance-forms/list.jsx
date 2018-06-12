@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
 import { isFinite, toSafeInteger } from 'lodash';
 
+import { Formats } from '/imports/lib/constants';
 import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
@@ -85,16 +86,18 @@ class List extends Component {
       showApprovedVal = approvalStatus.indexOf('approved') !== -1 ? 'true' : 'false';
       showUnapprovedVal = approvalStatus.indexOf('unapproved') !== -1 ? 'true' : 'false';
     } else {
-      showApprovedVal = queryParams.showApproved || 'false';
-      showUnapprovedVal = queryParams.showUnapproved || 'false';
+      showApprovedVal = queryParams.showApproved || 'true';
+      showUnapprovedVal = queryParams.showUnapproved || 'true';
     }
 
     let startDateVal;
-    if (newParams.hasOwnProperty('startDate')) startDateVal = startDate.format('DD-MM-YYYY') || '';
+    if (newParams.hasOwnProperty('startDate'))
+      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
     else startDateVal = queryParams.startDateVal || '';
 
     let endDateVal;
-    if (newParams.hasOwnProperty('endDate')) endDateVal = endDate.format('DD-MM-YYYY') || '';
+    if (newParams.hasOwnProperty('endDate'))
+      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
     else endDateVal = queryParams.endDateVal || '';
 
     let pageIndexVal;
@@ -120,10 +123,6 @@ class List extends Component {
     const selectedStoreId = value;
     const state = Object.assign({}, this.state, { selectedStoreId });
     this.setState(state);
-  };
-
-  handleDateRangeChange = (dates, dateStrings) => {
-    console.log(dateStrings);
   };
 
   onChange = (pageIndex, pageSize) => {
@@ -153,14 +152,6 @@ class List extends Component {
           queryParams={queryParams}
           allPhysicalStores={allPhysicalStores}
         />
-        {/*
-            <div style={FilterBoxStyle}>
-              <div>
-                Issue Dates:&nbsp;
-                <DatePicker.RangePicker onChange={this.handleDateRangeChange} />
-              </div>
-            </div>
-           */}
       </div>
     );
   };

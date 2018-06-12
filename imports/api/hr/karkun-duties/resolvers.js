@@ -14,18 +14,18 @@ export default {
       if (!karkunDutyType.locationId) return null;
       const location = DutyLocations.findOne(karkunDutyType.locationId);
       return location ? location.name : null;
-    }
+    },
   },
 
   Query: {
-    karkunDutiesByKarkunId(obj, { karkunId }, context) {
+    karkunDutiesByKarkunId(obj, { karkunId }) {
       return KarkunDuties.find({
-        karkunId: { $eq: karkunId }
+        karkunId: { $eq: karkunId },
       }).fetch();
     },
-    karkunDutyById(obj, { _id }, context) {
+    karkunDutyById(obj, { _id }) {
       return KarkunDuties.findOne(_id);
-    }
+    },
   },
 
   Mutation: {
@@ -59,7 +59,7 @@ export default {
         endTime,
         startDate: mStartDate.isValid() ? mStartDate.toDate() : null,
         endDate: mEndDate.isValid() ? mEndDate.toDate() : null,
-        daysOfWeek
+        daysOfWeek,
       };
       console.log(newDuty);
       const karkunDutyId = KarkunDuties.insert(newDuty);
@@ -92,8 +92,8 @@ export default {
           locationId,
           startTime,
           endTime,
-          daysOfWeek
-        }
+          daysOfWeek,
+        },
       });
 
       return KarkunDuties.findOne(_id);
@@ -105,6 +105,6 @@ export default {
       }
 
       return KarkunDuties.remove(_id);
-    }
-  }
+    },
+  },
 };

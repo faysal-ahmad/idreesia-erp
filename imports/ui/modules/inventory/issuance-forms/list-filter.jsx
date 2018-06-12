@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Collapse, Form, Row, Button } from 'antd';
+import moment from 'moment';
 
+import { Formats } from '/imports/lib/constants';
 import { CheckboxField, DateField, SelectField } from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
@@ -46,6 +48,12 @@ class ListFilter extends Component {
     const { getFieldDecorator } = this.props.form;
     const { allPhysicalStores, queryParams } = this.props;
 
+    const mStartDate = moment(queryParams.startDate, Formats.DATE_FORMAT);
+    const mEndDate = moment(queryParams.endDate, Formats.DATE_FORMAT);
+    const status = [];
+    if (queryParams.showApproved === 'true') status.push('approved');
+    if (queryParams.showUnapproved === 'true') status.push('unapproved');
+
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
@@ -68,7 +76,7 @@ class ListFilter extends Component {
                 { label: 'Approved', value: 'approved' },
                 { label: 'Unapproved', value: 'unapproved' },
               ]}
-              initialValue={['approved', 'unapproved']}
+              initialValue={status}
               getFieldDecorator={getFieldDecorator}
             />
             <DateField
@@ -76,6 +84,7 @@ class ListFilter extends Component {
               fieldLabel="Start Date"
               fieldLayout={formItemLayout}
               required={false}
+              initialValue={mStartDate.isValid() ? mStartDate : null}
               getFieldDecorator={getFieldDecorator}
             />
             <DateField
@@ -83,6 +92,7 @@ class ListFilter extends Component {
               fieldLabel="End Date"
               fieldLayout={formItemLayout}
               required={false}
+              initialValue={mEndDate.isValid() ? mEndDate : null}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>

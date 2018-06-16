@@ -57,8 +57,8 @@ export default {
     pagedIssuanceForms(obj, { queryString }) {
       return getIssuanceForms(queryString);
     },
-    issuanceFormById(obj, { id }) {
-      return IssuanceForms.findOne(id);
+    issuanceFormById(obj, { _id }) {
+      return IssuanceForms.findOne(_id);
     },
   },
 
@@ -89,28 +89,70 @@ export default {
       return IssuanceForms.findOne(issuanceFormId);
     },
 
-    updateIssuanceForm(obj, { id }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+    updateIssuanceForm(
+      obj,
+      { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items },
+      { userId }
+    ) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        throw new Error('You do not have permission to manage Issuance Forms in the System.');
       }
 
-      return IssuanceForms.findOne(id);
+      const date = new Date();
+      IssuanceForms.update(
+        {
+          _id: { $eq: _id },
+          approvedOn: { $eq: null },
+          approvedBy: { $eq: null },
+        },
+        {
+          $set: {
+            issueDate,
+            issuedBy,
+            issuedTo,
+            physicalStoreId,
+            items,
+            updatedAt: date,
+            updatedBy: userId,
+          },
+        }
+      );
+
+      return IssuanceForms.findOne(_id);
     },
 
-    approveIssuanceForm(obj, { id }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+    approveIssuanceForm(obj, { _id }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.IN_APPROVE_ISSUANCE_FORMS])) {
+        throw new Error('You do not have permission to approve Issuance Forms in the System.');
       }
 
-      return IssuanceForms.findOne(id);
+      const date = new Date();
+      IssuanceForms.update(_id, {
+        $set: {
+          approvedOn: date,
+          approvedBy: userId,
+        },
+      });
+
+      return IssuanceForms.findOne(_id);
     },
 
-    removeIssuanceForm(obj, { id }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+    removeIssuanceForm(obj, { _id }, { userId }) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        throw new Error('You do not have permission to manage Issuance Forms in the System.');
       }
 
-      return IssuanceForms.findOne(id);
+      return IssuanceForms.remove(_id);
     },
   },
 };

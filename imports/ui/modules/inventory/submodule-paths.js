@@ -25,7 +25,7 @@ export default class SubModulePaths {
   // *************************************************************************************
   static issuanceFormsPath = `${ModulePaths.inventory}/issuance-forms`;
   static issuanceFormsNewFormPath = `${SubModulePaths.issuanceFormsPath}/new`;
-  static issuanceFormsEditFormPath = `${SubModulePaths.issuanceFormsPath}/edit/:formId`;
+  static issuanceFormsEditFormPath = `${SubModulePaths.issuanceFormsPath}/:formId`;
 
   static receivalFormsPath = `${ModulePaths.inventory}/receival-forms`;
   static receivalFormsNewFormPath = `${SubModulePaths.receivalFormsPath}/new`;

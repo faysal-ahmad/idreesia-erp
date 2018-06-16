@@ -110,9 +110,6 @@ export default compose(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { itemTypeId } = match.params;
-      return { variables: { _id: itemTypeId } };
-    },
+    options: ({ itemTypeId }) => ({ variables: { _id: itemTypeId } }),
   })
 )(Picture);

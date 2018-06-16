@@ -28,7 +28,7 @@ type PagedIssuanceForm {
 extend type Query {
   allIssuanceForms: [IssuanceForm]
   pagedIssuanceForms(queryString: String): PagedIssuanceForm
-  issuanceFormById(id: String!): IssuanceForm
+  issuanceFormById(_id: String!): IssuanceForm
 }
 
 extend type Mutation {
@@ -39,7 +39,14 @@ extend type Mutation {
     physicalStoreId: String!
     items: [ItemWithQuantityInput]
   ): IssuanceForm
-  updateIssuanceForm(id: String!): IssuanceForm
-  approveIssuanceForm(id: String!): IssuanceForm
-  removeIssuanceForm(id: String!): Int
+  updateIssuanceForm(
+    _id: String!
+    issueDate: String!
+    issuedBy: String!
+    issuedTo: String!
+    physicalStoreId: String!
+    items: [ItemWithQuantityInput]
+  ): IssuanceForm
+  approveIssuanceForm(_id: String!): IssuanceForm
+  removeIssuanceForm(_id: String!): Int
 }

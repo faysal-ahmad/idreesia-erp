@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { Button, Pagination, Table } from 'antd';
+import { Button, Checkbox, Icon, Pagination, Table, Tooltip } from 'antd';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
@@ -19,6 +18,18 @@ const ToolbarStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
+};
+
+const ActionsStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+};
+
+const IconStyle = {
+  cursor: 'pointer',
 };
 
 class List extends Component {
@@ -39,11 +50,21 @@ class List extends Component {
 
   columns = [
     {
+      title: 'Approved',
+      dataIndex: 'approvedOn',
+      key: 'approvedOn',
+      render: text => {
+        let value = false;
+        if (text) value = true;
+        return <Checkbox checked={value} disabled />;
+      },
+    },
+    {
       title: 'Issue Date',
       dataIndex: 'issueDate',
       key: 'issueDate',
       render: text => {
-        const date = moment(text);
+        const date = moment(new Date(text));
         return date.format('DD MMM, YYYY');
       },
     },
@@ -52,17 +73,56 @@ class List extends Component {
       dataIndex: 'issuedToName',
       key: 'issuedToName',
     },
-    /*    {
+    {
       title: 'Items',
       dataIndex: 'items',
       key: 'items',
-      render: (items, record) => {
-        const formattedItems = items.map(
-          item => `${getItemDisplayNameFromItemStockId(item.itemStockId)} - ${item.quantity}`
-        );
-        return formattedItems.join(',');
+      render: items => {
+        const formattedItems = items.map(item => `${item.itemTypeName} - ${item.quantity}`);
+        return formattedItems.join(', ');
       },
-    }, */
+    },
+    {
+      title: 'Actions',
+      key: 'action',
+      render: (text, record) => {
+        if (!record.approvedOn) {
+          return (
+            <div style={ActionsStyle}>
+              <Tooltip title="Approve">
+                <Icon
+                  type="check-square-o"
+                  style={IconStyle}
+                  onClick={() => {
+                    this.handleApproveClicked(record);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title="Edit">
+                <Icon
+                  type="edit"
+                  style={IconStyle}
+                  onClick={() => {
+                    this.handleEditClicked(record);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title="Delete">
+                <Icon
+                  type="delete"
+                  style={IconStyle}
+                  onClick={() => {
+                    this.handleDeleteClicked(record);
+                  }}
+                />
+              </Tooltip>
+            </div>
+          );
+        }
+
+        return null;
+      },
+    },
   ];
 
   constructor(props) {
@@ -118,6 +178,14 @@ class List extends Component {
     const { history } = this.props;
     history.push(paths.issuanceFormsNewFormPath);
   };
+
+  handleEditClicked = record => {
+    const { history } = this.props;
+    history.push(`${paths.issuanceFormsPath}/${record._id}`);
+  };
+
+  handleDeleteClicked = () => {};
+  handleApproveClicked = () => {};
 
   handleStoreChanged = value => {
     const selectedStoreId = value;
@@ -201,9 +269,11 @@ const listQuery = gql`
         issuedByName
         issuedToName
         physicalStoreId
+        approvedOn
         items {
           stockItemId
           quantity
+          itemTypeName
         }
       }
     }

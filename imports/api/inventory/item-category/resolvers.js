@@ -4,11 +4,9 @@ import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   ItemCategory: {
-    itemTypeCount: itemCategory => {
-      return ItemTypes.find({
-        itemCategoryId: { $eq: itemCategory._id }
-      }).count();
-    }
+    itemTypeCount: itemCategory => ItemTypes.find({
+        itemCategoryId: { $eq: itemCategory._id },
+      }).count(),
   },
 
   Query: {
@@ -17,7 +15,7 @@ export default {
     },
     itemCategoryById(obj, { id }, context) {
       return ItemCategories.findOne(id);
-    }
+    },
   },
 
   Mutation: {
@@ -32,7 +30,7 @@ export default {
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
-        updatedBy: userId
+        updatedBy: userId,
       });
 
       return ItemCategories.findOne(itemCategoryId);
@@ -48,11 +46,11 @@ export default {
         $set: {
           name,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return ItemCategories.findOne(id);
-    }
-  }
+    },
+  },
 };

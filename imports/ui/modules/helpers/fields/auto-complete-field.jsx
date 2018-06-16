@@ -28,6 +28,7 @@ export default class AutoCompleteField extends Component {
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
+    initialValue: PropTypes.string,
     optionRenderer: PropTypes.func,
   };
 
@@ -50,6 +51,7 @@ export default class AutoCompleteField extends Component {
       requiredMessage,
       placeholder,
       getFieldDecorator,
+      initialValue,
       optionRenderer,
     } = this.props;
 
@@ -78,7 +80,7 @@ export default class AutoCompleteField extends Component {
       return optionText.indexOf(inputValue) !== -1;
     };
 
-    return getFieldDecorator(fieldName, { rules })(
+    return getFieldDecorator(fieldName, { initialValue, rules })(
       <AutoComplete
         placeholder={placeholder}
         optionLabelProp="text"

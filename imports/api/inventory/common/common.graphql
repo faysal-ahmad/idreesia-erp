@@ -1,6 +1,8 @@
 type ItemWithQuantity {
   stockItemId: String
   quantity: Float
+
+  itemTypeName: String
 }
 
 input ItemWithQuantityInput {

@@ -28,7 +28,7 @@ const ItemForm = ({ form: { getFieldDecorator }, stockItems }) => (
       requiredMessage="Please input a name for the item."
       getFieldDecorator={getFieldDecorator}
       optionRenderer={(text, dataObj) => (
-        <div style={OptionStyle}>
+        <div key={dataObj.stockItemId} style={OptionStyle}>
           {dataObj.itemTypeName}
           <span>{dataObj.currentStockLevel} Available</span>
         </div>

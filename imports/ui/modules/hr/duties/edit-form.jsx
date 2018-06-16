@@ -17,8 +17,9 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     dutyById: PropTypes.object,
-    updateDuty: PropTypes.func
+    updateDuty: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -35,8 +36,8 @@ class EditForm extends Component {
       updateDuty({
         variables: {
           id: dutyById._id,
-          name: fieldsValue.name
-        }
+          name: fieldsValue.name,
+        },
       })
         .then(() => {
           history.push(paths.dutiesPath);
@@ -58,33 +59,33 @@ class EditForm extends Component {
           fieldName="name"
           fieldLabel="Duty Name"
           initialValue={dutyById.name}
-          required={true}
+          required
           requiredMessage="Please input a name for the duty."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
-          disabled={true}
+          disabled
           fieldName="createdByName"
           fieldLabel="Created By"
           initialValue={dutyById.createdByName}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
-          disabled={true}
+          disabled
           fieldName="createdAt"
           fieldLabel="Created At"
           initialValue={moment(dutyById.createdAt).format('DD-MM-YYYY hh:mm a')}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
-          disabled={true}
+          disabled
           fieldName="updatedByName"
           fieldLabel="Updated By"
           initialValue={dutyById.updatedByName}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
-          disabled={true}
+          disabled
           fieldName="updatedAt"
           fieldLabel="Updated At"
           initialValue={moment(dutyById.updatedAt).format('DD-MM-YYYY hh:mm a')}
@@ -127,15 +128,15 @@ export default merge(
   graphql(formMutation, {
     name: 'updateDuty',
     options: {
-      refetchQueries: ['allDuties']
-    }
+      refetchQueries: ['allDuties'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { dutyId } = match.params;
       return { variables: { id: dutyId } };
-    }
+    },
   }),
   WithBreadcrumbs(['HR', 'Setup', 'Duties', 'Edit'])
 )(EditForm);

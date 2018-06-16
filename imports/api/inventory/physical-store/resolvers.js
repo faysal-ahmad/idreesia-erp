@@ -7,9 +7,9 @@ export default {
     allPhysicalStores() {
       return PhysicalStores.find({}).fetch();
     },
-    physicalStoreById(obj, { id }, context) {
+    physicalStoreById(obj, { id }) {
       return PhysicalStores.findOne(id);
-    }
+    },
   },
 
   Mutation: {
@@ -25,7 +25,7 @@ export default {
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
-        updatedBy: userId
+        updatedBy: userId,
       });
 
       return PhysicalStores.findOne(physicalStoreId);
@@ -42,11 +42,11 @@ export default {
           name,
           address,
           updatedAt: date,
-          updatedBy: userId
-        }
+          updatedBy: userId,
+        },
       });
 
       return PhysicalStores.findOne(id);
-    }
-  }
+    },
+  },
 };

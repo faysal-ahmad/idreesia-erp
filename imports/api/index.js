@@ -25,6 +25,7 @@ import KarkunDutyResolvers from './hr/karkun-duties/resolvers';
  * Schema and Resolvers for the Inventory module
  */
 import CommonSchema from './inventory/common/common.graphql';
+import CommonResolvers from './inventory/common/resolvers';
 
 import ItemCategorySchema from './inventory/item-category/item-category.graphql';
 import ItemCategoryResolvers from './inventory/item-category/resolvers';
@@ -60,6 +61,8 @@ const resolvers = merge(
   DutyResolvers,
   KarkunResolvers,
   KarkunDutyResolvers,
+
+  CommonResolvers,
   ItemCategoryResolvers,
   ItemTypeResolvers,
   PhysicalStoreResolvers,

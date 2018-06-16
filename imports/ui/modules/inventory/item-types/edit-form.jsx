@@ -12,10 +12,10 @@ const EditForm = props => {
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="General Info" key="1">
-        <GeneralInfo itemTypeId={itemTypeId} {...this.props} />
+        <GeneralInfo itemTypeId={itemTypeId} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Picture" key="2">
-        <Picture itemTypeId={itemTypeId} {...this.props} />
+        <Picture itemTypeId={itemTypeId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

@@ -2,19 +2,23 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Button, Icon, Table } from 'antd';
+import { Button, Icon, Table, Tooltip, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
+const IconStyle = {
+  cursor: 'pointer',
+};
+
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     allDuties: PropTypes.array,
-    removeDuty: PropTypes.func
+    removeDuty: PropTypes.func,
   };
 
   columns = [
@@ -22,7 +26,7 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.dutiesPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => <Link to={`${paths.dutiesPath}/${record._id}`}>{text}</Link>,
     },
     {
       key: 'action',
@@ -30,20 +34,21 @@ class List extends Component {
         if (record.usedCount === 0) {
           return (
             <span>
-              <a href="javascript:;">
+              <Tooltip title="Delete">
                 <Icon
                   type="delete"
+                  style={IconStyle}
                   onClick={() => {
                     this.handleDeleteClicked(record);
                   }}
                 />
-              </a>
+              </Tooltip>
             </span>
           );
         }
         return null;
-      }
-    }
+      },
+    },
   ];
 
   handleNewClicked = () => {
@@ -55,8 +60,8 @@ class List extends Component {
     const { removeDuty } = this.props;
     removeDuty({
       variables: {
-        _id: record._id
-      }
+        _id: record._id,
+      },
     }).catch(error => {
       message.error(error.message, 5);
     });
@@ -67,17 +72,15 @@ class List extends Component {
 
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allDuties}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Duty
-            </Button>
-          );
-        }}
+        title={() => (
+          <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+            New Duty
+          </Button>
+        )}
       />
     );
   }
@@ -101,13 +104,13 @@ const removeDutyMutation = gql`
 
 export default merge(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyMutation, {
     name: 'removeDuty',
     options: {
-      refetchQueries: ['allDuties']
-    }
+      refetchQueries: ['allDuties'],
+    },
   }),
   WithBreadcrumbs(['HR', 'Setup', 'Duties', 'List'])
 )(List);

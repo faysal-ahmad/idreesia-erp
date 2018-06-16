@@ -17,7 +17,7 @@ const ButtonBarStyle = {
 export default class ItemsList extends Component {
   static propTypes = {
     physicalStoreId: PropTypes.string,
-    stockItems: PropTypes.array,
+    stockItemsByPhysicalStore: PropTypes.array,
 
     value: PropTypes.array,
     onChange: PropTypes.func,
@@ -28,7 +28,9 @@ export default class ItemsList extends Component {
     this.state = {
       showForm: false,
       physicalStoreId: props.physicalStoreId,
-      stockItems: props.value ? props.value : [],
+      stockItems: props.value
+        ? props.value.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }))
+        : [],
       selectedStockItemIds: [],
     };
   }
@@ -80,6 +82,7 @@ export default class ItemsList extends Component {
 
   handleNewItemFormSaved = () => {
     this.itemForm.validateFields(null, (errors, values) => {
+      debugger;
       if (!errors) {
         const { stockItemId, quantity } = values;
         const { stockItems } = this.state;
@@ -114,8 +117,8 @@ export default class ItemsList extends Component {
   };
 
   getItemTypeName(stockItemId) {
-    const { stockItems } = this.props;
-    const stockItem = find(stockItems, { _id: stockItemId });
+    const { stockItemsByPhysicalStore } = this.props;
+    const stockItem = find(stockItemsByPhysicalStore, { _id: stockItemId });
     if (stockItem) return stockItem.itemTypeName;
     return null;
   }
@@ -136,7 +139,7 @@ export default class ItemsList extends Component {
 
   render() {
     const { showForm, selectedStockItemIds } = this.state;
-    const { physicalStoreId, stockItems } = this.props;
+    const { physicalStoreId, stockItemsByPhysicalStore } = this.props;
     const rowSelection = {
       selectedRowKeys: selectedStockItemIds,
       onChange: this.handleRowSelectionChanged,
@@ -188,7 +191,7 @@ export default class ItemsList extends Component {
             ref={f => {
               this.itemForm = f;
             }}
-            stockItems={stockItems}
+            stockItems={stockItemsByPhysicalStore}
           />
         </Modal>
       </React.Fragment>

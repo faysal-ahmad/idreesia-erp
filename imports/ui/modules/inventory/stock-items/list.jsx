@@ -144,16 +144,31 @@ class List extends Component {
       title: 'Min Stock',
       dataIndex: 'minStockLevel',
       key: 'minStockLevel',
+      render: (text, record) => {
+        if (!text) return '';
+        if (record.unitOfMeasurement !== 'quantity') return `${text} ${record.unitOfMeasurement}`;
+        return text;
+      },
     },
     {
       title: 'Current Stock',
       dataIndex: 'currentStockLevel',
       key: 'currentStockLevel',
+      render: (text, record) => {
+        if (!text) return '';
+        if (record.unitOfMeasurement !== 'quantity') return `${text} ${record.unitOfMeasurement}`;
+        return text;
+      },
     },
     {
       title: 'Total Stock',
       dataIndex: 'totalStockLevel',
       key: 'totalStockLevel',
+      render: (text, record) => {
+        if (!text) return '';
+        if (record.unitOfMeasurement !== 'quantity') return `${text} ${record.unitOfMeasurement}`;
+        return text;
+      },
     },
   ];
 
@@ -200,6 +215,7 @@ const listQuery = gql`
         itemTypeName
         itemTypePicture
         itemCategoryName
+        unitOfMeasurement
         minStockLevel
         currentStockLevel
         totalStockLevel

@@ -9,6 +9,7 @@ type StockItem {
   itemTypeName: String
   itemTypePicture: String
   itemCategoryName: String
+  unitOfMeasurement: String
   physicalStoreName: String
 
   createdAt: String

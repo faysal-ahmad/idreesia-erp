@@ -24,6 +24,10 @@ export default {
       const itemCategory = ItemCategories.findOne(itemType.itemCategoryId);
       return itemCategory.name;
     },
+    unitOfMeasurement: stockItem => {
+      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
+      return itemType.unitOfMeasurement;
+    },
     physicalStoreName: stockItem => {
       const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
       return physicalStore.name;

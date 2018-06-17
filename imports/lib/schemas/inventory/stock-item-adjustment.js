@@ -1,30 +1,27 @@
 import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from '../common';
+import { approvable, identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
-  itemTypeId: {
+  stockItemId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
   },
-  physicalStoreId: {
+  adjustmentDate: {
+    type: Date,
+  },
+  adjustedBy: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
   },
-  startingStockLevel: {
+  adjustment: {
     type: Number,
   },
-  minStockLevel: {
-    type: Number,
-    optional: true,
-  },
-  currentStockLevel: {
-    type: Number,
-  },
-  totalStockLevel: {
-    type: Number,
+  adjustmentReason: {
+    type: String,
     optional: true,
   },
 })
+  .extend(approvable)
   .extend(identifiable)
   .extend(timestamps);

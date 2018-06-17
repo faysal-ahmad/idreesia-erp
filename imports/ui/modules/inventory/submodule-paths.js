@@ -3,7 +3,7 @@ import { ModulePaths } from '/imports/ui/constants';
 export default class SubModulePaths {
   static stockItemsPath = `${ModulePaths.inventory}/stock-items`;
   static stockItemsNewFormPath = `${SubModulePaths.stockItemsPath}/new`;
-  static stockItemsViewFormPath = `${SubModulePaths.stockItemsPath}/:stockItemId`;
+  static stockItemsEditFormPath = `${SubModulePaths.stockItemsPath}/:stockItemId`;
 
   // *************************************************************************************
   // Data Setup Routes
@@ -30,8 +30,4 @@ export default class SubModulePaths {
   static returnFormsPath = `${ModulePaths.inventory}/return-forms`;
   static returnFormsNewFormPath = `${SubModulePaths.returnFormsPath}/new`;
   static returnFormsEditFormPath = `${SubModulePaths.returnFormsPath}/:formId`;
-
-  static adjustmentFormsPath = `${ModulePaths.inventory}/adjustment-forms`;
-  static adjustmentFormsNewFormPath = `${SubModulePaths.adjustmentFormsPath}/new`;
-  static adjustmentFormsEditFormPath = `${SubModulePaths.adjustmentFormsPath}/:formId`;
 }

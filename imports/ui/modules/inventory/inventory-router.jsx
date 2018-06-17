@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
-import { StockItemsNewForm, StockItemsViewForm, StockItemsList } from './stock-items';
+import { StockItemsNewForm, StockItemsEditForm, StockItemsList } from './stock-items';
 import { ItemTypesNewForm, ItemTypesEditForm, ItemTypesList } from './item-types';
 import {
   ItemCategoriesNewForm,
@@ -16,16 +16,11 @@ import {
 } from './physical-stores';
 import { IssuanceFormsNewForm, IssuanceFormsEditForm, IssuanceFormsList } from './issuance-forms';
 import { ReturnFormsNewForm, ReturnFormsEditForm, ReturnFormsList } from './return-forms';
-import {
-  AdjustmentFormsNewForm,
-  AdjustmentFormsEditForm,
-  AdjustmentFormsList,
-} from './adjustment-forms';
 
 const InventoryRouter = () => (
   <Switch>
     <Route path={paths.stockItemsNewFormPath} component={StockItemsNewForm} />
-    <Route path={paths.stockItemsViewFormPath} component={StockItemsViewForm} />
+    <Route path={paths.stockItemsEditFormPath} component={StockItemsEditForm} />
     <Route path={paths.stockItemsPath} component={StockItemsList} />
 
     <Route path={paths.itemTypesNewFormPath} component={ItemTypesNewForm} />
@@ -47,10 +42,6 @@ const InventoryRouter = () => (
     <Route path={paths.returnFormsNewFormPath} component={ReturnFormsNewForm} />
     <Route path={paths.returnFormsEditFormPath} component={ReturnFormsEditForm} />
     <Route path={paths.returnFormsPath} component={ReturnFormsList} />
-
-    <Route path={paths.adjustmentFormsNewFormPath} component={AdjustmentFormsNewForm} />
-    <Route path={paths.adjustmentFormsEditFormPath} component={AdjustmentFormsEditForm} />
-    <Route path={paths.adjustmentFormsPath} component={AdjustmentFormsList} />
   </Switch>
 );
 

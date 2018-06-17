@@ -71,6 +71,7 @@ export default {
         itemTypeId,
         physicalStoreId,
         minStockLevel,
+        startingStockLevel: currentStockLevel,
         currentStockLevel,
         totalStockLevel,
         createdAt: date,

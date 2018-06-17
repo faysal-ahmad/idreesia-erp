@@ -2,6 +2,7 @@ type StockItem {
   _id: String
   itemTypeId: String
   physicalStoreId: String
+  startingStockLevel: Float
   minStockLevel: Float
   currentStockLevel: Float
   totalStockLevel: Float

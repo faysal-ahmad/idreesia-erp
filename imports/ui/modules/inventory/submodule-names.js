@@ -3,7 +3,6 @@ export default class SubModuleNames {
 
   static issuanceForms = 'Issuance Forms';
   static returnForms = 'Return Forms';
-  static adjustmentForms = 'Adjustment Forms';
 
   static itemTypes = 'Item Types';
   static itemCategories = 'Item Categories';

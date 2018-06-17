@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row, message } from 'antd';
+import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -16,8 +16,9 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     dutyLocationById: PropTypes.object,
-    updateDutyLocation: PropTypes.func
+    updateDutyLocation: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -34,8 +35,8 @@ class EditForm extends Component {
       updateDutyLocation({
         variables: {
           id: dutyLocationById._id,
-          name: fieldsValue.name
-        }
+          name: fieldsValue.name,
+        },
       })
         .then(() => {
           history.push(paths.dutyLocationsPath);
@@ -57,7 +58,7 @@ class EditForm extends Component {
           fieldName="name"
           fieldLabel="Name"
           initialValue={dutyLocationById.name}
-          required={true}
+          required
           requiredMessage="Please input a name for the duty location."
           getFieldDecorator={getFieldDecorator}
         />
@@ -90,15 +91,15 @@ export default merge(
   graphql(formMutation, {
     name: 'updateDutyLocation',
     options: {
-      refetchQueries: ['allDutyLocations']
-    }
+      refetchQueries: ['allDutyLocations'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { dutyLocationId } = match.params;
       return { variables: { id: dutyLocationId } };
-    }
+    },
   }),
   WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'Edit'])
 )(EditForm);

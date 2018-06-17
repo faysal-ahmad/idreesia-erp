@@ -268,5 +268,5 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'New'])
+  WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'Edit'])
 )(EditForm);

@@ -10,7 +10,7 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
@@ -18,7 +18,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createKarkun: PropTypes.func
+    createKarkun: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -37,8 +37,8 @@ class NewForm extends Component {
           firstName,
           lastName,
           cnicNumber,
-          address
-        }
+          address,
+        },
       })
         .then(() => {
           history.push(paths.karkunsPath);
@@ -57,7 +57,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="firstName"
           fieldLabel="First Name"
-          required={true}
+          required
           requiredMessage="Please input the first name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
@@ -65,7 +65,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="lastName"
           fieldLabel="Last Name"
-          required={true}
+          required
           requiredMessage="Please input the last name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
@@ -73,7 +73,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          required={true}
+          required
           requiredMessage="Please input the CNIC for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
@@ -119,8 +119,8 @@ export default merge(
   graphql(formMutation, {
     name: 'createKarkun',
     options: {
-      refetchQueries: ['allKarkuns']
-    }
+      refetchQueries: ['allKarkuns'],
+    },
   }),
   WithBreadcrumbs(['HR', 'Karkuns', 'New'])
 )(NewForm);

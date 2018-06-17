@@ -10,7 +10,7 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   SelectField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
@@ -19,7 +19,7 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     createAccount: PropTypes.func,
-    allKarkunsWithNoAccounts: PropTypes.array
+    allKarkunsWithNoAccounts: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -37,8 +37,8 @@ class NewForm extends Component {
         variables: {
           karkunId: fieldsValue.karkunId,
           userName: fieldsValue.userName,
-          password: fieldsValue.password
-        }
+          password: fieldsValue.password,
+        },
       })
         .then(() => {
           history.push(paths.accountsPath);
@@ -61,7 +61,7 @@ class NewForm extends Component {
           getDataText={({ name }) => name}
           fieldName="karkunId"
           fieldLabel="Karkun Name"
-          required={true}
+          required
           requiredMessage="Please select a karkun for creating the account."
           getFieldDecorator={getFieldDecorator}
         />
@@ -69,7 +69,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"
-          required={true}
+          required
           requiredMessage="Please specify a user name."
           getFieldDecorator={getFieldDecorator}
         />
@@ -77,7 +77,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="password"
           fieldLabel="Password"
-          required={true}
+          required
           requiredMessage="Please specify a password."
           getFieldDecorator={getFieldDecorator}
         />
@@ -110,11 +110,11 @@ export default merge(
   graphql(formMutation, {
     name: 'createAccount',
     options: {
-      refetchQueries: ['allkarkunsWithAccounts']
-    }
+      refetchQueries: ['allkarkunsWithAccounts'],
+    },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['Admin', 'Setup', 'Account', 'New'])
 )(NewForm);

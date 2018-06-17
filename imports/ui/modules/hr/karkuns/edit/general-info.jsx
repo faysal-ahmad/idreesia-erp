@@ -9,7 +9,7 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 class GeneralInfo extends Component {
@@ -19,9 +19,10 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
-    updateKarkun: PropTypes.func
+    updateKarkun: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -41,8 +42,8 @@ class GeneralInfo extends Component {
           firstName,
           lastName,
           cnicNumber,
-          address
-        }
+          address,
+        },
       })
         .then(() => {
           history.push(paths.karkunsPath);
@@ -64,7 +65,7 @@ class GeneralInfo extends Component {
           fieldName="firstName"
           fieldLabel="First Name"
           initialValue={karkunById.firstName}
-          required={true}
+          required
           requiredMessage="Please input the first name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
@@ -73,7 +74,7 @@ class GeneralInfo extends Component {
           fieldName="lastName"
           fieldLabel="Last Name"
           initialValue={karkunById.lastName}
-          required={true}
+          required
           requiredMessage="Please input the last name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
@@ -82,7 +83,7 @@ class GeneralInfo extends Component {
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={karkunById.cnicNumber}
-          required={true}
+          required
           requiredMessage="Please input the CNIC for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
@@ -158,14 +159,14 @@ export default merge(
   graphql(formMutation, {
     name: 'updateKarkun',
     options: {
-      refetchQueries: ['allKarkuns']
-    }
+      refetchQueries: ['allKarkuns'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
-    }
+    },
   })
 )(GeneralInfo);

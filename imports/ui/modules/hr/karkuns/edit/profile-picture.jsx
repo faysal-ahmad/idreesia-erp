@@ -9,13 +9,14 @@ import PictureForm from './picture-form';
 
 class ProfilePicture extends Component {
   static propTypes = {
+    loading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
-    setProfilePicture: PropTypes.func
+    setProfilePicture: PropTypes.func,
   };
 
   state = {
-    showForm: false
+    showForm: false,
   };
 
   pictureForm;
@@ -35,15 +36,15 @@ class ProfilePicture extends Component {
     setProfilePicture({
       variables: {
         _id: karkunId,
-        profilePicture
-      }
+        profilePicture,
+      },
     }).catch(error => {
       message.error(error.message, 5);
     });
   };
 
   render() {
-    const { showForm, imageSrc } = this.state;
+    const { showForm } = this.state;
     const { loading, karkunById } = this.props;
     if (loading) return null;
 
@@ -68,11 +69,15 @@ class ProfilePicture extends Component {
           title="Take Photo"
           okText="Save"
           width={400}
-          destroyOnClose={true}
+          destroyOnClose
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >
-          <PictureForm ref={f => (this.pictureForm = f)} />
+          <PictureForm
+            ref={f => {
+              this.pictureForm = f;
+            }}
+          />
         </Modal>
       </Fragment>
     );
@@ -101,14 +106,14 @@ export default merge(
   graphql(formMutation, {
     name: 'setProfilePicture',
     options: {
-      refetchQueries: ['allKarkuns']
-    }
+      refetchQueries: ['allKarkuns'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
-    }
+    },
   })
 )(ProfilePicture);

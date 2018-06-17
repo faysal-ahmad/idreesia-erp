@@ -20,13 +20,13 @@ class DutyParticipation extends Component {
     allDutyLocations: PropTypes.array,
     createKarkunDuty: PropTypes.func,
     updateKarkunDuty: PropTypes.func,
-    removeKarkunDuty: PropTypes.func
+    removeKarkunDuty: PropTypes.func,
   };
 
   state = {
     showNewForm: false,
     showEditForm: false,
-    defaultValues: {}
+    defaultValues: {},
   };
 
   newDutyForm;
@@ -37,36 +37,35 @@ class DutyParticipation extends Component {
       title: 'Duty Name',
       dataIndex: 'dutyName',
       key: 'dutyName',
-      render: (text, record) => text
     },
     {
       title: 'Location Name',
       dataIndex: 'locationName',
-      key: 'locationName'
+      key: 'locationName',
     },
     {
       title: 'Start Time',
       dataIndex: 'startTime',
       key: 'startTime',
-      render: (text, record) => {
+      render: text => {
         const startTime = moment(text);
         return startTime.isValid() ? startTime.format('h:mm a') : null;
-      }
+      },
     },
     {
       title: 'End Time',
       dataIndex: 'endTime',
       key: 'endTime',
-      render: (text, record) => {
+      render: text => {
         const endTime = moment(text);
         return endTime.isValid() ? endTime.format('h:mm a') : null;
-      }
+      },
     },
     {
       title: 'Days of Week',
       dataIndex: 'daysOfWeek',
       key: 'daysOfWeek',
-      render: (textArray, record) => (textArray ? textArray.join() : null)
+      render: textArray => (textArray ? textArray.join() : null),
     },
     {
       key: 'action',
@@ -90,8 +89,8 @@ class DutyParticipation extends Component {
             />
           </a>
         </span>
-      )
-    }
+      ),
+    },
   ];
 
   handleNewClicked = () => {
@@ -106,8 +105,8 @@ class DutyParticipation extends Component {
     const { removeKarkunDuty } = this.props;
     removeKarkunDuty({
       variables: {
-        _id: record._id
-      }
+        _id: record._id,
+      },
     }).catch(error => {
       message.error(error.message, 5);
     });
@@ -135,8 +134,8 @@ class DutyParticipation extends Component {
             endTime: values.endTime ? values.endTime.format() : null,
             startDate: values.startDate ? values.startDate.format() : null,
             endDate: values.endDate ? values.endDate.format() : null,
-            daysOfWeek: values.weekDays
-          }
+            daysOfWeek: values.weekDays,
+          },
         }).catch(error => {
           message.error(error.message, 5);
         });
@@ -160,8 +159,8 @@ class DutyParticipation extends Component {
             endTime: values.endTime ? values.endTime.format() : null,
             startDate: values.startDate ? values.startDate.format() : null,
             endDate: values.endDate ? values.endDate.format() : null,
-            daysOfWeek: values.weekDays
-          }
+            daysOfWeek: values.weekDays,
+          },
         }).catch(error => {
           message.error(error.message, 5);
         });
@@ -171,22 +170,20 @@ class DutyParticipation extends Component {
 
   render() {
     const { showNewForm, showEditForm, defaultValues } = this.state;
-    const { karkunId, karkunDutiesByKarkunId, allDuties, allDutyLocations } = this.props;
+    const { karkunDutiesByKarkunId, allDuties, allDutyLocations } = this.props;
 
     return (
       <Fragment>
         <Table
-          rowKey={'_id'}
+          rowKey="_id"
           dataSource={karkunDutiesByKarkunId}
           columns={this.columns}
           bordered
-          title={() => {
-            return (
-              <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-                New Duty
-              </Button>
-            );
-          }}
+          title={() => (
+            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+              New Duty
+            </Button>
+          )}
         />
 
         <Modal
@@ -194,12 +191,14 @@ class DutyParticipation extends Component {
           title="Add Duty"
           okText="Save"
           width={600}
-          destroyOnClose={true}
+          destroyOnClose
           onOk={this.handleNewDutyFormSaved}
           onCancel={this.handleNewDutyFormCancelled}
         >
           <DutyForm
-            ref={f => (this.newDutyForm = f)}
+            ref={f => {
+              this.newDutyForm = f;
+            }}
             defaultValues={defaultValues}
             allDuties={allDuties}
             allDutyLocations={allDutyLocations}
@@ -211,12 +210,14 @@ class DutyParticipation extends Component {
           title="Edit Duty"
           okText="Save"
           width={600}
-          destroyOnClose={true}
+          destroyOnClose
           onOk={this.handleEditDutyFormSaved}
           onCancel={this.handleEditDutyFormCancelled}
         >
           <DutyForm
-            ref={f => (this.editDutyForm = f)}
+            ref={f => {
+              this.editDutyForm = f;
+            }}
             defaultValues={defaultValues}
             allDuties={allDuties}
             allDutyLocations={allDutyLocations}
@@ -340,30 +341,30 @@ export default merge(
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { karkunId } };
-    }
+    },
   }),
   graphql(locationsListQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   graphql(dutiesListQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   graphql(createKarkunDutyMutation, {
     name: 'createKarkunDuty',
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId']
-    }
+      refetchQueries: ['karkunDutiesByKarkunId'],
+    },
   }),
   graphql(updateKarkunDutyMutation, {
     name: 'updateKarkunDuty',
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId']
-    }
+      refetchQueries: ['karkunDutiesByKarkunId'],
+    },
   }),
   graphql(removeKarkunDutyMutation, {
     name: 'removeKarkunDuty',
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId']
-    }
+      refetchQueries: ['karkunDutiesByKarkunId'],
+    },
   })
 )(DutyParticipation);

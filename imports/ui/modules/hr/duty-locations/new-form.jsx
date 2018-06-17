@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { merge } from 'react-komposer';
-import { Form, Input, Button, Row, message } from 'antd';
+import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -14,7 +14,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createDutyLocation: PropTypes.func
+    createDutyLocation: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -30,8 +30,8 @@ class NewForm extends Component {
 
       createDutyLocation({
         variables: {
-          name: fieldsValue.name
-        }
+          name: fieldsValue.name,
+        },
       })
         .then(() => {
           history.push(paths.dutyLocationsPath);
@@ -49,7 +49,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          required={true}
+          required
           requiredMessage="Please input a name for the duty location."
           getFieldDecorator={getFieldDecorator}
         />
@@ -73,8 +73,8 @@ export default merge(
   graphql(formMutation, {
     name: 'createDutyLocation',
     options: {
-      refetchQueries: ['allDutyLocations']
-    }
+      refetchQueries: ['allDutyLocations'],
+    },
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Duty Locations', 'New'])
 )(NewForm);

@@ -14,7 +14,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createDuty: PropTypes.func
+    createDuty: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -30,8 +30,8 @@ class NewForm extends Component {
 
       createDuty({
         variables: {
-          name: fieldsValue.name
-        }
+          name: fieldsValue.name,
+        },
       })
         .then(() => {
           history.push(paths.dutiesPath);
@@ -50,7 +50,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Duty Name"
-          required={true}
+          required
           requiredMessage="Please input a name for the duty."
           getFieldDecorator={getFieldDecorator}
         />
@@ -74,8 +74,8 @@ export default merge(
   graphql(formMutation, {
     name: 'createDuty',
     options: {
-      refetchQueries: ['allDuties']
-    }
+      refetchQueries: ['allDuties'],
+    },
   }),
   WithBreadcrumbs(['HR', 'Setup', 'Duties', 'New'])
 )(NewForm);

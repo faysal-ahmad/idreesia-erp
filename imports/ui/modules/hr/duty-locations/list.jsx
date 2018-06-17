@@ -14,7 +14,7 @@ class List extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     allDutyLocations: PropTypes.array,
-    removeDutyLocation: PropTypes.func
+    removeDutyLocation: PropTypes.func,
   };
 
   columns = [
@@ -22,7 +22,7 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>,
     },
     {
       key: 'action',
@@ -42,8 +42,8 @@ class List extends Component {
           );
         }
         return null;
-      }
-    }
+      },
+    },
   ];
 
   handleNewClicked = () => {
@@ -55,8 +55,8 @@ class List extends Component {
     const { removeDutyLocation } = this.props;
     removeDutyLocation({
       variables: {
-        _id: record._id
-      }
+        _id: record._id,
+      },
     }).catch(error => {
       message.error(error.message, 5);
     });
@@ -67,17 +67,15 @@ class List extends Component {
 
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allDutyLocations}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
+        title={() => (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
               New Duty Location
             </Button>
-          );
-        }}
+          )}
       />
     );
   }
@@ -101,13 +99,13 @@ const removeDutyLocationMutation = gql`
 
 export default merge(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyLocationMutation, {
     name: 'removeDutyLocation',
     options: {
-      refetchQueries: ['allDutyLocations']
-    }
+      refetchQueries: ['allDutyLocations'],
+    },
   }),
   WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'List'])
 )(List);

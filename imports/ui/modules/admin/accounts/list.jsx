@@ -14,7 +14,7 @@ class List extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     allKarkunsWithAccounts: PropTypes.array,
-    deleteAccount: PropTypes.func
+    deleteAccount: PropTypes.func,
   };
 
   columns = [
@@ -22,17 +22,17 @@ class List extends Component {
       title: 'Karkun name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>,
     },
     {
       title: 'CNIC number',
       dataIndex: 'cnicNumber',
-      key: 'cnicNumber'
+      key: 'cnicNumber',
     },
     {
       title: 'User name',
       dataIndex: 'user.username',
-      key: 'username'
+      key: 'username',
     },
     {
       key: 'action',
@@ -48,8 +48,8 @@ class List extends Component {
             />
           </a>
         </span>
-      )
-    }
+      ),
+    },
   ];
 
   handleNewClicked = () => {
@@ -62,8 +62,8 @@ class List extends Component {
     deleteAccount({
       variables: {
         karkunId: record.karkun._id,
-        karkunUserId: record._id
-      }
+        karkunUserId: record._id,
+      },
     }).catch(error => {
       console.log(error);
     });
@@ -74,17 +74,15 @@ class List extends Component {
 
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allKarkunsWithAccounts}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
+        title={() => (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
               New Account
             </Button>
-          );
-        }}
+          )}
       />
     );
   }
@@ -114,11 +112,11 @@ export default merge(
   graphql(formMutation, {
     name: 'deleteAccount',
     options: {
-      refetchQueries: ['allkarkunsWithAccounts']
-    }
+      refetchQueries: ['allkarkunsWithAccounts'],
+    },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['Admin', 'Setup', 'Accounts', 'List'])
 )(List);

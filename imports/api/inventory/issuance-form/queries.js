@@ -5,6 +5,25 @@ import { get } from 'lodash';
 import { IssuanceForms } from '/imports/lib/collections/inventory';
 import { Formats } from '/imports/lib/constants';
 
+export function getIssuanceFormsByStockItemId(stockItemId) {
+  const pipeline = [
+    {
+      $match: {
+        items: {
+          $elemMatch: {
+            stockItemId: { $eq: stockItemId },
+          },
+        },
+      },
+    },
+    {
+      $sort: { issueDate: -1 },
+    },
+  ];
+
+  return IssuanceForms.aggregate(pipeline);
+}
+
 export default function getIssuanceForms(queryString) {
   const params = parse(queryString);
   const pipeline = [];
@@ -81,6 +100,7 @@ export default function getIssuanceForms(queryString) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
+    { $sort: { issueDate: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

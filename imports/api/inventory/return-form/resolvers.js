@@ -3,7 +3,7 @@ import { ReturnForms } from '/imports/lib/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
-import getReturnForms from './queries';
+import getReturnForms, { getReturnFormsByStockItemId } from './queries';
 
 export default {
   ReturnForm: {
@@ -64,6 +64,21 @@ export default {
 
       return ReturnForms.find({}).fetch();
     },
+
+    returnFormsByStockItem(obj, { stockItemId }, { userId }) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_VIEW_RETURN_FORMS,
+          PermissionConstants.IN_MANAGE_RETURN_FORMS,
+          PermissionConstants.IN_APPROVE_RETURN_FORMS,
+        ])
+      ) {
+        return [];
+      }
+
+      return getReturnFormsByStockItemId(stockItemId);
+    },
+
     pagedReturnForms(obj, { queryString }, { userId }) {
       if (
         !hasOnePermission(userId, [

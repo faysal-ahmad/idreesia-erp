@@ -3,7 +3,7 @@ import { IssuanceForms } from '/imports/lib/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
-import getIssuanceForms from './queries';
+import getIssuanceForms, { getIssuanceFormsByStockItemId } from './queries';
 
 export default {
   IssuanceForm: {
@@ -64,6 +64,21 @@ export default {
 
       return IssuanceForms.find({}).fetch();
     },
+
+    issuanceFormsByStockItem(obj, { stockItemId }, { userId }) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
+          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        return [];
+      }
+
+      return getIssuanceFormsByStockItemId(stockItemId);
+    },
+
     pagedIssuanceForms(obj, { queryString }, { userId }) {
       if (
         !hasOnePermission(userId, [

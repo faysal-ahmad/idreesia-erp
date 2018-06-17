@@ -83,7 +83,7 @@ export default {
       return StockItems.findOne(stockItemId);
     },
 
-    updateStockItem(obj, { _id, itemTypeId, physicalStoreId, minStockLevel }, { userId }) {
+    updateStockItem(obj, { _id, minStockLevel, totalStockLevel }, { userId }) {
       if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])) {
         throw new Error('You do not have permission to manage Stock Items in the System.');
       }
@@ -91,9 +91,8 @@ export default {
       const date = new Date();
       StockItems.update(_id, {
         $set: {
-          itemTypeId,
-          physicalStoreId,
           minStockLevel,
+          totalStockLevel,
           updatedAt: date,
           updatedBy: userId,
         },

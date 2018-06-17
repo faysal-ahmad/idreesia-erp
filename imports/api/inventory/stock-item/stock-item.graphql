@@ -28,7 +28,7 @@ extend type Query {
   allStockItems: [StockItem]
   allStockItemsByPhysicalStore(physicalStoreId: String): [StockItem]
   pagedStockItems(queryString: String): PagedStockItem
-  stockItemById(id: String!): StockItem
+  stockItemById(_id: String!): StockItem
 }
 
 extend type Mutation {
@@ -39,12 +39,5 @@ extend type Mutation {
     currentStockLevel: Float
     totalStockLevel: Float
   ): StockItem
-  updateStockItem(
-    _id: String!
-    itemTypeId: String!
-    physicalStoreId: String!
-    minStockLevel: Float
-    currentStockLevel: Float
-    totalStockLevel: Float
-  ): StockItem
+  updateStockItem(_id: String!, minStockLevel: Float, totalStockLevel: Float): StockItem
 }

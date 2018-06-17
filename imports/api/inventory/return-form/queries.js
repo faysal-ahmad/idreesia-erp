@@ -5,6 +5,25 @@ import { get } from 'lodash';
 import { ReturnForms } from '/imports/lib/collections/inventory';
 import { Formats } from '/imports/lib/constants';
 
+export function getReturnFormsByStockItemId(stockItemId) {
+  const pipeline = [
+    {
+      $match: {
+        items: {
+          $elemMatch: {
+            stockItemId: { $eq: stockItemId },
+          },
+        },
+      },
+    },
+    {
+      $sort: { returnDate: -1 },
+    },
+  ];
+
+  return ReturnForms.aggregate(pipeline);
+}
+
 export default function getReturnForms(queryString) {
   const params = parse(queryString);
   const pipeline = [];
@@ -81,11 +100,11 @@ export default function getReturnForms(queryString) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
+    { $sort: { issueDate: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
 
-  console.log(JSON.stringify(resultsPipeline));
   return {
     returnForms: ReturnForms.aggregate(resultsPipeline),
     totalResults: get(ReturnForms.aggregate(countingPipeline), ['0', 'total'], 0),

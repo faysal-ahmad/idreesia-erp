@@ -1,0 +1,52 @@
+type ReturnForm {
+  _id: String
+  returnDate: String
+  receivedBy: String
+  returnedBy: String
+  physicalStoreId: String
+  items: [ItemWithQuantity]
+
+  receivedByName: String
+  returnedByName: String
+  createdByName: String
+  updatedByName: String
+  approvedByName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedReturnForm {
+  totalResults: Int
+  returnForms: [ReturnForm]
+}
+
+extend type Query {
+  allReturnForms: [ReturnForm]
+  pagedReturnForms(queryString: String): PagedReturnForm
+  returnFormById(_id: String!): ReturnForm
+}
+
+extend type Mutation {
+  createReturnForm(
+    returnDate: String!
+    receivedBy: String!
+    returnedBy: String!
+    physicalStoreId: String!
+    items: [ItemWithQuantityInput]
+  ): ReturnForm
+  updateReturnForm(
+    _id: String!
+    returnDate: String!
+    receivedBy: String!
+    returnedBy: String!
+    physicalStoreId: String!
+    items: [ItemWithQuantityInput]
+  ): ReturnForm
+  approveReturnForm(_id: String!): ReturnForm
+  removeReturnForm(_id: String!): Int
+}

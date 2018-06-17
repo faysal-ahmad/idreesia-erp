@@ -15,7 +15,7 @@ import {
   PhysicalStoresList,
 } from './physical-stores';
 import { IssuanceFormsNewForm, IssuanceFormsEditForm, IssuanceFormsList } from './issuance-forms';
-import { ReceivalFormsNewForm, ReceivalFormsEditForm, ReceivalFormsList } from './receival-forms';
+import { ReturnFormsNewForm, ReturnFormsEditForm, ReturnFormsList } from './return-forms';
 import {
   AdjustmentFormsNewForm,
   AdjustmentFormsEditForm,
@@ -48,9 +48,9 @@ const InventoryRouter = () => (
     <Route path={paths.issuanceFormsEditFormPath} component={IssuanceFormsEditForm} />
     <Route path={paths.issuanceFormsPath} component={IssuanceFormsList} />
 
-    <Route path={paths.receivalFormsNewFormPath} component={ReceivalFormsNewForm} />
-    <Route path={paths.receivalFormsEditFormPath} component={ReceivalFormsEditForm} />
-    <Route path={paths.receivalFormsPath} component={ReceivalFormsList} />
+    <Route path={paths.returnFormsNewFormPath} component={ReturnFormsNewForm} />
+    <Route path={paths.returnFormsEditFormPath} component={ReturnFormsEditForm} />
+    <Route path={paths.returnFormsPath} component={ReturnFormsList} />
 
     <Route path={paths.adjustmentFormsNewFormPath} component={AdjustmentFormsNewForm} />
     <Route path={paths.adjustmentFormsEditFormPath} component={AdjustmentFormsEditForm} />

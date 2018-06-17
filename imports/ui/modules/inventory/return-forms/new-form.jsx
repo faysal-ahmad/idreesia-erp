@@ -30,7 +30,7 @@ class NewForm extends Component {
     allKarkuns: PropTypes.array,
     allPhysicalStores: PropTypes.array,
     allStockItems: PropTypes.array,
-    createIssuanceForm: PropTypes.func,
+    createReturnForm: PropTypes.func,
   };
 
   state = {
@@ -48,20 +48,20 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.issuanceFormsPath);
+    history.push(paths.returnFormsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, createIssuanceForm } = this.props;
-    form.validateFields((err, { issueDate, issuedBy, issuedTo, physicalStoreId, items }) => {
+    const { form, history, createReturnForm } = this.props;
+    form.validateFields((err, { returnDate, receivedBy, returnedBy, physicalStoreId, items }) => {
       if (err) return;
 
-      createIssuanceForm({
-        variables: { issueDate, issuedBy, issuedTo, physicalStoreId, items },
+      createReturnForm({
+        variables: { returnDate, receivedBy, returnedBy, physicalStoreId, items },
       })
         .then(() => {
-          history.push(paths.issuanceFormsPath);
+          history.push(paths.returnFormsPath);
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -96,28 +96,28 @@ class NewForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
+          fieldName="returnDate"
+          fieldLabel="Return Date"
           required
-          requiredMessage="Please input an issue date."
+          requiredMessage="Please input a return date."
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           data={allKarkuns}
-          fieldName="issuedBy"
-          fieldLabel="Issued By"
-          placeholder="Issued By"
+          fieldName="receivedBy"
+          fieldLabel="Received By"
+          placeholder="Received By"
           required
-          requiredMessage="Please input a name in issued by."
+          requiredMessage="Please input a name in received by."
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           data={allKarkuns}
-          fieldName="issuedTo"
-          fieldLabel="Issued To"
-          placeholder="Issued To"
+          fieldName="returnedBy"
+          fieldLabel="Returned By"
+          placeholder="Returned By"
           required
-          requiredMessage="Please input a name in issued to."
+          requiredMessage="Please input a name in returned by."
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
@@ -132,7 +132,7 @@ class NewForm extends Component {
           onChange={this.handleStoreChanged}
         />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
+        <Form.Item label="Returned Items" {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>
 
@@ -143,24 +143,24 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createIssuanceForm(
-    $issueDate: String!
-    $issuedBy: String!
-    $issuedTo: String!
+  mutation createReturnForm(
+    $returnDate: String!
+    $receivedBy: String!
+    $returnedBy: String!
     $physicalStoreId: String!
     $items: [ItemWithQuantityInput]
   ) {
-    createIssuanceForm(
-      issueDate: $issueDate
-      issuedBy: $issuedBy
-      issuedTo: $issuedTo
+    createReturnForm(
+      returnDate: $returnDate
+      receivedBy: $receivedBy
+      returnedBy: $returnedBy
       physicalStoreId: $physicalStoreId
       items: $items
     ) {
       _id
-      issueDate
-      issuedByName
-      issuedToName
+      returnDate
+      receivedByName
+      returnedByName
       physicalStoreId
       items {
         stockItemId
@@ -203,9 +203,9 @@ const allStockItemsLitsQuery = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'createIssuanceForm',
+    name: 'createReturnForm',
     options: {
-      refetchQueries: ['pagedIssuanceForms'],
+      refetchQueries: ['pagedReturnForms'],
     },
   }),
   graphql(physicalStoresListQuery, {
@@ -217,5 +217,5 @@ export default compose(
   graphql(allStockItemsLitsQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'New'])
+  WithBreadcrumbs(['Inventory', 'Forms', 'Return Forms', 'New'])
 )(NewForm);

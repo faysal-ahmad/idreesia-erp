@@ -4,23 +4,27 @@ import { ItemWithQuantity } from './common';
 import { approvable, identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
-  receivalDate: {
-    type: Date
+  returnDate: {
+    type: Date,
   },
   receivedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
-  submittedBy: {
+  returnedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
+  },
+  physicalStoreId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
   },
   items: {
-    type: Array
+    type: Array,
   },
   'items.$': {
-    type: ItemWithQuantity
-  }
+    type: ItemWithQuantity,
+  },
 })
   .extend(approvable)
   .extend(identifiable)

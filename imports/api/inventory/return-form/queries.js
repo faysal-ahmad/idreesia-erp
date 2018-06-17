@@ -2,10 +2,10 @@ import moment from 'moment';
 import { parse } from 'query-string';
 import { get } from 'lodash';
 
-import { IssuanceForms } from '/imports/lib/collections/inventory';
+import { ReturnForms } from '/imports/lib/collections/inventory';
 import { Formats } from '/imports/lib/constants';
 
-export default function getIssuanceForms(queryString) {
+export default function getReturnForms(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
@@ -54,7 +54,7 @@ export default function getIssuanceForms(queryString) {
     if (mStartDate.isValid()) {
       pipeline.push({
         $match: {
-          issueDate: { $gt: mStartDate.toDate() },
+          returnDate: { $gt: mStartDate.toDate() },
         },
       });
     }
@@ -68,7 +68,7 @@ export default function getIssuanceForms(queryString) {
     if (mEndDate.isValid()) {
       pipeline.push({
         $match: {
-          issueDate: { $lt: mEndDate.toDate() },
+          returnDate: { $lt: mEndDate.toDate() },
         },
       });
     }
@@ -85,8 +85,9 @@ export default function getIssuanceForms(queryString) {
     { $limit: nPageSize },
   ]);
 
+  console.log(JSON.stringify(resultsPipeline));
   return {
-    issuanceForms: IssuanceForms.aggregate(resultsPipeline),
-    totalResults: get(IssuanceForms.aggregate(countingPipeline), ['0', 'total'], 0),
+    returnForms: ReturnForms.aggregate(resultsPipeline),
+    totalResults: get(ReturnForms.aggregate(countingPipeline), ['0', 'total'], 0),
   };
 }

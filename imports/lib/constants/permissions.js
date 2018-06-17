@@ -23,6 +23,6 @@ export default class Permissions {
 
   static IN_MANAGE_ISSUANCE_FORMS = 'inventory-manage-issuance-forms';
   static IN_APPROVE_ISSUANCE_FORMS = 'inventory-approve-issuance-forms';
-  static IN_MANAGE_RECEIVAL_FORMS = 'inventory-manage-receival-forms';
-  static IN_APPROVE_RECEIVAL_FORMS = 'inventory-approve-receival-forms';
+  static IN_MANAGE_RETURN_FORMS = 'inventory-manage-return-forms';
+  static IN_APPROVE_RETURN_FORMS = 'inventory-approve-return-forms';
 }

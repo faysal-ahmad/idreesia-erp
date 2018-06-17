@@ -42,6 +42,9 @@ import StockItemResolvers from './inventory/stock-item/resolvers';
 import IssuanceFormSchema from './inventory/issuance-form/issuance-form.graphql';
 import IssuanceFormResolvers from './inventory/issuance-form/resolvers';
 
+import ReturnFormSchema from './inventory/return-form/return-form.graphql';
+import ReturnFormResolvers from './inventory/return-form/resolvers';
+
 const typeDefs = [
   DutyLocationSchema,
   DutySchema,
@@ -54,6 +57,7 @@ const typeDefs = [
   PhysicalStoreSchema,
   StockItemSchema,
   IssuanceFormSchema,
+  ReturnFormSchema,
 ];
 
 const resolvers = merge(
@@ -67,7 +71,8 @@ const resolvers = merge(
   ItemTypeResolvers,
   PhysicalStoreResolvers,
   StockItemResolvers,
-  IssuanceFormResolvers
+  IssuanceFormResolvers,
+  ReturnFormResolvers
 );
 
 // werwerefdgfdgdgd

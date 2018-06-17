@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
+import moment from 'moment';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
 import { filter } from 'lodash';
@@ -20,18 +21,33 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 18 },
 };
 
-class NewForm extends Component {
+class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
 
     loading: PropTypes.bool,
+    returnFormById: PropTypes.object,
     allKarkuns: PropTypes.array,
     allPhysicalStores: PropTypes.array,
     allStockItems: PropTypes.array,
-    createIssuanceForm: PropTypes.func,
+    updateReturnForm: PropTypes.func,
   };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { returnFormById, allStockItems } = nextProps;
+    if (returnFormById && allStockItems && !prevState.selectedPhysicalStoreId) {
+      return {
+        selectedPhysicalStoreId: returnFormById.physicalStoreId,
+        stockItemsBySelectedPhysicalStore: filter(allStockItems, {
+          physicalStoreId: returnFormById.physicalStoreId,
+        }),
+      };
+    }
+
+    return null;
+  }
 
   state = {
     selectedPhysicalStoreId: null,
@@ -48,20 +64,25 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.issuanceFormsPath);
+    history.push(paths.returnFormsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, createIssuanceForm } = this.props;
-    form.validateFields((err, { issueDate, issuedBy, issuedTo, physicalStoreId, items }) => {
+    const {
+      form,
+      history,
+      updateReturnForm,
+      returnFormById: { _id },
+    } = this.props;
+    form.validateFields((err, { returnDate, receivedBy, returnedBy, physicalStoreId, items }) => {
       if (err) return;
 
-      createIssuanceForm({
-        variables: { issueDate, issuedBy, issuedTo, physicalStoreId, items },
+      updateReturnForm({
+        variables: { _id, returnDate, receivedBy, returnedBy, physicalStoreId, items },
       })
         .then(() => {
-          history.push(paths.issuanceFormsPath);
+          history.push(paths.returnFormsPath);
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -70,6 +91,7 @@ class NewForm extends Component {
   };
 
   getItemsField() {
+    const { returnFormById } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { selectedPhysicalStoreId, stockItemsBySelectedPhysicalStore } = this.state;
 
@@ -79,7 +101,7 @@ class NewForm extends Component {
         message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator('items', { rules })(
+    return getFieldDecorator('items', { rules, initialValue: returnFormById.items })(
       <ItemsList
         physicalStoreId={selectedPhysicalStoreId}
         stockItemsByPhysicalStore={stockItemsBySelectedPhysicalStore}
@@ -88,7 +110,7 @@ class NewForm extends Component {
   }
 
   render() {
-    const { loading, allKarkuns, allPhysicalStores } = this.props;
+    const { loading, returnFormById, allKarkuns, allPhysicalStores } = this.props;
     if (loading) return null;
 
     const { getFieldDecorator } = this.props.form;
@@ -96,35 +118,35 @@ class NewForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
+          fieldName="returnDate"
+          fieldLabel="Return Date"
+          initialValue={moment(new Date(returnFormById.returnDate))}
           required
-          requiredMessage="Please input an issue date."
+          requiredMessage="Please input a return date."
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           data={allKarkuns}
-          fieldName="issuedBy"
-          fieldLabel="Issued By"
-          placeholder="Issued By"
+          fieldName="receivedBy"
+          fieldLabel="Received By"
+          initialValue={returnFormById.receivedBy}
           required
-          requiredMessage="Please input a name in issued by."
+          requiredMessage="Please input a name in received by."
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           data={allKarkuns}
-          fieldName="issuedTo"
-          fieldLabel="Issued To"
-          placeholder="Issued To"
+          fieldName="returnedBy"
+          fieldLabel="Returned By"
+          initialValue={returnFormById.returnedBy}
           required
-          requiredMessage="Please input a name in issued to."
+          requiredMessage="Please input a name in returned by."
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={allPhysicalStores}
           fieldName="physicalStoreId"
           fieldLabel="Physical store"
-          placeholder="Physical store"
           required
           requiredMessage="Please select a physical store."
           getFieldDecorator={getFieldDecorator}
@@ -132,7 +154,7 @@ class NewForm extends Component {
           onChange={this.handleStoreChanged}
         />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
+        <Form.Item label="Returned Items" {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>
 
@@ -143,28 +165,50 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createIssuanceForm(
-    $issueDate: String!
-    $issuedBy: String!
-    $issuedTo: String!
+  mutation updateReturnForm(
+    $_id: String!
+    $returnDate: String!
+    $receivedBy: String!
+    $returnedBy: String!
     $physicalStoreId: String!
     $items: [ItemWithQuantityInput]
   ) {
-    createIssuanceForm(
-      issueDate: $issueDate
-      issuedBy: $issuedBy
-      issuedTo: $issuedTo
+    updateReturnForm(
+      _id: $_id
+      returnDate: $returnDate
+      receivedBy: $receivedBy
+      returnedBy: $returnedBy
       physicalStoreId: $physicalStoreId
       items: $items
     ) {
       _id
-      issueDate
-      issuedByName
-      issuedToName
+      returnDate
+      receivedByName
+      returnedByName
       physicalStoreId
       items {
         stockItemId
         quantity
+      }
+    }
+  }
+`;
+
+const formQuery = gql`
+  query returnFormById($_id: String!) {
+    returnFormById(_id: $_id) {
+      _id
+      returnDate
+      receivedBy
+      returnedBy
+      receivedByName
+      returnedByName
+      physicalStoreId
+      approvedOn
+      items {
+        stockItemId
+        quantity
+        itemTypeName
       }
     }
   }
@@ -203,9 +247,9 @@ const allStockItemsLitsQuery = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'createIssuanceForm',
+    name: 'updateReturnForm',
     options: {
-      refetchQueries: ['pagedIssuanceForms'],
+      refetchQueries: ['pagedReturnForms'],
     },
   }),
   graphql(physicalStoresListQuery, {
@@ -217,5 +261,12 @@ export default compose(
   graphql(allStockItemsLitsQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'New'])
-)(NewForm);
+  graphql(formQuery, {
+    props: ({ data }) => ({ ...data }),
+    options: ({ match }) => {
+      const { formId } = match.params;
+      return { variables: { _id: formId } };
+    },
+  }),
+  WithBreadcrumbs(['Inventory', 'Forms', 'Return Forms', 'New'])
+)(EditForm);

@@ -27,7 +27,11 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    loading: PropTypes.bool,
+    physicalStoresLoading: PropTypes.bool,
+    karkunsListLoading: PropTypes.bool,
+    stockItemsLoading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
+
     returnFormById: PropTypes.object,
     allKarkuns: PropTypes.array,
     allPhysicalStores: PropTypes.array,
@@ -110,8 +114,18 @@ class EditForm extends Component {
   }
 
   render() {
-    const { loading, returnFormById, allKarkuns, allPhysicalStores } = this.props;
-    if (loading) return null;
+    const {
+      physicalStoresLoading,
+      karkunsListLoading,
+      stockItemsLoading,
+      formDataLoading,
+      returnFormById,
+      allKarkuns,
+      allPhysicalStores,
+    } = this.props;
+    if (physicalStoresLoading || karkunsListLoading || stockItemsLoading || formDataLoading) {
+      return null;
+    }
 
     const { getFieldDecorator } = this.props.form;
 
@@ -253,16 +267,16 @@ export default compose(
     },
   }),
   graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ physicalStoresLoading: data.loading, ...data }),
   }),
   graphql(karkunsListQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ karkunsListLoading: data.loading, ...data }),
   }),
   graphql(allStockItemsLitsQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ stockItemsLoading: data.loading, ...data }),
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { formId } = match.params;
       return { variables: { _id: formId } };

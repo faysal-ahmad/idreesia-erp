@@ -51,13 +51,46 @@ export default {
     },
   },
   Query: {
-    allReturnForms() {
+    allReturnForms(obj, params, { userId }) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_VIEW_RETURN_FORMS,
+          PermissionConstants.IN_MANAGE_RETURN_FORMS,
+          PermissionConstants.IN_APPROVE_RETURN_FORMS,
+        ])
+      ) {
+        return [];
+      }
+
       return ReturnForms.find({}).fetch();
     },
-    pagedReturnForms(obj, { queryString }) {
+    pagedReturnForms(obj, { queryString }, { userId }) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_VIEW_RETURN_FORMS,
+          PermissionConstants.IN_MANAGE_RETURN_FORMS,
+          PermissionConstants.IN_APPROVE_RETURN_FORMS,
+        ])
+      ) {
+        return {
+          returnForms: [],
+          totalResults: 0,
+        };
+      }
+
       return getReturnForms(queryString);
     },
-    returnFormById(obj, { _id }) {
+    returnFormById(obj, { _id }, { userId }) {
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_VIEW_RETURN_FORMS,
+          PermissionConstants.IN_MANAGE_RETURN_FORMS,
+          PermissionConstants.IN_APPROVE_RETURN_FORMS,
+        ])
+      ) {
+        return null;
+      }
+
       return ReturnForms.findOne(_id);
     },
   },

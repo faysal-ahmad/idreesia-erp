@@ -19,10 +19,12 @@ export default class Permissions {
   static IN_MANAGE_SETUP_DATA = 'inventory-manage-setup-data';
   static IN_VIEW_STOCK_ITEMS = 'inventory-view-stock-items';
   static IN_MANAGE_STOCK_ITEMS = 'inventory-manage-stock-items';
-  static IN_APPROVE_STOCK_MODIFICATIONS = 'inventory-approve-stock-modifications';
 
+  static IN_VIEW_ISSUANCE_FORMS = 'inventory-view-issuance-forms';
   static IN_MANAGE_ISSUANCE_FORMS = 'inventory-manage-issuance-forms';
   static IN_APPROVE_ISSUANCE_FORMS = 'inventory-approve-issuance-forms';
+
+  static IN_VIEW_RETURN_FORMS = 'inventory-view-return-forms';
   static IN_MANAGE_RETURN_FORMS = 'inventory-manage-return-forms';
   static IN_APPROVE_RETURN_FORMS = 'inventory-approve-return-forms';
 }

@@ -59,8 +59,28 @@ const permissionsData = [
         key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,
       },
       {
-        title: 'Approve Stock Modifications',
-        key: PermissionConstants.IN_APPROVE_STOCK_MODIFICATIONS,
+        title: 'View Issuance Forms',
+        key: PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
+      },
+      {
+        title: 'Manage Issuance Forms',
+        key: PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+      },
+      {
+        title: 'Approve Issuance Forms',
+        key: PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+      },
+      {
+        title: 'View Return Forms',
+        key: PermissionConstants.IN_VIEW_RETURN_FORMS,
+      },
+      {
+        title: 'Manage Return Forms',
+        key: PermissionConstants.IN_MANAGE_RETURN_FORMS,
+      },
+      {
+        title: 'Approve Return Forms',
+        key: PermissionConstants.IN_APPROVE_RETURN_FORMS,
       },
     ],
   },

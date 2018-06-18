@@ -205,7 +205,7 @@ export default compose(
   graphql(formMutation, {
     name: 'createIssuanceForm',
     options: {
-      refetchQueries: ['pagedIssuanceForms'],
+      refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
     },
   }),
   graphql(physicalStoresListQuery, {

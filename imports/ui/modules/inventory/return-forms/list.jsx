@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Checkbox, Icon, Pagination, Table, Tooltip } from 'antd';
+import { Button, Checkbox, Icon, Pagination, Table, Tooltip, message } from 'antd';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
@@ -46,6 +46,8 @@ class List extends Component {
       returnForms: PropTypes.array,
     }),
     allPhysicalStores: PropTypes.array,
+    removeReturnForm: PropTypes.func,
+    approveReturnForm: PropTypes.func,
   };
 
   columns = [
@@ -184,8 +186,31 @@ class List extends Component {
     history.push(`${paths.returnFormsPath}/${record._id}`);
   };
 
-  handleDeleteClicked = () => {};
-  handleApproveClicked = () => {};
+  handleDeleteClicked = returnForm => {
+    const { removeReturnForm } = this.props;
+    removeReturnForm({
+      variables: { _id: returnForm._id },
+    })
+      .then(() => {
+        message.success('Return form has been deleted.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleApproveClicked = returnForm => {
+    const { approveReturnForm } = this.props;
+    approveReturnForm({
+      variables: { _id: returnForm._id },
+    })
+      .then(() => {
+        message.success('Return form has been approved.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
 
   handleStoreChanged = value => {
     const selectedStoreId = value;
@@ -257,6 +282,18 @@ class List extends Component {
   }
 }
 
+const formMutationRemove = gql`
+  mutation removeReturnForm($_id: String!) {
+    removeReturnForm(_id: $_id)
+  }
+`;
+
+const formMutationApprove = gql`
+  mutation approveReturnForm($_id: String!) {
+    approveReturnForm(_id: $_id)
+  }
+`;
+
 const listQuery = gql`
   query pagedReturnForms($queryString: String) {
     pagedReturnForms(queryString: $queryString) {
@@ -291,6 +328,18 @@ const physicalStoresListQuery = gql`
 
 export default compose(
   WithQueryParams(),
+  graphql(formMutationRemove, {
+    name: 'removeReturnForm',
+    options: {
+      refetchQueries: ['pagedReturnForms', 'returnFormsByStockItem', 'pagedStockItems'],
+    },
+  }),
+  graphql(formMutationApprove, {
+    name: 'approveReturnForm',
+    options: {
+      refetchQueries: ['pagedReturnForms', 'returnFormsByStockItem', 'pagedStockItems'],
+    },
+  }),
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ ...data }),
   }),

@@ -263,7 +263,7 @@ export default compose(
   graphql(formMutation, {
     name: 'updateReturnForm',
     options: {
-      refetchQueries: ['pagedReturnForms'],
+      refetchQueries: ['pagedReturnForms', 'returnFormsByStockItem', 'pagedStockItems'],
     },
   }),
   graphql(physicalStoresListQuery, {

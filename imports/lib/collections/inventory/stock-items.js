@@ -8,6 +8,24 @@ class StockItems extends AggregatableCollection {
     stockItems.attachSchema(StockItemSchema);
     return stockItems;
   }
+
+  incrementCurrentLevel(stockItemId, incrementBy) {
+    const stockItem = this.findOne(stockItemId);
+    this.update(stockItemId, {
+      $set: {
+        currentStockLevel: stockItem.currentStockLevel + incrementBy,
+      },
+    });
+  }
+
+  decrementCurrentLevel(stockItemId, decrementBy) {
+    const stockItem = this.findOne(stockItemId);
+    this.update(stockItemId, {
+      $set: {
+        currentStockLevel: stockItem.currentStockLevel - decrementBy,
+      },
+    });
+  }
 }
 
 export default new StockItems();

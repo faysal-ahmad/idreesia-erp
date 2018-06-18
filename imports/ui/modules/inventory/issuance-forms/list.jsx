@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Checkbox, Icon, Pagination, Table, Tooltip } from 'antd';
+import { Button, Checkbox, Icon, Pagination, Table, Tooltip, message } from 'antd';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
@@ -46,6 +46,8 @@ class List extends Component {
       issuanceForms: PropTypes.array,
     }),
     allPhysicalStores: PropTypes.array,
+    removeIssuanceForm: PropTypes.func,
+    approveIssuanceForm: PropTypes.func,
   };
 
   columns = [
@@ -184,8 +186,31 @@ class List extends Component {
     history.push(`${paths.issuanceFormsPath}/${record._id}`);
   };
 
-  handleDeleteClicked = () => {};
-  handleApproveClicked = () => {};
+  handleDeleteClicked = issuanceForm => {
+    const { removeIssuanceForm } = this.props;
+    removeIssuanceForm({
+      variables: { _id: issuanceForm._id },
+    })
+      .then(() => {
+        message.success('Issuance form has been deleted.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleApproveClicked = issuanceForm => {
+    const { approveIssuanceForm } = this.props;
+    approveIssuanceForm({
+      variables: { _id: issuanceForm._id },
+    })
+      .then(() => {
+        message.success('Issuance form has been approved.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
 
   handleStoreChanged = value => {
     const selectedStoreId = value;
@@ -257,6 +282,18 @@ class List extends Component {
   }
 }
 
+const formMutationRemove = gql`
+  mutation removeIssuanceForm($_id: String!) {
+    removeIssuanceForm(_id: $_id)
+  }
+`;
+
+const formMutationApprove = gql`
+  mutation approveIssuanceForm($_id: String!) {
+    approveIssuanceForm(_id: $_id)
+  }
+`;
+
 const listQuery = gql`
   query pagedIssuanceForms($queryString: String) {
     pagedIssuanceForms(queryString: $queryString) {
@@ -291,6 +328,18 @@ const physicalStoresListQuery = gql`
 
 export default compose(
   WithQueryParams(),
+  graphql(formMutationRemove, {
+    name: 'removeIssuanceForm',
+    options: {
+      refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
+    },
+  }),
+  graphql(formMutationApprove, {
+    name: 'approveIssuanceForm',
+    options: {
+      refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
+    },
+  }),
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ ...data }),
   }),

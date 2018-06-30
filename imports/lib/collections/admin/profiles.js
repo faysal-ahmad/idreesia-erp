@@ -11,7 +11,7 @@ class Profiles extends Mongo.Collection {
       assign({}, options, {
         transform(doc) {
           return new ProfileModel(doc);
-        }
+        },
       })
     );
 

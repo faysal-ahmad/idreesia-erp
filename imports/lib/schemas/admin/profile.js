@@ -5,21 +5,21 @@ import { identifiable, timestamps } from '../common';
 export default new SimpleSchema({
   userId: {
     type: String,
-    optional: true
+    optional: true,
   },
   firstName: {
-    type: String
+    type: String,
   },
   lastName: {
-    type: String
+    type: String,
   },
   cnicNumber: {
-    type: String
+    type: String,
   },
   address: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

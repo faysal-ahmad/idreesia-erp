@@ -33,12 +33,18 @@ const permissionsData = [
         key: PermissionConstants.HR_MANAGE_SETUP_DATA,
       },
       {
-        title: 'View Karkuns',
-        key: PermissionConstants.HR_VIEW_KARKUNS,
-      },
-      {
-        title: 'Manage Karkuns',
-        key: PermissionConstants.HR_MANAGE_KARKUNS,
+        title: 'Karkuns',
+        key: 'module-hr-karkuns',
+        children: [
+          {
+            title: 'View Karkuns',
+            key: PermissionConstants.HR_VIEW_KARKUNS,
+          },
+          {
+            title: 'Manage Karkuns',
+            key: PermissionConstants.HR_MANAGE_KARKUNS,
+          },
+        ],
       },
     ],
   },
@@ -51,36 +57,72 @@ const permissionsData = [
         key: PermissionConstants.IN_MANAGE_SETUP_DATA,
       },
       {
-        title: 'View Stock Items',
-        key: PermissionConstants.IN_VIEW_STOCK_ITEMS,
+        title: 'Stock Items',
+        key: 'module-inventory-stock-items',
+        children: [
+          {
+            title: 'View Stock Items',
+            key: PermissionConstants.IN_VIEW_STOCK_ITEMS,
+          },
+          {
+            title: 'Manage Stock Items',
+            key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          },
+        ],
       },
       {
-        title: 'Manage Stock Items',
-        key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+        title: 'Issuance Forms',
+        key: 'module-inventory-issuance-forms',
+        children: [
+          {
+            title: 'View Issuance Forms',
+            key: PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
+          },
+          {
+            title: 'Manage Issuance Forms',
+            key: PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          },
+          {
+            title: 'Approve Issuance Forms',
+            key: PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+          },
+        ],
       },
       {
-        title: 'View Issuance Forms',
-        key: PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
+        title: 'Return Forms',
+        key: 'module-inventory-return-forms',
+        children: [
+          {
+            title: 'View Return Forms',
+            key: PermissionConstants.IN_VIEW_RETURN_FORMS,
+          },
+          {
+            title: 'Manage Return Forms',
+            key: PermissionConstants.IN_MANAGE_RETURN_FORMS,
+          },
+          {
+            title: 'Approve Return Forms',
+            key: PermissionConstants.IN_APPROVE_RETURN_FORMS,
+          },
+        ],
       },
       {
-        title: 'Manage Issuance Forms',
-        key: PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-      },
-      {
-        title: 'Approve Issuance Forms',
-        key: PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-      },
-      {
-        title: 'View Return Forms',
-        key: PermissionConstants.IN_VIEW_RETURN_FORMS,
-      },
-      {
-        title: 'Manage Return Forms',
-        key: PermissionConstants.IN_MANAGE_RETURN_FORMS,
-      },
-      {
-        title: 'Approve Return Forms',
-        key: PermissionConstants.IN_APPROVE_RETURN_FORMS,
+        title: 'Purchase Forms',
+        key: 'module-inventory-purchase-forms',
+        children: [
+          {
+            title: 'View Purchase Forms',
+            key: PermissionConstants.IN_VIEW_PURCHASE_FORMS,
+          },
+          {
+            title: 'Manage Purchase Forms',
+            key: PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
+          },
+          {
+            title: 'Approve Purchase Forms',
+            key: PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
+          },
+        ],
       },
     ],
   },

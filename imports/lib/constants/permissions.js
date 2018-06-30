@@ -27,4 +27,8 @@ export default class Permissions {
   static IN_VIEW_RETURN_FORMS = 'inventory-view-return-forms';
   static IN_MANAGE_RETURN_FORMS = 'inventory-manage-return-forms';
   static IN_APPROVE_RETURN_FORMS = 'inventory-approve-return-forms';
+
+  static IN_VIEW_PURCHASE_FORMS = 'inventory-view-purchase-forms';
+  static IN_MANAGE_PURCHASE_FORMS = 'inventory-manage-purchase-forms';
+  static IN_APPROVE_PURCHASE_FORMS = 'inventory-approve-purchase-forms';
 }

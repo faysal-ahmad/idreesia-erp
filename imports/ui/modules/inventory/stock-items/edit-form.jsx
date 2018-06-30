@@ -7,6 +7,7 @@ import { WithBreadcrumbs } from '/imports/ui/composers';
 import GeneralInfo from './edit/general-info';
 import IssuanceForms from './edit/issuance-forms';
 import ReturnForms from './edit/return-forms';
+import PurchaseForms from './edit/purchase-forms';
 import Adjustments from './edit/adjustments';
 
 const EditForm = props => {
@@ -22,7 +23,10 @@ const EditForm = props => {
       <Tabs.TabPane tab="Return Forms" key="3">
         <ReturnForms stockItemId={stockItemId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Adjustments" key="4">
+      <Tabs.TabPane tab="Purchase Forms" key="4">
+        <PurchaseForms stockItemId={stockItemId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Adjustments" key="5">
         <Adjustments stockItemId={stockItemId} {...props} />
       </Tabs.TabPane>
     </Tabs>

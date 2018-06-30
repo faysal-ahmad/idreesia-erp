@@ -30,4 +30,8 @@ export default class SubModulePaths {
   static returnFormsPath = `${ModulePaths.inventory}/return-forms`;
   static returnFormsNewFormPath = `${SubModulePaths.returnFormsPath}/new`;
   static returnFormsEditFormPath = `${SubModulePaths.returnFormsPath}/:formId`;
+
+  static purchaseFormsPath = `${ModulePaths.inventory}/purchase-forms`;
+  static purchaseFormsNewFormPath = `${SubModulePaths.purchaseFormsPath}/new`;
+  static purchaseFormsEditFormPath = `${SubModulePaths.purchaseFormsPath}/:formId`;
 }

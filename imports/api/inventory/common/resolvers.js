@@ -8,4 +8,12 @@ export default {
       return itemType.name;
     },
   },
+
+  ItemWithQuantityAndPrice: {
+    itemTypeName: item => {
+      const stockItem = StockItems.findOne(item.stockItemId);
+      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
+      return itemType.name;
+    },
+  },
 };

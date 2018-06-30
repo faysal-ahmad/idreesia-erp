@@ -34,6 +34,11 @@ class InventorySidebar extends Component {
         history.push(paths.returnFormsPath);
         break;
 
+      case 'purchase-forms':
+        setActiveSubModuleName(SubModuleNames.purchaseForms);
+        history.push(paths.purchaseFormsPath);
+        break;
+
       case 'item-types':
         setActiveSubModuleName(SubModuleNames.itemTypes);
         history.push(paths.itemTypesPath);
@@ -73,6 +78,7 @@ class InventorySidebar extends Component {
         >
           <Menu.Item key="issuance-forms">Issuance Forms</Menu.Item>
           <Menu.Item key="return-forms">Return Forms</Menu.Item>
+          <Menu.Item key="purchase-forms">Purchase Forms</Menu.Item>
         </SubMenu>
         <SubMenu
           key="setup"

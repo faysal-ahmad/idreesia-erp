@@ -2,10 +2,10 @@ import moment from 'moment';
 import { parse } from 'query-string';
 import { get } from 'lodash';
 
-import { ReturnForms } from '/imports/lib/collections/inventory';
+import { PurchaseForms } from '/imports/lib/collections/inventory';
 import { Formats } from '/imports/lib/constants';
 
-export function getReturnFormsByStockItemId(stockItemId) {
+export function getPurchaseFormsByStockItemId(stockItemId) {
   const pipeline = [
     {
       $match: {
@@ -21,10 +21,10 @@ export function getReturnFormsByStockItemId(stockItemId) {
     },
   ];
 
-  return ReturnForms.aggregate(pipeline).toArray();
+  return PurchaseForms.aggregate(pipeline).toArray();
 }
 
-export default function getReturnForms(queryString) {
+export default function getPurchaseForms(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
@@ -105,11 +105,11 @@ export default function getReturnForms(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const returnForms = ReturnForms.aggregate(resultsPipeline).toArray();
-  const totalResults = ReturnForms.aggregate(countingPipeline).toArray();
+  const purchaseForms = PurchaseForms.aggregate(resultsPipeline).toArray();
+  const totalResults = PurchaseForms.aggregate(countingPipeline).toArray();
 
-  return Promise.all([returnForms, totalResults]).then(results => ({
-    returnForms: results[0],
+  return Promise.all([purchaseForms, totalResults]).then(results => ({
+    purchaseForms: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

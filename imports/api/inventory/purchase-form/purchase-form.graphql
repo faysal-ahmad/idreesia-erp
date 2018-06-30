@@ -1,0 +1,53 @@
+type PurchaseForm {
+  _id: String
+  purchaseDate: String
+  receivedBy: String
+  purchasedBy: String
+  physicalStoreId: String
+  items: [ItemWithQuantityAndPrice]
+
+  receivedByName: String
+  purchasedByName: String
+  createdByName: String
+  updatedByName: String
+  approvedByName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedPurchaseForm {
+  totalResults: Int
+  purchaseForms: [PurchaseForm]
+}
+
+extend type Query {
+  allPurchaseForms: [PurchaseForm]
+  purchaseFormsByStockItem(stockItemId: String): [PurchaseForm]
+  pagedPurchaseForms(queryString: String): PagedPurchaseForm
+  purchaseFormById(_id: String!): PurchaseForm
+}
+
+extend type Mutation {
+  createPurchaseForm(
+    purchaseDate: String!
+    receivedBy: String!
+    purchasedBy: String!
+    physicalStoreId: String!
+    items: [ItemWithQuantityAndPriceInput]
+  ): PurchaseForm
+  updatePurchaseForm(
+    _id: String!
+    purchaseDate: String!
+    receivedBy: String!
+    purchasedBy: String!
+    physicalStoreId: String!
+    items: [ItemWithQuantityAndPriceInput]
+  ): PurchaseForm
+  approvePurchaseForm(_id: String!): PurchaseForm
+  removePurchaseForm(_id: String!): Int
+}

@@ -21,7 +21,7 @@ export function getIssuanceFormsByStockItemId(stockItemId) {
     },
   ];
 
-  return IssuanceForms.aggregate(pipeline);
+  return IssuanceForms.aggregate(pipeline).toArray();
 }
 
 export default function getIssuanceForms(queryString) {

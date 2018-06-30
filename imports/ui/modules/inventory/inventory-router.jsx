@@ -16,6 +16,7 @@ import {
 } from './physical-stores';
 import { IssuanceFormsNewForm, IssuanceFormsEditForm, IssuanceFormsList } from './issuance-forms';
 import { ReturnFormsNewForm, ReturnFormsEditForm, ReturnFormsList } from './return-forms';
+import { PurchaseFormsNewForm, PurchaseFormsEditForm, PurchaseFormsList } from './purchase-forms';
 
 const InventoryRouter = () => (
   <Switch>
@@ -42,6 +43,10 @@ const InventoryRouter = () => (
     <Route path={paths.returnFormsNewFormPath} component={ReturnFormsNewForm} />
     <Route path={paths.returnFormsEditFormPath} component={ReturnFormsEditForm} />
     <Route path={paths.returnFormsPath} component={ReturnFormsList} />
+
+    <Route path={paths.purchaseFormsNewFormPath} component={PurchaseFormsNewForm} />
+    <Route path={paths.purchaseFormsEditFormPath} component={PurchaseFormsEditForm} />
+    <Route path={paths.purchaseFormsPath} component={PurchaseFormsList} />
   </Switch>
 );
 

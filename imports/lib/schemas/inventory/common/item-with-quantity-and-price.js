@@ -10,5 +10,6 @@ export default new SimpleSchema({
   },
   price: {
     type: Number,
+    optional: true,
   },
 });

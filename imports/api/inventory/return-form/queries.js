@@ -105,8 +105,11 @@ export default function getReturnForms(queryString) {
     { $limit: nPageSize },
   ]);
 
-  return {
-    returnForms: ReturnForms.aggregate(resultsPipeline),
-    totalResults: get(ReturnForms.aggregate(countingPipeline), ['0', 'total'], 0),
-  };
+  const returnForms = ReturnForms.aggregate(resultsPipeline).toArray();
+  const totalResults = ReturnForms.aggregate(countingPipeline).toArray();
+
+  return Promise.all([returnForms, totalResults]).then(results => ({
+    returnForms: results[0],
+    totalResults: get(results[1], ['0', 'total'], 0),
+  }));
 }

@@ -105,8 +105,11 @@ export default function getIssuanceForms(queryString) {
     { $limit: nPageSize },
   ]);
 
-  return {
-    issuanceForms: IssuanceForms.aggregate(resultsPipeline),
-    totalResults: get(IssuanceForms.aggregate(countingPipeline), ['0', 'total'], 0),
-  };
+  const issuanceForms = IssuanceForms.aggregate(resultsPipeline).toArray();
+  const totalResults = IssuanceForms.aggregate(countingPipeline).toArray();
+
+  return Promise.all([issuanceForms, totalResults]).then(results => ({
+    issuanceForms: results[0],
+    totalResults: get(results[1], ['0', 'total'], 0),
+  }));
 }

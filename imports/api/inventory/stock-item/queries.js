@@ -67,8 +67,11 @@ export default function getStockItems(queryString) {
     { $limit: nPageSize },
   ]);
 
-  return {
-    stockItems: StockItems.aggregate(resultsPipeline),
-    totalResults: get(StockItems.aggregate(countingPipeline), ['0', 'total'], 0),
-  };
+  const stockItems = StockItems.aggregate(resultsPipeline).toArray();
+  const totalResults = StockItems.aggregate(countingPipeline).toArray();
+
+  return Promise.all([stockItems, totalResults]).then(results => ({
+    stockItems: results[0],
+    totalResults: get(results[1], ['0', 'total'], 0),
+  }));
 }

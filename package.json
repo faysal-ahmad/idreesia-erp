@@ -9,6 +9,7 @@
     "antd": "^3.1.0",
     "apollo-client": "^2.2.6",
     "apollo-client-preset": "^1.0.8",
+    "bcrypt": "^2.0.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "graphql": "^0.13.1",
@@ -53,6 +54,11 @@
     "regenerator-runtime": "^0.11.1"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["prettier --write", "eslint --fix", "eslint", "git add"]
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint",
+      "git add"
+    ]
   }
 }

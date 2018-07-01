@@ -198,24 +198,3 @@ export default class ItemsList extends Component {
     );
   }
 }
-/*
-const stockItemsByPhysicalStoresListQuery = gql`
-  query allStockItemsByPhysicalStore($physicalStoreId: String) {
-    allStockItemsByPhysicalStore(physicalStoreId: $physicalStoreId) {
-      _id
-      itemTypeName
-      itemCategoryName
-      currentStockLevel
-    }
-  }
-`;
-
-export default compose(
-  graphql(stockItemsByPhysicalStoresListQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId }) => ({
-      variables: { physicalStoreId },
-    }),
-  })
-)(ItemsList);
-*/

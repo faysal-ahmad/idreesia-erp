@@ -26,9 +26,16 @@ function getItemTypeIds(itemCategoryId, itemTypeName) {
   return ItemTypes.aggregate(pipeline);
 }
 
-export default function getStockItems(queryString) {
+export default function getStockItems(queryString, physicalStores) {
   const params = parse(queryString);
-  const pipeline = [];
+  const physicalStoreIds = physicalStores.map(({ _id }) => _id);
+  const pipeline = [
+    {
+      $match: {
+        physicalStoreId: { $in: physicalStoreIds },
+      },
+    },
+  ];
 
   const {
     physicalStoreId,

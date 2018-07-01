@@ -4,7 +4,7 @@ import {
   ItemTypes,
   StockItems,
 } from '/imports/lib/collections/inventory';
-import { hasOnePermission } from '/imports/api/security';
+import { filterByInstanceAccess, hasInstanceAccess, hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 import getStockItems from './queries';
@@ -35,24 +35,35 @@ export default {
   },
 
   Query: {
-    allStockItems() {
-      return StockItems.find({}).fetch();
-    },
-    allStockItemsByPhysicalStore(physicalStoreId) {
-      if (physicalStoreId) {
-        const stockItems = StockItems.find({
-          physicalStoreId: { $eq: physicalStoreId },
-        }).fetch();
-        return stockItems;
-      }
+    allStockItems(obj, params, { userId }) {
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
 
-      return [];
+      const physicalStoreIds = filteredPhysicalStores.map(physicalStore => physicalStore._id);
+      return StockItems.find({
+        physicalStoreId: { $in: physicalStoreIds },
+      }).fetch();
     },
-    pagedStockItems(obj, { queryString }) {
-      return getStockItems(queryString);
+
+    pagedStockItems(obj, { queryString }, { userId }) {
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+
+      return getStockItems(queryString, filteredPhysicalStores);
     },
-    stockItemById(obj, { _id }) {
-      return StockItems.findOne(_id);
+
+    stockItemById(obj, { _id }, { userId }) {
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+      const physicalStoreIds = physicalStores.map(physicalStore => physicalStore._id);
+
+      return StockItems.findOne({
+        _id: { $eq: _id },
+        physicalStoreId: { $in: physicalStoreIds },
+      });
     },
   },
 
@@ -64,6 +75,10 @@ export default {
     ) {
       if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])) {
         throw new Error('You do not have permission to manage Stock Items in the System.');
+      }
+
+      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+        throw new Error('You do not have permission to manage Stock Items in this Physical Store.');
       }
 
       const date = new Date();
@@ -85,6 +100,14 @@ export default {
 
     updateStockItem(obj, { _id, minStockLevel, totalStockLevel }, { userId }) {
       if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])) {
+        throw new Error('You do not have permission to manage Stock Items in the System.');
+      }
+
+      const existingStockItem = StockItems.findOne(_id);
+      if (
+        !existingStockItem ||
+        hasInstanceAccess(userId, existingStockItem.physicalStoreId) === false
+      ) {
         throw new Error('You do not have permission to manage Stock Items in the System.');
       }
 

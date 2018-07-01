@@ -26,7 +26,6 @@ type PagedStockItem {
 
 extend type Query {
   allStockItems: [StockItem]
-  allStockItemsByPhysicalStore(physicalStoreId: String): [StockItem]
   pagedStockItems(queryString: String): PagedStockItem
   stockItemById(_id: String!): StockItem
 }

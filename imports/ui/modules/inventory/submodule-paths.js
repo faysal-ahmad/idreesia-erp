@@ -16,10 +16,6 @@ export default class SubModulePaths {
   static itemCategoriesNewFormPath = `${SubModulePaths.itemCategoriesPath}/new`;
   static itemCategoriesEditFormPath = `${SubModulePaths.itemCategoriesPath}/:itemCategoryId`;
 
-  static physicalStoresPath = `${ModulePaths.inventory}/physical-stores`;
-  static physicalStoresNewFormPath = `${SubModulePaths.physicalStoresPath}/new`;
-  static physicalStoresEditFormPath = `${SubModulePaths.physicalStoresPath}/:physicalStoreId`;
-
   // *************************************************************************************
   // Forms Routes
   // *************************************************************************************

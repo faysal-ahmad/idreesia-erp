@@ -9,11 +9,6 @@ import {
   ItemCategoriesEditForm,
   ItemCategoriesList,
 } from './item-categories';
-import {
-  PhysicalStoresNewForm,
-  PhysicalStoresEditForm,
-  PhysicalStoresList,
-} from './physical-stores';
 import { IssuanceFormsNewForm, IssuanceFormsEditForm, IssuanceFormsList } from './issuance-forms';
 import { ReturnFormsNewForm, ReturnFormsEditForm, ReturnFormsList } from './return-forms';
 import { PurchaseFormsNewForm, PurchaseFormsEditForm, PurchaseFormsList } from './purchase-forms';
@@ -31,10 +26,6 @@ const InventoryRouter = () => (
     <Route path={paths.itemCategoriesNewFormPath} component={ItemCategoriesNewForm} />
     <Route path={paths.itemCategoriesEditFormPath} component={ItemCategoriesEditForm} />
     <Route path={paths.itemCategoriesPath} component={ItemCategoriesList} />
-
-    <Route path={paths.physicalStoresNewFormPath} component={PhysicalStoresNewForm} />
-    <Route path={paths.physicalStoresEditFormPath} component={PhysicalStoresEditForm} />
-    <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
     <Route path={paths.issuanceFormsNewFormPath} component={IssuanceFormsNewForm} />
     <Route path={paths.issuanceFormsEditFormPath} component={IssuanceFormsEditForm} />

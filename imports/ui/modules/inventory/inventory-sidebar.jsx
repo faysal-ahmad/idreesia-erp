@@ -49,11 +49,6 @@ class InventorySidebar extends Component {
         history.push(paths.itemCategoriesPath);
         break;
 
-      case 'physical-stores':
-        setActiveSubModuleName(SubModuleNames.physicalStores);
-        history.push(paths.physicalStoresPath);
-        break;
-
       default:
         break;
     }
@@ -90,7 +85,6 @@ class InventorySidebar extends Component {
         >
           <Menu.Item key="item-types">Item Types</Menu.Item>
           <Menu.Item key="item-categories">Item Categories</Menu.Item>
-          <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
         </SubMenu>
       </Menu>
     );

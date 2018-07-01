@@ -87,5 +87,5 @@ export default compose(
       refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New'])
 )(NewForm);

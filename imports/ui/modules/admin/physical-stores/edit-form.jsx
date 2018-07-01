@@ -114,5 +114,5 @@ export default compose(
       return { variables: { id: physicalStoreId } };
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'Edit'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])
 )(EditForm);

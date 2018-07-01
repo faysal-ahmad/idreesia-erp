@@ -45,10 +45,10 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={() => (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Physical Store
-            </Button>
-          )}
+          <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+            New Physical Store
+          </Button>
+        )}
       />
     );
   }
@@ -68,5 +68,5 @@ export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])
 )(List);

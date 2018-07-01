@@ -4,7 +4,11 @@ import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   Query: {
-    allPhysicalStores() {
+    allPhysicalStores(obj, params, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES])) {
+        throw new Error('You do not have permission to view Physical Stores in the System.');
+      }
+
       return PhysicalStores.find({}).fetch();
     },
 
@@ -14,15 +18,19 @@ export default {
       return filteredPhysicalStores;
     },
 
-    physicalStoreById(obj, { id }) {
+    physicalStoreById(obj, { id }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES])) {
+        throw new Error('You do not have permission to view Physical Stores in the System.');
+      }
+
       return PhysicalStores.findOne(id);
     },
   },
 
   Mutation: {
     createPhysicalStore(obj, { name, address }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES])) {
+        throw new Error('You do not have permission to manage Physical Stores in the System.');
       }
 
       const date = new Date();
@@ -39,8 +47,8 @@ export default {
     },
 
     updatePhysicalStore(obj, { id, name, address }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES])) {
+        throw new Error('You do not have permission to manage Physical Stores in the System.');
       }
 
       const date = new Date();

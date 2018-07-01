@@ -5,6 +5,9 @@ export default class Permissions {
   static ADMIN_VIEW_ACCOUNTS = 'admin-view-accounts';
   static ADMIN_MANAGE_ACCOUNTS = 'admin-manage-accounts';
 
+  static ADMIN_VIEW_PHYSICAL_STORES = 'admin-view-physical-stores';
+  static ADMIN_MANAGE_PHYSICAL_STORES = 'admin-manage-physical-stores';
+
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************

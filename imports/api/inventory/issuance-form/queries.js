@@ -5,10 +5,12 @@ import { get } from 'lodash';
 import { IssuanceForms } from '/imports/lib/collections/inventory';
 import { Formats } from '/imports/lib/constants';
 
-export function getIssuanceFormsByStockItemId(stockItemId) {
+export function getIssuanceFormsByStockItemId(stockItemId, physicalStores) {
+  const physicalStoreIds = physicalStores.map(({ _id }) => _id);
   const pipeline = [
     {
       $match: {
+        physicalStoreId: { $in: physicalStoreIds },
         items: {
           $elemMatch: {
             stockItemId: { $eq: stockItemId },
@@ -24,9 +26,16 @@ export function getIssuanceFormsByStockItemId(stockItemId) {
   return IssuanceForms.aggregate(pipeline).toArray();
 }
 
-export default function getIssuanceForms(queryString) {
+export default function getIssuanceForms(queryString, physicalStores) {
   const params = parse(queryString);
-  const pipeline = [];
+  const physicalStoreIds = physicalStores.map(({ _id }) => _id);
+  const pipeline = [
+    {
+      $match: {
+        physicalStoreId: { $in: physicalStoreIds },
+      },
+    },
+  ];
 
   const {
     physicalStoreId,

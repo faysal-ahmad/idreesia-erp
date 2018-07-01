@@ -1,8 +1,8 @@
 import { keyBy } from 'lodash';
 
 import { Karkuns } from '/imports/lib/collections/hr';
-import { PurchaseForms, StockItems } from '/imports/lib/collections/inventory';
-import { hasOnePermission } from '/imports/api/security';
+import { PhysicalStores, PurchaseForms, StockItems } from '/imports/lib/collections/inventory';
+import { filterByInstanceAccess, hasInstanceAccess, hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 import getPurchaseForms, { getPurchaseFormsByStockItemId } from './queries';
@@ -53,20 +53,6 @@ export default {
     },
   },
   Query: {
-    allPurchaseForms(obj, params, { userId }) {
-      if (
-        !hasOnePermission(userId, [
-          PermissionConstants.IN_VIEW_PURCHASE_FORMS,
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        return [];
-      }
-
-      return PurchaseForms.find({}).fetch();
-    },
-
     purchaseFormsByStockItem(obj, { stockItemId }, { userId }) {
       if (
         !hasOnePermission(userId, [
@@ -78,7 +64,11 @@ export default {
         return [];
       }
 
-      return getPurchaseFormsByStockItemId(stockItemId);
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+
+      return getPurchaseFormsByStockItemId(stockItemId, filteredPhysicalStores);
     },
 
     pagedPurchaseForms(obj, { queryString }, { userId }) {
@@ -95,8 +85,13 @@ export default {
         };
       }
 
-      return getPurchaseForms(queryString);
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+
+      return getPurchaseForms(queryString, filteredPhysicalStores);
     },
+
     purchaseFormById(obj, { _id }, { userId }) {
       if (
         !hasOnePermission(userId, [
@@ -108,7 +103,15 @@ export default {
         return null;
       }
 
-      return PurchaseForms.findOne(_id);
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+      const physicalStoreIds = physicalStores.map(physicalStore => physicalStore._id);
+
+      return PurchaseForms.findOne({
+        _id: { $eq: _id },
+        physicalStoreId: { $in: physicalStoreIds },
+      });
     },
   },
 
@@ -125,6 +128,12 @@ export default {
         ])
       ) {
         throw new Error('You do not have permission to manage Purchase Forms in the System.');
+      }
+
+      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Purchase Forms in this Physical Store.'
+        );
       }
 
       const date = new Date();
@@ -159,6 +168,12 @@ export default {
         ])
       ) {
         throw new Error('You do not have permission to manage Purchase Forms in the System.');
+      }
+
+      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Purchase Forms in this Physical Store.'
+        );
       }
 
       const itemsMap = keyBy(items, 'stockItemId');
@@ -216,6 +231,16 @@ export default {
         throw new Error('You do not have permission to approve Purchase Forms in the System.');
       }
 
+      const existingPurchaseForm = PurchaseForms.findOne(_id);
+      if (
+        !existingPurchaseForm ||
+        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) === false
+      ) {
+        throw new Error(
+          'You do not have permission to approve Purchase Forms in this Physical Store.'
+        );
+      }
+
       const date = new Date();
       PurchaseForms.update(_id, {
         $set: {
@@ -235,6 +260,16 @@ export default {
         ])
       ) {
         throw new Error('You do not have permission to manage Purchase Forms in the System.');
+      }
+
+      const existingPurchaseForm = PurchaseForms.findOne(_id);
+      if (
+        !existingPurchaseForm ||
+        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) === false
+      ) {
+        throw new Error(
+          'You do not have permission to manage Purchase Forms in this Physical Store.'
+        );
       }
 
       const existingForm = PurchaseForms.findOne(_id);

@@ -1,8 +1,8 @@
 import { keyBy } from 'lodash';
 
 import { Karkuns } from '/imports/lib/collections/hr';
-import { ReturnForms, StockItems } from '/imports/lib/collections/inventory';
-import { hasOnePermission } from '/imports/api/security';
+import { PhysicalStores, ReturnForms, StockItems } from '/imports/lib/collections/inventory';
+import { filterByInstanceAccess, hasInstanceAccess, hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 import getReturnForms, { getReturnFormsByStockItemId } from './queries';
@@ -53,20 +53,6 @@ export default {
     },
   },
   Query: {
-    allReturnForms(obj, params, { userId }) {
-      if (
-        !hasOnePermission(userId, [
-          PermissionConstants.IN_VIEW_RETURN_FORMS,
-          PermissionConstants.IN_MANAGE_RETURN_FORMS,
-          PermissionConstants.IN_APPROVE_RETURN_FORMS,
-        ])
-      ) {
-        return [];
-      }
-
-      return ReturnForms.find({}).fetch();
-    },
-
     returnFormsByStockItem(obj, { stockItemId }, { userId }) {
       if (
         !hasOnePermission(userId, [
@@ -78,7 +64,11 @@ export default {
         return [];
       }
 
-      return getReturnFormsByStockItemId(stockItemId);
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+
+      return getReturnFormsByStockItemId(stockItemId, filteredPhysicalStores);
     },
 
     pagedReturnForms(obj, { queryString }, { userId }) {
@@ -95,8 +85,13 @@ export default {
         };
       }
 
-      return getReturnForms(queryString);
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+
+      return getReturnForms(queryString, filteredPhysicalStores);
     },
+
     returnFormById(obj, { _id }, { userId }) {
       if (
         !hasOnePermission(userId, [
@@ -108,7 +103,15 @@ export default {
         return null;
       }
 
-      return ReturnForms.findOne(_id);
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      if (filteredPhysicalStores.length === 0) return [];
+      const physicalStoreIds = physicalStores.map(physicalStore => physicalStore._id);
+
+      return ReturnForms.findOne({
+        _id: { $eq: _id },
+        physicalStoreId: { $in: physicalStoreIds },
+      });
     },
   },
 
@@ -125,6 +128,12 @@ export default {
         ])
       ) {
         throw new Error('You do not have permission to manage Return Forms in the System.');
+      }
+
+      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Return Forms in this Physical Store.'
+        );
       }
 
       const date = new Date();
@@ -159,6 +168,12 @@ export default {
         ])
       ) {
         throw new Error('You do not have permission to manage Return Forms in the System.');
+      }
+
+      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Return Forms in this Physical Store.'
+        );
       }
 
       const itemsMap = keyBy(items, 'stockItemId');
@@ -216,6 +231,16 @@ export default {
         throw new Error('You do not have permission to approve Return Forms in the System.');
       }
 
+      const existingReturnForm = ReturnForms.findOne(_id);
+      if (
+        !existingReturnForm ||
+        hasInstanceAccess(userId, existingReturnForm.physicalStoreId) === false
+      ) {
+        throw new Error(
+          'You do not have permission to approve Return Forms in this Physical Store.'
+        );
+      }
+
       const date = new Date();
       ReturnForms.update(_id, {
         $set: {
@@ -235,6 +260,16 @@ export default {
         ])
       ) {
         throw new Error('You do not have permission to manage Return Forms in the System.');
+      }
+
+      const existingReturnForm = ReturnForms.findOne(_id);
+      if (
+        !existingReturnForm ||
+        hasInstanceAccess(userId, existingReturnForm.physicalStoreId) === false
+      ) {
+        throw new Error(
+          'You do not have permission to manage Return Forms in this Physical Store.'
+        );
       }
 
       const existingForm = ReturnForms.findOne(_id);

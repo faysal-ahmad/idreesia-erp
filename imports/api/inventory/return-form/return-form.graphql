@@ -26,7 +26,6 @@ type PagedReturnForm {
 }
 
 extend type Query {
-  allReturnForms: [ReturnForm]
   returnFormsByStockItem(stockItemId: String): [ReturnForm]
   pagedReturnForms(queryString: String): PagedReturnForm
   returnFormById(_id: String!): ReturnForm

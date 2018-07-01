@@ -22,9 +22,8 @@ export default {
 
         const dutyNames = duties.map(duty => duty.name);
         return dutyNames.join(', ');
-      } 
-        return null;
-      
+      }
+      return null;
     },
   },
 
@@ -188,6 +187,15 @@ export default {
       }
 
       Meteor.users.update(karkunUserId, { $set: { permissions } });
+      return Karkuns.findOne(karkunId);
+    },
+
+    setInstanceAccess(obj, { karkunId, karkunUserId, instances }, { userId }) {
+      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])) {
+        throw new Error('You do not have permission to manage Accounts in the System.');
+      }
+
+      Meteor.users.update(karkunUserId, { $set: { instances } });
       return Karkuns.findOne(karkunId);
     },
   },

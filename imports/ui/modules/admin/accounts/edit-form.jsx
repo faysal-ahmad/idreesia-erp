@@ -6,6 +6,7 @@ import { Tabs } from 'antd';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import GeneralInfo from './edit/general-info';
 import Permissions from './edit/permissions';
+import InstanceAccess from './edit/instance-access';
 
 const EditForm = props => {
   const karkunId = get(props, ['match', 'params', 'karkunId'], null);
@@ -16,6 +17,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Permissions" key="2">
         <Permissions karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Instance Access" key="3">
+        <InstanceAccess karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

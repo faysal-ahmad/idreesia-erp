@@ -2,6 +2,7 @@ type UserType {
   _id: String
   username: String
   permissions: [String]
+  instances: [String]
 }
 
 type KarkunType {
@@ -51,4 +52,5 @@ extend type Mutation {
   createAccount(karkunId: String!, userName: String!, password: String!): KarkunType
   deleteAccount(karkunId: String!, karkunUserId: String!): KarkunType
   setPermissions(karkunId: String!, karkunUserId: String!, permissions: [String]!): KarkunType
+  setInstanceAccess(karkunId: String!, karkunUserId: String!, instances: [String]!): KarkunType
 }

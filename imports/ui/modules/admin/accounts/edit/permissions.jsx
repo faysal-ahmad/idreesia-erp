@@ -1,9 +1,8 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
 import { Button, Row, Tree, message } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 import { filter } from 'lodash';
 
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
@@ -133,7 +132,6 @@ class Permissions extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     karkunId: PropTypes.string,
@@ -267,7 +265,7 @@ const formMutation = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(formMutation, {
     name: 'setPermissions',
     options: {
@@ -276,9 +274,6 @@ export default merge(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
+    options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
   })
 )(Permissions);

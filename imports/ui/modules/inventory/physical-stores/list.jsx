@@ -12,7 +12,7 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allPhysicalStores: PropTypes.array
+    allPhysicalStores: PropTypes.array,
   };
 
   columns = [
@@ -20,13 +20,15 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
+      render: (text, record) => (
+        <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
+      ),
     },
     {
       title: 'Address',
       dataIndex: 'address',
-      key: 'address'
-    }
+      key: 'address',
+    },
   ];
 
   handleNewClicked = () => {
@@ -38,17 +40,15 @@ class List extends Component {
     const { allPhysicalStores } = this.props;
     return (
       <Table
-        rowKey={'_id'}
+        rowKey="_id"
         dataSource={allPhysicalStores}
         columns={this.columns}
         bordered
-        title={() => {
-          return (
+        title={() => (
             <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
               New Physical Store
             </Button>
-          );
-        }}
+          )}
       />
     );
   }
@@ -66,7 +66,7 @@ const listQuery = gql`
 
 export default compose(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data })
+    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'List'])
 )(List);

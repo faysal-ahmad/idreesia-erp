@@ -45,7 +45,7 @@ class List extends Component {
       totalResults: PropTypes.number,
       issuanceForms: PropTypes.array,
     }),
-    allPhysicalStores: PropTypes.array,
+    allAccessiblePhysicalStores: PropTypes.array,
     removeIssuanceForm: PropTypes.func,
     approveIssuanceForm: PropTypes.func,
   };
@@ -233,7 +233,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { queryParams, allPhysicalStores } = this.props;
+    const { queryParams, allAccessiblePhysicalStores } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -243,7 +243,7 @@ class List extends Component {
         <ListFilter
           refreshPage={this.refreshPage}
           queryParams={queryParams}
-          allPhysicalStores={allPhysicalStores}
+          allPhysicalStores={allAccessiblePhysicalStores}
         />
       </div>
     );
@@ -318,8 +318,8 @@ const listQuery = gql`
 `;
 
 const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
+  query allAccessiblePhysicalStores {
+    allAccessiblePhysicalStores {
       _id
       name
     }

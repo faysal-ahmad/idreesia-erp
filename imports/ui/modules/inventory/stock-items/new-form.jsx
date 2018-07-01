@@ -20,7 +20,7 @@ class NewForm extends Component {
     form: PropTypes.object,
 
     allItemTypes: PropTypes.array,
-    allPhysicalStores: PropTypes.array,
+    allAccessiblePhysicalStores: PropTypes.array,
     allItemCategories: PropTypes.array,
     allStockItems: PropTypes.array,
     createStockItem: PropTypes.func,
@@ -105,13 +105,13 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allPhysicalStores, allItemCategories } = this.props;
+    const { allAccessiblePhysicalStores, allItemCategories } = this.props;
     const { filteredItemTypes } = this.state;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <SelectField
-          data={allPhysicalStores}
+          data={allAccessiblePhysicalStores}
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
           fieldName="physicalStoreId"
@@ -165,8 +165,8 @@ class NewForm extends Component {
 }
 
 const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
+  query allAccessiblePhysicalStores {
+    allAccessiblePhysicalStores {
       _id
       name
     }

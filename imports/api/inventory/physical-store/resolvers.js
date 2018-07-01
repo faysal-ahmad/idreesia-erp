@@ -1,5 +1,5 @@
 import { PhysicalStores } from '/imports/lib/collections/inventory';
-import { hasOnePermission } from '/imports/api/security';
+import { filterByInstanceAccess, hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
@@ -7,6 +7,13 @@ export default {
     allPhysicalStores() {
       return PhysicalStores.find({}).fetch();
     },
+
+    allAccessiblePhysicalStores(obj, params, { userId }) {
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      return filteredPhysicalStores;
+    },
+
     physicalStoreById(obj, { id }) {
       return PhysicalStores.findOne(id);
     },

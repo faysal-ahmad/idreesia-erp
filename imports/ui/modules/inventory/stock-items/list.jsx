@@ -39,12 +39,12 @@ class List extends Component {
       totalResults: PropTypes.number,
       stockItems: PropTypes.array,
     }),
-    allPhysicalStores: PropTypes.array,
+    allAccessiblePhysicalStores: PropTypes.array,
     allItemCategories: PropTypes.array,
   };
 
   getTableHeader = () => {
-    const { queryParams, allPhysicalStores, allItemCategories } = this.props;
+    const { queryParams, allAccessiblePhysicalStores, allItemCategories } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -54,7 +54,7 @@ class List extends Component {
         <ListFilter
           refreshPage={this.refreshPage}
           queryParams={queryParams}
-          allPhysicalStores={allPhysicalStores}
+          allPhysicalStores={allAccessiblePhysicalStores}
           allItemCategories={allItemCategories}
         />
       </div>
@@ -225,8 +225,8 @@ const listQuery = gql`
 `;
 
 const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
+  query allAccessiblePhysicalStores {
+    allAccessiblePhysicalStores {
       _id
       name
     }

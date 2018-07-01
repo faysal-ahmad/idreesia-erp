@@ -9,7 +9,7 @@ import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory'
 import {
   InputTextField,
   InputTextAreaField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
@@ -17,7 +17,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createPhysicalStore: PropTypes.func
+    createPhysicalStore: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -33,8 +33,8 @@ class NewForm extends Component {
       createPhysicalStore({
         variables: {
           name: fieldsValue.name,
-          address: fieldsValue.address
-        }
+          address: fieldsValue.address,
+        },
       })
         .then(() => {
           history.push(paths.physicalStoresPath);
@@ -53,7 +53,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          required={true}
+          required
           requiredMessage="Please input a name for the physical store."
           getFieldDecorator={getFieldDecorator}
         />
@@ -84,8 +84,8 @@ export default compose(
   graphql(formMutation, {
     name: 'createPhysicalStore',
     options: {
-      refetchQueries: ['allPhysicalStores']
-    }
+      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+    },
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'New'])
 )(NewForm);

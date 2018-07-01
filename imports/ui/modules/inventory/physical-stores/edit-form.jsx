@@ -9,7 +9,7 @@ import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory'
 import {
   InputTextField,
   InputTextAreaField,
-  FormButtonsSaveCancel
+  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
@@ -19,8 +19,9 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    loading: PropTypes.bool,
     physicalStoreById: PropTypes.object,
-    updatePhysicalStore: PropTypes.func
+    updatePhysicalStore: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -38,8 +39,8 @@ class EditForm extends Component {
         variables: {
           id: physicalStoreById._id,
           name: fieldsValue.name,
-          address: fieldsValue.address
-        }
+          address: fieldsValue.address,
+        },
       })
         .then(() => {
           history.push(paths.physicalStoresPath);
@@ -61,7 +62,7 @@ class EditForm extends Component {
           fieldName="name"
           fieldLabel="Name"
           initialValue={physicalStoreById.name}
-          required={true}
+          required
           requiredMessage="Please input a name for the physical store."
           getFieldDecorator={getFieldDecorator}
         />
@@ -103,15 +104,15 @@ export default compose(
   graphql(formMutation, {
     name: 'updatePhysicalStore',
     options: {
-      refetchQueries: ['allPhysicalStores']
-    }
+      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+    },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { physicalStoreId } = match.params;
       return { variables: { id: physicalStoreId } };
-    }
+    },
   }),
   WithBreadcrumbs(['Inventory', 'Setup', 'Physical Stores', 'Edit'])
 )(EditForm);

@@ -28,7 +28,7 @@ class NewForm extends Component {
 
     loading: PropTypes.bool,
     allKarkuns: PropTypes.array,
-    allPhysicalStores: PropTypes.array,
+    allAccessiblePhysicalStores: PropTypes.array,
     allStockItems: PropTypes.array,
     createReturnForm: PropTypes.func,
   };
@@ -88,7 +88,7 @@ class NewForm extends Component {
   }
 
   render() {
-    const { loading, allKarkuns, allPhysicalStores } = this.props;
+    const { loading, allKarkuns, allAccessiblePhysicalStores } = this.props;
     if (loading) return null;
 
     const { getFieldDecorator } = this.props.form;
@@ -121,7 +121,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
-          data={allPhysicalStores}
+          data={allAccessiblePhysicalStores}
           fieldName="physicalStoreId"
           fieldLabel="Physical store"
           placeholder="Physical store"
@@ -180,8 +180,8 @@ const karkunsListQuery = gql`
 `;
 
 const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
+  query allAccessiblePhysicalStores {
+    allAccessiblePhysicalStores {
       _id
       name
     }

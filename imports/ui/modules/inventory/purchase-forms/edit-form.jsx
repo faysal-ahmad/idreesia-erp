@@ -34,7 +34,7 @@ class EditForm extends Component {
 
     purchaseFormById: PropTypes.object,
     allKarkuns: PropTypes.array,
-    allPhysicalStores: PropTypes.array,
+    allAccessiblePhysicalStores: PropTypes.array,
     allStockItems: PropTypes.array,
     updatePurchaseForm: PropTypes.func,
   };
@@ -123,7 +123,7 @@ class EditForm extends Component {
       formDataLoading,
       purchaseFormById,
       allKarkuns,
-      allPhysicalStores,
+      allAccessiblePhysicalStores,
     } = this.props;
     if (physicalStoresLoading || karkunsListLoading || stockItemsLoading || formDataLoading) {
       return null;
@@ -160,7 +160,7 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
-          data={allPhysicalStores}
+          data={allAccessiblePhysicalStores}
           fieldName="physicalStoreId"
           fieldLabel="Physical store"
           required
@@ -242,8 +242,8 @@ const karkunsListQuery = gql`
 `;
 
 const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
+  query allAccessiblePhysicalStores {
+    allAccessiblePhysicalStores {
       _id
       name
     }

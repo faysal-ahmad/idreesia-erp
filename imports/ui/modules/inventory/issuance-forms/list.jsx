@@ -212,12 +212,6 @@ class List extends Component {
       });
   };
 
-  handleStoreChanged = value => {
-    const selectedStoreId = value;
-    const state = Object.assign({}, this.state, { selectedStoreId });
-    this.setState(state);
-  };
-
   onChange = (pageIndex, pageSize) => {
     this.refreshPage({
       pageIndex: pageIndex - 1,

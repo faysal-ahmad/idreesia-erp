@@ -16,8 +16,14 @@ type ItemType {
   updatedBy: String
 }
 
+type PagedItemType {
+  totalResults: Int
+  itemTypes: [ItemType]
+}
+
 extend type Query {
   allItemTypes: [ItemType]
+  pagedItemTypes(queryString: String): PagedItemType
   itemTypeById(_id: String!): ItemType
 }
 

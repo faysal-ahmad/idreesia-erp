@@ -2,6 +2,8 @@ import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
+import getItemTypes from './queries';
+
 export default {
   ItemType: {
     itemCategoryName: itemType => {
@@ -37,6 +39,11 @@ export default {
     allItemTypes() {
       return ItemTypes.find({}).fetch();
     },
+
+    pagedItemTypes(obj, { queryString }) {
+      return getItemTypes(queryString);
+    },
+
     itemTypeById(obj, { _id }) {
       return ItemTypes.findOne(_id);
     },

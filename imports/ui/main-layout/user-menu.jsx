@@ -8,7 +8,7 @@ const ContainerStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
-  alignItems: 'center'
+  alignItems: 'center',
 };
 
 class UserMenu extends Component {
@@ -16,10 +16,10 @@ class UserMenu extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    karkunByUserId: PropTypes.object
+    karkunByUserId: PropTypes.object,
   };
 
-  handleMenuItemClicked = ({ item, key, keyPath }) => {
+  handleMenuItemClicked = ({ key }) => {
     const { history } = this.props;
 
     switch (key) {
@@ -74,7 +74,5 @@ const formQuery = gql`
 
 export default graphql(formQuery, {
   props: ({ data }) => ({ ...data }),
-  options: () => {
-    return { variables: { userId: Meteor.userId() } };
-  }
+  options: () => ({ variables: { userId: Meteor.userId() } }),
 })(UserMenu);

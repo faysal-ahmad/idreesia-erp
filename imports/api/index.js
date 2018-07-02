@@ -1,12 +1,6 @@
 import { merge } from 'lodash';
 
 /**
- * Schema and Resolvers for the Admin module
- */
-// import AccountSchema from './admin/account/account.graphql';
-// import AccountResolvers from './admin/account/resolvers';
-
-/**
  * Schema and Resolvers for the HR module
  */
 import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
@@ -48,6 +42,12 @@ import ReturnFormResolvers from './inventory/return-form/resolvers';
 import PurchaseFormSchema from './inventory/purchase-form/purchase-form.graphql';
 import PurchaseFormResolvers from './inventory/purchase-form/resolvers';
 
+/**
+ * Schema and Resolvers for the HR module
+ */
+import FinancialAccountSchema from './finance/accounts/account.graphql';
+import FinancialAccountResolvers from './finance/accounts/resolvers';
+
 const typeDefs = [
   DutyLocationSchema,
   DutySchema,
@@ -62,6 +62,8 @@ const typeDefs = [
   IssuanceFormSchema,
   ReturnFormSchema,
   PurchaseFormSchema,
+
+  FinancialAccountSchema,
 ];
 
 const resolvers = merge(
@@ -77,7 +79,9 @@ const resolvers = merge(
   StockItemResolvers,
   IssuanceFormResolvers,
   ReturnFormResolvers,
-  PurchaseFormResolvers
+  PurchaseFormResolvers,
+
+  FinancialAccountResolvers
 );
 
 export { typeDefs, resolvers };

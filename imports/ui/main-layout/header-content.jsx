@@ -13,23 +13,23 @@ const ContainerStyle = {
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
   alignItems: 'center',
-  width: '100%'
+  width: '100%',
 };
 
 const modulePathsMapping = {};
 modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
-//modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
+modulePathsMapping[ModuleNames.finance] = ModulePaths.finance;
 modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
 
 class HeaderContent extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    setActiveModuleName: PropTypes.func
+    setActiveModuleName: PropTypes.func,
   };
 
-  handleMenuItemSelected = ({ item, key, selectedKeys }) => {
+  handleMenuItemSelected = ({ item /* , key, selectedKeys */ }) => {
     const moduleName = item.props.children;
     const modulePath = modulePathsMapping[moduleName];
     const { history, setActiveModuleName } = this.props;
@@ -87,13 +87,11 @@ class HeaderContent extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setActiveModuleName: moduleName => {
-      dispatch(GlobalActionsCreator.setActiveModuleName(moduleName));
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  setActiveModuleName: moduleName => {
+    dispatch(GlobalActionsCreator.setActiveModuleName(moduleName));
+  },
+});
 
 const HeaderContentContainer = connect(null, mapDispatchToProps)(HeaderContent);
 export default HeaderContentContainer;

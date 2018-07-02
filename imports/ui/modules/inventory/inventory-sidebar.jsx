@@ -76,6 +76,16 @@ class InventorySidebar extends Component {
           <Menu.Item key="purchase-forms">Purchase Forms</Menu.Item>
         </SubMenu>
         <SubMenu
+          key="report"
+          title={
+            <span>
+              <Icon type="book" />Reports
+            </span>
+          }
+        >
+          <Menu.Item key="monthly-report">Monthly Report</Menu.Item>
+        </SubMenu>
+        <SubMenu
           key="setup"
           title={
             <span>

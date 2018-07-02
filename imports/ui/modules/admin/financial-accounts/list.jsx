@@ -12,7 +12,7 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allPhysicalStores: PropTypes.array,
+    allFinancialAccounts: PropTypes.array,
   };
 
   columns = [
@@ -21,32 +21,37 @@ class List extends Component {
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
-        <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
+        <Link to={`${paths.financialAccountsPath}/${record._id}`}>{text}</Link>
       ),
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Starting Balance',
+      dataIndex: 'startingBalance',
+      key: 'startingBalance',
+    },
+    {
+      title: 'Current Balance',
+      dataIndex: 'currentBalance',
+      key: 'currentBalance',
     },
   ];
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresNewFormPath);
+    history.push(paths.financialAccountsNewFormPath);
   };
 
   render() {
-    const { allPhysicalStores } = this.props;
+    const { allFinancialAccounts } = this.props;
     return (
       <Table
         rowKey="_id"
-        dataSource={allPhysicalStores}
+        dataSource={allFinancialAccounts}
         columns={this.columns}
         bordered
         title={() => (
           <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-            New Physical Store
+            New Account
           </Button>
         )}
       />
@@ -55,11 +60,12 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
+  query allFinancialAccounts {
+    allFinancialAccounts {
       _id
       name
-      address
+      startingBalance
+      currentBalance
     }
   }
 `;
@@ -68,5 +74,5 @@ export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Financial Accounts', 'List'])
 )(List);

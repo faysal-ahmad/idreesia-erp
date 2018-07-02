@@ -6,11 +6,7 @@ import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
-import {
-  InputTextField,
-  InputTextAreaField,
-  FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -20,30 +16,29 @@ class EditForm extends Component {
     form: PropTypes.object,
 
     loading: PropTypes.bool,
-    physicalStoreById: PropTypes.object,
-    updatePhysicalStore: PropTypes.func,
+    financialAccountById: PropTypes.object,
+    updateFinancialAccount: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresPath);
+    history.push(paths.financialAccountsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, physicalStoreById, updatePhysicalStore } = this.props;
+    const { form, history, financialAccountById, updateFinancialAccount } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      updatePhysicalStore({
+      updateFinancialAccount({
         variables: {
-          id: physicalStoreById._id,
+          id: financialAccountById._id,
           name: fieldsValue.name,
-          address: fieldsValue.address,
         },
       })
         .then(() => {
-          history.push(paths.physicalStoresPath);
+          history.push(paths.financialAccountsPath);
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -52,7 +47,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, physicalStoreById } = this.props;
+    const { loading, financialAccountById } = this.props;
     if (loading) return null;
     const { getFieldDecorator } = this.props.form;
 
@@ -61,16 +56,9 @@ class EditForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={physicalStoreById.name}
+          initialValue={financialAccountById.name}
           required
-          requiredMessage="Please input a name for the physical store."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          initialValue={physicalStoreById.address}
-          required={false}
+          requiredMessage="Please input a name for the financial account."
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -80,21 +68,23 @@ class EditForm extends Component {
 }
 
 const formQuery = gql`
-  query physicalStoreById($id: String!) {
-    physicalStoreById(id: $id) {
+  query financialAccountById($id: String!) {
+    financialAccountById(id: $id) {
       _id
       name
-      address
+      startingBalance
+      currentBalance
     }
   }
 `;
 
 const formMutation = gql`
-  mutation updatePhysicalStore($id: String!, $name: String!, $address: String!) {
-    updatePhysicalStore(id: $id, name: $name, address: $address) {
+  mutation updateFinancialAccount($id: String!, $name: String!) {
+    updateFinancialAccount(id: $id, name: $name) {
       _id
       name
-      address
+      startingBalance
+      currentBalance
     }
   }
 `;
@@ -102,17 +92,17 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updatePhysicalStore',
+    name: 'updateFinancialAccount',
     options: {
-      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+      refetchQueries: ['allFinancialAccounts', 'allAccessibleFinancialAccounts'],
     },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
-      const { physicalStoreId } = match.params;
-      return { variables: { id: physicalStoreId } };
+      const { accountId } = match.params;
+      return { variables: { id: accountId } };
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Financial Accounts', 'Edit'])
 )(EditForm);

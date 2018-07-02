@@ -8,6 +8,9 @@ export default class Permissions {
   static ADMIN_VIEW_PHYSICAL_STORES = 'admin-view-physical-stores';
   static ADMIN_MANAGE_PHYSICAL_STORES = 'admin-manage-physical-stores';
 
+  static ADMIN_VIEW_FINANCIAL_ACCOUNTS = 'admin-view-financial-accounts';
+  static ADMIN_MANAGE_FINANCIAL_ACCOUNTS = 'admin-manage-financial-accounts';
+
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************

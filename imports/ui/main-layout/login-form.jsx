@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button } from 'antd';
 
 const loginFormButtonStyle = {
-  width: '100%'
+  width: '100%',
 };
 
 class LoginForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object
+    form: PropTypes.object,
   };
 
   handleSubmit = e => {
@@ -19,8 +19,8 @@ class LoginForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const { userName, password } = values;
-        Meteor.loginWithPassword(userName, password, err => {
-          if (!err) {
+        Meteor.loginWithPassword(userName, password, error => {
+          if (!error) {
             history.push(location.pathname);
           }
         });
@@ -33,8 +33,8 @@ class LoginForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input your username.'
-      }
+        message: 'Please input your username.',
+      },
     ];
     return getFieldDecorator('userName', { rules })(
       <Input
@@ -49,8 +49,8 @@ class LoginForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input your password.'
-      }
+        message: 'Please input your password.',
+      },
     ];
     return getFieldDecorator('password', { rules })(
       <Input
@@ -63,7 +63,7 @@ class LoginForm extends Component {
 
   render() {
     const itemLayout = {
-      wrapperCol: { span: 14 }
+      wrapperCol: { span: 14 },
     };
 
     return (

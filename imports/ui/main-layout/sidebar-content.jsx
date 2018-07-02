@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
@@ -10,47 +10,43 @@ import { HRSidebar } from '../modules/hr';
 
 const { Sider } = Layout;
 
-class SidebarContent extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    activeModuleName: PropTypes.string
-  };
+const SidebarContent = props => {
+  let sidebar;
+  const { history, activeModuleName } = props;
 
-  render() {
-    let sidebar;
-    const { history, activeModuleName } = this.props;
+  switch (activeModuleName) {
+    case ModuleNames.admin:
+      sidebar = <AdminSidebar history={history} />;
+      break;
 
-    switch (activeModuleName) {
-      case ModuleNames.admin:
-        sidebar = <AdminSidebar history={history} />;
-        break;
+    case ModuleNames.inventory:
+      sidebar = <InventorySidebar history={history} />;
+      break;
 
-      case ModuleNames.inventory:
-        sidebar = <InventorySidebar history={history} />;
-        break;
+    case ModuleNames.hr:
+      sidebar = <HRSidebar history={history} />;
+      break;
 
-      case ModuleNames.hr:
-        sidebar = <HRSidebar history={history} />;
-        break;
-
-      default:
-        break;
-    }
-
-    return (
-      <Sider width={200} style={{ background: '#fff' }}>
-        {sidebar}
-      </Sider>
-    );
+    default:
+      break;
   }
-}
 
-const mapStateToProps = state => {
-  return {
-    activeModuleName: state.activeModuleName
-  };
+  return (
+    <Sider width={200} style={{ background: '#fff' }}>
+      {sidebar}
+    </Sider>
+  );
 };
+
+SidebarContent.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  activeModuleName: PropTypes.string,
+};
+
+const mapStateToProps = state => ({
+  activeModuleName: state.activeModuleName,
+});
 
 const SidebarContentContainer = connect(mapStateToProps)(SidebarContent);
 export default SidebarContentContainer;

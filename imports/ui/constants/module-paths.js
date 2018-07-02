@@ -1,6 +1,6 @@
 export class ModulePaths {
   static admin = '/admin';
-  static accounts = '/accounts';
+  static finance = '/finance';
   static inventory = '/inventory';
   static hr = '/hr';
 }

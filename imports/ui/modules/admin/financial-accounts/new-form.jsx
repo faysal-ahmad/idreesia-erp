@@ -8,7 +8,7 @@ import { WithBreadcrumbs } from '/imports/ui/composers';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
-  InputTextAreaField,
+  InputNumberField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -17,27 +17,27 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createPhysicalStore: PropTypes.func,
+    createFinancialAccount: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.physicalStoresPath);
+    history.push(paths.financialAccountsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createPhysicalStore, history } = this.props;
+    const { form, createFinancialAccount, history } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      createPhysicalStore({
+      createFinancialAccount({
         variables: {
           name: fieldsValue.name,
-          address: fieldsValue.address,
+          startingBalance: fieldsValue.startingBalance,
         },
       })
         .then(() => {
-          history.push(paths.physicalStoresPath);
+          history.push(paths.financialAccountsPath);
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -54,13 +54,15 @@ class NewForm extends Component {
           fieldName="name"
           fieldLabel="Name"
           required
-          requiredMessage="Please input a name for the physical store."
+          requiredMessage="Please input a name for the financial account."
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          required={false}
+        <InputNumberField
+          fieldName="startingBalance"
+          fieldLabel="Starting Balance"
+          required
+          requiredMessage="Please input a value for starting balance."
+          minValue={0}
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -70,11 +72,12 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createPhysicalStore($name: String!, $address: String!) {
-    createPhysicalStore(name: $name, address: $address) {
+  mutation createFinancialAccount($name: String!, $startingBalance: Float!) {
+    createFinancialAccount(name: $name, startingBalance: $startingBalance) {
       _id
       name
-      address
+      startingBalance
+      currentBalance
     }
   }
 `;
@@ -82,10 +85,10 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'createPhysicalStore',
+    name: 'createFinancialAccount',
     options: {
-      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+      refetchQueries: ['allFinancialAccounts', 'allAccessibleFinancialAccounts'],
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New'])
+  WithBreadcrumbs(['Admin', 'Setup', 'Financial Accounts', 'New'])
 )(NewForm);

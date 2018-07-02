@@ -1,0 +1,20 @@
+type FinancialAccount {
+  _id: String
+  name: String
+  startingBalance: Float
+  currentBalance: Float
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allFinancialAccounts: [FinancialAccount]
+  allAccessibleFinancialAccounts: [FinancialAccount]
+  financialAccountById(id: String!): FinancialAccount
+}
+
+extend type Mutation {
+  createFinancialAccount(name: String!, startingBalance: Float!): FinancialAccount
+  updateFinancialAccount(id: String!, name: String!): FinancialAccount
+}

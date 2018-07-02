@@ -1,6 +1,6 @@
 export class ModuleNames {
   static admin = 'Admin';
-  static accounts = 'Accounts';
+  static finance = 'Finance';
   static inventory = 'Inventory';
   static hr = 'HR';
 }

@@ -11,4 +11,8 @@ export default class SubModulePaths {
   static physicalStoresPath = `${ModulePaths.admin}/physical-stores`;
   static physicalStoresNewFormPath = `${SubModulePaths.physicalStoresPath}/new`;
   static physicalStoresEditFormPath = `${SubModulePaths.physicalStoresPath}/:physicalStoreId`;
+
+  static financialAccountsPath = `${ModulePaths.admin}/financial-accounts`;
+  static financialAccountsNewFormPath = `${SubModulePaths.financialAccountsPath}/new`;
+  static financialAccountsEditFormPath = `${SubModulePaths.financialAccountsPath}/:accountId`;
 }

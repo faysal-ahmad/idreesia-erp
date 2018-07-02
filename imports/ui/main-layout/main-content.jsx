@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
@@ -10,50 +10,44 @@ import { HRRouter } from '../modules/hr';
 
 const { Content } = Layout;
 
-class MainContent extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    activeModuleName: PropTypes.string,
-    activeSubModuleName: PropTypes.string
-  };
+const MainContent = props => {
+  let main;
+  const { activeModuleName } = props;
 
-  render() {
-    let main;
-    const { activeModuleName } = this.props;
+  switch (activeModuleName) {
+    case ModuleNames.admin:
+      main = <AdminRouter />;
+      break;
 
-    switch (activeModuleName) {
-      case ModuleNames.admin:
-        main = <AdminRouter />;
-        break;
+    case ModuleNames.inventory:
+      main = <InventoryRouter />;
+      break;
 
-      case ModuleNames.inventory:
-        main = <InventoryRouter />;
-        break;
+    case ModuleNames.hr:
+      main = <HRRouter />;
+      break;
 
-      case ModuleNames.hr:
-        main = <HRRouter />;
-        break;
-
-      default:
-        main = <div />;
-        break;
-    }
-
-    return (
-      <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-        {main}
-      </Content>
-    );
+    default:
+      main = <div />;
+      break;
   }
-}
 
-const mapStateToProps = state => {
-  return {
-    activeModuleName: state.activeModuleName,
-    activeSubModuleName: state.activeSubModuleName
-  };
+  return (
+    <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>{main}</Content>
+  );
 };
+
+MainContent.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  activeModuleName: PropTypes.string,
+  activeSubModuleName: PropTypes.string,
+};
+
+const mapStateToProps = state => ({
+  activeModuleName: state.activeModuleName,
+  activeSubModuleName: state.activeSubModuleName,
+});
 
 const MainContentContainer = connect(mapStateToProps)(MainContent);
 export default MainContentContainer;

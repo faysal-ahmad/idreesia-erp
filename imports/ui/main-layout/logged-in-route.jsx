@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Layout, Breadcrumb } from 'antd';
-import { Row, Col } from 'antd';
-
-const { Content } = Layout;
 
 import { HeaderContent, SidebarContent, MainContent, LoginForm } from './';
 
@@ -15,14 +12,14 @@ const loginFormWrapperStyle = {
   top: '50%',
   left: '50%',
   marginTop: '-100px',
-  marginLeft: '-150px'
+  marginLeft: '-150px',
 };
 
 class LoggedInRoute extends Component {
   static propTypes = {
     breadcrumbs: PropTypes.array,
     history: PropTypes.object,
-    location: PropTypes.object
+    location: PropTypes.object,
   };
 
   getBreadcrumbs() {
@@ -57,21 +54,18 @@ class LoggedInRoute extends Component {
           </Layout>
         </Layout>
       );
-    } else {
-      return (
-        <div style={loginFormWrapperStyle}>
-          <LoginForm location={location} history={history} />
-        </div>
-      );
     }
+    return (
+      <div style={loginFormWrapperStyle}>
+        <LoginForm location={location} history={history} />
+      </div>
+    );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    breadcrumbs: state.breadcrumbs
-  };
-};
+const mapStateToProps = state => ({
+  breadcrumbs: state.breadcrumbs,
+});
 
 const LoggedInRouteContainer = connect(mapStateToProps)(LoggedInRoute);
 export default LoggedInRouteContainer;

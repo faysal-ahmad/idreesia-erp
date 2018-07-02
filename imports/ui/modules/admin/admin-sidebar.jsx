@@ -28,6 +28,11 @@ class AdminSidebar extends Component {
         history.push(paths.physicalStoresPath);
         break;
 
+      case 'financial-accounts':
+        setActiveSubModuleName(SubModuleNames.financialAccounts);
+        history.push(paths.financialAccountsPath);
+        break;
+
       default:
         break;
     }
@@ -49,8 +54,9 @@ class AdminSidebar extends Component {
             </span>
           }
         >
-          <Menu.Item key="accounts">Accounts</Menu.Item>
+          <Menu.Item key="accounts">Security Accounts</Menu.Item>
           <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
+          <Menu.Item key="financial-accounts">Financial Accounts</Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

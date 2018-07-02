@@ -45,8 +45,8 @@ import PurchaseFormResolvers from './inventory/purchase-form/resolvers';
 /**
  * Schema and Resolvers for the HR module
  */
-import FinancialAccountSchema from './finance/accounts/account.graphql';
-import FinancialAccountResolvers from './finance/accounts/resolvers';
+import FinancialAccountSchema from './accounts/financial-account/financial-account.graphql';
+import FinancialAccountResolvers from './accounts/financial-account/resolvers';
 
 const typeDefs = [
   DutyLocationSchema,

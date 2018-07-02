@@ -1,4 +1,4 @@
-import { Accounts } from '/imports/lib/collections/finance';
+import { FinancialAccounts } from '/imports/lib/collections/accounts';
 import { filterByInstanceAccess, hasOnePermission } from '/imports/api/security';
 import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
@@ -9,11 +9,11 @@ export default {
         throw new Error('You do not have permission to view Financial Accounts in the System.');
       }
 
-      return Accounts.find({}).fetch();
+      return FinancialAccounts.find({}).fetch();
     },
 
     allAccessibleFinancialAccounts(obj, params, { userId }) {
-      const accounts = Accounts.find({}).fetch();
+      const accounts = FinancialAccounts.find({}).fetch();
       const filteredFinancialAccounts = filterByInstanceAccess(userId, accounts);
       return filteredFinancialAccounts;
     },
@@ -23,7 +23,7 @@ export default {
         throw new Error('You do not have permission to view Financial Accounts in the System.');
       }
 
-      return Accounts.findOne(id);
+      return FinancialAccounts.findOne(id);
     },
   },
 
@@ -34,7 +34,7 @@ export default {
       }
 
       const date = new Date();
-      const accountId = Accounts.insert({
+      const accountId = FinancialAccounts.insert({
         name,
         startingBalance,
         currentBalance: startingBalance,
@@ -44,7 +44,7 @@ export default {
         updatedBy: userId,
       });
 
-      return Accounts.findOne(accountId);
+      return FinancialAccounts.findOne(accountId);
     },
 
     updateFinancialAccount(obj, { id, name }, { userId }) {
@@ -53,7 +53,7 @@ export default {
       }
 
       const date = new Date();
-      Accounts.update(id, {
+      FinancialAccounts.update(id, {
         $set: {
           name,
           updatedAt: date,
@@ -61,7 +61,7 @@ export default {
         },
       });
 
-      return Accounts.findOne(id);
+      return FinancialAccounts.findOne(id);
     },
   },
 };

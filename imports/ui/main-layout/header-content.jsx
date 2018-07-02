@@ -19,7 +19,7 @@ const ContainerStyle = {
 const modulePathsMapping = {};
 modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
-modulePathsMapping[ModuleNames.finance] = ModulePaths.finance;
+modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
 modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
 
 class HeaderContent extends Component {

@@ -7,6 +7,7 @@ import { ModuleNames } from '../constants';
 import { AdminRouter } from '../modules/admin';
 import { InventoryRouter } from '../modules/inventory';
 import { HRRouter } from '../modules/hr';
+import { AccountsRouter } from '../modules/accounts';
 
 const { Content } = Layout;
 
@@ -25,6 +26,10 @@ const MainContent = props => {
 
     case ModuleNames.hr:
       main = <HRRouter />;
+      break;
+
+    case ModuleNames.accounts:
+      main = <AccountsRouter />;
       break;
 
     default:

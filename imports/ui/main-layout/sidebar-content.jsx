@@ -7,6 +7,7 @@ import { ModuleNames } from '../constants';
 import { AdminSidebar } from '../modules/admin';
 import { InventorySidebar } from '../modules/inventory';
 import { HRSidebar } from '../modules/hr';
+import { AccountsSidebar } from '../modules/accounts';
 
 const { Sider } = Layout;
 
@@ -25,6 +26,10 @@ const SidebarContent = props => {
 
     case ModuleNames.hr:
       sidebar = <HRSidebar history={history} />;
+      break;
+
+    case ModuleNames.accounts:
+      sidebar = <AccountsSidebar history={history} />;
       break;
 
     default:

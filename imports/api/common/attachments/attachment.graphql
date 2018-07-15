@@ -1,0 +1,14 @@
+type Attachment {
+  _id: String
+  name: String
+  data: String
+}
+
+type Query {
+  attachmentsById(ids: [String]!): [Attachment]
+}
+
+type Mutation {
+  createAttachment(name: String, data: String!): Attachment
+  removeAttachment(_id: String!): Int
+}

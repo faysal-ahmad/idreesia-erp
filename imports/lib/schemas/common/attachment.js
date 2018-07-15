@@ -6,4 +6,12 @@ export default new SimpleSchema({
     regEx: SimpleSchema.RegEx.Id,
     optional: false,
   },
+  name: {
+    type: String,
+    optional: false,
+  },
+  data: {
+    type: String,
+    optional: false,
+  },
 });

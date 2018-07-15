@@ -4,7 +4,8 @@ import { Permissions as PermissionConstants } from '/imports/lib/constants';
 
 export default {
   ItemCategory: {
-    itemTypeCount: itemCategory => ItemTypes.find({
+    itemTypeCount: itemCategory =>
+      ItemTypes.find({
         itemCategoryId: { $eq: itemCategory._id },
       }).count(),
   },
@@ -13,7 +14,7 @@ export default {
     allItemCategories() {
       return ItemCategories.find({}).fetch();
     },
-    itemCategoryById(obj, { id }, context) {
+    itemCategoryById(obj, { id }) {
       return ItemCategories.findOne(id);
     },
   },

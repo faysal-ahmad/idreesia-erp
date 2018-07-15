@@ -1,6 +1,12 @@
 import { merge } from 'lodash';
 
 /**
+ * Common Schema and Resolvers
+ */
+import AttachmentSchema from './common/attachments/attachment.graphql';
+import AttachmentResolvers from './common/attachments/resolvers';
+
+/**
  * Schema and Resolvers for the HR module
  */
 import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
@@ -49,6 +55,7 @@ import FinancialAccountSchema from './accounts/financial-account/financial-accou
 import FinancialAccountResolvers from './accounts/financial-account/resolvers';
 
 const typeDefs = [
+  AttachmentSchema,
   DutyLocationSchema,
   DutySchema,
   KarkunSchema,
@@ -67,6 +74,8 @@ const typeDefs = [
 ];
 
 const resolvers = merge(
+  AttachmentResolvers,
+
   DutyLocationResolvers,
   DutyResolvers,
   KarkunResolvers,

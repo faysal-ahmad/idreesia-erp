@@ -4,15 +4,14 @@ import { Form, message } from 'antd';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
-import { filter } from 'lodash';
 
 import { ItemsList } from '../common/items-list';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
 import {
   AutoCompleteField,
   DateField,
-  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -26,49 +25,21 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
 
-    physicalStoresLoading: PropTypes.bool,
     karkunsListLoading: PropTypes.bool,
     stockItemsLoading: PropTypes.bool,
     formDataLoading: PropTypes.bool,
 
     issuanceFormById: PropTypes.object,
     allKarkuns: PropTypes.array,
-    allAccessiblePhysicalStores: PropTypes.array,
-    allStockItems: PropTypes.array,
+    stockItemsByPhysicalStoreId: PropTypes.array,
     updateIssuanceForm: PropTypes.func,
   };
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { issuanceFormById, allStockItems } = nextProps;
-    if (issuanceFormById && allStockItems && !prevState.selectedPhysicalStoreId) {
-      return {
-        selectedPhysicalStoreId: issuanceFormById.physicalStoreId,
-        stockItemsBySelectedPhysicalStore: filter(allStockItems, {
-          physicalStoreId: issuanceFormById.physicalStoreId,
-        }),
-      };
-    }
-
-    return null;
-  }
-
-  state = {
-    selectedPhysicalStoreId: null,
-    stockItemsBySelectedPhysicalStore: [],
-  };
-
-  handleStoreChanged = value => {
-    const { allStockItems } = this.props;
-    this.setState({
-      selectedPhysicalStoreId: value,
-      stockItemsBySelectedPhysicalStore: filter(allStockItems, { physicalStoreId: value }),
-    });
-  };
-
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.issuanceFormsPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.issuanceFormsPath(physicalStoreId));
   };
 
   handleSubmit = e => {
@@ -76,17 +47,19 @@ class EditForm extends Component {
     const {
       form,
       history,
+      physicalStoreId,
       updateIssuanceForm,
       issuanceFormById: { _id },
     } = this.props;
-    form.validateFields((err, { issueDate, issuedBy, issuedTo, physicalStoreId, items }) => {
+    form.validateFields((err, { issueDate, issuedBy, issuedTo, items }) => {
       if (err) return;
 
+      const updatedItems = items.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }));
       updateIssuanceForm({
-        variables: { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items },
+        variables: { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items: updatedItems },
       })
         .then(() => {
-          history.push(paths.issuanceFormsPath);
+          history.push(paths.issuanceFormsPath(physicalStoreId));
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -95,9 +68,8 @@ class EditForm extends Component {
   };
 
   getItemsField() {
-    const { issuanceFormById } = this.props;
+    const { issuanceFormById, physicalStoreId, stockItemsByPhysicalStoreId } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { selectedPhysicalStoreId, stockItemsBySelectedPhysicalStore } = this.state;
 
     const rules = [
       {
@@ -107,23 +79,21 @@ class EditForm extends Component {
     ];
     return getFieldDecorator('items', { rules, initialValue: issuanceFormById.items })(
       <ItemsList
-        physicalStoreId={selectedPhysicalStoreId}
-        stockItemsByPhysicalStore={stockItemsBySelectedPhysicalStore}
+        physicalStoreId={physicalStoreId}
+        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
     );
   }
 
   render() {
     const {
-      physicalStoresLoading,
       karkunsListLoading,
       stockItemsLoading,
       formDataLoading,
       issuanceFormById,
       allKarkuns,
-      allAccessiblePhysicalStores,
     } = this.props;
-    if (physicalStoresLoading || karkunsListLoading || stockItemsLoading || formDataLoading) {
+    if (karkunsListLoading || stockItemsLoading || formDataLoading) {
       return null;
     }
 
@@ -156,16 +126,6 @@ class EditForm extends Component {
           required
           requiredMessage="Please input a name in issued to."
           getFieldDecorator={getFieldDecorator}
-        />
-        <SelectField
-          data={allAccessiblePhysicalStores}
-          fieldName="physicalStoreId"
-          fieldLabel="Physical store"
-          required
-          requiredMessage="Please select a physical store."
-          getFieldDecorator={getFieldDecorator}
-          initialValue={this.state.selectedPhysicalStoreId}
-          onChange={this.handleStoreChanged}
         />
 
         <Form.Item label="Issued Items" {...formItemExtendedLayout}>
@@ -237,20 +197,10 @@ const karkunsListQuery = gql`
   }
 `;
 
-const physicalStoresListQuery = gql`
-  query allAccessiblePhysicalStores {
-    allAccessiblePhysicalStores {
+const stockItemsByPhysicalStoreId = gql`
+  query stockItemsByPhysicalStoreId($physicalStoreId: String!) {
+    stockItemsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
       _id
-      name
-    }
-  }
-`;
-
-const allStockItemsLitsQuery = gql`
-  query allStockItems {
-    allStockItems {
-      _id
-      physicalStoreId
       itemTypeName
       itemCategoryName
       currentStockLevel
@@ -260,20 +210,19 @@ const allStockItemsLitsQuery = gql`
 
 export default compose(
   Form.create(),
+  WithPhysicalStoreId(),
   graphql(formMutation, {
     name: 'updateIssuanceForm',
     options: {
       refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
     },
   }),
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ physicalStoresLoading: data.loading, ...data }),
-  }),
   graphql(karkunsListQuery, {
     props: ({ data }) => ({ karkunsListLoading: data.loading, ...data }),
   }),
-  graphql(allStockItemsLitsQuery, {
+  graphql(stockItemsByPhysicalStoreId, {
     props: ({ data }) => ({ stockItemsLoading: data.loading, ...data }),
+    options: ({ physicalStoreId }) => ({ variables: { physicalStoreId } }),
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),

@@ -28,6 +28,7 @@ extend type Query {
   allStockItems: [StockItem]
   pagedStockItems(queryString: String): PagedStockItem
   stockItemById(_id: String!): StockItem
+  stockItemsByPhysicalStoreId(physicalStoreId: String!): [StockItem]
 }
 
 extend type Mutation {

@@ -9,6 +9,7 @@ import { isFinite, toSafeInteger } from 'lodash';
 import { Formats } from '/imports/lib/constants';
 import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
 
 import ListFilter from './list-filter';
 
@@ -39,13 +40,13 @@ class List extends Component {
 
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
+    physicalStoreId: PropTypes.string,
 
     loading: PropTypes.bool,
     pagedIssuanceForms: PropTypes.shape({
       totalResults: PropTypes.number,
       issuanceForms: PropTypes.array,
     }),
-    allAccessiblePhysicalStores: PropTypes.array,
     removeIssuanceForm: PropTypes.func,
     approveIssuanceForm: PropTypes.func,
   };
@@ -135,12 +136,8 @@ class List extends Component {
   }
 
   refreshPage = newParams => {
-    const { physicalStoreId, approvalStatus, startDate, endDate, pageIndex, pageSize } = newParams;
+    const { approvalStatus, startDate, endDate, pageIndex, pageSize } = newParams;
     const { queryParams, history, location } = this.props;
-
-    let physicalStoreIdVal;
-    if (newParams.hasOwnProperty('physicalStoreId')) physicalStoreIdVal = physicalStoreId || '';
-    else physicalStoreIdVal = queryParams.physicalStoreId || '';
 
     let showApprovedVal;
     let showUnapprovedVal;
@@ -172,18 +169,18 @@ class List extends Component {
 
     const path = `${
       location.pathname
-    }?physicalStoreId=${physicalStoreIdVal}&showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
   handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.issuanceFormsNewFormPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.issuanceFormsNewFormPath(physicalStoreId));
   };
 
   handleEditClicked = record => {
-    const { history } = this.props;
-    history.push(`${paths.issuanceFormsPath}/${record._id}`);
+    const { history, physicalStoreId } = this.props;
+    history.push(`${paths.issuanceFormsPath(physicalStoreId)}/${record._id}`);
   };
 
   handleDeleteClicked = issuanceForm => {
@@ -227,7 +224,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { queryParams, allAccessiblePhysicalStores } = this.props;
+    const { queryParams } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -237,7 +234,6 @@ class List extends Component {
         <ListFilter
           refreshPage={this.refreshPage}
           queryParams={queryParams}
-          allPhysicalStores={allAccessiblePhysicalStores}
         />
       </div>
     );
@@ -311,17 +307,9 @@ const listQuery = gql`
   }
 `;
 
-const physicalStoresListQuery = gql`
-  query allAccessiblePhysicalStores {
-    allAccessiblePhysicalStores {
-      _id
-      name
-    }
-  }
-`;
-
 export default compose(
   WithQueryParams(),
+  WithPhysicalStoreId(),
   graphql(formMutationRemove, {
     name: 'removeIssuanceForm',
     options: {
@@ -333,9 +321,6 @@ export default compose(
     options: {
       refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
     },
-  }),
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ ...data }),
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),

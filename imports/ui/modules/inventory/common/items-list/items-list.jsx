@@ -35,19 +35,6 @@ export default class ItemsList extends Component {
     };
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.physicalStoreId !== prevState.physicalStoreId) {
-      return {
-        showForm: prevState.showForm,
-        physicalStoreId: nextProps.physicalStoreId,
-        stockItems: [],
-        selectedStockItemIds: [],
-      };
-    }
-
-    return null;
-  }
-
   itemForm = null;
   stockItemsTable = null;
 

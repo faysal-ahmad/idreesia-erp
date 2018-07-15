@@ -16,6 +16,7 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
 
     loading: PropTypes.bool,
     stockItemById: PropTypes.object,
@@ -23,13 +24,13 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.stockItemsPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.stockItemsPath(physicalStoreId));
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { stockItemById, updateStockItem, form, history } = this.props;
+    const { physicalStoreId, stockItemById, updateStockItem, form, history } = this.props;
     form.validateFields((err, { minStockLevel, totalStockLevel }) => {
       if (err) return;
       updateStockItem({
@@ -40,7 +41,7 @@ class EditForm extends Component {
         },
       })
         .then(() => {
-          history.push(paths.stockItemsPath);
+          history.push(paths.stockItemsPath(physicalStoreId));
         })
         .catch(error => {
           message.error(error.message, 5);

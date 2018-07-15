@@ -23,7 +23,6 @@ class ListFilter extends Component {
 
     refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
-    allPhysicalStores: PropTypes.array,
     allItemCategories: PropTypes.array,
   };
 
@@ -31,10 +30,9 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, refreshPage } = this.props;
 
-    form.validateFields((err, { physicalStoreId, itemCategoryId, itemTypeName }) => {
+    form.validateFields((err, { itemCategoryId, itemTypeName }) => {
       if (err) return;
       refreshPage({
-        physicalStoreId,
         itemCategoryId,
         itemTypeName,
         pageIndex: 0,
@@ -43,23 +41,13 @@ class ListFilter extends Component {
   };
 
   render() {
-    const { allPhysicalStores, allItemCategories, queryParams } = this.props;
+    const { allItemCategories, queryParams } = this.props;
     const { getFieldDecorator } = this.props.form;
 
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
-            <SelectField
-              data={allPhysicalStores}
-              getDataValue={({ _id }) => _id}
-              getDataText={({ name }) => name}
-              fieldName="physicalStoreId"
-              fieldLabel="Physical Store"
-              fieldLayout={formItemLayout}
-              initialValue={queryParams.physicalStoreId}
-              getFieldDecorator={getFieldDecorator}
-            />
             <SelectField
               data={allItemCategories}
               getDataValue={({ _id }) => _id}

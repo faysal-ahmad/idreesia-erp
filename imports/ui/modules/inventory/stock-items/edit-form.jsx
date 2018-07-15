@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 import { Tabs } from 'antd';
+import { compose } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
+import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+
 import GeneralInfo from './edit/general-info';
 import IssuanceForms from './edit/issuance-forms';
 import ReturnForms from './edit/return-forms';
@@ -37,6 +40,10 @@ EditForm.propTypes = {
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
+  physicalStoreId: PropTypes.string,
 };
 
-export default WithBreadcrumbs(['Inventory', 'Stock Items', 'Edit'])(EditForm);
+export default compose(
+  WithBreadcrumbs(['Inventory', 'Stock Items', 'Edit']),
+  WithPhysicalStoreId()
+)(EditForm);

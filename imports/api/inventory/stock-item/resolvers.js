@@ -65,6 +65,13 @@ export default {
         physicalStoreId: { $in: physicalStoreIds },
       });
     },
+
+    stockItemsByPhysicalStoreId(obj, { physicalStoreId }, { userId }) {
+      if (hasInstanceAccess(userId, physicalStoreId) === false) return [];
+      return StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+      }).fetch();
+    },
   },
 
   Mutation: {

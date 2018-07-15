@@ -12,15 +12,17 @@ import {
   SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+    match: PropTypes.object,
     form: PropTypes.object,
 
+    physicalStoreId: PropTypes.string,
     allItemTypes: PropTypes.array,
-    allAccessiblePhysicalStores: PropTypes.array,
     allItemCategories: PropTypes.array,
     allStockItems: PropTypes.array,
     createStockItem: PropTypes.func,
@@ -29,7 +31,6 @@ class NewForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedPhysicalStoreId: null,
       selectedItemCategoryId: null,
       filteredItemTypes: [],
     };
@@ -56,32 +57,24 @@ class NewForm extends Component {
     return filteredItemTypes;
   };
 
-  handleStoreChanged = value => {
-    const state = Object.assign({}, this.state, {
-      selectedPhysicalStoreId: value,
-      filteredItemTypes: this.getFilteredItemTypes(value, this.state.selectedItemCategoryId),
-    });
-    this.setState(state);
-  };
-
   handleCategoryChanged = value => {
     const state = Object.assign({}, this.state, {
       selectedItemCategoryId: value,
-      filteredItemTypes: this.getFilteredItemTypes(this.state.selectedPhysicalStoreId, value),
+      filteredItemTypes: this.getFilteredItemTypes(this.props.physicalStoreId, value),
     });
     this.setState(state);
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.stockItemsPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.stockItemsPath(physicalStoreId));
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, createStockItem } = this.props;
+    const { form, history, physicalStoreId, createStockItem } = this.props;
     form.validateFields(
-      (err, { physicalStoreId, itemTypeId, minStockLevel, currentStockLevel, totalStockLevel }) => {
+      (err, { itemTypeId, minStockLevel, currentStockLevel, totalStockLevel }) => {
         if (err) return;
 
         createStockItem({
@@ -94,7 +87,7 @@ class NewForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.stockItemsPath);
+            history.push(paths.stockItemsPath(physicalStoreId));
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -105,22 +98,11 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allAccessiblePhysicalStores, allItemCategories } = this.props;
+    const { allItemCategories } = this.props;
     const { filteredItemTypes } = this.state;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <SelectField
-          data={allAccessiblePhysicalStores}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="physicalStoreId"
-          fieldLabel="Physical Store"
-          required
-          requiredMessage="Please select a physical store."
-          onChange={this.handleStoreChanged}
-          getFieldDecorator={getFieldDecorator}
-        />
         <SelectField
           data={allItemCategories}
           getDataValue={({ _id }) => _id}
@@ -163,15 +145,6 @@ class NewForm extends Component {
     );
   }
 }
-
-const physicalStoresListQuery = gql`
-  query allAccessiblePhysicalStores {
-    allAccessiblePhysicalStores {
-      _id
-      name
-    }
-  }
-`;
 
 const itemCategoriesListQuery = gql`
   query allItemCategories {
@@ -230,9 +203,7 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
+  WithPhysicalStoreId(),
   graphql(itemCategoriesListQuery, {
     props: ({ data }) => ({ ...data }),
   }),

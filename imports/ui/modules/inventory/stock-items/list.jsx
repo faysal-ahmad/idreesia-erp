@@ -207,8 +207,8 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query pagedStockItems($queryString: String) {
-    pagedStockItems(queryString: $queryString) {
+  query pagedStockItems($physicalStoreId: String!, $queryString: String) {
+    pagedStockItems(physicalStoreId: $physicalStoreId, queryString: $queryString) {
       totalResults
       stockItems {
         _id
@@ -241,7 +241,9 @@ export default compose(
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ queryString }) => ({ variables: { queryString } }),
+    options: ({ physicalStoreId, queryString }) => ({
+      variables: { physicalStoreId, queryString },
+    }),
   }),
   WithBreadcrumbs(['Inventory', 'Stock Items', 'List'])
 )(List);

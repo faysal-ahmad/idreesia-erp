@@ -46,12 +46,15 @@ export default {
       }).fetch();
     },
 
-    pagedStockItems(obj, { queryString }, { userId }) {
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
-      if (filteredPhysicalStores.length === 0) return [];
+    pagedStockItems(obj, { physicalStoreId, queryString }, { userId }) {
+      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+        return {
+          stockItems: [],
+          totalResults: 0,
+        };
+      }
 
-      return getStockItems(queryString, filteredPhysicalStores);
+      return getStockItems(queryString, physicalStoreId);
     },
 
     stockItemById(obj, { _id }, { userId }) {

@@ -23,62 +23,52 @@ function getItemTypeIds(itemCategoryId, itemTypeName) {
     $project: { _id: 1 },
   });
 
-  return ItemTypes.aggregate(pipeline);
+  return ItemTypes.aggregate(pipeline).toArray();
 }
 
-export default function getStockItems(queryString, physicalStores) {
+export default function getStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
-  const physicalStoreIds = physicalStores.map(({ _id }) => _id);
   const pipeline = [
     {
       $match: {
-        physicalStoreId: { $in: physicalStoreIds },
+        physicalStoreId: { $eq: physicalStoreId },
       },
     },
   ];
 
-  const {
-    physicalStoreId,
-    itemCategoryId,
-    itemTypeName,
-    pageIndex = '0',
-    pageSize = '10',
-  } = params;
+  const { itemCategoryId, itemTypeName, pageIndex = '0', pageSize = '10' } = params;
 
-  if (physicalStoreId && physicalStoreId !== '') {
-    pipeline.push({
-      $match: {
-        physicalStoreId: { $eq: physicalStoreId },
-      },
-    });
+  let itemTypeIdsPromise = Promise.resolve([]);
+  if (itemCategoryId || itemTypeName) {
+    itemTypeIdsPromise = getItemTypeIds(itemCategoryId, itemTypeName);
   }
 
-  if ((itemCategoryId && itemCategoryId !== '') || (itemTypeName && itemTypeName !== '')) {
-    const itemTypeIdResults = getItemTypeIds(itemCategoryId, itemTypeName);
-    const itemTypeIds = itemTypeIdResults.map(itemTypeIdResult => itemTypeIdResult._id);
-    pipeline.push({
-      $match: {
-        itemTypeId: { $in: itemTypeIds },
-      },
-    });
-  }
+  return itemTypeIdsPromise.then(itemTypeIdResults => {
+    if (itemTypeIdResults.length > 0) {
+      const itemTypeIds = itemTypeIdResults.map(itemTypeIdResult => itemTypeIdResult._id);
+      pipeline.push({
+        $match: {
+          itemTypeId: { $in: itemTypeIds },
+        },
+      });
+    }
 
-  const countingPipeline = pipeline.concat({
-    $count: 'total',
+    const countingPipeline = pipeline.concat({
+      $count: 'total',
+    });
+
+    const nPageIndex = parseInt(pageIndex, 10);
+    const nPageSize = parseInt(pageSize, 10);
+    const resultsPipeline = pipeline.concat([
+      { $skip: nPageIndex * nPageSize },
+      { $limit: nPageSize },
+    ]);
+
+    const stockItems = StockItems.aggregate(resultsPipeline).toArray();
+    const totalResults = StockItems.aggregate(countingPipeline).toArray();
+    return Promise.all([stockItems, totalResults]).then(results => ({
+      stockItems: results[0],
+      totalResults: get(results[1], ['0', 'total'], 0),
+    }));
   });
-
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
-  const resultsPipeline = pipeline.concat([
-    { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize },
-  ]);
-
-  const stockItems = StockItems.aggregate(resultsPipeline).toArray();
-  const totalResults = StockItems.aggregate(countingPipeline).toArray();
-
-  return Promise.all([stockItems, totalResults]).then(results => ({
-    stockItems: results[0],
-    totalResults: get(results[1], ['0', 'total'], 0),
-  }));
 }

@@ -4,11 +4,11 @@ type Attachment {
   data: String
 }
 
-type Query {
+extend type Query {
   attachmentsById(ids: [String]!): [Attachment]
 }
 
-type Mutation {
+extend type Mutation {
   createAttachment(name: String, data: String!): Attachment
   removeAttachment(_id: String!): Int
 }

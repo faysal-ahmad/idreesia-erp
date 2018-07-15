@@ -27,7 +27,7 @@ type PagedIssuanceForm {
 
 extend type Query {
   issuanceFormsByStockItem(stockItemId: String): [IssuanceForm]
-  pagedIssuanceForms(queryString: String): PagedIssuanceForm
+  pagedIssuanceForms(physicalStoreId: String!, queryString: String): PagedIssuanceForm
   issuanceFormById(_id: String!): IssuanceForm
 }
 

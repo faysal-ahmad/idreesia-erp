@@ -71,8 +71,9 @@ export default {
       return getReturnFormsByStockItemId(stockItemId, filteredPhysicalStores);
     },
 
-    pagedReturnForms(obj, { queryString }, { userId }) {
+    pagedReturnForms(obj, { physicalStoreId, queryString }, { userId }) {
       if (
+        hasInstanceAccess(userId, physicalStoreId) === false ||
         !hasOnePermission(userId, [
           PermissionConstants.IN_VIEW_RETURN_FORMS,
           PermissionConstants.IN_MANAGE_RETURN_FORMS,
@@ -85,11 +86,7 @@ export default {
         };
       }
 
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
-      if (filteredPhysicalStores.length === 0) return [];
-
-      return getReturnForms(queryString, filteredPhysicalStores);
+      return getReturnForms(queryString, physicalStoreId);
     },
 
     returnFormById(obj, { _id }, { userId }) {

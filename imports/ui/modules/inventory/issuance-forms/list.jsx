@@ -231,10 +231,7 @@ class List extends Component {
         <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
           New Issuance Form
         </Button>
-        <ListFilter
-          refreshPage={this.refreshPage}
-          queryParams={queryParams}
-        />
+        <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />
       </div>
     );
   };
@@ -285,8 +282,8 @@ const formMutationApprove = gql`
 `;
 
 const listQuery = gql`
-  query pagedIssuanceForms($queryString: String) {
-    pagedIssuanceForms(queryString: $queryString) {
+  query pagedIssuanceForms($physicalStoreId: String!, $queryString: String) {
+    pagedIssuanceForms(physicalStoreId: $physicalStoreId, queryString: $queryString) {
       totalResults
       issuanceForms {
         _id
@@ -324,7 +321,9 @@ export default compose(
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ queryString }) => ({ variables: { queryString } }),
+    options: ({ physicalStoreId, queryString }) => ({
+      variables: { physicalStoreId, queryString },
+    }),
   }),
   WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'List'])
 )(List);

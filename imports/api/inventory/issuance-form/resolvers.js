@@ -71,8 +71,9 @@ export default {
       return getIssuanceFormsByStockItemId(stockItemId, filteredPhysicalStores);
     },
 
-    pagedIssuanceForms(obj, { queryString }, { userId }) {
+    pagedIssuanceForms(obj, { physicalStoreId, queryString }, { userId }) {
       if (
+        hasInstanceAccess(userId, physicalStoreId) === false ||
         !hasOnePermission(userId, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -85,11 +86,7 @@ export default {
         };
       }
 
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
-      if (filteredPhysicalStores.length === 0) return [];
-
-      return getIssuanceForms(queryString, filteredPhysicalStores);
+      return getIssuanceForms(queryString, physicalStoreId);
     },
 
     issuanceFormById(obj, { _id }, { userId }) {

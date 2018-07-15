@@ -26,19 +26,17 @@ export function getPurchaseFormsByStockItemId(stockItemId, physicalStores) {
   return PurchaseForms.aggregate(pipeline).toArray();
 }
 
-export default function getPurchaseForms(queryString, physicalStores) {
+export default function getPurchaseForms(queryString, physicalStoreId) {
   const params = parse(queryString);
-  const physicalStoreIds = physicalStores.map(({ _id }) => _id);
   const pipeline = [
     {
       $match: {
-        physicalStoreId: { $in: physicalStoreIds },
+        physicalStoreId: { $eq: physicalStoreId },
       },
     },
   ];
 
   const {
-    physicalStoreId,
     showApproved,
     showUnapproved,
     startDate,
@@ -46,14 +44,6 @@ export default function getPurchaseForms(queryString, physicalStores) {
     pageIndex = '0',
     pageSize = '10',
   } = params;
-
-  if (physicalStoreId && physicalStoreId !== '') {
-    pipeline.push({
-      $match: {
-        physicalStoreId: { $eq: physicalStoreId },
-      },
-    });
-  }
 
   if (showApproved === 'false' && showUnapproved === 'false') {
     return {

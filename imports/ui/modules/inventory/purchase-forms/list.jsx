@@ -275,8 +275,8 @@ const formMutationApprove = gql`
 `;
 
 const listQuery = gql`
-  query pagedPurchaseForms($queryString: String) {
-    pagedPurchaseForms(queryString: $queryString) {
+  query pagedPurchaseForms($physicalStoreId: String!, $queryString: String) {
+    pagedPurchaseForms(physicalStoreId: $physicalStoreId, queryString: $queryString) {
       totalResults
       purchaseForms {
         _id
@@ -314,7 +314,9 @@ export default compose(
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ queryString }) => ({ variables: { queryString } }),
+    options: ({ physicalStoreId, queryString }) => ({
+      variables: { physicalStoreId, queryString },
+    }),
   }),
   WithBreadcrumbs(['Inventory', 'Forms', 'Purchase Forms', 'List'])
 )(List);

@@ -27,7 +27,7 @@ type PagedPurchaseForm {
 
 extend type Query {
   purchaseFormsByStockItem(stockItemId: String): [PurchaseForm]
-  pagedPurchaseForms(queryString: String): PagedPurchaseForm
+  pagedPurchaseForms(physicalStoreId: String!, queryString: String): PagedPurchaseForm
   purchaseFormById(_id: String!): PurchaseForm
 }
 

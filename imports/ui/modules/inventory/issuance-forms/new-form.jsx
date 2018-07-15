@@ -7,7 +7,11 @@ import { compose, graphql } from 'react-apollo';
 import { ItemsList } from '../common/items-list';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+import {
+  WithKarkuns,
+  WithPhysicalStoreId,
+  WithStockItemsByPhysicalStore,
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   AutoCompleteField,
   DateField,
@@ -25,10 +29,13 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    stockItemsLoading: PropTypes.bool,
+    stockItemsByPhysicalStoreId: PropTypes.array,
+    karkunsListLoading: PropTypes.bool,
+    allKarkuns: PropTypes.array,
+
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
-    allKarkuns: PropTypes.array,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     createIssuanceForm: PropTypes.func,
   };
 
@@ -145,41 +152,16 @@ const formMutation = gql`
   }
 `;
 
-const karkunsListQuery = gql`
-  query allKarkuns {
-    allKarkuns {
-      _id
-      name
-    }
-  }
-`;
-
-const stockItemsByPhysicalStoreId = gql`
-  query stockItemsByPhysicalStoreId($physicalStoreId: String!) {
-    stockItemsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
-      _id
-      itemTypeName
-      itemCategoryName
-      currentStockLevel
-    }
-  }
-`;
-
 export default compose(
   Form.create(),
+  WithKarkuns(),
   WithPhysicalStoreId(),
+  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: 'createIssuanceForm',
     options: {
       refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
     },
-  }),
-  graphql(karkunsListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(stockItemsByPhysicalStoreId, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId }) => ({ variables: { physicalStoreId } }),
   }),
   WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'New'])
 )(NewForm);

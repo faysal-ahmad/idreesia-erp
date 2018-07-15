@@ -7,7 +7,11 @@ import { compose, graphql } from 'react-apollo';
 import { ItemsList } from '../common/items-list';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+import {
+  WithKarkuns,
+  WithPhysicalStoreId,
+  WithStockItemsByPhysicalStore,
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   AutoCompleteField,
   DateField,
@@ -26,9 +30,12 @@ class NewForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    loading: PropTypes.bool,
-    allKarkuns: PropTypes.array,
+    stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
+    karkunsListLoading: PropTypes.bool,
+    allKarkuns: PropTypes.array,
+
+    loading: PropTypes.bool,
     createPurchaseForm: PropTypes.func,
   };
 
@@ -146,41 +153,16 @@ const formMutation = gql`
   }
 `;
 
-const karkunsListQuery = gql`
-  query allKarkuns {
-    allKarkuns {
-      _id
-      name
-    }
-  }
-`;
-
-const stockItemsByPhysicalStoreId = gql`
-  query stockItemsByPhysicalStoreId($physicalStoreId: String!) {
-    stockItemsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
-      _id
-      itemTypeName
-      itemCategoryName
-      currentStockLevel
-    }
-  }
-`;
-
 export default compose(
   Form.create(),
+  WithKarkuns(),
   WithPhysicalStoreId(),
+  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: 'createPurchaseForm',
     options: {
       refetchQueries: ['pagedPurchaseForms', 'purchaseFormsByStockItem', 'pagedStockItems'],
     },
-  }),
-  graphql(karkunsListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(stockItemsByPhysicalStoreId, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId }) => ({ variables: { physicalStoreId } }),
   }),
   WithBreadcrumbs(['Inventory', 'Forms', 'Purchase Forms', 'New'])
 )(NewForm);

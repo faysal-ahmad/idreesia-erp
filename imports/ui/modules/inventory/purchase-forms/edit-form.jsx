@@ -8,7 +8,11 @@ import { compose, graphql } from 'react-apollo';
 import { ItemsList } from '../common/items-list';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+import {
+  WithKarkuns,
+  WithPhysicalStoreId,
+  WithStockItemsByPhysicalStore,
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   AutoCompleteField,
   DateField,
@@ -27,13 +31,13 @@ class EditForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    karkunsListLoading: PropTypes.bool,
     stockItemsLoading: PropTypes.bool,
-    formDataLoading: PropTypes.bool,
-
-    purchaseFormById: PropTypes.object,
-    allKarkuns: PropTypes.array,
     stockItemsByPhysicalStoreId: PropTypes.array,
+    karkunsListLoading: PropTypes.bool,
+    allKarkuns: PropTypes.array,
+
+    formDataLoading: PropTypes.bool,
+    purchaseFormById: PropTypes.object,
     updatePurchaseForm: PropTypes.func,
   };
 
@@ -54,8 +58,16 @@ class EditForm extends Component {
     form.validateFields((err, { purchaseDate, receivedBy, purchasedBy, items }) => {
       if (err) return;
 
+      const updatedItems = items.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }));
       updatePurchaseForm({
-        variables: { _id, purchaseDate, receivedBy, purchasedBy, physicalStoreId, items },
+        variables: {
+          _id,
+          purchaseDate,
+          receivedBy,
+          purchasedBy,
+          physicalStoreId,
+          items: updatedItems,
+        },
       })
         .then(() => {
           history.push(paths.purchaseFormsPath(physicalStoreId));
@@ -189,41 +201,16 @@ const formQuery = gql`
   }
 `;
 
-const karkunsListQuery = gql`
-  query allKarkuns {
-    allKarkuns {
-      _id
-      name
-    }
-  }
-`;
-
-const stockItemsByPhysicalStoreId = gql`
-  query stockItemsByPhysicalStoreId($physicalStoreId: String!) {
-    stockItemsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
-      _id
-      itemTypeName
-      itemCategoryName
-      currentStockLevel
-    }
-  }
-`;
-
 export default compose(
   Form.create(),
+  WithKarkuns(),
   WithPhysicalStoreId(),
+  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: 'updatePurchaseForm',
     options: {
       refetchQueries: ['pagedPurchaseForms', 'purchaseFormsByStockItem', 'pagedStockItems'],
     },
-  }),
-  graphql(karkunsListQuery, {
-    props: ({ data }) => ({ karkunsListLoading: data.loading, ...data }),
-  }),
-  graphql(stockItemsByPhysicalStoreId, {
-    props: ({ data }) => ({ stockItemsLoading: data.loading, ...data }),
-    options: ({ physicalStoreId }) => ({ variables: { physicalStoreId } }),
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),

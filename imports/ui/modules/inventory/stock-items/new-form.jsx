@@ -12,7 +12,10 @@ import {
   SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+import {
+  WithPhysicalStoreId,
+  WithStockItemsByPhysicalStore,
+} from '/imports/ui/modules/inventory/common/composers';
 
 class NewForm extends Component {
   static propTypes = {
@@ -21,10 +24,12 @@ class NewForm extends Component {
     match: PropTypes.object,
     form: PropTypes.object,
 
+    stockItemsLoading: PropTypes.bool,
+    stockItemsByPhysicalStoreId: PropTypes.array,
+
     physicalStoreId: PropTypes.string,
     allItemTypes: PropTypes.array,
     allItemCategories: PropTypes.array,
-    allStockItems: PropTypes.array,
     createStockItem: PropTypes.func,
   };
 
@@ -36,17 +41,12 @@ class NewForm extends Component {
     };
   }
 
-  getFilteredItemTypes = (physicalStoreId, itemCategoryId) => {
-    const { allItemTypes, allStockItems } = this.props;
+  getFilteredItemTypes = itemCategoryId => {
+    const { allItemTypes, stockItemsByPhysicalStoreId } = this.props;
     let filteredItemTypes = [];
 
-    if (physicalStoreId && itemCategoryId) {
-      const stockItemsInSelectedPhysicalStore = filter(
-        allStockItems,
-        stockItem => stockItem.physicalStoreId === physicalStoreId
-      );
-
-      const stockItemsByItemTypeId = keyBy(stockItemsInSelectedPhysicalStore, 'itemTypeId');
+    if (itemCategoryId) {
+      const stockItemsByItemTypeId = keyBy(stockItemsByPhysicalStoreId, 'itemTypeId');
       filteredItemTypes = filter(allItemTypes, itemType => {
         if (itemType.itemCategoryId !== itemCategoryId) return false;
         if (stockItemsByItemTypeId[itemType._id]) return false;
@@ -60,7 +60,7 @@ class NewForm extends Component {
   handleCategoryChanged = value => {
     const state = Object.assign({}, this.state, {
       selectedItemCategoryId: value,
-      filteredItemTypes: this.getFilteredItemTypes(this.props.physicalStoreId, value),
+      filteredItemTypes: this.getFilteredItemTypes(value),
     });
     this.setState(state);
   };
@@ -165,16 +165,6 @@ const itemTypesListQuery = gql`
   }
 `;
 
-const stockItemsListQuery = gql`
-  query allStockItems {
-    allStockItems {
-      _id
-      itemTypeId
-      physicalStoreId
-    }
-  }
-`;
-
 const formMutation = gql`
   mutation createStockItem(
     $itemTypeId: String!
@@ -204,13 +194,11 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithStockItemsByPhysicalStore(),
   graphql(itemCategoriesListQuery, {
     props: ({ data }) => ({ ...data }),
   }),
   graphql(itemTypesListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(stockItemsListQuery, {
     props: ({ data }) => ({ ...data }),
   }),
   graphql(formMutation, {

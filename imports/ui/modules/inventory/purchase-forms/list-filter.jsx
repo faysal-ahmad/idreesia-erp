@@ -4,7 +4,7 @@ import { Collapse, Form, Row, Button } from 'antd';
 import moment from 'moment';
 
 import { Formats } from '/imports/lib/constants';
-import { CheckboxField, DateField, SelectField } from '/imports/ui/modules/helpers/fields';
+import { CheckboxField, DateField } from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
   width: '500px',
@@ -25,17 +25,15 @@ class ListFilter extends Component {
 
     refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
-    allPhysicalStores: PropTypes.array,
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { form, refreshPage } = this.props;
 
-    form.validateFields((err, { physicalStoreId, approvalStatus, startDate, endDate }) => {
+    form.validateFields((err, { approvalStatus, startDate, endDate }) => {
       if (err) return;
       refreshPage({
-        physicalStoreId,
         approvalStatus,
         startDate,
         endDate,
@@ -46,7 +44,7 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allPhysicalStores, queryParams } = this.props;
+    const { queryParams } = this.props;
 
     const mStartDate = moment(queryParams.startDate, Formats.DATE_FORMAT);
     const mEndDate = moment(queryParams.endDate, Formats.DATE_FORMAT);
@@ -58,16 +56,6 @@ class ListFilter extends Component {
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
-            <SelectField
-              data={allPhysicalStores}
-              getDataValue={({ _id }) => _id}
-              getDataText={({ name }) => name}
-              fieldName="physicalStoreId"
-              fieldLabel="Physical Store"
-              fieldLayout={formItemLayout}
-              initialValue={queryParams.physicalStoreId}
-              getFieldDecorator={getFieldDecorator}
-            />
             <CheckboxField
               fieldName="approvalStatus"
               fieldLabel="Status"

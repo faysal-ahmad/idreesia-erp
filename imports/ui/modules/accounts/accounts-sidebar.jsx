@@ -12,7 +12,6 @@ import { default as paths } from './submodule-paths';
 class AccountsSidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
-    activeModuleName: PropTypes.string,
     setActiveSubModuleName: PropTypes.func,
 
     loading: PropTypes.bool,
@@ -22,7 +21,6 @@ class AccountsSidebar extends Component {
   handleMenuItemSelected = ({ item, key }) => {
     const { history, setActiveSubModuleName } = this.props;
     const accountId = item.props['parent-key'];
-    debugger;
 
     if (key.startsWith('transactions')) {
       setActiveSubModuleName(SubModuleNames.transactions);

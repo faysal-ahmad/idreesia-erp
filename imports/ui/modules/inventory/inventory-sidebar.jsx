@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Menu, Icon } from 'antd';
+import gql from 'graphql-tag';
+import { compose, graphql } from 'react-apollo';
 
 import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import SubModuleNames from './submodule-names';
@@ -13,48 +15,83 @@ class InventorySidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     setActiveSubModuleName: PropTypes.func,
+
+    loading: PropTypes.bool,
+    allAccessiblePhysicalStores: PropTypes.array,
   };
 
-  handleMenuItemSelected = ({ key }) => {
+  handleMenuItemSelected = ({ item, key }) => {
     const { history, setActiveSubModuleName } = this.props;
+    const physicalStoreId = item.props['parent-key'];
 
-    switch (key) {
-      case 'stock-items':
-        setActiveSubModuleName(SubModuleNames.stockItems);
-        history.push(paths.stockItemsPath);
-        break;
-
-      case 'issuance-forms':
-        setActiveSubModuleName(SubModuleNames.issuanceForms);
-        history.push(paths.issuanceFormsPath);
-        break;
-
-      case 'return-forms':
-        setActiveSubModuleName(SubModuleNames.returnForms);
-        history.push(paths.returnFormsPath);
-        break;
-
-      case 'purchase-forms':
-        setActiveSubModuleName(SubModuleNames.purchaseForms);
-        history.push(paths.purchaseFormsPath);
-        break;
-
-      case 'item-types':
-        setActiveSubModuleName(SubModuleNames.itemTypes);
-        history.push(paths.itemTypesPath);
-        break;
-
-      case 'item-categories':
-        setActiveSubModuleName(SubModuleNames.itemCategories);
-        history.push(paths.itemCategoriesPath);
-        break;
-
-      default:
-        break;
+    if (key.startsWith('stock-items')) {
+      setActiveSubModuleName(SubModuleNames.stockItems);
+      history.push(paths.stockItemsPath(physicalStoreId));
+    } else if (key.startsWith('issuance-forms')) {
+      setActiveSubModuleName(SubModuleNames.issuanceForms);
+      history.push(paths.issuanceFormsPath(physicalStoreId));
+    } else if (key.startsWith('return-forms')) {
+      setActiveSubModuleName(SubModuleNames.returnForms);
+      history.push(paths.returnFormsPath(physicalStoreId));
+    } else if (key.startsWith('purchase-forms')) {
+      setActiveSubModuleName(SubModuleNames.purchaseForms);
+      history.push(paths.purchaseFormsPath(physicalStoreId));
+    } else if (key === 'item-types') {
+      setActiveSubModuleName(SubModuleNames.itemTypes);
+      history.push(paths.itemTypesPath);
+    } else if (key === 'item-categories') {
+      setActiveSubModuleName(SubModuleNames.itemCategories);
+      history.push(paths.itemCategoriesPath);
     }
   };
 
   render() {
+    const { loading, allAccessiblePhysicalStores } = this.props;
+    if (loading) return null;
+
+    const subMenus = [];
+
+    allAccessiblePhysicalStores.forEach(physicalStore => {
+      subMenus.push(
+        <Menu.SubMenu
+          key={physicalStore._id}
+          title={
+            <span>
+              <Icon type="appstore" />
+              {physicalStore.name}
+            </span>
+          }
+        >
+          <Menu.Item parent-key={physicalStore._id} key={`stock-items-${physicalStore._id}`}>
+            Stock Items
+          </Menu.Item>
+          <Menu.Item parent-key={physicalStore._id} key={`issuance-forms-${physicalStore._id}`}>
+            Issuance Forms
+          </Menu.Item>
+          <Menu.Item parent-key={physicalStore._id} key={`return-forms-${physicalStore._id}`}>
+            Return Forms
+          </Menu.Item>
+          <Menu.Item parent-key={physicalStore._id} key={`purchase-forms-${physicalStore._id}`}>
+            Purchase Forms
+          </Menu.Item>
+        </Menu.SubMenu>
+      );
+    });
+
+    subMenus.push(
+      <SubMenu
+        key="setup"
+        title={
+          <span>
+            <Icon type="laptop" />Setup
+          </span>
+        }
+      >
+        <Menu.Item key="item-types">Item Types</Menu.Item>
+        <Menu.Item key="item-categories">Item Categories</Menu.Item>
+      </SubMenu>
+    );
+
     return (
       <Menu
         mode="inline"
@@ -62,44 +99,20 @@ class InventorySidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
-        <Menu.Item key="stock-items">Stock Items</Menu.Item>
-        <SubMenu
-          key="forms"
-          title={
-            <span>
-              <Icon type="file-text" />Forms
-            </span>
-          }
-        >
-          <Menu.Item key="issuance-forms">Issuance Forms</Menu.Item>
-          <Menu.Item key="return-forms">Return Forms</Menu.Item>
-          <Menu.Item key="purchase-forms">Purchase Forms</Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="report"
-          title={
-            <span>
-              <Icon type="book" />Reports
-            </span>
-          }
-        >
-          <Menu.Item key="monthly-report">Monthly Report</Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="setup"
-          title={
-            <span>
-              <Icon type="laptop" />Setup
-            </span>
-          }
-        >
-          <Menu.Item key="item-types">Item Types</Menu.Item>
-          <Menu.Item key="item-categories">Item Categories</Menu.Item>
-        </SubMenu>
+        {subMenus}
       </Menu>
     );
   }
 }
+
+const listQuery = gql`
+  query allAccessiblePhysicalStores {
+    allAccessiblePhysicalStores {
+      _id
+      name
+    }
+  }
+`;
 
 const mapDispatchToProps = dispatch => ({
   setActiveSubModuleName: subModuleName => {
@@ -107,5 +120,10 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const InventorySidebarContainer = connect(null, mapDispatchToProps)(InventorySidebar);
+const InventorySidebarContainer = compose(
+  graphql(listQuery, {
+    props: ({ data }) => ({ ...data }),
+  }),
+  connect(null, mapDispatchToProps)
+)(InventorySidebar);
 export default InventorySidebarContainer;

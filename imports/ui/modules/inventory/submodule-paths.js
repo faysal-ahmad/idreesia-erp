@@ -1,10 +1,6 @@
 import { ModulePaths } from '/imports/ui/constants';
 
 export default class SubModulePaths {
-  static stockItemsPath = `${ModulePaths.inventory}/stock-items`;
-  static stockItemsNewFormPath = `${SubModulePaths.stockItemsPath}/new`;
-  static stockItemsEditFormPath = `${SubModulePaths.stockItemsPath}/:stockItemId`;
-
   // *************************************************************************************
   // Data Setup Routes
   // *************************************************************************************
@@ -17,17 +13,54 @@ export default class SubModulePaths {
   static itemCategoriesEditFormPath = `${SubModulePaths.itemCategoriesPath}/:itemCategoryId`;
 
   // *************************************************************************************
-  // Forms Routes
+  // Stock Items Routes
   // *************************************************************************************
-  static issuanceFormsPath = `${ModulePaths.inventory}/issuance-forms`;
-  static issuanceFormsNewFormPath = `${SubModulePaths.issuanceFormsPath}/new`;
-  static issuanceFormsEditFormPath = `${SubModulePaths.issuanceFormsPath}/:formId`;
+  static stockItemsPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.inventory}/${physicalStoreId}/stock-items`;
+  }
+  static stockItemsNewFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.stockItemsPath(physicalStoreId)}/new`;
+  }
+  static stockItemsEditFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.stockItemsPath(physicalStoreId)}/:stockItemId`;
+  }
 
-  static returnFormsPath = `${ModulePaths.inventory}/return-forms`;
-  static returnFormsNewFormPath = `${SubModulePaths.returnFormsPath}/new`;
-  static returnFormsEditFormPath = `${SubModulePaths.returnFormsPath}/:formId`;
+  // *************************************************************************************
+  // Issuance Forms Routes
+  // *************************************************************************************
+  static issuanceFormsPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.inventory}/${physicalStoreId}/issuance-forms`;
+  }
+  static issuanceFormsNewFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.issuanceFormsPath(physicalStoreId)}/new`;
+  }
+  static issuanceFormsEditFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.issuanceFormsPath(physicalStoreId)}/:formId`;
+  }
 
-  static purchaseFormsPath = `${ModulePaths.inventory}/purchase-forms`;
-  static purchaseFormsNewFormPath = `${SubModulePaths.purchaseFormsPath}/new`;
-  static purchaseFormsEditFormPath = `${SubModulePaths.purchaseFormsPath}/:formId`;
+  // *************************************************************************************
+  // Return Forms Routes
+  // *************************************************************************************
+  static returnFormsPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.inventory}/${physicalStoreId}/return-forms`;
+  }
+  static returnFormsNewFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.returnFormsPath(physicalStoreId)}/new`;
+  }
+  static returnFormsEditFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.returnFormsPath(physicalStoreId)}/:formId`;
+  }
+
+  // *************************************************************************************
+  // Purchase Forms Routes
+  // *************************************************************************************
+  static purchaseFormsPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.inventory}/${physicalStoreId}/purchase-forms`;
+  }
+  static purchaseFormsNewFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.purchaseFormsPath(physicalStoreId)}/new`;
+  }
+  static purchaseFormsEditFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.purchaseFormsPath(physicalStoreId)}/:formId`;
+  }
 }

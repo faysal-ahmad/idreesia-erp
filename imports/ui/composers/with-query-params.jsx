@@ -4,7 +4,7 @@ import { parse } from 'query-string';
 import { withRouter } from 'react-router';
 
 export default () => WrappedComponent => {
-  const WithQueryParams = ({ location, history }) => {
+  const WithQueryParams = ({ location, history, match }) => {
     const queryString = location.search;
     const queryParams = parse(queryString);
     return (
@@ -13,6 +13,7 @@ export default () => WrappedComponent => {
         queryParams={queryParams}
         location={location}
         history={history}
+        match={match}
         {...this.props}
       />
     );
@@ -21,6 +22,7 @@ export default () => WrappedComponent => {
   WithQueryParams.propTypes = {
     location: PropTypes.object,
     history: PropTypes.object,
+    match: PropTypes.object,
   };
 
   return withRouter(WithQueryParams);

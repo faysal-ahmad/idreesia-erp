@@ -15,10 +15,6 @@ import { PurchaseFormsNewForm, PurchaseFormsEditForm, PurchaseFormsList } from '
 
 const InventoryRouter = () => (
   <Switch>
-    <Route path={paths.stockItemsNewFormPath} component={StockItemsNewForm} />
-    <Route path={paths.stockItemsEditFormPath} component={StockItemsEditForm} />
-    <Route path={paths.stockItemsPath} component={StockItemsList} />
-
     <Route path={paths.itemTypesNewFormPath} component={ItemTypesNewForm} />
     <Route path={paths.itemTypesEditFormPath} component={ItemTypesEditForm} />
     <Route path={paths.itemTypesPath} component={ItemTypesList} />
@@ -27,17 +23,21 @@ const InventoryRouter = () => (
     <Route path={paths.itemCategoriesEditFormPath} component={ItemCategoriesEditForm} />
     <Route path={paths.itemCategoriesPath} component={ItemCategoriesList} />
 
-    <Route path={paths.issuanceFormsNewFormPath} component={IssuanceFormsNewForm} />
-    <Route path={paths.issuanceFormsEditFormPath} component={IssuanceFormsEditForm} />
-    <Route path={paths.issuanceFormsPath} component={IssuanceFormsList} />
+    <Route path={paths.stockItemsNewFormPath()} component={StockItemsNewForm} />
+    <Route path={paths.stockItemsEditFormPath()} component={StockItemsEditForm} />
+    <Route path={paths.stockItemsPath()} component={StockItemsList} />
 
-    <Route path={paths.returnFormsNewFormPath} component={ReturnFormsNewForm} />
-    <Route path={paths.returnFormsEditFormPath} component={ReturnFormsEditForm} />
-    <Route path={paths.returnFormsPath} component={ReturnFormsList} />
+    <Route path={paths.issuanceFormsNewFormPath()} component={IssuanceFormsNewForm} />
+    <Route path={paths.issuanceFormsEditFormPath()} component={IssuanceFormsEditForm} />
+    <Route path={paths.issuanceFormsPath()} component={IssuanceFormsList} />
 
-    <Route path={paths.purchaseFormsNewFormPath} component={PurchaseFormsNewForm} />
-    <Route path={paths.purchaseFormsEditFormPath} component={PurchaseFormsEditForm} />
-    <Route path={paths.purchaseFormsPath} component={PurchaseFormsList} />
+    <Route path={paths.returnFormsNewFormPath()} component={ReturnFormsNewForm} />
+    <Route path={paths.returnFormsEditFormPath()} component={ReturnFormsEditForm} />
+    <Route path={paths.returnFormsPath()} component={ReturnFormsList} />
+
+    <Route path={paths.purchaseFormsNewFormPath()} component={PurchaseFormsNewForm} />
+    <Route path={paths.purchaseFormsEditFormPath()} component={PurchaseFormsEditForm} />
+    <Route path={paths.purchaseFormsPath()} component={PurchaseFormsList} />
   </Switch>
 );
 

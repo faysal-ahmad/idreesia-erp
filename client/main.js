@@ -15,7 +15,7 @@ import App from '../imports/ui/app';
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: Meteor.absoluteUrl('graphql')
+  uri: Meteor.absoluteUrl('graphql'),
 });
 
 const authLink = new ApolloLink((operation, forward) => {

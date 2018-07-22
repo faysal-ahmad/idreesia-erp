@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
 import { Button, Icon, Table, Tooltip, message } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
@@ -102,7 +101,7 @@ const removeDutyMutation = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),

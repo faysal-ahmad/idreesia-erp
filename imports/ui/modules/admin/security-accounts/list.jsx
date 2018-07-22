@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { merge } from 'react-komposer';
 import { Button, Icon, Table } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
@@ -108,7 +107,7 @@ const listQuery = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(formMutation, {
     name: 'deleteAccount',
     options: {

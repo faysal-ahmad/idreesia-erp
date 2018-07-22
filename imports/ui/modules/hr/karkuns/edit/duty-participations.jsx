@@ -1,10 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { merge } from 'react-komposer';
 import { Button, Divider, Icon, Table, Modal, message } from 'antd';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import DutyForm from './duty-form';
 
@@ -335,7 +334,7 @@ const removeKarkunDutyMutation = gql`
   }
 `;
 
-export default merge(
+export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {

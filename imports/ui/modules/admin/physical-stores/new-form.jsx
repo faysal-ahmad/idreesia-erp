@@ -70,7 +70,7 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createPhysicalStore($name: String!, $address: String!) {
+  mutation createPhysicalStore($name: String!, $address: String) {
     createPhysicalStore(name: $name, address: $address) {
       _id
       name

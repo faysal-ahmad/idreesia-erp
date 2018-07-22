@@ -15,6 +15,6 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPhysicalStore(name: String!): PhysicalStore
-  updatePhysicalStore(id: String!, name: String!, address: String!): PhysicalStore
+  createPhysicalStore(name: String!, address: String): PhysicalStore
+  updatePhysicalStore(id: String!, name: String!, address: String): PhysicalStore
 }

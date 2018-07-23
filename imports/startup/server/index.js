@@ -15,24 +15,29 @@ const schema = makeExecutableSchema({
 });
 
 const corsOptions = {
-  origin(origin, callback){
+  origin2(origin, callback){
+      console.log(`Checking CORS for ${origin}`);
       callback(null, true);
   },
-  credentials: true
+  origin: true,
+  credentials: true,
+  methods: 'POST, GET, OPTIONS',
+  allowedHeaders: 'content-type, authorization, content-length, x-requested-with, accept, origin, meteor-login-token',
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
 
 createApolloServer(
   { schema },
   { configServer: expressServer => {
-      expressServer.use(cors());
+      expressServer.use(cors(corsOptions));
       /*
-      expressServer.use('/graphql',(req,res,next)=>{
-
+      expressServer.use('/graphql', (req,res,next)=>{
+        res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Credentials', true);
-        res.header('Access-Control-Allow-Headers', 'content-type, authorization, content-length, x-requested-with, accept, origin');
+        res.header('Access-Control-Allow-Headers', 'content-type, authorization, content-length, x-requested-with, accept, origin, meteor-login-token');
         res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
         res.header('Allow', 'POST, GET, OPTIONS')
-        res.header('Access-Control-Allow-Origin', '*');
         if (req.method === 'OPTIONS') {
           res.sendStatus(200);
         } else {
@@ -40,10 +45,10 @@ createApolloServer(
         }
       }, graphqlExpress({
         schema,
-        graphiql: true
+        graphiql: process.env.NODE_ENV === 'development',
       }));
-      // expressServer.use('/graphql', bodyParser.json(), graphqlExpress({ schema }))
       */
+      // expressServer.use('/graphql', bodyParser.json(), graphqlExpress({ schema }))
     },
   }
 );

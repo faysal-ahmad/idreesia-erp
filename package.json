@@ -2,7 +2,7 @@
   "name": "idreesia-erp",
   "private": true,
   "scripts": {
-    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev meteor run",
+    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev BIND_IP='192.168.1.4' ROOT_URL='http://localhost' PORT=3000 meteor run",
     "build": "meteor build ../build",
     "test": "jest"
   },

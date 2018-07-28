@@ -1,5 +1,3 @@
-import { findIndex } from 'lodash';
-
 export default function hasOnePermission(userId, permissions) {
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
@@ -11,7 +9,7 @@ export default function hasOnePermission(userId, permissions) {
 
   let retVal = false;
   permissions.forEach(permission => {
-    if (findIndex(userPermissions, permission) !== -1) {
+    if (userPermissions.indexOf(permission) !== -1) {
       retVal = true;
       return false;
     }

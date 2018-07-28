@@ -1,5 +1,3 @@
-import { findIndex } from 'lodash';
-
 export default function filterByInstanceAccess(userId, instanceObjects) {
   const user = Meteor.users.findOne(userId);
   if (!user) return [];
@@ -11,7 +9,7 @@ export default function filterByInstanceAccess(userId, instanceObjects) {
 
   const retVal = [];
   instanceObjects.forEach(instanceObject => {
-    if (findIndex(userInstances, instanceObject._id) !== -1) {
+    if (userInstances.indexOf(instanceObject._id) !== -1) {
       retVal.push(instanceObject);
     }
   });

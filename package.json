@@ -2,14 +2,15 @@
   "name": "idreesia-erp",
   "private": true,
   "scripts": {
-    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev BIND_IP='192.168.1.4' ROOT_URL='http://localhost' PORT=3000 meteor run",
-    "build": "meteor build ../build",
+    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev ROOT_URL='http://localhost' PORT=3000 meteor run",
+    "build": "meteor build --directory ../build",
     "test": "jest"
   },
   "dependencies": {
     "antd": "^3.1.0",
     "apollo-client": "^2.2.6",
     "apollo-client-preset": "^1.0.8",
+    "apollo-link-error": "^1.1.0",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
@@ -55,6 +56,11 @@
     "regenerator-runtime": "^0.11.1"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["prettier --write", "eslint --fix", "eslint", "git add"]
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint",
+      "git add"
+    ]
   }
 }

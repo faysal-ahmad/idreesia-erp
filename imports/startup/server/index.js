@@ -1,6 +1,7 @@
 import './register-users';
 import './create-indexes';
 
+import { WebApp } from 'meteor/webapp';
 import { createApolloServer } from 'meteor/apollo';
 import { makeExecutableSchema } from 'graphql-tools';
 import bodyParser from 'body-parser';
@@ -15,10 +16,6 @@ const schema = makeExecutableSchema({
 });
 
 const corsOptions = {
-  origin2(origin, callback){
-      console.log(`Checking CORS for ${origin}`);
-      callback(null, true);
-  },
   origin: true,
   credentials: true,
   methods: 'POST, GET, OPTIONS',
@@ -31,24 +28,19 @@ createApolloServer(
   { schema },
   { configServer: expressServer => {
       expressServer.use(cors(corsOptions));
-      /*
-      expressServer.use('/graphql', (req,res,next)=>{
-        res.header('Access-Control-Allow-Origin', '*');
-        res.header('Access-Control-Allow-Credentials', true);
-        res.header('Access-Control-Allow-Headers', 'content-type, authorization, content-length, x-requested-with, accept, origin, meteor-login-token');
-        res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-        res.header('Allow', 'POST, GET, OPTIONS')
-        if (req.method === 'OPTIONS') {
-          res.sendStatus(200);
-        } else {
-          next();
-        }
-      }, graphqlExpress({
-        schema,
-        graphiql: process.env.NODE_ENV === 'development',
-      }));
-      */
-      // expressServer.use('/graphql', bodyParser.json(), graphqlExpress({ schema }))
+      expressServer.listen({ port: 4000 }, () =>
+        console.log('🚀 Server ready at http://localhost:4000'),
+      );
     },
   }
 );
+
+var connectHandler = WebApp.connectHandlers;
+Meteor.startup(() => {
+  connectHandler.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', ['GET', 'POST', 'OPTIONS']);
+    res.setHeader('Access-Control-Allow-Headers', ['Content-Type', 'Authorization', 'X-Requested-With', 'content-length', 'accept', 'origin', 'meteor-login-token']);
+    return next();
+  });
+});

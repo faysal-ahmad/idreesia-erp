@@ -44,9 +44,9 @@ export default {
     },
 
     allKarkuns(obj, params, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.HR_VIEW_KARKUNS])) {
-        return [];
-      }
+      // if (!hasOnePermission(userId, [PermissionConstants.HR_VIEW_KARKUNS])) {
+      //  return [];
+      // }
 
       return Karkuns.find({}).fetch();
     },

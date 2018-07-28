@@ -69,7 +69,6 @@ export default class ItemsList extends Component {
 
   handleNewItemFormSaved = () => {
     this.itemForm.validateFields(null, (errors, values) => {
-      debugger;
       if (!errors) {
         const { stockItemId, quantity } = values;
         const { stockItems } = this.state;

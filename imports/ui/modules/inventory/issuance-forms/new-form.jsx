@@ -81,8 +81,8 @@ class NewForm extends Component {
   }
 
   render() {
-    const { loading, allKarkuns } = this.props;
-    if (loading) return null;
+    const { stockItemsLoading, karkunsListLoading, allKarkuns } = this.props;
+    if (stockItemsLoading || karkunsListLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 

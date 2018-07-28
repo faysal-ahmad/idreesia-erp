@@ -178,7 +178,7 @@ export default compose(
   graphql(formMutation, {
     name: 'updateItemType',
     options: {
-      refetchQueries: ['allItemTypes'],
+      refetchQueries: ['allItemTypes', 'pagedItemTypes'],
     },
   }),
   graphql(listQuery, {

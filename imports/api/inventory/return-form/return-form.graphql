@@ -5,6 +5,7 @@ type ReturnForm {
   returnedBy: String
   physicalStoreId: String
   items: [ItemWithQuantity]
+  notes: String
 
   receivedByName: String
   returnedByName: String
@@ -38,7 +39,9 @@ extend type Mutation {
     returnedBy: String!
     physicalStoreId: String!
     items: [ItemWithQuantityInput]
+    notes: String
   ): ReturnForm
+
   updateReturnForm(
     _id: String!
     returnDate: String!
@@ -46,7 +49,10 @@ extend type Mutation {
     returnedBy: String!
     physicalStoreId: String!
     items: [ItemWithQuantityInput]
+    notes: String
   ): ReturnForm
+
   approveReturnForm(_id: String!): ReturnForm
+
   removeReturnForm(_id: String!): Int
 }

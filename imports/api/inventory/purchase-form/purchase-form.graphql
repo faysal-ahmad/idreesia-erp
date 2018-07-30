@@ -5,6 +5,7 @@ type PurchaseForm {
   purchasedBy: String
   physicalStoreId: String
   items: [ItemWithQuantityAndPrice]
+  notes: String
 
   receivedByName: String
   purchasedByName: String
@@ -38,7 +39,9 @@ extend type Mutation {
     purchasedBy: String!
     physicalStoreId: String!
     items: [ItemWithQuantityAndPriceInput]
+    notes: String
   ): PurchaseForm
+
   updatePurchaseForm(
     _id: String!
     purchaseDate: String!
@@ -46,7 +49,10 @@ extend type Mutation {
     purchasedBy: String!
     physicalStoreId: String!
     items: [ItemWithQuantityAndPriceInput]
+    notes: String
   ): PurchaseForm
+
   approvePurchaseForm(_id: String!): PurchaseForm
+
   removePurchaseForm(_id: String!): Int
 }

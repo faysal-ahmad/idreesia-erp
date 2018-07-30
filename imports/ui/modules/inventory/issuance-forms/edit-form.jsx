@@ -17,6 +17,7 @@ import {
   AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
+  InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
 const formItemExtendedLayout = {
@@ -54,12 +55,20 @@ class EditForm extends Component {
       updateIssuanceForm,
       issuanceFormById: { _id },
     } = this.props;
-    form.validateFields((err, { issueDate, issuedBy, issuedTo, items }) => {
+    form.validateFields((err, { issueDate, issuedBy, issuedTo, items, notes }) => {
       if (err) return;
 
       const updatedItems = items.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }));
       updateIssuanceForm({
-        variables: { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items: updatedItems },
+        variables: {
+          _id,
+          issueDate,
+          issuedBy,
+          issuedTo,
+          physicalStoreId,
+          items: updatedItems,
+          notes,
+        },
       })
         .then(() => {
           history.push(paths.issuanceFormsPath(physicalStoreId));
@@ -135,6 +144,14 @@ class EditForm extends Component {
           {this.getItemsField()}
         </Form.Item>
 
+        <InputTextAreaField
+          fieldName="notes"
+          fieldLabel="Notes"
+          required={false}
+          initialValue={issuanceFormById.notes}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -149,6 +166,7 @@ const formMutation = gql`
     $issuedTo: String!
     $physicalStoreId: String!
     $items: [ItemWithQuantityInput]
+    $notes: String
   ) {
     updateIssuanceForm(
       _id: $_id
@@ -157,6 +175,7 @@ const formMutation = gql`
       issuedTo: $issuedTo
       physicalStoreId: $physicalStoreId
       items: $items
+      notes: $notes
     ) {
       _id
       issueDate
@@ -167,6 +186,7 @@ const formMutation = gql`
         stockItemId
         quantity
       }
+      notes
     }
   }
 `;
@@ -187,6 +207,7 @@ const formQuery = gql`
         quantity
         itemTypeName
       }
+      notes
     }
   }
 `;

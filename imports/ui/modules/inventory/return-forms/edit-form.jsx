@@ -17,6 +17,7 @@ import {
   AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
+  InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
 const formItemExtendedLayout = {
@@ -55,7 +56,7 @@ class EditForm extends Component {
       updateReturnForm,
       returnFormById: { _id },
     } = this.props;
-    form.validateFields((err, { returnDate, receivedBy, returnedBy, items }) => {
+    form.validateFields((err, { returnDate, receivedBy, returnedBy, items, notes }) => {
       if (err) return;
 
       const updatedItems = items.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }));
@@ -67,6 +68,7 @@ class EditForm extends Component {
           returnedBy,
           physicalStoreId,
           items: updatedItems,
+          notes,
         },
       })
         .then(() => {
@@ -143,6 +145,14 @@ class EditForm extends Component {
           {this.getItemsField()}
         </Form.Item>
 
+        <InputTextAreaField
+          fieldName="notes"
+          fieldLabel="Notes"
+          required={false}
+          initialValue={returnFormById.notes}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -157,6 +167,7 @@ const formMutation = gql`
     $returnedBy: String!
     $physicalStoreId: String!
     $items: [ItemWithQuantityInput]
+    $notes: String
   ) {
     updateReturnForm(
       _id: $_id
@@ -165,6 +176,7 @@ const formMutation = gql`
       returnedBy: $returnedBy
       physicalStoreId: $physicalStoreId
       items: $items
+      notes: $notes
     ) {
       _id
       returnDate
@@ -175,6 +187,7 @@ const formMutation = gql`
         stockItemId
         quantity
       }
+      notes
     }
   }
 `;
@@ -195,6 +208,7 @@ const formQuery = gql`
         quantity
         itemTypeName
       }
+      notes
     }
   }
 `;

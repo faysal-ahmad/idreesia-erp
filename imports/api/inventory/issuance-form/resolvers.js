@@ -113,7 +113,11 @@ export default {
   },
 
   Mutation: {
-    createIssuanceForm(obj, { issueDate, issuedBy, issuedTo, physicalStoreId, items }, { userId }) {
+    createIssuanceForm(
+      obj,
+      { issueDate, issuedBy, issuedTo, physicalStoreId, items, notes },
+      { userId }
+    ) {
       if (
         !hasOnePermission(userId, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -136,6 +140,7 @@ export default {
         issuedTo,
         physicalStoreId,
         items,
+        notes,
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
@@ -151,7 +156,7 @@ export default {
 
     updateIssuanceForm(
       obj,
-      { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items },
+      { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items, notes },
       { userId }
     ) {
       if (
@@ -210,6 +215,7 @@ export default {
             issuedTo,
             physicalStoreId,
             items,
+            notes,
             updatedAt: date,
             updatedBy: userId,
           },

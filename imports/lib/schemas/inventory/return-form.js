@@ -25,6 +25,10 @@ export default new SimpleSchema({
   'items.$': {
     type: ItemWithQuantity,
   },
+  notes: {
+    type: String,
+    optional: true,
+  },
 })
   .extend(approvable)
   .extend(identifiable)

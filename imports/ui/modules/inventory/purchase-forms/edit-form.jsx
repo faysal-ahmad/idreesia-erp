@@ -17,6 +17,7 @@ import {
   AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
+  InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
 const formItemExtendedLayout = {
@@ -55,7 +56,7 @@ class EditForm extends Component {
       updatePurchaseForm,
       purchaseFormById: { _id },
     } = this.props;
-    form.validateFields((err, { purchaseDate, receivedBy, purchasedBy, items }) => {
+    form.validateFields((err, { purchaseDate, receivedBy, purchasedBy, items, notes }) => {
       if (err) return;
 
       const updatedItems = items.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }));
@@ -67,6 +68,7 @@ class EditForm extends Component {
           purchasedBy,
           physicalStoreId,
           items: updatedItems,
+          notes,
         },
       })
         .then(() => {
@@ -143,6 +145,14 @@ class EditForm extends Component {
           {this.getItemsField()}
         </Form.Item>
 
+        <InputTextAreaField
+          fieldName="notes"
+          fieldLabel="Notes"
+          required={false}
+          initialValue={purchaseFormById.notes}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -157,6 +167,7 @@ const formMutation = gql`
     $purchasedBy: String!
     $physicalStoreId: String!
     $items: [ItemWithQuantityAndPriceInput]
+    $notes: String
   ) {
     updatePurchaseForm(
       _id: $_id
@@ -165,6 +176,7 @@ const formMutation = gql`
       purchasedBy: $purchasedBy
       physicalStoreId: $physicalStoreId
       items: $items
+      notes: $notes
     ) {
       _id
       purchaseDate
@@ -176,6 +188,7 @@ const formMutation = gql`
         quantity
         price
       }
+      notes
     }
   }
 `;
@@ -197,6 +210,7 @@ const formQuery = gql`
         price
         itemTypeName
       }
+      notes
     }
   }
 `;

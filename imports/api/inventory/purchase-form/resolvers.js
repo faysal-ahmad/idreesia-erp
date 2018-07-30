@@ -115,7 +115,7 @@ export default {
   Mutation: {
     createPurchaseForm(
       obj,
-      { purchaseDate, receivedBy, purchasedBy, physicalStoreId, items },
+      { purchaseDate, receivedBy, purchasedBy, physicalStoreId, items, notes },
       { userId }
     ) {
       if (
@@ -140,6 +140,7 @@ export default {
         purchasedBy,
         physicalStoreId,
         items,
+        notes,
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
@@ -155,7 +156,7 @@ export default {
 
     updatePurchaseForm(
       obj,
-      { _id, purchaseDate, receivedBy, purchasedBy, physicalStoreId, items },
+      { _id, purchaseDate, receivedBy, purchasedBy, physicalStoreId, items, notes },
       { userId }
     ) {
       if (
@@ -214,6 +215,7 @@ export default {
             purchasedBy,
             physicalStoreId,
             items,
+            notes,
             updatedAt: date,
             updatedBy: userId,
           },

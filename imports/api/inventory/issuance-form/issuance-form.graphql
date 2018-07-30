@@ -5,6 +5,7 @@ type IssuanceForm {
   issuedTo: String
   physicalStoreId: String
   items: [ItemWithQuantity]
+  notes: String
 
   issuedByName: String
   issuedToName: String
@@ -38,7 +39,9 @@ extend type Mutation {
     issuedTo: String!
     physicalStoreId: String!
     items: [ItemWithQuantityInput]
+    notes: String
   ): IssuanceForm
+
   updateIssuanceForm(
     _id: String!
     issueDate: String!
@@ -46,7 +49,10 @@ extend type Mutation {
     issuedTo: String!
     physicalStoreId: String!
     items: [ItemWithQuantityInput]
+    notes: String
   ): IssuanceForm
+
   approveIssuanceForm(_id: String!): IssuanceForm
+
   removeIssuanceForm(_id: String!): Int
 }

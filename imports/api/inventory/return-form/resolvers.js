@@ -115,7 +115,7 @@ export default {
   Mutation: {
     createReturnForm(
       obj,
-      { returnDate, receivedBy, returnedBy, physicalStoreId, items },
+      { returnDate, receivedBy, returnedBy, physicalStoreId, items, notes },
       { userId }
     ) {
       if (
@@ -140,6 +140,7 @@ export default {
         returnedBy,
         physicalStoreId,
         items,
+        notes,
         createdAt: date,
         createdBy: userId,
         updatedAt: date,
@@ -155,7 +156,7 @@ export default {
 
     updateReturnForm(
       obj,
-      { _id, returnDate, receivedBy, returnedBy, physicalStoreId, items },
+      { _id, returnDate, receivedBy, returnedBy, physicalStoreId, items, notes },
       { userId }
     ) {
       if (
@@ -214,6 +215,7 @@ export default {
             returnedBy,
             physicalStoreId,
             items,
+            notes,
             updatedAt: date,
             updatedBy: userId,
           },

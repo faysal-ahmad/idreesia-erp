@@ -1,5 +1,5 @@
 {
   "public": {
-    "graphqlServerUrl": "http://localhost:4000/graphql"
+    "graphqlServerUrl": "http://erp-server:4000/graphql"
   }
 }

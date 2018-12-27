@@ -2,8 +2,7 @@
   "name": "idreesia-erp",
   "private": true,
   "scripts": {
-    "start":
-      "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev ROOT_URL='http://localhost' PORT=3000 meteor run --settings ./private/env/settings.json",
+    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev ROOT_URL='http://localhost' PORT=3000 meteor run --settings ./private/env/settings.json",
     "build": "meteor build --directory ../build",
     "test": "jest"
   },
@@ -23,7 +22,7 @@
     "immutable": "~3.7.4",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
-    "meteor-babel": "^7.0.0-beta.46-1",
+    "meteor-babel": "^7.2.0",
     "meteor-node-stubs": "^0.3.2",
     "moment": "^2.20.1",
     "popper.js": "^1.12.9",
@@ -57,6 +56,11 @@
     "regenerator-runtime": "^0.11.1"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["prettier --write", "eslint --fix", "eslint", "git add"]
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint",
+      "git add"
+    ]
   }
 }

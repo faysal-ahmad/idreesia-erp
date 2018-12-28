@@ -9,6 +9,7 @@ type ItemType {
   picture: String
 
   formattedUOM: String
+  formattedName: String
   itemCategoryName: String
 
   createdAt: String

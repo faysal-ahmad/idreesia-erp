@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import { filter, keyBy } from 'lodash';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import { filter, keyBy } from "lodash";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputNumberField,
   SelectField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 import {
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+} from "/imports/ui/modules/inventory/common/composers";
 
 class NewForm extends Component {
   static propTypes = {
@@ -46,7 +46,10 @@ class NewForm extends Component {
     let filteredItemTypes = [];
 
     if (itemCategoryId) {
-      const stockItemsByItemTypeId = keyBy(stockItemsByPhysicalStoreId, 'itemTypeId');
+      const stockItemsByItemTypeId = keyBy(
+        stockItemsByPhysicalStoreId,
+        "itemTypeId"
+      );
       filteredItemTypes = filter(allItemTypes, itemType => {
         if (itemType.itemCategoryId !== itemCategoryId) return false;
         if (stockItemsByItemTypeId[itemType._id]) return false;
@@ -74,7 +77,10 @@ class NewForm extends Component {
     e.preventDefault();
     const { form, history, physicalStoreId, createStockItem } = this.props;
     form.validateFields(
-      (err, { itemTypeId, minStockLevel, currentStockLevel, totalStockLevel }) => {
+      (
+        err,
+        { itemTypeId, minStockLevel, currentStockLevel, totalStockLevel }
+      ) => {
         if (err) return;
 
         createStockItem({
@@ -117,7 +123,7 @@ class NewForm extends Component {
         <SelectField
           data={filteredItemTypes}
           getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
+          getDataText={({ formattedName }) => formattedName}
           fieldName="itemTypeId"
           fieldLabel="Item Type"
           required
@@ -133,11 +139,6 @@ class NewForm extends Component {
         <InputNumberField
           fieldName="currentStockLevel"
           fieldLabel="Current Stock Level"
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="totalStockLevel"
-          fieldLabel="Total Stock Level"
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -159,7 +160,7 @@ const itemTypesListQuery = gql`
   query allItemTypes {
     allItemTypes {
       _id
-      name
+      formattedName
       itemCategoryId
     }
   }
@@ -171,14 +172,12 @@ const formMutation = gql`
     $physicalStoreId: String!
     $minStockLevel: Float
     $currentStockLevel: Float
-    $totalStockLevel: Float
   ) {
     createStockItem(
       itemTypeId: $itemTypeId
       physicalStoreId: $physicalStoreId
       minStockLevel: $minStockLevel
       currentStockLevel: $currentStockLevel
-      totalStockLevel: $totalStockLevel
     ) {
       _id
       itemTypeName
@@ -186,7 +185,6 @@ const formMutation = gql`
       itemCategoryName
       minStockLevel
       currentStockLevel
-      totalStockLevel
     }
   }
 `;
@@ -202,10 +200,10 @@ export default compose(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(formMutation, {
-    name: 'createStockItem',
+    name: "createStockItem",
     options: {
-      refetchQueries: ['pagedStockItems'],
+      refetchQueries: ["pagedStockItems"],
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Stock Items', 'New'])
+  WithBreadcrumbs(["Inventory", "Stock Items", "New"])
 )(NewForm);

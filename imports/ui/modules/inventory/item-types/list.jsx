@@ -178,10 +178,7 @@ class List extends Component {
         bordered
         title={this.getTableHeader}
         size="small"
-        pagination={{
-          current: numPageIndex,
-          pageSize: numPageSize,
-        }}
+        pagination={false}
         footer={() => (
           <Pagination
             current={numPageIndex}

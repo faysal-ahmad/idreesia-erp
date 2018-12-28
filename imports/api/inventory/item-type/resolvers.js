@@ -10,6 +10,18 @@ export default {
       const itemCategory = ItemCategories.findOne(itemType.itemCategoryId);
       return itemCategory.name;
     },
+    formattedName: itemType => {
+      const { name, company, details } = itemType;
+      let formattedName = name;
+      if (company) {
+        formattedName = `${formattedName} - ${company}`;
+      }
+      if (details) {
+        formattedName = `${formattedName} - ${details}`;
+      }
+
+      return formattedName;
+    },
     formattedUOM: itemType => {
       let uom = null;
       switch (itemType.unitOfMeasurement) {

@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Collapse, Form, Row, Button } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Collapse, Form, Row, Button } from "antd";
 
-import { InputTextField, SelectField } from '/imports/ui/modules/helpers/fields';
+import {
+  InputTextField,
+  SelectField,
+} from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
-  width: '500px',
+  width: "500px",
 };
 
 const formItemLayout = {
@@ -24,6 +27,15 @@ class ListFilter extends Component {
     refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
     allItemCategories: PropTypes.array,
+  };
+
+  handleReset = () => {
+    const { refreshPage } = this.props;
+    refreshPage({
+      itemCategoryId: null,
+      itemTypeName: null,
+      pageIndex: 0,
+    });
   };
 
   handleSubmit = e => {
@@ -53,7 +65,7 @@ class ListFilter extends Component {
               getDataValue={({ _id }) => _id}
               getDataText={({ name }) => name}
               fieldName="itemCategoryId"
-              fieldLabel="Item Category"
+              fieldLabel="Category"
               fieldLayout={formItemLayout}
               initialValue={queryParams.itemCategoryId}
               getFieldDecorator={getFieldDecorator}
@@ -63,11 +75,12 @@ class ListFilter extends Component {
               fieldLabel="Name"
               required={false}
               fieldLayout={formItemLayout}
+              initialValue={queryParams.itemTypeName}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleCancel}>
+                <Button type="default" onClick={this.handleReset}>
                   Reset
                 </Button>
                 &nbsp;

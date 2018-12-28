@@ -153,6 +153,16 @@ class List extends Component {
         },
       },
       {
+        title: "Company",
+        dataIndex: "itemTypeCompany",
+        key: "itemTypeCompany",
+      },
+      {
+        title: "Details",
+        dataIndex: "itemTypeDetails",
+        key: "itemTypeDetails",
+      },
+      {
         title: "Category",
         dataIndex: "itemCategoryName",
         key: "itemCategoryName",
@@ -179,17 +189,6 @@ class List extends Component {
           return text;
         },
       },
-      {
-        title: "Total Stock",
-        dataIndex: "totalStockLevel",
-        key: "totalStockLevel",
-        render: (text, record) => {
-          if (!text) return "";
-          if (record.unitOfMeasurement !== "quantity")
-            return `${text} ${record.unitOfMeasurement}`;
-          return text;
-        },
-      },
     ];
   };
 
@@ -202,21 +201,28 @@ class List extends Component {
       pagedStockItems: { totalResults, stockItems },
     } = this.props;
 
+    const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
+    const numPageSize = pageSize ? toSafeInteger(pageSize) : 10;
+
     return (
       <Table
         rowKey="_id"
         dataSource={stockItems}
         columns={this.getColumnDefinitions()}
         bordered
+        size="small"
         pagination={false}
         title={this.getTableHeader}
         footer={() => (
           <Pagination
             defaultCurrent={1}
             defaultPageSize={10}
-            current={pageIndex ? toSafeInteger(pageIndex) + 1 : 1}
-            pageSize={pageSize ? toSafeInteger(pageSize) : 10}
+            current={numPageIndex}
+            pageSize={numPageSize}
             showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
             onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
             total={totalResults}
@@ -237,6 +243,8 @@ const listQuery = gql`
       stockItems {
         _id
         itemTypeName
+        itemTypeCompany
+        itemTypeDetails
         itemTypePicture
         itemCategoryName
         unitOfMeasurement

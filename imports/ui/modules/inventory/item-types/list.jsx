@@ -167,6 +167,9 @@ class List extends Component {
       pagedItemTypes: { totalResults, itemTypes },
     } = this.props;
 
+    const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
+    const numPageSize = pageSize ? toSafeInteger(pageSize) : 10;
+
     return (
       <Table
         rowKey="_id"
@@ -175,11 +178,18 @@ class List extends Component {
         bordered
         title={this.getTableHeader}
         size="small"
+        pagination={{
+          current: numPageIndex,
+          pageSize: numPageSize,
+        }}
         footer={() => (
           <Pagination
-            current={pageIndex ? toSafeInteger(pageIndex) + 1 : 1}
-            pageSize={pageSize ? toSafeInteger(pageSize) : 10}
+            current={numPageIndex}
+            pageSize={numPageSize}
             showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
             onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
             total={totalResults}

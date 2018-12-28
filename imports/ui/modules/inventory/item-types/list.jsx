@@ -1,30 +1,30 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Avatar, Button, Checkbox, Pagination, Table } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
-import { isFinite, toSafeInteger } from 'lodash';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Avatar, Button, Pagination, Table } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
+import { toSafeInteger } from "lodash";
 
-import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 
-import ListFilter from './list-filter';
+import ListFilter from "./list-filter";
 
 const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
 };
 
 const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  width: "100%",
 };
 
 class List extends Component {
@@ -45,9 +45,9 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
       render: (text, record) => {
         if (record.picture) {
           return (
@@ -69,20 +69,24 @@ class List extends Component {
       },
     },
     {
-      title: 'Category',
-      dataIndex: 'itemCategoryName',
-      key: 'itemCategoryName',
+      title: "Company",
+      dataIndex: "company",
+      key: "company",
     },
     {
-      title: 'Measurement Unit',
-      dataIndex: 'formattedUOM',
-      key: 'formattedUOM',
+      title: "Details",
+      dataIndex: "details",
+      key: "details",
     },
     {
-      title: 'Single Use',
-      dataIndex: 'singleUse',
-      key: 'singleUse',
-      render: value => <Checkbox checked={value} disabled />,
+      title: "Measurement Unit",
+      dataIndex: "formattedUOM",
+      key: "formattedUOM",
+    },
+    {
+      title: "Category",
+      dataIndex: "itemCategoryName",
+      key: "itemCategoryName",
     },
   ];
 
@@ -91,15 +95,16 @@ class List extends Component {
     const { queryParams, history, location } = this.props;
 
     let itemCategoryIdVal;
-    if (newParams.hasOwnProperty('itemCategoryId')) itemCategoryIdVal = itemCategoryId || '';
-    else itemCategoryIdVal = queryParams.itemCategoryId || '';
+    if (newParams.hasOwnProperty("itemCategoryId"))
+      itemCategoryIdVal = itemCategoryId || "";
+    else itemCategoryIdVal = queryParams.itemCategoryId || "";
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
+    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 10;
+    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 10;
     else pageSizeVal = queryParams.pageSize || 10;
 
     const path = `${
@@ -132,7 +137,11 @@ class List extends Component {
 
     return (
       <div style={ToolbarStyle}>
-        <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+        <Button
+          type="primary"
+          icon="plus-circle-o"
+          onClick={this.handleNewClicked}
+        >
           New Item Type
         </Button>
         <ListFilter
@@ -160,12 +169,11 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        size="small"
         footer={() => (
           <Pagination
-            defaultCurrent={1}
-            defaultPageSize={10}
-            current={isFinite(pageIndex) ? toSafeInteger(pageIndex) + 1 : 1}
-            pageSize={isFinite(pageSize) ? toSafeInteger(pageSize) : 10}
+            current={pageIndex ? toSafeInteger(pageIndex) + 1 : 1}
+            pageSize={pageSize ? toSafeInteger(pageSize) : 10}
             showSizeChanger
             onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
@@ -184,8 +192,9 @@ const listQuery = gql`
       itemTypes {
         _id
         name
-        description
-        singleUse
+        urduName
+        company
+        details
         formattedUOM
         itemCategoryName
         picture
@@ -212,5 +221,5 @@ export default compose(
     props: ({ data }) => ({ ...data }),
     options: ({ queryString }) => ({ variables: { queryString } }),
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'List'])
+  WithBreadcrumbs(["Inventory", "Setup", "Item Types", "List"])
 )(List);

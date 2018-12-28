@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Collapse, Form, Row, Button } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Collapse, Form, Row, Button } from "antd";
 
-import { SelectField } from '/imports/ui/modules/helpers/fields';
+import { SelectField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
-  width: '500px',
+  width: "500px",
 };
 
 const formItemLayout = {
@@ -59,7 +59,7 @@ class ListFilter extends Component {
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
-                <Button type="secondary" onClick={this.handleCancel}>
+                <Button type="default" onClick={this.handleCancel}>
                   Reset
                 </Button>
                 &nbsp;

@@ -1,12 +1,24 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
+  externalReferenceId: {
+    type: String,
+    optional: true,
+  },
   name: {
     type: String,
   },
-  description: {
+  urduName: {
+    type: String,
+    optional: true,
+  },
+  company: {
+    type: String,
+    optional: true,
+  },
+  details: {
     type: String,
     optional: true,
   },
@@ -16,10 +28,7 @@ export default new SimpleSchema({
   },
   unitOfMeasurement: {
     type: String,
-    allowedValues: ['quantity', 'ft', 'm', 'kg', 'lbs'],
-  },
-  singleUse: {
-    type: Boolean,
+    allowedValues: ["quantity", "ft", "m", "kg", "lbs"],
   },
   picture: {
     type: String,

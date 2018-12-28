@@ -226,7 +226,7 @@ class Permissions extends Component {
         <br />
         <br />
         <Row type="flex" justify="start">
-          <Button type="secondary" onClick={this.handleCancel}>
+          <Button type="default" onClick={this.handleCancel}>
             Cancel
           </Button>
           &nbsp;

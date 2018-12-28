@@ -1,20 +1,18 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
-  InputTextAreaField,
   SelectField,
-  SwitchField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
-import allUnitOfMeasurements from './all-unit-of-measurements';
+import allUnitOfMeasurements from "./all-unit-of-measurements";
 
 class NewForm extends Component {
   static propTypes = {
@@ -36,7 +34,10 @@ class NewForm extends Component {
     e.preventDefault();
     const { form, history, createItemType } = this.props;
     form.validateFields(
-      (err, { name, description, itemCategoryId, unitOfMeasurement, singleUse }) => {
+      (
+        err,
+        { name, description, itemCategoryId, unitOfMeasurement, singleUse }
+      ) => {
         if (err) return;
 
         createItemType({
@@ -67,14 +68,26 @@ class NewForm extends Component {
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="name"
-          fieldLabel="Item Type Name"
+          fieldLabel="Item Type Name (Eng)"
           required
           requiredMessage="Please input a name for the item type."
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
+        <InputTextField
+          fieldName="urduName"
+          fieldLabel="Item Type Name (Urdu)"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="company"
+          fieldLabel="Company"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="details"
+          fieldLabel="Details"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -98,11 +111,6 @@ class NewForm extends Component {
           requiredMessage="Please select a unit of measurement."
           getFieldDecorator={getFieldDecorator}
         />
-        <SwitchField
-          fieldName="singleUse"
-          fieldLabel="Single Use Item"
-          getFieldDecorator={getFieldDecorator}
-        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -121,22 +129,25 @@ const listQuery = gql`
 const formMutation = gql`
   mutation createItemType(
     $name: String!
-    $description: String
+    $urduName: String!
+    $company: String!
+    $details: String
     $unitOfMeasurement: String!
-    $singleUse: Boolean!
     $itemCategoryId: String!
   ) {
     createItemType(
       name: $name
-      description: $description
+      urduName: $urduName
+      company: $company
+      details: $details
       unitOfMeasurement: $unitOfMeasurement
-      singleUse: $singleUse
       itemCategoryId: $itemCategoryId
     ) {
       _id
       name
-      description
-      singleUse
+      urduName
+      company
+      details
       unitOfMeasurement
       formattedUOM
       itemCategoryId
@@ -148,13 +159,13 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'createItemType',
+    name: "createItemType",
     options: {
-      refetchQueries: ['allItemTypes', 'pagedItemTypes'],
+      refetchQueries: ["allItemTypes", "pagedItemTypes"],
     },
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Types', 'New'])
+  WithBreadcrumbs(["Inventory", "Setup", "Item Types", "New"])
 )(NewForm);

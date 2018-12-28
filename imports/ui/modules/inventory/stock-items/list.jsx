@@ -1,30 +1,30 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Avatar, Button, Table, Pagination } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
-import { isFinite, toSafeInteger } from 'lodash';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Avatar, Button, Table, Pagination } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
+import { toSafeInteger } from "lodash";
 
-import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 
-import ListFilter from './list-filter';
+import ListFilter from "./list-filter";
 
 const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  width: "100%",
 };
 
 const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  width: "100%",
 };
 
 class List extends Component {
@@ -50,7 +50,11 @@ class List extends Component {
 
     return (
       <div style={ToolbarStyle}>
-        <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+        <Button
+          type="primary"
+          icon="plus-circle-o"
+          onClick={this.handleNewClicked}
+        >
           New Stock Item
         </Button>
         <ListFilter
@@ -67,19 +71,21 @@ class List extends Component {
     const { queryParams, history, location } = this.props;
 
     let itemCategoryIdVal;
-    if (newParams.hasOwnProperty('itemCategoryId')) itemCategoryIdVal = itemCategoryId || '';
-    else itemCategoryIdVal = queryParams.itemCategoryId || '';
+    if (newParams.hasOwnProperty("itemCategoryId"))
+      itemCategoryIdVal = itemCategoryId || "";
+    else itemCategoryIdVal = queryParams.itemCategoryId || "";
 
     let itemTypeNameVal;
-    if (newParams.hasOwnProperty('itemTypeName')) itemTypeNameVal = itemTypeName || '';
-    else itemTypeNameVal = queryParams.itemTypeName || '';
+    if (newParams.hasOwnProperty("itemTypeName"))
+      itemTypeNameVal = itemTypeName || "";
+    else itemTypeNameVal = queryParams.itemTypeName || "";
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
+    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 10;
+    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 10;
     else pageSizeVal = queryParams.pageSize || 10;
 
     const path = `${
@@ -111,16 +117,24 @@ class List extends Component {
     const { physicalStoreId } = this.props;
     return [
       {
-        title: 'Name',
-        dataIndex: 'itemTypeName',
-        key: 'itemTypeName',
+        title: "Name",
+        dataIndex: "itemTypeName",
+        key: "itemTypeName",
         render: (text, record) => {
           if (record.itemTypePicture) {
             return (
               <div style={NameDivStyle}>
-                <Avatar shape="square" size="large" src={record.itemTypePicture} />
+                <Avatar
+                  shape="square"
+                  size="large"
+                  src={record.itemTypePicture}
+                />
                 &nbsp;
-                <Link to={`${paths.stockItemsPath(physicalStoreId)}/${record._id}`}>{text}</Link>
+                <Link
+                  to={`${paths.stockItemsPath(physicalStoreId)}/${record._id}`}
+                >
+                  {text}
+                </Link>
               </div>
             );
           }
@@ -129,43 +143,50 @@ class List extends Component {
             <div style={NameDivStyle}>
               <Avatar shape="square" size="large" icon="picture" />
               &nbsp;
-              <Link to={`${paths.stockItemsPath(physicalStoreId)}/${record._id}`}>{text}</Link>
+              <Link
+                to={`${paths.stockItemsPath(physicalStoreId)}/${record._id}`}
+              >
+                {text}
+              </Link>
             </div>
           );
         },
       },
       {
-        title: 'Category',
-        dataIndex: 'itemCategoryName',
-        key: 'itemCategoryName',
+        title: "Category",
+        dataIndex: "itemCategoryName",
+        key: "itemCategoryName",
       },
       {
-        title: 'Min Stock',
-        dataIndex: 'minStockLevel',
-        key: 'minStockLevel',
+        title: "Min Stock",
+        dataIndex: "minStockLevel",
+        key: "minStockLevel",
         render: (text, record) => {
-          if (!text) return '';
-          if (record.unitOfMeasurement !== 'quantity') return `${text} ${record.unitOfMeasurement}`;
+          if (!text) return "";
+          if (record.unitOfMeasurement !== "quantity")
+            return `${text} ${record.unitOfMeasurement}`;
           return text;
         },
       },
       {
-        title: 'Current Stock',
-        dataIndex: 'currentStockLevel',
-        key: 'currentStockLevel',
+        title: "Current Stock",
+        dataIndex: "currentStockLevel",
+        key: "currentStockLevel",
         render: (text, record) => {
-          if (!text) return '';
-          if (record.unitOfMeasurement !== 'quantity') return `${text} ${record.unitOfMeasurement}`;
+          if (!text) return "";
+          if (record.unitOfMeasurement !== "quantity")
+            return `${text} ${record.unitOfMeasurement}`;
           return text;
         },
       },
       {
-        title: 'Total Stock',
-        dataIndex: 'totalStockLevel',
-        key: 'totalStockLevel',
+        title: "Total Stock",
+        dataIndex: "totalStockLevel",
+        key: "totalStockLevel",
         render: (text, record) => {
-          if (!text) return '';
-          if (record.unitOfMeasurement !== 'quantity') return `${text} ${record.unitOfMeasurement}`;
+          if (!text) return "";
+          if (record.unitOfMeasurement !== "quantity")
+            return `${text} ${record.unitOfMeasurement}`;
           return text;
         },
       },
@@ -193,8 +214,8 @@ class List extends Component {
           <Pagination
             defaultCurrent={1}
             defaultPageSize={10}
-            current={isFinite(pageIndex) ? toSafeInteger(pageIndex) + 1 : 1}
-            pageSize={isFinite(pageSize) ? toSafeInteger(pageSize) : 10}
+            current={pageIndex ? toSafeInteger(pageIndex) + 1 : 1}
+            pageSize={pageSize ? toSafeInteger(pageSize) : 10}
             showSizeChanger
             onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
@@ -208,7 +229,10 @@ class List extends Component {
 
 const listQuery = gql`
   query pagedStockItems($physicalStoreId: String!, $queryString: String) {
-    pagedStockItems(physicalStoreId: $physicalStoreId, queryString: $queryString) {
+    pagedStockItems(
+      physicalStoreId: $physicalStoreId
+      queryString: $queryString
+    ) {
       totalResults
       stockItems {
         _id
@@ -245,5 +269,5 @@ export default compose(
       variables: { physicalStoreId, queryString },
     }),
   }),
-  WithBreadcrumbs(['Inventory', 'Stock Items', 'List'])
+  WithBreadcrumbs(["Inventory", "Stock Items", "List"])
 )(List);

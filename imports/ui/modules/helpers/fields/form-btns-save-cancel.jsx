@@ -13,7 +13,7 @@ const buttonItemLayout = {
 const FormButtonsSaveCancel = ({ handleCancel }) => (
   <Form.Item {...buttonItemLayout}>
     <Row type="flex" justify="end">
-      <Button type="secondary" onClick={handleCancel}>
+      <Button type="default" onClick={handleCancel}>
         Cancel
       </Button>
       &nbsp;

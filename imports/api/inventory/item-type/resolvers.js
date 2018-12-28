@@ -1,8 +1,8 @@
-import { ItemTypes, ItemCategories } from '/imports/lib/collections/inventory';
-import { hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import { ItemTypes, ItemCategories } from "/imports/lib/collections/inventory";
+import { hasOnePermission } from "/imports/api/security";
+import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
-import getItemTypes from './queries';
+import getItemTypes from "./queries";
 
 export default {
   ItemType: {
@@ -13,20 +13,20 @@ export default {
     formattedUOM: itemType => {
       let uom = null;
       switch (itemType.unitOfMeasurement) {
-        case 'quantity':
-          uom = 'Quantity';
+        case "quantity":
+          uom = "Quantity";
           break;
-        case 'ft':
-          uom = 'Length (ft)';
+        case "ft":
+          uom = "Length (ft)";
           break;
-        case 'm':
-          uom = 'Length (m)';
+        case "m":
+          uom = "Length (m)";
           break;
-        case 'kg':
-          uom = 'Weight (kg)';
+        case "kg":
+          uom = "Weight (kg)";
           break;
-        case 'lbs':
-          uom = 'Weight (lbs)';
+        case "lbs":
+          uom = "Weight (lbs)";
           break;
         default:
           break;
@@ -52,19 +52,24 @@ export default {
   Mutation: {
     createItemType(
       obj,
-      { name, description, unitOfMeasurement, singleUse, itemCategoryId },
+      { name, urduName, company, details, unitOfMeasurement, itemCategoryId },
       { userId }
     ) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (
+        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Inventory Setup Data in the System."
+        );
       }
 
       const date = new Date();
       const itemTypeId = ItemTypes.insert({
         name,
-        description,
+        urduName,
+        company,
+        details,
         unitOfMeasurement,
-        singleUse,
         itemCategoryId,
         createdAt: date,
         createdBy: userId,
@@ -77,20 +82,33 @@ export default {
 
     updateItemType(
       obj,
-      { _id, name, description, unitOfMeasurement, singleUse, itemCategoryId },
+      {
+        _id,
+        name,
+        urduName,
+        company,
+        details,
+        unitOfMeasurement,
+        itemCategoryId,
+      },
       { userId }
     ) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (
+        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Inventory Setup Data in the System."
+        );
       }
 
       const date = new Date();
       ItemTypes.update(_id, {
         $set: {
           name,
-          description,
+          urduName,
+          company,
+          details,
           unitOfMeasurement,
-          singleUse,
           itemCategoryId,
           updatedAt: date,
           updatedBy: userId,
@@ -101,8 +119,12 @@ export default {
     },
 
     setPicture(obj, { _id, picture }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (
+        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Inventory Setup Data in the System."
+        );
       }
 
       const date = new Date();

@@ -146,7 +146,7 @@ export default class ItemsList extends Component {
           footer={() => (
             <div style={ButtonBarStyle}>
               <Button
-                type="secondary"
+                type="default"
                 icon="minus-circle-o"
                 onClick={this.handleRemoveItemClicked}
                 disabled={selectedStockItemIds.length === 0}

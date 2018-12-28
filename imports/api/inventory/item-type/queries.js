@@ -1,15 +1,15 @@
-import { parse } from 'query-string';
-import { get } from 'lodash';
+import { parse } from "query-string";
+import { get } from "lodash";
 
-import { ItemTypes } from '/imports/lib/collections/inventory';
+import { ItemTypes } from "/imports/lib/collections/inventory";
 
 export default function getItemTypes(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
-  const { itemCategoryId, pageIndex = '0', pageSize = '10' } = params;
+  const { itemCategoryId, pageIndex = "0", pageSize = "10" } = params;
 
-  if (itemCategoryId && itemCategoryId !== '') {
+  if (itemCategoryId && itemCategoryId !== "") {
     pipeline.push({
       $match: {
         itemCategoryId: { $eq: itemCategoryId },
@@ -18,13 +18,13 @@ export default function getItemTypes(queryString) {
   }
 
   const countingPipeline = pipeline.concat({
-    $count: 'total',
+    $count: "total",
   });
 
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { issueDate: -1 } },
+    { $sort: { name: 1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
@@ -34,6 +34,6 @@ export default function getItemTypes(queryString) {
 
   return Promise.all([itemTypes, totalResults]).then(results => ({
     itemTypes: results[0],
-    totalResults: get(results[1], ['0', 'total'], 0),
+    totalResults: get(results[1], ["0", "total"], 0),
   }));
 }

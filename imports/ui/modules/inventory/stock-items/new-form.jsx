@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
-import { filter, keyBy } from "lodash";
+import { filter } from "lodash";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -24,11 +24,11 @@ class NewForm extends Component {
     match: PropTypes.object,
     form: PropTypes.object,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
+    unStockedItemTypesLoading: PropTypes.bool,
+    unStockedItemTypesByPhysicalStoreId: PropTypes.array,
 
     physicalStoreId: PropTypes.string,
-    allItemTypes: PropTypes.array,
+    itemCategoriesLoading: PropTypes.bool,
     allItemCategories: PropTypes.array,
     createStockItem: PropTypes.func,
   };
@@ -42,19 +42,17 @@ class NewForm extends Component {
   }
 
   getFilteredItemTypes = itemCategoryId => {
-    const { allItemTypes, stockItemsByPhysicalStoreId } = this.props;
+    const { unStockedItemTypesByPhysicalStoreId } = this.props;
     let filteredItemTypes = [];
 
     if (itemCategoryId) {
-      const stockItemsByItemTypeId = keyBy(
-        stockItemsByPhysicalStoreId,
-        "itemTypeId"
+      filteredItemTypes = filter(
+        unStockedItemTypesByPhysicalStoreId,
+        itemType => {
+          if (itemType.itemCategoryId !== itemCategoryId) return false;
+          return true;
+        }
       );
-      filteredItemTypes = filter(allItemTypes, itemType => {
-        if (itemType.itemCategoryId !== itemCategoryId) return false;
-        if (stockItemsByItemTypeId[itemType._id]) return false;
-        return true;
-      });
     }
 
     return filteredItemTypes;
@@ -156,9 +154,9 @@ const itemCategoriesListQuery = gql`
   }
 `;
 
-const itemTypesListQuery = gql`
-  query allItemTypes {
-    allItemTypes {
+const unStockedItemTypesListQuery = gql`
+  query unStockedItemTypesByPhysicalStoreId($physicalStoreId: String!) {
+    unStockedItemTypesByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
       _id
       formattedName
       itemCategoryId
@@ -194,15 +192,21 @@ export default compose(
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(itemCategoriesListQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ itemCategoriesLoading: data.loading, ...data }),
   }),
-  graphql(itemTypesListQuery, {
-    props: ({ data }) => ({ ...data }),
+  graphql(unStockedItemTypesListQuery, {
+    props: ({ data }) => ({ unStockedItemTypesLoading: data.loading, ...data }),
+    options: ({ physicalStoreId }) => ({
+      variables: { physicalStoreId },
+    }),
   }),
   graphql(formMutation, {
     name: "createStockItem",
     options: {
-      refetchQueries: ["pagedStockItems"],
+      refetchQueries: [
+        "pagedStockItems",
+        "unStockedItemTypesByPhysicalStoreId",
+      ],
     },
   }),
   WithBreadcrumbs(["Inventory", "Stock Items", "New"])

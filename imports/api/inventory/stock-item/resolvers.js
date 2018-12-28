@@ -107,10 +107,16 @@ export default {
         { fields: { itemTypeId: 1 } }
       ).fetch();
 
-      const stockedItemTypeIds = stockedItemTypes.map(({ _id }) => _id);
-      return ItemTypes.find({
-        _id: { $nin: stockedItemTypeIds },
-      });
+      const stockedItemTypeIds = stockedItemTypes.map(
+        ({ itemTypeId }) => itemTypeId
+      );
+
+      return ItemTypes.find(
+        {
+          _id: { $nin: stockedItemTypeIds },
+        },
+        { sort: { name: 1 } }
+      );
     },
   },
 

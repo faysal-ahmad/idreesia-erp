@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 
-import { SelectField } from "/imports/ui/modules/helpers/fields";
+import {
+  InputTextField,
+  SelectField,
+} from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
   width: "500px",
@@ -30,10 +33,11 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, refreshPage } = this.props;
 
-    form.validateFields((err, { itemCategoryId }) => {
+    form.validateFields((err, { itemCategoryId, itemTypeName }) => {
       if (err) return;
       refreshPage({
         itemCategoryId,
+        itemTypeName,
         pageIndex: 0,
       });
     });
@@ -52,9 +56,18 @@ class ListFilter extends Component {
               getDataValue={({ _id }) => _id}
               getDataText={({ name }) => name}
               fieldName="itemCategoryId"
-              fieldLabel="Item Category"
+              fieldLabel="Category"
               fieldLayout={formItemLayout}
+              required={false}
               initialValue={queryParams.itemCategoryId}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputTextField
+              fieldName="itemTypeName"
+              fieldLabel="Name"
+              fieldLayout={formItemLayout}
+              required={false}
+              initialValue={queryParams.itemTypeName}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>

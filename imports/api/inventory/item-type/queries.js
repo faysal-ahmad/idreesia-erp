@@ -7,13 +7,24 @@ export default function getItemTypes(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
-  const { itemCategoryId, pageIndex = "0", pageSize = "10" } = params;
+  const {
+    itemCategoryId,
+    itemTypeName,
+    pageIndex = "0",
+    pageSize = "10",
+  } = params;
 
-  if (itemCategoryId && itemCategoryId !== "") {
+  if (itemCategoryId) {
     pipeline.push({
       $match: {
         itemCategoryId: { $eq: itemCategoryId },
       },
+    });
+  }
+
+  if (itemTypeName) {
+    pipeline.push({
+      $match: { $text: { $search: itemTypeName } },
     });
   }
 

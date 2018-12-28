@@ -91,13 +91,18 @@ class List extends Component {
   ];
 
   refreshPage = newParams => {
-    const { itemCategoryId, pageIndex, pageSize } = newParams;
+    const { itemCategoryId, itemTypeName, pageIndex, pageSize } = newParams;
     const { queryParams, history, location } = this.props;
 
     let itemCategoryIdVal;
     if (newParams.hasOwnProperty("itemCategoryId"))
       itemCategoryIdVal = itemCategoryId || "";
     else itemCategoryIdVal = queryParams.itemCategoryId || "";
+
+    let itemTypeNameVal;
+    if (newParams.hasOwnProperty("itemTypeName"))
+      itemTypeNameVal = itemTypeName || "";
+    else itemTypeNameVal = queryParams.itemTypeName || "";
 
     let pageIndexVal;
     if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
@@ -109,7 +114,7 @@ class List extends Component {
 
     const path = `${
       location.pathname
-    }?itemCategoryId=${itemCategoryIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    }?itemCategoryId=${itemCategoryIdVal}&itemTypeName=${itemTypeNameVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 

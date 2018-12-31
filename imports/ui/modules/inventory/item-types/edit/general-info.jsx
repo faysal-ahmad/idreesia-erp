@@ -1,19 +1,17 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
-  InputTextAreaField,
   SelectField,
-  SwitchField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
-import allUnitOfMeasurements from '../all-unit-of-measurements';
+import allUnitOfMeasurements from "../all-unit-of-measurements";
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -42,7 +40,10 @@ class GeneralInfo extends Component {
     e.preventDefault();
     const { form, history, itemTypeById, updateItemType } = this.props;
     form.validateFields(
-      (err, { name, description, itemCategoryId, unitOfMeasurement, singleUse }) => {
+      (
+        err,
+        { name, description, itemCategoryId, unitOfMeasurement, singleUse }
+      ) => {
         if (err) return;
 
         updateItemType({
@@ -81,10 +82,17 @@ class GeneralInfo extends Component {
           requiredMessage="Please input a name for the item type."
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-          initialValue={itemTypeById.description}
+        <InputTextField
+          fieldName="company"
+          fieldLabel="Company"
+          initialValue={itemTypeById.company}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="details"
+          fieldLabel="Details"
+          initialValue={itemTypeById.details}
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -110,12 +118,6 @@ class GeneralInfo extends Component {
           initialValue={itemTypeById.unitOfMeasurement}
           getFieldDecorator={getFieldDecorator}
         />
-        <SwitchField
-          fieldName="singleUse"
-          fieldLabel="Single Use Item"
-          initialValue={itemTypeById.singleUse}
-          getFieldDecorator={getFieldDecorator}
-        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -127,8 +129,9 @@ const formQuery = gql`
     itemTypeById(_id: $_id) {
       _id
       name
-      description
-      singleUse
+      urduName
+      company
+      details
       unitOfMeasurement
       itemCategoryId
     }
@@ -148,23 +151,26 @@ const formMutation = gql`
   mutation updateItemType(
     $_id: String!
     $name: String!
-    $description: String
+    $urduName: String
+    $company: String
+    $details: String
     $unitOfMeasurement: String!
-    $singleUse: Boolean!
     $itemCategoryId: String!
   ) {
     updateItemType(
       _id: $_id
       name: $name
-      description: $description
+      urduName: $urduName
+      compant: $company
+      details: $details
       unitOfMeasurement: $unitOfMeasurement
-      singleUse: $singleUse
       itemCategoryId: $itemCategoryId
     ) {
       _id
       name
-      description
-      singleUse
+      urduName
+      company
+      details
       unitOfMeasurement
       formattedUOM
       itemCategoryId
@@ -176,13 +182,13 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateItemType',
+    name: "updateItemType",
     options: {
-      refetchQueries: ['allItemTypes', 'pagedItemTypes'],
+      refetchQueries: ["allItemTypes", "pagedItemTypes"],
     },
   }),
   graphql(listQuery, {
-    name: 'listData',
+    name: "listData",
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),

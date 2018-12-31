@@ -27,7 +27,7 @@ export default class PictureForm extends Component {
       return (
         <div>
           <img src={imageSrc} />
-          <Button type="secondary" onClick={this.captureAnother}>
+          <Button type="default" onClick={this.captureAnother}>
             Capture another photo
           </Button>
         </div>
@@ -46,7 +46,7 @@ export default class PictureForm extends Component {
           width={350}
           screenshotFormat="image/jpeg"
         />
-        <Button type="secondary" onClick={this.capture}>
+        <Button type="default" onClick={this.capture}>
           Capture photo
         </Button>
       </div>

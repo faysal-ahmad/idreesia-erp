@@ -20,6 +20,10 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
+const FormStyle = {
+  width: "800px",
+};
+
 const formItemExtendedLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
@@ -113,7 +117,7 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
         <DateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"

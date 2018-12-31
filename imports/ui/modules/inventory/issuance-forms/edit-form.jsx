@@ -1,24 +1,28 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import moment from 'moment';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import moment from "moment";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { ItemsList } from '../common/items-list';
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { ItemsList } from "../common/items-list";
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   WithKarkuns,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
+
+const FormStyle = {
+  width: "800px",
+};
 
 const formItemExtendedLayout = {
   labelCol: { span: 6 },
@@ -55,41 +59,53 @@ class EditForm extends Component {
       updateIssuanceForm,
       issuanceFormById: { _id },
     } = this.props;
-    form.validateFields((err, { issueDate, issuedBy, issuedTo, items, notes }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { issueDate, issuedBy, issuedTo, items, notes }) => {
+        if (err) return;
 
-      const updatedItems = items.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }));
-      updateIssuanceForm({
-        variables: {
-          _id,
-          issueDate,
-          issuedBy,
-          issuedTo,
-          physicalStoreId,
-          items: updatedItems,
-          notes,
-        },
-      })
-        .then(() => {
-          history.push(paths.issuanceFormsPath(physicalStoreId));
+        const updatedItems = items.map(({ stockItemId, quantity }) => ({
+          stockItemId,
+          quantity,
+        }));
+        updateIssuanceForm({
+          variables: {
+            _id,
+            issueDate,
+            issuedBy,
+            issuedTo,
+            physicalStoreId,
+            items: updatedItems,
+            notes,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.push(paths.issuanceFormsPath(physicalStoreId));
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   getItemsField() {
-    const { issuanceFormById, physicalStoreId, stockItemsByPhysicalStoreId } = this.props;
+    const {
+      issuanceFormById,
+      physicalStoreId,
+      stockItemsByPhysicalStoreId,
+    } = this.props;
     const { getFieldDecorator } = this.props.form;
 
     const rules = [
       {
         required: true,
-        message: 'Please add some items.',
+        message: "Please add some items.",
       },
     ];
-    return getFieldDecorator('items', { rules, initialValue: issuanceFormById.items })(
+    return getFieldDecorator("items", {
+      rules,
+      initialValue: issuanceFormById.items,
+    })(
       <ItemsList
         physicalStoreId={physicalStoreId}
         stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
@@ -112,7 +128,7 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
         <DateField
           fieldName="issueDate"
           fieldLabel="Issue Date"
@@ -218,9 +234,13 @@ export default compose(
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
-    name: 'updateIssuanceForm',
+    name: "updateIssuanceForm",
     options: {
-      refetchQueries: ['pagedIssuanceForms', 'issuanceFormsByStockItem', 'pagedStockItems'],
+      refetchQueries: [
+        "pagedIssuanceForms",
+        "issuanceFormsByStockItem",
+        "pagedStockItems",
+      ],
     },
   }),
   graphql(formQuery, {
@@ -230,5 +250,5 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Forms', 'Issuance Forms', 'Edit'])
+  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "Edit"])
 )(EditForm);

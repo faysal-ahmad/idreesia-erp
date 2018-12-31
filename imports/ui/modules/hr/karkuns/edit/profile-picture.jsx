@@ -57,7 +57,7 @@ class ProfilePicture extends Component {
         <br />
         <Row>
           <Col span={16}>
-            <Button type="secondary" onClick={this.updatePhoto}>
+            <Button type="default" onClick={this.updatePhoto}>
               Update photo
             </Button>
           </Col>

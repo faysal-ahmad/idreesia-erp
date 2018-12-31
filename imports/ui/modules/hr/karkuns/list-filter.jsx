@@ -79,7 +79,7 @@ class ListFilter extends Component {
             </Form.Item>
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
-                <Button type="secondary" onClick={this.handleCancel}>
+                <Button type="default" onClick={this.handleCancel}>
                   Reset
                 </Button>
                 &nbsp;

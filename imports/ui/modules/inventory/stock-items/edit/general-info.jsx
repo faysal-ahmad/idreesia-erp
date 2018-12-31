@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
   InputNumberField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 class EditForm extends Component {
   static propTypes = {
@@ -30,7 +30,13 @@ class EditForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { physicalStoreId, stockItemById, updateStockItem, form, history } = this.props;
+    const {
+      physicalStoreId,
+      stockItemById,
+      updateStockItem,
+      form,
+      history,
+    } = this.props;
     form.validateFields((err, { minStockLevel, totalStockLevel }) => {
       if (err) return;
       updateStockItem({
@@ -78,6 +84,27 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
+          fieldName="company"
+          fieldLabel="Company"
+          initialValue={stockItemById.itemTypeCompany}
+          disabled
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="details"
+          fieldLabel="Details"
+          initialValue={stockItemById.itemTypeDetails}
+          disabled
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="uom"
+          fieldLabel="Unit of Measurement"
+          initialValue={stockItemById.unitOfMeasurement}
+          disabled
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
           fieldName="currentStockLevel"
           fieldLabel="Current Stock Level"
           initialValue={stockItemById.currentStockLevel}
@@ -91,12 +118,6 @@ class EditForm extends Component {
           initialValue={stockItemById.minStockLevel}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputNumberField
-          fieldName="totalStockLevel"
-          fieldLabel="Total Stock Level"
-          initialValue={stockItemById.totalStockLevel}
-          getFieldDecorator={getFieldDecorator}
-        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -104,11 +125,10 @@ class EditForm extends Component {
 }
 
 const formMutation = gql`
-  mutation updateStockItem($_id: String!, $minStockLevel: Float, $totalStockLevel: Float) {
-    updateStockItem(_id: $_id, minStockLevel: $minStockLevel, totalStockLevel: $totalStockLevel) {
+  mutation updateStockItem($_id: String!, $minStockLevel: Float) {
+    updateStockItem(_id: $_id, minStockLevel: $minStockLevel) {
       _id
       minStockLevel
-      totalStockLevel
     }
   }
 `;
@@ -118,6 +138,8 @@ const formQuery = gql`
     stockItemById(_id: $_id) {
       _id
       itemTypeName
+      itemTypeCompany
+      itemTypeDetails
       itemTypePicture
       itemCategoryName
       physicalStoreName
@@ -136,9 +158,9 @@ export default compose(
     options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),
   }),
   graphql(formMutation, {
-    name: 'updateStockItem',
+    name: "updateStockItem",
     options: {
-      refetchQueries: ['pagedStockItems'],
+      refetchQueries: ["pagedStockItems"],
     },
   })
 )(EditForm);

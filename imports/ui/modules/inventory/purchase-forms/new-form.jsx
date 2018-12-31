@@ -1,23 +1,27 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { ItemsList } from '../common/items-list';
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { ItemsList } from "../common/items-list";
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   WithKarkuns,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
+
+const FormStyle = {
+  width: "800px",
+};
 
 const formItemExtendedLayout = {
   labelCol: { span: 6 },
@@ -48,19 +52,28 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, physicalStoreId, createPurchaseForm } = this.props;
-    form.validateFields((err, { purchaseDate, receivedBy, purchasedBy, items, notes }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { purchaseDate, receivedBy, purchasedBy, items, notes }) => {
+        if (err) return;
 
-      createPurchaseForm({
-        variables: { purchaseDate, receivedBy, purchasedBy, physicalStoreId, items, notes },
-      })
-        .then(() => {
-          history.push(paths.purchaseFormsPath(physicalStoreId));
+        createPurchaseForm({
+          variables: {
+            purchaseDate,
+            receivedBy,
+            purchasedBy,
+            physicalStoreId,
+            items,
+            notes,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.push(paths.purchaseFormsPath(physicalStoreId));
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   getItemsField() {
@@ -70,10 +83,10 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please add some items.',
+        message: "Please add some items.",
       },
     ];
-    return getFieldDecorator('items', { rules })(
+    return getFieldDecorator("items", { rules })(
       <ItemsList
         physicalStoreId={physicalStoreId}
         stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
@@ -88,7 +101,7 @@ class NewForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
         <DateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"
@@ -170,10 +183,14 @@ export default compose(
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
-    name: 'createPurchaseForm',
+    name: "createPurchaseForm",
     options: {
-      refetchQueries: ['pagedPurchaseForms', 'purchaseFormsByStockItem', 'pagedStockItems'],
+      refetchQueries: [
+        "pagedPurchaseForms",
+        "purchaseFormsByStockItem",
+        "pagedStockItems",
+      ],
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Forms', 'Purchase Forms', 'New'])
+  WithBreadcrumbs(["Inventory", "Forms", "Purchase Forms", "New"])
 )(NewForm);

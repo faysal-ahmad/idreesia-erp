@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Table, Modal } from 'antd';
-import { filter, find } from 'lodash';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Button, Table, Modal } from "antd";
+import { filter, find } from "lodash";
 // import gql from 'graphql-tag';
 // import { compose, graphql } from 'react-apollo';
 
-import { default as ItemForm } from './item-form';
+import { default as ItemForm } from "./item-form";
 
 const ButtonBarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-end',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "flex-end",
+  width: "100%",
 };
 
 export default class ItemsList extends Component {
@@ -29,7 +29,10 @@ export default class ItemsList extends Component {
       showForm: false,
       physicalStoreId: props.physicalStoreId,
       stockItems: props.value
-        ? props.value.map(({ stockItemId, quantity }) => ({ stockItemId, quantity }))
+        ? props.value.map(({ stockItemId, quantity }) => ({
+            stockItemId,
+            quantity,
+          }))
         : [],
       selectedStockItemIds: [],
     };
@@ -105,21 +108,21 @@ export default class ItemsList extends Component {
   getItemTypeName(stockItemId) {
     const { stockItemsByPhysicalStore } = this.props;
     const stockItem = find(stockItemsByPhysicalStore, { _id: stockItemId });
-    if (stockItem) return stockItem.itemTypeName;
+    if (stockItem) return stockItem.itemTypeFormattedName;
     return null;
   }
 
   columns = [
     {
-      title: 'Item Name',
-      dataIndex: 'stockItemId',
-      key: 'stockItemId',
+      title: "Item Name",
+      dataIndex: "stockItemId",
+      key: "stockItemId",
       render: text => this.getItemTypeName(text),
     },
     {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
     },
   ];
 
@@ -146,7 +149,7 @@ export default class ItemsList extends Component {
           footer={() => (
             <div style={ButtonBarStyle}>
               <Button
-                type="secondary"
+                type="default"
                 icon="minus-circle-o"
                 onClick={this.handleRemoveItemClicked}
                 disabled={selectedStockItemIds.length === 0}

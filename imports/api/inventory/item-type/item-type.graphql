@@ -1,13 +1,15 @@
 type ItemType {
   _id: String
   name: String
-  description: String
+  urduName: String
+  company: String
+  details: String
   unitOfMeasurement: String
-  singleUse: Boolean
   itemCategoryId: String
   picture: String
 
   formattedUOM: String
+  formattedName: String
   itemCategoryName: String
 
   createdAt: String
@@ -30,18 +32,20 @@ extend type Query {
 extend type Mutation {
   createItemType(
     name: String!
-    description: String
+    urduName: String
+    company: String
+    details: String
     unitOfMeasurement: String!
-    singleUse: Boolean!
     itemCategoryId: String!
   ): ItemType
 
   updateItemType(
     _id: String!
     name: String!
-    description: String
+    urduName: String
+    company: String
+    details: String
     unitOfMeasurement: String!
-    singleUse: Boolean!
     itemCategoryId: String!
   ): ItemType
 

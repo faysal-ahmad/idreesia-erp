@@ -8,6 +8,9 @@ type StockItem {
   totalStockLevel: Float
 
   itemTypeName: String
+  itemTypeFormattedName: String
+  itemTypeCompany: String
+  itemTypeDetails: String
   itemTypePicture: String
   itemCategoryName: String
   unitOfMeasurement: String
@@ -29,6 +32,7 @@ extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
   stockItemById(_id: String!): StockItem
   stockItemsByPhysicalStoreId(physicalStoreId: String!): [StockItem]
+  unStockedItemTypesByPhysicalStoreId(physicalStoreId: String!): [ItemType]
 }
 
 extend type Mutation {
@@ -37,7 +41,6 @@ extend type Mutation {
     physicalStoreId: String!
     minStockLevel: Float
     currentStockLevel: Float
-    totalStockLevel: Float
   ): StockItem
-  updateStockItem(_id: String!, minStockLevel: Float, totalStockLevel: Float): StockItem
+  updateStockItem(_id: String!, minStockLevel: Float): StockItem
 }

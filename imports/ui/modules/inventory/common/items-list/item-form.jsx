@@ -1,13 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Form } from 'antd';
-import { AutoCompleteField, InputNumberField } from '/imports/ui/modules/helpers/fields';
+import React from "react";
+import PropTypes from "prop-types";
+import { Form } from "antd";
+import {
+  AutoCompleteField,
+  InputNumberField,
+} from "/imports/ui/modules/helpers/fields";
 
 const OptionStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  width: "100%",
 };
 
 const formItemLayout = {
@@ -20,7 +23,7 @@ const ItemForm = ({ form: { getFieldDecorator }, stockItems }) => (
     <AutoCompleteField
       data={stockItems}
       getDataValue={({ _id }) => _id}
-      getDataText={({ itemTypeName }) => itemTypeName}
+      getDataText={({ itemTypeFormattedName }) => itemTypeFormattedName}
       fieldName="stockItemId"
       fieldLabel="Name"
       fieldLayout={formItemLayout}
@@ -29,7 +32,7 @@ const ItemForm = ({ form: { getFieldDecorator }, stockItems }) => (
       getFieldDecorator={getFieldDecorator}
       optionRenderer={(text, dataObj) => (
         <div key={dataObj.stockItemId} style={OptionStyle}>
-          {dataObj.itemTypeName}
+          {dataObj.itemTypeFormattedName}
           <span>{dataObj.currentStockLevel} Available</span>
         </div>
       )}

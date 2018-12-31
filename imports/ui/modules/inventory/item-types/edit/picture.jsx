@@ -57,7 +57,7 @@ class Picture extends Component {
         <br />
         <Row>
           <Col span={16}>
-            <Button type="secondary" onClick={this.updatePicture}>
+            <Button type="default" onClick={this.updatePicture}>
               Update Picture
             </Button>
           </Col>

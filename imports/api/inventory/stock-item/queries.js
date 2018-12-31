@@ -26,7 +26,37 @@ function getItemTypeIds(itemCategoryId, itemTypeName) {
   return ItemTypes.aggregate(pipeline).toArray();
 }
 
-export default function getStockItems(queryString, physicalStoreId) {
+export function getAllStockItems(physicalStoreId) {
+  const pipeline = [
+    {
+      $match: {
+        physicalStoreId: { $eq: physicalStoreId },
+      },
+    },
+    {
+      $lookup: {
+        from: "inventory-item-types",
+        localField: "itemTypeId",
+        foreignField: "_id",
+        as: "itemType",
+      },
+    },
+    { $unwind: "$itemType" },
+    { $sort: { "itemType.name": 1 } },
+  ];
+
+  return StockItems.aggregate(pipeline)
+    .toArray()
+    .then(stockItemObjs =>
+      stockItemObjs.map(stockItemObj => {
+        // eslint-disable-next-line no-param-reassign
+        delete stockItemObj.itemType;
+        return stockItemObj;
+      })
+    );
+}
+
+export default function getPagedStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
   const pipeline = [
     {

@@ -8,6 +8,7 @@ type StockItem {
   totalStockLevel: Float
 
   itemTypeName: String
+  itemTypeFormattedName: String
   itemTypeCompany: String
   itemTypeDetails: String
   itemTypePicture: String

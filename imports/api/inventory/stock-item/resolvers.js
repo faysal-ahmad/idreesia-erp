@@ -11,13 +11,25 @@ import {
 } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
-import getStockItems from "./queries";
+import getPagedStockItems, { getAllStockItems } from "./queries";
 
 export default {
   StockItem: {
     itemTypeName: stockItem => {
       const itemType = ItemTypes.findOne(stockItem.itemTypeId);
       return itemType.name;
+    },
+    itemTypeFormattedName: stockItem => {
+      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
+      const { name, company, details } = itemType;
+      let formattedName = name;
+      if (company) {
+        formattedName = `${formattedName} - ${company}`;
+      }
+      if (details) {
+        formattedName = `${formattedName} - ${details}`;
+      }
+      return formattedName;
     },
     itemTypeCompany: stockItem => {
       const itemType = ItemTypes.findOne(stockItem.itemTypeId);
@@ -71,7 +83,7 @@ export default {
         };
       }
 
-      return getStockItems(queryString, physicalStoreId);
+      return getPagedStockItems(queryString, physicalStoreId);
     },
 
     stockItemById(obj, { _id }, { userId }) {
@@ -93,9 +105,7 @@ export default {
 
     stockItemsByPhysicalStoreId(obj, { physicalStoreId }, { userId }) {
       if (hasInstanceAccess(userId, physicalStoreId) === false) return [];
-      return StockItems.find({
-        physicalStoreId: { $eq: physicalStoreId },
-      }).fetch();
+      return getAllStockItems(physicalStoreId);
     },
 
     unStockedItemTypesByPhysicalStoreId(obj, { physicalStoreId }, { userId }) {

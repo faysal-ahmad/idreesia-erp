@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Checkbox, Icon, Table, Tooltip } from 'antd';
-import moment from 'moment';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Icon, Table, Tooltip } from "antd";
+import moment from "moment";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
 const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
 };
 
 const IconStyle = {
-  cursor: 'pointer',
+  cursor: "pointer",
 };
 
 class List extends Component {
@@ -25,41 +25,46 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Approved',
-      dataIndex: 'approvedOn',
-      key: 'approvedOn',
+      title: "Approved",
+      dataIndex: "approvedOn",
+      key: "approvedOn",
       render: text => {
-        let value = false;
-        if (text) value = true;
-        return <Checkbox checked={value} disabled />;
+        if (text) return <Icon type="check" />;
+        return null;
       },
     },
     {
-      title: 'Issue Date',
-      dataIndex: 'issueDate',
-      key: 'issueDate',
+      title: "Issue Date",
+      dataIndex: "issueDate",
+      key: "issueDate",
       render: text => {
         const date = moment(new Date(text));
-        return date.format('DD MMM, YYYY');
+        return date.format("DD MMM, YYYY");
       },
     },
     {
-      title: 'Issued To',
-      dataIndex: 'issuedToName',
-      key: 'issuedToName',
+      title: "Issued To",
+      dataIndex: "issuedToName",
+      key: "issuedToName",
     },
     {
-      title: 'Items',
-      dataIndex: 'items',
-      key: 'items',
+      title: "Items",
+      dataIndex: "items",
+      key: "items",
       render: items => {
-        const formattedItems = items.map(item => `${item.itemTypeName} - ${item.quantity}`);
-        return formattedItems.join(', ');
+        const formattedItems = items.map(item => (
+          <li key={`${item.stockItemId}${item.isInflow}`}>
+            {`${item.itemTypeName} [${item.quantity} ${
+              item.isInflow ? "Returned" : "Issued"
+            }]`}
+          </li>
+        ));
+        return <ul>{formattedItems}</ul>;
       },
     },
     {
-      title: 'Actions',
-      key: 'action',
+      title: "Actions",
+      key: "action",
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
@@ -89,7 +94,12 @@ class List extends Component {
     if (loading) return null;
 
     return (
-      <Table rowKey="_id" dataSource={issuanceFormsByStockItem} columns={this.columns} bordered />
+      <Table
+        rowKey="_id"
+        dataSource={issuanceFormsByStockItem}
+        columns={this.columns}
+        bordered
+      />
     );
   }
 }
@@ -108,6 +118,7 @@ const listQuery = gql`
       items {
         stockItemId
         quantity
+        isInflow
         itemTypeName
       }
     }

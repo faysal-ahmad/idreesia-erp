@@ -54,19 +54,6 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
-  // Return Forms Routes
-  // *************************************************************************************
-  static returnFormsPath(physicalStoreId = ":physicalStoreId") {
-    return `${ModulePaths.inventory}/${physicalStoreId}/return-forms`;
-  }
-  static returnFormsNewFormPath(physicalStoreId = ":physicalStoreId") {
-    return `${SubModulePaths.returnFormsPath(physicalStoreId)}/new`;
-  }
-  static returnFormsEditFormPath(physicalStoreId = ":physicalStoreId") {
-    return `${SubModulePaths.returnFormsPath(physicalStoreId)}/:formId`;
-  }
-
-  // *************************************************************************************
   // Purchase Forms Routes
   // *************************************************************************************
   static purchaseFormsPath(physicalStoreId = ":physicalStoreId") {

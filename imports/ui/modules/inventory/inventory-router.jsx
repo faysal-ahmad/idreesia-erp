@@ -24,11 +24,6 @@ import {
   IssuanceFormsList,
 } from "./issuance-forms";
 import {
-  ReturnFormsNewForm,
-  ReturnFormsEditForm,
-  ReturnFormsList,
-} from "./return-forms";
-import {
   PurchaseFormsNewForm,
   PurchaseFormsEditForm,
   PurchaseFormsList,
@@ -70,16 +65,6 @@ const InventoryRouter = () => (
       component={IssuanceFormsViewForm}
     />
     <Route path={paths.issuanceFormsPath()} component={IssuanceFormsList} />
-
-    <Route
-      path={paths.returnFormsNewFormPath()}
-      component={ReturnFormsNewForm}
-    />
-    <Route
-      path={paths.returnFormsEditFormPath()}
-      component={ReturnFormsEditForm}
-    />
-    <Route path={paths.returnFormsPath()} component={ReturnFormsList} />
 
     <Route
       path={paths.purchaseFormsNewFormPath()}

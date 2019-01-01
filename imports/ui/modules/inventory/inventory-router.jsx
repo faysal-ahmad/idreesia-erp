@@ -26,6 +26,7 @@ import {
 import {
   PurchaseFormsNewForm,
   PurchaseFormsEditForm,
+  PurchaseFormsViewForm,
   PurchaseFormsList,
 } from "./purchase-forms";
 
@@ -73,6 +74,10 @@ const InventoryRouter = () => (
     <Route
       path={paths.purchaseFormsEditFormPath()}
       component={PurchaseFormsEditForm}
+    />
+    <Route
+      path={paths.purchaseFormsViewFormPath()}
+      component={PurchaseFormsViewForm}
     />
     <Route path={paths.purchaseFormsPath()} component={PurchaseFormsList} />
   </Switch>

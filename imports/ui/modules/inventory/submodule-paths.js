@@ -62,7 +62,20 @@ export default class SubModulePaths {
   static purchaseFormsNewFormPath(physicalStoreId = ":physicalStoreId") {
     return `${SubModulePaths.purchaseFormsPath(physicalStoreId)}/new`;
   }
-  static purchaseFormsEditFormPath(physicalStoreId = ":physicalStoreId") {
-    return `${SubModulePaths.purchaseFormsPath(physicalStoreId)}/:formId`;
+  static purchaseFormsEditFormPath(
+    physicalStoreId = ":physicalStoreId",
+    formId = ":formId"
+  ) {
+    return `${SubModulePaths.purchaseFormsPath(
+      physicalStoreId
+    )}/edit/${formId}`;
+  }
+  static purchaseFormsViewFormPath(
+    physicalStoreId = ":physicalStoreId",
+    formId = ":formId"
+  ) {
+    return `${SubModulePaths.purchaseFormsPath(
+      physicalStoreId
+    )}/view/${formId}`;
   }
 }

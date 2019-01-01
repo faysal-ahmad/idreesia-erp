@@ -33,7 +33,6 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    physicalStoreId: PropTypes.string,
 
     stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
@@ -41,6 +40,7 @@ class NewForm extends Component {
     allKarkuns: PropTypes.array,
 
     loading: PropTypes.bool,
+    physicalStoreId: PropTypes.string,
     createPurchaseForm: PropTypes.func,
   };
 
@@ -88,6 +88,8 @@ class NewForm extends Component {
     ];
     return getFieldDecorator("items", { rules })(
       <ItemsList
+        inflowLabel="Purchased"
+        outflowLabel="Returned"
         physicalStoreId={physicalStoreId}
         stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
@@ -95,8 +97,8 @@ class NewForm extends Component {
   }
 
   render() {
-    const { loading, allKarkuns } = this.props;
-    if (loading) return null;
+    const { stockItemsLoading, karkunsListLoading, allKarkuns } = this.props;
+    if (stockItemsLoading || karkunsListLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -170,6 +172,7 @@ const formMutation = gql`
       items {
         stockItemId
         quantity
+        isInflow
         price
       }
       notes

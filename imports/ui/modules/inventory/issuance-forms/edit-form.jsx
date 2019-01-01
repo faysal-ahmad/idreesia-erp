@@ -40,6 +40,7 @@ class EditForm extends Component {
     stockItemsByPhysicalStoreId: PropTypes.array,
     karkunsListLoading: PropTypes.bool,
     allKarkuns: PropTypes.array,
+
     formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
     updateIssuanceForm: PropTypes.func,

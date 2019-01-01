@@ -165,9 +165,9 @@ export default {
 
       items.forEach(({ stockItemId, quantity, isInflow }) => {
         if (isInflow) {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        } else {
           StockItems.incrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
         }
       });
 
@@ -201,19 +201,18 @@ export default {
       // Undo the effect of all previous items
       existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
         if (isInflow) {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        } else {
           StockItems.decrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
         }
       });
 
       // Apply the effect of new incoming items
-      console.log(JSON.stringify(items));
       items.forEach(({ stockItemId, quantity, isInflow }) => {
         if (isInflow) {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        } else {
           StockItems.incrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
         }
       });
 
@@ -299,8 +298,12 @@ export default {
 
       const existingForm = IssuanceForms.findOne(_id);
       const { items: existingItems } = existingForm;
-      existingItems.forEach(({ stockItemId, quantity }) => {
-        StockItems.incrementCurrentLevel(stockItemId, quantity);
+      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
+        }
       });
 
       return IssuanceForms.remove(_id);

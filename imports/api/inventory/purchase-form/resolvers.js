@@ -1,11 +1,17 @@
-import { keyBy } from 'lodash';
+import { Karkuns } from "/imports/lib/collections/hr";
+import {
+  PurchaseForms,
+  PhysicalStores,
+  StockItems,
+} from "/imports/lib/collections/inventory";
+import {
+  filterByInstanceAccess,
+  hasInstanceAccess,
+  hasOnePermission,
+} from "/imports/api/security";
+import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
-import { Karkuns } from '/imports/lib/collections/hr';
-import { PhysicalStores, PurchaseForms, StockItems } from '/imports/lib/collections/inventory';
-import { filterByInstanceAccess, hasInstanceAccess, hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
-
-import getPurchaseForms, { getPurchaseFormsByStockItemId } from './queries';
+import getPurchaseForms, { getPurchaseFormsByStockItemId } from "./queries";
 
 export default {
   PurchaseForm: {
@@ -65,7 +71,10 @@ export default {
       }
 
       const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      const filteredPhysicalStores = filterByInstanceAccess(
+        userId,
+        physicalStores
+      );
       if (filteredPhysicalStores.length === 0) return [];
 
       return getPurchaseFormsByStockItemId(stockItemId, filteredPhysicalStores);
@@ -101,9 +110,14 @@ export default {
       }
 
       const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      const filteredPhysicalStores = filterByInstanceAccess(
+        userId,
+        physicalStores
+      );
       if (filteredPhysicalStores.length === 0) return [];
-      const physicalStoreIds = physicalStores.map(physicalStore => physicalStore._id);
+      const physicalStoreIds = physicalStores.map(
+        physicalStore => physicalStore._id
+      );
 
       return PurchaseForms.findOne({
         _id: { $eq: _id },
@@ -124,12 +138,14 @@ export default {
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
-        throw new Error('You do not have permission to manage Purchase Forms in the System.');
+        throw new Error(
+          "You do not have permission to manage Purchase Forms in the System."
+        );
       }
 
       if (hasInstanceAccess(userId, physicalStoreId) === false) {
         throw new Error(
-          'You do not have permission to manage Purchase Forms in this Physical Store.'
+          "You do not have permission to manage Purchase Forms in this Physical Store."
         );
       }
 
@@ -147,8 +163,12 @@ export default {
         updatedBy: userId,
       });
 
-      items.forEach(({ stockItemId, quantity }) => {
-        StockItems.incrementCurrentLevel(stockItemId, quantity);
+      items.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
+        }
       });
 
       return PurchaseForms.findOne(purchaseFormId);
@@ -156,7 +176,15 @@ export default {
 
     updatePurchaseForm(
       obj,
-      { _id, purchaseDate, receivedBy, purchasedBy, physicalStoreId, items, notes },
+      {
+        _id,
+        purchaseDate,
+        receivedBy,
+        purchasedBy,
+        physicalStoreId,
+        items,
+        notes,
+      },
       { userId }
     ) {
       if (
@@ -165,38 +193,33 @@ export default {
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
-        throw new Error('You do not have permission to manage Purchase Forms in the System.');
+        throw new Error(
+          "You do not have permission to manage Purchase Forms in the System."
+        );
       }
 
       if (hasInstanceAccess(userId, physicalStoreId) === false) {
         throw new Error(
-          'You do not have permission to manage Purchase Forms in this Physical Store.'
+          "You do not have permission to manage Purchase Forms in this Physical Store."
         );
       }
 
-      const itemsMap = keyBy(items, 'stockItemId');
       const existingForm = PurchaseForms.findOne(_id);
       const { items: existingItems } = existingForm;
-      const existingItemsMap = keyBy(existingItems, 'stockItemId');
-
-      items.forEach(({ stockItemId, quantity }) => {
-        const existingItem = existingItemsMap[stockItemId];
-        if (!existingItem) {
-          // This item did not exist previously in the form, so just update the current
-          // stock level with the specified quantity
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
+      // Undo the effect of all previous items
+      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
         } else {
-          // This item existed previously in the form. So update the current stock level
-          // by the change in quantity
-          StockItems.incrementCurrentLevel(stockItemId, quantity - existingItem.quantity);
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
         }
       });
 
-      existingItems.forEach(({ stockItemId, quantity }) => {
-        const item = itemsMap[stockItemId];
-        if (!item) {
-          // This item existed previously in the form but has been removed now. Since we
-          // previously incremented the quantity for it, we need to undo that action.
+      // Apply the effect of new incoming items
+      items.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
+        } else {
           StockItems.decrementCurrentLevel(stockItemId, quantity);
         }
       });
@@ -226,17 +249,24 @@ export default {
     },
 
     approvePurchaseForm(obj, { _id }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_APPROVE_PURCHASE_FORMS])) {
-        throw new Error('You do not have permission to approve Purchase Forms in the System.');
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
+        ])
+      ) {
+        throw new Error(
+          "You do not have permission to approve Purchase Forms in the System."
+        );
       }
 
       const existingPurchaseForm = PurchaseForms.findOne(_id);
       if (
         !existingPurchaseForm ||
-        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) === false
+        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) ===
+          false
       ) {
         throw new Error(
-          'You do not have permission to approve Purchase Forms in this Physical Store.'
+          "You do not have permission to approve Purchase Forms in this Physical Store."
         );
       }
 
@@ -258,23 +288,30 @@ export default {
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
-        throw new Error('You do not have permission to manage Purchase Forms in the System.');
+        throw new Error(
+          "You do not have permission to manage Purchase Forms in the System."
+        );
       }
 
       const existingPurchaseForm = PurchaseForms.findOne(_id);
       if (
         !existingPurchaseForm ||
-        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) === false
+        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) ===
+          false
       ) {
         throw new Error(
-          'You do not have permission to manage Purchase Forms in this Physical Store.'
+          "You do not have permission to manage Purchase Forms in this Physical Store."
         );
       }
 
       const existingForm = PurchaseForms.findOne(_id);
       const { items: existingItems } = existingForm;
-      existingItems.forEach(({ stockItemId, quantity }) => {
-        StockItems.decrementCurrentLevel(stockItemId, quantity);
+      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
+        }
       });
 
       return PurchaseForms.remove(_id);

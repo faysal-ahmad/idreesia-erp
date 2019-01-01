@@ -4,12 +4,12 @@ import { Form } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import { noop } from "lodash";
 
 import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
+  WithKarkuns,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -39,17 +39,17 @@ class ViewForm extends Component {
     stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
     formDataLoading: PropTypes.bool,
-    issuanceFormById: PropTypes.object,
+    purchaseFormById: PropTypes.object,
   };
 
   handleClose = () => {
     const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsPath(physicalStoreId));
+    history.push(paths.purchaseFormsPath(physicalStoreId));
   };
 
   getItemsField() {
     const {
-      issuanceFormById,
+      purchaseFormById,
       physicalStoreId,
       stockItemsByPhysicalStoreId,
     } = this.props;
@@ -63,12 +63,11 @@ class ViewForm extends Component {
     ];
     return getFieldDecorator("items", {
       rules,
-      initialValue: issuanceFormById.items,
+      initialValue: purchaseFormById.items,
     })(
       <ItemsList
-        readOnly
-        inflowLabel="Returned"
-        outflowLabel="Issued"
+        inflowLabel="Purchased"
+        outflowLabel="Returned"
         physicalStoreId={physicalStoreId}
         stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
@@ -76,7 +75,7 @@ class ViewForm extends Component {
   }
 
   render() {
-    const { stockItemsLoading, formDataLoading, issuanceFormById } = this.props;
+    const { stockItemsLoading, formDataLoading, purchaseFormById } = this.props;
     if (stockItemsLoading || formDataLoading) {
       return null;
     }
@@ -84,33 +83,33 @@ class ViewForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
         <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
-          initialValue={moment(new Date(issuanceFormById.issueDate))}
+          fieldName="purchaseDate"
+          fieldLabel="Purchase Date"
+          initialValue={moment(new Date(purchaseFormById.purchaseDate))}
           required
-          requiredMessage="Please input an issue date."
+          requiredMessage="Please input a purchase date."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
-          fieldName="issuedBy"
-          fieldLabel="Issued By"
-          initialValue={issuanceFormById.issuedByName}
+          fieldName="receivedBy"
+          fieldLabel="Received By"
+          initialValue={purchaseFormById.receivedByName}
           required
-          requiredMessage="Please input a name in issued by."
+          requiredMessage="Please input a name in received by."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
-          fieldName="issuedTo"
-          fieldLabel="Issued To"
-          initialValue={issuanceFormById.issuedToName}
+          fieldName="purchasedBy"
+          fieldLabel="Purchaseed By"
+          initialValue={purchaseFormById.purchasedByName}
           required
-          requiredMessage="Please input a name in issued to."
+          requiredMessage="Please input a name in purchased by."
           getFieldDecorator={getFieldDecorator}
         />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
+        <Form.Item label="Purchaseed Items" {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>
 
@@ -118,7 +117,7 @@ class ViewForm extends Component {
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
-          initialValue={issuanceFormById.notes}
+          initialValue={purchaseFormById.notes}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -129,20 +128,21 @@ class ViewForm extends Component {
 }
 
 const formQuery = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
+  query purchaseFormById($_id: String!) {
+    purchaseFormById(_id: $_id) {
       _id
-      issueDate
-      issuedBy
-      issuedTo
-      issuedByName
-      issuedToName
+      purchaseDate
+      receivedBy
+      purchasedBy
+      receivedByName
+      purchasedByName
       physicalStoreId
       approvedOn
       items {
         stockItemId
         quantity
         isInflow
+        price
         itemTypeName
       }
       notes
@@ -152,6 +152,7 @@ const formQuery = gql`
 
 export default compose(
   Form.create(),
+  WithKarkuns(),
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formQuery, {
@@ -161,5 +162,5 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "View"])
+  WithBreadcrumbs(["Inventory", "Forms", "Purchase Forms", "View"])
 )(ViewForm);

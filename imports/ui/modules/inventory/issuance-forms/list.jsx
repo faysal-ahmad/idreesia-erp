@@ -144,13 +144,6 @@ class List extends Component {
     },
   ];
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedStoreId: null,
-    };
-  }
-
   refreshPage = newParams => {
     const {
       approvalStatus,

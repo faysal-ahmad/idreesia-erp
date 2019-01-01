@@ -63,10 +63,13 @@ class EditForm extends Component {
       (err, { issueDate, issuedBy, issuedTo, items, notes }) => {
         if (err) return;
 
-        const updatedItems = items.map(({ stockItemId, quantity }) => ({
-          stockItemId,
-          quantity,
-        }));
+        const updatedItems = items.map(
+          ({ stockItemId, quantity, isInflow }) => ({
+            stockItemId,
+            quantity,
+            isInflow,
+          })
+        );
         updateIssuanceForm({
           variables: {
             _id,
@@ -107,6 +110,8 @@ class EditForm extends Component {
       initialValue: issuanceFormById.items,
     })(
       <ItemsList
+        inflowLabel="Returned"
+        outflowLabel="Issued"
         physicalStoreId={physicalStoreId}
         stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
@@ -201,6 +206,7 @@ const formMutation = gql`
       items {
         stockItemId
         quantity
+        isInflow
       }
       notes
     }
@@ -221,6 +227,7 @@ const formQuery = gql`
       items {
         stockItemId
         quantity
+        isInflow
         itemTypeName
       }
       notes

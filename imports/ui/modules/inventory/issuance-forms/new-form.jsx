@@ -88,6 +88,8 @@ class NewForm extends Component {
     ];
     return getFieldDecorator("items", { rules })(
       <ItemsList
+        inflowLabel="Returned"
+        outflowLabel="Issued"
         physicalStoreId={physicalStoreId}
         stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
@@ -170,6 +172,7 @@ const formMutation = gql`
       items {
         stockItemId
         quantity
+        isInflow
       }
       notes
     }

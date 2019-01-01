@@ -1,11 +1,17 @@
-import { keyBy } from 'lodash';
+import { Karkuns } from "/imports/lib/collections/hr";
+import {
+  IssuanceForms,
+  PhysicalStores,
+  StockItems,
+} from "/imports/lib/collections/inventory";
+import {
+  filterByInstanceAccess,
+  hasInstanceAccess,
+  hasOnePermission,
+} from "/imports/api/security";
+import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
-import { Karkuns } from '/imports/lib/collections/hr';
-import { IssuanceForms, PhysicalStores, StockItems } from '/imports/lib/collections/inventory';
-import { filterByInstanceAccess, hasInstanceAccess, hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
-
-import getIssuanceForms, { getIssuanceFormsByStockItemId } from './queries';
+import getIssuanceForms, { getIssuanceFormsByStockItemId } from "./queries";
 
 export default {
   IssuanceForm: {
@@ -65,7 +71,10 @@ export default {
       }
 
       const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      const filteredPhysicalStores = filterByInstanceAccess(
+        userId,
+        physicalStores
+      );
       if (filteredPhysicalStores.length === 0) return [];
 
       return getIssuanceFormsByStockItemId(stockItemId, filteredPhysicalStores);
@@ -101,9 +110,14 @@ export default {
       }
 
       const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      const filteredPhysicalStores = filterByInstanceAccess(
+        userId,
+        physicalStores
+      );
       if (filteredPhysicalStores.length === 0) return [];
-      const physicalStoreIds = physicalStores.map(physicalStore => physicalStore._id);
+      const physicalStoreIds = physicalStores.map(
+        physicalStore => physicalStore._id
+      );
 
       return IssuanceForms.findOne({
         _id: { $eq: _id },
@@ -124,12 +138,14 @@ export default {
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
-        throw new Error('You do not have permission to manage Issuance Forms in the System.');
+        throw new Error(
+          "You do not have permission to manage Issuance Forms in the System."
+        );
       }
 
       if (hasInstanceAccess(userId, physicalStoreId) === false) {
         throw new Error(
-          'You do not have permission to manage Issuance Forms in this Physical Store.'
+          "You do not have permission to manage Issuance Forms in this Physical Store."
         );
       }
 
@@ -147,8 +163,12 @@ export default {
         updatedBy: userId,
       });
 
-      items.forEach(({ stockItemId, quantity }) => {
-        StockItems.decrementCurrentLevel(stockItemId, quantity);
+      items.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
+        } else {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
+        }
       });
 
       return IssuanceForms.findOne(issuanceFormId);
@@ -165,38 +185,34 @@ export default {
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
-        throw new Error('You do not have permission to manage Issuance Forms in the System.');
+        throw new Error(
+          "You do not have permission to manage Issuance Forms in the System."
+        );
       }
 
       if (hasInstanceAccess(userId, physicalStoreId) === false) {
         throw new Error(
-          'You do not have permission to manage Issuance Forms in this Physical Store.'
+          "You do not have permission to manage Issuance Forms in this Physical Store."
         );
       }
 
-      const itemsMap = keyBy(items, 'stockItemId');
       const existingForm = IssuanceForms.findOne(_id);
       const { items: existingItems } = existingForm;
-      const existingItemsMap = keyBy(existingItems, 'stockItemId');
-
-      items.forEach(({ stockItemId, quantity }) => {
-        const existingItem = existingItemsMap[stockItemId];
-        if (!existingItem) {
-          // This item did not exist previously in the form, so just update the current
-          // stock level with the specified quantity
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
+      // Undo the effect of all previous items
+      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.incrementCurrentLevel(stockItemId, quantity);
         } else {
-          // This item existed previously in the form. So update the current stock level
-          // by the change in quantity
-          StockItems.decrementCurrentLevel(stockItemId, quantity - existingItem.quantity);
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
         }
       });
 
-      existingItems.forEach(({ stockItemId, quantity }) => {
-        const item = itemsMap[stockItemId];
-        if (!item) {
-          // This item existed previously in the form but has been removed now. Since we
-          // previously decremented the quantity for it, we need to undo that action.
+      // Apply the effect of new incoming items
+      console.log(JSON.stringify(items));
+      items.forEach(({ stockItemId, quantity, isInflow }) => {
+        if (isInflow) {
+          StockItems.decrementCurrentLevel(stockItemId, quantity);
+        } else {
           StockItems.incrementCurrentLevel(stockItemId, quantity);
         }
       });
@@ -226,17 +242,24 @@ export default {
     },
 
     approveIssuanceForm(obj, { _id }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_APPROVE_ISSUANCE_FORMS])) {
-        throw new Error('You do not have permission to approve Issuance Forms in the System.');
+      if (
+        !hasOnePermission(userId, [
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        throw new Error(
+          "You do not have permission to approve Issuance Forms in the System."
+        );
       }
 
       const existingIssuanceForm = IssuanceForms.findOne(_id);
       if (
         !existingIssuanceForm ||
-        hasInstanceAccess(userId, existingIssuanceForm.physicalStoreId) === false
+        hasInstanceAccess(userId, existingIssuanceForm.physicalStoreId) ===
+          false
       ) {
         throw new Error(
-          'You do not have permission to approve Issuance Forms in this Physical Store.'
+          "You do not have permission to approve Issuance Forms in this Physical Store."
         );
       }
 
@@ -258,16 +281,19 @@ export default {
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
-        throw new Error('You do not have permission to manage Issuance Forms in the System.');
+        throw new Error(
+          "You do not have permission to manage Issuance Forms in the System."
+        );
       }
 
       const existingIssuanceForm = IssuanceForms.findOne(_id);
       if (
         !existingIssuanceForm ||
-        hasInstanceAccess(userId, existingIssuanceForm.physicalStoreId) === false
+        hasInstanceAccess(userId, existingIssuanceForm.physicalStoreId) ===
+          false
       ) {
         throw new Error(
-          'You do not have permission to manage Issuance Forms in this Physical Store.'
+          "You do not have permission to manage Issuance Forms in this Physical Store."
         );
       }
 

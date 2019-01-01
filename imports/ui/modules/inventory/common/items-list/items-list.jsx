@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Button, Table, Modal } from "antd";
 import { filter, find } from "lodash";
-// import gql from 'graphql-tag';
-// import { compose, graphql } from 'react-apollo';
 
 import { default as ItemForm } from "./item-form";
 
@@ -22,6 +20,9 @@ export default class ItemsList extends Component {
     readOnly: PropTypes.bool,
     value: PropTypes.array,
     onChange: PropTypes.func,
+
+    inflowLabel: PropTypes.string,
+    outflowLabel: PropTypes.string,
   };
 
   static defaultProps = {
@@ -34,9 +35,10 @@ export default class ItemsList extends Component {
       showForm: false,
       physicalStoreId: props.physicalStoreId,
       stockItems: props.value
-        ? props.value.map(({ stockItemId, quantity }) => ({
+        ? props.value.map(({ stockItemId, quantity, isInflow }) => ({
             stockItemId,
             quantity,
+            isInflow,
           }))
         : [],
       selectedStockItemIds: [],
@@ -78,13 +80,14 @@ export default class ItemsList extends Component {
   handleNewItemFormSaved = () => {
     this.itemForm.validateFields(null, (errors, values) => {
       if (!errors) {
-        const { stockItemId, quantity } = values;
+        const { stockItemId, quantity, status } = values;
         const { stockItems } = this.state;
-        // If we have an existing item against this itemStockId, then add the issued
+        const isInflow = status === "inflow";
+        // If we have an existing item against this itemStockId, then add the
         // count to the existing item instead of adding a new item.
-        const existingItem = find(stockItems, { stockItemId });
+        const existingItem = find(stockItems, { stockItemId, isInflow });
         if (!existingItem) {
-          stockItems.push({ stockItemId, quantity });
+          stockItems.push({ stockItemId, quantity, isInflow });
         } else {
           existingItem.quantity += quantity;
         }
@@ -117,23 +120,39 @@ export default class ItemsList extends Component {
     return null;
   }
 
-  columns = [
-    {
-      title: "Item Name",
-      dataIndex: "stockItemId",
-      key: "stockItemId",
-      render: text => this.getItemTypeName(text),
-    },
-    {
-      title: "Quantity",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-  ];
+  columns = () => {
+    const { inflowLabel, outflowLabel } = this.props;
+
+    return [
+      {
+        title: "Item Name",
+        dataIndex: "stockItemId",
+        key: "stockItemId",
+        render: text => this.getItemTypeName(text),
+      },
+      {
+        title: "Quantity",
+        dataIndex: "quantity",
+        key: "quantity",
+        render: (text, record) => {
+          if (record.isInflow) {
+            return `${text} ${inflowLabel}`;
+          }
+          return `${text} ${outflowLabel}`;
+        },
+      },
+    ];
+  };
 
   render() {
     const { showForm, selectedStockItemIds } = this.state;
-    const { physicalStoreId, stockItemsByPhysicalStore, readOnly } = this.props;
+    const {
+      physicalStoreId,
+      stockItemsByPhysicalStore,
+      readOnly,
+      inflowLabel,
+      outflowLabel,
+    } = this.props;
     const rowSelection = readOnly
       ? null
       : {
@@ -149,7 +168,7 @@ export default class ItemsList extends Component {
           }}
           rowKey="stockItemId"
           rowSelection={rowSelection}
-          columns={this.columns}
+          columns={this.columns()}
           bordered
           pagination={false}
           dataSource={this.state.stockItems}
@@ -191,6 +210,8 @@ export default class ItemsList extends Component {
             ref={f => {
               this.itemForm = f;
             }}
+            inflowLabel={inflowLabel}
+            outflowLabel={outflowLabel}
             stockItems={stockItemsByPhysicalStore}
           />
         </Modal>

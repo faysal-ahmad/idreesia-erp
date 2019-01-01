@@ -4,6 +4,7 @@ import { Form } from "antd";
 import {
   AutoCompleteField,
   InputNumberField,
+  RadioGroupField,
 } from "/imports/ui/modules/helpers/fields";
 
 const OptionStyle = {
@@ -18,7 +19,12 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
-const ItemForm = ({ form: { getFieldDecorator }, stockItems }) => (
+const ItemForm = ({
+  form: { getFieldDecorator },
+  stockItems,
+  inflowLabel,
+  outflowLabel,
+}) => (
   <Form layout="horizontal">
     <AutoCompleteField
       data={stockItems}
@@ -47,12 +53,25 @@ const ItemForm = ({ form: { getFieldDecorator }, stockItems }) => (
       minValue={0}
       getFieldDecorator={getFieldDecorator}
     />
+
+    <RadioGroupField
+      fieldName="status"
+      fieldLabel="Status"
+      fieldLayout={formItemLayout}
+      options={[
+        { label: inflowLabel, value: "inflow" },
+        { label: outflowLabel, value: "outflow" },
+      ]}
+      getFieldDecorator={getFieldDecorator}
+    />
   </Form>
 );
 
 ItemForm.propTypes = {
   form: PropTypes.object,
   stockItems: PropTypes.array,
+  inflowLabel: PropTypes.string,
+  outflowLabel: PropTypes.string,
 };
 
 export default Form.create()(ItemForm);

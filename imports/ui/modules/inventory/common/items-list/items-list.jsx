@@ -19,8 +19,13 @@ export default class ItemsList extends Component {
     physicalStoreId: PropTypes.string,
     stockItemsByPhysicalStore: PropTypes.array,
 
+    readOnly: PropTypes.bool,
     value: PropTypes.array,
     onChange: PropTypes.func,
+  };
+
+  static defaultProps = {
+    readOnly: false,
   };
 
   constructor(props) {
@@ -128,11 +133,13 @@ export default class ItemsList extends Component {
 
   render() {
     const { showForm, selectedStockItemIds } = this.state;
-    const { physicalStoreId, stockItemsByPhysicalStore } = this.props;
-    const rowSelection = {
-      selectedRowKeys: selectedStockItemIds,
-      onChange: this.handleRowSelectionChanged,
-    };
+    const { physicalStoreId, stockItemsByPhysicalStore, readOnly } = this.props;
+    const rowSelection = readOnly
+      ? null
+      : {
+          selectedRowKeys: selectedStockItemIds,
+          onChange: this.handleRowSelectionChanged,
+        };
 
     return (
       <React.Fragment>
@@ -146,27 +153,31 @@ export default class ItemsList extends Component {
           bordered
           pagination={false}
           dataSource={this.state.stockItems}
-          footer={() => (
-            <div style={ButtonBarStyle}>
-              <Button
-                type="default"
-                icon="minus-circle-o"
-                onClick={this.handleRemoveItemClicked}
-                disabled={selectedStockItemIds.length === 0}
-              >
-                Remove Item
-              </Button>
-              &nbsp;
-              <Button
-                type="primary"
-                icon="plus-circle-o"
-                onClick={this.handleNewItemClicked}
-                disabled={!physicalStoreId}
-              >
-                Add Item
-              </Button>
-            </div>
-          )}
+          footer={
+            this.props.readOnly
+              ? null
+              : () => (
+                  <div style={ButtonBarStyle}>
+                    <Button
+                      type="default"
+                      icon="minus-circle-o"
+                      onClick={this.handleRemoveItemClicked}
+                      disabled={selectedStockItemIds.length === 0}
+                    >
+                      Remove Item
+                    </Button>
+                    &nbsp;
+                    <Button
+                      type="primary"
+                      icon="plus-circle-o"
+                      onClick={this.handleNewItemClicked}
+                      disabled={!physicalStoreId}
+                    >
+                      Add Item
+                    </Button>
+                  </div>
+                )
+          }
         />
         <Modal
           visible={showForm}

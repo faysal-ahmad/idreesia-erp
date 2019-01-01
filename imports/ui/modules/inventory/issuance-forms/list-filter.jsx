@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Collapse, Form, Row, Button } from 'antd';
-import moment from 'moment';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Collapse, Form, Row, Button } from "antd";
+import moment from "moment";
 
-import { Formats } from '/imports/lib/constants';
-import { CheckboxField, DateField } from '/imports/ui/modules/helpers/fields';
+import { Formats } from "/imports/lib/constants";
+import { CheckboxField, DateField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
-  width: '500px',
+  width: "500px",
 };
 
 const formItemLayout = {
@@ -44,13 +44,15 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { queryParams } = this.props;
+    const {
+      queryParams: { startDate, endDate, showApproved, showUnapproved },
+    } = this.props;
 
-    const mStartDate = moment(queryParams.startDate, Formats.DATE_FORMAT);
-    const mEndDate = moment(queryParams.endDate, Formats.DATE_FORMAT);
+    const mStartDate = moment(startDate, Formats.DATE_FORMAT);
+    const mEndDate = moment(endDate, Formats.DATE_FORMAT);
     const status = [];
-    if (queryParams.showApproved === 'true') status.push('approved');
-    if (queryParams.showUnapproved === 'true') status.push('unapproved');
+    if (!showApproved || showApproved === "true") status.push("approved");
+    if (!showUnapproved || showUnapproved === "true") status.push("unapproved");
 
     return (
       <Collapse style={ContainerStyle}>
@@ -61,8 +63,8 @@ class ListFilter extends Component {
               fieldLabel="Status"
               fieldLayout={formItemLayout}
               options={[
-                { label: 'Approved', value: 'approved' },
-                { label: 'Unapproved', value: 'unapproved' },
+                { label: "Approved", value: "approved" },
+                { label: "Unapproved", value: "unapproved" },
               ]}
               initialValue={status}
               getFieldDecorator={getFieldDecorator}

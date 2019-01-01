@@ -1,14 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import {
-  Button,
-  Checkbox,
-  Icon,
-  Pagination,
-  Table,
-  Tooltip,
-  message,
-} from "antd";
+import { Button, Icon, Pagination, Table, Tooltip, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -39,6 +31,7 @@ const ActionsStyle = {
 
 const IconStyle = {
   cursor: "pointer",
+  fontSize: 20,
 };
 
 class List extends Component {
@@ -65,9 +58,8 @@ class List extends Component {
       dataIndex: "approvedOn",
       key: "approvedOn",
       render: text => {
-        let value = false;
-        if (text) value = true;
-        return <Checkbox checked={value} disabled />;
+        if (text) return <Icon type="check" />;
+        return null;
       },
     },
     {
@@ -89,10 +81,12 @@ class List extends Component {
       dataIndex: "items",
       key: "items",
       render: items => {
-        const formattedItems = items.map(
-          item => `${item.itemTypeName} - ${item.quantity}`
-        );
-        return formattedItems.join(", ");
+        const formattedItems = items.map(item => (
+          <li key={item.stockItemId}>
+            {`${item.itemTypeName} [${item.quantity}]`}
+          </li>
+        ));
+        return <ul>{formattedItems}</ul>;
       },
     },
     {
@@ -133,7 +127,17 @@ class List extends Component {
           );
         }
 
-        return null;
+        return (
+          <Tooltip title="View">
+            <Icon
+              type="file"
+              style={IconStyle}
+              onClick={() => {
+                this.handleViewClicked(record);
+              }}
+            />
+          </Tooltip>
+        );
       },
     },
   ];
@@ -198,7 +202,12 @@ class List extends Component {
 
   handleEditClicked = record => {
     const { history, physicalStoreId } = this.props;
-    history.push(`${paths.issuanceFormsPath(physicalStoreId)}/${record._id}`);
+    history.push(paths.issuanceFormsEditFormPath(physicalStoreId, record._id));
+  };
+
+  handleViewClicked = record => {
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.issuanceFormsViewFormPath(physicalStoreId, record._id));
   };
 
   handleDeleteClicked = issuanceForm => {
@@ -267,6 +276,9 @@ class List extends Component {
       pagedIssuanceForms: { totalResults, issuanceForms },
     } = this.props;
 
+    const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
+    const numPageSize = pageSize ? toSafeInteger(pageSize) : 10;
+
     return (
       <Table
         rowKey="_id"
@@ -274,13 +286,18 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        size="small"
+        pagination={false}
         footer={() => (
           <Pagination
             defaultCurrent={1}
             defaultPageSize={10}
-            current={pageIndex ? toSafeInteger(pageIndex) + 1 : 1}
-            pageSize={pageSize ? toSafeInteger(pageSize) : 10}
+            current={numPageIndex}
+            pageSize={numPageSize}
             showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
             onChange={this.onChange}
             onShowSizeChange={this.onShowSizeChange}
             total={totalResults}
@@ -299,7 +316,21 @@ const formMutationRemove = gql`
 
 const formMutationApprove = gql`
   mutation approveIssuanceForm($_id: String!) {
-    approveIssuanceForm(_id: $_id)
+    approveIssuanceForm(_id: $_id) {
+      _id
+      issueDate
+      issuedBy
+      issuedTo
+      issuedByName
+      issuedToName
+      physicalStoreId
+      approvedOn
+      items {
+        stockItemId
+        quantity
+        itemTypeName
+      }
+    }
   }
 `;
 

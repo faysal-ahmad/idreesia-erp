@@ -3,6 +3,7 @@ import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
 import getItemTypes from "./queries";
+import { getItemTypeFormattedName } from "./helpers";
 
 export default {
   ItemType: {
@@ -10,18 +11,7 @@ export default {
       const itemCategory = ItemCategories.findOne(itemType.itemCategoryId);
       return itemCategory.name;
     },
-    formattedName: itemType => {
-      const { name, company, details } = itemType;
-      let formattedName = name;
-      if (company) {
-        formattedName = `${formattedName} - ${company}`;
-      }
-      if (details) {
-        formattedName = `${formattedName} - ${details}`;
-      }
-
-      return formattedName;
-    },
+    formattedName: itemType => getItemTypeFormattedName(itemType),
     formattedUOM: itemType => {
       let uom = null;
       switch (itemType.unitOfMeasurement) {
@@ -39,6 +29,9 @@ export default {
           break;
         case "lbs":
           uom = "Weight (lbs)";
+          break;
+        case "l":
+          uom = "Volume (liters)";
           break;
         default:
           break;

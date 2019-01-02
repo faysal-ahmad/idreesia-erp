@@ -42,7 +42,7 @@ class GeneralInfo extends Component {
     form.validateFields(
       (
         err,
-        { name, description, itemCategoryId, unitOfMeasurement, singleUse }
+        { name, company, details, itemCategoryId, unitOfMeasurement, singleUse }
       ) => {
         if (err) return;
 
@@ -50,7 +50,8 @@ class GeneralInfo extends Component {
           variables: {
             _id: itemTypeById._id,
             name,
-            description,
+            company,
+            details,
             itemCategoryId,
             unitOfMeasurement,
             singleUse,

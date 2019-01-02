@@ -36,13 +36,15 @@ class NewForm extends Component {
     form.validateFields(
       (
         err,
-        { name, description, itemCategoryId, unitOfMeasurement, singleUse }
+        { name, company, details, description, itemCategoryId, unitOfMeasurement, singleUse }
       ) => {
         if (err) return;
 
         createItemType({
           variables: {
             name,
+            company,
+            details,
             description,
             itemCategoryId,
             unitOfMeasurement,
@@ -71,12 +73,6 @@ class NewForm extends Component {
           fieldLabel="Item Type Name (Eng)"
           required
           requiredMessage="Please input a name for the item type."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="urduName"
-          fieldLabel="Item Type Name (Urdu)"
-          required={false}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -129,8 +125,8 @@ const listQuery = gql`
 const formMutation = gql`
   mutation createItemType(
     $name: String!
-    $urduName: String!
-    $company: String!
+    $urduName: String
+    $company: String
     $details: String
     $unitOfMeasurement: String!
     $itemCategoryId: String!

@@ -88,24 +88,6 @@ const permissionsData = [
         ],
       },
       {
-        title: 'Return Forms',
-        key: 'module-inventory-return-forms',
-        children: [
-          {
-            title: 'View Return Forms',
-            key: PermissionConstants.IN_VIEW_RETURN_FORMS,
-          },
-          {
-            title: 'Manage Return Forms',
-            key: PermissionConstants.IN_MANAGE_RETURN_FORMS,
-          },
-          {
-            title: 'Approve Return Forms',
-            key: PermissionConstants.IN_APPROVE_RETURN_FORMS,
-          },
-        ],
-      },
-      {
         title: 'Purchase Forms',
         key: 'module-inventory-purchase-forms',
         children: [

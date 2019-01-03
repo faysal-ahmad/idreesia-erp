@@ -17,7 +17,6 @@ export default class Permissions {
   static HR_MANAGE_SETUP_DATA = "hr-manage-setup-data";
   static HR_VIEW_KARKUNS = "hr-view-karkuns";
   static HR_MANAGE_KARKUNS = "hr-manage-karkuns";
-  static HR_MANAGE_KARKUN_DUTIES = "hr-manage-karkun-duties";
 
   // ****************************************************************************************
   // Inventory Module

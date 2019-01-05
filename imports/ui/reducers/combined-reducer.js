@@ -1,13 +1,17 @@
-import { combineReducers } from 'redux';
-import { activeModuleName, activeSubModuleName, breadcrumbs } from './global-reducer';
-import { listData } from './list-reducer';
+import { combineReducers } from "redux";
+import {
+  activeModuleName,
+  activeSubModuleName,
+  breadcrumbs,
+} from "./global-reducer";
+import { listData } from "./list-reducer";
 
 const combinedReducer = combineReducers({
-  activeModuleName: activeModuleName,
-  activeSubModuleName: activeSubModuleName,
-  breadcrumbs: breadcrumbs,
+  activeModuleName,
+  activeSubModuleName,
+  breadcrumbs,
 
-  listData: listData
+  listData,
 });
 
 export default combinedReducer;

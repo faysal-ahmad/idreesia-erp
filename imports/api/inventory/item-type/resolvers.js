@@ -143,5 +143,26 @@ export default {
 
       return ItemTypes.findOne(_id);
     },
+
+    setItemTypeImage(obj, { _id, attachmentId }, { userId }) {
+      if (
+        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Inventory Setup Data in the System."
+        );
+      }
+
+      const date = new Date();
+      ItemTypes.update(_id, {
+        $set: {
+          imageId: attachmentId,
+          updatedAt: date,
+          updatedBy: userId,
+        },
+      });
+
+      return ItemTypes.findOne(_id);
+    },
   },
 };

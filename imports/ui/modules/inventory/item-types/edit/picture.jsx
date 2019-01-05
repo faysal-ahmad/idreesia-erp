@@ -1,17 +1,18 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal, Row, Col, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component, Fragment } from "react";
+import PropTypes from "prop-types";
+import { Button, Icon, Modal, Row, Col, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import PictureForm from './picture-form';
+import { UploadAttachment } from "/imports/ui/modules/helpers/controls";
+import PictureForm from "./picture-form";
 
 class Picture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     itemTypeId: PropTypes.string,
     itemTypeById: PropTypes.object,
-    setPicture: PropTypes.func,
+    setItemTypeImage: PropTypes.func,
   };
 
   state = {
@@ -28,8 +29,9 @@ class Picture extends Component {
     this.setState({ showForm: false });
   };
 
+  /*
   handlePictureFormSaved = () => {
-    const { itemTypeId, setPicture } = this.props;
+    const { itemTypeId, setItemTypeImage } = this.props;
     const picture = this.pictureForm.state.imageSrc;
     this.setState({ showForm: false });
     setPicture({
@@ -41,24 +43,43 @@ class Picture extends Component {
       message.error(error.message, 5);
     });
   };
+*/
+
+  handleImageUploaded = attachmentId => {
+    const { itemTypeId, setItemTypeImage } = this.props;
+    setItemTypeImage({
+      variables: {
+        _id: itemTypeId,
+        attachmentId,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
 
   render() {
     const { showForm } = this.state;
     const { loading, itemTypeById } = this.props;
     if (loading) return null;
+    const url = itemTypeById.imageId
+      ? `${Meteor.absoluteUrl()}download-file?attachmentId=${
+          itemTypeById.imageId
+        }`
+      : null;
 
     return (
       <Fragment>
         <Row>
           <Col span={16}>
-            <img src={itemTypeById.picture} />
+            <img style={{ "max-width": "400px" }} src={url} />
           </Col>
         </Row>
         <br />
         <Row>
           <Col span={16}>
+            <UploadAttachment onUploadFinish={this.handleImageUploaded} />
             <Button type="default" onClick={this.updatePicture}>
-              Update Picture
+              <Icon type="instagram" />Take Picture
             </Button>
           </Col>
         </Row>
@@ -87,11 +108,21 @@ const formQuery = gql`
   query itemTypeById($_id: String!) {
     itemTypeById(_id: $_id) {
       _id
-      picture
+      imageId
     }
   }
 `;
 
+const formMutation = gql`
+  mutation setItemTypeImage($_id: String!, $attachmentId: String!) {
+    setItemTypeImage(_id: $_id, attachmentId: $attachmentId) {
+      _id
+      imageId
+    }
+  }
+`;
+
+/*
 const formMutation = gql`
   mutation setPicture($_id: String!, $picture: String!) {
     setPicture(_id: $_id, picture: $picture) {
@@ -100,12 +131,13 @@ const formMutation = gql`
     }
   }
 `;
+*/
 
 export default compose(
   graphql(formMutation, {
-    name: 'setPicture',
+    name: "setItemTypeImage",
     options: {
-      refetchQueries: ['allItemTypes'],
+      refetchQueries: ["allItemTypes"],
     },
   }),
   graphql(formQuery, {

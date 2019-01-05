@@ -30,6 +30,10 @@ export default new SimpleSchema({
     type: String,
     allowedValues: ["quantity", "ft", "m", "kg", "lbs"],
   },
+  imageId: {
+    type: String,
+    optional: true,
+  },
   picture: {
     type: String,
     optional: true,

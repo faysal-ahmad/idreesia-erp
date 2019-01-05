@@ -1,6 +1,7 @@
 import "./register-users";
 import "./create-indexes";
 import "./import-inventory-data";
+import "./setup-rest-endpoints";
 
 import { WebApp } from "meteor/webapp";
 import { createApolloServer } from "meteor/apollo";

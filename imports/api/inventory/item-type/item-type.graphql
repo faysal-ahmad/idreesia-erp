@@ -6,6 +6,7 @@ type ItemType {
   details: String
   unitOfMeasurement: String
   itemCategoryId: String
+  imageId: String
   picture: String
 
   formattedUOM: String
@@ -49,5 +50,6 @@ extend type Mutation {
     itemCategoryId: String!
   ): ItemType
 
+  setItemTypeImage(_id: String!, attachmentId: String!): ItemType
   setPicture(_id: String!, picture: String!): ItemType
 }

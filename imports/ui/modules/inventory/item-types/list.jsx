@@ -1,3 +1,4 @@
+import { Meteor } from "meteor/meteor";
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -49,11 +50,14 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => {
-        if (record.picture) {
+        if (record.imageId) {
+          const url = `${Meteor.absoluteUrl()}download-file?attachmentId=${
+            record.imageId
+          }`;
           return (
             <div style={NameDivStyle}>
-              <Avatar shape="square" size="large" src={record.picture} />
-              &nbsp;
+              <Avatar shape="square" size="large" src={url} />
+              &nbsp;&nbsp;
               <Link to={`${paths.itemTypesPath}/${record._id}`}>{text}</Link>
             </div>
           );
@@ -210,6 +214,7 @@ const listQuery = gql`
         formattedUOM
         itemCategoryName
         picture
+        imageId
       }
     }
   }

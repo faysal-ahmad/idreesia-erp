@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Row, Col, message } from "antd";

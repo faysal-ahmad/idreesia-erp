@@ -121,13 +121,16 @@ class List extends Component {
         dataIndex: "itemTypeName",
         key: "itemTypeName",
         render: (text, record) => {
-          if (record.itemTypePicture) {
-            return (
+          if (record.itemTypeImageId) {
+            const url = `${Meteor.absoluteUrl()}download-file?attachmentId=${
+              record.imageId
+            }`;
+              return (
               <div style={NameDivStyle}>
                 <Avatar
                   shape="square"
                   size="large"
-                  src={record.itemTypePicture}
+                  src={url}
                 />
                 &nbsp;
                 <Link
@@ -245,7 +248,7 @@ const listQuery = gql`
         itemTypeName
         itemTypeCompany
         itemTypeDetails
-        itemTypePicture
+        itemTypeImageId
         itemCategoryName
         unitOfMeasurement
         minStockLevel

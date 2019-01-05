@@ -47,8 +47,8 @@ Meteor.startup(() => {
       };
       const attachmentId = Attachments.insert(attachment);
       res.writeHead(200);
-      res.write(attachmentId);
-      res.end();
+      // res.write(attachmentId);
+      res.end(attachmentId);
     })
   );
 

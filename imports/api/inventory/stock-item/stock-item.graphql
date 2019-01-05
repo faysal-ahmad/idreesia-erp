@@ -11,7 +11,7 @@ type StockItem {
   itemTypeFormattedName: String
   itemTypeCompany: String
   itemTypeDetails: String
-  itemTypePicture: String
+  itemTypeImageId: String
   itemCategoryName: String
   unitOfMeasurement: String
   physicalStoreName: String

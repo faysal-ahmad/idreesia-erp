@@ -213,7 +213,6 @@ const listQuery = gql`
         details
         formattedUOM
         itemCategoryName
-        picture
         imageId
       }
     }

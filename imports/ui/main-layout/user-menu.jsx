@@ -40,8 +40,11 @@ class UserMenu extends Component {
     const userName = karkunByUserId ? karkunByUserId.name : '';
 
     let avatar = <Avatar size="large" icon="user" />;
-    if (karkunByUserId && karkunByUserId.profilePicture) {
-      avatar = <Avatar size="large" src={karkunByUserId.profilePicture} />;
+    if (karkunByUserId && karkunByUserId.imageId) {
+      const url = `${Meteor.absoluteUrl()}download-file?attachmentId=${
+        karkunByUserId.imageId
+      }`;
+      avatar = <Avatar size="large" src={url} />;
     }
 
     const menu = (
@@ -67,7 +70,7 @@ const formQuery = gql`
     karkunByUserId(userId: $userId) {
       _id
       name
-      profilePicture
+      imageId
     }
   }
 `;

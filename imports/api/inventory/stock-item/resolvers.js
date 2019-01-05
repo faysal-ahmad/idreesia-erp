@@ -39,9 +39,9 @@ export default {
       const itemType = ItemTypes.findOne(stockItem.itemTypeId);
       return itemType.details;
     },
-    itemTypePicture: stockItem => {
+    itemTypeImageId: stockItem => {
       const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      return itemType.picture;
+      return itemType.imageId;
     },
     itemCategoryName: stockItem => {
       const itemType = ItemTypes.findOne(stockItem.itemTypeId);

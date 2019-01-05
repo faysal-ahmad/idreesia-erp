@@ -1,41 +1,28 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal, Row, Col, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component, Fragment } from "react";
+import PropTypes from "prop-types";
+import { Row, Col, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import PictureForm from './picture-form';
+import {
+  TakePicture,
+  UploadAttachment,
+} from "/imports/ui/modules/helpers/controls";
 
 class ProfilePicture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
-    setProfilePicture: PropTypes.func,
+    setKarkunProfileImage: PropTypes.func,
   };
 
-  state = {
-    showForm: false,
-  };
-
-  pictureForm;
-
-  updatePhoto = () => {
-    this.setState({ showForm: true });
-  };
-
-  handlePictureFormCancelled = () => {
-    this.setState({ showForm: false });
-  };
-
-  handlePictureFormSaved = () => {
-    const { karkunId, setProfilePicture } = this.props;
-    const profilePicture = this.pictureForm.state.imageSrc;
-    this.setState({ showForm: false });
-    setProfilePicture({
+  updateImageId = imageId => {
+    const { karkunId, setKarkunProfileImage } = this.props;
+    setKarkunProfileImage({
       variables: {
         _id: karkunId,
-        profilePicture,
+        imageId,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -43,41 +30,28 @@ class ProfilePicture extends Component {
   };
 
   render() {
-    const { showForm } = this.state;
     const { loading, karkunById } = this.props;
     if (loading) return null;
+    const url = karkunById.imageId
+      ? `${Meteor.absoluteUrl()}download-file?attachmentId=${
+          karkunById.imageId
+        }`
+      : null;
 
     return (
       <Fragment>
         <Row>
           <Col span={16}>
-            <img src={karkunById.profilePicture} />
+            <img style={{ maxWidth: "400px" }} src={url} />
           </Col>
         </Row>
         <br />
         <Row>
           <Col span={16}>
-            <Button type="default" onClick={this.updatePhoto}>
-              Update photo
-            </Button>
+            <UploadAttachment onUploadFinish={this.updateImageId} />
+            <TakePicture onPictureTaken={this.updateImageId} />
           </Col>
         </Row>
-
-        <Modal
-          visible={showForm}
-          title="Take Photo"
-          okText="Save"
-          width={400}
-          destroyOnClose
-          onOk={this.handlePictureFormSaved}
-          onCancel={this.handlePictureFormCancelled}
-        >
-          <PictureForm
-            ref={f => {
-              this.pictureForm = f;
-            }}
-          />
-        </Modal>
       </Fragment>
     );
   }
@@ -87,25 +61,25 @@ const formQuery = gql`
   query karkunById($_id: String!) {
     karkunById(_id: $_id) {
       _id
-      profilePicture
+      imageId
     }
   }
 `;
 
 const formMutation = gql`
-  mutation setProfilePicture($_id: String!, $profilePicture: String!) {
-    setProfilePicture(_id: $_id, profilePicture: $profilePicture) {
+  mutation setKarkunProfileImage($_id: String!, $imageId: String!) {
+    setKarkunProfileImage(_id: $_id, imageId: $imageId) {
       _id
-      profilePicture
+      imageId
     }
   }
 `;
 
 export default compose(
   graphql(formMutation, {
-    name: 'setProfilePicture',
+    name: "setKarkunProfileImage",
     options: {
-      refetchQueries: ['allKarkuns'],
+      refetchQueries: ["allKarkuns"],
     },
   }),
   graphql(formQuery, {

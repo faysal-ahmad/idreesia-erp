@@ -1,38 +1,38 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
   // Points to login account if one exists for this karkun
   userId: {
     type: String,
-    optional: true
+    optional: true,
   },
   firstName: {
-    type: String
+    type: String,
   },
   lastName: {
-    type: String
+    type: String,
   },
   cnicNumber: {
-    type: String
+    type: String,
   },
   address: {
     type: String,
-    optional: true
+    optional: true,
   },
   primaryContactNumber: {
     type: String,
-    optional: true
+    optional: true,
   },
   secondaryContactNumber: {
     type: String,
-    optional: true
+    optional: true,
   },
-  profilePicture: {
+  imageId: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

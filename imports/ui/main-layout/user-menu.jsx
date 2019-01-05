@@ -41,7 +41,7 @@ class UserMenu extends Component {
 
     let avatar = <Avatar size="large" icon="user" />;
     if (karkunByUserId && karkunByUserId.imageId) {
-      const url = `${Meteor.settings.public.graphqlServerUrl}/download-file?attachmentId=${
+      const url = `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
         karkunByUserId.imageId
       }`;
       avatar = <Avatar size="large" src={url} />;

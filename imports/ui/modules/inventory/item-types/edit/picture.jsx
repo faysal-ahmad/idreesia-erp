@@ -33,7 +33,7 @@ class Picture extends Component {
     const { loading, itemTypeById } = this.props;
     if (loading) return null;
     const url = itemTypeById.imageId
-      ? `${Meteor.settings.public.graphqlServerUrl}/download-file?attachmentId=${
+      ? `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
           itemTypeById.imageId
         }`
       : null;

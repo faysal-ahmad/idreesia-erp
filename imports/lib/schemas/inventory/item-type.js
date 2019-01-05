@@ -34,10 +34,6 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  picture: {
-    type: String,
-    optional: true,
-  },
 })
   .extend(identifiable)
   .extend(timestamps);

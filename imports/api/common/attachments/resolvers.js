@@ -1,4 +1,4 @@
-import { Attachments } from '/imports/lib/collections/common';
+import { Attachments } from "/imports/lib/collections/common";
 
 export default {
   Query: {
@@ -10,10 +10,15 @@ export default {
   },
 
   Mutation: {
-    createAttachment(obj, { name, data }) {
+    createAttachment(obj, { name, mimeType, data }) {
+      let updateData = data;
+      if (data.startsWith("data:image/jpeg;base64,")) {
+        updateData = data.slice(23);
+      }
       const attachmentId = Attachments.insert({
         name,
-        data,
+        mimeType,
+        data: updateData,
       });
 
       return Attachments.findOne(attachmentId);

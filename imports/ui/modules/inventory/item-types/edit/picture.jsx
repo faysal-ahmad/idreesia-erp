@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Modal, Row, Col, message } from "antd";
+import { Row, Col, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { UploadAttachment } from "/imports/ui/modules/helpers/controls";
-import PictureForm from "./picture-form";
+import {
+  TakePicture,
+  UploadAttachment,
+} from "/imports/ui/modules/helpers/controls";
 
 class Picture extends Component {
   static propTypes = {
@@ -15,42 +17,12 @@ class Picture extends Component {
     setItemTypeImage: PropTypes.func,
   };
 
-  state = {
-    showForm: false,
-  };
-
-  pictureForm;
-
-  updatePicture = () => {
-    this.setState({ showForm: true });
-  };
-
-  handlePictureFormCancelled = () => {
-    this.setState({ showForm: false });
-  };
-
-  /*
-  handlePictureFormSaved = () => {
-    const { itemTypeId, setItemTypeImage } = this.props;
-    const picture = this.pictureForm.state.imageSrc;
-    this.setState({ showForm: false });
-    setPicture({
-      variables: {
-        _id: itemTypeId,
-        picture,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-*/
-
-  handleImageUploaded = attachmentId => {
+  updateImageId = imageId => {
     const { itemTypeId, setItemTypeImage } = this.props;
     setItemTypeImage({
       variables: {
         _id: itemTypeId,
-        attachmentId,
+        imageId,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -58,7 +30,6 @@ class Picture extends Component {
   };
 
   render() {
-    const { showForm } = this.state;
     const { loading, itemTypeById } = this.props;
     if (loading) return null;
     const url = itemTypeById.imageId
@@ -71,34 +42,16 @@ class Picture extends Component {
       <Fragment>
         <Row>
           <Col span={16}>
-            <img style={{ "max-width": "400px" }} src={url} />
+            <img style={{ maxWidth: "400px" }} src={url} />
           </Col>
         </Row>
         <br />
         <Row>
           <Col span={16}>
-            <UploadAttachment onUploadFinish={this.handleImageUploaded} />
-            <Button type="default" onClick={this.updatePicture}>
-              <Icon type="instagram" />Take Picture
-            </Button>
+            <UploadAttachment onUploadFinish={this.updateImageId} />
+            <TakePicture onPictureTaken={this.updateImageId} />
           </Col>
         </Row>
-
-        <Modal
-          visible={showForm}
-          title="Take Picture"
-          okText="Save"
-          width={400}
-          destroyOnClose
-          onOk={this.handlePictureFormSaved}
-          onCancel={this.handlePictureFormCancelled}
-        >
-          <PictureForm
-            ref={f => {
-              this.pictureForm = f;
-            }}
-          />
-        </Modal>
       </Fragment>
     );
   }
@@ -114,24 +67,13 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation setItemTypeImage($_id: String!, $attachmentId: String!) {
-    setItemTypeImage(_id: $_id, attachmentId: $attachmentId) {
+  mutation setItemTypeImage($_id: String!, $imageId: String!) {
+    setItemTypeImage(_id: $_id, imageId: $imageId) {
       _id
       imageId
     }
   }
 `;
-
-/*
-const formMutation = gql`
-  mutation setPicture($_id: String!, $picture: String!) {
-    setPicture(_id: $_id, picture: $picture) {
-      _id
-      picture
-    }
-  }
-`;
-*/
 
 export default compose(
   graphql(formMutation, {

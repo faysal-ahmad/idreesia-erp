@@ -123,7 +123,7 @@ export default {
       return ItemTypes.findOne(_id);
     },
 
-    setPicture(obj, { _id, picture }, { userId }) {
+    setItemTypeImage(obj, { _id, imageId }, { userId }) {
       if (
         !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
@@ -135,28 +135,7 @@ export default {
       const date = new Date();
       ItemTypes.update(_id, {
         $set: {
-          picture,
-          updatedAt: date,
-          updatedBy: userId,
-        },
-      });
-
-      return ItemTypes.findOne(_id);
-    },
-
-    setItemTypeImage(obj, { _id, attachmentId }, { userId }) {
-      if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
-        throw new Error(
-          "You do not have permission to manage Inventory Setup Data in the System."
-        );
-      }
-
-      const date = new Date();
-      ItemTypes.update(_id, {
-        $set: {
-          imageId: attachmentId,
+          imageId,
           updatedAt: date,
           updatedBy: userId,
         },

@@ -33,12 +33,13 @@ class TakePicture extends Component {
 
     createAttachment({
       variables: {
+        mimeType: "image/jpeg",
         data: picture,
       },
     })
-      .then(data => {
-        console.log(data);
-        // onPictureTaken(picture);
+      .then(result => {
+        const attachmentId = result.data.createAttachment._id;
+        onPictureTaken(attachmentId);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -75,8 +76,8 @@ class TakePicture extends Component {
 }
 
 const formMutation = gql`
-  mutation createAttachment($name: String, $data: String!) {
-    createAttachment(name: $name, data: $data) {
+  mutation createAttachment($name: String, $mimeType: String, $data: String!) {
+    createAttachment(name: $name, mimeType: $mimeType, data: $data) {
       _id
     }
   }

@@ -33,7 +33,7 @@ class ProfilePicture extends Component {
     const { loading, karkunById } = this.props;
     if (loading) return null;
     const url = karkunById.imageId
-      ? `${Meteor.absoluteUrl()}download-file?attachmentId=${
+      ? `${Meteor.settings.public.graphqlServerUrl}/download-file?attachmentId=${
           karkunById.imageId
         }`
       : null;

@@ -51,7 +51,7 @@ class List extends Component {
       key: "name",
       render: (text, record) => {
         if (record.imageId) {
-          const url = `${Meteor.absoluteUrl()}download-file?attachmentId=${
+          const url = `${Meteor.settings.public.graphqlServerUrl}/download-file?attachmentId=${
             record.imageId
           }`;
           return (

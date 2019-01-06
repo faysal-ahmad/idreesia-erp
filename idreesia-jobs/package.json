@@ -1,11 +1,11 @@
 {
-  "name": "idreesia-erp-jobs",
+  "name": "idreesia-jobs",
   "private": true,
   "scripts": {
     "start": "meteor run"
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.5",
+    "meteor-babel": "^7.2.0",
     "meteor-node-stubs": "^0.4.1"
   }
 }

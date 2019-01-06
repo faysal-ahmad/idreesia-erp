@@ -24,7 +24,7 @@
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "meteor-babel": "^7.2.0",
-    "meteor-node-stubs": "^0.3.2",
+    "meteor-node-stubs": "^0.4.1",
     "moment": "^2.20.1",
     "multer": "^1.4.1",
     "popper.js": "^1.12.9",

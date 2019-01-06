@@ -89,7 +89,7 @@ class List extends Component {
   ];
 
   refreshPage = newParams => {
-    const { name, cnicNumber, dutyIds, pageIndex, pageSize } = newParams;
+    const { name, cnicNumber, dutyId, pageIndex, pageSize } = newParams;
     const { queryParams, history, location } = this.props;
 
     let nameVal;
@@ -101,10 +101,9 @@ class List extends Component {
       cnicNumberVal = cnicNumber || "";
     else cnicNumberVal = queryParams.cnicNumber || "";
 
-    let dutyIdsVal;
-    if (newParams.hasOwnProperty("dutyIds"))
-      dutyIdsVal = JSON.stringify(dutyIds) || "";
-    else dutyIdsVal = queryParams.dutyIds || "";
+    let dutyIdVal;
+    if (newParams.hasOwnProperty("dutyId")) dutyIdVal = dutyId || "";
+    else dutyIdVal = queryParams.dutyId || "";
 
     let pageIndexVal;
     if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
@@ -116,7 +115,7 @@ class List extends Component {
 
     const path = `${
       location.pathname
-    }?name=${nameVal}&cnicNumber=${cnicNumberVal}&dutyIds=${dutyIdsVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    }?name=${nameVal}&cnicNumber=${cnicNumberVal}&dutyId=${dutyIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 

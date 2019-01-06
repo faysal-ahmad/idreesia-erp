@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button, Select } from "antd";
 
-import { InputTextField } from "/imports/ui/modules/helpers/fields";
+import {
+  InputTextField,
+  SelectField,
+} from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
   width: "500px",
@@ -35,13 +38,13 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, refreshPage } = this.props;
 
-    form.validateFields((err, { name, cnicNumber, dutyIds }) => {
+    form.validateFields((err, { name, cnicNumber, dutyId }) => {
       if (err) return;
       debugger;
       refreshPage({
         name,
         cnicNumber,
-        dutyIds,
+        dutyId,
         pageIndex: 0,
       });
     });
@@ -72,7 +75,7 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { queryParams } = this.props;
+    const { allDuties, queryParams } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -94,9 +97,17 @@ class ListFilter extends Component {
               initialValue={queryParams.cnicNumber}
               getFieldDecorator={getFieldDecorator}
             />
-            <Form.Item label="Duties" {...formItemLayout}>
-              {this.getDutiesField()}
-            </Form.Item>
+            <SelectField
+              data={allDuties}
+              getDataValue={({ _id }) => _id}
+              getDataText={({ name }) => name}
+              fieldName="dutyId"
+              fieldLabel="Duty"
+              fieldLayout={formItemLayout}
+              required={false}
+              initialValue={queryParams.dutyId}
+              getFieldDecorator={getFieldDecorator}
+            />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleCancel}>

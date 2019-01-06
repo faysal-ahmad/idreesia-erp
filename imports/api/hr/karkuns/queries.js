@@ -7,7 +7,7 @@ export default function getKarkuns(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
-  const { name, cnicNumber, pageIndex = "0", pageSize = "10" } = params;
+  const { name, cnicNumber, dutyId, pageIndex = "0", pageSize = "10" } = params;
 
   if (name) {
     pipeline.push({
@@ -19,6 +19,26 @@ export default function getKarkuns(queryString) {
     pipeline.push({
       $match: {
         cnicNumber: { $eq: cnicNumber },
+      },
+    });
+  }
+
+  if (dutyId) {
+    pipeline.push({
+      $lookup: {
+        from: "hr-karkun-duties",
+        localField: "_id",
+        foreignField: "karkunId",
+        as: "duties",
+      },
+    });
+    pipeline.push({
+      $match: {
+        duties: {
+          $elemMatch: {
+            dutyId: { $eq: dutyId },
+          },
+        },
       },
     });
   }

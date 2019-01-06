@@ -22,8 +22,6 @@ extend type Mutation {
     locationId: String
     startTime: String
     endTime: String
-    startDate: String
-    endDate: String
     daysOfWeek: [String]
   ): KarkunDutyType
 
@@ -34,8 +32,6 @@ extend type Mutation {
     locationId: String
     startTime: String
     endTime: String
-    startDate: String
-    endDate: String
     daysOfWeek: [String]
   ): KarkunDutyType
 

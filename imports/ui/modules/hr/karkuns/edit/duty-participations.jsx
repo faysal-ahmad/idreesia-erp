@@ -1,11 +1,12 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import { Button, Divider, Icon, Table, Modal, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+/* eslint "no-script-url": "off" */
+import React, { Component, Fragment } from "react";
+import PropTypes from "prop-types";
+import moment from "moment";
+import { Button, Divider, Icon, Table, Modal, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import DutyForm from './duty-form';
+import DutyForm from "./duty-form";
 
 class DutyParticipation extends Component {
   static propTypes = {
@@ -33,41 +34,41 @@ class DutyParticipation extends Component {
 
   columns = [
     {
-      title: 'Duty Name',
-      dataIndex: 'dutyName',
-      key: 'dutyName',
+      title: "Duty Name",
+      dataIndex: "dutyName",
+      key: "dutyName",
     },
     {
-      title: 'Location Name',
-      dataIndex: 'locationName',
-      key: 'locationName',
+      title: "Location Name",
+      dataIndex: "locationName",
+      key: "locationName",
     },
     {
-      title: 'Start Time',
-      dataIndex: 'startTime',
-      key: 'startTime',
+      title: "Start Time",
+      dataIndex: "startTime",
+      key: "startTime",
       render: text => {
         const startTime = moment(text);
-        return startTime.isValid() ? startTime.format('h:mm a') : null;
+        return startTime.isValid() ? startTime.format("h:mm a") : null;
       },
     },
     {
-      title: 'End Time',
-      dataIndex: 'endTime',
-      key: 'endTime',
+      title: "End Time",
+      dataIndex: "endTime",
+      key: "endTime",
       render: text => {
         const endTime = moment(text);
-        return endTime.isValid() ? endTime.format('h:mm a') : null;
+        return endTime.isValid() ? endTime.format("h:mm a") : null;
       },
     },
     {
-      title: 'Days of Week',
-      dataIndex: 'daysOfWeek',
-      key: 'daysOfWeek',
+      title: "Days of Week",
+      dataIndex: "daysOfWeek",
+      key: "daysOfWeek",
       render: textArray => (textArray ? textArray.join() : null),
     },
     {
-      key: 'action',
+      key: "action",
       render: (text, record) => (
         <span>
           <a href="javascript:;">
@@ -131,8 +132,6 @@ class DutyParticipation extends Component {
             locationId: values.locationId,
             startTime: values.startTime ? values.startTime.format() : null,
             endTime: values.endTime ? values.endTime.format() : null,
-            startDate: values.startDate ? values.startDate.format() : null,
-            endDate: values.endDate ? values.endDate.format() : null,
             daysOfWeek: values.weekDays,
           },
         }).catch(error => {
@@ -156,8 +155,6 @@ class DutyParticipation extends Component {
             locationId: values.locationId,
             startTime: values.startTime ? values.startTime.format() : null,
             endTime: values.endTime ? values.endTime.format() : null,
-            startDate: values.startDate ? values.startDate.format() : null,
-            endDate: values.endDate ? values.endDate.format() : null,
             daysOfWeek: values.weekDays,
           },
         }).catch(error => {
@@ -179,7 +176,11 @@ class DutyParticipation extends Component {
           columns={this.columns}
           bordered
           title={() => (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+            <Button
+              type="primary"
+              icon="plus-circle-o"
+              onClick={this.handleNewClicked}
+            >
               New Duty
             </Button>
           )}
@@ -267,8 +268,6 @@ const createKarkunDutyMutation = gql`
     $locationId: String
     $startTime: String
     $endTime: String
-    $startDate: String
-    $endDate: String
     $daysOfWeek: [String]
   ) {
     createKarkunDuty(
@@ -277,8 +276,6 @@ const createKarkunDutyMutation = gql`
       locationId: $locationId
       startTime: $startTime
       endTime: $endTime
-      startDate: $startDate
-      endDate: $endDate
       daysOfWeek: $daysOfWeek
     ) {
       _id
@@ -301,8 +298,6 @@ const updateKarkunDutyMutation = gql`
     $locationId: String
     $startTime: String
     $endTime: String
-    $startDate: String
-    $endDate: String
     $daysOfWeek: [String]
   ) {
     updateKarkunDuty(
@@ -312,8 +307,6 @@ const updateKarkunDutyMutation = gql`
       locationId: $locationId
       startTime: $startTime
       endTime: $endTime
-      startDate: $startDate
-      endDate: $endDate
       daysOfWeek: $daysOfWeek
     ) {
       _id
@@ -349,21 +342,21 @@ export default compose(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(createKarkunDutyMutation, {
-    name: 'createKarkunDuty',
+    name: "createKarkunDuty",
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
+      refetchQueries: ["karkunDutiesByKarkunId"],
     },
   }),
   graphql(updateKarkunDutyMutation, {
-    name: 'updateKarkunDuty',
+    name: "updateKarkunDuty",
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
+      refetchQueries: ["karkunDutiesByKarkunId"],
     },
   }),
   graphql(removeKarkunDutyMutation, {
-    name: 'removeKarkunDuty',
+    name: "removeKarkunDuty",
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
+      refetchQueries: ["karkunDutiesByKarkunId"],
     },
   })
 )(DutyParticipation);

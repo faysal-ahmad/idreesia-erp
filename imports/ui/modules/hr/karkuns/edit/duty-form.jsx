@@ -1,14 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import { Form } from 'antd';
+import React from "react";
+import PropTypes from "prop-types";
+import moment from "moment";
+import { Form } from "antd";
 
 import {
   SelectField,
   TimeField,
-  DateField,
   WeekDaysField,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 const DutyForm = props => {
   const { getFieldDecorator } = props.form;
@@ -44,7 +43,9 @@ const DutyForm = props => {
         fieldLabel="Start Time"
         required
         requiredMessage="Please input start time for the duty."
-        initialValue={defaultValues.startTime ? moment(defaultValues.startTime) : null}
+        initialValue={
+          defaultValues.startTime ? moment(defaultValues.startTime) : null
+        }
         getFieldDecorator={getFieldDecorator}
       />
 
@@ -53,23 +54,9 @@ const DutyForm = props => {
         fieldLabel="End Time"
         required
         requiredMessage="Please input end time for the duty."
-        initialValue={defaultValues.endTime ? moment(defaultValues.endTime) : null}
-        getFieldDecorator={getFieldDecorator}
-      />
-
-      <DateField
-        fieldName="startDate"
-        fieldLabel="Start Date"
-        required={false}
-        initialValue={defaultValues.startDate ? moment(defaultValues.startDate) : null}
-        getFieldDecorator={getFieldDecorator}
-      />
-
-      <DateField
-        fieldName="endDate"
-        fieldLabel="End Date"
-        required={false}
-        initialValue={defaultValues.endDate ? moment(defaultValues.endDate) : null}
+        initialValue={
+          defaultValues.endTime ? moment(defaultValues.endTime) : null
+        }
         getFieldDecorator={getFieldDecorator}
       />
 

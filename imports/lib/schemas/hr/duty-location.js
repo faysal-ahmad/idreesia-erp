@@ -1,11 +1,11 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
   name: {
-    type: String
-  }
+    type: String,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

@@ -1,8 +1,10 @@
-import moment from 'moment';
-
-import { KarkunDuties, Duties, DutyLocations } from '/imports/lib/collections/hr';
-import { hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import {
+  KarkunDuties,
+  Duties,
+  DutyLocations,
+} from "/imports/lib/collections/hr";
+import { hasOnePermission } from "/imports/api/security";
+import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
 export default {
   KarkunDutyType: {
@@ -31,11 +33,13 @@ export default {
   Mutation: {
     createKarkunDuty(
       obj,
-      { karkunId, dutyId, locationId, startTime, endTime, startDate, endDate, daysOfWeek },
+      { karkunId, dutyId, locationId, startTime, endTime, daysOfWeek },
       { userId }
     ) {
       if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error('You do not have permission to manage Karkun Duties in the System.');
+        throw new Error(
+          "You do not have permission to manage Karkun Duties in the System."
+        );
       }
 
       /*
@@ -48,22 +52,15 @@ export default {
         }
       */
 
-      const mStartDate = moment(startDate);
-      const mEndDate = moment(endDate);
-
       const newDuty = {
         karkunId,
         dutyId,
         locationId,
         startTime,
         endTime,
-        startDate: mStartDate.isValid() ? mStartDate.toDate() : null,
-        endDate: mEndDate.isValid() ? mEndDate.toDate() : null,
         daysOfWeek,
       };
-      console.log(newDuty);
       const karkunDutyId = KarkunDuties.insert(newDuty);
-
       return KarkunDuties.findOne(karkunDutyId);
     },
 
@@ -73,7 +70,9 @@ export default {
       { userId }
     ) {
       if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error('You do not have permission to manage Karkun Duties in the System.');
+        throw new Error(
+          "You do not have permission to manage Karkun Duties in the System."
+        );
       }
       /*
         const existingKarkunDuty = KarkunDuties.findOne({
@@ -101,7 +100,9 @@ export default {
 
     removeKarkunDuty(obj, { _id }, { userId }) {
       if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error('You do not have permission to manage Karkun Duties in the System.');
+        throw new Error(
+          "You do not have permission to manage Karkun Duties in the System."
+        );
       }
 
       return KarkunDuties.remove(_id);

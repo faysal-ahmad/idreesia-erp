@@ -73,7 +73,15 @@ export default {
   Mutation: {
     createKarkun(
       obj,
-      { firstName, lastName, cnicNumber, address },
+      {
+        firstName,
+        lastName,
+        cnicNumber,
+        contactNumber1,
+        contactNumber2,
+        emailAddress,
+        address,
+      },
       { userId }
     ) {
       if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
@@ -98,6 +106,9 @@ export default {
         firstName,
         lastName,
         cnicNumber,
+        contactNumber1,
+        contactNumber2,
+        emailAddress,
         address,
         createdAt: date,
         createdBy: userId,
@@ -110,7 +121,16 @@ export default {
 
     updateKarkun(
       obj,
-      { _id, firstName, lastName, cnicNumber, address },
+      {
+        _id,
+        firstName,
+        lastName,
+        cnicNumber,
+        contactNumber1,
+        contactNumber2,
+        emailAddress,
+        address,
+      },
       { userId }
     ) {
       if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
@@ -136,6 +156,9 @@ export default {
           firstName,
           lastName,
           cnicNumber,
+          contactNumber1,
+          contactNumber2,
+          emailAddress,
           address,
           updatedAt: date,
           updatedBy: userId,

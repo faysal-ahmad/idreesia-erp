@@ -21,11 +21,15 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  primaryContactNumber: {
+  contactNumber1: {
     type: String,
     optional: true,
   },
-  secondaryContactNumber: {
+  contactNumber2: {
+    type: String,
+    optional: true,
+  },
+  emailAddress: {
     type: String,
     optional: true,
   },

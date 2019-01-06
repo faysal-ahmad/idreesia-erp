@@ -11,6 +11,9 @@ type KarkunType {
   firstName: String
   lastName: String
   cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  emailAddress: String
   address: String
   imageId: String
   duties: String
@@ -36,6 +39,9 @@ extend type Mutation {
     firstName: String!
     lastName: String!
     cnicNumber: String!
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
     address: String
   ): KarkunType
 
@@ -44,6 +50,9 @@ extend type Mutation {
     firstName: String!
     lastName: String!
     cnicNumber: String!
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
     address: String
   ): KarkunType
 

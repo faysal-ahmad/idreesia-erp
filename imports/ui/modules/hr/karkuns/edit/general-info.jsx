@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -32,25 +32,41 @@ class GeneralInfo extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, karkunById, updateKarkun } = this.props;
-    form.validateFields((err, { firstName, lastName, cnicNumber, address }) => {
-      if (err) return;
-
-      updateKarkun({
-        variables: {
-          _id: karkunById._id,
+    form.validateFields(
+      (
+        err,
+        {
           firstName,
           lastName,
           cnicNumber,
+          contactNumber1,
+          contactNumber2,
+          emailAddress,
           address,
-        },
-      })
-        .then(() => {
-          history.push(paths.karkunsPath);
+        }
+      ) => {
+        if (err) return;
+
+        updateKarkun({
+          variables: {
+            _id: karkunById._id,
+            firstName,
+            lastName,
+            cnicNumber,
+            contactNumber1,
+            contactNumber2,
+            emailAddress,
+            address,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.push(paths.karkunsPath);
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   render() {
@@ -88,17 +104,25 @@ class GeneralInfo extends Component {
         />
 
         <InputTextField
-          fieldName="primaryContactNumber"
+          fieldName="contactNumber1"
           fieldLabel="Contact No. 1"
-          initialValue={karkunById.primaryContactNumber}
+          initialValue={karkunById.contactNumber1}
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="secondaryContactNumber"
+          fieldName="contactNumber2"
           fieldLabel="Contact No. 2"
-          initialValue={karkunById.secondaryContactNumber}
+          initialValue={karkunById.contactNumber2}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="emailAddress"
+          fieldLabel="Email"
+          initialValue={karkunById.emailAddress}
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -124,6 +148,9 @@ const formQuery = gql`
       firstName
       lastName
       cnicNumber
+      contactNumber1
+      contactNumber2
+      emailAddress
       address
     }
   }
@@ -135,6 +162,9 @@ const formMutation = gql`
     $firstName: String!
     $lastName: String!
     $cnicNumber: String!
+    $contactNumber1: String
+    $contactNumber2: String
+    $emailAddress: String
     $address: String
   ) {
     updateKarkun(
@@ -142,12 +172,18 @@ const formMutation = gql`
       firstName: $firstName
       lastName: $lastName
       cnicNumber: $cnicNumber
+      contactNumber1: $contactNumber1
+      contactNumber2: $contactNumber2
+      emailAddress: $emailAddress
       address: $address
     ) {
       _id
       firstName
       lastName
       cnicNumber
+      contactNumber1
+      contactNumber2
+      emailAddress
       address
     }
   }
@@ -156,9 +192,9 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateKarkun',
+    name: "updateKarkun",
     options: {
-      refetchQueries: ['allKarkuns'],
+      refetchQueries: ["allKarkuns"],
     },
   }),
   graphql(formQuery, {

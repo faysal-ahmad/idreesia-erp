@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Collapse, Form, Row, Button, Select } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Collapse, Form, Row, Button, Select } from "antd";
 
-import { InputTextField } from '/imports/ui/modules/helpers/fields';
+import { InputTextField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
-  width: '500px',
+  width: "500px",
 };
 
 const formItemLayout = {
@@ -21,7 +21,8 @@ class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
 
-    filterCriteria: PropTypes.object,
+    refreshPage: PropTypes.func,
+    queryParams: PropTypes.object,
     allDuties: PropTypes.array,
   };
 
@@ -30,10 +31,26 @@ class ListFilter extends Component {
     allDuties: [],
   };
 
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form, refreshPage } = this.props;
+
+    form.validateFields((err, { name, cnicNumber, dutyIds }) => {
+      if (err) return;
+      debugger;
+      refreshPage({
+        name,
+        cnicNumber,
+        dutyIds,
+        pageIndex: 0,
+      });
+    });
+  };
+
   getDutiesField() {
-    const { allDuties, filterCriteria } = this.props;
+    const { allDuties, queryParams } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = filterCriteria.dutyId;
+    const initialValue = queryParams.dutyId;
     const rules = [];
     const options = [];
     allDuties.forEach(duty => {
@@ -44,7 +61,7 @@ class ListFilter extends Component {
       );
     });
 
-    return getFieldDecorator('dutyId', { rules, initialValue })(
+    return getFieldDecorator("dutyIds", { rules, initialValue })(
       <Select mode="multiple" onChange={this.handleDutyChanged}>
         {options}
       </Select>
@@ -55,6 +72,7 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { queryParams } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -65,6 +83,7 @@ class ListFilter extends Component {
               fieldLabel="Name"
               required={false}
               fieldLayout={formItemLayout}
+              initialValue={queryParams.name}
               getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
@@ -72,6 +91,7 @@ class ListFilter extends Component {
               fieldLabel="CNIC Number"
               required={false}
               fieldLayout={formItemLayout}
+              initialValue={queryParams.cnicNumber}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item label="Duties" {...formItemLayout}>
@@ -83,7 +103,9 @@ class ListFilter extends Component {
                   Reset
                 </Button>
                 &nbsp;
-                <Button type="primary">Search</Button>
+                <Button type="primary" htmlType="submit">
+                  Search
+                </Button>
               </Row>
             </Form.Item>
           </Form>

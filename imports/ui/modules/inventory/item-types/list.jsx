@@ -51,9 +51,9 @@ class List extends Component {
       key: "name",
       render: (text, record) => {
         if (record.imageId) {
-          const url = `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
-            record.imageId
-          }`;
+          const url = `${
+            Meteor.settings.public.expressServerUrl
+          }/download-file?attachmentId=${record.imageId}`;
           return (
             <div style={NameDivStyle}>
               <Avatar shape="square" size="large" src={url} />

@@ -2,6 +2,8 @@ import { Duties, Karkuns, KarkunDuties } from "/imports/lib/collections/hr";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "/imports/lib/constants";
 
+import getKarkuns from "./queries";
+
 export default {
   KarkunType: {
     name: karkunType => `${karkunType.firstName} ${karkunType.lastName}`,
@@ -57,6 +59,10 @@ export default {
       // }
 
       return Karkuns.find({}).fetch();
+    },
+
+    pagedKarkuns(obj, { queryString }) {
+      return getKarkuns(queryString);
     },
 
     karkunById(obj, { _id }) {

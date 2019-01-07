@@ -1,4 +1,4 @@
-import { AggregatableCollection } from '/imports/lib/collections';
+import { AggregatableCollection } from 'meteor/idreesia-common/collections';
 
 import { StockItem as StockItemSchema } from '../../schemas/inventory';
 

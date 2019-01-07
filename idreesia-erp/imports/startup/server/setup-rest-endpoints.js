@@ -3,7 +3,7 @@ import express from "express";
 import multer from "multer";
 import bodyParser from "body-parser";
 
-import Attachments from "/imports/lib/collections/common/attachments";
+import Attachments from "meteor/idreesia-common/collections/common/attachments";
 
 Meteor.startup(() => {
   const app = express();

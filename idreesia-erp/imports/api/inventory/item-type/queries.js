@@ -1,7 +1,7 @@
 import { parse } from "query-string";
 import { get } from "lodash";
 
-import { ItemTypes } from "/imports/lib/collections/inventory";
+import { ItemTypes } from "meteor/idreesia-common/collections/inventory";
 
 export default function getItemTypes(queryString) {
   const params = parse(queryString);

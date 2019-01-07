@@ -1,6 +1,6 @@
-import { FinancialAccounts } from '/imports/lib/collections/accounts';
+import { FinancialAccounts } from 'meteor/idreesia-common/collections/accounts';
 import { filterByInstanceAccess, hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {

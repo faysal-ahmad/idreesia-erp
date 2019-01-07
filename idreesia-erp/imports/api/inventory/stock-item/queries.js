@@ -1,5 +1,5 @@
 import { parse } from "query-string";
-import { ItemTypes, StockItems } from "/imports/lib/collections/inventory";
+import { ItemTypes, StockItems } from "meteor/idreesia-common/collections/inventory";
 import { get } from "lodash";
 
 function getItemTypeIds(itemCategoryId, itemTypeName) {

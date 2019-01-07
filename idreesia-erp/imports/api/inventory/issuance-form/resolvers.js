@@ -1,15 +1,15 @@
-import { Karkuns } from "/imports/lib/collections/hr";
+import { Karkuns } from "meteor/idreesia-common/collections/hr";
 import {
   IssuanceForms,
   PhysicalStores,
   StockItems,
-} from "/imports/lib/collections/inventory";
+} from "meteor/idreesia-common/collections/inventory";
 import {
   filterByInstanceAccess,
   hasInstanceAccess,
   hasOnePermission,
 } from "/imports/api/security";
-import { Permissions as PermissionConstants } from "/imports/lib/constants";
+import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getIssuanceForms, { getIssuanceFormsByStockItemId } from "./queries";
 

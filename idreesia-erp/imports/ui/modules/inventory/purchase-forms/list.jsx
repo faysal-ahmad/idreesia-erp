@@ -6,7 +6,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import { toSafeInteger } from "lodash";
 
-import { Formats } from "/imports/lib/constants";
+import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";

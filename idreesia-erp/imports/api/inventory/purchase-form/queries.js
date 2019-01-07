@@ -2,8 +2,8 @@ import moment from "moment";
 import { parse } from "query-string";
 import { get } from "lodash";
 
-import { PurchaseForms } from "/imports/lib/collections/inventory";
-import { Formats } from "/imports/lib/constants";
+import { PurchaseForms } from "meteor/idreesia-common/collections/inventory";
+import { Formats } from "meteor/idreesia-common/constants";
 
 export function getPurchaseFormsByStockItemId(stockItemId, physicalStores) {
   const physicalStoreIds = physicalStores.map(({ _id }) => _id);

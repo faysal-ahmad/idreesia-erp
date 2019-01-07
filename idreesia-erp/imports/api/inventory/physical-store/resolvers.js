@@ -1,6 +1,6 @@
-import { PhysicalStores } from '/imports/lib/collections/inventory';
+import { PhysicalStores } from 'meteor/idreesia-common/collections/inventory';
 import { filterByInstanceAccess, hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {

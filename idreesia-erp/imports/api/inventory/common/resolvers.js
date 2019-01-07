@@ -1,4 +1,4 @@
-import { ItemTypes, StockItems } from "/imports/lib/collections/inventory";
+import { ItemTypes, StockItems } from "meteor/idreesia-common/collections/inventory";
 import { getItemTypeFormattedName } from "/imports/api/inventory/item-type/helpers";
 
 export default {

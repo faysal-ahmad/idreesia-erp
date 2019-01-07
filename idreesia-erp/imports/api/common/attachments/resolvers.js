@@ -1,4 +1,4 @@
-import { Attachments } from "/imports/lib/collections/common";
+import { Attachments } from "meteor/idreesia-common/collections/common";
 
 export default {
   Query: {

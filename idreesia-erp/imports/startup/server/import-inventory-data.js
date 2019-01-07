@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import { ItemTypes, ItemCategories } from "/imports/lib/collections/inventory";
+import { ItemTypes, ItemCategories } from "meteor/idreesia-common/collections/inventory";
 import { Accounts } from "meteor/accounts-base";
 
 import { default as csv } from "csvtojson";

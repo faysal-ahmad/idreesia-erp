@@ -1,6 +1,6 @@
-import { ItemTypes, ItemCategories } from "/imports/lib/collections/inventory";
+import { ItemTypes, ItemCategories } from "meteor/idreesia-common/collections/inventory";
 import { hasOnePermission } from "/imports/api/security";
-import { Permissions as PermissionConstants } from "/imports/lib/constants";
+import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getItemTypes from "./queries";
 import { getItemTypeFormattedName } from "./helpers";

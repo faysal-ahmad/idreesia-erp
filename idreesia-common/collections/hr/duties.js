@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 
-import { Duty as DutySchema } from '/imports/lib/schemas/hr';
+import { Duty as DutySchema } from 'meteor/idreesia-common/schemas/hr';
 
 class Duties extends Mongo.Collection {
   constructor(name = 'hr-duties', options = {}) {

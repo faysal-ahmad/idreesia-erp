@@ -1,6 +1,6 @@
-import { Duties, Karkuns, KarkunDuties } from '/imports/lib/collections/hr';
+import { Duties, Karkuns, KarkunDuties } from 'meteor/idreesia-common/collections/hr';
 import { hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   DutyType: {

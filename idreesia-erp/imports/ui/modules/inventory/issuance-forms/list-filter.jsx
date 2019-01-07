@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 import moment from "moment";
 
-import { Formats } from "/imports/lib/constants";
+import { Formats } from "meteor/idreesia-common/constants";
 import { CheckboxField, DateField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {

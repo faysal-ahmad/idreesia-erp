@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 
-import { KarkunDuty as KarkunDutySchema } from '/imports/lib/schemas/hr';
+import { KarkunDuty as KarkunDutySchema } from 'meteor/idreesia-common/schemas/hr';
 
 class KarkunDuties extends Mongo.Collection {
   constructor(name = 'hr-karkun-duties', options = {}) {

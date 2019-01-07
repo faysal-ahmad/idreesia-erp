@@ -1,6 +1,6 @@
-import { ItemCategories, ItemTypes } from '/imports/lib/collections/inventory';
+import { ItemCategories, ItemTypes } from 'meteor/idreesia-common/collections/inventory';
 import { hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   ItemCategory: {

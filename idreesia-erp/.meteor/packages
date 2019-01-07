@@ -20,6 +20,8 @@ aldeed:collection2-core
 mdg:validated-method
 accounts-password@1.5.1
 
+idreesia-common
+
 apollo
 swydo:graphql
 underscore@1.0.10

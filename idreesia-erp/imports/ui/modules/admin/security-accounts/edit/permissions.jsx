@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
 import { filter } from 'lodash';
 
-import { Permissions as PermissionConstants } from '/imports/lib/constants';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const permissionsData = [

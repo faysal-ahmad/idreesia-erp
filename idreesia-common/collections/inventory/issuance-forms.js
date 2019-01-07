@@ -1,4 +1,4 @@
-import { AggregatableCollection } from '/imports/lib/collections';
+import { AggregatableCollection } from 'meteor/idreesia-common/collections';
 
 import { IssuanceForm as IssuanceFormSchema } from '../../schemas/inventory';
 

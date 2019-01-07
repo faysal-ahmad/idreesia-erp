@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 
-import { Attachment as AttachmentSchema } from '/imports/lib/schemas/common';
+import { Attachment as AttachmentSchema } from 'meteor/idreesia-common/schemas/common';
 
 class Attachments extends Mongo.Collection {
   constructor(name = 'common-attachments', options = {}) {

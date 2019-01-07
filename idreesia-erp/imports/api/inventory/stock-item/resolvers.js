@@ -3,13 +3,13 @@ import {
   ItemCategories,
   ItemTypes,
   StockItems,
-} from "/imports/lib/collections/inventory";
+} from "meteor/idreesia-common/collections/inventory";
 import {
   filterByInstanceAccess,
   hasInstanceAccess,
   hasOnePermission,
 } from "/imports/api/security";
-import { Permissions as PermissionConstants } from "/imports/lib/constants";
+import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getPagedStockItems, { getAllStockItems } from "./queries";
 

@@ -1,7 +1,7 @@
 import { parse } from "query-string";
 import { get } from "lodash";
 
-import { Karkuns } from "/imports/lib/collections/hr";
+import { Karkuns } from "meteor/idreesia-common/collections/hr";
 
 export default function getKarkuns(queryString) {
   const params = parse(queryString);

@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 import {
   InputTextField,
   SelectField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -76,6 +76,7 @@ class NewForm extends Component {
         <InputTextField
           fieldName="password"
           fieldLabel="Password"
+          type="password"
           required
           requiredMessage="Please specify a password."
           getFieldDecorator={getFieldDecorator}
@@ -88,8 +89,16 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createAccount($karkunId: String!, $userName: String!, $password: String!) {
-    createAccount(karkunId: $karkunId, userName: $userName, password: $password) {
+  mutation createAccount(
+    $karkunId: String!
+    $userName: String!
+    $password: String!
+  ) {
+    createAccount(
+      karkunId: $karkunId
+      userName: $userName
+      password: $password
+    ) {
       _id
     }
   }
@@ -107,13 +116,13 @@ const listQuery = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'createAccount',
+    name: "createAccount",
     options: {
-      refetchQueries: ['allkarkunsWithAccounts'],
+      refetchQueries: ["allkarkunsWithAccounts"],
     },
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Account', 'New'])
+  WithBreadcrumbs(["Admin", "Setup", "Account", "New"])
 )(NewForm);

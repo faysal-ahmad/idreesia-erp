@@ -26,6 +26,7 @@ export default class InputTextField extends Component {
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
+    type: PropTypes.string,
     getFieldDecorator: PropTypes.func,
   };
 
@@ -43,6 +44,7 @@ export default class InputTextField extends Component {
       getFieldDecorator,
       initialValue,
       disabled,
+      type,
     } = this.props;
 
     if (!disabled) {
@@ -54,7 +56,7 @@ export default class InputTextField extends Component {
       ];
 
       return getFieldDecorator(fieldName, { initialValue, rules })(
-        <Input placeholder={placeholder} />
+        <Input type={type} placeholder={placeholder} />
       );
     }
 

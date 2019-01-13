@@ -14,28 +14,49 @@ const ToolbarStyle = {
 export default class PagedDataList extends Component {
   static propTypes = {
     columns: PropTypes.array,
+    params: PropTypes.array,
+
+    history: PropTypes.object,
+    location: PropTypes.object,
     queryParams: PropTypes.object,
+
     pagedData: PropTypes.shape({
       data: PropTypes.array,
       totalResults: PropTypes.number,
     }),
     newButtonLabel: PropTypes.string,
-    refreshPage: PropTypes.func,
     handleNewClicked: PropTypes.func,
     ListFilter: PropTypes.element,
   };
 
+  refreshPage = newParams => {
+    const { params } = this.props;
+    const { queryParams, history, location } = this.props;
+
+    const paramStrings = params.map(({ name, defaultValue }) => {
+      let nameVal;
+      if (newParams.hasOwnProperty(name)) {
+        nameVal = newParams[name] || defaultValue;
+      } else {
+        nameVal = queryParams[name] || defaultValue;
+      }
+
+      return `${name}=${nameVal}`;
+    });
+
+    const path = `${location.pathname}?${paramStrings.join("&")}`;
+    history.push(path);
+  };
+
   onChange = (pageIndex, pageSize) => {
-    const { refreshPage } = this.props;
-    refreshPage({
+    this.refreshPage({
       pageIndex: pageIndex - 1,
       pageSize,
     });
   };
 
   onShowSizeChange = (pageIndex, pageSize) => {
-    const { refreshPage } = this.props;
-    refreshPage({
+    this.refreshPage({
       pageIndex: pageIndex - 1,
       pageSize,
     });
@@ -46,7 +67,6 @@ export default class PagedDataList extends Component {
       queryParams,
       newButtonLabel,
       handleNewClicked,
-      refreshPage,
       ListFilter,
     } = this.props;
 
@@ -55,7 +75,7 @@ export default class PagedDataList extends Component {
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
           {newButtonLabel}
         </Button>
-        <ListFilter refreshPage={refreshPage} queryParams={queryParams} />
+        <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />
       </div>
     );
   };

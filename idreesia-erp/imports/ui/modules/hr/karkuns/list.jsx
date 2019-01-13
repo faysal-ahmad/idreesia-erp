@@ -14,9 +14,9 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+    queryParams: PropTypes.object,
 
     queryString: PropTypes.string,
-    queryParams: PropTypes.object,
 
     loading: PropTypes.bool,
     pagedKarkuns: PropTypes.shape({
@@ -51,36 +51,13 @@ class List extends Component {
     },
   ];
 
-  refreshPage = newParams => {
-    const { name, cnicNumber, dutyId, pageIndex, pageSize } = newParams;
-    const { queryParams, history, location } = this.props;
-
-    let nameVal;
-    if (newParams.hasOwnProperty("name")) nameVal = name || "";
-    else nameVal = queryParams.name || "";
-
-    let cnicNumberVal;
-    if (newParams.hasOwnProperty("cnicNumber"))
-      cnicNumberVal = cnicNumber || "";
-    else cnicNumberVal = queryParams.cnicNumber || "";
-
-    let dutyIdVal;
-    if (newParams.hasOwnProperty("dutyId")) dutyIdVal = dutyId || "";
-    else dutyIdVal = queryParams.dutyId || "";
-
-    let pageIndexVal;
-    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
-    else pageIndexVal = queryParams.pageIndex || 0;
-
-    let pageSizeVal;
-    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 10;
-    else pageSizeVal = queryParams.pageSize || 10;
-
-    const path = `${
-      location.pathname
-    }?name=${nameVal}&cnicNumber=${cnicNumberVal}&dutyId=${dutyIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
-    history.push(path);
-  };
+  params = [
+    { name: "name", defaultValue: "" },
+    { name: "cnicNumber", defaultValue: "" },
+    { name: "dutyId", defaultValue: "" },
+    { name: "pageIndex", defaultValue: 0 },
+    { name: "pageSize", defaultValue: 10 },
+  ];
 
   handleNewClicked = () => {
     const { history } = this.props;
@@ -92,6 +69,8 @@ class List extends Component {
     if (loading) return null;
 
     const {
+      history,
+      location,
       queryParams,
       pagedKarkuns: { totalResults, karkuns },
     } = this.props;
@@ -99,13 +78,15 @@ class List extends Component {
     return (
       <PagedDataList
         columns={this.columns}
+        params={this.params}
+        history={history}
+        location={location}
         queryParams={queryParams}
         pagedData={{
           data: karkuns,
           totalResults,
         }}
         newButtonLabel="New Karkun"
-        refreshPage={this.refreshPage}
         handleNewClicked={this.handleNewClicked}
         ListFilter={ListFilter}
       />

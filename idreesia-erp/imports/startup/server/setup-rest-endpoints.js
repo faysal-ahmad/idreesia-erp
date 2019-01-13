@@ -20,11 +20,16 @@ Meteor.startup(() => {
       const { attachmentId } = req.query;
       if (attachmentId) {
         const attachment = Attachments.findOne(attachmentId);
-        const imgData = Buffer.from(attachment.data, "base64");
-        res.writeHead(200, {
-          "Content-Type": attachment.mimeType,
-        });
-        res.end(imgData);
+        if (attachment) {
+          const imgData = Buffer.from(attachment.data, "base64");
+          res.writeHead(200, {
+            "Content-Type": attachment.mimeType,
+          });
+          res.end(imgData);
+        } else {
+          res.writeHead(404);
+          res.end();
+        }
       } else {
         res.writeHead(404);
         res.end();
@@ -47,7 +52,6 @@ Meteor.startup(() => {
       };
       const attachmentId = Attachments.insert(attachment);
       res.writeHead(200);
-      // res.write(attachmentId);
       res.end(attachmentId);
     })
   );

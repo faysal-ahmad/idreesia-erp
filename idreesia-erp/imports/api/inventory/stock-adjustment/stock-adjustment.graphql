@@ -1,0 +1,62 @@
+type StockAdjustment {
+  _id: String
+  physicalStoreId: String
+  stockItemId: String
+  adjustmentDate: String
+  adjustedBy: String
+  quantity: Float
+  isInflow: Boolean
+  adjustmentReason: String
+
+  refStockItem: StockItem
+  refAdjustedBy: KarkunType
+  refCreatedBy: KarkunType
+  refUpdatedBy: KarkunType
+  refApprovedBy: KarkunType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedStockAdjustment {
+  totalResults: Int
+  data: [StockAdjustment]
+}
+
+extend type Query {
+  stockAdjustmentsByStockItem(stockItemId: String): [StockAdjustment]
+  pagedStockAdjustments(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedStockAdjustment
+  stockAdjustmentById(_id: String!): StockAdjustment
+}
+
+extend type Mutation {
+  createStockAdjustment(
+    physicalStoreId: String!
+    stockItemId: String!
+    adjustmentDate: String!
+    adjustedBy: String!
+    quantity: Float!
+    isInflow: Boolean!
+    adjustmentReason: String
+  ): StockAdjustment
+
+  updateStockAdjustment(
+    _id: String!
+    adjustmentDate: String!
+    adjustedBy: String!
+    quantity: Float!
+    isInflow: Boolean!
+    adjustmentReason: String
+  ): StockAdjustment
+
+  approveStockAdjustment(_id: String!): StockAdjustment
+
+  removeStockAdjustment(_id: String!): Int
+}

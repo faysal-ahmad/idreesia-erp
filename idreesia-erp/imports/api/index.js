@@ -45,6 +45,9 @@ import IssuanceFormResolvers from "./inventory/issuance-form/resolvers";
 import PurchaseFormSchema from "./inventory/purchase-form/purchase-form.graphql";
 import PurchaseFormResolvers from "./inventory/purchase-form/resolvers";
 
+import StockAdjustmentSchema from "./inventory/stock-adjustment/stock-adjustment.graphql";
+import StockAdjustmentResolvers from "./inventory/stock-adjustment/resolvers";
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -65,6 +68,7 @@ const typeDefs = [
   StockItemSchema,
   IssuanceFormSchema,
   PurchaseFormSchema,
+  StockAdjustmentSchema,
 
   FinancialAccountSchema,
 ];
@@ -84,6 +88,7 @@ const resolvers = merge(
   StockItemResolvers,
   IssuanceFormResolvers,
   PurchaseFormResolvers,
+  StockAdjustmentResolvers,
 
   FinancialAccountResolvers
 );

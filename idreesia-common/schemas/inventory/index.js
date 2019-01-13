@@ -4,4 +4,4 @@ export { default as ItemType } from "./item-type";
 export { default as PhysicalStore } from "./physical-store";
 export { default as PurchaseForm } from "./purchase-form";
 export { default as StockItem } from "./stock-item";
-export { default as StockItemAdjustment } from "./stock-item-adjustment";
+export { default as StockAdjustment } from "./stock-adjustment";

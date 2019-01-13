@@ -1,32 +1,14 @@
-import { Meteor } from "meteor/meteor";
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { Avatar, Button, Pagination, Table } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import { toSafeInteger } from "lodash";
 
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { PagedDataList } from "/imports/ui/modules/helpers/controls";
+import { getNameWithImageRenderer } from "/imports/ui/modules/helpers/controls";
 
 import ListFilter from "./list-filter";
-
-const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-};
-
-const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-};
 
 class List extends Component {
   static propTypes = {
@@ -39,7 +21,7 @@ class List extends Component {
     loading: PropTypes.bool,
     pagedKarkuns: PropTypes.shape({
       totalResults: PropTypes.number,
-      itemTypes: PropTypes.array,
+      karkuns: PropTypes.array,
     }),
     allDuties: PropTypes.array,
   };
@@ -50,25 +32,8 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => {
-        if (record.imageId) {
-          const url = `${
-            Meteor.settings.public.expressServerUrl
-          }/download-file?attachmentId=${record.imageId}`;
-          return (
-            <div style={NameDivStyle}>
-              <Avatar shape="square" size="large" src={url} />
-              &nbsp;
-              <Link to={`${paths.karkunsPath}/${record._id}`}>{text}</Link>
-            </div>
-          );
-        }
-        return (
-          <div style={NameDivStyle}>
-            <Avatar shape="square" size="large" icon="user" />
-            &nbsp;
-            <Link to={`${paths.karkunsPath}/${record._id}`}>{text}</Link>
-          </div>
-        );
+        const { _id, imageId, name } = record;
+        return getNameWithImageRenderer(_id, imageId, name, paths.karkunsPath);
       },
     },
     {
@@ -124,75 +89,27 @@ class List extends Component {
     history.push(paths.karkunsNewFormPath);
   };
 
-  onChange = (pageIndex, pageSize) => {
-    this.refreshPage({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  onShowSizeChange = (pageIndex, pageSize) => {
-    this.refreshPage({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  getTableHeader = () => {
-    const { queryParams, allDuties } = this.props;
-
-    return (
-      <div style={ToolbarStyle}>
-        <Button
-          type="primary"
-          icon="plus-circle-o"
-          onClick={this.handleNewClicked}
-        >
-          New Karkun
-        </Button>
-        <ListFilter
-          refreshPage={this.refreshPage}
-          queryParams={queryParams}
-          allDuties={allDuties}
-        />
-      </div>
-    );
-  };
-
   render() {
     const { loading } = this.props;
     if (loading) return null;
 
     const {
-      queryParams: { pageIndex, pageSize },
+      queryParams,
       pagedKarkuns: { totalResults, karkuns },
     } = this.props;
 
-    const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
-    const numPageSize = pageSize ? toSafeInteger(pageSize) : 10;
-
     return (
-      <Table
-        rowKey="_id"
-        dataSource={karkuns}
+      <PagedDataList
         columns={this.columns}
-        bordered
-        title={this.getTableHeader}
-        size="small"
-        pagination={false}
-        footer={() => (
-          <Pagination
-            current={numPageIndex}
-            pageSize={numPageSize}
-            showSizeChanger
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
-            onChange={this.onChange}
-            onShowSizeChange={this.onShowSizeChange}
-            total={totalResults}
-          />
-        )}
+        queryParams={queryParams}
+        pagedData={{
+          data: karkuns,
+          totalResults,
+        }}
+        newButtonLabel="New Karkun"
+        refreshPage={this.refreshPage}
+        handleNewClicked={this.handleNewClicked}
+        ListFilter={ListFilter}
       />
     );
   }

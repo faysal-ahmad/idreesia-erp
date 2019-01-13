@@ -31,10 +31,8 @@ class List extends Component {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (text, record) => {
-        const { _id, imageId, name } = record;
-        return getNameWithImageRenderer(_id, imageId, name, paths.karkunsPath);
-      },
+      render: (text, { _id, imageId }) =>
+        getNameWithImageRenderer(_id, imageId, text, paths.karkunsPath),
     },
     {
       title: "CNIC Number",

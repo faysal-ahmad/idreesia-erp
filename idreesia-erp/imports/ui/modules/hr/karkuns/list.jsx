@@ -51,7 +51,7 @@ class List extends Component {
     },
   ];
 
-  params = [
+  filterParams = [
     { name: "name", defaultValue: "" },
     { name: "cnicNumber", defaultValue: "" },
     { name: "dutyId", defaultValue: "" },
@@ -78,7 +78,7 @@ class List extends Component {
     return (
       <PagedDataList
         columns={this.columns}
-        params={this.params}
+        filterParams={this.filterParams}
         history={history}
         location={location}
         queryParams={queryParams}

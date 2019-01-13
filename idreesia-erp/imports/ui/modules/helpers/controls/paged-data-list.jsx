@@ -14,7 +14,7 @@ const ToolbarStyle = {
 export default class PagedDataList extends Component {
   static propTypes = {
     columns: PropTypes.array,
-    params: PropTypes.array,
+    filterParams: PropTypes.array,
 
     history: PropTypes.object,
     location: PropTypes.object,
@@ -30,10 +30,10 @@ export default class PagedDataList extends Component {
   };
 
   refreshPage = newParams => {
-    const { params } = this.props;
+    const { filterParams } = this.props;
     const { queryParams, history, location } = this.props;
 
-    const paramStrings = params.map(({ name, defaultValue }) => {
+    const paramStrings = filterParams.map(({ name, defaultValue }) => {
       let nameVal;
       if (newParams.hasOwnProperty(name)) {
         nameVal = newParams[name] || defaultValue;

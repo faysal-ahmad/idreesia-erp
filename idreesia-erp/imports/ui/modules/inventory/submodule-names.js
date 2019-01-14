@@ -3,6 +3,7 @@ export default class SubModuleNames {
 
   static issuanceForms = "Issuance Forms";
   static purchaseForms = "Purchase Forms";
+  static stockAdjustments = "Stock Adjustments";
 
   static itemTypes = "Item Types";
   static itemCategories = "Item Categories";

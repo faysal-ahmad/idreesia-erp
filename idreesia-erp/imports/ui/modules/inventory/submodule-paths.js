@@ -78,4 +78,30 @@ export default class SubModulePaths {
       physicalStoreId
     )}/view/${formId}`;
   }
+
+  // *************************************************************************************
+  // Stock Adjustment Routes
+  // *************************************************************************************
+  static stockAdjustmentsPath(physicalStoreId = ":physicalStoreId") {
+    return `${ModulePaths.inventory}/${physicalStoreId}/stock-adjustments`;
+  }
+  static stockAdjustmentsNewFormPath(physicalStoreId = ":physicalStoreId") {
+    return `${SubModulePaths.stockAdjustmentsPath(physicalStoreId)}/new`;
+  }
+  static stockAdjustmentsEditFormPath(
+    physicalStoreId = ":physicalStoreId",
+    formId = ":formId"
+  ) {
+    return `${SubModulePaths.stockAdjustmentsPath(
+      physicalStoreId
+    )}/edit/${formId}`;
+  }
+  static stockAdjustmentsViewFormPath(
+    physicalStoreId = ":physicalStoreId",
+    formId = ":formId"
+  ) {
+    return `${SubModulePaths.stockAdjustmentsPath(
+      physicalStoreId
+    )}/view/${formId}`;
+  }
 }

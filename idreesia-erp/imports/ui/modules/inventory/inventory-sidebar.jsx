@@ -33,6 +33,9 @@ class InventorySidebar extends Component {
     } else if (key.startsWith("purchase-forms")) {
       setActiveSubModuleName(SubModuleNames.purchaseForms);
       history.push(paths.purchaseFormsPath(physicalStoreId));
+    } else if (key.startsWith("stock-adjustments")) {
+      setActiveSubModuleName(SubModuleNames.stockAdjustments);
+      history.push(paths.stockAdjustmentsPath(physicalStoreId));
     } else if (key === "item-types") {
       setActiveSubModuleName(SubModuleNames.itemTypes);
       history.push(paths.itemTypesPath);
@@ -76,6 +79,12 @@ class InventorySidebar extends Component {
             key={`purchase-forms-${physicalStore._id}`}
           >
             Purchase Forms
+          </Menu.Item>
+          <Menu.Item
+            parent-key={physicalStore._id}
+            key={`stock-adjustments-${physicalStore._id}`}
+          >
+            Stock Adjustments
           </Menu.Item>
         </Menu.SubMenu>
       );

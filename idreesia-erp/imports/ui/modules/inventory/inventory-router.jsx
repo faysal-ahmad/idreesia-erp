@@ -29,6 +29,12 @@ import {
   PurchaseFormsViewForm,
   PurchaseFormsList,
 } from "./purchase-forms";
+import {
+  StockAdjustmentsNewForm,
+  StockAdjustmentsEditForm,
+  StockAdjustmentsViewForm,
+  StockAdjustmentsList,
+} from "./stock-adjustments";
 
 const InventoryRouter = () => (
   <Switch>
@@ -80,6 +86,23 @@ const InventoryRouter = () => (
       component={PurchaseFormsViewForm}
     />
     <Route path={paths.purchaseFormsPath()} component={PurchaseFormsList} />
+
+    <Route
+      path={paths.stockAdjustmentsNewFormPath()}
+      component={StockAdjustmentsNewForm}
+    />
+    <Route
+      path={paths.stockAdjustmentsEditFormPath()}
+      component={StockAdjustmentsEditForm}
+    />
+    <Route
+      path={paths.stockAdjustmentsViewFormPath()}
+      component={StockAdjustmentsViewForm}
+    />
+    <Route
+      path={paths.stockAdjustmentsPath()}
+      component={StockAdjustmentsList}
+    />
   </Switch>
 );
 

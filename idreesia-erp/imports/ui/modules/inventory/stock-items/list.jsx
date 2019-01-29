@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor } from "meteor/meteor";
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -123,16 +123,12 @@ class List extends Component {
         key: "itemTypeName",
         render: (text, record) => {
           if (record.itemTypeImageId) {
-            const url = `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
-              record.imageId
-            }`;
-              return (
+            const url = `${
+              Meteor.settings.public.expressServerUrl
+            }/download-file?attachmentId=${record.itemTypeImageId}`;
+            return (
               <div style={NameDivStyle}>
-                <Avatar
-                  shape="square"
-                  size="large"
-                  src={url}
-                />
+                <Avatar shape="square" size="large" src={url} />
                 &nbsp;
                 <Link
                   to={`${paths.stockItemsPath(physicalStoreId)}/${record._id}`}

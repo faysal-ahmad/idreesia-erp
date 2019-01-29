@@ -11,15 +11,11 @@ export function getStockAdjustmentsByStockItemId(stockItemId, physicalStores) {
     {
       $match: {
         physicalStoreId: { $in: physicalStoreIds },
-        items: {
-          $elemMatch: {
-            stockItemId: { $eq: stockItemId },
-          },
-        },
+        stockItemId: { $eq: stockItemId },
       },
     },
     {
-      $sort: { issueDate: -1 },
+      $sort: { adjustmentDate: -1 },
     },
   ];
 
@@ -76,7 +72,7 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
   if (startDate) {
     pipeline.push({
       $match: {
-        issueDate: {
+        adjustmentDate: {
           $gte: moment(startDate, Formats.DATE_FORMAT)
             .startOf("day")
             .toDate(),
@@ -88,7 +84,7 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
   if (endDate) {
     pipeline.push({
       $match: {
-        issueDate: {
+        adjustmentDate: {
           $lte: moment(endDate, Formats.DATE_FORMAT)
             .endOf("day")
             .toDate(),
@@ -104,7 +100,7 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { issueDate: -1 } },
+    { $sort: { adjustmentDate: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

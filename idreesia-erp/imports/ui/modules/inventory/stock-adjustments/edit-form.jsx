@@ -5,17 +5,18 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   WithKarkuns,
   WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   AutoCompleteField,
   DateField,
+  InputTextField,
+  InputNumberField,
+  RadioGroupField,
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
@@ -24,31 +25,24 @@ const FormStyle = {
   width: "800px",
 };
 
-const formItemExtendedLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
-};
-
 class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    physicalStoreId: PropTypes.string,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     karkunsListLoading: PropTypes.bool,
     allKarkuns: PropTypes.array,
 
     formDataLoading: PropTypes.bool,
-    issuanceFormById: PropTypes.object,
-    updateIssuanceForm: PropTypes.func,
+    stockAdjustmentById: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    updateStockAdjustment: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsPath(physicalStoreId));
+    history.push(paths.stockAdjustmentsPath(physicalStoreId));
   };
 
   handleSubmit = e => {
@@ -57,33 +51,29 @@ class EditForm extends Component {
       form,
       history,
       physicalStoreId,
-      updateIssuanceForm,
-      issuanceFormById: { _id },
+      updateStockAdjustment,
+      stockAdjustmentById: { _id },
     } = this.props;
     form.validateFields(
-      (err, { issueDate, issuedBy, issuedTo, items, notes }) => {
+      (
+        err,
+        { adjustmentDate, adjustedBy, quantity, adjustment, adjustmentReason }
+      ) => {
         if (err) return;
 
-        const updatedItems = items.map(
-          ({ stockItemId, quantity, isInflow }) => ({
-            stockItemId,
-            quantity,
-            isInflow,
-          })
-        );
-        updateIssuanceForm({
+        const isInflow = adjustment === "inflow";
+        updateStockAdjustment({
           variables: {
             _id,
-            issueDate,
-            issuedBy,
-            issuedTo,
-            physicalStoreId,
-            items: updatedItems,
-            notes,
+            adjustmentDate,
+            adjustedBy,
+            quantity,
+            isInflow,
+            adjustmentReason,
           },
         })
           .then(() => {
-            history.push(paths.issuanceFormsPath(physicalStoreId));
+            history.push(paths.stockAdjustmentsPath(physicalStoreId));
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -92,85 +82,72 @@ class EditForm extends Component {
     );
   };
 
-  getItemsField() {
-    const {
-      issuanceFormById,
-      physicalStoreId,
-      stockItemsByPhysicalStoreId,
-    } = this.props;
-    const { getFieldDecorator } = this.props.form;
-
-    const rules = [
-      {
-        required: true,
-        message: "Please add some items.",
-      },
-    ];
-    return getFieldDecorator("items", {
-      rules,
-      initialValue: issuanceFormById.items,
-    })(
-      <ItemsList
-        inflowLabel="Returned"
-        outflowLabel="Issued"
-        physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
-      />
-    );
-  }
-
   render() {
     const {
-      karkunsListLoading,
-      stockItemsLoading,
       formDataLoading,
-      issuanceFormById,
+      karkunsListLoading,
       allKarkuns,
+      stockAdjustmentById,
     } = this.props;
-    if (karkunsListLoading || stockItemsLoading || formDataLoading) {
-      return null;
-    }
+    if (formDataLoading || karkunsListLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
-        <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
-          initialValue={moment(new Date(issuanceFormById.issueDate))}
-          required
-          requiredMessage="Please input an issue date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <AutoCompleteField
-          data={allKarkuns}
-          fieldName="issuedBy"
-          fieldLabel="Issued By"
-          initialValue={issuanceFormById.issuedBy}
-          required
-          requiredMessage="Please input a name in issued by."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <AutoCompleteField
-          data={allKarkuns}
-          fieldName="issuedTo"
-          fieldLabel="Issued To"
-          initialValue={issuanceFormById.issuedTo}
-          required
-          requiredMessage="Please input a name in issued to."
+        <InputTextField
+          fieldName="stockItemId"
+          fieldLabel="Name"
+          initialValue={stockAdjustmentById.refStockItem.itemTypeFormattedName}
           getFieldDecorator={getFieldDecorator}
         />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
+        <RadioGroupField
+          fieldName="adjustment"
+          fieldLabel="Adjustment"
+          initialValue={stockAdjustmentById.isInflow ? "inflow" : "outflow"}
+          options={[
+            { label: "Increase by", value: "inflow" },
+            { label: "Decrease by", value: "outflow" },
+          ]}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputNumberField
+          fieldName="quantity"
+          fieldLabel="Quantity"
+          initialValue={stockAdjustmentById.quantity}
+          required
+          requiredMessage="Please input a value for adjustment quantity."
+          minValue={0}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <DateField
+          fieldName="adjustmentDate"
+          fieldLabel="Adjustment Date"
+          initialValue={moment(new Date(stockAdjustmentById.adjustmentDate))}
+          required
+          requiredMessage="Please input an adjustment date."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <AutoCompleteField
+          data={allKarkuns}
+          fieldName="adjustedBy"
+          fieldLabel="Adjusted By"
+          placeholder="Adjusted By"
+          initialValue={stockAdjustmentById.adjustedBy}
+          required
+          requiredMessage="Please input a name in adjusted by."
+          getFieldDecorator={getFieldDecorator}
+        />
 
         <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
+          fieldName="adjustmentReason"
+          fieldLabel="Adjustment Reason"
+          initialValue={stockAdjustmentById.adjustmentReason}
           required={false}
-          initialValue={issuanceFormById.notes}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -180,58 +157,53 @@ class EditForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation updateIssuanceForm(
-    $_id: String!
-    $issueDate: String!
-    $issuedBy: String!
-    $issuedTo: String!
-    $physicalStoreId: String!
-    $items: [ItemWithQuantityInput]
-    $notes: String
-  ) {
-    updateIssuanceForm(
-      _id: $_id
-      issueDate: $issueDate
-      issuedBy: $issuedBy
-      issuedTo: $issuedTo
-      physicalStoreId: $physicalStoreId
-      items: $items
-      notes: $notes
-    ) {
+const formQuery = gql`
+  query stockAdjustmentById($_id: String!) {
+    stockAdjustmentById(_id: $_id) {
       _id
-      issueDate
-      issuedByName
-      issuedToName
       physicalStoreId
-      items {
-        stockItemId
-        quantity
-        isInflow
+      stockItemId
+      adjustmentDate
+      adjustedBy
+      quantity
+      isInflow
+      adjustmentReason
+      refStockItem {
+        itemTypeName
+        itemTypeFormattedName
       }
-      notes
+      refAdjustedBy {
+        name
+      }
     }
   }
 `;
 
-const formQuery = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
+const formMutation = gql`
+  mutation updateStockAdjustment(
+    $_id: String!
+    $adjustmentDate: String!
+    $adjustedBy: String!
+    $quantity: Float!
+    $isInflow: Boolean!
+    $adjustmentReason: String
+  ) {
+    updateStockAdjustment(
+      _id: $_id
+      adjustmentDate: $adjustmentDate
+      adjustedBy: $adjustedBy
+      quantity: $quantity
+      isInflow: $isInflow
+      adjustmentReason: $adjustmentReason
+    ) {
       _id
-      issueDate
-      issuedBy
-      issuedTo
-      issuedByName
-      issuedToName
       physicalStoreId
-      approvedOn
-      items {
-        stockItemId
-        quantity
-        isInflow
-        itemTypeName
-      }
-      notes
+      stockItemId
+      adjustmentDate
+      adjustedBy
+      quantity
+      isInflow
+      adjustmentReason
     }
   }
 `;
@@ -240,13 +212,12 @@ export default compose(
   Form.create(),
   WithKarkuns(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
-    name: "updateIssuanceForm",
+    name: "updateStockAdjustment",
     options: {
       refetchQueries: [
-        "pagedIssuanceForms",
-        "issuanceFormsByStockItem",
+        "pagedStockAdjustment",
+        "stockAdjustmentByStockItem",
         "pagedStockItems",
       ],
     },
@@ -258,5 +229,5 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "Edit"])
+  WithBreadcrumbs(["Inventory", "Forms", "Stock Adjustments", "Edit"])
 )(EditForm);

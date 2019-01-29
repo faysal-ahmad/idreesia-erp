@@ -16,13 +16,13 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class CheckboxField extends Component {
+export default class RadioGroupField extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
-    initialValue: PropTypes.array,
+    initialValue: PropTypes.string,
     options: PropTypes.arrayOf(
       PropTypes.shape({
         label: PropTypes.string,
@@ -35,7 +35,7 @@ export default class CheckboxField extends Component {
   };
 
   static defaultProps = {
-    initialValue: [],
+    initialValue: null,
     fieldLayout: formItemLayout,
   };
 

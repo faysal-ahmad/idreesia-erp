@@ -46,6 +46,7 @@ export default {
         !hasOnePermission(userId, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -71,6 +72,7 @@ export default {
         !hasOnePermission(userId, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -88,6 +90,7 @@ export default {
         !hasOnePermission(userId, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -127,7 +130,7 @@ export default {
     ) {
       if (
         !hasOnePermission(userId, [
-          PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -173,7 +176,7 @@ export default {
     ) {
       if (
         !hasOnePermission(userId, [
-          PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -276,7 +279,7 @@ export default {
     removeStockAdjustment(obj, { _id }, { userId }) {
       if (
         !hasOnePermission(userId, [
-          PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {

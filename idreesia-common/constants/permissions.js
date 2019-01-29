@@ -24,7 +24,9 @@ export default class Permissions {
   static IN_MANAGE_SETUP_DATA = "inventory-manage-setup-data";
   static IN_VIEW_STOCK_ITEMS = "inventory-view-stock-items";
   static IN_MANAGE_STOCK_ITEMS = "inventory-manage-stock-items";
-  static IN_APPROVE_STOCK_ADJUSTMENTS = "inventory-manage-stock-adjustments";
+
+  static IN_MANAGE_STOCK_ADJUSTMENTS = "inventory-manage-stock-adjustments";
+  static IN_APPROVE_STOCK_ADJUSTMENTS = "inventory-approve-stock-adjustments";
 
   static IN_VIEW_ISSUANCE_FORMS = "inventory-view-issuance-forms";
   static IN_MANAGE_ISSUANCE_FORMS = "inventory-manage-issuance-forms";

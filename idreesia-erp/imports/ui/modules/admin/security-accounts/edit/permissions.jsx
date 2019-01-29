@@ -1,46 +1,66 @@
-import React, { Fragment, Component } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Row, Tree, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
-import { filter } from 'lodash';
+import React, { Fragment, Component } from "react";
+import PropTypes from "prop-types";
+import { Button, Row, Tree, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
+import { filter } from "lodash";
 
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 
 const permissionsData = [
   {
-    title: 'Admin',
-    key: 'module-admin',
+    title: "Admin",
+    key: "module-admin",
     children: [
       {
-        title: 'View Accounts',
-        key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+        title: "Security Accounts",
+        key: "module-admin-security-accounts",
+        children: [
+          {
+            title: "View Accounts",
+            key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+          },
+          {
+            title: "Manage Accounts",
+            key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+          },
+        ],
       },
       {
-        title: 'Manage Accounts',
-        key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+        title: "Physical Stores",
+        key: "module-admin-physical-stores",
+        children: [
+          {
+            title: "View Physical Stores",
+            key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
+          },
+          {
+            title: "Manage Physical Stores",
+            key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
+          },
+        ],
       },
     ],
   },
   {
-    title: 'HR',
-    key: 'module-hr',
+    title: "HR",
+    key: "module-hr",
     children: [
       {
-        title: 'Manage Setup Data',
+        title: "Manage Setup Data",
         key: PermissionConstants.HR_MANAGE_SETUP_DATA,
       },
       {
-        title: 'Karkuns',
-        key: 'module-hr-karkuns',
+        title: "Karkuns",
+        key: "module-hr-karkuns",
         children: [
           {
-            title: 'View Karkuns',
+            title: "View Karkuns",
             key: PermissionConstants.HR_VIEW_KARKUNS,
           },
           {
-            title: 'Manage Karkuns',
+            title: "Manage Karkuns",
             key: PermissionConstants.HR_MANAGE_KARKUNS,
           },
         ],
@@ -48,60 +68,74 @@ const permissionsData = [
     ],
   },
   {
-    title: 'Inventory',
-    key: 'module-inventory',
+    title: "Inventory",
+    key: "module-inventory",
     children: [
       {
-        title: 'Manage Setup Data',
+        title: "Manage Setup Data",
         key: PermissionConstants.IN_MANAGE_SETUP_DATA,
       },
       {
-        title: 'Stock Items',
-        key: 'module-inventory-stock-items',
+        title: "Stock Items",
+        key: "module-inventory-stock-items",
         children: [
           {
-            title: 'View Stock Items',
+            title: "View Stock Items",
             key: PermissionConstants.IN_VIEW_STOCK_ITEMS,
           },
           {
-            title: 'Manage Stock Items',
+            title: "Manage Stock Items",
             key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           },
         ],
       },
       {
-        title: 'Issuance Forms',
-        key: 'module-inventory-issuance-forms',
+        title: "Issuance Forms",
+        key: "module-inventory-issuance-forms",
         children: [
           {
-            title: 'View Issuance Forms',
+            title: "View Issuance Forms",
             key: PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           },
           {
-            title: 'Manage Issuance Forms',
+            title: "Manage Issuance Forms",
             key: PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           },
           {
-            title: 'Approve Issuance Forms',
+            title: "Approve Issuance Forms",
             key: PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
           },
         ],
       },
       {
-        title: 'Purchase Forms',
-        key: 'module-inventory-purchase-forms',
+        title: "Purchase Forms",
+        key: "module-inventory-purchase-forms",
         children: [
           {
-            title: 'View Purchase Forms',
+            title: "View Purchase Forms",
             key: PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           },
           {
-            title: 'Manage Purchase Forms',
+            title: "Manage Purchase Forms",
             key: PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           },
           {
-            title: 'Approve Purchase Forms',
+            title: "Approve Purchase Forms",
             key: PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
+          },
+        ],
+      },
+      {
+        title: "Stock Adjustments",
+        key: "module-inventory-stock-adjustments",
+        children: [
+          {
+            title: "Manage Stock Adjustments",
+            key: PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
+          },
+          {
+            title: "Approve Stock Adjustments",
+            key: PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
           },
         ],
       },
@@ -148,7 +182,7 @@ class Permissions extends Component {
     e.preventDefault();
     const { history, karkunById, setPermissions } = this.props;
     const { checkedKeys } = this.state;
-    const permissions = filter(checkedKeys, key => !key.startsWith('module-'));
+    const permissions = filter(checkedKeys, key => !key.startsWith("module-"));
 
     setPermissions({
       variables: {
@@ -235,8 +269,16 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation setPermissions($karkunId: String!, $karkunUserId: String!, $permissions: [String]!) {
-    setPermissions(karkunId: $karkunId, karkunUserId: $karkunUserId, permissions: $permissions) {
+  mutation setPermissions(
+    $karkunId: String!
+    $karkunUserId: String!
+    $permissions: [String]!
+  ) {
+    setPermissions(
+      karkunId: $karkunId
+      karkunUserId: $karkunUserId
+      permissions: $permissions
+    ) {
       _id
       userId
       user {
@@ -249,9 +291,9 @@ const formMutation = gql`
 
 export default compose(
   graphql(formMutation, {
-    name: 'setPermissions',
+    name: "setPermissions",
     options: {
-      refetchQueries: ['allkarkunsWithAccounts'],
+      refetchQueries: ["allkarkunsWithAccounts"],
     },
   }),
   graphql(formQuery, {

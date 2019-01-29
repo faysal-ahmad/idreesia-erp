@@ -12,14 +12,14 @@ const NameDivStyle = {
   width: "100%",
 };
 
-export function getNameWithImageRenderer(id, imageId, name, modulePath) {
+export function getNameWithImageRenderer(id, imageId, name, path) {
   if (imageId) {
     const url = getDownloadUrl(imageId);
     return (
       <div style={NameDivStyle}>
         <Avatar shape="square" size="large" src={url} />
         &nbsp;
-        <Link to={`${modulePath}/${id}`}>{name}</Link>
+        <Link to={path}>{name}</Link>
       </div>
     );
   }
@@ -28,7 +28,7 @@ export function getNameWithImageRenderer(id, imageId, name, modulePath) {
     <div style={NameDivStyle}>
       <Avatar shape="square" size="large" icon="user" />
       &nbsp;
-      <Link to={`${modulePath}/${id}`}>{name}</Link>
+      <Link to={path}>{name}</Link>
     </div>
   );
 }

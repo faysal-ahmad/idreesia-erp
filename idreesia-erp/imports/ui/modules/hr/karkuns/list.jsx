@@ -32,7 +32,12 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, { _id, imageId }) =>
-        getNameWithImageRenderer(_id, imageId, text, paths.karkunsPath),
+        getNameWithImageRenderer(
+          _id,
+          imageId,
+          text,
+          `${paths.karkunsPath}/${_id}`
+        ),
     },
     {
       title: "CNIC Number",

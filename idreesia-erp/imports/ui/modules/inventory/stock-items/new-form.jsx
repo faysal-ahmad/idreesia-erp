@@ -179,7 +179,6 @@ const formMutation = gql`
     ) {
       _id
       itemTypeName
-      itemTypePicture
       itemCategoryName
       minStockLevel
       currentStockLevel

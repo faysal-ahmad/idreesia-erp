@@ -140,7 +140,6 @@ const formQuery = gql`
       itemTypeName
       itemTypeCompany
       itemTypeDetails
-      itemTypePicture
       itemCategoryName
       physicalStoreName
       unitOfMeasurement

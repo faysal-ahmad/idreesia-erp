@@ -3,6 +3,10 @@ import SimpleSchema from "simpl-schema";
 import { approvable, identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
+  physicalStoreId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+  },
   stockItemId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id

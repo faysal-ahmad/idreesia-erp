@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Input, Form } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Input, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -22,7 +22,7 @@ export default class InputTextField extends Component {
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
-    initialValue: PropTypes.string,
+    initialValue: PropTypes.any,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,

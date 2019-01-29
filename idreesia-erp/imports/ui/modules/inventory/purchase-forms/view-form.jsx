@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form } from "antd";
 import moment from "moment";
+import { noop } from "lodash";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -83,7 +84,7 @@ class ViewForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
         <DateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"

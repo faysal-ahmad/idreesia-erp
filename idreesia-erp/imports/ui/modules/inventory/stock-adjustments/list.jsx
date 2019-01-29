@@ -216,12 +216,16 @@ class List extends Component {
 
   handleEditClicked = record => {
     const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsEditFormPath(physicalStoreId, record._id));
+    history.push(
+      paths.stockAdjustmentsEditFormPath(physicalStoreId, record._id)
+    );
   };
 
   handleViewClicked = record => {
     const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsViewFormPath(physicalStoreId, record._id));
+    history.push(
+      paths.stockAdjustmentsViewFormPath(physicalStoreId, record._id)
+    );
   };
 
   handleDeleteClicked = stockAdjustment => {

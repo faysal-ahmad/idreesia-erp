@@ -6,13 +6,9 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import { noop } from "lodash";
 
-import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import {
-  WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   InputTextField,
   DateField,
@@ -24,11 +20,6 @@ const FormStyle = {
   width: "800px",
 };
 
-const formItemExtendedLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
-};
-
 class ViewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -36,89 +27,62 @@ class ViewForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     formDataLoading: PropTypes.bool,
-    issuanceFormById: PropTypes.object,
+    stockAdjustmentById: PropTypes.object,
   };
 
   handleClose = () => {
     const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsPath(physicalStoreId));
+    history.push(paths.stockAdjustmentsPath(physicalStoreId));
   };
 
-  getItemsField() {
-    const {
-      issuanceFormById,
-      physicalStoreId,
-      stockItemsByPhysicalStoreId,
-    } = this.props;
-    const { getFieldDecorator } = this.props.form;
-
-    const rules = [
-      {
-        required: true,
-        message: "Please add some items.",
-      },
-    ];
-    return getFieldDecorator("items", {
-      rules,
-      initialValue: issuanceFormById.items,
-    })(
-      <ItemsList
-        readOnly
-        inflowLabel="Returned"
-        outflowLabel="Issued"
-        physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
-      />
-    );
-  }
-
   render() {
-    const { stockItemsLoading, formDataLoading, issuanceFormById } = this.props;
-    if (stockItemsLoading || formDataLoading) {
+    const { formDataLoading, stockAdjustmentById } = this.props;
+    if (formDataLoading) {
       return null;
     }
 
     const { getFieldDecorator } = this.props.form;
 
+    debugger;
+    let adjustment;
+    if (stockAdjustmentById.isInflow) {
+      adjustment = `Increased by ${stockAdjustmentById.quantity}`;
+    } else {
+      adjustment = `Decreased by ${stockAdjustmentById.quantity}`;
+    }
+
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+        <InputTextField
+          fieldName="stockItemId"
+          fieldLabel="Name"
+          initialValue={stockAdjustmentById.refStockItem.itemTypeFormattedName}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="adjustment"
+          fieldLabel="Adjustment"
+          initialValue={adjustment}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="adjustedBy"
+          fieldLabel="Adjusted By"
+          initialValue={stockAdjustmentById.refAdjustedBy.name}
+          getFieldDecorator={getFieldDecorator}
+        />
         <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
-          initialValue={moment(new Date(issuanceFormById.issueDate))}
-          required
-          requiredMessage="Please input an issue date."
+          fieldName="adjustedDate"
+          fieldLabel="Adjusted Date"
+          initialValue={moment(new Date(stockAdjustmentById.adjustmentDate))}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
-          fieldName="issuedBy"
-          fieldLabel="Issued By"
-          initialValue={issuanceFormById.issuedByName}
-          required
-          requiredMessage="Please input a name in issued by."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="issuedTo"
-          fieldLabel="Issued To"
-          initialValue={issuanceFormById.issuedToName}
-          required
-          requiredMessage="Please input a name in issued to."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
 
         <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          required={false}
-          initialValue={issuanceFormById.notes}
+          fieldName="adjustmentReason"
+          fieldLabel="Adjustment Reason"
+          initialValue={stockAdjustmentById.adjustmentReason}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -129,23 +93,23 @@ class ViewForm extends Component {
 }
 
 const formQuery = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
+  query stockAdjustmentById($_id: String!) {
+    stockAdjustmentById(_id: $_id) {
       _id
-      issueDate
-      issuedBy
-      issuedTo
-      issuedByName
-      issuedToName
       physicalStoreId
-      approvedOn
-      items {
-        stockItemId
-        quantity
-        isInflow
+      stockItemId
+      adjustmentDate
+      adjustedBy
+      quantity
+      isInflow
+      adjustmentReason
+      refStockItem {
         itemTypeName
+        itemTypeFormattedName
       }
-      notes
+      refAdjustedBy {
+        name
+      }
     }
   }
 `;
@@ -153,7 +117,6 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
@@ -161,5 +124,5 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "View"])
+  WithBreadcrumbs(["Inventory", "Forms", "Stock Adjustments", "View"])
 )(ViewForm);

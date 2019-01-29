@@ -42,7 +42,6 @@ class ViewForm extends Component {
       return null;
     }
 
-    debugger;
     const { getFieldDecorator } = this.props.form;
 
     let adjustment;

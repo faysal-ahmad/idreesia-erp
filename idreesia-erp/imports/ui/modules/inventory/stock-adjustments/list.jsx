@@ -372,6 +372,7 @@ const listQuery = gql`
           itemTypeImageId
         }
         refAdjustedBy {
+          _id
           name
         }
       }

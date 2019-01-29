@@ -169,10 +169,12 @@ const formQuery = gql`
       isInflow
       adjustmentReason
       refStockItem {
+        _id
         itemTypeName
         itemTypeFormattedName
       }
       refAdjustedBy {
+        _id
         name
       }
     }

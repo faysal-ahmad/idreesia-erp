@@ -42,9 +42,9 @@ class ViewForm extends Component {
       return null;
     }
 
+    debugger;
     const { getFieldDecorator } = this.props.form;
 
-    debugger;
     let adjustment;
     if (stockAdjustmentById.isInflow) {
       adjustment = `Increased by ${stockAdjustmentById.quantity}`;
@@ -104,10 +104,12 @@ const formQuery = gql`
       isInflow
       adjustmentReason
       refStockItem {
+        _id
         itemTypeName
         itemTypeFormattedName
       }
       refAdjustedBy {
+        _id
         name
       }
     }

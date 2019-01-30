@@ -1,7 +1,7 @@
 module.exports = {
   apps : [{
     name: 'Idreesia-ERP',
-    script: 'node ./bundle/main.js',
+    script: 'node ../build/bundle/main.js',
     autorestart: true,
     env: {
       NODE_ENV: 'production',

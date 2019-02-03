@@ -10,6 +10,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   WithKarkuns,
+  WithLocations,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -40,6 +41,8 @@ class EditForm extends Component {
     stockItemsByPhysicalStoreId: PropTypes.array,
     karkunsListLoading: PropTypes.bool,
     allKarkuns: PropTypes.array,
+    locationsListLoading: PropTypes.bool,
+    allLocations: PropTypes.array,
 
     formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
@@ -61,7 +64,7 @@ class EditForm extends Component {
       issuanceFormById: { _id },
     } = this.props;
     form.validateFields(
-      (err, { issueDate, issuedBy, issuedTo, items, notes }) => {
+      (err, { issueDate, issuedBy, issuedTo, locationId, items, notes }) => {
         if (err) return;
 
         const updatedItems = items.map(
@@ -77,6 +80,7 @@ class EditForm extends Component {
             issueDate,
             issuedBy,
             issuedTo,
+            locationId,
             physicalStoreId,
             items: updatedItems,
             notes,
@@ -122,12 +126,19 @@ class EditForm extends Component {
   render() {
     const {
       karkunsListLoading,
+      locationsListLoading,
       stockItemsLoading,
       formDataLoading,
       issuanceFormById,
       allKarkuns,
+      allLocations,
     } = this.props;
-    if (karkunsListLoading || stockItemsLoading || formDataLoading) {
+    if (
+      karkunsListLoading ||
+      stockItemsLoading ||
+      locationsListLoading ||
+      formDataLoading
+    ) {
       return null;
     }
 
@@ -146,19 +157,29 @@ class EditForm extends Component {
         <AutoCompleteField
           data={allKarkuns}
           fieldName="issuedBy"
-          fieldLabel="Issued By"
+          fieldLabel="Issued By / Received By"
+          placeholder="Issued By / Received By"
           initialValue={issuanceFormById.issuedBy}
           required
-          requiredMessage="Please input a name in issued by."
+          requiredMessage="Please select a name for Issued By / Received By."
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           data={allKarkuns}
           fieldName="issuedTo"
-          fieldLabel="Issued To"
+          fieldLabel="Issued To / Returned By"
+          placeholder="Issued To / Returned By"
           initialValue={issuanceFormById.issuedTo}
           required
-          requiredMessage="Please input a name in issued to."
+          requiredMessage="Please select a name for Issued To / Returned By."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <AutoCompleteField
+          data={allLocations}
+          fieldName="locationId"
+          fieldLabel="For Location"
+          placeholder="Select a Location"
+          initialValue={issuanceFormById.locationId}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -186,6 +207,7 @@ const formMutation = gql`
     $issueDate: String!
     $issuedBy: String!
     $issuedTo: String!
+    $locationId: String
     $physicalStoreId: String!
     $items: [ItemWithQuantityInput]
     $notes: String
@@ -195,6 +217,7 @@ const formMutation = gql`
       issueDate: $issueDate
       issuedBy: $issuedBy
       issuedTo: $issuedTo
+      locationId: $locationId
       physicalStoreId: $physicalStoreId
       items: $items
       notes: $notes
@@ -203,6 +226,7 @@ const formMutation = gql`
       issueDate
       issuedByName
       issuedToName
+      locationId
       physicalStoreId
       items {
         stockItemId
@@ -223,6 +247,7 @@ const formQuery = gql`
       issuedTo
       issuedByName
       issuedToName
+      locationId
       physicalStoreId
       approvedOn
       items {
@@ -239,6 +264,7 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithKarkuns(),
+  WithLocations(),
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {

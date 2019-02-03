@@ -77,6 +77,11 @@ class List extends Component {
       key: "issuedToName",
     },
     {
+      title: "For Location",
+      dataIndex: "refLocation.name",
+      key: "refLocation.name",
+    },
+    {
       title: "Items",
       dataIndex: "items",
       key: "items",
@@ -316,6 +321,7 @@ const formMutationApprove = gql`
       issueDate
       issuedBy
       issuedTo
+      locationId
       issuedByName
       issuedToName
       physicalStoreId
@@ -342,6 +348,7 @@ const listQuery = gql`
         issueDate
         issuedBy
         issuedTo
+        locationId
         issuedByName
         issuedToName
         physicalStoreId
@@ -351,6 +358,10 @@ const listQuery = gql`
           quantity
           isInflow
           itemTypeName
+        }
+        refLocation {
+          _id
+          name
         }
       }
     }

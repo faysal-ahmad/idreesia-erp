@@ -204,6 +204,7 @@ export default compose(
     options: {
       refetchQueries: [
         "pagedStockItems",
+        "stockItemsByPhysicalStoreId",
         "unStockedItemTypesByPhysicalStoreId",
       ],
     },

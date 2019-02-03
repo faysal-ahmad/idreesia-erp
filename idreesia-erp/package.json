@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp-dev METEOR_PACKAGE_DIRS=../ meteor run --settings ./private/env/settings.json",
-    "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build",
+    "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build/idreesia-erp",
     "test": "jest"
   },
   "dependencies": {

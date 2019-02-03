@@ -3,9 +3,11 @@ import { isUndefined } from "lodash";
 
 import * as JOB_TYPES from "imports/constants/job-types";
 import { CleanupJob } from "imports/models";
+import { SendEmailsJob } from "imports/models";
 
 const JobModels = {
   [JOB_TYPES.CLEANUP_JOB]: CleanupJob,
+  [JOB_TYPES.SEND_EMAILS]: SendEmailsJob,
 };
 
 class Jobs extends JobCollection {

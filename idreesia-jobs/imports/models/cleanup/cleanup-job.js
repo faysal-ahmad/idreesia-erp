@@ -1,5 +1,5 @@
 import * as JOB_TYPES from "imports/constants/job-types";
-import Job from "./common/job";
+import Job from "../common/job";
 
 class CleanupJob extends Job {
   constructor(data = {}) {

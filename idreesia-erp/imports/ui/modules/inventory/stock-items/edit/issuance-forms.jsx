@@ -48,6 +48,11 @@ class List extends Component {
       key: "refIssuedTo.name",
     },
     {
+      title: "For Location",
+      dataIndex: "refLocation.name",
+      key: "refLocation.name",
+    },
+    {
       title: "Items",
       dataIndex: "items",
       key: "items",
@@ -119,11 +124,11 @@ const listQuery = gql`
         isInflow
         itemTypeName
       }
-      refIssuedBy {
+      refIssuedTo {
         _id
         name
       }
-      refIssuedTo {
+      refLocation {
         _id
         name
       }

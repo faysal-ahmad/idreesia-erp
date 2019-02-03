@@ -14,6 +14,10 @@ export default class SubModulePaths {
     SubModulePaths.itemCategoriesPath
   }/:itemCategoryId`;
 
+  static locationsPath = `${ModulePaths.inventory}/locations`;
+  static locationsNewFormPath = `${SubModulePaths.locationsPath}/new`;
+  static locationsEditFormPath = `${SubModulePaths.locationsPath}/:locationId`;
+
   // *************************************************************************************
   // Stock Items Routes
   // *************************************************************************************

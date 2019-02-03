@@ -1,0 +1,20 @@
+type Location {
+  _id: String
+  name: String
+  description: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allLocations: [Location]
+  locationById(_id: String!): Location
+}
+
+extend type Mutation {
+  createLocation(name: String!, description: String): Location
+  updateLocation(_id: String!, name: String!, description: String): Location
+}

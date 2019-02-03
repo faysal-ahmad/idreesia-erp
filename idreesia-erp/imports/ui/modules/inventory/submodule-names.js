@@ -7,4 +7,5 @@ export default class SubModuleNames {
 
   static itemTypes = "Item Types";
   static itemCategories = "Item Categories";
+  static locations = "Locations";
 }

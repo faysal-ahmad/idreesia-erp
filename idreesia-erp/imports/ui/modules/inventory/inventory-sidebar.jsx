@@ -42,6 +42,9 @@ class InventorySidebar extends Component {
     } else if (key === "item-categories") {
       setActiveSubModuleName(SubModuleNames.itemCategories);
       history.push(paths.itemCategoriesPath);
+    } else if (key === "locations") {
+      setActiveSubModuleName(SubModuleNames.locations);
+      history.push(paths.locationsPath);
     }
   };
 
@@ -101,6 +104,7 @@ class InventorySidebar extends Component {
       >
         <Menu.Item key="item-types">Item Types</Menu.Item>
         <Menu.Item key="item-categories">Item Categories</Menu.Item>
+        <Menu.Item key="locations">Locations</Menu.Item>
       </SubMenu>
     );
 

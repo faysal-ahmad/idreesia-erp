@@ -18,6 +18,11 @@ import {
   ItemCategoriesList,
 } from "./item-categories";
 import {
+  LocationsNewForm,
+  LocationsEditForm,
+  LocationsList,
+} from "./locations";
+import {
   IssuanceFormsNewForm,
   IssuanceFormsEditForm,
   IssuanceFormsViewForm,
@@ -51,6 +56,10 @@ const InventoryRouter = () => (
       component={ItemCategoriesEditForm}
     />
     <Route path={paths.itemCategoriesPath} component={ItemCategoriesList} />
+
+    <Route path={paths.locationsNewFormPath} component={LocationsNewForm} />
+    <Route path={paths.locationsEditFormPath} component={LocationsEditForm} />
+    <Route path={paths.locationsPath} component={LocationsList} />
 
     <Route path={paths.stockItemsNewFormPath()} component={StockItemsNewForm} />
     <Route

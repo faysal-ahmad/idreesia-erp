@@ -96,7 +96,7 @@ class ViewForm extends Component {
         <InputTextField
           fieldName="issuedBy"
           fieldLabel="Issued By"
-          initialValue={issuanceFormById.issuedByName}
+          initialValue={issuanceFormById.refIssuedBy.name}
           required
           requiredMessage="Please input a name in issued by."
           getFieldDecorator={getFieldDecorator}
@@ -104,9 +104,19 @@ class ViewForm extends Component {
         <InputTextField
           fieldName="issuedTo"
           fieldLabel="Issued To"
-          initialValue={issuanceFormById.issuedToName}
+          initialValue={issuanceFormById.refIssuedTo.name}
           required
           requiredMessage="Please input a name in issued to."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="locationId"
+          fieldLabel="For Location"
+          initialValue={
+            issuanceFormById.refLocation
+              ? issuanceFormById.refLocation.name
+              : null
+          }
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -135,8 +145,6 @@ const formQuery = gql`
       issueDate
       issuedBy
       issuedTo
-      issuedByName
-      issuedToName
       physicalStoreId
       approvedOn
       items {
@@ -144,6 +152,18 @@ const formQuery = gql`
         quantity
         isInflow
         itemTypeName
+      }
+      refLocation {
+        _id
+        name
+      }
+      refIssuedBy {
+        _id
+        name
+      }
+      refIssuedTo {
+        _id
+        name
       }
       notes
     }

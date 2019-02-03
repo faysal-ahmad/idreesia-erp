@@ -44,8 +44,8 @@ class List extends Component {
     },
     {
       title: "Issued To",
-      dataIndex: "issuedToName",
-      key: "issuedToName",
+      dataIndex: "refIssuedTo.name",
+      key: "refIssuedTo.name",
     },
     {
       title: "Items",
@@ -111,8 +111,6 @@ const listQuery = gql`
       issueDate
       issuedBy
       issuedTo
-      issuedByName
-      issuedToName
       physicalStoreId
       approvedOn
       items {
@@ -120,6 +118,14 @@ const listQuery = gql`
         quantity
         isInflow
         itemTypeName
+      }
+      refIssuedBy {
+        _id
+        name
+      }
+      refIssuedTo {
+        _id
+        name
       }
     }
   }

@@ -9,13 +9,11 @@ type IssuanceForm {
   notes: String
 
   refLocation: Location
+  refIssuedBy: KarkunType
+  refIssuedTo: KarkunType
   refCreatedBy: KarkunType
   refUpdatedBy: KarkunType
-  issuedByName: String
-  issuedToName: String
-  createdByName: String
-  updatedByName: String
-  approvedByName: String
+  refApprovedBy: KarkunType
 
   createdAt: String
   createdBy: String

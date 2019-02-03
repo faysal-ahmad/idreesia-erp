@@ -224,14 +224,20 @@ const formMutation = gql`
     ) {
       _id
       issueDate
-      issuedByName
-      issuedToName
       locationId
       physicalStoreId
       items {
         stockItemId
         quantity
         isInflow
+      }
+      refIssuedBy {
+        _id
+        name
+      }
+      refIssuedTo {
+        _id
+        name
       }
       notes
     }
@@ -245,8 +251,6 @@ const formQuery = gql`
       issueDate
       issuedBy
       issuedTo
-      issuedByName
-      issuedToName
       locationId
       physicalStoreId
       approvedOn
@@ -255,6 +259,14 @@ const formQuery = gql`
         quantity
         isInflow
         itemTypeName
+      }
+      refIssuedBy {
+        _id
+        name
+      }
+      refIssuedTo {
+        _id
+        name
       }
       notes
     }

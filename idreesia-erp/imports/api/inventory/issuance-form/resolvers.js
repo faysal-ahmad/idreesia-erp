@@ -24,6 +24,14 @@ export default {
       }
       return null;
     },
+    refIssuedBy: issuanceForm =>
+      Karkuns.findOne({
+        _id: { $eq: issuanceForm.issuedBy },
+      }),
+    refIssuedTo: issuanceForm =>
+      Karkuns.findOne({
+        _id: { $eq: issuanceForm.issuedTo },
+      }),
     refCreatedBy: issuanceForm =>
       Karkuns.findOne({
         _id: { $eq: issuanceForm.createdBy },
@@ -32,47 +40,13 @@ export default {
       Karkuns.findOne({
         _id: { $eq: issuanceForm.updatedBy },
       }),
-    issuedByName: issuanceForm => {
-      const karkun = Karkuns.findOne({
-        _id: { $eq: issuanceForm.issuedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    issuedToName: issuanceForm => {
-      const karkun = Karkuns.findOne({
-        _id: { $eq: issuanceForm.issuedTo },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    createdByName: issuanceForm => {
-      const karkun = Karkuns.findOne({
-        userId: { $eq: issuanceForm.createdBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    updatedByName: issuanceForm => {
-      const karkun = Karkuns.findOne({
-        userId: { $eq: issuanceForm.updatedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    approvedByName: issuanceForm => {
-      if (!issuanceForm.approvedBy) return null;
-
-      const karkun = Karkuns.findOne({
-        userId: { $eq: issuanceForm.approvedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
+    refApprovedBy: issuanceForm => {
+      if (issuanceForm.approvedBy) {
+        return Karkuns.findOne({
+          _id: { $eq: issuanceForm.approvedBy },
+        });
+      }
+      return null;
     },
   },
   Query: {

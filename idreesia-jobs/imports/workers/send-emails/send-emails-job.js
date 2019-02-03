@@ -1,13 +1,34 @@
 import * as JOB_TYPES from "imports/constants/job-types";
 
 import Jobs from "imports/collections/jobs";
+import sendEmail from "./sendgrid/send-email";
+
+const apiKey = Meteor.settings.private.emailProviderKey;
 
 export const worker = (job, callback) => {
-  job.done();
+  // eslint-disable-next-line no-console
+  console.log(`--> Sending emails`);
 
-  if (callback) {
-    callback();
-  }
+  sendEmail(
+    {
+      from: "server@idreesia-erp.org",
+      to: "faisal.idreesi@gmail.com",
+      replyTo: "no-reply@idreesia-erp.org",
+      subject: "Inventory Summary",
+      html: "Here is your inventory summary.",
+    },
+    { apiKey }
+  )
+    .catch(error => {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    })
+    .finally(() => {
+      job.done();
+      if (callback) {
+        callback();
+      }
+    });
 };
 
 export default Jobs.processJobs(

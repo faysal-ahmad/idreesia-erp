@@ -26,7 +26,10 @@ module.exports = {
         MONGO_URL: "mongodb://localhost:27017/idreesia-erp",
         PORT: 3002,
         METEOR_SETTINGS: {
-          public: {}
+          private: {
+            emailProviderKey:
+              "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"
+          }
         }
       }
     }

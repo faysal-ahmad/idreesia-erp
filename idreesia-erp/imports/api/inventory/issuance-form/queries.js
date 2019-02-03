@@ -39,6 +39,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
   const {
     showApproved,
     showUnapproved,
+    locationId,
     startDate,
     endDate,
     pageIndex = "0",
@@ -60,6 +61,14 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         approvedOn: { $eq: null },
+      },
+    });
+  }
+
+  if (locationId) {
+    pipeline.push({
+      $match: {
+        locationId: { $eq: locationId },
       },
     });
   }

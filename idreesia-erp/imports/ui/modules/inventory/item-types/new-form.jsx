@@ -36,7 +36,15 @@ class NewForm extends Component {
     form.validateFields(
       (
         err,
-        { name, company, details, description, itemCategoryId, unitOfMeasurement, singleUse }
+        {
+          name,
+          company,
+          details,
+          description,
+          itemCategoryId,
+          unitOfMeasurement,
+          singleUse,
+        }
       ) => {
         if (err) return;
 
@@ -70,7 +78,7 @@ class NewForm extends Component {
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="name"
-          fieldLabel="Item Type Name (Eng)"
+          fieldLabel="Item Type Name"
           required
           requiredMessage="Please input a name for the item type."
           getFieldDecorator={getFieldDecorator}

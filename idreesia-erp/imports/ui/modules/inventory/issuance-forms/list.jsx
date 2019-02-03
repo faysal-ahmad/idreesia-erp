@@ -9,7 +9,10 @@ import { toSafeInteger } from "lodash";
 import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithLocations,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 
 import ListFilter from "./list-filter";
 
@@ -43,6 +46,8 @@ class List extends Component {
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
+    locationsListLoading: PropTypes.bool,
+    allLocations: PropTypes.array,
     loading: PropTypes.bool,
     pagedIssuanceForms: PropTypes.shape({
       totalResults: PropTypes.number,
@@ -154,6 +159,7 @@ class List extends Component {
       approvalStatus,
       startDate,
       endDate,
+      locationId,
       pageIndex,
       pageSize,
     } = newParams;
@@ -170,6 +176,10 @@ class List extends Component {
       showApprovedVal = queryParams.showApproved || "true";
       showUnapprovedVal = queryParams.showUnapproved || "true";
     }
+
+    let locationIdVal;
+    if (newParams.hasOwnProperty("locationId")) locationIdVal = locationId;
+    else locationIdVal = queryParams.locationId || "";
 
     let startDateVal;
     if (newParams.hasOwnProperty("startDate"))
@@ -191,7 +201,7 @@ class List extends Component {
 
     const path = `${
       location.pathname
-    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&locationId=${locationIdVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -251,7 +261,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { queryParams } = this.props;
+    const { allLocations, queryParams } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -262,7 +272,11 @@ class List extends Component {
         >
           New Issuance Form
         </Button>
-        <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />
+        <ListFilter
+          allLocations={allLocations}
+          refreshPage={this.refreshPage}
+          queryParams={queryParams}
+        />
       </div>
     );
   };
@@ -375,6 +389,7 @@ const listQuery = gql`
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
+  WithLocations(),
   graphql(formMutationRemove, {
     name: "removeIssuanceForm",
     options: {

@@ -4,7 +4,11 @@ import { Collapse, Form, Row, Button } from "antd";
 import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { CheckboxField, DateField } from "/imports/ui/modules/helpers/fields";
+import {
+  AutoCompleteField,
+  CheckboxField,
+  DateField,
+} from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
   width: "500px",
@@ -23,6 +27,7 @@ class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
 
+    allLocations: PropTypes.array,
     refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
   };
@@ -31,21 +36,42 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, refreshPage } = this.props;
 
-    form.validateFields((err, { approvalStatus, startDate, endDate }) => {
-      if (err) return;
-      refreshPage({
-        approvalStatus,
-        startDate,
-        endDate,
-        pageIndex: 0,
-      });
+    form.validateFields(
+      (err, { approvalStatus, locationId, startDate, endDate }) => {
+        if (err) return;
+        refreshPage({
+          approvalStatus,
+          locationId,
+          startDate,
+          endDate,
+          pageIndex: 0,
+        });
+      }
+    );
+  };
+
+  handleReset = () => {
+    const { refreshPage } = this.props;
+    refreshPage({
+      approvalStatus: ["approved", "unapproved"],
+      locationId: "",
+      startDate: null,
+      endDate: null,
+      pageIndex: 0,
     });
   };
 
   render() {
+    const { allLocations } = this.props;
     const { getFieldDecorator } = this.props.form;
     const {
-      queryParams: { startDate, endDate, showApproved, showUnapproved },
+      queryParams: {
+        startDate,
+        endDate,
+        locationId,
+        showApproved,
+        showUnapproved,
+      },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -69,6 +95,15 @@ class ListFilter extends Component {
               initialValue={status}
               getFieldDecorator={getFieldDecorator}
             />
+            <AutoCompleteField
+              data={allLocations}
+              fieldName="locationId"
+              fieldLayout={formItemLayout}
+              fieldLabel="Location"
+              placeholder="Select a Location"
+              initialValue={locationId}
+              getFieldDecorator={getFieldDecorator}
+            />
             <DateField
               fieldName="startDate"
               fieldLabel="Start Date"
@@ -87,7 +122,7 @@ class ListFilter extends Component {
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleCancel}>
+                <Button type="default" onClick={this.handleReset}>
                   Reset
                 </Button>
                 &nbsp;

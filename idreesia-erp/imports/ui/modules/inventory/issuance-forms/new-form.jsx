@@ -9,6 +9,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   WithKarkuns,
+  WithLocations,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -38,6 +39,8 @@ class NewForm extends Component {
     stockItemsByPhysicalStoreId: PropTypes.array,
     karkunsListLoading: PropTypes.bool,
     allKarkuns: PropTypes.array,
+    locationsListLoading: PropTypes.bool,
+    allLocations: PropTypes.array,
 
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
@@ -53,7 +56,7 @@ class NewForm extends Component {
     e.preventDefault();
     const { form, history, physicalStoreId, createIssuanceForm } = this.props;
     form.validateFields(
-      (err, { issueDate, issuedBy, issuedTo, items, notes }) => {
+      (err, { issueDate, issuedBy, issuedTo, locationId, items, notes }) => {
         if (err) return;
 
         createIssuanceForm({
@@ -62,6 +65,7 @@ class NewForm extends Component {
             issuedBy,
             issuedTo,
             physicalStoreId,
+            locationId,
             items,
             notes,
           },
@@ -97,8 +101,15 @@ class NewForm extends Component {
   }
 
   render() {
-    const { stockItemsLoading, karkunsListLoading, allKarkuns } = this.props;
-    if (stockItemsLoading || karkunsListLoading) return null;
+    const {
+      stockItemsLoading,
+      karkunsListLoading,
+      locationsListLoading,
+      allKarkuns,
+      allLocations,
+    } = this.props;
+    if (stockItemsLoading || karkunsListLoading || locationsListLoading)
+      return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -114,19 +125,26 @@ class NewForm extends Component {
         <AutoCompleteField
           data={allKarkuns}
           fieldName="issuedBy"
-          fieldLabel="Issued By"
-          placeholder="Issued By"
+          fieldLabel="Issued By / Received By"
+          placeholder="Issued By / Received By"
           required
-          requiredMessage="Please input a name in issued by."
+          requiredMessage="Please select a name for Issued By / Received By."
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           data={allKarkuns}
           fieldName="issuedTo"
-          fieldLabel="Issued To"
-          placeholder="Issued To"
+          fieldLabel="Issued To / Returned By"
+          placeholder="Issued To / Returned By"
           required
-          requiredMessage="Please input a name in issued to."
+          requiredMessage="Please select a name for Issued To / Returned By."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <AutoCompleteField
+          data={allLocations}
+          fieldName="locationId"
+          fieldLabel="For Location"
+          placeholder="Select a Location"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -153,6 +171,7 @@ const formMutation = gql`
     $issuedBy: String!
     $issuedTo: String!
     $physicalStoreId: String!
+    $locationId: String
     $items: [ItemWithQuantityInput]
     $notes: String
   ) {
@@ -161,6 +180,7 @@ const formMutation = gql`
       issuedBy: $issuedBy
       issuedTo: $issuedTo
       physicalStoreId: $physicalStoreId
+      locationId: $locationId
       items: $items
       notes: $notes
     ) {
@@ -169,6 +189,7 @@ const formMutation = gql`
       issuedByName
       issuedToName
       physicalStoreId
+      locationId
       items {
         stockItemId
         quantity
@@ -182,6 +203,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithKarkuns(),
+  WithLocations(),
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {

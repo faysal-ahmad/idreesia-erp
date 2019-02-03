@@ -3,10 +3,14 @@ type IssuanceForm {
   issueDate: String
   issuedBy: String
   issuedTo: String
+  locationId: String
   physicalStoreId: String
   items: [ItemWithQuantity]
   notes: String
 
+  refLocation: Location
+  refCreatedBy: KarkunType
+  refUpdatedBy: KarkunType
   issuedByName: String
   issuedToName: String
   createdByName: String
@@ -28,7 +32,10 @@ type PagedIssuanceForm {
 
 extend type Query {
   issuanceFormsByStockItem(stockItemId: String): [IssuanceForm]
-  pagedIssuanceForms(physicalStoreId: String!, queryString: String): PagedIssuanceForm
+  pagedIssuanceForms(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedIssuanceForm
   issuanceFormById(_id: String!): IssuanceForm
 }
 
@@ -38,6 +45,7 @@ extend type Mutation {
     issuedBy: String!
     issuedTo: String!
     physicalStoreId: String!
+    locationId: String
     items: [ItemWithQuantityInput]
     notes: String
   ): IssuanceForm
@@ -48,6 +56,7 @@ extend type Mutation {
     issuedBy: String!
     issuedTo: String!
     physicalStoreId: String!
+    locationId: String
     items: [ItemWithQuantityInput]
     notes: String
   ): IssuanceForm

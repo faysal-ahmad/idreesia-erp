@@ -1,5 +1,6 @@
 import { Karkuns } from "meteor/idreesia-common/collections/hr";
 import {
+  Locations,
   IssuanceForms,
   PhysicalStores,
   StockItems,
@@ -15,6 +16,22 @@ import getIssuanceForms, { getIssuanceFormsByStockItemId } from "./queries";
 
 export default {
   IssuanceForm: {
+    refLocation: issuanceForm => {
+      if (issuanceForm.locationId) {
+        return Locations.findOne({
+          _id: { $eq: issuanceForm.locationId },
+        });
+      }
+      return null;
+    },
+    refCreatedBy: issuanceForm =>
+      Karkuns.findOne({
+        _id: { $eq: issuanceForm.createdBy },
+      }),
+    refUpdatedBy: issuanceForm =>
+      Karkuns.findOne({
+        _id: { $eq: issuanceForm.updatedBy },
+      }),
     issuedByName: issuanceForm => {
       const karkun = Karkuns.findOne({
         _id: { $eq: issuanceForm.issuedBy },
@@ -129,7 +146,15 @@ export default {
   Mutation: {
     createIssuanceForm(
       obj,
-      { issueDate, issuedBy, issuedTo, physicalStoreId, items, notes },
+      {
+        issueDate,
+        issuedBy,
+        issuedTo,
+        physicalStoreId,
+        locationId,
+        items,
+        notes,
+      },
       { userId }
     ) {
       if (
@@ -155,6 +180,7 @@ export default {
         issuedBy,
         issuedTo,
         physicalStoreId,
+        locationId,
         items,
         notes,
         createdAt: date,
@@ -176,7 +202,16 @@ export default {
 
     updateIssuanceForm(
       obj,
-      { _id, issueDate, issuedBy, issuedTo, physicalStoreId, items, notes },
+      {
+        _id,
+        issueDate,
+        issuedBy,
+        issuedTo,
+        physicalStoreId,
+        locationId,
+        items,
+        notes,
+      },
       { userId }
     ) {
       if (
@@ -229,6 +264,7 @@ export default {
             issuedBy,
             issuedTo,
             physicalStoreId,
+            locationId,
             items,
             notes,
             updatedAt: date,

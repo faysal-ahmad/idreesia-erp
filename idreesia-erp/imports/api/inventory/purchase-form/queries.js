@@ -67,7 +67,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
   if (startDate) {
     pipeline.push({
       $match: {
-        returnDate: {
+        purchaseDate: {
           $gte: moment(startDate, Formats.DATE_FORMAT)
             .startOf("day")
             .toDate(),
@@ -79,7 +79,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
   if (endDate) {
     pipeline.push({
       $match: {
-        returnDate: {
+        purchaseDate: {
           $lte: moment(endDate, Formats.DATE_FORMAT)
             .endOf("day")
             .toDate(),

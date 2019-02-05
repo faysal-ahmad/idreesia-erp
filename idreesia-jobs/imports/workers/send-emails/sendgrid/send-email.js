@@ -1,9 +1,8 @@
 import request from "request";
 
-export default function sendEmail(
-  { from, to, replyTo, subject, html },
-  { apiKey }
-) {
+const apiKey = Meteor.settings.private.emailProviderKey;
+
+export default function sendEmail({ from, to, replyTo, subject, html }) {
   return new Promise((resolve, reject) => {
     const options = {
       uri: "https://api.sendgrid.com/v3/mail/send",
@@ -14,11 +13,7 @@ export default function sendEmail(
       body: JSON.stringify({
         personalizations: [
           {
-            to: [
-              {
-                email: to,
-              },
-            ],
+            to,
             subject,
           },
         ],

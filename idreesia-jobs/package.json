@@ -10,7 +10,9 @@
     "meteor-babel": "^7.2.0",
     "meteor-node-stubs": "^0.4.1",
     "mjml": "^4.3.1",
-    "request": "^2.88.0"
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "simpl-schema": "^1.4.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",

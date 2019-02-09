@@ -4,6 +4,7 @@ import { get } from "lodash";
 import { ItemTypes } from "meteor/idreesia-common/collections/inventory";
 
 export default function getItemTypes(queryString) {
+  console.log(queryString);
   const params = parse(queryString);
   const pipeline = [];
 
@@ -12,6 +13,7 @@ export default function getItemTypes(queryString) {
     itemTypeName,
     pageIndex = "0",
     pageSize = "10",
+    unstockedInPhysicalStoreId,
   } = params;
 
   if (itemCategoryId) {
@@ -26,6 +28,39 @@ export default function getItemTypes(queryString) {
     pipeline.push({
       $match: { $text: { $search: itemTypeName } },
     });
+  }
+
+  if (unstockedInPhysicalStoreId) {
+    pipeline.push(
+      {
+        $lookup: {
+          from: "inventory-stock-items",
+          let: {
+            itemTypeId: "$_id",
+            physicalStoreId: unstockedInPhysicalStoreId,
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$itemTypeId", "$$itemTypeId"] },
+                    { $eq: ["$physicalStoreId", "$$physicalStoreId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "stockItems",
+        },
+      },
+      {
+        $match: {
+          stockItems: { $eq: [] },
+        },
+      },
+      { $project: { stockItems: 0 } }
+    );
   }
 
   const countingPipeline = pipeline.concat({

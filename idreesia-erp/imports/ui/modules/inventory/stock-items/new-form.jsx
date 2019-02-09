@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
-import { filter } from "lodash";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -9,13 +8,11 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputNumberField,
-  SelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
-import {
-  WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+
+import { ItemTypeField } from "/imports/ui/modules/inventory/item-types/field";
 
 class NewForm extends Component {
   static propTypes = {
@@ -28,42 +25,7 @@ class NewForm extends Component {
     unStockedItemTypesByPhysicalStoreId: PropTypes.array,
 
     physicalStoreId: PropTypes.string,
-    itemCategoriesLoading: PropTypes.bool,
-    allItemCategories: PropTypes.array,
     createStockItem: PropTypes.func,
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedItemCategoryId: null,
-      filteredItemTypes: [],
-    };
-  }
-
-  getFilteredItemTypes = itemCategoryId => {
-    const { unStockedItemTypesByPhysicalStoreId } = this.props;
-    let filteredItemTypes = [];
-
-    if (itemCategoryId) {
-      filteredItemTypes = filter(
-        unStockedItemTypesByPhysicalStoreId,
-        itemType => {
-          if (itemType.itemCategoryId !== itemCategoryId) return false;
-          return true;
-        }
-      );
-    }
-
-    return filteredItemTypes;
-  };
-
-  handleCategoryChanged = value => {
-    const state = Object.assign({}, this.state, {
-      selectedItemCategoryId: value,
-      filteredItemTypes: this.getFilteredItemTypes(value),
-    });
-    this.setState(state);
   };
 
   handleCancel = () => {
@@ -77,13 +39,13 @@ class NewForm extends Component {
     form.validateFields(
       (
         err,
-        { itemTypeId, minStockLevel, currentStockLevel, totalStockLevel }
+        { itemType, minStockLevel, currentStockLevel, totalStockLevel }
       ) => {
         if (err) return;
 
         createStockItem({
           variables: {
-            itemTypeId,
+            itemTypeId: itemType._id,
             physicalStoreId,
             minStockLevel,
             currentStockLevel,
@@ -101,42 +63,29 @@ class NewForm extends Component {
   };
 
   render() {
+    const { physicalStoreId } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { allItemCategories } = this.props;
-    const { filteredItemTypes } = this.state;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <SelectField
-          data={allItemCategories}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="itemCategoryId"
-          fieldLabel="Item Category"
+        <ItemTypeField
           required
-          requiredMessage="Please select an item category."
-          onChange={this.handleCategoryChanged}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <SelectField
-          data={filteredItemTypes}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ formattedName }) => formattedName}
-          fieldName="itemTypeId"
+          requiredMessage="Please select and item type."
+          fieldName="itemType"
           fieldLabel="Item Type"
+          getFieldDecorator={getFieldDecorator}
+          physicalStoreId={physicalStoreId}
+        />
+        <InputNumberField
           required
-          requiredMessage="Please select an item type."
+          requiredMessage="Please set the current stock level."
+          fieldName="currentStockLevel"
+          fieldLabel="Current Stock Level"
           getFieldDecorator={getFieldDecorator}
         />
-
         <InputNumberField
           fieldName="minStockLevel"
           fieldLabel="Min Stock Level"
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="currentStockLevel"
-          fieldLabel="Current Stock Level"
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -144,15 +93,6 @@ class NewForm extends Component {
     );
   }
 }
-
-const itemCategoriesListQuery = gql`
-  query allItemCategories {
-    allItemCategories {
-      _id
-      name
-    }
-  }
-`;
 
 const unStockedItemTypesListQuery = gql`
   query unStockedItemTypesByPhysicalStoreId($physicalStoreId: String!) {
@@ -189,10 +129,6 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
-  graphql(itemCategoriesListQuery, {
-    props: ({ data }) => ({ itemCategoriesLoading: data.loading, ...data }),
-  }),
   graphql(unStockedItemTypesListQuery, {
     props: ({ data }) => ({ unStockedItemTypesLoading: data.loading, ...data }),
     options: ({ physicalStoreId }) => ({

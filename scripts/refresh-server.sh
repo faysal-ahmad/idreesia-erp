@@ -10,11 +10,13 @@ git pull
 
 # build the idreesia-erp application
 cd ./idreesia-erp
+meteor yarn install
 meteor yarn build
 cd ../
 
 # build the idreesia-jobs application
 cd ./idreesia-jobs
+meteor yarn install
 meteor yarn build
 cd ../
 

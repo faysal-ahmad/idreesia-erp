@@ -57,7 +57,7 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allItemCategories } = this.props;
+    const { itemCategoryId, itemTypeName, allItemCategories } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -71,6 +71,7 @@ class ListFilter extends Component {
               fieldLabel="Category"
               fieldLayout={formItemLayout}
               required={false}
+              initialValue={itemCategoryId}
               getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
@@ -78,6 +79,7 @@ class ListFilter extends Component {
               fieldLabel="Name"
               fieldLayout={formItemLayout}
               required={false}
+              initialValue={itemTypeName}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>

@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Pagination, Table } from "antd";
+import { Avatar, Button, Pagination, Table } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -33,6 +33,8 @@ class List extends Component {
     itemTypeName: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
+    showNewButton: PropTypes.bool,
+    handleNewClicked: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedItemTypes: PropTypes.shape({
@@ -118,9 +120,26 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { itemCategoryId, itemTypeName, setPageParams } = this.props;
+    const {
+      itemCategoryId,
+      itemTypeName,
+      setPageParams,
+      showNewButton,
+      handleNewClicked,
+    } = this.props;
+
+    let newButton = null;
+    if (showNewButton) {
+      newButton = (
+        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+          New Item Type
+        </Button>
+      );
+    }
+
     return (
       <div style={ToolbarStyle}>
+        {newButton}
         <ListFilter
           itemCategoryId={itemCategoryId}
           itemTypeName={itemTypeName}
@@ -129,6 +148,7 @@ class List extends Component {
       </div>
     );
   };
+
   render() {
     const { loading } = this.props;
     if (loading) return null;

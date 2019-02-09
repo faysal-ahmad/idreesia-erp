@@ -127,7 +127,7 @@ const formMutation = gql`
 `;
 
 export default compose(
-  Form.create(),
+  Form.create({ name: "newStockItemForm" }),
   WithPhysicalStoreId(),
   graphql(unStockedItemTypesListQuery, {
     props: ({ data }) => ({ unStockedItemTypesLoading: data.loading, ...data }),

@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "antd": "^3.11.0",
+    "antd": "^3.13.2",
     "apollo-client": "^2.2.6",
     "apollo-client-preset": "^1.0.8",
     "apollo-link-error": "^1.1.0",
@@ -30,16 +30,16 @@
     "popper.js": "^1.12.9",
     "prop-types": "^15.6.0",
     "query-string": "^6.1.0",
-    "react": "^16.3.0",
+    "react": "^16.8.1",
     "react-apollo": "^2.0.4",
-    "react-dom": "^16.2.0",
-    "react-redux": "^5.0.6",
-    "react-router-dom": "^4.2.2",
+    "react-dom": "^16.8.1",
+    "react-redux": "^6.0.0",
+    "react-router-dom": "^4.3.1",
     "react-webcam": "^0.5.0",
     "recompose": "^0.27.0",
-    "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0",
-    "simpl-schema": "^1.4.0"
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
+    "simpl-schema": "^1.5.5"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",

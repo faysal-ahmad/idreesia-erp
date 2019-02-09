@@ -10,7 +10,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
-  width: "100%",
+  width: "500px",
 };
 
 const formItemLayout = {
@@ -29,13 +29,6 @@ class ListFilter extends Component {
     itemCategoryId: PropTypes.string,
     itemTypeName: PropTypes.string,
     setPageParams: PropTypes.func,
-  };
-
-  state = {
-    pageIndex: 0,
-    pageSize: 10,
-    itemCategoryId: null,
-    itemTypeName: null,
   };
 
   handleReset = () => {

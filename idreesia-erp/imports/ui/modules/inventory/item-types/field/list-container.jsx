@@ -1,8 +1,7 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import List from "../list/list";
-import ListFilter from "../list/list-filter";
 
 export default class ListContainer extends Component {
   static propTypes = {
@@ -26,22 +25,15 @@ export default class ListContainer extends Component {
     const { pageIndex, pageSize, itemCategoryId, itemTypeName } = this.state;
 
     return (
-      <Fragment>
-        <ListFilter
-          itemCategoryId={itemCategoryId}
-          itemTypeName={itemTypeName}
-          setPageParams={this.setPageParams}
-        />
-        <List
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          physicalStoreId={physicalStoreId}
-          itemCategoryId={itemCategoryId}
-          itemTypeName={itemTypeName}
-          setPageParams={this.setPageParams}
-          handleItemSelected={setSelectedValue}
-        />
-      </Fragment>
+      <List
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        physicalStoreId={physicalStoreId}
+        itemCategoryId={itemCategoryId}
+        itemTypeName={itemTypeName}
+        setPageParams={this.setPageParams}
+        handleItemSelected={setSelectedValue}
+      />
     );
   }
 }

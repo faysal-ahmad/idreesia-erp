@@ -46,7 +46,7 @@ export default class CustomInput extends Component {
     return (
       <Fragment>
         <Drawer
-          title="Select an item type"
+          title="Select an Item Type"
           width={720}
           onClose={this.handleClose}
           visible={this.state.showSelectionForm}

@@ -5,6 +5,16 @@ import { Avatar, Pagination, Table } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import ListFilter from "./list-filter";
+
+const ToolbarStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+};
+
 const NameDivStyle = {
   display: "flex",
   flexFlow: "row nowrap",
@@ -20,7 +30,7 @@ class List extends Component {
     pageSize: PropTypes.number,
     physicalStoreId: PropTypes.string,
     itemCategoryId: PropTypes.string,
-    itemCategoryName: PropTypes.string,
+    itemTypeName: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
 
@@ -107,6 +117,18 @@ class List extends Component {
     });
   };
 
+  getTableHeader = () => {
+    const { itemCategoryId, itemTypeName, setPageParams } = this.props;
+    return (
+      <div style={ToolbarStyle}>
+        <ListFilter
+          itemCategoryId={itemCategoryId}
+          itemTypeName={itemTypeName}
+          setPageParams={setPageParams}
+        />
+      </div>
+    );
+  };
   render() {
     const { loading } = this.props;
     if (loading) return null;
@@ -125,6 +147,7 @@ class List extends Component {
         rowKey="_id"
         dataSource={itemTypes}
         columns={this.columns}
+        title={this.getTableHeader}
         bordered
         size="small"
         pagination={false}

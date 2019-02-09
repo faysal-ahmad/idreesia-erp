@@ -4,7 +4,6 @@ import { get } from "lodash";
 import { ItemTypes } from "meteor/idreesia-common/collections/inventory";
 
 export default function getItemTypes(queryString) {
-  console.log(queryString);
   const params = parse(queryString);
   const pipeline = [];
 

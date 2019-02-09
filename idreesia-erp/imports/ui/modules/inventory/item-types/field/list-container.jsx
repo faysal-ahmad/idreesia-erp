@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 
-import List from "./list";
-import ListFilter from "./list-filter";
+import List from "../list/list";
+import ListFilter from "../list/list-filter";
 
 export default class ListContainer extends Component {
   static propTypes = {

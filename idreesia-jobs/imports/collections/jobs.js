@@ -4,10 +4,12 @@ import { isUndefined } from "lodash";
 import * as JOB_TYPES from "imports/constants/job-types";
 import { CleanupJob } from "imports/models";
 import { SendEmailsJob } from "imports/models";
+import { ImportDataJob } from "imports/models";
 
 const JobModels = {
   [JOB_TYPES.CLEANUP_JOB]: CleanupJob,
   [JOB_TYPES.SEND_EMAILS]: SendEmailsJob,
+  [JOB_TYPES.IMPORT_DATA]: ImportDataJob,
 };
 
 class Jobs extends JobCollection {

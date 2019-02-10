@@ -19,5 +19,6 @@ shell-server@0.4.0            # Server-side component of the `meteor shell` comm
 aldeed:collection2-core
 vsivsi:job-collection
 mdg:validated-method
+accounts-password@1.5.1
 
 idreesia-common

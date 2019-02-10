@@ -75,8 +75,8 @@ class EditForm extends Component {
           variables: {
             _id,
             purchaseDate,
-            receivedBy,
-            purchasedBy,
+            receivedBy: receivedBy._id,
+            purchasedBy: purchasedBy._id,
             physicalStoreId,
             items: updatedItems,
             notes,

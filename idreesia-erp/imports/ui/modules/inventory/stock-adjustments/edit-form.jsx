@@ -7,12 +7,8 @@ import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
-  WithKarkuns,
-  WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
-import {
-  AutoCompleteField,
   DateField,
   InputTextField,
   InputNumberField,
@@ -20,6 +16,8 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+
+import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 
 const FormStyle = {
   width: "800px",
@@ -30,9 +28,6 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-
-    karkunsListLoading: PropTypes.bool,
-    allKarkuns: PropTypes.array,
 
     formDataLoading: PropTypes.bool,
     stockAdjustmentById: PropTypes.object,
@@ -66,7 +61,7 @@ class EditForm extends Component {
           variables: {
             _id,
             adjustmentDate,
-            adjustedBy,
+            adjustedBy: adjustedBy._id,
             quantity,
             isInflow,
             adjustmentReason,
@@ -83,13 +78,8 @@ class EditForm extends Component {
   };
 
   render() {
-    const {
-      formDataLoading,
-      karkunsListLoading,
-      allKarkuns,
-      stockAdjustmentById,
-    } = this.props;
-    if (formDataLoading || karkunsListLoading) return null;
+    const { formDataLoading, stockAdjustmentById } = this.props;
+    if (formDataLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -131,15 +121,13 @@ class EditForm extends Component {
           requiredMessage="Please input an adjustment date."
           getFieldDecorator={getFieldDecorator}
         />
-
-        <AutoCompleteField
-          data={allKarkuns}
+        <KarkunField
           fieldName="adjustedBy"
           fieldLabel="Adjusted By"
           placeholder="Adjusted By"
-          initialValue={stockAdjustmentById.adjustedBy}
           required
-          requiredMessage="Please input a name in adjusted by."
+          requiredMessage="Please select a name for adjusted By."
+          initialValue={stockAdjustmentById.refAdjustedBy}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -206,13 +194,21 @@ const formMutation = gql`
       quantity
       isInflow
       adjustmentReason
+      refStockItem {
+        _id
+        itemTypeName
+        itemTypeFormattedName
+      }
+      refAdjustedBy {
+        _id
+        name
+      }
     }
   }
 `;
 
 export default compose(
   Form.create(),
-  WithKarkuns(),
   WithPhysicalStoreId(),
   graphql(formMutation, {
     name: "updateStockAdjustment",

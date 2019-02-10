@@ -7,7 +7,6 @@ import { compose, graphql } from "react-apollo";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithKarkuns,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -19,6 +18,8 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+
+import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 
 const FormStyle = {
   width: "800px",
@@ -39,8 +40,6 @@ class NewForm extends Component {
 
     stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
-    karkunsListLoading: PropTypes.bool,
-    allKarkuns: PropTypes.array,
 
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
@@ -80,7 +79,7 @@ class NewForm extends Component {
             physicalStoreId,
             stockItemId,
             adjustmentDate,
-            adjustedBy,
+            adjustedBy: adjustedBy._id,
             quantity,
             isInflow,
             adjustmentReason,
@@ -97,13 +96,8 @@ class NewForm extends Component {
   };
 
   render() {
-    const {
-      stockItemsLoading,
-      karkunsListLoading,
-      allKarkuns,
-      stockItemsByPhysicalStoreId,
-    } = this.props;
-    if (stockItemsLoading || karkunsListLoading) return null;
+    const { stockItemsLoading, stockItemsByPhysicalStoreId } = this.props;
+    if (stockItemsLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -152,13 +146,12 @@ class NewForm extends Component {
           requiredMessage="Please input an adjustment date."
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
-          data={allKarkuns}
+        <KarkunField
           fieldName="adjustedBy"
           fieldLabel="Adjusted By"
           placeholder="Adjusted By"
           required
-          requiredMessage="Please input a name in adjusted by."
+          requiredMessage="Please select a name for adjusted By."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -208,7 +201,6 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
-  WithKarkuns(),
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {

@@ -1,5 +1,6 @@
 import "./register-users";
 import "./create-indexes";
+import "./create-companies";
 import "./import-inventory-data";
 import "./setup-rest-endpoints";
 

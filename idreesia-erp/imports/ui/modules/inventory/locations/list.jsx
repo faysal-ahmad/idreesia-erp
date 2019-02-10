@@ -2,16 +2,18 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Button, Table } from "antd";
-import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { compose } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithLocations } from "/imports/ui/modules/inventory/common/composers";
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+
+    locationsListLoading: PropTypes.bool,
     allLocations: PropTypes.array,
   };
 
@@ -22,6 +24,16 @@ class List extends Component {
       key: "name",
       render: (text, record) => (
         <Link to={`${paths.locationsPath}/${record._id}`}>{text}</Link>
+      ),
+    },
+    {
+      title: "Parent Location",
+      dataIndex: "parentId",
+      key: "parentId",
+      render: (text, record) => (
+        <Link to={`${paths.locationsPath}/${record.parentId}`}>
+          {record.refParent ? record.refParent.name : ""}
+        </Link>
       ),
     },
     {
@@ -37,7 +49,8 @@ class List extends Component {
   };
 
   render() {
-    const { allLocations } = this.props;
+    const { locationsListLoading, allLocations } = this.props;
+    if (locationsListLoading) return null;
 
     return (
       <Table
@@ -59,19 +72,7 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query allLocations {
-    allLocations {
-      _id
-      name
-      description
-    }
-  }
-`;
-
 export default compose(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
+  WithLocations(),
   WithBreadcrumbs(["Inventory", "Setup", "Locations", "List"])
 )(List);

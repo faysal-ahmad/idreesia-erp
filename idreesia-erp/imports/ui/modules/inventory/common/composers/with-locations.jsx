@@ -16,7 +16,12 @@ export default () => WrappedComponent => {
       allLocations {
         _id
         name
+        parentId
         description
+        refParent {
+          _id
+          name
+        }
       }
     }
   `;

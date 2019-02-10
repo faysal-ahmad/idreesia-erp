@@ -1,7 +1,10 @@
 type Location {
   _id: String
   name: String
+  parentId: String
   description: String
+
+  refParent: Location
 
   createdAt: String
   createdBy: String
@@ -15,6 +18,11 @@ extend type Query {
 }
 
 extend type Mutation {
-  createLocation(name: String!, description: String): Location
-  updateLocation(_id: String!, name: String!, description: String): Location
+  createLocation(name: String!, parentId: String, description: String): Location
+  updateLocation(
+    _id: String!
+    name: String!
+    parentId: String
+    description: String
+  ): Location
 }

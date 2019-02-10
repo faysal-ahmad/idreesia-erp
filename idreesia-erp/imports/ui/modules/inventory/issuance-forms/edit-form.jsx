@@ -14,10 +14,10 @@ import {
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
-  AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
+  TreeSelectField,
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
@@ -164,7 +164,7 @@ class EditForm extends Component {
           initialValue={issuanceFormById.refIssuedTo}
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
+        <TreeSelectField
           data={allLocations}
           fieldName="locationId"
           fieldLabel="For Location"

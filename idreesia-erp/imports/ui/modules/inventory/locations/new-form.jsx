@@ -9,8 +9,10 @@ import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory"
 import {
   InputTextField,
   InputTextAreaField,
+  TreeSelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { WithLocations } from "/imports/ui/modules/inventory/common/composers";
 
 class NewForm extends Component {
   static propTypes = {
@@ -18,6 +20,9 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     createLocation: PropTypes.func,
+
+    locationsListLoading: PropTypes.bool,
+    allLocations: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -28,11 +33,11 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createLocation, history } = this.props;
-    form.validateFields((err, { name, description }) => {
+    form.validateFields((err, { name, parentId, description }) => {
       if (err) return;
 
       createLocation({
-        variables: { name, description },
+        variables: { name, parentId, description },
       })
         .then(() => {
           history.push(paths.locationsPath);
@@ -44,6 +49,11 @@ class NewForm extends Component {
   };
 
   render() {
+    const { locationsListLoading, allLocations } = this.props;
+    if (locationsListLoading) {
+      return null;
+    }
+
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -53,6 +63,12 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the location."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <TreeSelectField
+          data={allLocations}
+          fieldName="parentId"
+          fieldLabel="Parent Location"
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
@@ -67,10 +83,19 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createLocation($name: String!, $description: String) {
-    createLocation(name: $name, description: $description) {
+  mutation createLocation(
+    $name: String!
+    $parentId: String
+    $description: String
+  ) {
+    createLocation(
+      name: $name
+      parentId: $parentId
+      description: $description
+    ) {
       _id
       name
+      parentId
       description
     }
   }
@@ -78,6 +103,7 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
+  WithLocations(),
   graphql(formMutation, {
     name: "createLocation",
     options: {

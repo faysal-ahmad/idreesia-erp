@@ -9,8 +9,10 @@ import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory"
 import {
   InputTextField,
   InputTextAreaField,
+  TreeSelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { WithLocations } from "/imports/ui/modules/inventory/common/composers";
 
 class EditForm extends Component {
   static propTypes = {
@@ -21,6 +23,8 @@ class EditForm extends Component {
 
     loading: PropTypes.bool,
     locationById: PropTypes.object,
+    locationsListLoading: PropTypes.bool,
+    allLocations: PropTypes.array,
     updateLocation: PropTypes.func,
   };
 
@@ -32,13 +36,15 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, locationById, updateLocation } = this.props;
-    form.validateFields((err, { name, description }) => {
+    form.validateFields((err, { name, parentId, description }) => {
       if (err) return;
 
+      debugger;
       updateLocation({
         variables: {
           _id: locationById._id,
           name,
+          parentId: parentId || null,
           description,
         },
       })
@@ -52,8 +58,14 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, locationById } = this.props;
-    if (loading) return null;
+    const {
+      loading,
+      locationsListLoading,
+      locationById,
+      allLocations,
+    } = this.props;
+    if (loading || locationsListLoading) return null;
+
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -64,6 +76,14 @@ class EditForm extends Component {
           initialValue={locationById.name}
           required
           requiredMessage="Please input a name for the location."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <TreeSelectField
+          data={allLocations}
+          skipValue={locationById._id}
+          fieldName="parentId"
+          fieldLabel="Parent Location"
+          initialValue={locationById.parentId}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
@@ -83,16 +103,28 @@ const formQuery = gql`
     locationById(_id: $_id) {
       _id
       name
+      parentId
       description
     }
   }
 `;
 
 const formMutation = gql`
-  mutation updateLocation($_id: String!, $name: String!, $description: String) {
-    updateLocation(_id: $_id, name: $name, description: $description) {
+  mutation updateLocation(
+    $_id: String!
+    $name: String!
+    $parentId: String
+    $description: String
+  ) {
+    updateLocation(
+      _id: $_id
+      name: $name
+      parentId: $parentId
+      description: $description
+    ) {
       _id
       name
+      parentId
       description
     }
   }
@@ -100,6 +132,7 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
+  WithLocations(),
   graphql(formMutation, {
     name: "updateLocation",
     options: {

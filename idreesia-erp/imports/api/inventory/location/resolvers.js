@@ -3,6 +3,14 @@ import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
+  Location: {
+    refParent: location => {
+      if (location.parentId) {
+        return Locations.findOne(location.parentId);
+      }
+      return null;
+    },
+  },
   Query: {
     allLocations() {
       return Locations.find({}).fetch();
@@ -14,7 +22,7 @@ export default {
   },
 
   Mutation: {
-    createLocation(obj, { name, description }, { userId }) {
+    createLocation(obj, { name, parentId, description }, { userId }) {
       if (
         !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
@@ -26,6 +34,7 @@ export default {
       const date = new Date();
       const locationId = Locations.insert({
         name,
+        parentId,
         description,
         createdAt: date,
         createdBy: userId,
@@ -36,7 +45,7 @@ export default {
       return Locations.findOne(locationId);
     },
 
-    updateLocation(obj, { _id, name, description }, { userId }) {
+    updateLocation(obj, { _id, name, parentId, description }, { userId }) {
       if (
         !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
@@ -49,6 +58,7 @@ export default {
       Locations.update(_id, {
         $set: {
           name,
+          parentId,
           description,
           updatedAt: date,
           updatedBy: userId,

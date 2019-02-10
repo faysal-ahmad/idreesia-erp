@@ -9,7 +9,6 @@ import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithKarkuns,
   WithLocations,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
@@ -20,6 +19,8 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+
+import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 
 const FormStyle = {
   width: "800px",
@@ -39,8 +40,6 @@ class EditForm extends Component {
 
     stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
-    karkunsListLoading: PropTypes.bool,
-    allKarkuns: PropTypes.array,
     locationsListLoading: PropTypes.bool,
     allLocations: PropTypes.array,
 
@@ -78,8 +77,8 @@ class EditForm extends Component {
           variables: {
             _id,
             issueDate,
-            issuedBy,
-            issuedTo,
+            issuedBy: issuedBy._id,
+            issuedTo: issuedTo._id,
             locationId,
             physicalStoreId,
             items: updatedItems,
@@ -125,20 +124,13 @@ class EditForm extends Component {
 
   render() {
     const {
-      karkunsListLoading,
       locationsListLoading,
       stockItemsLoading,
       formDataLoading,
       issuanceFormById,
-      allKarkuns,
       allLocations,
     } = this.props;
-    if (
-      karkunsListLoading ||
-      stockItemsLoading ||
-      locationsListLoading ||
-      formDataLoading
-    ) {
+    if (stockItemsLoading || locationsListLoading || formDataLoading) {
       return null;
     }
 
@@ -154,24 +146,22 @@ class EditForm extends Component {
           requiredMessage="Please input an issue date."
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
-          data={allKarkuns}
+        <KarkunField
+          required
+          requiredMessage="Please select a name for Issued By / Received By."
           fieldName="issuedBy"
           fieldLabel="Issued By / Received By"
           placeholder="Issued By / Received By"
-          initialValue={issuanceFormById.issuedBy}
-          required
-          requiredMessage="Please select a name for Issued By / Received By."
+          initialValue={issuanceFormById.refIssuedBy}
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
-          data={allKarkuns}
+        <KarkunField
+          required
+          requiredMessage="Please select a name for Issued To / Returned By."
           fieldName="issuedTo"
           fieldLabel="Issued To / Returned By"
           placeholder="Issued To / Returned By"
-          initialValue={issuanceFormById.issuedTo}
-          required
-          requiredMessage="Please select a name for Issued To / Returned By."
+          initialValue={issuanceFormById.refIssuedTo}
           getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
@@ -275,7 +265,6 @@ const formQuery = gql`
 
 export default compose(
   Form.create(),
-  WithKarkuns(),
   WithLocations(),
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),

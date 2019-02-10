@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button, Select } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
 import {
   InputTextField,
@@ -23,10 +25,11 @@ const buttonItemLayout = {
 class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
-
-    refreshPage: PropTypes.func,
-    queryParams: PropTypes.object,
     allDuties: PropTypes.array,
+    name: PropTypes.string,
+    cnicNumber: PropTypes.string,
+    dutyId: PropTypes.string,
+    setPageParams: PropTypes.func,
   };
 
   static defaultProps = {
@@ -34,26 +37,35 @@ class ListFilter extends Component {
     allDuties: [],
   };
 
+  handleReset = () => {
+    const { form, setPageParams } = this.props;
+    form.resetFields();
+    setPageParams({
+      pageIndex: 0,
+      name: null,
+      cnicNumber: null,
+      dutyId: null,
+    });
+  };
+
   handleSubmit = e => {
     e.preventDefault();
-    const { form, refreshPage } = this.props;
+    const { form, setPageParams } = this.props;
 
     form.validateFields((err, { name, cnicNumber, dutyId }) => {
       if (err) return;
-      debugger;
-      refreshPage({
+      setPageParams({
+        pageIndex: 0,
         name,
         cnicNumber,
         dutyId,
-        pageIndex: 0,
       });
     });
   };
 
   getDutiesField() {
-    const { allDuties, queryParams } = this.props;
+    const { allDuties, dutyId } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const initialValue = queryParams.dutyId;
     const rules = [];
     const options = [];
     allDuties.forEach(duty => {
@@ -64,7 +76,7 @@ class ListFilter extends Component {
       );
     });
 
-    return getFieldDecorator("dutyIds", { rules, initialValue })(
+    return getFieldDecorator("dutyIds", { rules, initialValue: dutyId })(
       <Select mode="multiple" onChange={this.handleDutyChanged}>
         {options}
       </Select>
@@ -75,7 +87,7 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allDuties, queryParams } = this.props;
+    const { name, cnicNumber, dutyId, allDuties } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -86,7 +98,7 @@ class ListFilter extends Component {
               fieldLabel="Name"
               required={false}
               fieldLayout={formItemLayout}
-              initialValue={queryParams.name}
+              initialValue={name}
               getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
@@ -94,23 +106,23 @@ class ListFilter extends Component {
               fieldLabel="CNIC Number"
               required={false}
               fieldLayout={formItemLayout}
-              initialValue={queryParams.cnicNumber}
+              initialValue={cnicNumber}
               getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               data={allDuties}
               getDataValue={({ _id }) => _id}
-              getDataText={({ name }) => name}
+              getDataText={duty => duty.name}
               fieldName="dutyId"
               fieldLabel="Duty"
               fieldLayout={formItemLayout}
               required={false}
-              initialValue={queryParams.dutyId}
+              initialValue={dutyId}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleCancel}>
+                <Button type="default" onClick={this.handleReset}>
                   Reset
                 </Button>
                 &nbsp;
@@ -126,4 +138,18 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create()(ListFilter);
+const allDutiesListQuery = gql`
+  query allDuties {
+    allDuties {
+      _id
+      name
+    }
+  }
+`;
+
+export default compose(
+  Form.create({ name: "karkunsListFilter" }),
+  graphql(allDutiesListQuery, {
+    props: ({ data }) => ({ ...data }),
+  })
+)(ListFilter);

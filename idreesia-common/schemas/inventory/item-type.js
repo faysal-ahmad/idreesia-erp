@@ -28,7 +28,7 @@ export default new SimpleSchema({
   },
   unitOfMeasurement: {
     type: String,
-    allowedValues: ["quantity", "ft", "m", "kg", "lbs"],
+    allowedValues: ["quantity", "ft", "m", "kg", "lbs", "l"],
   },
   imageId: {
     type: String,

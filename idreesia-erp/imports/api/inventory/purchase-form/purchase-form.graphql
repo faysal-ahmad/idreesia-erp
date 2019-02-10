@@ -7,11 +7,11 @@ type PurchaseForm {
   items: [ItemWithQuantityAndPrice]
   notes: String
 
-  receivedByName: String
-  purchasedByName: String
-  createdByName: String
-  updatedByName: String
-  approvedByName: String
+  refReceivedBy: KarkunType
+  refPurchasedBy: KarkunType
+  refCreatedBy: KarkunType
+  refUpdatedBy: KarkunType
+  refApprovedBy: KarkunType
 
   createdAt: String
   createdBy: String
@@ -28,7 +28,10 @@ type PagedPurchaseForm {
 
 extend type Query {
   purchaseFormsByStockItem(stockItemId: String): [PurchaseForm]
-  pagedPurchaseForms(physicalStoreId: String!, queryString: String): PagedPurchaseForm
+  pagedPurchaseForms(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedPurchaseForm
   purchaseFormById(_id: String!): PurchaseForm
 }
 

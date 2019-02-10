@@ -15,47 +15,29 @@ import getPurchaseForms, { getPurchaseFormsByStockItemId } from "./queries";
 
 export default {
   PurchaseForm: {
-    receivedByName: purchaseForm => {
-      const karkun = Karkuns.findOne({
+    refReceivedBy: purchaseForm =>
+      Karkuns.findOne({
         _id: { $eq: purchaseForm.receivedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    purchasedByName: purchaseForm => {
-      const karkun = Karkuns.findOne({
+      }),
+    refPurchasedBy: purchaseForm =>
+      Karkuns.findOne({
         _id: { $eq: purchaseForm.purchasedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    createdByName: purchaseForm => {
-      const karkun = Karkuns.findOne({
-        userId: { $eq: purchaseForm.createdBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    updatedByName: purchaseForm => {
-      const karkun = Karkuns.findOne({
-        userId: { $eq: purchaseForm.updatedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    approvedByName: purchaseForm => {
-      if (!purchaseForm.approvedBy) return null;
-
-      const karkun = Karkuns.findOne({
-        userId: { $eq: purchaseForm.approvedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
+      }),
+    refCreatedBy: purchaseForm =>
+      Karkuns.findOne({
+        _id: { $eq: purchaseForm.createdBy },
+      }),
+    refUpdatedBy: purchaseForm =>
+      Karkuns.findOne({
+        _id: { $eq: purchaseForm.updatedBy },
+      }),
+    refApprovedBy: purchaseForm => {
+      if (purchaseForm.approvedBy) {
+        return Karkuns.findOne({
+          _id: { $eq: purchaseForm.approvedBy },
+        });
+      }
+      return null;
     },
   },
   Query: {

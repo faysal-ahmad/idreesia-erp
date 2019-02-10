@@ -96,7 +96,7 @@ class ViewForm extends Component {
         <InputTextField
           fieldName="receivedBy"
           fieldLabel="Received By"
-          initialValue={purchaseFormById.receivedByName}
+          initialValue={purchaseFormById.refReceivedBy.name}
           required
           requiredMessage="Please input a name in received by."
           getFieldDecorator={getFieldDecorator}
@@ -104,7 +104,7 @@ class ViewForm extends Component {
         <InputTextField
           fieldName="purchasedBy"
           fieldLabel="Purchaseed By"
-          initialValue={purchaseFormById.purchasedByName}
+          initialValue={purchaseFormById.refPurchasedBy.name}
           required
           requiredMessage="Please input a name in purchased by."
           getFieldDecorator={getFieldDecorator}
@@ -135,8 +135,6 @@ const formQuery = gql`
       purchaseDate
       receivedBy
       purchasedBy
-      receivedByName
-      purchasedByName
       physicalStoreId
       approvedOn
       items {
@@ -145,6 +143,14 @@ const formQuery = gql`
         isInflow
         price
         itemTypeName
+      }
+      refReceivedBy {
+        _id
+        name
+      }
+      refPurchasedBy {
+        _id
+        name
       }
       notes
     }

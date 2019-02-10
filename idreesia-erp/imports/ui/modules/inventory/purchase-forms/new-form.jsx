@@ -8,16 +8,16 @@ import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithKarkuns,
   WithPhysicalStoreId,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
-  AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+
+import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 
 const FormStyle = {
   width: "800px",
@@ -59,8 +59,8 @@ class NewForm extends Component {
         createPurchaseForm({
           variables: {
             purchaseDate,
-            receivedBy,
-            purchasedBy,
+            receivedBy: receivedBy._id,
+            purchasedBy: purchasedBy._id,
             physicalStoreId,
             items,
             notes,
@@ -97,7 +97,7 @@ class NewForm extends Component {
   }
 
   render() {
-    const { stockItemsLoading, karkunsListLoading, allKarkuns } = this.props;
+    const { stockItemsLoading, karkunsListLoading } = this.props;
     if (stockItemsLoading || karkunsListLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
@@ -111,22 +111,20 @@ class NewForm extends Component {
           requiredMessage="Please input a purchase date."
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
-          data={allKarkuns}
-          fieldName="receivedBy"
-          fieldLabel="Received By"
-          placeholder="Received By"
+        <KarkunField
           required
-          requiredMessage="Please input a name in received by."
+          requiredMessage="Please select a name for Received By / Returned By."
+          fieldName="receivedBy"
+          fieldLabel="Received By / Returned By"
+          placeholder="Received By / Returned By"
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
-          data={allKarkuns}
-          fieldName="purchasedBy"
-          fieldLabel="Purchased By"
-          placeholder="Purchased By"
+        <KarkunField
           required
-          requiredMessage="Please input a name in purchased by."
+          requiredMessage="Please select a name for Purchased By / Returned To."
+          fieldName="purchasedBy"
+          fieldLabel="Purchased By / Returned To"
+          placeholder="Purchased By / Returned To"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -166,14 +164,20 @@ const formMutation = gql`
     ) {
       _id
       purchaseDate
-      receivedByName
-      purchasedByName
       physicalStoreId
       items {
         stockItemId
         quantity
         isInflow
         price
+      }
+      refReceivedBy {
+        _id
+        name
+      }
+      refPurchasedBy {
+        _id
+        name
       }
       notes
     }
@@ -182,7 +186,6 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
-  WithKarkuns(),
   WithPhysicalStoreId(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {

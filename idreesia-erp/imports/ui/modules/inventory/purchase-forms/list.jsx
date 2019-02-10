@@ -316,8 +316,6 @@ const formMutationApprove = gql`
       purchaseDate
       receivedBy
       purchasedBy
-      receivedByName
-      purchasedByName
       physicalStoreId
       approvedOn
       items {
@@ -342,8 +340,6 @@ const listQuery = gql`
         purchaseDate
         receivedBy
         purchasedBy
-        receivedByName
-        purchasedByName
         physicalStoreId
         approvedOn
         items {
@@ -351,6 +347,14 @@ const listQuery = gql`
           quantity
           isInflow
           itemTypeName
+        }
+        refReceivedBy {
+          _id
+          name
+        }
+        refPurchasedBy {
+          _id
+          name
         }
       }
     }

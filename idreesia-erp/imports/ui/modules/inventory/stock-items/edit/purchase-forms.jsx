@@ -45,8 +45,8 @@ class List extends Component {
     },
     {
       title: 'Purchased By',
-      dataIndex: 'purchasedByName',
-      key: 'purchasedByName',
+      dataIndex: 'refPurchasedBy.name',
+      key: 'refPurchasedBy.name',
     },
     {
       title: 'Items',
@@ -101,14 +101,20 @@ const listQuery = gql`
       purchaseDate
       receivedBy
       purchasedBy
-      receivedByName
-      purchasedByName
       physicalStoreId
       approvedOn
       items {
         stockItemId
         quantity
         itemTypeName
+      }
+      refReceivedBy {
+        _id
+        name
+      }
+      refPurchasedBy {
+        _id
+        name
       }
     }
   }

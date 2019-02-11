@@ -52,8 +52,11 @@ import StockAdjustmentSchema from "./inventory/stock-adjustment/stock-adjustment
 import StockAdjustmentResolvers from "./inventory/stock-adjustment/resolvers";
 
 /**
- * Schema and Resolvers for the HR module
+ * Schema and Resolvers for the Accounts module
  */
+import CompanySchema from "./accounts/company/company.graphql";
+import CompanyResolvers from "./accounts/company/resolvers";
+
 import FinancialAccountSchema from "./accounts/financial-account/financial-account.graphql";
 import FinancialAccountResolvers from "./accounts/financial-account/resolvers";
 
@@ -74,6 +77,7 @@ const typeDefs = [
   PurchaseFormSchema,
   StockAdjustmentSchema,
 
+  CompanySchema,
   FinancialAccountSchema,
 ];
 
@@ -95,6 +99,7 @@ const resolvers = merge(
   PurchaseFormResolvers,
   StockAdjustmentResolvers,
 
+  CompanyResolvers,
   FinancialAccountResolvers
 );
 

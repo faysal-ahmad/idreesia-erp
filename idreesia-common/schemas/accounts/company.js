@@ -1,19 +1,18 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
   name: {
-    type: String,
+    type: String
   },
-  importTransactions: {
-    type: Boolean,
+  importData: {
+    type: Boolean
   },
   connectivitySettings: {
-    type: Object,
-    blackbox: true,
-    optional: true,
-  },
+    type: String,
+    optional: true
+  }
 })
   .extend(identifiable)
   .extend(timestamps);

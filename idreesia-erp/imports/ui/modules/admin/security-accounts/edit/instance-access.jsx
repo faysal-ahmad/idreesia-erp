@@ -1,11 +1,11 @@
-import React, { Fragment, Component } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Row, Tree, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
-import { filter } from 'lodash';
+import React, { Fragment, Component } from "react";
+import PropTypes from "prop-types";
+import { Button, Row, Tree, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
+import { filter } from "lodash";
 
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 
 class InstanceAccess extends Component {
   static propTypes = {
@@ -13,10 +13,14 @@ class InstanceAccess extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    loading: PropTypes.bool,
     karkunId: PropTypes.string,
+    karkunLoading: PropTypes.bool,
     karkunById: PropTypes.object,
     setInstanceAccess: PropTypes.func,
+
+    companiesListLoading: PropTypes.bool,
+    allCompanies: PropTypes.array,
+    physicalStoresListLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
   };
 
@@ -42,7 +46,7 @@ class InstanceAccess extends Component {
     e.preventDefault();
     const { history, karkunById, setInstanceAccess } = this.props;
     const { checkedKeys } = this.state;
-    const instances = filter(checkedKeys, key => !key.startsWith('module-'));
+    const instances = filter(checkedKeys, key => !key.startsWith("module-"));
 
     setInstanceAccess({
       variables: {
@@ -89,13 +93,28 @@ class InstanceAccess extends Component {
     });
 
   render() {
-    const { loading, allPhysicalStores } = this.props;
-    if (loading) return null;
+    const {
+      karkunLoading,
+      companiesListLoading,
+      allCompanies,
+      physicalStoresListLoading,
+      allPhysicalStores,
+    } = this.props;
+    if (karkunLoading || companiesListLoading || physicalStoresListLoading)
+      return null;
 
     const accessData = [
       {
-        title: 'Physical Stores',
-        key: 'module-inventory-physical-stores',
+        title: "Companies",
+        key: "module-accounts-companies",
+        children: allCompanies.map(company => ({
+          title: company.name,
+          key: company._id,
+        })),
+      },
+      {
+        title: "Physical Stores",
+        key: "module-inventory-physical-stores",
         children: allPhysicalStores.map(physicalStore => ({
           title: physicalStore.name,
           key: physicalStore._id,
@@ -132,8 +151,16 @@ class InstanceAccess extends Component {
 }
 
 const formMutation = gql`
-  mutation setInstanceAccess($karkunId: String!, $karkunUserId: String!, $instances: [String]!) {
-    setInstanceAccess(karkunId: $karkunId, karkunUserId: $karkunUserId, instances: $instances) {
+  mutation setInstanceAccess(
+    $karkunId: String!
+    $karkunUserId: String!
+    $instances: [String]!
+  ) {
+    setInstanceAccess(
+      karkunId: $karkunId
+      karkunUserId: $karkunUserId
+      instances: $instances
+    ) {
       _id
       userId
       user {
@@ -157,7 +184,16 @@ const formQuery = gql`
   }
 `;
 
-const listQuery = gql`
+const companiesListQuery = gql`
+  query allCompanies {
+    allCompanies {
+      _id
+      name
+    }
+  }
+`;
+
+const physicalStoresListQuery = gql`
   query allPhysicalStores {
     allPhysicalStores {
       _id
@@ -168,16 +204,19 @@ const listQuery = gql`
 
 export default compose(
   graphql(formMutation, {
-    name: 'setInstanceAccess',
+    name: "setInstanceAccess",
     options: {
-      refetchQueries: ['allkarkunsWithAccounts'],
+      refetchQueries: ["allkarkunsWithAccounts"],
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ karkunLoading: data.loading, ...data }),
     options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
   }),
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+  graphql(companiesListQuery, {
+    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
+  }),
+  graphql(physicalStoresListQuery, {
+    props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
   })
 )(InstanceAccess);

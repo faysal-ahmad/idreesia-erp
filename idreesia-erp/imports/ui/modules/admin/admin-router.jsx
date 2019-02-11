@@ -1,18 +1,22 @@
-import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import React from "react";
+import { Switch, Route } from "react-router-dom";
 
-import { default as paths } from './submodule-paths';
-import { AccountsNewForm, AccountsEditForm, AccountsList } from './security-accounts';
+import { default as paths } from "./submodule-paths";
+import {
+  AccountsNewForm,
+  AccountsEditForm,
+  AccountsList,
+} from "./security-accounts";
 import {
   PhysicalStoresNewForm,
   PhysicalStoresEditForm,
   PhysicalStoresList,
-} from './physical-stores';
+} from "./physical-stores";
 import {
-  FinancialAccountsNewForm,
-  FinancialAccountsEditForm,
-  FinancialAccountsList,
-} from './financial-accounts';
+  CompaniesNewForm,
+  CompaniesEditForm,
+  CompaniesList,
+} from "./companies";
 
 const AdminRouter = () => (
   <Switch>
@@ -20,13 +24,19 @@ const AdminRouter = () => (
     <Route path={paths.accountsEditFormPath} component={AccountsEditForm} />
     <Route path={paths.accountsPath} component={AccountsList} />
 
-    <Route path={paths.physicalStoresNewFormPath} component={PhysicalStoresNewForm} />
-    <Route path={paths.physicalStoresEditFormPath} component={PhysicalStoresEditForm} />
+    <Route
+      path={paths.physicalStoresNewFormPath}
+      component={PhysicalStoresNewForm}
+    />
+    <Route
+      path={paths.physicalStoresEditFormPath}
+      component={PhysicalStoresEditForm}
+    />
     <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
-    <Route path={paths.financialAccountsNewFormPath} component={FinancialAccountsNewForm} />
-    <Route path={paths.financialAccountsEditFormPath} component={FinancialAccountsEditForm} />
-    <Route path={paths.financialAccountsPath} component={FinancialAccountsList} />
+    <Route path={paths.companiesNewFormPath} component={CompaniesNewForm} />
+    <Route path={paths.companiesEditFormPath} component={CompaniesEditForm} />
+    <Route path={paths.companiesPath} component={CompaniesList} />
   </Switch>
 );
 

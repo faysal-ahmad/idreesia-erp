@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Switch, Form } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Switch, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -13,7 +13,7 @@ const formItemLayout = {
  * fieldLayout: Layout settings for the form field.
  * initialValue: Initial value for the form field.
  */
-export default class InputTextField extends Component {
+export default class SwitchField extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
@@ -30,7 +30,9 @@ export default class InputTextField extends Component {
   getField() {
     const { fieldName, getFieldDecorator, initialValue } = this.props;
 
-    return getFieldDecorator(fieldName, { initialValue })(<Switch defaultChecked={initialValue} />);
+    return getFieldDecorator(fieldName, { initialValue })(
+      <Switch defaultChecked={initialValue} />
+    );
   }
 
   render() {

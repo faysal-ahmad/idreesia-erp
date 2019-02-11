@@ -41,6 +41,20 @@ const permissionsData = [
           },
         ],
       },
+      {
+        title: "Accounts",
+        key: "module-admin-companies",
+        children: [
+          {
+            title: "View Companies",
+            key: PermissionConstants.ADMIN_VIEW_COMPANIES,
+          },
+          {
+            title: "Manage Companies",
+            key: PermissionConstants.ADMIN_MANAGE_COMPANIES,
+          },
+        ],
+      },
     ],
   },
   {

@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Menu, Icon } from 'antd';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Menu, Icon } from "antd";
 
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
-import SubModuleNames from './submodule-names';
-import { default as paths } from './submodule-paths';
+import { GlobalActionsCreator } from "/imports/ui/action-creators";
+import SubModuleNames from "./submodule-names";
+import { default as paths } from "./submodule-paths";
 
 class AdminSidebar extends Component {
   static propTypes = {
@@ -18,19 +18,19 @@ class AdminSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case 'accounts':
+      case "accounts":
         setActiveSubModuleName(SubModuleNames.accounts);
         history.push(paths.accountsPath);
         break;
 
-      case 'physical-stores':
+      case "physical-stores":
         setActiveSubModuleName(SubModuleNames.physicalStores);
         history.push(paths.physicalStoresPath);
         break;
 
-      case 'financial-accounts':
-        setActiveSubModuleName(SubModuleNames.financialAccounts);
-        history.push(paths.financialAccountsPath);
+      case "companies":
+        setActiveSubModuleName(SubModuleNames.companies);
+        history.push(paths.companiesPath);
         break;
 
       default:
@@ -42,8 +42,8 @@ class AdminSidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={['home']}
-        style={{ height: '100%', borderRight: 0 }}
+        defaultSelectedKeys={["home"]}
+        style={{ height: "100%", borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
         <Menu.SubMenu
@@ -56,7 +56,7 @@ class AdminSidebar extends Component {
         >
           <Menu.Item key="accounts">Security Accounts</Menu.Item>
           <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
-          <Menu.Item key="financial-accounts">Financial Accounts</Menu.Item>
+          <Menu.Item key="companies">Companies</Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

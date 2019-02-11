@@ -1,26 +1,26 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Layout, Menu } from 'antd';
-import { keys, forEach } from 'lodash';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Layout, Menu } from "antd";
+import { keys, forEach } from "lodash";
 
-import { ModuleNames, ModulePaths } from '../constants';
-import { GlobalActionsCreator } from '../action-creators';
-import { UserMenu } from './';
+import { ModuleNames, ModulePaths } from "../constants";
+import { GlobalActionsCreator } from "../action-creators";
+import { UserMenu } from "./";
 
 const ContainerStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
 };
 
 const modulePathsMapping = {};
 modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
-modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
 modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
 modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
+modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
 
 class HeaderContent extends Component {
   static propTypes = {
@@ -42,7 +42,7 @@ class HeaderContent extends Component {
     const { location, setActiveModuleName } = this.props;
     const { pathname } = location;
 
-    if (pathname !== '/') {
+    if (pathname !== "/") {
       const moduleNames = keys(modulePathsMapping);
       forEach(moduleNames, moduleName => {
         const modulePath = modulePathsMapping[moduleName];
@@ -62,7 +62,9 @@ class HeaderContent extends Component {
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName, index) => {
       const modulePath = modulePathsMapping[moduleName];
-      menuItems.push(<Menu.Item key={index.toString()}>{moduleName}</Menu.Item>);
+      menuItems.push(
+        <Menu.Item key={index.toString()}>{moduleName}</Menu.Item>
+      );
       if (pathname.startsWith(modulePath)) {
         selectedMenuItemKey.push(index.toString());
       }
@@ -75,7 +77,7 @@ class HeaderContent extends Component {
             theme="dark"
             mode="horizontal"
             defaultSelectedKeys={selectedMenuItemKey}
-            style={{ lineHeight: '64px' }}
+            style={{ lineHeight: "64px" }}
             onSelect={this.handleMenuItemSelected}
           >
             {menuItems}

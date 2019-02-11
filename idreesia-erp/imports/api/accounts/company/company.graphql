@@ -1,0 +1,30 @@
+type Company {
+  _id: String
+  name: String
+  importData: Boolean
+  connectivitySettings: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allCompanies: [Company]
+  allAccessibleCompanies: [Company]
+  companyById(id: String!): Company
+}
+
+extend type Mutation {
+  createCompany(
+    name: String!
+    importData: Boolean!
+    connectivitySettings: String
+  ): Company
+  updateCompany(
+    _id: String!
+    name: String!
+    importData: Boolean!
+    connectivitySettings: String
+  ): Company
+}

@@ -19,8 +19,8 @@ const ContainerStyle = {
 const modulePathsMapping = {};
 modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
-modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
 modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
+modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
 
 class HeaderContent extends Component {
   static propTypes = {

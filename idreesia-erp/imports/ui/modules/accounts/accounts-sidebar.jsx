@@ -20,11 +20,11 @@ class AccountsSidebar extends Component {
 
   handleMenuItemSelected = ({ item, key }) => {
     const { history, setActiveSubModuleName } = this.props;
-    const accountId = item.props["parent-key"];
+    const companyId = item.props["parent-key"];
 
-    if (key.startsWith("transactions")) {
-      setActiveSubModuleName(SubModuleNames.transactions);
-      history.push(paths.transactionsPath(accountId));
+    if (key.startsWith("vouchers")) {
+      setActiveSubModuleName(SubModuleNames.vouchers);
+      history.push(paths.vouchersPath(companyId));
     }
   };
 
@@ -44,11 +44,8 @@ class AccountsSidebar extends Component {
             </span>
           }
         >
-          <Menu.Item
-            parent-key={company._id}
-            key={`transactions-${company._id}`}
-          >
-            Transactions
+          <Menu.Item parent-key={company._id} key={`vouchers-${company._id}`}>
+            Vouchers
           </Menu.Item>
         </Menu.SubMenu>
       );

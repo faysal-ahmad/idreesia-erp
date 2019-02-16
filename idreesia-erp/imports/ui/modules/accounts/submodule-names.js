@@ -1,3 +1,3 @@
 export default class SubModuleNames {
-  static transactions = 'Transactions';
+  static vouchers = "Vouchers";
 }

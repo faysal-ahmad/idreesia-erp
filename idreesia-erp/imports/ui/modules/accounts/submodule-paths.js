@@ -1,13 +1,13 @@
-import { ModulePaths } from '/imports/ui/constants';
+import { ModulePaths } from "/imports/ui/constants";
 
 export default class SubModulePaths {
-  static transactionsPath(accountId) {
-    return `${ModulePaths.accounts}/${accountId}/transactions`;
+  static vouchersPath(companyId) {
+    return `${ModulePaths.accounts}/${companyId}/vouchers`;
   }
-  static transactionsNewFormPath(accountId) {
-    return `${SubModulePaths.transactionsPath(accountId)}/new`;
+  static vouchersNewFormPath(companyId) {
+    return `${SubModulePaths.vouchersPath(companyId)}/new`;
   }
-  static transactionsEditFormPath(accountId) {
-    return `${SubModulePaths.transactionsPath(accountId)}/:transactionId`;
+  static vouchersEditFormPath(companyId) {
+    return `${SubModulePaths.vouchersPath(companyId)}/:voucherId`;
   }
 }

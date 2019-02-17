@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Pagination, Table } from "antd";
+import { Button, Icon, Pagination, Table, Tooltip } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -13,6 +13,19 @@ const ToolbarStyle = {
   width: "100%",
 };
 
+const ActionsStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+};
+
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
+
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -21,6 +34,7 @@ class List extends Component {
     setPageParams: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
+    handleDeleteClicked: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedDataImports: PropTypes.shape({
@@ -36,7 +50,7 @@ class List extends Component {
       key: "createdAt",
       render: text => {
         const date = moment(new Date(text));
-        return date.format("DD MMM, YYYY");
+        return date.format("DD-MM-YY hh:mm a");
       },
     },
     {
@@ -52,6 +66,29 @@ class List extends Component {
         let counter = 0;
         const logNodes = logs.map(log => <li key={counter++}>{log}</li>);
         return <ul>{logNodes}</ul>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "action",
+      render: (text, record) => {
+        if (record.status === "completed" || record.status === "errored") {
+          return (
+            <div style={ActionsStyle}>
+              <Tooltip title="Delete">
+                <Icon
+                  type="delete"
+                  style={IconStyle}
+                  onClick={() => {
+                    this.props.handleDeleteClicked(record._id);
+                  }}
+                />
+              </Tooltip>
+            </div>
+          );
+        }
+
+        return null;
       },
     },
   ];

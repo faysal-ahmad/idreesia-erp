@@ -6,7 +6,6 @@ const config = {
   user: "erp-server",
   password: "password",
   server: "192.168.1.249",
-  database: "eduConnectionDB",
   options: {
     tdsVersion: "7_1",
   },

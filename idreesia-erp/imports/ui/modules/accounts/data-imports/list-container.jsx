@@ -14,6 +14,7 @@ class ListContainer extends Component {
     location: PropTypes.object,
     companyId: PropTypes.string,
     createDataImport: PropTypes.func,
+    removeDataImport: PropTypes.func,
   };
 
   state = {
@@ -30,6 +31,11 @@ class ListContainer extends Component {
     createDataImport(companyId);
   };
 
+  handleDeleteClicked = _id => {
+    const { removeDataImport } = this.props;
+    removeDataImport(_id);
+  };
+
   render() {
     const { companyId } = this.props;
     const { pageIndex, pageSize } = this.state;
@@ -42,12 +48,13 @@ class ListContainer extends Component {
         setPageParams={this.setPageParams}
         showNewButton
         handleNewClicked={this.handleNewClicked}
+        handleDeleteClicked={this.handleDeleteClicked}
       />
     );
   }
 }
 
-const mutation = gql`
+const createMutation = gql`
   mutation createDataImport($companyId: String!) {
     createDataImport(companyId: $companyId) {
       _id
@@ -62,10 +69,22 @@ const mutation = gql`
   }
 `;
 
+const removeMutation = gql`
+  mutation removeDataImport($_id: String!) {
+    removeDataImport(_id: $_id)
+  }
+`;
+
 export default compose(
   WithCompanyId(),
-  graphql(mutation, {
+  graphql(createMutation, {
     name: "createDataImport",
+    options: {
+      refetchQueries: ["pagedDataImports"],
+    },
+  }),
+  graphql(removeMutation, {
+    name: "removeDataImport",
     options: {
       refetchQueries: ["pagedDataImports"],
     },

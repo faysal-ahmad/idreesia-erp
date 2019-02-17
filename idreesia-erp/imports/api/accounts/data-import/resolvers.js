@@ -51,5 +51,19 @@ export default {
       });
       return DataImports.findOne(dataImportId);
     },
+    removeDataImport(obj, { _id }, { userId }) {
+      const existingDataImport = DataImports.findOne(_id);
+
+      if (
+        hasInstanceAccess(userId, existingDataImport.companyId) === false ||
+        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+      ) {
+        throw new Error(
+          "You do not have permission to manage imports for Companies in the System."
+        );
+      }
+
+      return DataImports.remove(_id);
+    },
   },
 };

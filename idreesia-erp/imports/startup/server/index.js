@@ -1,5 +1,7 @@
 import "./register-users";
-import "./create-indexes";
+import "./create-account-indexes";
+import "./create-hr-indexes";
+import "./create-inventory-indexes";
 import "./create-companies";
 import "./import-inventory-data";
 import "./setup-rest-endpoints";

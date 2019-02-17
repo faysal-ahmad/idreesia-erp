@@ -1,5 +1,8 @@
 import * as JOB_TYPES from "imports/constants/job-types";
-import { DataImports } from "meteor/idreesia-common/collections/accounts";
+import {
+  Companies,
+  DataImports,
+} from "meteor/idreesia-common/collections/accounts";
 
 import Jobs from "imports/collections/jobs";
 
@@ -12,7 +15,9 @@ export const worker = (job, callback) => {
   const { dataImportId } = job.data;
 
   const dataImport = DataImports.findOne(dataImportId);
-  return importData(dataImport)
+  const company = Companies.findOne(dataImport.companyId);
+
+  return importData(dataImport, company)
     .then(() => {
       DataImports.update(dataImportId, {
         $set: {

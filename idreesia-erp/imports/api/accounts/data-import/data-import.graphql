@@ -3,6 +3,7 @@ type DataImport {
   companyId: String
   status: String
   logs: [String]
+  errorDetails: String
   createdAt: String
   createdBy: String
   updatedAt: String

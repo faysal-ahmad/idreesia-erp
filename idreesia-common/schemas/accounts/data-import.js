@@ -16,6 +16,10 @@ export default new SimpleSchema({
   },
   "logs.$": {
     type: String
+  },
+  errorDetails: {
+    type: String,
+    optional: true
   }
 })
   .extend(identifiable)

@@ -44,7 +44,11 @@ export default {
         updatedBy: userId,
       });
 
-      createJob({ type: "IMPORT_DATA", params: { dataImportId } });
+      createJob({
+        type: "IMPORT_DATA",
+        params: { dataImportId },
+        options: { priority: "normal", retry: 10 },
+      });
       return DataImports.findOne(dataImportId);
     },
   },

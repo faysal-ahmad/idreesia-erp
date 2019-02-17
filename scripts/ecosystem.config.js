@@ -13,6 +13,9 @@ module.exports = {
           public: {
             graphqlServerUrl: "http://192.168.1.100:4000/graphql",
             expressServerUrl: "http://192.168.1.100:3000"
+          },
+          private: {
+            jobsAppUrl: "http://localhost:3002"
           }
         }
       }

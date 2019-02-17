@@ -1,21 +1,26 @@
 import * as JOB_TYPES from "imports/constants/job-types";
-import { Companies } from "meteor/idreesia-common/collections/accounts";
+import { DataImports } from "meteor/idreesia-common/collections/accounts";
 
 import Jobs from "imports/collections/jobs";
 
-import importCompanyData from "./importers/import-companies-data";
+import importData from "./importers/import-data";
 
 export const worker = (job, callback) => {
   // eslint-disable-next-line no-console
-  console.log(`--> Importing data`);
+  console.log(`--> Importing data`, job.data);
 
-  const companies = Companies.find({}).fetch();
-  const promises = companies.map(company => importCompanyData(company));
+  const { dataImportId } = job.data;
 
-  return Promise.all(promises)
-    .catch(error => {
-      // eslint-disable-next-line no-console
-      console.log(error);
+  const dataImport = DataImports.findOne(dataImportId);
+  return importData(dataImport)
+    .then(() => {
+      DataImports.update(dataImportId, {
+        $set: {
+          status: dataImport.status,
+          logs: dataImport.logs,
+          errorDetails: dataImport.errorDetails,
+        },
+      });
     })
     .finally(() => {
       job.done();

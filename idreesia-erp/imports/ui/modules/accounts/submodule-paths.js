@@ -1,6 +1,10 @@
 import { ModulePaths } from "/imports/ui/constants";
 
 export default class SubModulePaths {
+  static dataImportsPath(companyId) {
+    return `${ModulePaths.accounts}/${companyId}/data-imports`;
+  }
+
   static vouchersPath(companyId) {
     return `${ModulePaths.accounts}/${companyId}/vouchers`;
   }

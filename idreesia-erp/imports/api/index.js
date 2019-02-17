@@ -57,6 +57,9 @@ import StockAdjustmentResolvers from "./inventory/stock-adjustment/resolvers";
 import CompanySchema from "./accounts/company/company.graphql";
 import CompanyResolvers from "./accounts/company/resolvers";
 
+import DataImportSchema from "./accounts/data-import/data-import.graphql";
+import DataImportResolvers from "./accounts/data-import/resolvers";
+
 import FinancialAccountSchema from "./accounts/financial-account/financial-account.graphql";
 import FinancialAccountResolvers from "./accounts/financial-account/resolvers";
 
@@ -78,6 +81,7 @@ const typeDefs = [
   StockAdjustmentSchema,
 
   CompanySchema,
+  DataImportSchema,
   FinancialAccountSchema,
 ];
 
@@ -100,6 +104,7 @@ const resolvers = merge(
   StockAdjustmentResolvers,
 
   CompanyResolvers,
+  DataImportResolvers,
   FinancialAccountResolvers
 );
 

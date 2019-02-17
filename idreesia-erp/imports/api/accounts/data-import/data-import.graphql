@@ -1,0 +1,27 @@
+type DataImport {
+  _id: String
+  companyId: String
+  status: String
+  logs: [String]
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedDataImport {
+  totalResults: Int
+  data: [DataImport]
+}
+
+extend type Query {
+  pagedDataImports(
+    companyId: String!
+    pageIndex: Float!
+    pageSize: Float!
+  ): PagedDataImport
+}
+
+extend type Mutation {
+  createDataImport(companyId: String!): DataImport
+}

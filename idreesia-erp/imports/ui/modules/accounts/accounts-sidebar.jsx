@@ -25,6 +25,9 @@ class AccountsSidebar extends Component {
     if (key.startsWith("vouchers")) {
       setActiveSubModuleName(SubModuleNames.vouchers);
       history.push(paths.vouchersPath(companyId));
+    } else if (key.startsWith("data-imports")) {
+      setActiveSubModuleName(SubModuleNames.dataImports);
+      history.push(paths.dataImportsPath(companyId));
     }
   };
 
@@ -46,6 +49,12 @@ class AccountsSidebar extends Component {
         >
           <Menu.Item parent-key={company._id} key={`vouchers-${company._id}`}>
             Vouchers
+          </Menu.Item>
+          <Menu.Item
+            parent-key={company._id}
+            key={`data-imports-${company._id}`}
+          >
+            Data Imports
           </Menu.Item>
         </Menu.SubMenu>
       );

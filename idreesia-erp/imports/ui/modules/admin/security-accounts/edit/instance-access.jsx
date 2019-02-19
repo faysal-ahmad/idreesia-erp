@@ -18,8 +18,6 @@ class InstanceAccess extends Component {
     karkunById: PropTypes.object,
     setInstanceAccess: PropTypes.func,
 
-    companiesListLoading: PropTypes.bool,
-    allCompanies: PropTypes.array,
     physicalStoresListLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
   };
@@ -95,23 +93,12 @@ class InstanceAccess extends Component {
   render() {
     const {
       karkunLoading,
-      companiesListLoading,
-      allCompanies,
       physicalStoresListLoading,
       allPhysicalStores,
     } = this.props;
-    if (karkunLoading || companiesListLoading || physicalStoresListLoading)
-      return null;
+    if (karkunLoading || physicalStoresListLoading) return null;
 
     const accessData = [
-      {
-        title: "Companies",
-        key: "module-accounts-companies",
-        children: allCompanies.map(company => ({
-          title: company.name,
-          key: company._id,
-        })),
-      },
       {
         title: "Physical Stores",
         key: "module-inventory-physical-stores",
@@ -184,15 +171,6 @@ const formQuery = gql`
   }
 `;
 
-const companiesListQuery = gql`
-  query allCompanies {
-    allCompanies {
-      _id
-      name
-    }
-  }
-`;
-
 const physicalStoresListQuery = gql`
   query allPhysicalStores {
     allPhysicalStores {
@@ -212,9 +190,6 @@ export default compose(
   graphql(formQuery, {
     props: ({ data }) => ({ karkunLoading: data.loading, ...data }),
     options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
-  }),
-  graphql(companiesListQuery, {
-    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
   }),
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),

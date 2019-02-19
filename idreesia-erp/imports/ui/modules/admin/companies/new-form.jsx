@@ -99,7 +99,7 @@ export default compose(
   graphql(formMutation, {
     name: "createCompany",
     options: {
-      refetchQueries: ["allCompanies", "allAccessibleCompanies"],
+      refetchQueries: ["allCompanies"],
     },
   }),
   WithBreadcrumbs(["Admin", "Setup", "Companies", "New"])

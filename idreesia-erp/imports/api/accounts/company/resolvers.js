@@ -1,8 +1,5 @@
 import { Companies } from "meteor/idreesia-common/collections/accounts";
-import {
-  filterByInstanceAccess,
-  hasOnePermission,
-} from "/imports/api/security";
+import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
@@ -17,12 +14,6 @@ export default {
       }
 
       return Companies.find({}).fetch();
-    },
-
-    allAccessibleCompanies(obj, params, { userId }) {
-      const companies = Companies.find({}).fetch();
-      const filteredCompanies = filterByInstanceAccess(userId, companies);
-      return filteredCompanies;
     },
 
     companyById(obj, { id }, { userId }) {

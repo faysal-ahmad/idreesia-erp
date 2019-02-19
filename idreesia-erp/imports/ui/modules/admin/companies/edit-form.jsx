@@ -123,7 +123,7 @@ export default compose(
   graphql(formMutation, {
     name: "updateCompany",
     options: {
-      refetchQueries: ["allCompanies", "allAccessibleCompanies"],
+      refetchQueries: ["allCompanies"],
     },
   }),
   graphql(formQuery, {

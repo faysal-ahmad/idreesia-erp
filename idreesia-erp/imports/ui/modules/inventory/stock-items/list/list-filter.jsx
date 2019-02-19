@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
 import {
   InputTextField,
@@ -23,38 +25,39 @@ const buttonItemLayout = {
 class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
-
-    refreshPage: PropTypes.func,
-    queryParams: PropTypes.object,
     allItemCategories: PropTypes.array,
+    itemCategoryId: PropTypes.string,
+    itemTypeName: PropTypes.string,
+    setPageParams: PropTypes.func,
   };
 
   handleReset = () => {
-    const { refreshPage } = this.props;
-    refreshPage({
+    const { form, setPageParams } = this.props;
+    form.resetFields();
+    setPageParams({
+      pageIndex: 0,
       itemCategoryId: null,
       itemTypeName: null,
-      pageIndex: 0,
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, refreshPage } = this.props;
+    const { form, setPageParams } = this.props;
 
     form.validateFields((err, { itemCategoryId, itemTypeName }) => {
       if (err) return;
-      refreshPage({
+      setPageParams({
+        pageIndex: 0,
         itemCategoryId,
         itemTypeName,
-        pageIndex: 0,
       });
     });
   };
 
   render() {
-    const { allItemCategories, queryParams } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const { itemCategoryId, itemTypeName, allItemCategories } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -67,7 +70,7 @@ class ListFilter extends Component {
               fieldName="itemCategoryId"
               fieldLabel="Category"
               fieldLayout={formItemLayout}
-              initialValue={queryParams.itemCategoryId}
+              initialValue={itemCategoryId}
               getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
@@ -75,7 +78,7 @@ class ListFilter extends Component {
               fieldLabel="Name"
               required={false}
               fieldLayout={formItemLayout}
-              initialValue={queryParams.itemTypeName}
+              initialValue={itemTypeName}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
@@ -96,4 +99,18 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create()(ListFilter);
+const itemCategoriesListQuery = gql`
+  query allItemCategories {
+    allItemCategories {
+      _id
+      name
+    }
+  }
+`;
+
+export default compose(
+  Form.create({ name: "itemTypeListFilter" }),
+  graphql(itemCategoriesListQuery, {
+    props: ({ data }) => ({ ...data }),
+  })
+)(ListFilter);

@@ -27,8 +27,11 @@ export default class SubModulePaths {
   static stockItemsNewFormPath(physicalStoreId = ":physicalStoreId") {
     return `${SubModulePaths.stockItemsPath(physicalStoreId)}/new`;
   }
-  static stockItemsEditFormPath(physicalStoreId = ":physicalStoreId") {
-    return `${SubModulePaths.stockItemsPath(physicalStoreId)}/:stockItemId`;
+  static stockItemsEditFormPath(
+    physicalStoreId = ":physicalStoreId",
+    stockItemId = ":stockItemId"
+  ) {
+    return `${SubModulePaths.stockItemsPath(physicalStoreId)}/${stockItemId}`;
   }
 
   // *************************************************************************************

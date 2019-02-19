@@ -1,9 +1,14 @@
 type DataImport {
   _id: String
   companyId: String
+  importType: String
+  importForMonth: String
   status: String
   logs: [String]
   errorDetails: String
+
+  refCompany: Company
+
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -17,13 +22,17 @@ type PagedDataImport {
 
 extend type Query {
   pagedDataImports(
-    companyId: String!
+    companyId: String
     pageIndex: Float!
     pageSize: Float!
   ): PagedDataImport
 }
 
 extend type Mutation {
-  createDataImport(companyId: String!): DataImport
+  createDataImport(
+    companyId: String!
+    importType: String!
+    importForMonth: String
+  ): DataImport
   removeDataImport(_id: String!): Int
 }

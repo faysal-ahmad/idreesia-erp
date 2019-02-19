@@ -9,8 +9,6 @@ import { GlobalActionsCreator } from "/imports/ui/action-creators";
 import SubModuleNames from "./submodule-names";
 import { default as paths } from "./submodule-paths";
 
-const { SubMenu } = Menu;
-
 class InventorySidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -94,7 +92,7 @@ class InventorySidebar extends Component {
     });
 
     subMenus.push(
-      <SubMenu
+      <Menu.SubMenu
         key="setup"
         title={
           <span>
@@ -105,7 +103,7 @@ class InventorySidebar extends Component {
         <Menu.Item key="item-types">Item Types</Menu.Item>
         <Menu.Item key="item-categories">Item Categories</Menu.Item>
         <Menu.Item key="locations">Locations</Menu.Item>
-      </SubMenu>
+      </Menu.SubMenu>
     );
 
     return (

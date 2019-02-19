@@ -3,13 +3,15 @@ import { get } from "lodash";
 import { DataImports } from "meteor/idreesia-common/collections/accounts";
 
 export default function getDataImports(companyId, pageIndex, pageSize) {
-  const pipeline = [
-    {
+  const pipeline = [];
+
+  if (companyId) {
+    pipeline.push({
       $match: {
         companyId: { $eq: companyId },
       },
-    },
-  ];
+    });
+  }
 
   const countingPipeline = pipeline.concat({
     $count: "total",

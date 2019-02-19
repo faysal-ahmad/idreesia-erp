@@ -6,6 +6,14 @@ export default new SimpleSchema({
   companyId: {
     type: String
   },
+  importType: {
+    type: String,
+    allowedValues: ["categories", "vouchers"]
+  },
+  importForMonth: {
+    type: String,
+    optional: true
+  },
   status: {
     type: String,
     allowedValues: ["queued", "processing", "completed", "errored"]

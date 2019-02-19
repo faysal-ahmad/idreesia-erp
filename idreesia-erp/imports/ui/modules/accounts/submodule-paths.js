@@ -1,9 +1,8 @@
 import { ModulePaths } from "/imports/ui/constants";
 
 export default class SubModulePaths {
-  static dataImportsPath(companyId) {
-    return `${ModulePaths.accounts}/${companyId}/data-imports`;
-  }
+  static dataImportsPath = `${ModulePaths.accounts}/data-imports`;
+  static dataImportsNewFormPath = `${SubModulePaths.dataImportsPath}/new`;
 
   static vouchersPath(companyId) {
     return `${ModulePaths.accounts}/${companyId}/vouchers`;

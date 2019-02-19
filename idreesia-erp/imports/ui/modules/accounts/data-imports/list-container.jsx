@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
+import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 
 import List from "./list/list";
 
@@ -26,9 +26,9 @@ class ListContainer extends Component {
     this.setState(pageParams);
   };
 
-  handleNewClicked = () => {
-    const { companyId, createDataImport } = this.props;
-    createDataImport(companyId);
+  handleNewDataImportClicked = () => {
+    const { history } = this.props;
+    history.push(paths.dataImportsNewFormPath);
   };
 
   handleDeleteClicked = _id => {
@@ -46,28 +46,12 @@ class ListContainer extends Component {
         pageIndex={pageIndex}
         pageSize={pageSize}
         setPageParams={this.setPageParams}
-        showNewButton
-        handleNewClicked={this.handleNewClicked}
+        handleNewDataImportClicked={this.handleNewDataImportClicked}
         handleDeleteClicked={this.handleDeleteClicked}
       />
     );
   }
 }
-
-const createMutation = gql`
-  mutation createDataImport($companyId: String!) {
-    createDataImport(companyId: $companyId) {
-      _id
-      companyId
-      status
-      logs
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
 
 const removeMutation = gql`
   mutation removeDataImport($_id: String!) {
@@ -76,13 +60,6 @@ const removeMutation = gql`
 `;
 
 export default compose(
-  WithCompanyId(),
-  graphql(createMutation, {
-    name: "createDataImport",
-    options: {
-      refetchQueries: ["pagedDataImports"],
-    },
-  }),
   graphql(removeMutation, {
     name: "removeDataImport",
     options: {

@@ -1,15 +1,24 @@
-import { DataImports } from "meteor/idreesia-common/collections/accounts";
-import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
+import {
+  Companies,
+  DataImports,
+} from "meteor/idreesia-common/collections/accounts";
+import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 import { createJob } from "meteor/idreesia-common/utilities/jobs";
 
 import getDataImports from "./queries";
 
 export default {
+  DataImport: {
+    refCompany: dataImport =>
+      Companies.findOne({
+        _id: { $eq: dataImport.companyId },
+      }),
+  },
+
   Query: {
     pagedDataImports(obj, { companyId, pageIndex, pageSize }, { userId }) {
       if (
-        hasInstanceAccess(userId, companyId) === false ||
         !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         return {
@@ -23,9 +32,12 @@ export default {
   },
 
   Mutation: {
-    createDataImport(obj, { companyId }, { userId }) {
+    createDataImport(
+      obj,
+      { companyId, importType, importForMonth },
+      { userId }
+    ) {
       if (
-        hasInstanceAccess(userId, companyId) === false ||
         !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
@@ -36,6 +48,8 @@ export default {
       const date = new Date();
       const dataImportId = DataImports.insert({
         companyId,
+        importType,
+        importForMonth,
         status: "queued",
         logs: [],
         createdAt: date,
@@ -51,11 +65,9 @@ export default {
       });
       return DataImports.findOne(dataImportId);
     },
-    removeDataImport(obj, { _id }, { userId }) {
-      const existingDataImport = DataImports.findOne(_id);
 
+    removeDataImport(obj, { _id }, { userId }) {
       if (
-        hasInstanceAccess(userId, existingDataImport.companyId) === false ||
         !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(

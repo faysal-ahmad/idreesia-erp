@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { capitalize } from "lodash";
 import { Button, Icon, Pagination, Table, Tooltip } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
@@ -8,8 +9,8 @@ import { compose, graphql } from "react-apollo";
 const ToolbarStyle = {
   display: "flex",
   flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
+  justifyContent: "flex-start",
+  alignItems: "left",
   width: "100%",
 };
 
@@ -32,8 +33,7 @@ class List extends Component {
     pageSize: PropTypes.number,
     companyId: PropTypes.string,
     setPageParams: PropTypes.func,
-    showNewButton: PropTypes.bool,
-    handleNewClicked: PropTypes.func,
+    handleNewDataImportClicked: PropTypes.func,
     handleDeleteClicked: PropTypes.func,
 
     loading: PropTypes.bool,
@@ -44,6 +44,17 @@ class List extends Component {
   };
 
   columns = [
+    {
+      title: "Company",
+      dataIndex: "refCompany.name",
+      key: "refCompany.name",
+    },
+    {
+      title: "Import Type",
+      dataIndex: "importType",
+      key: "importType",
+      render: text => capitalize(text),
+    },
     {
       title: "Created On",
       dataIndex: "createdAt",
@@ -57,6 +68,7 @@ class List extends Component {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      render: text => capitalize(text),
     },
     {
       title: "Logs",
@@ -69,7 +81,6 @@ class List extends Component {
       },
     },
     {
-      title: "Actions",
       key: "action",
       render: (text, record) => {
         if (record.status === "completed" || record.status === "errored") {
@@ -110,18 +121,19 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { showNewButton, handleNewClicked } = this.props;
+    const { handleNewDataImportClicked } = this.props;
 
-    let newButton = null;
-    if (showNewButton) {
-      newButton = (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+    return (
+      <div style={ToolbarStyle}>
+        <Button
+          type="primary"
+          icon="plus-circle-o"
+          onClick={handleNewDataImportClicked}
+        >
           New Data Import
         </Button>
-      );
-    }
-
-    return <div style={ToolbarStyle}>{newButton}</div>;
+      </div>
+    );
   };
 
   render() {
@@ -166,7 +178,7 @@ class List extends Component {
 
 const listQuery = gql`
   query pagedDataImports(
-    $companyId: String!
+    $companyId: String
     $pageIndex: Float!
     $pageSize: Float!
   ) {
@@ -179,12 +191,18 @@ const listQuery = gql`
       data {
         _id
         companyId
+        importType
+        importForMonth
         status
         logs
         createdAt
         createdBy
         updatedAt
         updatedBy
+        refCompany {
+          _id
+          name
+        }
       }
     }
   }

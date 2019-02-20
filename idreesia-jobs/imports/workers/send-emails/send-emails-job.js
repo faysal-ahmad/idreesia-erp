@@ -5,7 +5,7 @@ import { PhysicalStores } from "meteor/idreesia-common/collections/inventory";
 
 import Jobs from "imports/collections/jobs";
 import sendEmail from "./sendgrid/send-email";
-import getDailyInventorySummaryForStore from "./email-templates/get-daily-inventory-summary";
+import getDailySummary from "./email-templates/daily-summary-report/get-daily-summary";
 
 export const worker = (job, callback) => {
   // eslint-disable-next-line no-console
@@ -13,7 +13,7 @@ export const worker = (job, callback) => {
 
   const physicalStores = PhysicalStores.find({}).fetch();
   const promises = physicalStores.map(physicalStore => {
-    const template = getDailyInventorySummaryForStore(physicalStore._id);
+    const template = getDailySummary(physicalStore._id);
     const html = mjmltohtml(template).html;
 
     const recepients = [

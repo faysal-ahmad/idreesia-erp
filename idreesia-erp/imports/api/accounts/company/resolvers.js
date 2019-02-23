@@ -4,9 +4,9 @@ import { Permissions as PermissionConstants } from "meteor/idreesia-common/const
 
 export default {
   Query: {
-    allCompanies(obj, params, { userId }) {
+    allCompanies(obj, params, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_COMPANIES])
       ) {
         throw new Error(
           "You do not have permission to view Companies in the System."
@@ -16,9 +16,9 @@ export default {
       return Companies.find({}).fetch();
     },
 
-    companyById(obj, { id }, { userId }) {
+    companyById(obj, { id }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_COMPANIES])
       ) {
         throw new Error(
           "You do not have permission to view Companies in the System."
@@ -30,9 +30,9 @@ export default {
   },
 
   Mutation: {
-    createCompany(obj, { name, importData, connectivitySettings }, { userId }) {
+    createCompany(obj, { name, importData, connectivitySettings }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
           "You do not have permission to manage Companies in the System."
@@ -45,9 +45,9 @@ export default {
         importData,
         connectivitySettings,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return Companies.findOne(accountId);
@@ -56,10 +56,10 @@ export default {
     updateCompany(
       obj,
       { _id, name, importData, connectivitySettings },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
           "You do not have permission to manage Companies in the System."
@@ -73,7 +73,7 @@ export default {
           importData,
           connectivitySettings,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 

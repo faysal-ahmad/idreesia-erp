@@ -1,4 +1,8 @@
-import { Duties, Karkuns, KarkunDuties } from "meteor/idreesia-common/collections/hr";
+import {
+  Duties,
+  Karkuns,
+  KarkunDuties,
+} from "meteor/idreesia-common/collections/hr";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
@@ -30,9 +34,9 @@ export default {
   },
 
   Query: {
-    allKarkunsWithAccounts(obj, params, { userId }) {
+    allKarkunsWithAccounts(obj, params, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_ACCOUNTS])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_ACCOUNTS])
       ) {
         return [];
       }
@@ -88,9 +92,11 @@ export default {
         emailAddress,
         address,
       },
-      { userId }
+      { user }
     ) {
-      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
         throw new Error(
           "You do not have permission to manage Karkuns in the System."
         );
@@ -117,9 +123,9 @@ export default {
         emailAddress,
         address,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return Karkuns.findOne(karkunId);
@@ -137,9 +143,11 @@ export default {
         emailAddress,
         address,
       },
-      { userId }
+      { user }
     ) {
-      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
         throw new Error(
           "You do not have permission to manage Karkuns in the System."
         );
@@ -167,15 +175,17 @@ export default {
           emailAddress,
           address,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 
       return Karkuns.findOne(_id);
     },
 
-    setKarkunProfileImage(obj, { _id, imageId }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+    setKarkunProfileImage(obj, { _id, imageId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
         throw new Error(
           "You do not have permission to create Karkuns in the System."
         );
@@ -186,16 +196,16 @@ export default {
         $set: {
           imageId,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 
       return Karkuns.findOne(_id);
     },
 
-    createAccount(obj, { karkunId, userName, password }, { userId }) {
+    createAccount(obj, { karkunId, userName, password }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
           "You do not have permission to manage Accounts in the System."
@@ -223,9 +233,9 @@ export default {
       return Karkuns.findOne(karkunId);
     },
 
-    deleteAccount(obj, { karkunId, karkunUserId }, { userId }) {
+    deleteAccount(obj, { karkunId, karkunUserId }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
           "You do not have permission to manage Accounts in the System."
@@ -244,9 +254,9 @@ export default {
       return Karkuns.findOne(karkunId);
     },
 
-    setPermissions(obj, { karkunId, karkunUserId, permissions }, { userId }) {
+    setPermissions(obj, { karkunId, karkunUserId, permissions }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
           "You do not have permission to manage Accounts in the System."
@@ -257,9 +267,9 @@ export default {
       return Karkuns.findOne(karkunId);
     },
 
-    setInstanceAccess(obj, { karkunId, karkunUserId, instances }, { userId }) {
+    setInstanceAccess(obj, { karkunId, karkunUserId, instances }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
           "You do not have permission to manage Accounts in the System."

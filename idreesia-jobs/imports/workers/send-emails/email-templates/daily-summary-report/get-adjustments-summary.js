@@ -6,7 +6,7 @@ import {
   ItemTypes,
 } from "meteor/idreesia-common/collections/inventory";
 
-export default function getPurchaseFormsSummary(physicalStoreId) {
+export default function getAdjustmentsSummary(physicalStoreId) {
   const purchaseForms = PurchaseForms.getUpdatedForDate(
     physicalStoreId,
     new Date()

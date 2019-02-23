@@ -59,10 +59,10 @@ export default {
   },
 
   Query: {
-    allStockItems(obj, params, { userId }) {
+    allStockItems(obj, params, { user }) {
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -75,8 +75,8 @@ export default {
       }).fetch();
     },
 
-    pagedStockItems(obj, { physicalStoreId, queryString }, { userId }) {
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+    pagedStockItems(obj, { physicalStoreId, queryString }, { user }) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         return {
           stockItems: [],
           totalResults: 0,
@@ -86,10 +86,10 @@ export default {
       return getPagedStockItems(queryString, physicalStoreId);
     },
 
-    stockItemById(obj, { _id }, { userId }) {
+    stockItemById(obj, { _id }, { user }) {
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -103,13 +103,13 @@ export default {
       });
     },
 
-    stockItemsByPhysicalStoreId(obj, { physicalStoreId }, { userId }) {
-      if (hasInstanceAccess(userId, physicalStoreId) === false) return [];
+    stockItemsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
       return getAllStockItems(physicalStoreId);
     },
 
-    unStockedItemTypesByPhysicalStoreId(obj, { physicalStoreId }, { userId }) {
-      if (hasInstanceAccess(userId, physicalStoreId) === false) return [];
+    unStockedItemTypesByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
       const stockedItemTypes = StockItems.find(
         {
           physicalStoreId: { $eq: physicalStoreId },
@@ -134,17 +134,17 @@ export default {
     createStockItem(
       obj,
       { itemTypeId, physicalStoreId, minStockLevel, currentStockLevel },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           "You do not have permission to manage Stock Items in the System."
         );
       }
 
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
           "You do not have permission to manage Stock Items in this Physical Store."
         );
@@ -158,17 +158,17 @@ export default {
         startingStockLevel: currentStockLevel,
         currentStockLevel,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return StockItems.findOne(stockItemId);
     },
 
-    updateStockItem(obj, { _id, minStockLevel }, { userId }) {
+    updateStockItem(obj, { _id, minStockLevel }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           "You do not have permission to manage Stock Items in the System."
@@ -178,7 +178,7 @@ export default {
       const existingStockItem = StockItems.findOne(_id);
       if (
         !existingStockItem ||
-        hasInstanceAccess(userId, existingStockItem.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingStockItem.physicalStoreId) === false
       ) {
         throw new Error(
           "You do not have permission to manage Stock Items in the System."
@@ -190,7 +190,7 @@ export default {
         $set: {
           minStockLevel,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 

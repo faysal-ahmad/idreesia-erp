@@ -41,9 +41,9 @@ export default {
     },
   },
   Query: {
-    stockAdjustmentsByStockItem(obj, { stockItemId }, { userId }) {
+    stockAdjustmentsByStockItem(obj, { stockItemId }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -55,7 +55,7 @@ export default {
 
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -66,10 +66,10 @@ export default {
       );
     },
 
-    pagedStockAdjustments(obj, { physicalStoreId, queryString }, { userId }) {
+    pagedStockAdjustments(obj, { physicalStoreId, queryString }, { user }) {
       if (
-        hasInstanceAccess(userId, physicalStoreId) === false ||
-        !hasOnePermission(userId, [
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -85,9 +85,9 @@ export default {
       return getStockAdjustments(queryString, physicalStoreId);
     },
 
-    stockAdjustmentById(obj, { _id }, { userId }) {
+    stockAdjustmentById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -99,7 +99,7 @@ export default {
 
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return null;
@@ -126,10 +126,10 @@ export default {
         isInflow,
         adjustmentReason,
       },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -139,7 +139,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
           "You do not have permission to manage Stock Adjustments in this Physical Store."
         );
@@ -155,9 +155,9 @@ export default {
         isInflow,
         adjustmentReason,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       if (isInflow) {
@@ -172,10 +172,10 @@ export default {
     updateStockAdjustment(
       obj,
       { _id, adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -188,7 +188,7 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(userId, existingAdjustment.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) === false
       ) {
         throw new Error(
           "You do not have permission to manage Stock Adjustments in this Physical Store."
@@ -236,7 +236,7 @@ export default {
             isInflow,
             adjustmentReason,
             updatedAt: date,
-            updatedBy: userId,
+            updatedBy: user._id,
           },
         }
       );
@@ -244,9 +244,9 @@ export default {
       return StockAdjustments.findOne(_id);
     },
 
-    approveStockAdjustment(obj, { _id }, { userId }) {
+    approveStockAdjustment(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -258,7 +258,7 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(userId, existingAdjustment.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) === false
       ) {
         throw new Error(
           "You do not have permission to approve Stock Adjustments in this Physical Store."
@@ -269,16 +269,16 @@ export default {
       StockAdjustments.update(_id, {
         $set: {
           approvedOn: date,
-          approvedBy: userId,
+          approvedBy: user._id,
         },
       });
 
       return StockAdjustments.findOne(_id);
     },
 
-    removeStockAdjustment(obj, { _id }, { userId }) {
+    removeStockAdjustment(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -291,7 +291,7 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(userId, existingAdjustment.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) === false
       ) {
         throw new Error(
           "You do not have permission to manage Stock Adjustments in this Physical Store."

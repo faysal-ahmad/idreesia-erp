@@ -50,9 +50,9 @@ export default {
     },
   },
   Query: {
-    issuanceFormsByStockItem(obj, { stockItemId }, { userId }) {
+    issuanceFormsByStockItem(obj, { stockItemId }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -63,7 +63,7 @@ export default {
 
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -71,10 +71,10 @@ export default {
       return getIssuanceFormsByStockItemId(stockItemId, filteredPhysicalStores);
     },
 
-    pagedIssuanceForms(obj, { physicalStoreId, queryString }, { userId }) {
+    pagedIssuanceForms(obj, { physicalStoreId, queryString }, { user }) {
       if (
-        hasInstanceAccess(userId, physicalStoreId) === false ||
-        !hasOnePermission(userId, [
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -89,9 +89,9 @@ export default {
       return getIssuanceForms(queryString, physicalStoreId);
     },
 
-    issuanceFormById(obj, { _id }, { userId }) {
+    issuanceFormById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -102,7 +102,7 @@ export default {
 
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -129,10 +129,10 @@ export default {
         items,
         notes,
       },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
@@ -142,7 +142,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
           "You do not have permission to manage Issuance Forms in this Physical Store."
         );
@@ -158,9 +158,9 @@ export default {
         items,
         notes,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       items.forEach(({ stockItemId, quantity, isInflow }) => {
@@ -186,10 +186,10 @@ export default {
         items,
         notes,
       },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
@@ -199,7 +199,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
           "You do not have permission to manage Issuance Forms in this Physical Store."
         );
@@ -242,7 +242,7 @@ export default {
             items,
             notes,
             updatedAt: date,
-            updatedBy: userId,
+            updatedBy: user._id,
           },
         }
       );
@@ -250,9 +250,9 @@ export default {
       return IssuanceForms.findOne(_id);
     },
 
-    approveIssuanceForm(obj, { _id }, { userId }) {
+    approveIssuanceForm(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
@@ -264,7 +264,7 @@ export default {
       const existingIssuanceForm = IssuanceForms.findOne(_id);
       if (
         !existingIssuanceForm ||
-        hasInstanceAccess(userId, existingIssuanceForm.physicalStoreId) ===
+        hasInstanceAccess(user._id, existingIssuanceForm.physicalStoreId) ===
           false
       ) {
         throw new Error(
@@ -276,16 +276,16 @@ export default {
       IssuanceForms.update(_id, {
         $set: {
           approvedOn: date,
-          approvedBy: userId,
+          approvedBy: user._id,
         },
       });
 
       return IssuanceForms.findOne(_id);
     },
 
-    removeIssuanceForm(obj, { _id }, { userId }) {
+    removeIssuanceForm(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
@@ -298,7 +298,7 @@ export default {
       const existingIssuanceForm = IssuanceForms.findOne(_id);
       if (
         !existingIssuanceForm ||
-        hasInstanceAccess(userId, existingIssuanceForm.physicalStoreId) ===
+        hasInstanceAccess(user._id, existingIssuanceForm.physicalStoreId) ===
           false
       ) {
         throw new Error(

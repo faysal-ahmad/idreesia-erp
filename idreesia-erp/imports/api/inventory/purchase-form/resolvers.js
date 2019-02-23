@@ -41,9 +41,9 @@ export default {
     },
   },
   Query: {
-    purchaseFormsByStockItem(obj, { stockItemId }, { userId }) {
+    purchaseFormsByStockItem(obj, { stockItemId }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -54,7 +54,7 @@ export default {
 
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -62,10 +62,10 @@ export default {
       return getPurchaseFormsByStockItemId(stockItemId, filteredPhysicalStores);
     },
 
-    pagedPurchaseForms(obj, { physicalStoreId, queryString }, { userId }) {
+    pagedPurchaseForms(obj, { physicalStoreId, queryString }, { user }) {
       if (
-        hasInstanceAccess(userId, physicalStoreId) === false ||
-        !hasOnePermission(userId, [
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -80,9 +80,9 @@ export default {
       return getPurchaseForms(queryString, physicalStoreId);
     },
 
-    purchaseFormById(obj, { _id }, { userId }) {
+    purchaseFormById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -93,7 +93,7 @@ export default {
 
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        userId,
+        user._id,
         physicalStores
       );
       if (filteredPhysicalStores.length === 0) return [];
@@ -112,10 +112,10 @@ export default {
     createPurchaseForm(
       obj,
       { purchaseDate, receivedBy, purchasedBy, physicalStoreId, items, notes },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -125,7 +125,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
           "You do not have permission to manage Purchase Forms in this Physical Store."
         );
@@ -140,9 +140,9 @@ export default {
         items,
         notes,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       items.forEach(({ stockItemId, quantity, isInflow }) => {
@@ -167,10 +167,10 @@ export default {
         items,
         notes,
       },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -180,7 +180,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(userId, physicalStoreId) === false) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
           "You do not have permission to manage Purchase Forms in this Physical Store."
         );
@@ -222,7 +222,7 @@ export default {
             items,
             notes,
             updatedAt: date,
-            updatedBy: userId,
+            updatedBy: user._id,
           },
         }
       );
@@ -230,9 +230,9 @@ export default {
       return PurchaseForms.findOne(_id);
     },
 
-    approvePurchaseForm(obj, { _id }, { userId }) {
+    approvePurchaseForm(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
@@ -244,7 +244,7 @@ export default {
       const existingPurchaseForm = PurchaseForms.findOne(_id);
       if (
         !existingPurchaseForm ||
-        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) ===
+        hasInstanceAccess(user._id, existingPurchaseForm.physicalStoreId) ===
           false
       ) {
         throw new Error(
@@ -256,16 +256,16 @@ export default {
       PurchaseForms.update(_id, {
         $set: {
           approvedOn: date,
-          approvedBy: userId,
+          approvedBy: user._id,
         },
       });
 
       return PurchaseForms.findOne(_id);
     },
 
-    removePurchaseForm(obj, { _id }, { userId }) {
+    removePurchaseForm(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -278,7 +278,7 @@ export default {
       const existingPurchaseForm = PurchaseForms.findOne(_id);
       if (
         !existingPurchaseForm ||
-        hasInstanceAccess(userId, existingPurchaseForm.physicalStoreId) ===
+        hasInstanceAccess(user._id, existingPurchaseForm.physicalStoreId) ===
           false
       ) {
         throw new Error(

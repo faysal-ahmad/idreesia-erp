@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Avatar, Dropdown, Menu } from 'antd';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { Meteor } from "meteor/meteor";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Avatar, Dropdown, Menu } from "antd";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
 
 const ContainerStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
 };
 
 class UserMenu extends Component {
@@ -24,10 +24,10 @@ class UserMenu extends Component {
     const { history } = this.props;
 
     switch (key) {
-      case 'logout':
+      case "logout":
         Meteor.logout(error => {
           if (error) console.log(error);
-          history.push('/');
+          history.push("/");
         });
         break;
 
@@ -38,18 +38,22 @@ class UserMenu extends Component {
 
   render() {
     const { karkunByUserId } = this.props;
-    const userName = karkunByUserId ? karkunByUserId.name : '';
+    const userName = karkunByUserId ? karkunByUserId.name : "";
 
+    debugger;
     let avatar = <Avatar size="large" icon="user" />;
     if (karkunByUserId && karkunByUserId.imageId) {
-      const url = `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
-        karkunByUserId.imageId
-      }`;
+      const url = Meteor.absoluteUrl(
+        `download-file?attachmentId=${karkunByUserId.imageId}`
+      );
       avatar = <Avatar size="large" src={url} />;
     }
 
     const menu = (
-      <Menu style={{ height: '100%', borderRight: 0 }} onClick={this.handleMenuItemClicked}>
+      <Menu
+        style={{ height: "100%", borderRight: 0 }}
+        onClick={this.handleMenuItemClicked}
+      >
         <Menu.Item key="logout">Logout</Menu.Item>
       </Menu>
     );
@@ -57,7 +61,7 @@ class UserMenu extends Component {
     return (
       <Dropdown overlay={menu} placement="bottomLeft">
         <div style={ContainerStyle}>
-          <div style={{ color: '#FFFFFF' }}>{userName}</div>
+          <div style={{ color: "#FFFFFF" }}>{userName}</div>
           &nbsp; &nbsp;
           {avatar}
         </div>

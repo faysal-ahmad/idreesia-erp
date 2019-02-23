@@ -40,7 +40,6 @@ class UserMenu extends Component {
     const { karkunByUserId } = this.props;
     const userName = karkunByUserId ? karkunByUserId.name : "";
 
-    debugger;
     let avatar = <Avatar size="large" icon="user" />;
     if (karkunByUserId && karkunByUserId.imageId) {
       const url = Meteor.absoluteUrl(

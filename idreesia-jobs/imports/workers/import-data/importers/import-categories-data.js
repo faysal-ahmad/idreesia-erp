@@ -4,7 +4,7 @@ import { Categories } from "meteor/idreesia-common/collections/accounts";
 
 export default async function importCategoriesData(company, adminUser) {
   return new Promise((resolve, reject) => {
-    const config = company.connectivitySettings;
+    const config = JSON.parse(company.connectivitySettings);
     sql.connect(config, err => {
       if (err) reject(err);
 
@@ -15,6 +15,7 @@ export default async function importCategoriesData(company, adminUser) {
       let importedCategories = 0;
       const rowsToProcess = [];
       const processRows = () => {
+        console.log(`Processing ${rowsToProcess.length} rows.`);
         rowsToProcess.forEach(
           ({ Title, Type, Nature, AccountNo, Parent, Description }) => {
             const existingCategory = Categories.findOne({
@@ -40,7 +41,7 @@ export default async function importCategoriesData(company, adminUser) {
                   updatedBy: adminUser._id,
                 },
                 error => {
-                  console.log(error);
+                  if (error) console.log(error);
                 }
               );
             }
@@ -52,10 +53,10 @@ export default async function importCategoriesData(company, adminUser) {
         rowsToProcess.push(row);
       });
 
-      sqlRequest.on("done", () => {
+      sqlRequest.on("done", Meteor.bindEnvironment(() => {
         processRows();
         resolve(importedCategories);
-      });
+      }));
     });
 
     sql.on("error", err => {

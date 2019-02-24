@@ -1,0 +1,24 @@
+type Voucher {
+  _id: String
+  companyId: String
+  externalReferenceId: String
+  voucherNumber: String
+  voucherDate: String
+  description: String
+  order: Float
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVoucher {
+  data: [Voucher]
+  totalResults: Int
+}
+
+extend type Query {
+  pagedVouchers(companyId: String!, queryString: String): PagedVoucher
+  voucherById(id: String!): Voucher
+}

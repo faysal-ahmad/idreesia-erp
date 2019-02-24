@@ -8,9 +8,7 @@ export default {
       if (
         !hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_COMPANIES])
       ) {
-        throw new Error(
-          "You do not have permission to view Companies in the System."
-        );
+        return [];
       }
 
       return Companies.find({}).fetch();
@@ -20,9 +18,7 @@ export default {
       if (
         !hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_COMPANIES])
       ) {
-        throw new Error(
-          "You do not have permission to view Companies in the System."
-        );
+        return null;
       }
 
       return Companies.findOne(id);

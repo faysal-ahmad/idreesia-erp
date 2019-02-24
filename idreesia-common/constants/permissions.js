@@ -2,6 +2,8 @@ export default class Permissions {
   // ****************************************************************************************
   // Accounts Module
   // ****************************************************************************************
+  static ACCOUNTS_IMPORT_DATA = "accounts-import-data";
+
   static ACCOUNTS_VIEW_VOUCHERS = "accounts-view-vouchers";
   static ACCOUNTS_MANAGE_VOUCHERS = "accounts-manage-vouchers";
 

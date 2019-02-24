@@ -6,9 +6,9 @@ import getVouchers from "./queries";
 
 export default {
   Query: {
-    pagedVouchers(obj, { companyId, queryString }, { userId }) {
+    pagedVouchers(obj, { companyId, queryString }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -22,9 +22,9 @@ export default {
       return getVouchers(companyId, queryString);
     },
 
-    voucherById(obj, { id }, { userId }) {
+    voucherById(obj, { id }, { user }) {
       if (
-        !hasOnePermission(userId, [
+        !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])

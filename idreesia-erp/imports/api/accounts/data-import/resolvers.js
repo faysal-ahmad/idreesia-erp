@@ -19,7 +19,7 @@ export default {
   Query: {
     pagedDataImports(obj, { companyId, pageIndex, pageSize }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ACCOUNTS_IMPORT_DATA])
       ) {
         return {
           data: [],
@@ -32,13 +32,9 @@ export default {
   },
 
   Mutation: {
-    createDataImport(
-      obj,
-      { companyId, importType, importForMonth },
-      { user }
-    ) {
+    createDataImport(obj, { companyId, importType, importForMonth }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ACCOUNTS_IMPORT_DATA])
       ) {
         throw new Error(
           "You do not have permission to import data for Companies in the System."
@@ -68,7 +64,7 @@ export default {
 
     removeDataImport(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ACCOUNTS_IMPORT_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage imports for Companies in the System."

@@ -58,6 +58,30 @@ const permissionsData = [
     ],
   },
   {
+    title: "Accounts",
+    key: "module-accounts",
+    children: [
+      {
+        title: "Import Data",
+        key: PermissionConstants.ACCOUNTS_IMPORT_DATA,
+      },
+      {
+        title: "Vouchers",
+        key: "module-accounts-vouchers",
+        children: [
+          {
+            title: "View Vouchers",
+            key: PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
+          },
+          {
+            title: "Manage Vouchers",
+            key: PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
+          },
+        ],
+      },
+    ],
+  },
+  {
     title: "HR",
     key: "module-hr",
     children: [

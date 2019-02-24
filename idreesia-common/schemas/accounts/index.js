@@ -1,5 +1,5 @@
 export { default as Category } from "./category";
 export { default as Company } from "./company";
 export { default as DataImport } from "./data-import";
-export { default as Transaction } from "./transaction";
+export { default as VoucherDetail } from "./voucher-detail";
 export { default as Voucher } from "./voucher";

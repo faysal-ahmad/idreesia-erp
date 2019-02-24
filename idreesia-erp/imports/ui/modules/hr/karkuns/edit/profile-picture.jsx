@@ -34,9 +34,9 @@ class ProfilePicture extends Component {
     const { loading, karkunById } = this.props;
     if (loading) return null;
     const url = karkunById.imageId
-      ? `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
+      ? Meteor.absoluteUrl(`download-file?attachmentId=${
           karkunById.imageId
-        }`
+        }`)
       : null;
 
     return (

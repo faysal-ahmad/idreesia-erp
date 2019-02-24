@@ -6,55 +6,26 @@ import "./create-companies";
 import "./import-inventory-data";
 import "./setup-rest-endpoints";
 
+import { ApolloServer } from "apollo-server-express";
 import { WebApp } from "meteor/webapp";
-import { createApolloServer } from "meteor/apollo";
-import { makeExecutableSchema } from "graphql-tools";
-import cors from "cors";
-
+import { getUser } from "meteor/apollo";
 import { typeDefs, resolvers } from "/imports/api";
 
-const schema = makeExecutableSchema({
+const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => ({
+    user: await getUser(req.headers.authorization),
+  }),
 });
 
-const corsOptions = {
-  origin: true,
-  credentials: true,
-  methods: "POST, GET, OPTIONS",
-  allowedHeaders:
-    "content-type, authorization, content-length, x-requested-with, accept, origin, meteor-login-token",
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-};
+server.applyMiddleware({
+  app: WebApp.connectHandlers,
+  path: "/graphql",
+});
 
-createApolloServer(
-  { schema },
-  {
-    configServer: expressServer => {
-      expressServer.use(cors(corsOptions));
-      expressServer.listen({ port: 4000 }, () =>
-        // eslint-disable-next-line no-console
-        console.log("🚀 Apollo Server ready at http://localhost:4000")
-      );
-    },
+WebApp.connectHandlers.use("/graphql", (req, res) => {
+  if (req.method === "GET") {
+    res.end();
   }
-);
-
-const connectHandler = WebApp.connectHandlers;
-Meteor.startup(() => {
-  connectHandler.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", ["GET", "POST", "OPTIONS"]);
-    res.setHeader("Access-Control-Allow-Headers", [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "content-length",
-      "accept",
-      "origin",
-      "meteor-login-token",
-    ]);
-    return next();
-  });
 });

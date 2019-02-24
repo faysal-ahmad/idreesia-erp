@@ -20,8 +20,8 @@ export default {
   },
 
   Mutation: {
-    createItemCategory(obj, { name }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
+    createItemCategory(obj, { name }, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
       }
 
@@ -29,16 +29,16 @@ export default {
       const itemCategoryId = ItemCategories.insert({
         name,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return ItemCategories.findOne(itemCategoryId);
     },
 
-    updateItemCategory(obj, { id, name }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
+    updateItemCategory(obj, { id, name }, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
       }
 
@@ -47,7 +47,7 @@ export default {
         $set: {
           name,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 

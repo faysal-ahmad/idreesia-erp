@@ -4,22 +4,22 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Query: {
-    allPhysicalStores(obj, params, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES])) {
+    allPhysicalStores(obj, params, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES])) {
         throw new Error('You do not have permission to view Physical Stores in the System.');
       }
 
       return PhysicalStores.find({}).fetch();
     },
 
-    allAccessiblePhysicalStores(obj, params, { userId }) {
+    allAccessiblePhysicalStores(obj, params, { user }) {
       const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(userId, physicalStores);
+      const filteredPhysicalStores = filterByInstanceAccess(user._id, physicalStores);
       return filteredPhysicalStores;
     },
 
-    physicalStoreById(obj, { id }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES])) {
+    physicalStoreById(obj, { id }, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES])) {
         throw new Error('You do not have permission to view Physical Stores in the System.');
       }
 
@@ -28,8 +28,8 @@ export default {
   },
 
   Mutation: {
-    createPhysicalStore(obj, { name, address }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES])) {
+    createPhysicalStore(obj, { name, address }, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES])) {
         throw new Error('You do not have permission to manage Physical Stores in the System.');
       }
 
@@ -38,16 +38,16 @@ export default {
         name,
         address,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return PhysicalStores.findOne(physicalStoreId);
     },
 
-    updatePhysicalStore(obj, { id, name, address }, { userId }) {
-      if (!hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES])) {
+    updatePhysicalStore(obj, { id, name, address }, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES])) {
         throw new Error('You do not have permission to manage Physical Stores in the System.');
       }
 
@@ -57,7 +57,7 @@ export default {
           name,
           address,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 

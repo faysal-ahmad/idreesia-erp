@@ -23,9 +23,9 @@ export default {
   },
 
   Mutation: {
-    createDutyLocation(obj, { name }, { userId }) {
+    createDutyLocation(obj, { name }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Duty Locations Setup Data in the System."
@@ -36,17 +36,17 @@ export default {
       const dutyLocationId = DutyLocations.insert({
         name,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return DutyLocations.findOne(dutyLocationId);
     },
 
-    updateDutyLocation(obj, { id, name }, { userId }) {
+    updateDutyLocation(obj, { id, name }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Duty Locations Setup Data in the System."
@@ -58,16 +58,16 @@ export default {
         $set: {
           name,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 
       return DutyLocations.findOne(id);
     },
 
-    removeDutyLocation(obj, { _id }, { userId }) {
+    removeDutyLocation(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.HR_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Duty Locations Setup Data in the System."

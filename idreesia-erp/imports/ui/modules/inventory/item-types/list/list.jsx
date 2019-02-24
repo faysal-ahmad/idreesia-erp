@@ -55,9 +55,7 @@ class List extends Component {
         };
 
         if (record.imageId) {
-          const url = `${
-            Meteor.settings.public.expressServerUrl
-          }/download-file?attachmentId=${record.imageId}`;
+          const url = Meteor.absoluteUrl(`download-file?attachmentId=${record.imageId}`);
           return (
             <div style={NameDivStyle} onClick={onClickHandler}>
               <Avatar shape="square" size="large" src={url} />

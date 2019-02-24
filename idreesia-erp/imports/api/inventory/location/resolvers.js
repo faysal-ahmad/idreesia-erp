@@ -22,9 +22,9 @@ export default {
   },
 
   Mutation: {
-    createLocation(obj, { name, parentId, description }, { userId }) {
+    createLocation(obj, { name, parentId, description }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Inventory Setup Data in the System."
@@ -37,17 +37,17 @@ export default {
         parentId,
         description,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return Locations.findOne(locationId);
     },
 
-    updateLocation(obj, { _id, name, parentId, description }, { userId }) {
+    updateLocation(obj, { _id, name, parentId, description }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Inventory Setup Data in the System."
@@ -61,7 +61,7 @@ export default {
           parentId,
           description,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 

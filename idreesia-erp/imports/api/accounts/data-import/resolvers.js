@@ -17,9 +17,9 @@ export default {
   },
 
   Query: {
-    pagedDataImports(obj, { companyId, pageIndex, pageSize }, { userId }) {
+    pagedDataImports(obj, { companyId, pageIndex, pageSize }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         return {
           data: [],
@@ -35,10 +35,10 @@ export default {
     createDataImport(
       obj,
       { companyId, importType, importForMonth },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
           "You do not have permission to import data for Companies in the System."
@@ -53,9 +53,9 @@ export default {
         status: "queued",
         logs: [],
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       createJob({
@@ -66,9 +66,9 @@ export default {
       return DataImports.findOne(dataImportId);
     },
 
-    removeDataImport(obj, { _id }, { userId }) {
+    removeDataImport(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
           "You do not have permission to manage imports for Companies in the System."

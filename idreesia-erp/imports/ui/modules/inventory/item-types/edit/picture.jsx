@@ -34,9 +34,9 @@ class Picture extends Component {
     const { loading, itemTypeById } = this.props;
     if (loading) return null;
     const url = itemTypeById.imageId
-      ? `${Meteor.settings.public.expressServerUrl}/download-file?attachmentId=${
+      ? Meteor.absoluteUrl(`download-file?attachmentId=${
           itemTypeById.imageId
-        }`
+        }`)
       : null;
 
     return (

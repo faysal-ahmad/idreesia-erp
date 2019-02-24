@@ -39,7 +39,6 @@ class EditForm extends Component {
     form.validateFields((err, { name, parentId, description }) => {
       if (err) return;
 
-      debugger;
       updateLocation({
         variables: {
           _id: locationById._id,

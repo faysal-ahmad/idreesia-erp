@@ -1,4 +1,7 @@
-import { ItemTypes, ItemCategories } from "meteor/idreesia-common/collections/inventory";
+import {
+  ItemTypes,
+  ItemCategories,
+} from "meteor/idreesia-common/collections/inventory";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
@@ -58,10 +61,10 @@ export default {
     createItemType(
       obj,
       { name, urduName, company, details, unitOfMeasurement, itemCategoryId },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Inventory Setup Data in the System."
@@ -77,9 +80,9 @@ export default {
         unitOfMeasurement,
         itemCategoryId,
         createdAt: date,
-        createdBy: userId,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: userId,
+        updatedBy: user._id,
       });
 
       return ItemTypes.findOne(itemTypeId);
@@ -96,10 +99,10 @@ export default {
         unitOfMeasurement,
         itemCategoryId,
       },
-      { userId }
+      { user }
     ) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Inventory Setup Data in the System."
@@ -116,16 +119,16 @@ export default {
           unitOfMeasurement,
           itemCategoryId,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 
       return ItemTypes.findOne(_id);
     },
 
-    setItemTypeImage(obj, { _id, imageId }, { userId }) {
+    setItemTypeImage(obj, { _id, imageId }, { user }) {
       if (
-        !hasOnePermission(userId, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
           "You do not have permission to manage Inventory Setup Data in the System."
@@ -137,7 +140,7 @@ export default {
         $set: {
           imageId,
           updatedAt: date,
-          updatedBy: userId,
+          updatedBy: user._id,
         },
       });
 

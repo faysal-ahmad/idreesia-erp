@@ -5,8 +5,8 @@ pm2 stop ecosystem.config.js
 cd ../
 
 # checkout the master branch
-git checkout master
-git pull
+# git checkout master
+# git pull
 
 # build the idreesia-erp application
 cd ./idreesia-erp

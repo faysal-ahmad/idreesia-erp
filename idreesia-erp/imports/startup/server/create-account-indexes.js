@@ -1,8 +1,18 @@
-import { Categories } from "meteor/idreesia-common/collections/accounts";
+import {
+  Categories,
+  Vouchers,
+  VoucherDetails,
+} from "meteor/idreesia-common/collections/accounts";
 
-Categories.rawCollection().createIndex(
-  { number: 1 },
-  { background: true }
-);
-Categories.rawCollection().createIndex({ parent: 1 }, { background: true });
-Categories.rawCollection().createIndex({ companyId: 1 }, { background: true });
+const categories = Categories.rawCollection();
+categories.createIndex({ number: 1 }, { background: true });
+categories.createIndex({ parent: 1 }, { background: true });
+categories.createIndex({ companyId: 1 }, { background: true });
+
+const vouchers = Vouchers.rawCollection();
+vouchers.createIndex({ companyId: 1 }, { background: true });
+vouchers.createIndex({ externalReferenceId: 1 }, { background: true });
+
+const voucherDetails = VoucherDetails.rawCollection();
+voucherDetails.createIndex({ companyId: 1 }, { background: true });
+voucherDetails.createIndex({ externalReferenceId: 1 }, { background: true });

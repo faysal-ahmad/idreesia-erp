@@ -16,8 +16,8 @@ export default new SimpleSchema({
   amount: {
     type: Number
   },
-  type: {
-    type: String
+  isCredit: {
+    type: Boolean
   },
   categoryId: {
     type: String,

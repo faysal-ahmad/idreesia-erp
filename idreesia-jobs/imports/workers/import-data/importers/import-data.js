@@ -11,6 +11,8 @@ import importVoucherDetailsData from "./import-voucher-details-data";
 export default async function importData(dataImport, company) {
   try {
     const adminUser = Accounts.findUserByUsername("erp-admin");
+    const config = JSON.parse(company.connectivitySettings);
+    await sql.connect(config);
 
     if (dataImport.importType === "categories") {
       const importedCategoriesCount = await importCategoriesData(
@@ -20,10 +22,10 @@ export default async function importData(dataImport, company) {
       dataImport.logs.push(`Imported ${importedCategoriesCount} categories.`);
       dataImport.status = "completed";
     } else if (dataImport.importType === "vouchers") {
-      const categories = Categories.find({ companyId: { $eq: company._id } });
+      const categories = Categories.find({ companyId: { $eq: company._id } }).fetch();
       const categoriesMap = keyBy(categories, "number");
       const importedVoucherIds = await importVouchersData(
-        company,
+        company._id,
         dataImport.importForMonth,
         adminUser
       );
@@ -32,7 +34,7 @@ export default async function importData(dataImport, company) {
       let voucherDetailsCount = 0;
       const promises = importedVoucherIds.map(importedVoucherId =>
         importVoucherDetailsData(
-          company,
+          company._id,
           importedVoucherId,
           categoriesMap,
           adminUser
@@ -48,6 +50,7 @@ export default async function importData(dataImport, company) {
   } catch (err) {
     dataImport.status = "errored";
     dataImport.errorDetails = err.message;
+    console.log(err);
   } finally {
     sql.close();
   }

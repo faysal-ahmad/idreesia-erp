@@ -51,7 +51,7 @@ class List extends Component {
       dataIndex: "voucherDate",
       key: "voucherDate",
       render: text => {
-        const date = moment(new Date(text));
+        const date = moment(Number(text));
         return date.format("DD MMM, YYYY");
       },
     },

@@ -137,7 +137,7 @@ class EditForm extends Component {
         <DateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"
-          initialValue={moment(new Date(purchaseFormById.purchaseDate))}
+          initialValue={moment(Number(purchaseFormById.purchaseDate))}
           required
           requiredMessage="Please input a purchase date."
           getFieldDecorator={getFieldDecorator}

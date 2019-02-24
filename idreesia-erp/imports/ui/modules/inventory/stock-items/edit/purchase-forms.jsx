@@ -39,7 +39,7 @@ class List extends Component {
       dataIndex: 'purchaseDate',
       key: 'purchaseDate',
       render: text => {
-        const date = moment(new Date(text));
+        const date = moment(Number(text));
         return date.format('DD MMM, YYYY');
       },
     },

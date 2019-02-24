@@ -60,7 +60,7 @@ class List extends Component {
       dataIndex: "createdAt",
       key: "createdAt",
       render: text => {
-        const date = moment(new Date(text));
+        const date = moment(Number(text));
         return date.format("DD-MM-YY hh:mm a");
       },
     },

@@ -88,7 +88,7 @@ class ViewForm extends Component {
         <DateField
           fieldName="issueDate"
           fieldLabel="Issue Date"
-          initialValue={moment(new Date(issuanceFormById.issueDate))}
+          initialValue={moment(Number(issuanceFormById.issueDate))}
           required
           requiredMessage="Please input an issue date."
           getFieldDecorator={getFieldDecorator}

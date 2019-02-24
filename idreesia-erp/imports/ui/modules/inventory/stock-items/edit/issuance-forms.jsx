@@ -38,7 +38,7 @@ class List extends Component {
       dataIndex: "issueDate",
       key: "issueDate",
       render: text => {
-        const date = moment(new Date(text));
+        const date = moment(Number(text));
         return date.format("DD MMM, YYYY");
       },
     },

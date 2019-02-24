@@ -74,7 +74,7 @@ class ViewForm extends Component {
         <DateField
           fieldName="adjustedDate"
           fieldLabel="Adjusted Date"
-          initialValue={moment(new Date(stockAdjustmentById.adjustmentDate))}
+          initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
           getFieldDecorator={getFieldDecorator}
         />
 

@@ -60,8 +60,14 @@ import CompanyResolvers from "./accounts/company/resolvers";
 import DataImportSchema from "./accounts/data-import/data-import.graphql";
 import DataImportResolvers from "./accounts/data-import/resolvers";
 
+import AccountHeadSchema from "./accounts/account-head/account-head.graphql";
+import AccountHeadResolvers from "./accounts/account-head/resolvers";
+
 import VoucherSchema from "./accounts/voucher/voucher.graphql";
 import VoucherResolvers from "./accounts/voucher/resolvers";
+
+import VoucherDetailSchema from "./accounts/voucher-detail/voucher-detail.graphql";
+import VoucherDetailResolvers from "./accounts/voucher-detail/resolvers";
 
 const typeDefs = [
   AttachmentSchema,
@@ -80,9 +86,11 @@ const typeDefs = [
   PurchaseFormSchema,
   StockAdjustmentSchema,
 
+  AccountHeadSchema,
   CompanySchema,
   DataImportSchema,
   VoucherSchema,
+  VoucherDetailSchema,
 ];
 
 const resolvers = merge(
@@ -103,9 +111,11 @@ const resolvers = merge(
   PurchaseFormResolvers,
   StockAdjustmentResolvers,
 
+  AccountHeadResolvers,
   CompanyResolvers,
   DataImportResolvers,
-  VoucherResolvers
+  VoucherResolvers,
+  VoucherDetailResolvers
 );
 
 export { typeDefs, resolvers };

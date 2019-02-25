@@ -1,0 +1,19 @@
+type AccountHead {
+  _id: String
+  companyId: String
+  name: String
+  description: String
+  type: String
+  nature: String
+  number: Float
+  parent: Float
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allAccountHeads(companyId: String!): [AccountHead]
+}

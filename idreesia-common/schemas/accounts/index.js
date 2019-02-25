@@ -1,4 +1,4 @@
-export { default as Category } from "./category";
+export { default as AccountHead } from "./account-head";
 export { default as Company } from "./company";
 export { default as DataImport } from "./data-import";
 export { default as VoucherDetail } from "./voucher-detail";

@@ -3,8 +3,8 @@ import { Accounts } from "meteor/accounts-base";
 import sql from "mssql";
 import { keyBy } from "lodash";
 
-import { Categories } from "meteor/idreesia-common/collections/accounts";
-import importCategoriesData from "./import-categories-data";
+import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
+import importAccountHeadsData from "./import-account-heads-data";
 import importVouchersData from "./import-vouchers-data";
 import importVoucherDetailsData from "./import-voucher-details-data";
 
@@ -14,16 +14,20 @@ export default async function importData(dataImport, company) {
     const config = JSON.parse(company.connectivitySettings);
     await sql.connect(config);
 
-    if (dataImport.importType === "categories") {
-      const importedCategoriesCount = await importCategoriesData(
+    if (dataImport.importType === "account-heads") {
+      const importedAccountHeadsCount = await importAccountHeadsData(
         company,
         adminUser
       );
-      dataImport.logs.push(`Imported ${importedCategoriesCount} categories.`);
+      dataImport.logs.push(
+        `Imported ${importedAccountHeadsCount} account heads.`
+      );
       dataImport.status = "completed";
     } else if (dataImport.importType === "vouchers") {
-      const categories = Categories.find({ companyId: { $eq: company._id } }).fetch();
-      const categoriesMap = keyBy(categories, "number");
+      const accountHeads = AccountHeads.find({
+        companyId: { $eq: company._id },
+      }).fetch();
+      const accountHeadsMap = keyBy(accountHeads, "number");
       const importedVoucherIds = await importVouchersData(
         company._id,
         dataImport.importForMonth,
@@ -36,7 +40,7 @@ export default async function importData(dataImport, company) {
         importVoucherDetailsData(
           company._id,
           importedVoucherId,
-          categoriesMap,
+          accountHeadsMap,
           adminUser
         ).then(voucherDetailIds => {
           voucherDetailsCount += voucherDetailIds.length;

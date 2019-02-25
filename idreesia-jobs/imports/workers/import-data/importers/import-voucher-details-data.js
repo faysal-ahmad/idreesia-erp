@@ -16,7 +16,7 @@ import {
 export default async function importVoucherDetailsData(
   companyId,
   importedVoucherId,
-  categoriesMap,
+  accountHeadsMap,
   adminUser
 ) {
   const voucher = Vouchers.findOne(importedVoucherId);
@@ -30,7 +30,7 @@ export default async function importVoucherDetailsData(
             externalReferenceId: VoucherDetailId,
           });
 
-          const category = categoriesMap[AccountNo];
+          const accountHead = accountHeadsMap[AccountNo];
           if (!existingVoucherDetail) {
             const date = new Date();
             const voucherDetailId = VoucherDetails.insert({
@@ -39,7 +39,7 @@ export default async function importVoucherDetailsData(
               voucherId: voucher._id,
               amount: Amount,
               isCredit: DrorCr === "Cr",
-              categoryId: category._id,
+              accountHeadId: accountHead._id,
               createdAt: date,
               createdBy: adminUser._id,
               updatedAt: date,
@@ -55,7 +55,9 @@ export default async function importVoucherDetailsData(
     const ps = new sql.PreparedStatement();
     ps.input("voucherId", sql.Numeric(18, 0));
     ps.prepare("select * from VoucherDetails where VoucherID = @voucherId")
-      .then(() => ps.execute({ voucherId: Number(voucher.externalReferenceId) }))
+      .then(() =>
+        ps.execute({ voucherId: Number(voucher.externalReferenceId) })
+      )
       .then(result => {
         processRows(result.recordsets[0]);
       })
@@ -66,6 +68,5 @@ export default async function importVoucherDetailsData(
       .catch(error => {
         reject(error);
       });
-    });
-  }
-
+  });
+}

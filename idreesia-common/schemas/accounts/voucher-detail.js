@@ -13,15 +13,14 @@ export default new SimpleSchema({
   voucherId: {
     type: String
   },
+  accountHeadId: {
+    type: String
+  },
   amount: {
     type: Number
   },
   isCredit: {
     type: Boolean
-  },
-  categoryId: {
-    type: String,
-    optional: true
   }
 })
   .extend(identifiable)

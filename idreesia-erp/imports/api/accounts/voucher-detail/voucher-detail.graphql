@@ -1,0 +1,20 @@
+type VoucherDetail {
+  _id: String
+  companyId: String
+  externalReferenceId: String
+  voucherId: String
+  categoryId: String
+  amount: Float
+  isCredit: Boolean
+
+  refAccountHead: AccountHead
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  voucherDetailsByVoucherId(voucherId: String!): VoucherDetail
+}

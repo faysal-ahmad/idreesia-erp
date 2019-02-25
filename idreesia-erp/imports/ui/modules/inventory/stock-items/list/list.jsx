@@ -53,7 +53,9 @@ class List extends Component {
         };
 
         if (record.itemTypeImageId) {
-          const url = Meteor.absoluteUrl(`download-file?attachmentId=${record.itemTypeImageId}`);
+          const url = Meteor.absoluteUrl(
+            `download-file?attachmentId=${record.itemTypeImageId}`
+          );
           return (
             <div style={NameDivStyle} onClick={onClickHandler}>
               <Avatar shape="square" size="large" src={url} />
@@ -112,14 +114,16 @@ class List extends Component {
   ];
 
   onChange = (pageIndex, pageSize) => {
-    this.refreshPage({
+    const { setPageParams } = this.props;
+    setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
     });
   };
 
   onShowSizeChange = (pageIndex, pageSize) => {
-    this.refreshPage({
+    const { setPageParams } = this.props;
+    setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
     });

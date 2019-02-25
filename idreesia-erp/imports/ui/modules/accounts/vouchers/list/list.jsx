@@ -77,14 +77,16 @@ class List extends Component {
   ];
 
   onChange = (pageIndex, pageSize) => {
-    this.refreshPage({
+    const { setPageParams } = this.props;
+    setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
     });
   };
 
   onShowSizeChange = (pageIndex, pageSize) => {
-    this.refreshPage({
+    const { setPageParams } = this.props;
+    setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
     });

@@ -67,8 +67,8 @@ class NewForm extends Component {
         />
         <SelectField
           data={[
-            { value: "categories", text: "Categories" },
-            { value: "vouchers", text: "Vouchers" },
+            { value: "account-heads", text: "Account Heads" },
+            { value: "vouchers", text: "Vouchers with Details" },
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ text }) => text}

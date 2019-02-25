@@ -1,9 +1,9 @@
-import { Categories } from "meteor/idreesia-common/collections/accounts";
+import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
 
 export default {
   Query: {
     allAccountHeads(obj, { companyId }) {
-      return Categories.find({ companyId: { $eq: companyId } }).fetch();
+      return AccountHeads.find({ companyId: { $eq: companyId } }).fetch();
     },
   },
 };

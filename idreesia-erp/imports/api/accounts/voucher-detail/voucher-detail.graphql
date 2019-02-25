@@ -3,7 +3,7 @@ type VoucherDetail {
   companyId: String
   externalReferenceId: String
   voucherId: String
-  categoryId: String
+  accountHeadId: String
   amount: Float
   isCredit: Boolean
 
@@ -16,5 +16,5 @@ type VoucherDetail {
 }
 
 extend type Query {
-  voucherDetailsByVoucherId(voucherId: String!): VoucherDetail
+  voucherDetailsByVoucherId(voucherId: String!): [VoucherDetail]
 }

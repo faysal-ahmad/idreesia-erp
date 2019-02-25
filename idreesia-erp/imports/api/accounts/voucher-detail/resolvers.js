@@ -1,5 +1,5 @@
 import {
-  Categories,
+  AccountHeads,
   VoucherDetails,
 } from "meteor/idreesia-common/collections/accounts";
 import { hasOnePermission } from "/imports/api/security";
@@ -8,8 +8,8 @@ import { Permissions as PermissionConstants } from "meteor/idreesia-common/const
 export default {
   VoucherDetail: {
     refAccountHead: voucherDetail =>
-      Categories.findOne({
-        _id: { $eq: voucherDetail.categoryId },
+      AccountHeads.findOne({
+        _id: { $eq: voucherDetail.accountHeadId },
         companyId: { $eq: voucherDetail.companyId },
       }),
   },

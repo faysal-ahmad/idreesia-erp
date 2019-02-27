@@ -5,7 +5,10 @@ import { Drawer } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { AccountSubModulePaths as paths } from "/imports/ui/modules/accounts";
-import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
+import {
+  WithCompanyId,
+  WithCompany,
+} from "/imports/ui/modules/accounts/common/composers";
 
 import List from "./list/list";
 import DetailsForm from "./details-form";
@@ -15,6 +18,8 @@ class ListContainer extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     companyId: PropTypes.string,
+    company: PropTypes.object,
+    setBreadcrumbs: PropTypes.func,
   };
 
   state = {
@@ -22,9 +27,17 @@ class ListContainer extends Component {
     pageSize: 10,
     startDate: null,
     endDate: null,
+    voucherNumber: null,
     showDetails: false,
     voucherIdForDetails: null,
   };
+
+  componentDidUpdate(prevProps) {
+    const { company, setBreadcrumbs } = this.props;
+    if (prevProps.company !== company) {
+      setBreadcrumbs([company.name, "Accounts", "Vouchers", "List"]);
+    }
+  }
 
   setPageParams = pageParams => {
     this.setState(pageParams);
@@ -60,6 +73,7 @@ class ListContainer extends Component {
       pageSize,
       startDate,
       endDate,
+      voucherNumber,
       voucherIdForDetails,
     } = this.state;
 
@@ -70,6 +84,7 @@ class ListContainer extends Component {
           pageSize={pageSize}
           startDate={startDate}
           endDate={endDate}
+          voucherNumber={voucherNumber}
           companyId={companyId}
           setPageParams={this.setPageParams}
           handleItemSelected={this.handleItemSelected}
@@ -97,5 +112,6 @@ class ListContainer extends Component {
 
 export default compose(
   WithCompanyId(),
+  WithCompany(),
   WithBreadcrumbs(["Accounts", "Vouchers", "List"])
 )(ListContainer);

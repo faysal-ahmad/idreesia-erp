@@ -141,7 +141,7 @@ class List extends Component {
     if (showNewButton) {
       newButton = (
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Item Type
+          New Karkun
         </Button>
       );
     }

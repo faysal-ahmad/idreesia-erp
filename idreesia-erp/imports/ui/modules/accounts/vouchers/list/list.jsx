@@ -27,6 +27,7 @@ class List extends Component {
     companyId: PropTypes.string,
     startDate: PropTypes.object,
     endDate: PropTypes.object,
+    voucherNumber: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
@@ -189,14 +190,22 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ companyId, startDate, endDate, pageIndex, pageSize }) => ({
+    options: ({
+      companyId,
+      startDate,
+      endDate,
+      voucherNumber,
+      pageIndex,
+      pageSize,
+    }) => ({
       variables: {
         companyId,
         queryString: `?startDate=${
           startDate ? startDate.format(Formats.DATE_FORMAT) : ""
         }&endDate=${
           endDate ? endDate.format(Formats.DATE_FORMAT) : ""
-        }&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+        }&voucherNumber=${voucherNumber ||
+          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   })

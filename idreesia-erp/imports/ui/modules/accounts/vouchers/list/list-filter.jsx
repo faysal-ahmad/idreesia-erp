@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 
-import { DateField } from "/imports/ui/modules/helpers/fields";
+import { DateField, InputTextField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
   width: "500px",
@@ -22,6 +22,7 @@ class ListFilter extends Component {
     form: PropTypes.object,
     startDate: PropTypes.object,
     endDate: PropTypes.object,
+    voucherNumber: PropTypes.string,
     setPageParams: PropTypes.func,
   };
 
@@ -39,19 +40,20 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { startDate, endDate }) => {
+    form.validateFields((err, { startDate, endDate, voucherNumber }) => {
       if (err) return;
       setPageParams({
         pageIndex: 0,
         startDate,
         endDate,
+        voucherNumber,
       });
     });
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { startDate, endDate } = this.props;
+    const { startDate, endDate, voucherNumber } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -71,6 +73,14 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={endDate}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputTextField
+              fieldName="voucherNumber"
+              fieldLabel="Voucher No."
+              fieldLayout={formItemLayout}
+              required={false}
+              initialValue={voucherNumber}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>

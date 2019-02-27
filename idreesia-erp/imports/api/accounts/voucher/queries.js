@@ -61,7 +61,7 @@ export default function getVouchers(companyId, queryString) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { voucherDate: -1, order: 1 } },
+    { $sort: { voucherDate: -1, order: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

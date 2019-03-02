@@ -1,7 +1,7 @@
 type ItemCategory {
   _id: String
   name: String
-  itemTypeCount: Int
+  stockItemCount: Int
 
   createdAt: String
   createdBy: String

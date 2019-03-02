@@ -1,12 +1,15 @@
-import { ItemCategories, ItemTypes } from 'meteor/idreesia-common/collections/inventory';
-import { hasOnePermission } from '/imports/api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import {
+  ItemCategories,
+  StockItems,
+} from "meteor/idreesia-common/collections/inventory";
+import { hasOnePermission } from "/imports/api/security";
+import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
   ItemCategory: {
-    itemTypeCount: itemCategory =>
-      ItemTypes.find({
-        itemCategoryId: { $eq: itemCategory._id },
+    stockItemCount: itemCategory =>
+      StockItems.find({
+        categoryId: { $eq: itemCategory._id },
       }).count(),
   },
 
@@ -21,8 +24,12 @@ export default {
 
   Mutation: {
     createItemCategory(obj, { name }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Inventory Setup Data in the System."
+        );
       }
 
       const date = new Date();
@@ -38,8 +45,12 @@ export default {
     },
 
     updateItemCategory(obj, { id, name }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error('You do not have permission to manage Inventory Setup Data in the System.');
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Inventory Setup Data in the System."
+        );
       }
 
       const date = new Date();

@@ -1,9 +1,5 @@
-import "./register-users";
-import "./create-account-indexes";
-import "./create-hr-indexes";
-import "./create-inventory-indexes";
-import "./create-companies";
 import "./setup-rest-endpoints";
+import "./migrations";
 
 import { ApolloServer } from "apollo-server-express";
 import { WebApp } from "meteor/webapp";

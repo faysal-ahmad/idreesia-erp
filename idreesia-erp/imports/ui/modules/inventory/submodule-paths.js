@@ -4,10 +4,6 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Data Setup Routes
   // *************************************************************************************
-  static itemTypesPath = `${ModulePaths.inventory}/item-types`;
-  static itemTypesNewFormPath = `${SubModulePaths.itemTypesPath}/new`;
-  static itemTypesEditFormPath = `${SubModulePaths.itemTypesPath}/:itemTypeId`;
-
   static itemCategoriesPath = `${ModulePaths.inventory}/item-categories`;
   static itemCategoriesNewFormPath = `${SubModulePaths.itemCategoriesPath}/new`;
   static itemCategoriesEditFormPath = `${

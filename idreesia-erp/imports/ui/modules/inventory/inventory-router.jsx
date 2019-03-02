@@ -8,11 +8,6 @@ import {
   StockItemsList,
 } from "./stock-items";
 import {
-  ItemTypesNewForm,
-  ItemTypesEditForm,
-  ItemTypesList,
-} from "./item-types";
-import {
   ItemCategoriesNewForm,
   ItemCategoriesEditForm,
   ItemCategoriesList,
@@ -43,10 +38,6 @@ import {
 
 const InventoryRouter = () => (
   <Switch>
-    <Route path={paths.itemTypesNewFormPath} component={ItemTypesNewForm} />
-    <Route path={paths.itemTypesEditFormPath} component={ItemTypesEditForm} />
-    <Route path={paths.itemTypesPath} component={ItemTypesList} />
-
     <Route
       path={paths.itemCategoriesNewFormPath}
       component={ItemCategoriesNewForm}

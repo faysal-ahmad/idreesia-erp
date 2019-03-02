@@ -30,9 +30,6 @@ import CommonResolvers from "./inventory/common/resolvers";
 import ItemCategorySchema from "./inventory/item-category/item-category.graphql";
 import ItemCategoryResolvers from "./inventory/item-category/resolvers";
 
-import ItemTypeSchema from "./inventory/item-type/item-type.graphql";
-import ItemTypeResolvers from "./inventory/item-type/resolvers";
-
 import LocationSchema from "./inventory/location/location.graphql";
 import LocationResolvers from "./inventory/location/resolvers";
 
@@ -78,7 +75,6 @@ const typeDefs = [
 
   CommonSchema,
   ItemCategorySchema,
-  ItemTypeSchema,
   LocationSchema,
   PhysicalStoreSchema,
   StockItemSchema,
@@ -103,7 +99,6 @@ const resolvers = merge(
 
   CommonResolvers,
   ItemCategoryResolvers,
-  ItemTypeResolvers,
   LocationResolvers,
   PhysicalStoreResolvers,
   StockItemResolvers,

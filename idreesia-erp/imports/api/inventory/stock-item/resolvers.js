@@ -1,7 +1,6 @@
 import {
   PhysicalStores,
   ItemCategories,
-  ItemTypes,
   StockItems,
 } from "meteor/idreesia-common/collections/inventory";
 import {
@@ -15,13 +14,8 @@ import getPagedStockItems, { getAllStockItems } from "./queries";
 
 export default {
   StockItem: {
-    itemTypeName: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      return itemType.name;
-    },
-    itemTypeFormattedName: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      const { name, company, details } = itemType;
+    formattedName: stockItem => {
+      const { name, company, details } = stockItem;
       let formattedName = name;
       if (company) {
         formattedName = `${formattedName} - ${company}`;
@@ -31,30 +25,39 @@ export default {
       }
       return formattedName;
     },
-    itemTypeCompany: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      return itemType.company;
-    },
-    itemTypeDetails: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      return itemType.details;
-    },
-    itemTypeImageId: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      return itemType.imageId;
-    },
-    itemCategoryName: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      const itemCategory = ItemCategories.findOne(itemType.itemCategoryId);
+    categoryName: stockItem => {
+      const itemCategory = ItemCategories.findOne(stockItem.categoryId);
       return itemCategory.name;
-    },
-    unitOfMeasurement: stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      return itemType.unitOfMeasurement;
     },
     physicalStoreName: stockItem => {
       const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
       return physicalStore.name;
+    },
+    formattedUOM: stockItem => {
+      let uom = null;
+      switch (stockItem.unitOfMeasurement) {
+        case "quantity":
+          uom = "Quantity";
+          break;
+        case "ft":
+          uom = "Length (ft)";
+          break;
+        case "m":
+          uom = "Length (m)";
+          break;
+        case "kg":
+          uom = "Weight (kg)";
+          break;
+        case "lbs":
+          uom = "Weight (lbs)";
+          break;
+        case "l":
+          uom = "Volume (liters)";
+          break;
+        default:
+          break;
+      }
+      return uom;
     },
   },
 
@@ -78,7 +81,7 @@ export default {
     pagedStockItems(obj, { physicalStoreId, queryString }, { user }) {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         return {
-          stockItems: [],
+          data: [],
           totalResults: 0,
         };
       }
@@ -107,33 +110,21 @@ export default {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
       return getAllStockItems(physicalStoreId);
     },
-
-    unStockedItemTypesByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
-      const stockedItemTypes = StockItems.find(
-        {
-          physicalStoreId: { $eq: physicalStoreId },
-        },
-        { fields: { itemTypeId: 1 } }
-      ).fetch();
-
-      const stockedItemTypeIds = stockedItemTypes.map(
-        ({ itemTypeId }) => itemTypeId
-      );
-
-      return ItemTypes.find(
-        {
-          _id: { $nin: stockedItemTypeIds },
-        },
-        { sort: { name: 1 } }
-      );
-    },
   },
 
   Mutation: {
     createStockItem(
       obj,
-      { itemTypeId, physicalStoreId, minStockLevel, currentStockLevel },
+      {
+        name,
+        company,
+        details,
+        unitOfMeasurement,
+        categoryId,
+        physicalStoreId,
+        minStockLevel,
+        currentStockLevel,
+      },
       { user }
     ) {
       if (
@@ -152,7 +143,11 @@ export default {
 
       const date = new Date();
       const stockItemId = StockItems.insert({
-        itemTypeId,
+        name,
+        company,
+        details,
+        unitOfMeasurement,
+        categoryId,
         physicalStoreId,
         minStockLevel,
         startingStockLevel: currentStockLevel,
@@ -166,7 +161,19 @@ export default {
       return StockItems.findOne(stockItemId);
     },
 
-    updateStockItem(obj, { _id, minStockLevel }, { user }) {
+    updateStockItem(
+      obj,
+      {
+        _id,
+        name,
+        company,
+        details,
+        unitOfMeasurement,
+        categoryId,
+        minStockLevel,
+      },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
@@ -188,7 +195,33 @@ export default {
       const date = new Date();
       StockItems.update(_id, {
         $set: {
+          name,
+          company,
+          details,
+          unitOfMeasurement,
+          categoryId,
           minStockLevel,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return StockItems.findOne(_id);
+    },
+
+    setStockItemImage(obj, { _id, imageId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Stock Items in the System."
+        );
+      }
+
+      const date = new Date();
+      StockItems.update(_id, {
+        $set: {
+          imageId,
           updatedAt: date,
           updatedBy: user._id,
         },

@@ -25,9 +25,9 @@ const buttonItemLayout = {
 class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
+    name: PropTypes.string,
+    categoryId: PropTypes.string,
     allItemCategories: PropTypes.array,
-    itemCategoryId: PropTypes.string,
-    itemTypeName: PropTypes.string,
     setPageParams: PropTypes.func,
   };
 
@@ -36,8 +36,8 @@ class ListFilter extends Component {
     form.resetFields();
     setPageParams({
       pageIndex: 0,
-      itemCategoryId: null,
-      itemTypeName: null,
+      categoryId: null,
+      name: null,
     });
   };
 
@@ -45,19 +45,19 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { itemCategoryId, itemTypeName }) => {
+    form.validateFields((err, { categoryId, name }) => {
       if (err) return;
       setPageParams({
         pageIndex: 0,
-        itemCategoryId,
-        itemTypeName,
+        categoryId,
+        name,
       });
     });
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { itemCategoryId, itemTypeName, allItemCategories } = this.props;
+    const { categoryId, name, allItemCategories } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -65,20 +65,20 @@ class ListFilter extends Component {
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
             <SelectField
               data={allItemCategories}
-              getDataValue={({ _id }) => _id}
-              getDataText={({ name }) => name}
-              fieldName="itemCategoryId"
+              getDataValue={category => category._id}
+              getDataText={category => category.name}
+              fieldName="categoryId"
               fieldLabel="Category"
               fieldLayout={formItemLayout}
-              initialValue={itemCategoryId}
+              initialValue={categoryId}
               getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
-              fieldName="itemTypeName"
+              fieldName="name"
               fieldLabel="Name"
               required={false}
               fieldLayout={formItemLayout}
-              initialValue={itemTypeName}
+              initialValue={name}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>

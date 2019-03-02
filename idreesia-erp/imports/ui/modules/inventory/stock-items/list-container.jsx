@@ -18,8 +18,8 @@ class ListContainer extends Component {
   state = {
     pageIndex: 0,
     pageSize: 10,
-    itemCategoryId: null,
-    itemTypeName: null,
+    categoryId: null,
+    name: null,
   };
 
   setPageParams = pageParams => {
@@ -38,14 +38,14 @@ class ListContainer extends Component {
 
   render() {
     const { physicalStoreId } = this.props;
-    const { pageIndex, pageSize, itemCategoryId, itemTypeName } = this.state;
+    const { pageIndex, pageSize, categoryId, name } = this.state;
 
     return (
       <List
         pageIndex={pageIndex}
         pageSize={pageSize}
-        itemCategoryId={itemCategoryId}
-        itemTypeName={itemTypeName}
+        name={name}
+        categoryId={categoryId}
         physicalStoreId={physicalStoreId}
         setPageParams={this.setPageParams}
         handleItemSelected={this.handleItemSelected}

@@ -8,8 +8,12 @@ import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory"
 import {
   InputTextField,
   InputNumberField,
+  SelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { WithItemCategories } from "/imports/ui/modules/inventory/common/composers";
+
+import allUnitOfMeasurements from "../all-unit-of-measurements";
 
 class EditForm extends Component {
   static propTypes = {
@@ -18,6 +22,8 @@ class EditForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
+    itemCategoriesListLoading: PropTypes.bool,
+    allItemCategories: PropTypes.array,
     loading: PropTypes.bool,
     stockItemById: PropTypes.object,
     updateStockItem: PropTypes.func,
@@ -37,81 +43,89 @@ class EditForm extends Component {
       form,
       history,
     } = this.props;
-    form.validateFields((err, { minStockLevel, totalStockLevel }) => {
-      if (err) return;
-      updateStockItem({
-        variables: {
-          _id: stockItemById._id,
-          minStockLevel,
-          totalStockLevel,
-        },
-      })
-        .then(() => {
-          history.push(paths.stockItemsPath(physicalStoreId));
+    form.validateFields(
+      (
+        err,
+        { name, company, details, categoryId, unitOfMeasurement, minStockLevel }
+      ) => {
+        if (err) return;
+        updateStockItem({
+          variables: {
+            _id: stockItemById._id,
+            name,
+            company,
+            details,
+            categoryId,
+            unitOfMeasurement,
+            minStockLevel,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.push(paths.stockItemsPath(physicalStoreId));
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   render() {
-    const { loading, stockItemById } = this.props;
+    const {
+      loading,
+      itemCategoriesListLoading,
+      stockItemById,
+      allItemCategories,
+    } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (loading) return null;
+    if (loading || itemCategoriesListLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
-          fieldName="physicalStoreId"
-          fieldLabel="Physical Store"
-          initialValue={stockItemById.physicalStoreName}
-          disabled
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="itemCategoryId"
-          fieldLabel="Item Category"
-          initialValue={stockItemById.itemCategoryName}
-          disabled
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="itemTypeId"
-          fieldLabel="Item Type"
-          initialValue={stockItemById.itemTypeName}
-          disabled
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={stockItemById.name}
+          required
+          requiredMessage="Please input a name for the stock item."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="company"
           fieldLabel="Company"
-          initialValue={stockItemById.itemTypeCompany}
-          disabled
+          initialValue={stockItemById.company}
+          required={false}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="details"
           fieldLabel="Details"
-          initialValue={stockItemById.itemTypeDetails}
-          disabled
+          initialValue={stockItemById.details}
+          required={false}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
-          fieldName="uom"
-          fieldLabel="Unit of Measurement"
+        <SelectField
+          data={allItemCategories}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="categoryId"
+          fieldLabel="Category"
+          required
+          requiredMessage="Please select an item category."
+          initialValue={stockItemById.categoryId}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={allUnitOfMeasurements}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="unitOfMeasurement"
+          fieldLabel="Measurement Unit"
+          required
+          requiredMessage="Please select a unit of measurement."
           initialValue={stockItemById.unitOfMeasurement}
-          disabled
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
-          fieldName="currentStockLevel"
-          fieldLabel="Current Stock Level"
-          initialValue={stockItemById.currentStockLevel}
-          disabled
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <InputNumberField
           fieldName="minStockLevel"
           fieldLabel="Min Stock Level"
@@ -125,9 +139,30 @@ class EditForm extends Component {
 }
 
 const formMutation = gql`
-  mutation updateStockItem($_id: String!, $minStockLevel: Float) {
-    updateStockItem(_id: $_id, minStockLevel: $minStockLevel) {
+  mutation updateStockItem(
+    $_id: String!
+    $name: String!
+    $company: String
+    $details: String
+    $unitOfMeasurement: String!
+    $categoryId: String!
+    $minStockLevel: Float
+  ) {
+    updateStockItem(
+      _id: $_id
+      name: $name
+      company: $company
+      details: $details
+      unitOfMeasurement: $unitOfMeasurement
+      categoryId: $categoryId
+      minStockLevel: $minStockLevel
+    ) {
       _id
+      name
+      company
+      details
+      categoryId
+      unitOfMeasurement
       minStockLevel
     }
   }
@@ -137,21 +172,19 @@ const formQuery = gql`
   query stockItemById($_id: String!) {
     stockItemById(_id: $_id) {
       _id
-      itemTypeName
-      itemTypeCompany
-      itemTypeDetails
-      itemCategoryName
-      physicalStoreName
+      name
+      company
+      details
+      categoryId
       unitOfMeasurement
       minStockLevel
-      currentStockLevel
-      totalStockLevel
     }
   }
 `;
 
 export default compose(
   Form.create(),
+  WithItemCategories(),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),
@@ -159,11 +192,7 @@ export default compose(
   graphql(formMutation, {
     name: "updateStockItem",
     options: {
-      refetchQueries: [
-        "pagedStockItems",
-        "stockItemsByPhysicalStoreId",
-        "unStockedItemTypesByPhysicalStoreId",
-      ],
+      refetchQueries: ["pagedStockItems", "stockItemsByPhysicalStoreId"],
     },
   })
 )(EditForm);

@@ -13,16 +13,16 @@ import {
 class Picture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
-    itemTypeId: PropTypes.string,
-    itemTypeById: PropTypes.object,
-    setItemTypeImage: PropTypes.func,
+    stockItemId: PropTypes.string,
+    stockItemById: PropTypes.object,
+    setStockItemImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { itemTypeId, setItemTypeImage } = this.props;
-    setItemTypeImage({
+    const { stockItemId, setStockItemImage } = this.props;
+    setStockItemImage({
       variables: {
-        _id: itemTypeId,
+        _id: stockItemId,
         imageId,
       },
     }).catch(error => {
@@ -31,10 +31,12 @@ class Picture extends Component {
   };
 
   render() {
-    const { loading, itemTypeById } = this.props;
+    const { loading, stockItemById } = this.props;
     if (loading) return null;
-    const url = itemTypeById.imageId
-      ? Meteor.absoluteUrl(`download-file?attachmentId=${itemTypeById.imageId}`)
+    const url = stockItemById.imageId
+      ? Meteor.absoluteUrl(
+          `download-file?attachmentId=${stockItemById.imageId}`
+        )
       : null;
 
     return (
@@ -57,8 +59,8 @@ class Picture extends Component {
 }
 
 const formQuery = gql`
-  query itemTypeById($_id: String!) {
-    itemTypeById(_id: $_id) {
+  query stockItemById($_id: String!) {
+    stockItemById(_id: $_id) {
       _id
       imageId
     }
@@ -66,8 +68,8 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation setItemTypeImage($_id: String!, $imageId: String!) {
-    setItemTypeImage(_id: $_id, imageId: $imageId) {
+  mutation setStockItemImage($_id: String!, $imageId: String!) {
+    setStockItemImage(_id: $_id, imageId: $imageId) {
       _id
       imageId
     }
@@ -76,13 +78,13 @@ const formMutation = gql`
 
 export default compose(
   graphql(formMutation, {
-    name: "setItemTypeImage",
+    name: "setStockItemImage",
     options: {
-      refetchQueries: ["allItemTypes"],
+      refetchQueries: ["pagedStockItems", "stockItemsByPhysicalStoreId"],
     },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ itemTypeId }) => ({ variables: { _id: itemTypeId } }),
+    options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),
   })
 )(Picture);

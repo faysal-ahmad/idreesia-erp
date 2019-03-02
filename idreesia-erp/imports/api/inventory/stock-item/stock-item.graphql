@@ -1,20 +1,21 @@
 type StockItem {
   _id: String
-  itemTypeId: String
+  name: String
+  company: String
+  details: String
+  unitOfMeasurement: String
+  categoryId: String
+  imageId: String
   physicalStoreId: String
   startingStockLevel: Float
   minStockLevel: Float
   currentStockLevel: Float
   totalStockLevel: Float
 
-  itemTypeName: String
-  itemTypeFormattedName: String
-  itemTypeCompany: String
-  itemTypeDetails: String
-  itemTypeImageId: String
-  itemCategoryName: String
-  unitOfMeasurement: String
+  formattedName: String
+  categoryName: String
   physicalStoreName: String
+  formattedUOM: String
 
   createdAt: String
   createdBy: String
@@ -24,7 +25,7 @@ type StockItem {
 
 type PagedStockItem {
   totalResults: Int
-  stockItems: [StockItem]
+  data: [StockItem]
 }
 
 extend type Query {
@@ -32,15 +33,29 @@ extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
   stockItemById(_id: String!): StockItem
   stockItemsByPhysicalStoreId(physicalStoreId: String!): [StockItem]
-  unStockedItemTypesByPhysicalStoreId(physicalStoreId: String!): [ItemType]
 }
 
 extend type Mutation {
   createStockItem(
-    itemTypeId: String!
+    name: String!
+    company: String
+    details: String
+    unitOfMeasurement: String!
+    categoryId: String!
     physicalStoreId: String!
     minStockLevel: Float
     currentStockLevel: Float
   ): StockItem
-  updateStockItem(_id: String!, minStockLevel: Float): StockItem
+
+  updateStockItem(
+    _id: String!
+    name: String!
+    company: String
+    details: String
+    unitOfMeasurement: String!
+    categoryId: String!
+    minStockLevel: Float
+  ): StockItem
+
+  setStockItemImage(_id: String!, imageId: String!): StockItem
 }

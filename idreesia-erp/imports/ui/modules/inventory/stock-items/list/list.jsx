@@ -27,8 +27,8 @@ class List extends Component {
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
     physicalStoreId: PropTypes.string,
-    itemCategoryId: PropTypes.string,
-    itemTypeName: PropTypes.string,
+    name: PropTypes.string,
+    categoryId: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
@@ -37,24 +37,24 @@ class List extends Component {
     loading: PropTypes.bool,
     pagedStockItems: PropTypes.shape({
       totalResults: PropTypes.number,
-      stockItems: PropTypes.array,
+      data: PropTypes.array,
     }),
   };
 
   columns = [
     {
       title: "Name",
-      dataIndex: "itemTypeName",
-      key: "itemTypeName",
+      dataIndex: "name",
+      key: "name",
       render: (text, record) => {
         const onClickHandler = () => {
           const { handleItemSelected } = this.props;
           handleItemSelected(record);
         };
 
-        if (record.itemTypeImageId) {
+        if (record.imageId) {
           const url = Meteor.absoluteUrl(
-            `download-file?attachmentId=${record.itemTypeImageId}`
+            `download-file?attachmentId=${record.imageId}`
           );
           return (
             <div style={NameDivStyle} onClick={onClickHandler}>
@@ -76,18 +76,18 @@ class List extends Component {
     },
     {
       title: "Company",
-      dataIndex: "itemTypeCompany",
-      key: "itemTypeCompany",
+      dataIndex: "company",
+      key: "company",
     },
     {
       title: "Details",
-      dataIndex: "itemTypeDetails",
-      key: "itemTypeDetails",
+      dataIndex: "details",
+      key: "details",
     },
     {
       title: "Category",
-      dataIndex: "itemCategoryName",
-      key: "itemCategoryName",
+      dataIndex: "categoryName",
+      key: "categoryName",
     },
     {
       title: "Min Stock",
@@ -131,8 +131,8 @@ class List extends Component {
 
   getTableHeader = () => {
     const {
-      itemCategoryId,
-      itemTypeName,
+      name,
+      categoryId,
       setPageParams,
       showNewButton,
       handleNewClicked,
@@ -151,8 +151,8 @@ class List extends Component {
       <div style={ToolbarStyle}>
         {newButton}
         <ListFilter
-          itemCategoryId={itemCategoryId}
-          itemTypeName={itemTypeName}
+          name={name}
+          categoryId={categoryId}
           setPageParams={setPageParams}
         />
       </div>
@@ -166,7 +166,7 @@ class List extends Component {
     const {
       pageIndex,
       pageSize,
-      pagedStockItems: { totalResults, stockItems },
+      pagedStockItems: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
@@ -175,7 +175,7 @@ class List extends Component {
     return (
       <Table
         rowKey="_id"
-        dataSource={stockItems}
+        dataSource={data}
         columns={this.columns}
         bordered
         size="small"
@@ -208,13 +208,13 @@ const listQuery = gql`
       queryString: $queryString
     ) {
       totalResults
-      stockItems {
+      data {
         _id
-        itemTypeName
-        itemTypeCompany
-        itemTypeDetails
-        itemTypeImageId
-        itemCategoryName
+        name
+        company
+        details
+        imageId
+        categoryName
         unitOfMeasurement
         minStockLevel
         currentStockLevel
@@ -227,17 +227,10 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({
-      physicalStoreId,
-      itemCategoryId,
-      itemTypeName,
-      pageIndex,
-      pageSize,
-    }) => ({
+    options: ({ physicalStoreId, categoryId, name, pageIndex, pageSize }) => ({
       variables: {
         physicalStoreId,
-        queryString: `?itemCategoryId=${itemCategoryId ||
-          ""}&itemTypeName=${itemTypeName ||
+        queryString: `?categoryId=${categoryId || ""}&name=${name ||
           ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),

@@ -7,12 +7,17 @@ import { compose, graphql } from "react-apollo";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
+  InputTextField,
   InputNumberField,
+  SelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStoreId,
+  WithItemCategories,
+} from "/imports/ui/modules/inventory/common/composers";
 
-import { ItemTypeField } from "/imports/ui/modules/inventory/item-types/field";
+import allUnitOfMeasurements from "./all-unit-of-measurements";
 
 class NewForm extends Component {
   static propTypes = {
@@ -21,9 +26,8 @@ class NewForm extends Component {
     match: PropTypes.object,
     form: PropTypes.object,
 
-    unStockedItemTypesLoading: PropTypes.bool,
-    unStockedItemTypesByPhysicalStoreId: PropTypes.array,
-
+    itemCategoriesListLoading: PropTypes.bool,
+    allItemCategories: PropTypes.array,
     physicalStoreId: PropTypes.string,
     createStockItem: PropTypes.func,
   };
@@ -39,17 +43,28 @@ class NewForm extends Component {
     form.validateFields(
       (
         err,
-        { itemType, minStockLevel, currentStockLevel, totalStockLevel }
+        {
+          name,
+          company,
+          details,
+          categoryId,
+          unitOfMeasurement,
+          minStockLevel,
+          currentStockLevel,
+        }
       ) => {
         if (err) return;
 
         createStockItem({
           variables: {
-            itemTypeId: itemType._id,
+            name,
+            company,
+            details,
+            categoryId,
+            unitOfMeasurement,
             physicalStoreId,
             minStockLevel,
             currentStockLevel,
-            totalStockLevel,
           },
         })
           .then(() => {
@@ -63,18 +78,50 @@ class NewForm extends Component {
   };
 
   render() {
-    const { physicalStoreId } = this.props;
+    const { itemCategoriesListLoading, allItemCategories } = this.props;
     const { getFieldDecorator } = this.props.form;
+    if (itemCategoriesListLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <ItemTypeField
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
           required
-          requiredMessage="Please select and item type."
-          fieldName="itemType"
-          fieldLabel="Item Type"
+          requiredMessage="Please input a name for the stock item."
           getFieldDecorator={getFieldDecorator}
-          physicalStoreId={physicalStoreId}
+        />
+        <InputTextField
+          fieldName="company"
+          fieldLabel="Company"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="details"
+          fieldLabel="Details"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={allItemCategories}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="categoryId"
+          fieldLabel="Category"
+          required
+          requiredMessage="Please select an item category."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={allUnitOfMeasurements}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="unitOfMeasurement"
+          fieldLabel="Measurement Unit"
+          required
+          requiredMessage="Please select a unit of measurement."
+          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           required
@@ -94,32 +141,34 @@ class NewForm extends Component {
   }
 }
 
-const unStockedItemTypesListQuery = gql`
-  query unStockedItemTypesByPhysicalStoreId($physicalStoreId: String!) {
-    unStockedItemTypesByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
-      _id
-      formattedName
-      itemCategoryId
-    }
-  }
-`;
-
 const formMutation = gql`
   mutation createStockItem(
-    $itemTypeId: String!
+    $name: String!
+    $company: String
+    $details: String
+    $unitOfMeasurement: String!
+    $categoryId: String!
     $physicalStoreId: String!
     $minStockLevel: Float
     $currentStockLevel: Float
   ) {
     createStockItem(
-      itemTypeId: $itemTypeId
+      name: $name
+      company: $company
+      details: $details
+      unitOfMeasurement: $unitOfMeasurement
+      categoryId: $categoryId
       physicalStoreId: $physicalStoreId
       minStockLevel: $minStockLevel
       currentStockLevel: $currentStockLevel
     ) {
       _id
-      itemTypeName
-      itemCategoryName
+      name
+      company
+      details
+      unitOfMeasurement
+      categoryId
+      physicalStoreId
       minStockLevel
       currentStockLevel
     }
@@ -129,20 +178,11 @@ const formMutation = gql`
 export default compose(
   Form.create({ name: "newStockItemForm" }),
   WithPhysicalStoreId(),
-  graphql(unStockedItemTypesListQuery, {
-    props: ({ data }) => ({ unStockedItemTypesLoading: data.loading, ...data }),
-    options: ({ physicalStoreId }) => ({
-      variables: { physicalStoreId },
-    }),
-  }),
+  WithItemCategories(),
   graphql(formMutation, {
     name: "createStockItem",
     options: {
-      refetchQueries: [
-        "pagedStockItems",
-        "stockItemsByPhysicalStoreId",
-        "unStockedItemTypesByPhysicalStoreId",
-      ],
+      refetchQueries: ["pagedStockItems", "stockItemsByPhysicalStoreId"],
     },
   }),
   WithBreadcrumbs(["Inventory", "Stock Items", "New"])

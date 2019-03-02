@@ -18,8 +18,20 @@ Migrations.add({
     const adminUser = Accounts.findUserByUsername("erp-admin");
     const date = new Date();
 
+    // Rename itemCategoryId to categoryId
+    let stockItems = StockItems.find({
+      itemCategoryId: { $exists: true },
+    }).fetch();
+    stockItems.forEach(stockItem => {
+      StockItems.update(stockItem._id, {
+        $set: {
+          categoryId: stockItem.itemCategoryId,
+        },
+      });
+    });
+
     // Update existing stock items with attributes from item types
-    const stockItems = StockItems.find({
+    stockItems = StockItems.find({
       itemTypeId: { $exists: true },
     }).fetch();
     stockItems.forEach(stockItem => {
@@ -29,7 +41,7 @@ Migrations.add({
           name: itemType.name,
           company: itemType.company,
           details: itemType.details,
-          itemCategoryId: itemType.itemCategoryId,
+          categoryId: itemType.itemCategoryId,
           unitOfMeasurement: itemType.unitOfMeasurement,
           imageId: itemType.imageId,
         },
@@ -52,7 +64,7 @@ Migrations.add({
             name: itemType.name,
             company: itemType.company,
             details: itemType.details,
-            itemCategoryId: itemType.itemCategoryId,
+            categoryId: itemType.itemCategoryId,
             unitOfMeasurement: itemType.unitOfMeasurement,
             imageId: itemType.imageId,
             startingStockLevel: 0,

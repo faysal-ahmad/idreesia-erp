@@ -8,6 +8,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 
 import GeneralInfo from "./edit/general-info";
+import Picture from "./edit/picture";
 import IssuanceForms from "./edit/issuance-forms";
 import PurchaseForms from "./edit/purchase-forms";
 import Adjustments from "./edit/adjustments";
@@ -19,13 +20,16 @@ const EditForm = props => {
       <Tabs.TabPane tab="General Info" key="1">
         <GeneralInfo stockItemId={stockItemId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Issuance Forms" key="2">
+      <Tabs.TabPane tab="Picture" key="2">
+        <Picture stockItemId={stockItemId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Issuance Forms" key="3">
         <IssuanceForms stockItemId={stockItemId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Purchase Forms" key="3">
+      <Tabs.TabPane tab="Purchase Forms" key="4">
         <PurchaseForms stockItemId={stockItemId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Adjustments" key="4">
+      <Tabs.TabPane tab="Adjustments" key="5">
         <Adjustments stockItemId={stockItemId} {...props} />
       </Tabs.TabPane>
     </Tabs>

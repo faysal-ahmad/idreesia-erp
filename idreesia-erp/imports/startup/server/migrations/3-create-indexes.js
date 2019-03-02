@@ -1,5 +1,5 @@
 import { Migrations } from "meteor/percolate:migrations";
-import { ItemTypes } from "meteor/idreesia-common/collections/inventory";
+import { StockItems } from "meteor/idreesia-common/collections/inventory";
 import { Karkuns } from "meteor/idreesia-common/collections/hr";
 import {
   AccountHeads,
@@ -11,7 +11,9 @@ Migrations.add({
   version: 3,
   up() {
     // Inventory Indexes
-    ItemTypes.rawCollection().createIndex({ name: "text", details: "text" });
+    const stockItems = StockItems.rawCollection();
+    stockItems.createIndex({ name: "text", details: "text" });
+    stockItems.createIndex({ categoryId: 1 }, { background: true });
 
     // HR Indexes
     Karkuns.rawCollection().createIndex({

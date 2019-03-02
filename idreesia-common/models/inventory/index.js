@@ -1,1 +1,1 @@
-export { default as ItemType } from "./item-type";
+export { default as StockItem } from "./stock-item";

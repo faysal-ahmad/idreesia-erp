@@ -3,7 +3,6 @@ import moment from "moment";
 import {
   PurchaseForms,
   StockItems,
-  ItemTypes,
 } from "meteor/idreesia-common/collections/inventory";
 
 export default function getAdjustmentsSummary(physicalStoreId) {
@@ -18,8 +17,7 @@ export default function getAdjustmentsSummary(physicalStoreId) {
     const items = purchaseForm.items.map(
       ({ stockItemId, quantity, isInflow }) => {
         const stockItem = StockItems.findOne(stockItemId);
-        const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-        return `<li>${itemType.formattedName} [${quantity} ${
+        return `<li>${stockItem.formattedName} [${quantity} ${
           isInflow ? "Purchased" : "Returned"
         }]</li>`;
       }

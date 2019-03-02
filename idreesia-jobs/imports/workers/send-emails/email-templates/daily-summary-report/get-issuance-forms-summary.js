@@ -5,7 +5,6 @@ import {
   Locations,
   IssuanceForms,
   StockItems,
-  ItemTypes,
 } from "meteor/idreesia-common/collections/inventory";
 import { Karkuns } from "meteor/idreesia-common/collections/hr";
 
@@ -25,8 +24,7 @@ export default function getIssuanceFormsSummary(physicalStoreId) {
       issuanceForm.items,
       ({ stockItemId, quantity, isInflow }) => {
         const stockItem = StockItems.findOne(stockItemId);
-        const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-        return `<li>${itemType.formattedName} [${quantity} ${
+        return `<li>${stockItem.formattedName} [${quantity} ${
           isInflow ? "Returned" : "Issued"
         }]</li>`;
       }

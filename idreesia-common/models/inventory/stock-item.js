@@ -1,6 +1,6 @@
-import { assign } from 'lodash';
+import { assign } from "lodash";
 
-export default class ItemType {
+export default class StockItem {
   constructor(doc) {
     assign(this, doc);
   }
@@ -14,7 +14,7 @@ export default class ItemType {
     if (details) {
       formattedName = `${formattedName} - ${details}`;
     }
-  
+
     return formattedName;
   }
 }

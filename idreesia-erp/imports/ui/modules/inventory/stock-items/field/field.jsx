@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { InputNumber, Form } from "antd";
+import { Form } from "antd";
+
+import Input from "./input";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -16,19 +18,19 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputNumberField extends Component {
+export default class Field extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
-    initialValue: PropTypes.number,
-    minValue: PropTypes.number,
-    maxValue: PropTypes.number,
+    initialValue: PropTypes.object,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
     getFieldDecorator: PropTypes.func,
+
+    physicalStoreId: PropTypes.string,
   };
 
   static defaultProps = {
@@ -40,34 +42,30 @@ export default class InputNumberField extends Component {
     const {
       fieldName,
       placeholder,
+      disabled,
       required,
       requiredMessage,
       getFieldDecorator,
       initialValue,
-      minValue,
-      maxValue,
-      disabled,
+      physicalStoreId,
     } = this.props;
 
-    const additionalProps = {};
-    if (minValue) additionalProps.min = minValue;
-    if (maxValue) additionalProps.max = maxValue;
+    const rules = [
+      {
+        required,
+        message: requiredMessage,
+      },
+    ];
 
-    if (!disabled) {
-      const rules = [
-        {
-          required,
-          message: requiredMessage,
-        },
-      ];
-
-      return getFieldDecorator(fieldName, { initialValue, rules })(
-        <InputNumber placeholder={placeholder} {...additionalProps} />
-      );
-    }
-
-    return getFieldDecorator(fieldName, { initialValue })(
-      <InputNumber disabled />
+    return getFieldDecorator(fieldName, {
+      initialValue,
+      rules,
+    })(
+      <Input
+        placeholder={placeholder}
+        disabled={disabled}
+        physicalStoreId={physicalStoreId}
+      />
     );
   }
 

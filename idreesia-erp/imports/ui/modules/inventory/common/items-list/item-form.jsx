@@ -1,77 +1,69 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Form } from "antd";
+import { Button, Form, Row } from "antd";
 import {
-  AutoCompleteField,
   InputNumberField,
-  RadioGroupField,
+  SelectField,
 } from "/imports/ui/modules/helpers/fields";
+import { StockItemField } from "/imports/ui/modules/inventory/stock-items/field";
 
-const OptionStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  width: "100%",
+const RowStyle = {
+  height: "40px",
 };
-
-const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 14 },
+const ButtonContainerStyle = {
+  paddingLeft: "20px",
 };
 
 const ItemForm = ({
-  form: { getFieldDecorator },
-  stockItems,
+  refForm: { getFieldDecorator },
+  physicalStoreId,
   inflowLabel,
   outflowLabel,
+  handleAddItem,
 }) => (
-  <Form layout="horizontal">
-    <AutoCompleteField
-      data={stockItems}
-      getDataValue={({ _id }) => _id}
-      getDataText={({ formattedName }) => formattedName}
-      fieldName="stockItemId"
-      fieldLabel="Name"
-      fieldLayout={formItemLayout}
-      required
-      requiredMessage="Please input a name for the item."
+  <Row type="flex" justify="start" style={RowStyle}>
+    <StockItemField
+      physicalStoreId={physicalStoreId}
+      fieldLayout={null}
+      fieldName="stockItem"
+      placeholder="Stock Item"
       getFieldDecorator={getFieldDecorator}
-      optionRenderer={(text, dataObj) => (
-        <div key={dataObj.stockItemId} style={OptionStyle}>
-          {dataObj.itemTypeFormattedName}
-          <span>{dataObj.currentStockLevel} Available</span>
-        </div>
-      )}
     />
-
     <InputNumberField
       fieldName="quantity"
-      fieldLabel="Quantity"
-      fieldLayout={formItemLayout}
-      required
-      requiredMessage="Please input a value for quantity."
-      minValue={0}
+      placeholder="Quantity"
+      fieldLayout={null}
+      minValue={1}
       getFieldDecorator={getFieldDecorator}
     />
-
-    <RadioGroupField
-      fieldName="status"
-      fieldLabel="Status"
-      fieldLayout={formItemLayout}
-      options={[
+    <SelectField
+      allowClear={false}
+      data={[
         { label: inflowLabel, value: "inflow" },
         { label: outflowLabel, value: "outflow" },
       ]}
+      getDataValue={({ value }) => value}
+      getDataText={({ label }) => label}
+      initialValue={inflowLabel}
+      fieldLayout={null}
+      fieldName="status"
       getFieldDecorator={getFieldDecorator}
     />
-  </Form>
+    <Form.Item style={ButtonContainerStyle}>
+      <Button type="primary" icon="plus-circle-o" onClick={handleAddItem}>
+        Add Item
+      </Button>
+    </Form.Item>
+  </Row>
 );
 
 ItemForm.propTypes = {
-  form: PropTypes.object,
+  refForm: PropTypes.object,
+  physicalStoreId: PropTypes.string,
   stockItems: PropTypes.array,
   inflowLabel: PropTypes.string,
   outflowLabel: PropTypes.string,
+  handleAddItem: PropTypes.func,
 };
 
 export default Form.create()(ItemForm);

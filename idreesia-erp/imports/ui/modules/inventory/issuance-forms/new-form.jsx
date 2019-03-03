@@ -10,7 +10,6 @@ import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory"
 import {
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
-  WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
@@ -36,8 +35,6 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
 
@@ -80,8 +77,8 @@ class NewForm extends Component {
   };
 
   getItemsField() {
-    const { physicalStoreId, stockItemsByPhysicalStoreId } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { form, physicalStoreId } = this.props;
+    const { getFieldDecorator } = form;
 
     const rules = [
       {
@@ -91,21 +88,17 @@ class NewForm extends Component {
     ];
     return getFieldDecorator("items", { rules })(
       <ItemsList
+        refForm={form}
         inflowLabel="Returned"
         outflowLabel="Issued"
         physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
     );
   }
 
   render() {
-    const {
-      stockItemsLoading,
-      locationsLoading,
-      locationsByPhysicalStoreId,
-    } = this.props;
-    if (stockItemsLoading || locationsLoading) return null;
+    const { locationsLoading, locationsByPhysicalStoreId } = this.props;
+    if (locationsLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -196,7 +189,6 @@ export default compose(
   Form.create(),
   WithPhysicalStoreId(),
   WithLocationsByPhysicalStore(),
-  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: "createIssuanceForm",
     options: {

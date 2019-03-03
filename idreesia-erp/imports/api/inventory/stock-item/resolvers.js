@@ -90,6 +90,24 @@ export default {
       });
     },
 
+    stockItemsById(obj, { _ids }, { user }) {
+      if (!_ids || _ids.length === 0) return [];
+      const physicalStores = PhysicalStores.find({}).fetch();
+      const filteredPhysicalStores = filterByInstanceAccess(
+        user._id,
+        physicalStores
+      );
+      if (filteredPhysicalStores.length === 0) return [];
+      const physicalStoreIds = physicalStores.map(
+        physicalStore => physicalStore._id
+      );
+
+      return StockItems.find({
+        _id: { $in: _ids },
+        physicalStoreId: { $in: physicalStoreIds },
+      }).fetch();
+    },
+
     stockItemsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
       return getAllStockItems(physicalStoreId);

@@ -9,10 +9,7 @@ import { noop } from "lodash";
 import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import {
-  WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   InputTextField,
   DateField,
@@ -36,8 +33,6 @@ class ViewForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
   };
@@ -48,12 +43,8 @@ class ViewForm extends Component {
   };
 
   getItemsField() {
-    const {
-      issuanceFormById,
-      physicalStoreId,
-      stockItemsByPhysicalStoreId,
-    } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { form, issuanceFormById, physicalStoreId } = this.props;
+    const { getFieldDecorator } = form;
 
     const rules = [
       {
@@ -67,17 +58,17 @@ class ViewForm extends Component {
     })(
       <ItemsList
         readOnly
+        refForm={form}
         inflowLabel="Returned"
         outflowLabel="Issued"
         physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
     );
   }
 
   render() {
-    const { stockItemsLoading, formDataLoading, issuanceFormById } = this.props;
-    if (stockItemsLoading || formDataLoading) {
+    const { formDataLoading, issuanceFormById } = this.props;
+    if (formDataLoading) {
       return null;
     }
 
@@ -151,7 +142,6 @@ const formQuery = gql`
         stockItemId
         quantity
         isInflow
-        itemTypeName
       }
       refLocation {
         _id
@@ -173,7 +163,6 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {

@@ -11,7 +11,6 @@ import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory"
 import {
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
-  WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
@@ -38,11 +37,8 @@ class EditForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
-
     formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
     updateIssuanceForm: PropTypes.func,
@@ -96,12 +92,8 @@ class EditForm extends Component {
   };
 
   getItemsField() {
-    const {
-      issuanceFormById,
-      physicalStoreId,
-      stockItemsByPhysicalStoreId,
-    } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { form, physicalStoreId, issuanceFormById } = this.props;
+    const { getFieldDecorator } = form;
 
     const rules = [
       {
@@ -114,10 +106,10 @@ class EditForm extends Component {
       initialValue: issuanceFormById.items,
     })(
       <ItemsList
+        refForm={form}
         inflowLabel="Returned"
         outflowLabel="Issued"
         physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
     );
   }
@@ -125,12 +117,11 @@ class EditForm extends Component {
   render() {
     const {
       locationsLoading,
-      stockItemsLoading,
       formDataLoading,
       issuanceFormById,
       locationsByPhysicalStoreId,
     } = this.props;
-    if (stockItemsLoading || locationsLoading || formDataLoading) {
+    if (locationsLoading || formDataLoading) {
       return null;
     }
 
@@ -248,7 +239,6 @@ const formQuery = gql`
         stockItemId
         quantity
         isInflow
-        itemTypeName
       }
       refIssuedBy {
         _id
@@ -267,7 +257,6 @@ export default compose(
   Form.create(),
   WithPhysicalStoreId(),
   WithLocationsByPhysicalStore(),
-  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: "updateIssuanceForm",
     options: {

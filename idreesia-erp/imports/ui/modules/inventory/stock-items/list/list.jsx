@@ -213,6 +213,7 @@ const listQuery = gql`
       data {
         _id
         name
+        formattedName
         company
         details
         imageId

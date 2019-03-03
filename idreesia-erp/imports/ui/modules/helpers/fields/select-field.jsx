@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Select, Form } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Select, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -23,6 +23,7 @@ const formItemLayout = {
  */
 export default class SelectField extends Component {
   static propTypes = {
+    allowClear: PropTypes.bool,
     data: PropTypes.array,
     getDataValue: PropTypes.func,
     getDataText: PropTypes.func,
@@ -38,6 +39,7 @@ export default class SelectField extends Component {
   };
 
   static defaultProps = {
+    allowClear: true,
     data: [],
     getDataValue: ({ _id }) => _id,
     getDataText: ({ name }) => name,
@@ -47,6 +49,7 @@ export default class SelectField extends Component {
 
   getField = () => {
     const {
+      allowClear,
       data,
       getDataValue,
       getDataText,
@@ -80,7 +83,11 @@ export default class SelectField extends Component {
       : null;
 
     return getFieldDecorator(fieldName, { rules, initialValue })(
-      <Select placeholder={placeholder} onChange={onChange} allowClear>
+      <Select
+        placeholder={placeholder}
+        onChange={onChange}
+        allowClear={allowClear}
+      >
         {options}
       </Select>
     );

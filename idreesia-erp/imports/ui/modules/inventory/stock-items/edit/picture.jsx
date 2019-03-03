@@ -80,7 +80,7 @@ export default compose(
   graphql(formMutation, {
     name: "setStockItemImage",
     options: {
-      refetchQueries: ["pagedStockItems", "stockItemsByPhysicalStoreId"],
+      refetchQueries: ["pagedStockItems"],
     },
   }),
   graphql(formQuery, {

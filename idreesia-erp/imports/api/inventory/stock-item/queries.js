@@ -2,19 +2,6 @@ import { parse } from "query-string";
 import { StockItems } from "meteor/idreesia-common/collections/inventory";
 import { get } from "lodash";
 
-export function getAllStockItems(physicalStoreId) {
-  const pipeline = [
-    {
-      $match: {
-        physicalStoreId: { $eq: physicalStoreId },
-      },
-    },
-    { $sort: { name: 1 } },
-  ];
-
-  return StockItems.aggregate(pipeline).toArray();
-}
-
 export default function getPagedStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
   const { categoryId, name, pageIndex = "0", pageSize = "10" } = params;

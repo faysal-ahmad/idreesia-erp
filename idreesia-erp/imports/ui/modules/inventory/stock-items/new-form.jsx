@@ -185,7 +185,7 @@ export default compose(
   graphql(formMutation, {
     name: "createStockItem",
     options: {
-      refetchQueries: ["pagedStockItems", "stockItemsByPhysicalStoreId"],
+      refetchQueries: ["pagedStockItems"],
     },
   }),
   WithBreadcrumbs(["Inventory", "Stock Items", "New"])

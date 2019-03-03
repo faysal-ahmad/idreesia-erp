@@ -6,6 +6,3 @@ export {
 export {
   default as WithItemCategoriesByPhysicalStore,
 } from "./with-item-categories-by-physical-store";
-export {
-  default as WithStockItemsByPhysicalStore,
-} from "./with-stock-items-by-physical-store";

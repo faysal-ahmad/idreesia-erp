@@ -192,7 +192,7 @@ export default compose(
   graphql(formMutation, {
     name: "updateStockItem",
     options: {
-      refetchQueries: ["pagedStockItems", "stockItemsByPhysicalStoreId"],
+      refetchQueries: ["pagedStockItems"],
     },
   })
 )(EditForm);

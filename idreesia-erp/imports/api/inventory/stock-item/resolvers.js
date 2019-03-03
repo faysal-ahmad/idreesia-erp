@@ -10,7 +10,7 @@ import {
 } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
-import getPagedStockItems, { getAllStockItems } from "./queries";
+import getPagedStockItems from "./queries";
 
 export default {
   StockItem: {
@@ -106,11 +106,6 @@ export default {
         _id: { $in: _ids },
         physicalStoreId: { $in: physicalStoreIds },
       }).fetch();
-    },
-
-    stockItemsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
-      return getAllStockItems(physicalStoreId);
     },
   },
 

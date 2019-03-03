@@ -11,7 +11,7 @@ import {
   SelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
-import { WithItemCategories } from "/imports/ui/modules/inventory/common/composers";
+import { WithItemCategoriesByPhysicalStore } from "/imports/ui/modules/inventory/common/composers";
 
 import allUnitOfMeasurements from "../all-unit-of-measurements";
 
@@ -22,8 +22,8 @@ class EditForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    itemCategoriesListLoading: PropTypes.bool,
-    allItemCategories: PropTypes.array,
+    itemCategoriesLoading: PropTypes.bool,
+    itemCategoriesByPhysicalStoreId: PropTypes.array,
     loading: PropTypes.bool,
     stockItemById: PropTypes.object,
     updateStockItem: PropTypes.func,
@@ -73,12 +73,12 @@ class EditForm extends Component {
   render() {
     const {
       loading,
-      itemCategoriesListLoading,
+      itemCategoriesLoading,
       stockItemById,
-      allItemCategories,
+      itemCategoriesByPhysicalStoreId,
     } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (loading || itemCategoriesListLoading) return null;
+    if (loading || itemCategoriesLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -105,7 +105,7 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
-          data={allItemCategories}
+          data={itemCategoriesByPhysicalStoreId}
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
           fieldName="categoryId"
@@ -184,7 +184,7 @@ const formQuery = gql`
 
 export default compose(
   Form.create(),
-  WithItemCategories(),
+  WithItemCategoriesByPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),

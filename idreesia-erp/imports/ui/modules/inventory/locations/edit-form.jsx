@@ -12,7 +12,10 @@ import {
   TreeSelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
-import { WithLocations } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
+} from "/imports/ui/modules/inventory/common/composers";
 
 class EditForm extends Component {
   static propTypes = {
@@ -21,21 +24,28 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    physicalStoreId: PropTypes.string,
     loading: PropTypes.bool,
     locationById: PropTypes.object,
-    locationsListLoading: PropTypes.bool,
-    allLocations: PropTypes.array,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
     updateLocation: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.locationsPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.locationsPath(physicalStoreId));
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, locationById, updateLocation } = this.props;
+    const {
+      form,
+      history,
+      physicalStoreId,
+      locationById,
+      updateLocation,
+    } = this.props;
     form.validateFields((err, { name, parentId, description }) => {
       if (err) return;
 
@@ -43,12 +53,13 @@ class EditForm extends Component {
         variables: {
           _id: locationById._id,
           name,
+          physicalStoreId,
           parentId: parentId || null,
           description,
         },
       })
         .then(() => {
-          history.push(paths.locationsPath);
+          history.push(paths.locationsPath(physicalStoreId));
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -59,11 +70,11 @@ class EditForm extends Component {
   render() {
     const {
       loading,
-      locationsListLoading,
+      locationsLoading,
       locationById,
-      allLocations,
+      locationsByPhysicalStoreId,
     } = this.props;
-    if (loading || locationsListLoading) return null;
+    if (loading || locationsLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -78,7 +89,7 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <TreeSelectField
-          data={allLocations}
+          data={locationsByPhysicalStoreId}
           skipValue={locationById._id}
           fieldName="parentId"
           fieldLabel="Parent Location"
@@ -131,11 +142,12 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
-  WithLocations(),
+  WithPhysicalStoreId(),
+  WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "updateLocation",
     options: {
-      refetchQueries: ["allLocations"],
+      refetchQueries: ["locationsByPhysicalStoreId"],
     },
   }),
   graphql(formQuery, {

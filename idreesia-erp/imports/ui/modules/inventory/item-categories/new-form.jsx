@@ -1,37 +1,42 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import {
+  InputTextField,
+  FormButtonsSaveCancel,
+} from "/imports/ui/modules/helpers/fields";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
     createItemCategory: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.itemCategoriesPath(physicalStoreId));
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createItemCategory, history } = this.props;
+    const { form, physicalStoreId, createItemCategory, history } = this.props;
     form.validateFields((err, { name }) => {
       if (err) return;
 
       createItemCategory({
-        variables: { name },
+        variables: { name, physicalStoreId },
       })
         .then(() => {
-          history.push(paths.itemCategoriesPath);
+          history.push(paths.itemCategoriesPath(physicalStoreId));
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -58,21 +63,23 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createItemCategory($name: String!) {
-    createItemCategory(name: $name) {
+  mutation createItemCategory($name: String!, $physicalStoreId: String!) {
+    createItemCategory(name: $name, physicalStoreId: $physicalStoreId) {
       _id
       name
+      physicalStoreId
     }
   }
 `;
 
 export default compose(
   Form.create(),
+  WithPhysicalStoreId(),
   graphql(formMutation, {
-    name: 'createItemCategory',
+    name: "createItemCategory",
     options: {
-      refetchQueries: ['allItemCategories'],
+      refetchQueries: ["itemCategoriesByPhysicalStoreId"],
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New'])
+  WithBreadcrumbs(["Inventory", "Setup", "Item Categories", "New"])
 )(NewForm);

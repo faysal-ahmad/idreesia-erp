@@ -10,8 +10,8 @@ import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithLocations,
   WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 
 import ListFilter from "./list-filter";
@@ -46,8 +46,8 @@ class List extends Component {
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    locationsListLoading: PropTypes.bool,
-    allLocations: PropTypes.array,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
     loading: PropTypes.bool,
     pagedIssuanceForms: PropTypes.shape({
       totalResults: PropTypes.number,
@@ -261,7 +261,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { allLocations, queryParams } = this.props;
+    const { locationsByPhysicalStoreId, queryParams } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -273,7 +273,7 @@ class List extends Component {
           New Issuance Form
         </Button>
         <ListFilter
-          allLocations={allLocations}
+          allLocations={locationsByPhysicalStoreId}
           refreshPage={this.refreshPage}
           queryParams={queryParams}
         />
@@ -389,7 +389,7 @@ const listQuery = gql`
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
-  WithLocations(),
+  WithLocationsByPhysicalStore(),
   graphql(formMutationRemove, {
     name: "removeIssuanceForm",
     options: {

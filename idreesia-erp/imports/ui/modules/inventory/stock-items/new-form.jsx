@@ -14,7 +14,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 import {
   WithPhysicalStoreId,
-  WithItemCategories,
+  WithItemCategoriesByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 
 import allUnitOfMeasurements from "./all-unit-of-measurements";
@@ -26,8 +26,8 @@ class NewForm extends Component {
     match: PropTypes.object,
     form: PropTypes.object,
 
-    itemCategoriesListLoading: PropTypes.bool,
-    allItemCategories: PropTypes.array,
+    itemCategoriesLoading: PropTypes.bool,
+    itemCategoriesByPhysicalStoreId: PropTypes.array,
     physicalStoreId: PropTypes.string,
     createStockItem: PropTypes.func,
   };
@@ -78,9 +78,12 @@ class NewForm extends Component {
   };
 
   render() {
-    const { itemCategoriesListLoading, allItemCategories } = this.props;
+    const {
+      itemCategoriesLoading,
+      itemCategoriesByPhysicalStoreId,
+    } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (itemCategoriesListLoading) return null;
+    if (itemCategoriesLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -104,7 +107,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
-          data={allItemCategories}
+          data={itemCategoriesByPhysicalStoreId}
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
           fieldName="categoryId"
@@ -178,7 +181,7 @@ const formMutation = gql`
 export default compose(
   Form.create({ name: "newStockItemForm" }),
   WithPhysicalStoreId(),
-  WithItemCategories(),
+  WithItemCategoriesByPhysicalStore(),
   graphql(formMutation, {
     name: "createStockItem",
     options: {

@@ -39,18 +39,18 @@ import {
 const InventoryRouter = () => (
   <Switch>
     <Route
-      path={paths.itemCategoriesNewFormPath}
+      path={paths.itemCategoriesNewFormPath()}
       component={ItemCategoriesNewForm}
     />
     <Route
-      path={paths.itemCategoriesEditFormPath}
+      path={paths.itemCategoriesEditFormPath()}
       component={ItemCategoriesEditForm}
     />
-    <Route path={paths.itemCategoriesPath} component={ItemCategoriesList} />
+    <Route path={paths.itemCategoriesPath()} component={ItemCategoriesList} />
 
-    <Route path={paths.locationsNewFormPath} component={LocationsNewForm} />
-    <Route path={paths.locationsEditFormPath} component={LocationsEditForm} />
-    <Route path={paths.locationsPath} component={LocationsList} />
+    <Route path={paths.locationsNewFormPath()} component={LocationsNewForm} />
+    <Route path={paths.locationsEditFormPath()} component={LocationsEditForm} />
+    <Route path={paths.locationsPath()} component={LocationsList} />
 
     <Route path={paths.stockItemsNewFormPath()} component={StockItemsNewForm} />
     <Route

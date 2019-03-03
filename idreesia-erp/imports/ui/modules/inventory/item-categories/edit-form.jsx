@@ -1,12 +1,16 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import {
+  InputTextField,
+  FormButtonsSaveCancel,
+} from "/imports/ui/modules/helpers/fields";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 
 class EditForm extends Component {
   static propTypes = {
@@ -16,18 +20,25 @@ class EditForm extends Component {
     form: PropTypes.object,
 
     loading: PropTypes.bool,
+    physicalStoreId: PropTypes.string,
     itemCategoryById: PropTypes.object,
     updateItemCategory: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.itemCategoriesPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.itemCategoriesPath(physicalStoreId));
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, itemCategoryById, updateItemCategory } = this.props;
+    const {
+      form,
+      history,
+      physicalStoreId,
+      itemCategoryById,
+      updateItemCategory,
+    } = this.props;
     form.validateFields((err, { name }) => {
       if (err) return;
 
@@ -38,7 +49,7 @@ class EditForm extends Component {
         },
       })
         .then(() => {
-          history.push(paths.itemCategoriesPath);
+          history.push(paths.itemCategoriesPath(physicalStoreId));
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -87,10 +98,11 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
+  WithPhysicalStoreId(),
   graphql(formMutation, {
-    name: 'updateItemCategory',
+    name: "updateItemCategory",
     options: {
-      refetchQueries: ['allItemCategories'],
+      refetchQueries: ["itemCategoriesByPhysicalStoreId"],
     },
   }),
   graphql(formQuery, {
@@ -100,5 +112,5 @@ export default compose(
       return { variables: { id: itemCategoryId } };
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit'])
+  WithBreadcrumbs(["Inventory", "Setup", "Item Categories", "Edit"])
 )(EditForm);

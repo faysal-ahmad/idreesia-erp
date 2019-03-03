@@ -34,12 +34,12 @@ class InventorySidebar extends Component {
     } else if (key.startsWith("stock-adjustments")) {
       setActiveSubModuleName(SubModuleNames.stockAdjustments);
       history.push(paths.stockAdjustmentsPath(physicalStoreId));
-    } else if (key === "item-categories") {
+    } else if (key.startsWith("item-categories")) {
       setActiveSubModuleName(SubModuleNames.itemCategories);
-      history.push(paths.itemCategoriesPath);
-    } else if (key === "locations") {
+      history.push(paths.itemCategoriesPath(physicalStoreId));
+    } else if (key.startsWith("locations")) {
       setActiveSubModuleName(SubModuleNames.locations);
-      history.push(paths.locationsPath);
+      history.push(paths.locationsPath(physicalStoreId));
     }
   };
 
@@ -84,23 +84,30 @@ class InventorySidebar extends Component {
           >
             Stock Adjustments
           </Menu.Item>
+          <Menu.SubMenu
+            key={`setup-${physicalStore._id}`}
+            title={
+              <span>
+                <Icon type="laptop" />Setup
+              </span>
+            }
+          >
+            <Menu.Item
+              parent-key={physicalStore._id}
+              key={`item-categories-${physicalStore._id}`}
+            >
+              Item Categories
+            </Menu.Item>
+            <Menu.Item
+              parent-key={physicalStore._id}
+              key={`locations-${physicalStore._id}`}
+            >
+              Locations
+            </Menu.Item>
+          </Menu.SubMenu>
         </Menu.SubMenu>
       );
     });
-
-    subMenus.push(
-      <Menu.SubMenu
-        key="setup"
-        title={
-          <span>
-            <Icon type="laptop" />Setup
-          </span>
-        }
-      >
-        <Menu.Item key="item-categories">Item Categories</Menu.Item>
-        <Menu.Item key="locations">Locations</Menu.Item>
-      </Menu.SubMenu>
-    );
 
     return (
       <Menu

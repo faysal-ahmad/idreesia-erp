@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
-import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { compose } from "react-apollo";
 
 import {
   InputTextField,
   SelectField,
 } from "/imports/ui/modules/helpers/fields";
+import { WithItemCategoriesByPhysicalStore } from "/imports/ui/modules/inventory/common/composers";
 
 const ContainerStyle = {
   width: "500px",
@@ -27,7 +27,8 @@ class ListFilter extends Component {
     form: PropTypes.object,
     name: PropTypes.string,
     categoryId: PropTypes.string,
-    allItemCategories: PropTypes.array,
+    physicalStoreId: PropTypes.string,
+    itemCategoriesByPhysicalStoreId: PropTypes.array,
     setPageParams: PropTypes.func,
   };
 
@@ -57,14 +58,14 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { categoryId, name, allItemCategories } = this.props;
+    const { categoryId, name, itemCategoriesByPhysicalStoreId } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
             <SelectField
-              data={allItemCategories}
+              data={itemCategoriesByPhysicalStoreId}
               getDataValue={category => category._id}
               getDataText={category => category.name}
               fieldName="categoryId"
@@ -99,18 +100,7 @@ class ListFilter extends Component {
   }
 }
 
-const itemCategoriesListQuery = gql`
-  query allItemCategories {
-    allItemCategories {
-      _id
-      name
-    }
-  }
-`;
-
 export default compose(
   Form.create({ name: "itemTypeListFilter" }),
-  graphql(itemCategoriesListQuery, {
-    props: ({ data }) => ({ ...data }),
-  })
+  WithItemCategoriesByPhysicalStore()
 )(ListFilter);

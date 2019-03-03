@@ -2,6 +2,7 @@ type Location {
   _id: String
   name: String
   parentId: String
+  physicalStoreId: String
   description: String
 
   refParent: Location
@@ -13,12 +14,17 @@ type Location {
 }
 
 extend type Query {
-  allLocations: [Location]
   locationById(_id: String!): Location
+  locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
 }
 
 extend type Mutation {
-  createLocation(name: String!, parentId: String, description: String): Location
+  createLocation(
+    name: String!
+    physicalStoreId: String!
+    parentId: String
+    description: String
+  ): Location
   updateLocation(
     _id: String!
     name: String!

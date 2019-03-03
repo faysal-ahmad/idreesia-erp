@@ -4,15 +4,33 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Data Setup Routes
   // *************************************************************************************
-  static itemCategoriesPath = `${ModulePaths.inventory}/item-categories`;
-  static itemCategoriesNewFormPath = `${SubModulePaths.itemCategoriesPath}/new`;
-  static itemCategoriesEditFormPath = `${
-    SubModulePaths.itemCategoriesPath
-  }/:itemCategoryId`;
+  static itemCategoriesPath(physicalStoreId = ":physicalStoreId") {
+    return `${ModulePaths.inventory}/${physicalStoreId}/item-categories`;
+  }
+  static itemCategoriesNewFormPath(physicalStoreId = ":physicalStoreId") {
+    return `${SubModulePaths.itemCategoriesPath(physicalStoreId)}/new`;
+  }
+  static itemCategoriesEditFormPath(
+    physicalStoreId = ":physicalStoreId",
+    itemCategoryId = ":itemCategoryId"
+  ) {
+    return `${SubModulePaths.itemCategoriesPath(
+      physicalStoreId
+    )}/${itemCategoryId}`;
+  }
 
-  static locationsPath = `${ModulePaths.inventory}/locations`;
-  static locationsNewFormPath = `${SubModulePaths.locationsPath}/new`;
-  static locationsEditFormPath = `${SubModulePaths.locationsPath}/:locationId`;
+  static locationsPath(physicalStoreId = ":physicalStoreId") {
+    return `${ModulePaths.inventory}/${physicalStoreId}/locations`;
+  }
+  static locationsNewFormPath(physicalStoreId = ":physicalStoreId") {
+    return `${SubModulePaths.locationsPath(physicalStoreId)}/new`;
+  }
+  static locationsEditFormPath(
+    physicalStoreId = ":physicalStoreId",
+    locationId = ":locationId"
+  ) {
+    return `${SubModulePaths.locationsPath(physicalStoreId)}/${locationId}`;
+  }
 
   // *************************************************************************************
   // Stock Items Routes

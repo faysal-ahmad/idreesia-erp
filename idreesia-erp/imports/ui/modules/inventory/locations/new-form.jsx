@@ -12,35 +12,39 @@ import {
   TreeSelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
-import { WithLocations } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
+} from "/imports/ui/modules/inventory/common/composers";
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createLocation: PropTypes.func,
 
-    locationsListLoading: PropTypes.bool,
-    allLocations: PropTypes.array,
+    physicalStoreId: PropTypes.string,
+    createLocation: PropTypes.func,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.locationsPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.locationsPath(physicalStoreId));
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createLocation, history } = this.props;
+    const { form, physicalStoreId, createLocation, history } = this.props;
     form.validateFields((err, { name, parentId, description }) => {
       if (err) return;
 
       createLocation({
-        variables: { name, parentId, description },
+        variables: { name, physicalStoreId, parentId, description },
       })
         .then(() => {
-          history.push(paths.locationsPath);
+          history.push(paths.locationsPath(physicalStoreId));
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -49,8 +53,8 @@ class NewForm extends Component {
   };
 
   render() {
-    const { locationsListLoading, allLocations } = this.props;
-    if (locationsListLoading) {
+    const { locationsLoading, locationsByPhysicalStoreId } = this.props;
+    if (locationsLoading) {
       return null;
     }
 
@@ -66,7 +70,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <TreeSelectField
-          data={allLocations}
+          data={locationsByPhysicalStoreId}
           fieldName="parentId"
           fieldLabel="Parent Location"
           getFieldDecorator={getFieldDecorator}
@@ -85,11 +89,13 @@ class NewForm extends Component {
 const formMutation = gql`
   mutation createLocation(
     $name: String!
+    $physicalStoreId: String!
     $parentId: String
     $description: String
   ) {
     createLocation(
       name: $name
+      physicalStoreId: $physicalStoreId
       parentId: $parentId
       description: $description
     ) {
@@ -103,11 +109,12 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
-  WithLocations(),
+  WithPhysicalStoreId(),
+  WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "createLocation",
     options: {
-      refetchQueries: ["allLocations"],
+      refetchQueries: ["locationsByPhysicalStoreId"],
     },
   }),
   WithBreadcrumbs(["Inventory", "Setup", "Locations", "New"])

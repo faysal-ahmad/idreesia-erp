@@ -8,8 +8,8 @@ import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithLocations,
   WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
@@ -38,8 +38,8 @@ class NewForm extends Component {
 
     stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
-    locationsListLoading: PropTypes.bool,
-    allLocations: PropTypes.array,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
 
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
@@ -102,10 +102,10 @@ class NewForm extends Component {
   render() {
     const {
       stockItemsLoading,
-      locationsListLoading,
-      allLocations,
+      locationsLoading,
+      locationsByPhysicalStoreId,
     } = this.props;
-    if (stockItemsLoading || locationsListLoading) return null;
+    if (stockItemsLoading || locationsLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -135,7 +135,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <TreeSelectField
-          data={allLocations}
+          data={locationsByPhysicalStoreId}
           fieldName="locationId"
           fieldLabel="For Location"
           placeholder="Select a Location"
@@ -194,8 +194,8 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
-  WithLocations(),
   WithPhysicalStoreId(),
+  WithLocationsByPhysicalStore(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: "createIssuanceForm",

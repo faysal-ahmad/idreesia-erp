@@ -2,17 +2,22 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Button, Table } from "antd";
-import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { compose } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import {
+  WithPhysicalStoreId,
+  WithItemCategoriesByPhysicalStore,
+} from "/imports/ui/modules/inventory/common/composers";
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allItemCategories: PropTypes.array,
+    physicalStoreId: PropTypes.string,
+    itemCategoriesLoading: PropTypes.bool,
+    itemCategoriesByPhysicalStoreId: PropTypes.array,
   };
 
   columns = [
@@ -21,7 +26,14 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
-        <Link to={`${paths.itemCategoriesPath}/${record._id}`}>{text}</Link>
+        <Link
+          to={`${paths.itemCategoriesEditFormPath(
+            this.props.physicalStoreId,
+            record._id
+          )}`}
+        >
+          {text}
+        </Link>
       ),
     },
     {
@@ -32,17 +44,21 @@ class List extends Component {
   ];
 
   handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.itemCategoriesNewFormPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.itemCategoriesNewFormPath(physicalStoreId));
   };
 
   render() {
-    const { allItemCategories } = this.props;
+    const {
+      itemCategoriesLoading,
+      itemCategoriesByPhysicalStoreId,
+    } = this.props;
+    if (itemCategoriesLoading) return null;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allItemCategories}
+        dataSource={itemCategoriesByPhysicalStoreId}
         columns={this.columns}
         bordered
         title={() => (
@@ -59,19 +75,8 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query allItemCategories {
-    allItemCategories {
-      _id
-      name
-      stockItemCount
-    }
-  }
-`;
-
 export default compose(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
+  WithPhysicalStoreId(),
+  WithItemCategoriesByPhysicalStore(),
   WithBreadcrumbs(["Inventory", "Setup", "Item Categories", "List"])
 )(List);

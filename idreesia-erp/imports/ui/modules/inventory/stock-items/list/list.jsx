@@ -133,6 +133,7 @@ class List extends Component {
     const {
       name,
       categoryId,
+      physicalStoreId,
       setPageParams,
       showNewButton,
       handleNewClicked,
@@ -152,6 +153,7 @@ class List extends Component {
         {newButton}
         <ListFilter
           name={name}
+          physicalStoreId={physicalStoreId}
           categoryId={categoryId}
           setPageParams={setPageParams}
         />

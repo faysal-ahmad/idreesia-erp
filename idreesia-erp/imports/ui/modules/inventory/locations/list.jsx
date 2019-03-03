@@ -6,15 +6,18 @@ import { compose } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithLocations } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
+} from "/imports/ui/modules/inventory/common/composers";
 
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-
-    locationsListLoading: PropTypes.bool,
-    allLocations: PropTypes.array,
+    physicalStoreId: PropTypes.string,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
   };
 
   columns = [
@@ -23,7 +26,14 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
-        <Link to={`${paths.locationsPath}/${record._id}`}>{text}</Link>
+        <Link
+          to={`${paths.locationsEditFormPath(
+            this.props.physicalStoreId,
+            record._id
+          )}`}
+        >
+          {text}
+        </Link>
       ),
     },
     {
@@ -31,7 +41,12 @@ class List extends Component {
       dataIndex: "parentId",
       key: "parentId",
       render: (text, record) => (
-        <Link to={`${paths.locationsPath}/${record.parentId}`}>
+        <Link
+          to={`${paths.itemCategoriesEditFormPath(
+            this.props.physicalStoreId,
+            record.parentId
+          )}`}
+        >
           {record.refParent ? record.refParent.name : ""}
         </Link>
       ),
@@ -44,18 +59,18 @@ class List extends Component {
   ];
 
   handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.locationsNewFormPath);
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.locationsNewFormPath(physicalStoreId));
   };
 
   render() {
-    const { locationsListLoading, allLocations } = this.props;
-    if (locationsListLoading) return null;
+    const { locationsLoading, locationsByPhysicalStoreId } = this.props;
+    if (locationsLoading) return null;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allLocations}
+        dataSource={locationsByPhysicalStoreId}
         columns={this.columns}
         bordered
         title={() => (
@@ -73,6 +88,7 @@ class List extends Component {
 }
 
 export default compose(
-  WithLocations(),
+  WithPhysicalStoreId(),
+  WithLocationsByPhysicalStore(),
   WithBreadcrumbs(["Inventory", "Setup", "Locations", "List"])
 )(List);

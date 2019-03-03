@@ -9,8 +9,8 @@ import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithLocations,
   WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
   WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
@@ -40,8 +40,8 @@ class EditForm extends Component {
 
     stockItemsLoading: PropTypes.bool,
     stockItemsByPhysicalStoreId: PropTypes.array,
-    locationsListLoading: PropTypes.bool,
-    allLocations: PropTypes.array,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
 
     formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
@@ -124,13 +124,13 @@ class EditForm extends Component {
 
   render() {
     const {
-      locationsListLoading,
+      locationsLoading,
       stockItemsLoading,
       formDataLoading,
       issuanceFormById,
-      allLocations,
+      locationsByPhysicalStoreId,
     } = this.props;
-    if (stockItemsLoading || locationsListLoading || formDataLoading) {
+    if (stockItemsLoading || locationsLoading || formDataLoading) {
       return null;
     }
 
@@ -165,7 +165,7 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <TreeSelectField
-          data={allLocations}
+          data={locationsByPhysicalStoreId}
           fieldName="locationId"
           fieldLabel="For Location"
           placeholder="Select a Location"
@@ -265,8 +265,8 @@ const formQuery = gql`
 
 export default compose(
   Form.create(),
-  WithLocations(),
   WithPhysicalStoreId(),
+  WithLocationsByPhysicalStore(),
   WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: "updateIssuanceForm",

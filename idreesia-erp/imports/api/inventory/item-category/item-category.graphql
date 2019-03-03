@@ -1,6 +1,7 @@
 type ItemCategory {
   _id: String
   name: String
+  physicalStoreId: String
   stockItemCount: Int
 
   createdAt: String
@@ -10,11 +11,11 @@ type ItemCategory {
 }
 
 type Query {
-  allItemCategories: [ItemCategory]
   itemCategoryById(id: String!): ItemCategory
+  itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
 }
 
 type Mutation {
-  createItemCategory(name: String!): ItemCategory
+  createItemCategory(name: String!, physicalStoreId: String!): ItemCategory
   updateItemCategory(id: String!, name: String!): ItemCategory
 }

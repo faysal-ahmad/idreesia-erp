@@ -18,10 +18,9 @@ export default () => WrappedComponent => {
     query stockItemsByPhysicalStoreId($physicalStoreId: String!) {
       stockItemsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
         _id
-        itemTypeId
-        itemTypeName
-        itemTypeFormattedName
-        itemCategoryName
+        name
+        formattedName
+        categoryName
         currentStockLevel
       }
     }

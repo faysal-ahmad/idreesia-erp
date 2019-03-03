@@ -29,7 +29,7 @@ const ItemForm = ({
     <AutoCompleteField
       data={stockItems}
       getDataValue={({ _id }) => _id}
-      getDataText={({ itemTypeFormattedName }) => itemTypeFormattedName}
+      getDataText={({ formattedName }) => formattedName}
       fieldName="stockItemId"
       fieldLabel="Name"
       fieldLayout={formItemLayout}

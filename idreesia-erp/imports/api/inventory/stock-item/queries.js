@@ -40,18 +40,6 @@ export default function getPagedStockItems(queryString, physicalStoreId) {
     });
   }
 
-  pipeline.push({
-    $lookup: {
-      from: "inventory-item-types",
-      localField: "itemTypeId",
-      foreignField: "_id",
-      as: "itemType",
-    },
-  });
-  pipeline.push({
-    $unwind: "$itemType",
-  });
-
   const countingPipeline = pipeline.concat({
     $count: "total",
   });

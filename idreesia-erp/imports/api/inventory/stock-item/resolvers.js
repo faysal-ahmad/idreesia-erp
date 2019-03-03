@@ -62,22 +62,6 @@ export default {
   },
 
   Query: {
-    allStockItems(obj, params, { user }) {
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-
-      const physicalStoreIds = filteredPhysicalStores.map(
-        physicalStore => physicalStore._id
-      );
-      return StockItems.find({
-        physicalStoreId: { $in: physicalStoreIds },
-      }).fetch();
-    },
-
     pagedStockItems(obj, { physicalStoreId, queryString }, { user }) {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         return {

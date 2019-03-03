@@ -12,7 +12,7 @@ Migrations.add({
   up() {
     // Inventory Indexes
     const stockItems = StockItems.rawCollection();
-    stockItems.createIndex({ name: "text", details: "text" });
+    stockItems.createIndex({ name: "text", company: "text", details: "text" });
     stockItems.createIndex({ categoryId: 1 }, { background: true });
 
     // HR Indexes

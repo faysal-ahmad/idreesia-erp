@@ -21,9 +21,15 @@ export default function getPagedStockItems(queryString, physicalStoreId) {
   const pipeline = [];
 
   if (name) {
-    pipeline.push({
-      $match: { $text: { $search: name } },
-    });
+    if (name.length === 1) {
+      pipeline.push({
+        $match: { name: { $regex: `^${name}` } },
+      });
+    } else {
+      pipeline.push({
+        $match: { $text: { $search: name } },
+      });
+    }
   }
 
   pipeline.push({

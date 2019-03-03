@@ -10,9 +10,15 @@ export default function getKarkuns(queryString) {
   const { name, cnicNumber, dutyId, pageIndex = "0", pageSize = "10" } = params;
 
   if (name) {
-    pipeline.push({
-      $match: { $text: { $search: name } },
-    });
+    if (name.length === 1) {
+      pipeline.push({
+        $match: { firstName: { $regex: `^${name}` } },
+      });
+    } else {
+      pipeline.push({
+        $match: { $text: { $search: name } },
+      });
+    }
   }
 
   if (cnicNumber) {

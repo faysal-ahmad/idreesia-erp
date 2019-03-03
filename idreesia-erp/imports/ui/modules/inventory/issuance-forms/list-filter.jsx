@@ -5,7 +5,7 @@ import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import {
-  AutoCompleteField,
+  TreeSelectField,
   CheckboxField,
   DateField,
 } from "/imports/ui/modules/helpers/fields";
@@ -95,12 +95,11 @@ class ListFilter extends Component {
               initialValue={status}
               getFieldDecorator={getFieldDecorator}
             />
-            <AutoCompleteField
+            <TreeSelectField
               data={allLocations}
               fieldName="locationId"
-              fieldLayout={formItemLayout}
               fieldLabel="Location"
-              placeholder="Select a Location"
+              fieldLayout={formItemLayout}
               initialValue={locationId}
               getFieldDecorator={getFieldDecorator}
             />

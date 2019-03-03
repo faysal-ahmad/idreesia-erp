@@ -7,7 +7,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         MONGO_URL: "mongodb://localhost:27017/idreesia-erp",
-        ROOT_URL: "http://192.168.1.100",
+        ROOT_URL: "http://192.168.1.100:3000",
         PORT: 3000,
         METEOR_SETTINGS: {
           private: {

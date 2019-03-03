@@ -56,7 +56,7 @@ class ViewForm extends Component {
         <InputTextField
           fieldName="stockItemId"
           fieldLabel="Name"
-          initialValue={stockAdjustmentById.refStockItem.itemTypeFormattedName}
+          initialValue={stockAdjustmentById.refStockItem.formattedName}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -104,8 +104,8 @@ const formQuery = gql`
       adjustmentReason
       refStockItem {
         _id
-        itemTypeName
-        itemTypeFormattedName
+        name
+        formattedName
       }
       refAdjustedBy {
         _id

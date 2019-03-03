@@ -7,10 +7,7 @@ import { compose, graphql } from "react-apollo";
 import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import {
-  WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
   FormButtonsSaveCancel,
@@ -34,11 +31,8 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     karkunsListLoading: PropTypes.bool,
     allKarkuns: PropTypes.array,
-
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
     createPurchaseForm: PropTypes.func,
@@ -77,8 +71,8 @@ class NewForm extends Component {
   };
 
   getItemsField() {
-    const { getFieldDecorator } = this.props.form;
-    const { physicalStoreId, stockItemsByPhysicalStoreId } = this.props;
+    const { form, physicalStoreId } = this.props;
+    const { getFieldDecorator } = form;
 
     const rules = [
       {
@@ -88,17 +82,17 @@ class NewForm extends Component {
     ];
     return getFieldDecorator("items", { rules })(
       <ItemsList
+        refForm={form}
         inflowLabel="Purchased"
         outflowLabel="Returned"
         physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
     );
   }
 
   render() {
-    const { stockItemsLoading, karkunsListLoading } = this.props;
-    if (stockItemsLoading || karkunsListLoading) return null;
+    const { karkunsListLoading } = this.props;
+    if (karkunsListLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -187,7 +181,6 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: "createPurchaseForm",
     options: {

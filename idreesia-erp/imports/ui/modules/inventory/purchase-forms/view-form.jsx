@@ -12,7 +12,6 @@ import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory"
 import {
   WithKarkuns,
   WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   InputTextField,
@@ -37,8 +36,6 @@ class ViewForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
     formDataLoading: PropTypes.bool,
     purchaseFormById: PropTypes.object,
   };
@@ -49,12 +46,8 @@ class ViewForm extends Component {
   };
 
   getItemsField() {
-    const {
-      purchaseFormById,
-      physicalStoreId,
-      stockItemsByPhysicalStoreId,
-    } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { form, purchaseFormById, physicalStoreId } = this.props;
+    const { getFieldDecorator } = form;
 
     const rules = [
       {
@@ -67,17 +60,17 @@ class ViewForm extends Component {
       initialValue: purchaseFormById.items,
     })(
       <ItemsList
+        refForm={form}
         inflowLabel="Purchased"
         outflowLabel="Returned"
         physicalStoreId={physicalStoreId}
-        stockItemsByPhysicalStore={stockItemsByPhysicalStoreId}
       />
     );
   }
 
   render() {
-    const { stockItemsLoading, formDataLoading, purchaseFormById } = this.props;
-    if (stockItemsLoading || formDataLoading) {
+    const { formDataLoading, purchaseFormById } = this.props;
+    if (formDataLoading) {
       return null;
     }
 
@@ -142,7 +135,6 @@ const formQuery = gql`
         quantity
         isInflow
         price
-        itemTypeName
       }
       refReceivedBy {
         _id
@@ -161,7 +153,6 @@ export default compose(
   Form.create(),
   WithKarkuns(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {

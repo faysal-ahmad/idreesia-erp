@@ -72,17 +72,12 @@ class List extends Component {
           _id,
           physicalStoreId,
           approvedOn,
-          refStockItem: { itemTypeFormattedName, itemTypeImageId },
+          refStockItem: { formattedName, imageId },
         } = record;
         const path = approvedOn
           ? paths.stockAdjustmentsViewFormPath(physicalStoreId, _id)
           : paths.stockAdjustmentsEditFormPath(physicalStoreId, _id);
-        return getNameWithImageRenderer(
-          _id,
-          itemTypeImageId,
-          itemTypeFormattedName,
-          path
-        );
+        return getNameWithImageRenderer(_id, imageId, formattedName, path);
       },
     },
     {
@@ -368,8 +363,8 @@ const listQuery = gql`
         approvedOn
         refStockItem {
           _id
-          itemTypeFormattedName
-          itemTypeImageId
+          formattedName
+          imageId
         }
         refAdjustedBy {
           _id

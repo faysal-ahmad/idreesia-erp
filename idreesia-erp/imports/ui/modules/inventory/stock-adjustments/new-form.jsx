@@ -6,12 +6,8 @@ import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
-  WithPhysicalStoreId,
-  WithStockItemsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
-import {
-  AutoCompleteField,
   DateField,
   InputNumberField,
   RadioGroupField,
@@ -20,16 +16,10 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { StockItemField } from "/imports/ui/modules/inventory/stock-items/field";
 
 const FormStyle = {
   width: "800px",
-};
-
-const OptionStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  width: "100%",
 };
 
 class NewForm extends Component {
@@ -37,9 +27,6 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-
-    stockItemsLoading: PropTypes.bool,
-    stockItemsByPhysicalStoreId: PropTypes.array,
 
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
@@ -63,7 +50,7 @@ class NewForm extends Component {
       (
         err,
         {
-          stockItemId,
+          stockItem,
           adjustmentDate,
           adjustedBy,
           quantity,
@@ -77,7 +64,7 @@ class NewForm extends Component {
         createStockAdjustment({
           variables: {
             physicalStoreId,
-            stockItemId,
+            stockItemId: stockItem._id,
             adjustmentDate,
             adjustedBy: adjustedBy._id,
             quantity,
@@ -96,28 +83,18 @@ class NewForm extends Component {
   };
 
   render() {
-    const { stockItemsLoading, stockItemsByPhysicalStoreId } = this.props;
-    if (stockItemsLoading) return null;
-
-    const { getFieldDecorator } = this.props.form;
+    const { form, physicalStoreId } = this.props;
+    const { getFieldDecorator } = form;
 
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
-        <AutoCompleteField
-          data={stockItemsByPhysicalStoreId}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ itemTypeFormattedName }) => itemTypeFormattedName}
-          fieldName="stockItemId"
-          fieldLabel="Name"
+        <StockItemField
+          physicalStoreId={physicalStoreId}
+          fieldName="stockItem"
+          placeholder="Stock Item"
           required
-          requiredMessage="Please input a name for the stock item."
+          requiredMessage="Please select a stock item."
           getFieldDecorator={getFieldDecorator}
-          optionRenderer={(text, dataObj) => (
-            <div key={dataObj.stockItemId} style={OptionStyle}>
-              {dataObj.itemTypeFormattedName}
-              <span>{dataObj.currentStockLevel} Available</span>
-            </div>
-          )}
         />
 
         <RadioGroupField
@@ -202,7 +179,6 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
-  WithStockItemsByPhysicalStore(),
   graphql(formMutation, {
     name: "createStockAdjustment",
     options: {

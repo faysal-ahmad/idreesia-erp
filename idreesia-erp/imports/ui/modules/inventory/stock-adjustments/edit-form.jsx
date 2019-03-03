@@ -88,7 +88,7 @@ class EditForm extends Component {
         <InputTextField
           fieldName="stockItemId"
           fieldLabel="Name"
-          initialValue={stockAdjustmentById.refStockItem.itemTypeFormattedName}
+          initialValue={stockAdjustmentById.refStockItem.formattedName}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -158,8 +158,8 @@ const formQuery = gql`
       adjustmentReason
       refStockItem {
         _id
-        itemTypeName
-        itemTypeFormattedName
+        name
+        formattedName
       }
       refAdjustedBy {
         _id
@@ -196,8 +196,8 @@ const formMutation = gql`
       adjustmentReason
       refStockItem {
         _id
-        itemTypeName
-        itemTypeFormattedName
+        name
+        formattedName
       }
       refAdjustedBy {
         _id

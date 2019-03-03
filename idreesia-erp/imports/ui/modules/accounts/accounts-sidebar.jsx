@@ -22,7 +22,10 @@ class AccountsSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
     const companyId = item.props["parent-key"];
 
-    if (key.startsWith("vouchers")) {
+    if (key.startsWith("account-heads")) {
+      setActiveSubModuleName(SubModuleNames.accountHeads);
+      history.push(paths.accountHeadsPath(companyId));
+    } else if (key.startsWith("vouchers")) {
       setActiveSubModuleName(SubModuleNames.vouchers);
       history.push(paths.vouchersPath(companyId));
     } else if (key === "data-imports") {
@@ -47,6 +50,12 @@ class AccountsSidebar extends Component {
             </span>
           }
         >
+          <Menu.Item
+            parent-key={company._id}
+            key={`account-heads-${company._id}`}
+          >
+            Account Heads
+          </Menu.Item>
           <Menu.Item parent-key={company._id} key={`vouchers-${company._id}`}>
             Vouchers
           </Menu.Item>

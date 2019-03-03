@@ -15,5 +15,5 @@ type AccountHead {
 }
 
 extend type Query {
-  allAccountHeads(companyId: String!): [AccountHead]
+  accountHeadsByCompanyId(companyId: String!): [AccountHead]
 }

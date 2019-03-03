@@ -17,9 +17,10 @@ class ListContainer extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+    setBreadcrumbs: PropTypes.func,
+
     companyId: PropTypes.string,
     company: PropTypes.object,
-    setBreadcrumbs: PropTypes.func,
   };
 
   state = {

@@ -3,7 +3,8 @@ import { Switch, Route } from "react-router-dom";
 
 import { default as paths } from "./submodule-paths";
 import { DataImportsList, DataImportsNewForm } from "./data-imports";
-import { VouchersNewForm, VouchersEditForm, VouchersList } from "./vouchers";
+import { VouchersList } from "./vouchers";
+import { AccountHeadsList } from "./account-heads";
 
 const AccountsRouter = () => (
   <Switch>
@@ -11,13 +12,10 @@ const AccountsRouter = () => (
     <Route path={paths.dataImportsPath} component={DataImportsList} />
 
     <Route
-      path={paths.vouchersNewFormPath(":companyId")}
-      component={VouchersNewForm}
+      path={paths.accountHeadsPath(":companyId")}
+      component={AccountHeadsList}
     />
-    <Route
-      path={paths.vouchersEditFormPath(":companyId")}
-      component={VouchersEditForm}
-    />
+
     <Route path={paths.vouchersPath(":companyId")} component={VouchersList} />
   </Switch>
 );

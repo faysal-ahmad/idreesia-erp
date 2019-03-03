@@ -55,7 +55,7 @@ class ViewForm extends Component {
       <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
         <InputTextField
           fieldName="stockItemId"
-          fieldLabel="Name"
+          fieldLabel="Stock Item Name"
           initialValue={stockAdjustmentById.refStockItem.formattedName}
           getFieldDecorator={getFieldDecorator}
         />

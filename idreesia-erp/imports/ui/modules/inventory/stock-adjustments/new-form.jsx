@@ -91,7 +91,7 @@ class NewForm extends Component {
         <StockItemField
           physicalStoreId={physicalStoreId}
           fieldName="stockItem"
-          placeholder="Stock Item"
+          fieldLabel="Stock Item Name"
           required
           requiredMessage="Please select a stock item."
           getFieldDecorator={getFieldDecorator}
@@ -100,6 +100,7 @@ class NewForm extends Component {
         <RadioGroupField
           fieldName="adjustment"
           fieldLabel="Adjustment"
+          required
           options={[
             { label: "Increase by", value: "inflow" },
             { label: "Decrease by", value: "outflow" },

@@ -87,7 +87,7 @@ class EditForm extends Component {
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="stockItemId"
-          fieldLabel="Name"
+          fieldLabel="Stock Item Name"
           initialValue={stockAdjustmentById.refStockItem.formattedName}
           getFieldDecorator={getFieldDecorator}
         />

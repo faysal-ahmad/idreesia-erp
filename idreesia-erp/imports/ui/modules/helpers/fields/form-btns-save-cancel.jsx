@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Button, Form, Row } from 'antd';
-import { noop } from 'lodash';
+import React from "react";
+import PropTypes from "prop-types";
+import { Button, Form, Row } from "antd";
+import { noop } from "lodash";
 
 const buttonItemLayout = {
-  wrapperCol: { span: 14, offset: 4 },
+  wrapperCol: { span: 16, offset: 4 },
 };
 
 /**
@@ -13,11 +13,16 @@ const buttonItemLayout = {
 const FormButtonsSaveCancel = ({ handleCancel }) => (
   <Form.Item {...buttonItemLayout}>
     <Row type="flex" justify="end">
-      <Button type="default" onClick={handleCancel}>
+      <Button
+        size="large"
+        type="default"
+        icon="close-circle"
+        onClick={handleCancel}
+      >
         Cancel
       </Button>
       &nbsp;
-      <Button type="primary" htmlType="submit">
+      <Button size="large" type="primary" icon="save" htmlType="submit">
         Save
       </Button>
     </Row>

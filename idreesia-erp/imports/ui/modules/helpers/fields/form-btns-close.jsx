@@ -4,7 +4,7 @@ import { Button, Form, Row } from "antd";
 import { noop } from "lodash";
 
 const buttonItemLayout = {
-  wrapperCol: { span: 14, offset: 4 },
+  wrapperCol: { span: 16, offset: 4 },
 };
 
 /**
@@ -13,7 +13,12 @@ const buttonItemLayout = {
 const FormButtonsClose = ({ handleClose }) => (
   <Form.Item {...buttonItemLayout}>
     <Row type="flex" justify="end">
-      <Button type="default" onClick={handleClose}>
+      <Button
+        size="large"
+        type="default"
+        icon="close-circle"
+        onClick={handleClose}
+      >
         Close
       </Button>
     </Row>

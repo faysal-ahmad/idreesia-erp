@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, Icon, Input, Button, message } from "antd";
 
 const loginFormButtonStyle = {
-  width: '100%',
+  width: "100%",
 };
 
 class LoginForm extends Component {
@@ -22,6 +22,8 @@ class LoginForm extends Component {
         Meteor.loginWithPassword(userName, password, error => {
           if (!error) {
             history.push(location.pathname);
+          } else {
+            message.error(error.message, 5);
           }
         });
       }
@@ -33,13 +35,13 @@ class LoginForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input your username.',
+        message: "Please input your username.",
       },
     ];
-    return getFieldDecorator('userName', { rules })(
+    return getFieldDecorator("userName", { rules })(
       <Input
         placeholder="Username"
-        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+        prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
       />
     );
   }
@@ -49,14 +51,14 @@ class LoginForm extends Component {
     const rules = [
       {
         required: true,
-        message: 'Please input your password.',
+        message: "Please input your password.",
       },
     ];
-    return getFieldDecorator('password', { rules })(
+    return getFieldDecorator("password", { rules })(
       <Input
         type="password"
         placeholder="Password"
-        prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+        prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
       />
     );
   }

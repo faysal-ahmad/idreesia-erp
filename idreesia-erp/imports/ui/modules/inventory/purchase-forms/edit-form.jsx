@@ -102,6 +102,7 @@ class EditForm extends Component {
     })(
       <ItemsList
         refForm={form}
+        defaultLabel="Purchased"
         inflowLabel="Purchased"
         outflowLabel="Returned"
         physicalStoreId={physicalStoreId}

@@ -59,6 +59,7 @@ class ViewForm extends Component {
       <ItemsList
         readOnly
         refForm={form}
+        defaultLabel="Issued"
         inflowLabel="Returned"
         outflowLabel="Issued"
         physicalStoreId={physicalStoreId}

@@ -20,6 +20,7 @@ class ItemsList extends Component {
     value: PropTypes.array,
     onChange: PropTypes.func,
     physicalStoreId: PropTypes.string,
+    defaultLabel: PropTypes.string,
     inflowLabel: PropTypes.string,
     outflowLabel: PropTypes.string,
     loading: PropTypes.bool,
@@ -47,12 +48,15 @@ class ItemsList extends Component {
   }
 
   handleRemoveItemClicked = () => {
+    debugger;
     const { stockItems, selectedStockItemIds } = this.state;
     if (selectedStockItemIds && selectedStockItemIds.length > 0) {
-      const updatedItemStocks = filter(
-        stockItems,
-        stockItem => selectedStockItemIds.indexOf(stockItem.stockItemId) === -1
-      );
+      const updatedItemStocks = filter(stockItems, stockItem => {
+        const rowKey = `${stockItem.stockItemId}_${
+          stockItem.isInflow ? "inflow" : "outflow"
+        }`;
+        return selectedStockItemIds.indexOf(rowKey) === -1;
+      });
 
       const state = Object.assign({}, this.state, {
         stockItems: updatedItemStocks,
@@ -68,7 +72,7 @@ class ItemsList extends Component {
   };
 
   handleAddItem = () => {
-    const { refForm } = this.props;
+    const { refForm, outflowLabel } = this.props;
     const { referenceStockItems } = this.state;
     const fieldValues = refForm.getFieldsValue();
     const { stockItem, quantity, status } = fieldValues;
@@ -80,12 +84,22 @@ class ItemsList extends Component {
       return;
     }
 
+    const isInflow = status === "inflow";
+    if (!isInflow && stockItem.currentStockLevel < quantity) {
+      message.error(
+        `You current stock level is ${
+          stockItem.currentStockLevel
+        }. You cannot have ${quantity} ${outflowLabel}.`,
+        5
+      );
+      return;
+    }
+
     // Save this stock item in the state so that we can use it to display the label
     referenceStockItems.push(stockItem);
     debugger;
 
     const { stockItems } = this.state;
-    const isInflow = status === "inflow";
     // If we have an existing item against this itemStockId, then add the
     // count to the existing item instead of adding a new item.
     const existingItem = find(stockItems, {
@@ -153,6 +167,7 @@ class ItemsList extends Component {
       refForm,
       readOnly,
       physicalStoreId,
+      defaultLabel,
       inflowLabel,
       outflowLabel,
     } = this.props;
@@ -162,6 +177,7 @@ class ItemsList extends Component {
       <ItemForm
         refForm={refForm}
         physicalStoreId={physicalStoreId}
+        defaultLabel={defaultLabel}
         inflowLabel={inflowLabel}
         outflowLabel={outflowLabel}
         handleAddItem={this.handleAddItem}

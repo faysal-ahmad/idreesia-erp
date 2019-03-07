@@ -17,6 +17,7 @@ const ButtonContainerStyle = {
 const ItemForm = ({
   refForm: { getFieldDecorator },
   physicalStoreId,
+  defaultLabel,
   inflowLabel,
   outflowLabel,
   handleAddItem,
@@ -44,7 +45,7 @@ const ItemForm = ({
       ]}
       getDataValue={({ value }) => value}
       getDataText={({ label }) => label}
-      initialValue="inflow"
+      initialValue={defaultLabel === inflowLabel ? "inflow" : "outflow"}
       fieldLayout={null}
       fieldName="status"
       getFieldDecorator={getFieldDecorator}
@@ -61,6 +62,7 @@ ItemForm.propTypes = {
   refForm: PropTypes.object,
   physicalStoreId: PropTypes.string,
   stockItems: PropTypes.array,
+  defaultLabel: PropTypes.string,
   inflowLabel: PropTypes.string,
   outflowLabel: PropTypes.string,
   handleAddItem: PropTypes.func,

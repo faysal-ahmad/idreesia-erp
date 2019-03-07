@@ -120,6 +120,7 @@ class EditForm extends Component {
     })(
       <ItemsList
         refForm={form}
+        defaultLabel="Issued"
         inflowLabel="Returned"
         outflowLabel="Issued"
         physicalStoreId={physicalStoreId}

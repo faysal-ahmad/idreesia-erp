@@ -102,6 +102,7 @@ class NewForm extends Component {
     return getFieldDecorator("items", { rules })(
       <ItemsList
         refForm={form}
+        defaultLabel="Issued"
         inflowLabel="Returned"
         outflowLabel="Issued"
         physicalStoreId={physicalStoreId}

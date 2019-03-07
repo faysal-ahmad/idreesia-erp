@@ -3,6 +3,7 @@ type IssuanceForm {
   issueDate: String
   issuedBy: String
   issuedTo: String
+  handedOverTo: String
   locationId: String
   physicalStoreId: String
   items: [ItemWithQuantity]
@@ -42,6 +43,7 @@ extend type Mutation {
     issueDate: String!
     issuedBy: String!
     issuedTo: String!
+    handedOverTo: String
     physicalStoreId: String!
     locationId: String
     items: [ItemWithQuantityInput]
@@ -53,6 +55,7 @@ extend type Mutation {
     issueDate: String!
     issuedBy: String!
     issuedTo: String!
+    handedOverTo: String
     physicalStoreId: String!
     locationId: String
     items: [ItemWithQuantityInput]

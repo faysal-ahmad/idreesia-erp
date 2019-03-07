@@ -14,6 +14,7 @@ import {
 import {
   DateField,
   FormButtonsSaveCancel,
+  InputTextField,
   InputTextAreaField,
   TreeSelectField,
 } from "/imports/ui/modules/helpers/fields";
@@ -52,7 +53,18 @@ class NewForm extends Component {
     e.preventDefault();
     const { form, history, physicalStoreId, createIssuanceForm } = this.props;
     form.validateFields(
-      (err, { issueDate, issuedBy, issuedTo, locationId, items, notes }) => {
+      (
+        err,
+        {
+          issueDate,
+          issuedBy,
+          issuedTo,
+          handedOverTo,
+          locationId,
+          items,
+          notes,
+        }
+      ) => {
         if (err) return;
 
         createIssuanceForm({
@@ -60,6 +72,7 @@ class NewForm extends Component {
             issueDate,
             issuedBy: issuedBy._id,
             issuedTo: issuedTo._id,
+            handedOverTo,
             physicalStoreId,
             locationId,
             items,
@@ -127,6 +140,14 @@ class NewForm extends Component {
           placeholder="Issued To / Returned By"
           getFieldDecorator={getFieldDecorator}
         />
+
+        <InputTextField
+          fieldName="handedOverTo"
+          fieldLabel="Handed Over To / By"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <TreeSelectField
           data={locationsByPhysicalStoreId}
           fieldName="locationId"
@@ -157,6 +178,7 @@ const formMutation = gql`
     $issueDate: String!
     $issuedBy: String!
     $issuedTo: String!
+    $handedOverTo: String
     $physicalStoreId: String!
     $locationId: String
     $items: [ItemWithQuantityInput]
@@ -166,6 +188,7 @@ const formMutation = gql`
       issueDate: $issueDate
       issuedBy: $issuedBy
       issuedTo: $issuedTo
+      handedOverTo: $handedOverTo
       physicalStoreId: $physicalStoreId
       locationId: $locationId
       items: $items

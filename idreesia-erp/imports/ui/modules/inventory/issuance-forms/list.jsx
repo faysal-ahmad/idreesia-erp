@@ -80,6 +80,13 @@ class List extends Component {
       title: "Issued To",
       dataIndex: "refIssuedTo.name",
       key: "refIssuedTo.name",
+      render: (text, record) => {
+        if (record.handedOverTo) {
+          return `${record.handedOverTo} - [on behalf of ${text}]`;
+        }
+
+        return text;
+      },
     },
     {
       title: "For Location",
@@ -364,6 +371,7 @@ const listQuery = gql`
         issueDate
         issuedBy
         issuedTo
+        handedOverTo
         locationId
         physicalStoreId
         approvedOn

@@ -14,6 +14,7 @@ import {
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
+  InputTextField,
   FormButtonsSaveCancel,
   InputTextAreaField,
   TreeSelectField,
@@ -59,7 +60,18 @@ class EditForm extends Component {
       issuanceFormById: { _id },
     } = this.props;
     form.validateFields(
-      (err, { issueDate, issuedBy, issuedTo, locationId, items, notes }) => {
+      (
+        err,
+        {
+          issueDate,
+          issuedBy,
+          issuedTo,
+          handedOverTo,
+          locationId,
+          items,
+          notes,
+        }
+      ) => {
         if (err) return;
 
         const updatedItems = items.map(
@@ -75,6 +87,7 @@ class EditForm extends Component {
             issueDate,
             issuedBy: issuedBy._id,
             issuedTo: issuedTo._id,
+            handedOverTo,
             locationId,
             physicalStoreId,
             items: updatedItems,
@@ -155,6 +168,13 @@ class EditForm extends Component {
           initialValue={issuanceFormById.refIssuedTo}
           getFieldDecorator={getFieldDecorator}
         />
+        <InputTextField
+          fieldName="handedOverTo"
+          fieldLabel="Handed Over To / By"
+          required={false}
+          initialValue={issuanceFormById.handedOverTo}
+          getFieldDecorator={getFieldDecorator}
+        />
         <TreeSelectField
           data={locationsByPhysicalStoreId}
           fieldName="locationId"
@@ -188,6 +208,7 @@ const formMutation = gql`
     $issueDate: String!
     $issuedBy: String!
     $issuedTo: String!
+    $handedOverTo: String
     $locationId: String
     $physicalStoreId: String!
     $items: [ItemWithQuantityInput]
@@ -198,6 +219,7 @@ const formMutation = gql`
       issueDate: $issueDate
       issuedBy: $issuedBy
       issuedTo: $issuedTo
+      handedOverTo: $handedOverTo
       locationId: $locationId
       physicalStoreId: $physicalStoreId
       items: $items
@@ -232,6 +254,7 @@ const formQuery = gql`
       issueDate
       issuedBy
       issuedTo
+      handedOverTo
       locationId
       physicalStoreId
       approvedOn

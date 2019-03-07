@@ -101,6 +101,12 @@ class ViewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
+          fieldName="handedOverTo"
+          fieldLabel="Handed Over To / By"
+          initialValue={issuanceFormById.handedOverTo}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
           fieldName="locationId"
           fieldLabel="For Location"
           initialValue={
@@ -136,6 +142,7 @@ const formQuery = gql`
       issueDate
       issuedBy
       issuedTo
+      handedOverTo
       physicalStoreId
       approvedOn
       items {

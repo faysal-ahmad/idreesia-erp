@@ -15,6 +15,10 @@ export default new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
+  handedOverTo: {
+    type: String,
+    optional: true,
+  },
   locationId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,

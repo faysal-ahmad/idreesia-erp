@@ -5,7 +5,6 @@ import { compose } from "react-apollo";
 import { sortBy } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-// import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithCompanyId,
   WithCompany,

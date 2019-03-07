@@ -44,7 +44,7 @@ const ItemForm = ({
       ]}
       getDataValue={({ value }) => value}
       getDataText={({ label }) => label}
-      initialValue={inflowLabel}
+      initialValue="inflow"
       fieldLayout={null}
       fieldName="status"
       getFieldDecorator={getFieldDecorator}

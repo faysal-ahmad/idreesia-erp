@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
-import { Button, Table } from "antd";
+import { Button, Table, message } from "antd";
 import { filter, find } from "lodash";
 
 import { default as ItemForm } from "./item-form";
@@ -70,8 +70,15 @@ class ItemsList extends Component {
   handleAddItem = () => {
     const { refForm } = this.props;
     const { referenceStockItems } = this.state;
-    const { stockItem, quantity, status } = refForm.getFieldsValue();
-    if (!stockItem || !quantity || !status) return;
+    const fieldValues = refForm.getFieldsValue();
+    const { stockItem, quantity, status } = fieldValues;
+    if (!stockItem || !quantity || !status) {
+      message.info(
+        "You need to select a stock item, and specify the quantity.",
+        5
+      );
+      return;
+    }
 
     // Save this stock item in the state so that we can use it to display the label
     referenceStockItems.push(stockItem);

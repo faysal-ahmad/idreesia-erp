@@ -27,6 +27,6 @@ extend type Mutation {
     _id: String!
     name: String!
     description: String
-    tartingBalance: Float
+    startingBalance: Float
   ): AccountHead
 }

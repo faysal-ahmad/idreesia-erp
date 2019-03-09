@@ -42,8 +42,7 @@ class ListFilter extends Component {
     });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleSubmit = () => {
     const { form, setPageParams } = this.props;
 
     form.validateFields((err, { categoryId, name }) => {
@@ -63,7 +62,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form layout="horizontal">
             <SelectField
               data={itemCategoriesByPhysicalStoreId}
               getDataValue={category => category._id}
@@ -88,7 +87,7 @@ class ListFilter extends Component {
                   Reset
                 </Button>
                 &nbsp;
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" onClick={this.handleSubmit}>
                   Search
                 </Button>
               </Row>

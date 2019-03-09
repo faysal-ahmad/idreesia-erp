@@ -15,12 +15,14 @@ export default () => WrappedComponent => {
     query accountHeadsByCompanyId($companyId: String!) {
       accountHeadsByCompanyId(companyId: $companyId) {
         _id
+        companyId
         name
         description
         type
         nature
         number
         parent
+        hasChildren
       }
     }
   `;

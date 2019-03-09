@@ -33,6 +33,13 @@ class ListContainer extends Component {
     voucherIdForDetails: null,
   };
 
+  componentDidMount() {
+    const { company, setBreadcrumbs } = this.props;
+    if (company) {
+      setBreadcrumbs([company.name, "Accounts", "Vouchers", "List"]);
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const { company, setBreadcrumbs } = this.props;
     if (prevProps.company !== company) {

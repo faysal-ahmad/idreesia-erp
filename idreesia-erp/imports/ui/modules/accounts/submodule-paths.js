@@ -10,11 +10,14 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Account Heads Routes
   // *************************************************************************************
-  static accountHeadsPath(companyId) {
+  static accountHeadsPath(companyId = ":companyId") {
     return `${ModulePaths.accounts}/${companyId}/account-heads`;
   }
-  static accountHeadsEditFormPath(companyId) {
-    return `${SubModulePaths.accountHeadsPath(companyId)}/:accountHeadId`;
+  static accountHeadsEditFormPath(
+    companyId = ":companyId",
+    accountHeadId = ":accountHeadId"
+  ) {
+    return `${SubModulePaths.accountHeadsPath(companyId)}/${accountHeadId}`;
   }
 
   // *************************************************************************************

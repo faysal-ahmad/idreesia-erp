@@ -67,7 +67,7 @@ export default class InputNumberField extends Component {
     }
 
     return getFieldDecorator(fieldName, { initialValue })(
-      <InputNumber disabled />
+      <InputNumber disabled={disabled} />
     );
   }
 

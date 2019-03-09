@@ -7,6 +7,9 @@ type AccountHead {
   nature: String
   number: Float
   parent: Float
+  startingBalance: Float
+
+  hasChildren: Boolean
 
   createdAt: String
   createdBy: String
@@ -15,5 +18,15 @@ type AccountHead {
 }
 
 extend type Query {
+  accountHeadById(_id: String!): AccountHead
   accountHeadsByCompanyId(companyId: String!): [AccountHead]
+}
+
+extend type Mutation {
+  updateAccountHead(
+    _id: String!
+    name: String!
+    description: String
+    tartingBalance: Float
+  ): AccountHead
 }

@@ -4,6 +4,11 @@ export default class Permissions {
   // ****************************************************************************************
   static ACCOUNTS_IMPORT_DATA = "accounts-import-data";
 
+  static ACCOUNTS_VIEW_ACCOUNT_HEADS = "accounts-view-account-heads";
+  static ACCOUNTS_MANAGE_ACCOUNT_HEADS = "accounts-manage-account-heads";
+
+  static ACCOUNTS_VIEW_BALANCE_SHEET = "accounts-view-balance-sheet";
+
   static ACCOUNTS_VIEW_VOUCHERS = "accounts-view-vouchers";
   static ACCOUNTS_MANAGE_VOUCHERS = "accounts-manage-vouchers";
 

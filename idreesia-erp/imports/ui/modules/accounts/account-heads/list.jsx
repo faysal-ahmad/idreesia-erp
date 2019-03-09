@@ -1,14 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import { Table } from "antd";
 import { compose } from "react-apollo";
 import { sortBy } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithAccountHeadsByCompany } from "./composers";
+import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithCompanyId,
   WithCompany,
-  WithAccountHeadsByCompany,
 } from "/imports/ui/modules/accounts/common/composers";
 
 class List extends Component {
@@ -29,11 +31,16 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => {
-        if (record.children) {
-          return <b>{`[${record.number}] ${record.name}`}</b>;
+        let nameText = `[${record.number}] ${record.name}`;
+        if (record.hasChildren) {
+          nameText = <b>{`${nameText}`}</b>;
         }
 
-        return `[${record.number}] ${record.name}`;
+        const url = paths.accountHeadsEditFormPath(
+          record.companyId,
+          record._id
+        );
+        return <Link to={url}>{nameText}</Link>;
       },
     },
     {
@@ -47,6 +54,13 @@ class List extends Component {
       key: "description",
     },
   ];
+
+  componentDidMount() {
+    const { company, setBreadcrumbs } = this.props;
+    if (company) {
+      setBreadcrumbs([company.name, "Accounts", "Account Heads", "List"]);
+    }
+  }
 
   componentDidUpdate(prevProps) {
     const { company, setBreadcrumbs } = this.props;

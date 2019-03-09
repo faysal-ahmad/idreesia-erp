@@ -1,33 +1,37 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
   companyId: {
-    type: String,
+    type: String
   },
   name: {
-    type: String,
+    type: String
   },
   description: {
     type: String,
-    optional: true,
+    optional: true
   },
   type: {
     type: String,
-    optional: true,
+    optional: true
   },
   nature: {
     type: String,
-    optional: true,
+    optional: true
   },
   number: {
-    type: String,
+    type: String
   },
   parent: {
     type: String,
-    optional: true,
+    optional: true
   },
+  startingBalance: {
+    type: Number,
+    optional: true
+  }
 })
   .extend(identifiable)
   .extend(timestamps);

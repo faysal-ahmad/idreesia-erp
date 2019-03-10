@@ -1,17 +1,20 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
-import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { compose } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
+import { JobTypes } from "meteor/idreesia-common/constants";
+import { Formats } from "meteor/idreesia-common/constants";
 import { WithCompanies } from "/imports/ui/modules/accounts/common/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 import {
   MonthField,
   SelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+
+import { WithAdminJobsMutation } from "./composers";
 
 class NewForm extends Component {
   static propTypes = {
@@ -20,28 +23,32 @@ class NewForm extends Component {
     form: PropTypes.object,
     companiesListLoading: PropTypes.bool,
     allCompanies: PropTypes.array,
-    createDataImport: PropTypes.func,
+    createAdminJob: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.financialAccountsPath);
+    history.push(paths.adminJobsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createDataImport, history } = this.props;
-    form.validateFields((err, { companyId, importType, importForMonth }) => {
+    const { form, createAdminJob, history } = this.props;
+    form.validateFields((err, { companyId, importForMonth }) => {
       if (err) return;
-      createDataImport({
+      const jobType = JobTypes.VOUCHERS_IMPORT;
+      const jobDetails = {
+        companyId,
+        importForMonth: importForMonth.format(Formats.DATE_FORMAT),
+      };
+      createAdminJob({
         variables: {
-          companyId,
-          importType,
-          importForMonth,
+          jobType,
+          jobDetails: JSON.parse(jobDetails),
         },
       })
         .then(() => {
-          history.push(paths.dataImportsPath);
+          history.push(paths.adminJobsPath);
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -65,19 +72,6 @@ class NewForm extends Component {
           requiredMessage="Please select a company."
           getFieldDecorator={getFieldDecorator}
         />
-        <SelectField
-          data={[
-            { value: "account-heads", text: "Account Heads" },
-            { value: "vouchers", text: "Vouchers with Details" },
-          ]}
-          getDataValue={({ value }) => value}
-          getDataText={({ text }) => text}
-          fieldName="importType"
-          fieldLabel="Import Type"
-          required
-          requiredMessage="Please select an import type."
-          getFieldDecorator={getFieldDecorator}
-        />
         <MonthField
           fieldName="importForMonth"
           fieldLabel="For Month"
@@ -89,39 +83,9 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createDataImport(
-    $companyId: String!
-    $importType: String!
-    $importForMonth: String
-  ) {
-    createDataImport(
-      companyId: $companyId
-      importType: $importType
-      importForMonth: $importForMonth
-    ) {
-      _id
-      companyId
-      importType
-      importForMonth
-      status
-      logs
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default compose(
   Form.create(),
   WithCompanies(),
-  graphql(formMutation, {
-    name: "createDataImport",
-    options: {
-      refetchQueries: ["pagedDataImports"],
-    },
-  }),
-  WithBreadcrumbs(["Accounts", "Data Imports", "New"])
+  WithAdminJobsMutation(),
+  WithBreadcrumbs(["Admin", "Admin Jobs", "New Vouchers Import"])
 )(NewForm);

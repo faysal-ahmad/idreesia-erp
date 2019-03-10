@@ -3,6 +3,12 @@ import { Switch, Route } from "react-router-dom";
 
 import { default as paths } from "./submodule-paths";
 import {
+  AdminJobsList,
+  AdminJobsNewAccountsImport,
+  AdminJobsNewVouchersImport,
+  AdminJobsNewAccountsCalculation,
+} from "./admin-jobs";
+import {
   AccountsNewForm,
   AccountsEditForm,
   AccountsList,
@@ -20,6 +26,20 @@ import {
 
 const AdminRouter = () => (
   <Switch>
+    <Route
+      path={paths.adminJobsNewAccountsImportPath}
+      component={AdminJobsNewAccountsImport}
+    />
+    <Route
+      path={paths.adminJobsNewVouchersImportPath}
+      component={AdminJobsNewVouchersImport}
+    />
+    <Route
+      path={paths.adminJobsNewAccountsCalculationPath}
+      component={AdminJobsNewAccountsCalculation}
+    />
+    <Route path={paths.adminJobsPath} component={AdminJobsList} />
+
     <Route path={paths.accountsNewFormPath} component={AccountsNewForm} />
     <Route path={paths.accountsEditFormPath} component={AccountsEditForm} />
     <Route path={paths.accountsPath} component={AccountsList} />

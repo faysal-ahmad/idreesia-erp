@@ -3,37 +3,40 @@ import { Accounts } from "meteor/accounts-base";
 import sql from "mssql";
 import { keyBy } from "lodash";
 
+import { Companies } from "meteor/idreesia-common/collections/accounts";
 import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
 import importAccountHeadsData from "./import-account-heads-data";
 import importVouchersData from "./import-vouchers-data";
 import importVoucherDetailsData from "./import-voucher-details-data";
 
-export default async function importData(dataImport, company) {
+export default async function importData(adminJob, jobDetails, importType) {
   try {
     const adminUser = Accounts.findUserByUsername("erp-admin");
+    const company = Companies.findOne(jobDetails.companyId);
+
     const config = JSON.parse(company.connectivitySettings);
     await sql.connect(config);
 
-    if (dataImport.importType === "account-heads") {
+    if (importType === "account-heads") {
       const importedAccountHeadsCount = await importAccountHeadsData(
         company,
         adminUser
       );
-      dataImport.logs.push(
+      adminJob.logs.push(
         `Imported ${importedAccountHeadsCount} account heads.`
       );
-      dataImport.status = "completed";
-    } else if (dataImport.importType === "vouchers") {
+      adminJob.status = "completed";
+    } else if (importType === "vouchers") {
       const accountHeads = AccountHeads.find({
         companyId: { $eq: company._id },
       }).fetch();
       const accountHeadsMap = keyBy(accountHeads, "number");
       const importedVoucherIds = await importVouchersData(
         company._id,
-        dataImport.importForMonth,
+        jobDetails.importForMonth,
         adminUser
       );
-      dataImport.logs.push(`Imported ${importedVoucherIds.length} vouchers.`);
+      adminJob.logs.push(`Imported ${importedVoucherIds.length} vouchers.`);
 
       let voucherDetailsCount = 0;
       const promises = importedVoucherIds.map(importedVoucherId =>
@@ -48,12 +51,13 @@ export default async function importData(dataImport, company) {
       );
 
       await Promise.all(promises);
-      dataImport.logs.push(`Imported ${voucherDetailsCount} voucher details.`);
-      dataImport.status = "completed";
+      adminJob.logs.push(`Imported ${voucherDetailsCount} voucher details.`);
+      adminJob.status = "completed";
     }
   } catch (err) {
-    dataImport.status = "errored";
-    dataImport.errorDetails = err.message;
+    adminJob.status = "errored";
+    adminJob.errorDetails = err.message;
+    // eslint-disable-next-line no-console
     console.log(err);
   } finally {
     sql.close();

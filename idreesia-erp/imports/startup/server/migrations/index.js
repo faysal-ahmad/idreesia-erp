@@ -8,6 +8,7 @@ import "./4-rename-category-to-account-head";
 import "./5-merge-item-types-stock-items";
 import "./6-move-categories-into-store";
 import "./7-move-locations-into-store";
+import "./8-create-account-indexes";
 
 Migrations.config({
   log: true,

@@ -1,6 +1,6 @@
 import mjmltohtml from "mjml";
 
-import * as JOB_TYPES from "imports/constants/job-types";
+import { JobTypes } from "meteor/idreesia-common/constants/job-types";
 import { PhysicalStores } from "meteor/idreesia-common/collections/inventory";
 
 import Jobs from "imports/collections/jobs";
@@ -44,7 +44,7 @@ export const worker = (job, callback) => {
 };
 
 export default Jobs.processJobs(
-  JOB_TYPES.SEND_EMAILS,
+  JobTypes.SEND_EMAILS,
   {
     pollInterval: 500,
     concurrency: 1,

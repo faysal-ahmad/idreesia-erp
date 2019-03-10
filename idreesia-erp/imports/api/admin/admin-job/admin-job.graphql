@@ -1,0 +1,32 @@
+type AdminJob {
+  _id: String
+  jobType: String
+  jobDetails: String
+  status: String
+  logs: [String]
+  errorDetails: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedAdminJob {
+  totalResults: Int
+  data: [AdminJob]
+}
+
+extend type Query {
+  pagedAdminJobs(
+    jobType: String
+    status: String
+    pageIndex: Float!
+    pageSize: Float!
+  ): PagedAdminJob
+}
+
+extend type Mutation {
+  createAdminJob(jobType: String!, jobDetails: String!): AdminJob
+  removeAdminJob(_id: String!): Int
+}

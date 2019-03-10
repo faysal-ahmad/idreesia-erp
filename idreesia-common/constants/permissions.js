@@ -2,8 +2,6 @@ export default class Permissions {
   // ****************************************************************************************
   // Accounts Module
   // ****************************************************************************************
-  static ACCOUNTS_IMPORT_DATA = "accounts-import-data";
-
   static ACCOUNTS_VIEW_ACCOUNT_HEADS = "accounts-view-account-heads";
   static ACCOUNTS_MANAGE_ACCOUNT_HEADS = "accounts-manage-account-heads";
 
@@ -15,6 +13,9 @@ export default class Permissions {
   // ****************************************************************************************
   // Admin Module
   // ****************************************************************************************
+  static ADMIN_VIEW_ADMIN_JOBS = "admin-view-admin-jobs";
+  static ADMIN_MANAGE_ADMIN_JOBS = "admin-manage-admin-jobs";
+
   static ADMIN_VIEW_ACCOUNTS = "admin-view-accounts";
   static ADMIN_MANAGE_ACCOUNTS = "admin-manage-accounts";
 

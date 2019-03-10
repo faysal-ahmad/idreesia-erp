@@ -2,6 +2,20 @@ import { ModulePaths } from "/imports/ui/constants";
 
 export default class SubModulePaths {
   // *************************************************************************************
+  // Admin Jobs Routes
+  // *************************************************************************************
+  static adminJobsPath = `${ModulePaths.admin}/admin-jobs`;
+  static adminJobsNewAccountsImportPath = `${
+    SubModulePaths.adminJobsPath
+  }/new-accounts-import`;
+  static adminJobsNewVouchersImportPath = `${
+    SubModulePaths.adminJobsPath
+  }/new-vouchers-import`;
+  static adminJobsNewAccountsCalculationPath = `${
+    SubModulePaths.adminJobsPath
+  }/new-accounts-calculation`;
+
+  // *************************************************************************************
   // Data Setup Routes
   // *************************************************************************************
   static accountsPath = `${ModulePaths.admin}/accounts`;

@@ -3,16 +3,11 @@ import SimpleSchema from "simpl-schema";
 import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
-  companyId: {
+  jobType: {
     type: String
   },
-  importType: {
-    type: String,
-    allowedValues: ["categories", "vouchers"]
-  },
-  importForMonth: {
-    type: String,
-    optional: true
+  jobDetails: {
+    type: String
   },
   status: {
     type: String,

@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { capitalize } from "lodash";
-import { Button, Icon, Pagination, Table, Tooltip } from "antd";
+import { Button, Icon, Pagination, Select, Table, Tooltip } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { JobTypes } from "meteor/idreesia-common/constants";
+
+import ListFilter from "./list-filter";
+
 const ToolbarStyle = {
   display: "flex",
   flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "left",
+  justifyContent: "space-between",
   width: "100%",
 };
 
@@ -31,29 +34,33 @@ class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
-    companyId: PropTypes.string,
+    jobType: PropTypes.string,
+    status: PropTypes.string,
     setPageParams: PropTypes.func,
-    handleNewDataImportClicked: PropTypes.func,
+    handleNewClicked: PropTypes.func,
     handleDeleteClicked: PropTypes.func,
 
     loading: PropTypes.bool,
-    pagedDataImports: PropTypes.shape({
+    pagedAdminJobs: PropTypes.shape({
       data: PropTypes.array,
       totalResults: PropTypes.number,
     }),
   };
 
+  state = {
+    selectedJobType: JobTypes.ACCOUNTS_IMPORT,
+  };
+
   columns = [
     {
-      title: "Company",
-      dataIndex: "refCompany.name",
-      key: "refCompany.name",
+      title: "Job Type",
+      dataIndex: "jobtype",
+      key: "jobtype",
     },
     {
-      title: "Import Type",
-      dataIndex: "importType",
-      key: "importType",
-      render: text => capitalize(text),
+      title: "Job Details",
+      dataIndex: "jobDetails",
+      key: "jobDetails",
     },
     {
       title: "Created On",
@@ -120,18 +127,50 @@ class List extends Component {
     });
   };
 
-  getTableHeader = () => {
-    const { handleNewDataImportClicked } = this.props;
+  handleNewClicked = () => {
+    const { selectedJobType } = this.state;
+    const { handleNewClicked } = this.props;
+    handleNewClicked(selectedJobType);
+  };
 
+  getTableHeader = () => {
+    const { jobType, status, setPageParams } = this.props;
     return (
       <div style={ToolbarStyle}>
-        <Button
-          type="primary"
-          icon="plus-circle-o"
-          onClick={handleNewDataImportClicked}
-        >
-          New Data Import
-        </Button>
+        <div>
+          <Select
+            defaultValue={this.state.selectedJobType}
+            allowClear={false}
+            onChange={value => {
+              this.setState({
+                selectedJobType: value,
+              });
+            }}
+          >
+            <Select.Option value={JobTypes.ACCOUNTS_IMPORT}>
+              Accounts Import
+            </Select.Option>
+            <Select.Option value={JobTypes.VOUCHERS_IMPORT}>
+              Vouchers Import
+            </Select.Option>
+            <Select.Option value={JobTypes.ACCOUNTS_CALCULATION}>
+              Accounts Calculation
+            </Select.Option>
+          </Select>
+          &nbsp;&nbsp;
+          <Button
+            type="primary"
+            icon="plus-circle-o"
+            onClick={this.handleNewClicked}
+          >
+            Create Admin Job
+          </Button>
+        </div>
+        <ListFilter
+          jobType={jobType}
+          status={status}
+          setPageParams={setPageParams}
+        />
       </div>
     );
   };
@@ -143,7 +182,7 @@ class List extends Component {
     const {
       pageIndex,
       pageSize,
-      pagedDataImports: { totalResults, data },
+      pagedAdminJobs: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
@@ -177,32 +216,29 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query pagedDataImports(
-    $companyId: String
+  query pagedAdminJobs(
+    $jobType: String
+    $status: String
     $pageIndex: Float!
     $pageSize: Float!
   ) {
-    pagedDataImports(
-      companyId: $companyId
+    pagedAdminJobs(
+      jobType: $jobType
+      status: $status
       pageIndex: $pageIndex
       pageSize: $pageSize
     ) {
       totalResults
       data {
         _id
-        companyId
-        importType
-        importForMonth
+        jobType
+        jobDetails
         status
         logs
         createdAt
         createdBy
         updatedAt
         updatedBy
-        refCompany {
-          _id
-          name
-        }
       }
     }
   }
@@ -211,9 +247,10 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ companyId, pageIndex, pageSize }) => ({
+    options: ({ jobType, status, pageIndex, pageSize }) => ({
       variables: {
-        companyId,
+        jobType,
+        status,
         pageIndex,
         pageSize,
       },

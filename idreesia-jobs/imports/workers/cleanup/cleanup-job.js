@@ -1,4 +1,4 @@
-import * as JOB_TYPES from "imports/constants/job-types";
+import { JobTypes } from "meteor/idreesia-common/constants/job-types";
 import { Job } from "meteor/vsivsi:job-collection";
 
 import Jobs from "imports/collections/jobs";
@@ -19,7 +19,7 @@ export const worker = (job, callback) => {
 };
 
 export default Jobs.processJobs(
-  JOB_TYPES.CLEANUP_JOB,
+  JobTypes.CLEANUP_JOB,
   {
     pollInterval: 500,
     concurrency: 1,

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Menu, Icon } from "antd";
+import { Menu } from "antd";
 
 import { GlobalActionsCreator } from "/imports/ui/action-creators";
 import SubModuleNames from "./submodule-names";
@@ -18,7 +18,12 @@ class AdminSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case "accounts":
+      case "admin-jobs":
+        setActiveSubModuleName(SubModuleNames.adminJobs);
+        history.push(paths.adminJobsPath);
+        break;
+
+      case "security-accounts":
         setActiveSubModuleName(SubModuleNames.accounts);
         history.push(paths.accountsPath);
         break;
@@ -46,18 +51,10 @@ class AdminSidebar extends Component {
         style={{ height: "100%", borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
-        <Menu.SubMenu
-          key="setup"
-          title={
-            <span>
-              <Icon type="laptop" />Setup
-            </span>
-          }
-        >
-          <Menu.Item key="accounts">Security Accounts</Menu.Item>
-          <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
-          <Menu.Item key="companies">Companies</Menu.Item>
-        </Menu.SubMenu>
+        <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
+        <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
+        <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
+        <Menu.Item key="companies">Companies</Menu.Item>
       </Menu>
     );
   }

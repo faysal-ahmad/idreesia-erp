@@ -24,6 +24,4 @@ export default new SimpleSchema({
   balance: {
     type: Number
   }
-})
-  .extend(identifiable)
-  .extend(timestamps);
+}).extend(identifiable);

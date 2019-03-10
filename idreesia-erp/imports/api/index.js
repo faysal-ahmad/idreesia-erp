@@ -9,6 +9,12 @@ import AttachmentResolvers from "./common/attachments/resolvers";
 /**
  * Schema and Resolvers for the HR module
  */
+import AdminJobSchema from "./admin/admin-job/admin-job.graphql";
+import AdminJobResolvers from "./admin/admin-job/resolvers";
+
+/**
+ * Schema and Resolvers for the HR module
+ */
 import DutyLocationSchema from "./hr/duty-location/duty-location.graphql";
 import DutyLocationResolvers from "./hr/duty-location/resolvers";
 
@@ -54,9 +60,6 @@ import StockAdjustmentResolvers from "./inventory/stock-adjustment/resolvers";
 import CompanySchema from "./accounts/company/company.graphql";
 import CompanyResolvers from "./accounts/company/resolvers";
 
-import DataImportSchema from "./accounts/data-import/data-import.graphql";
-import DataImportResolvers from "./accounts/data-import/resolvers";
-
 import AccountHeadSchema from "./accounts/account-head/account-head.graphql";
 import AccountHeadResolvers from "./accounts/account-head/resolvers";
 
@@ -84,9 +87,10 @@ const typeDefs = [
 
   AccountHeadSchema,
   CompanySchema,
-  DataImportSchema,
   VoucherSchema,
   VoucherDetailSchema,
+
+  AdminJobSchema,
 ];
 
 const resolvers = merge(
@@ -108,9 +112,10 @@ const resolvers = merge(
 
   AccountHeadResolvers,
   CompanyResolvers,
-  DataImportResolvers,
   VoucherResolvers,
-  VoucherDetailResolvers
+  VoucherDetailResolvers,
+
+  AdminJobResolvers
 );
 
 export { typeDefs, resolvers };

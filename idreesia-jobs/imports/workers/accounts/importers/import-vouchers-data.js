@@ -10,6 +10,7 @@ VOrder
 /* eslint "no-param-reassign": "off" */
 import sql from "mssql";
 import moment from "moment";
+import { Formats } from "meteor/idreesia-common/constants";
 import { Vouchers } from "meteor/idreesia-common/collections/accounts";
 
 export default async function importVouchersData(
@@ -21,13 +22,7 @@ export default async function importVouchersData(
     const importedVoucherIds = [];
     const processRows = rowsToProcess => {
       rowsToProcess.forEach(
-        ({
-          VoucherID,
-          VoucherNo,
-          VoucherDate,
-          VoucherDescription,
-          VOrder,
-        }) => {
+        ({ VoucherID, VoucherNo, VoucherDate, VoucherDescription, VOrder }) => {
           const existingVoucher = Vouchers.findOne({
             companyId,
             externalReferenceId: VoucherID,
@@ -54,10 +49,10 @@ export default async function importVouchersData(
       );
     };
 
-    const startDate = moment(importForMonth)
+    const startDate = moment(importForMonth, Formats.DATE_FORMAT)
       .startOf("month")
       .toDate();
-    const endDate = moment(importForMonth)
+    const endDate = moment(importForMonth, Formats.DATE_FORMAT)
       .endOf("month")
       .toDate();
 
@@ -78,5 +73,5 @@ export default async function importVouchersData(
       .catch(error => {
         reject(error);
       });
-  })
+  });
 }

@@ -28,7 +28,7 @@ class ListContainer extends Component {
   jobTypePathsMap = {
     [JobTypes.ACCOUNTS_IMPORT]: paths.adminJobsNewAccountsImportPath,
     [JobTypes.VOUCHERS_IMPORT]: paths.adminJobsNewVouchersImportPath,
-    [JobTypes.ACCOUNTS_CALCULATIONS]: paths.adminJobsNewAccountsCalculationPath,
+    [JobTypes.ACCOUNTS_CALCULATION]: paths.adminJobsNewAccountsCalculationPath,
   };
 
   setPageParams = pageParams => {

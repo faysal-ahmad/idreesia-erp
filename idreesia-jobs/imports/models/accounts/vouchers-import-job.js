@@ -1,4 +1,4 @@
-import { JobTypes } from "meteor/idreesia-common/constants/job-types";
+import { JobTypes } from "meteor/idreesia-common/constants";
 
 import Job from "../common/job";
 

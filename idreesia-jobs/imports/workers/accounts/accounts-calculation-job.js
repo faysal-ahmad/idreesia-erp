@@ -1,4 +1,5 @@
-import { JobTypes } from "meteor/idreesia-common/constants/job-types";
+import moment from "moment";
+import { Formats, JobTypes } from "meteor/idreesia-common/constants";
 import { AdminJobs } from "meteor/idreesia-common/collections/admin";
 import { calculateAllAccountBalancesFromMonth } from "meteor/idreesia-common/business-logic/accounts";
 
@@ -11,11 +12,11 @@ export const worker = (job, callback) => {
 
   const adminJob = AdminJobs.findOne(adminJobId);
   const jobDetails = JSON.parse(adminJob.jobDetails);
-  const { companyId, startingMoneth } = jobDetails;
+  const { companyId, startingMonth } = jobDetails;
 
   return calculateAllAccountBalancesFromMonth(
     companyId,
-    startingMoneth
+    moment(startingMonth, Formats.DATE_FORMAT)
   ).finally(() => {
     job.done();
     if (callback) {

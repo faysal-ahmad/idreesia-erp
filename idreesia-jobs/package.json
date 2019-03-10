@@ -6,6 +6,7 @@
     "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build/idreesia-jobs"
   },
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "lodash": "^4.17.4",
     "meteor-babel": "^7.2.0",
     "meteor-node-stubs": "^0.4.1",

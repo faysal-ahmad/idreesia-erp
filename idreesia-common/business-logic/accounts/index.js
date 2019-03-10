@@ -1,3 +1,3 @@
 export {
-  default as calculateAccountBalances
-} from "./calculate-account-balances";
+  default as calculateAllAccountBalancesFromMonth
+} from "./calculate-all-account-balances-from-month";

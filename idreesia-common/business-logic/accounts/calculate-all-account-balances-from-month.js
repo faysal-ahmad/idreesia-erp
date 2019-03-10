@@ -2,6 +2,7 @@ import moment from "moment";
 
 import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
 import calculateAccountBalancesForMonth from "./calculate-account-balances-for-month";
+import getAllAccounts from "./get-all-accounts";
 
 async function calculateAllAccountBalancesforMonth(
   companyId,
@@ -19,7 +20,7 @@ export default async function calculateAllAccountBalancesFromMonth(
   companyId,
   startingMonth
 ) {
-  const allAccountHeads = AccountHeads.find({ companyId }).fetch();
+  const allAccountHeads = await getAllAccounts(companyId);
   const numbers = allAccountHeads.map(({ number }) => number);
   const calculationMonth = startingMonth.clone();
   const endMonth = moment()

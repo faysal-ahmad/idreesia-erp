@@ -1,4 +1,3 @@
-import { Mongo } from "meteor/mongo";
 import { AggregatableCollection } from "meteor/idreesia-common/collections";
 import { Voucher as VoucherSchema } from "../../schemas/accounts";
 

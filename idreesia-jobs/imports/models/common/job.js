@@ -1,11 +1,13 @@
+import { values } from "lodash";
 import { Job } from "meteor/vsivsi:job-collection";
 
-import * as JOB_TYPES from "imports/constants/job-types";
+import { JobTypes } from "meteor/idreesia-common/constants";
 import Jobs from "imports/collections/jobs";
 
 export default class extends Job {
   constructor(type, params = {}) {
-    if (!JOB_TYPES[type]) {
+    const jobTypes = values(JobTypes);
+    if (jobTypes.indexOf(type) === -1) {
       throw new Error(`Job of type '${type}' doesn't exist`);
     }
     super(Jobs, type, params);

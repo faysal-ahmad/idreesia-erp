@@ -11,7 +11,7 @@ export default () => WrappedComponent => {
   };
 
   const adminJobsMutation = gql`
-    mutation createAdminJob($jobType: String!, $jobDetails: String) {
+    mutation createAdminJob($jobType: String!, $jobDetails: String!) {
       createAdminJob(jobType: $jobType, jobDetails: $jobDetails) {
         _id
         jobType

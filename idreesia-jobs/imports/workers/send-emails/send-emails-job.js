@@ -1,6 +1,6 @@
 import mjmltohtml from "mjml";
 
-import { JobTypes } from "meteor/idreesia-common/constants/job-types";
+import { JobTypes } from "meteor/idreesia-common/constants";
 import { PhysicalStores } from "meteor/idreesia-common/collections/inventory";
 
 import Jobs from "imports/collections/jobs";
@@ -18,6 +18,7 @@ export const worker = (job, callback) => {
 
     const recepients = [
       { email: "faisal.idreesi@gmail.com", name: "Faisal Ahmad" },
+      { email: "yahyanaeem@gmail.com", name: "Dr. Yahya Naeem" },
       { email: "381hrd@gmail.com", name: "Raheel Khan" },
     ];
 

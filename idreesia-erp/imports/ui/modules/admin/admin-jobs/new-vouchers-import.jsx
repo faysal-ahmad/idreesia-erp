@@ -44,7 +44,7 @@ class NewForm extends Component {
       createAdminJob({
         variables: {
           jobType,
-          jobDetails: JSON.parse(jobDetails),
+          jobDetails: JSON.stringify(jobDetails),
         },
       })
         .then(() => {

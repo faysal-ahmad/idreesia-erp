@@ -1,17 +1,21 @@
 import { JobCollection } from "meteor/vsivsi:job-collection";
 import { isUndefined } from "lodash";
 
-import { JobTypes } from "meteor/idreesia-common/constants/job-types";
-import { CleanupJob } from "imports/models";
-import { SendEmailsJob } from "imports/models";
-import { ImportDataJob } from "imports/models";
+import { JobTypes } from "meteor/idreesia-common/constants";
+import {
+  CleanupJob,
+  SendEmailsJob,
+  AccountsImportJob,
+  VouchersImportJob,
+  AccountsCalculationJob,
+} from "imports/models";
 
 const JobModels = {
   [JobTypes.CLEANUP_JOB]: CleanupJob,
   [JobTypes.SEND_EMAILS]: SendEmailsJob,
-  [JobTypes.ACCOUNTS_IMPORT]: ImportDataJob,
-  [JobTypes.VOUCHERS_IMPORT]: ImportDataJob,
-  [JobTypes.ACCOUNTS_CALCULATION]: ImportDataJob,
+  [JobTypes.ACCOUNTS_IMPORT]: AccountsImportJob,
+  [JobTypes.VOUCHERS_IMPORT]: VouchersImportJob,
+  [JobTypes.ACCOUNTS_CALCULATION]: AccountsCalculationJob,
 };
 
 class Jobs extends JobCollection {

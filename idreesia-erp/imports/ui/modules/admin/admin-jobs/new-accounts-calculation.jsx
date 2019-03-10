@@ -36,7 +36,7 @@ class NewForm extends Component {
     const { form, createAdminJob, history } = this.props;
     form.validateFields((err, { companyId, startingMonth }) => {
       if (err) return;
-      const jobType = JobTypes.VOUCHERS_IMPORT;
+      const jobType = JobTypes.ACCOUNTS_CALCULATION;
       const jobDetails = {
         companyId,
         startingMonth: startingMonth.format(Formats.DATE_FORMAT),
@@ -44,7 +44,7 @@ class NewForm extends Component {
       createAdminJob({
         variables: {
           jobType,
-          jobDetails: JSON.parse(jobDetails),
+          jobDetails: JSON.stringify(jobDetails),
         },
       })
         .then(() => {

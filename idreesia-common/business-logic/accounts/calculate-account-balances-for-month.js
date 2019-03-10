@@ -20,6 +20,9 @@ function accumulateAccountBalancesForMonth(companyId, number, month) {
     companyId,
     number: number
   });
+  if (!accountHead) {
+    console.log(`Account ${number} for ${companyId} not found`);
+  }
   const childAccountHeads = AccountHeads.find({
     companyId,
     parent: number

@@ -3,8 +3,10 @@ import { Accounts } from "meteor/accounts-base";
 import sql from "mssql";
 import { keyBy } from "lodash";
 
-import { Companies } from "meteor/idreesia-common/collections/accounts";
-import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
+import {
+  Companies,
+  AccountHeads,
+} from "meteor/idreesia-common/collections/accounts";
 import importAccountHeadsData from "./import-account-heads-data";
 import importVouchersData from "./import-vouchers-data";
 import importVoucherDetailsData from "./import-voucher-details-data";

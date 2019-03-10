@@ -1,9 +1,9 @@
-import * as JOB_TYPES from "imports/constants/job-types";
+import { JobTypes } from "meteor/idreesia-common/constants";
 import Job from "../common/job";
 
 class CleanupJob extends Job {
   constructor(data = {}) {
-    super(JOB_TYPES.CLEANUP_JOB, data);
+    super(JobTypes.CLEANUP_JOB, data);
   }
 }
 

@@ -15,6 +15,13 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Activity Sheet Routes
+  // *************************************************************************************
+  static activitySheetPath(companyId = ":companyId") {
+    return `${ModulePaths.accounts}/${companyId}/activity-sheet`;
+  }
+
+  // *************************************************************************************
   // Voucher Routes
   // *************************************************************************************
   static vouchersPath(companyId) {

@@ -6,11 +6,11 @@ import { compose } from "react-apollo";
 import { sortBy } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithAccountHeadsByCompany } from "./composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithCompanyId,
   WithCompany,
+  WithAccountHeadsByCompany,
 } from "/imports/ui/modules/accounts/common/composers";
 
 class List extends Component {
@@ -58,14 +58,14 @@ class List extends Component {
   componentDidMount() {
     const { company, setBreadcrumbs } = this.props;
     if (company) {
-      setBreadcrumbs([company.name, "Accounts", "Account Heads", "List"]);
+      setBreadcrumbs([company.name, "Account Heads", "List"]);
     }
   }
 
   componentDidUpdate(prevProps) {
     const { company, setBreadcrumbs } = this.props;
     if (prevProps.company !== company) {
-      setBreadcrumbs([company.name, "Accounts", "Account Heads", "List"]);
+      setBreadcrumbs([company.name, "Account Heads", "List"]);
     }
   }
 

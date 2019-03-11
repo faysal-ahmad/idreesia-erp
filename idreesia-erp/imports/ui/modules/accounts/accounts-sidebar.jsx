@@ -25,6 +25,9 @@ class AccountsSidebar extends Component {
     if (key.startsWith("account-heads")) {
       setActiveSubModuleName(SubModuleNames.accountHeads);
       history.push(paths.accountHeadsPath(companyId));
+    } else if (key.startsWith("activity-sheet")) {
+      setActiveSubModuleName(SubModuleNames.activitySheet);
+      history.push(paths.activitySheetPath(companyId));
     } else if (key.startsWith("vouchers")) {
       setActiveSubModuleName(SubModuleNames.vouchers);
       history.push(paths.vouchersPath(companyId));
@@ -52,6 +55,12 @@ class AccountsSidebar extends Component {
             key={`account-heads-${company._id}`}
           >
             Account Heads
+          </Menu.Item>
+          <Menu.Item
+            parent-key={company._id}
+            key={`activity-sheet-${company._id}`}
+          >
+            Activity Sheet
           </Menu.Item>
           <Menu.Item parent-key={company._id} key={`vouchers-${company._id}`}>
             Vouchers

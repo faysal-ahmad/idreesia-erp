@@ -5,7 +5,7 @@ export default class Permissions {
   static ACCOUNTS_VIEW_ACCOUNT_HEADS = "accounts-view-account-heads";
   static ACCOUNTS_MANAGE_ACCOUNT_HEADS = "accounts-manage-account-heads";
 
-  static ACCOUNTS_VIEW_BALANCE_SHEET = "accounts-view-balance-sheet";
+  static ACCOUNTS_VIEW_ACTIVTY_SHEET = "accounts-view-activity-sheet";
 
   static ACCOUNTS_VIEW_VOUCHERS = "accounts-view-vouchers";
   static ACCOUNTS_MANAGE_VOUCHERS = "accounts-manage-vouchers";

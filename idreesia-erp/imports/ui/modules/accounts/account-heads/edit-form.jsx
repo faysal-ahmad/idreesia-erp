@@ -5,8 +5,12 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithAccountHeadId, WithAccountHeadById } from "./composers";
-import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
+import {
+  WithCompanyId,
+  WithCompany,
+  WithAccountHeadId,
+  WithAccountHeadById,
+} from "/imports/ui/modules/accounts/common/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   InputTextField,
@@ -21,12 +25,28 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    setBreadcrumbs: PropTypes.func,
 
     companyId: PropTypes.string,
+    company: PropTypes.object,
     accountHeadByIdLoading: PropTypes.bool,
     accountHeadById: PropTypes.object,
     updateAccountHead: PropTypes.func,
   };
+
+  componentDidMount() {
+    const { company, setBreadcrumbs } = this.props;
+    if (company) {
+      setBreadcrumbs([company.name, "Account Heads", "Edit"]);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { company, setBreadcrumbs } = this.props;
+    if (prevProps.company !== company) {
+      setBreadcrumbs([company.name, "Account Heads", "Edit"]);
+    }
+  }
 
   handleCancel = () => {
     const { history, companyId } = this.props;
@@ -131,6 +151,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithCompanyId(),
+  WithCompany(),
   WithAccountHeadId(),
   WithAccountHeadById(),
   graphql(formMutation, {

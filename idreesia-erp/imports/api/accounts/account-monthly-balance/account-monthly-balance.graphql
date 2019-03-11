@@ -1,0 +1,17 @@
+type AccountMonthlyBalance {
+  _id: String
+  companyId: String
+  accountHeadId: String
+  monthString: String
+  prevBalance: Float
+  debits: Float
+  credits: Float
+  balance: Float
+}
+
+extend type Query {
+  accountMonthlyBalancesByCompanyId(
+    monthString: String!
+    companyId: String!
+  ): [AccountMonthlyBalance]
+}

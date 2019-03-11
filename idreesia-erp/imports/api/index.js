@@ -63,6 +63,9 @@ import CompanyResolvers from "./accounts/company/resolvers";
 import AccountHeadSchema from "./accounts/account-head/account-head.graphql";
 import AccountHeadResolvers from "./accounts/account-head/resolvers";
 
+import AccountMonthlyBalanceSchema from "./accounts/account-monthly-balance/account-monthly-balance.graphql";
+import AccountMonthlyBalanceResolvers from "./accounts/account-monthly-balance/resolvers";
+
 import VoucherSchema from "./accounts/voucher/voucher.graphql";
 import VoucherResolvers from "./accounts/voucher/resolvers";
 
@@ -89,6 +92,7 @@ const typeDefs = [
   CompanySchema,
   VoucherSchema,
   VoucherDetailSchema,
+  AccountMonthlyBalanceSchema,
 
   AdminJobSchema,
 ];
@@ -114,6 +118,7 @@ const resolvers = merge(
   CompanyResolvers,
   VoucherResolvers,
   VoucherDetailResolvers,
+  AccountMonthlyBalanceResolvers,
 
   AdminJobResolvers
 );

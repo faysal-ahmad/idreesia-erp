@@ -1,5 +1,4 @@
 import { map } from "lodash";
-import moment from "moment";
 
 import {
   AccountHeads,
@@ -7,8 +6,6 @@ import {
   VoucherDetails
 } from "meteor/idreesia-common/collections/accounts";
 import { Formats } from "meteor/idreesia-common/constants";
-
-import getVouchersForMonth from "./get-vouchers-for-month";
 
 /**
  * This methods is used to calculate balances for the non-leaf nodes in the
@@ -20,9 +17,7 @@ function accumulateAccountBalancesForMonth(companyId, number, month) {
     companyId,
     number: number
   });
-  if (!accountHead) {
-    console.log(`Account ${number} for ${companyId} not found`);
-  }
+
   const childAccountHeads = AccountHeads.find({
     companyId,
     parent: number
@@ -41,7 +36,7 @@ function accumulateAccountBalancesForMonth(companyId, number, month) {
   const currentMonthlyBalance = AccountMonthlyBalances.findOne({
     companyId,
     accountHeadId: accountHead._id,
-    monthString: month.clone().format(Formats.DATE_FORMAT)
+    monthString: month.format(Formats.DATE_FORMAT)
   });
 
   const childMonthlyBalances = AccountMonthlyBalances.find({
@@ -88,19 +83,17 @@ function accumulateAccountBalancesForMonth(companyId, number, month) {
 export default async function calculateAccountBalancesForMonth(
   companyId,
   number,
-  month
+  month,
+  voucherIds
 ) {
-  console.log(
-    `Calculating for ${companyId}, ${month.format("YYYY-MM")}, ${number}`
-  );
   const accountHead = AccountHeads.findOne({
     companyId,
     number: number
   });
-  const vouchers = await getVouchersForMonth(companyId, month);
-  const voucherIds = map(vouchers, voucher => voucher._id);
+
   const voucherDetails = VoucherDetails.find({
-    _id: { $in: voucherIds }
+    voucherId: { $in: voucherIds },
+    accountHeadId: { $eq: accountHead._id }
   }).fetch();
 
   const prevMonthlyBalance = AccountMonthlyBalances.findOne({
@@ -115,7 +108,7 @@ export default async function calculateAccountBalancesForMonth(
   const currentMonthlyBalance = AccountMonthlyBalances.findOne({
     companyId,
     accountHeadId: accountHead._id,
-    monthString: month.clone().format(Formats.DATE_FORMAT)
+    monthString: month.format(Formats.DATE_FORMAT)
   });
 
   const monthlyBalance = {
@@ -149,5 +142,9 @@ export default async function calculateAccountBalancesForMonth(
 
   // Once we have calculated the balance for the leaf node, move up the hierarchy and
   // accumulate the balances for the parent nodes
-  accumulateAccountBalancesForMonth(companyId, accountHead.parent, month);
+  accumulateAccountBalancesForMonth(
+    companyId,
+    accountHead.parent,
+    month.clone()
+  );
 }

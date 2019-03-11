@@ -22,7 +22,7 @@ export default async function getVouchersForMonth(companyId, month) {
     {
       $match: {
         voucherDate: {
-          $gte: moment(month, Formats.DATE_FORMAT)
+          $lte: moment(month, Formats.DATE_FORMAT)
             .endOf("month")
             .toDate()
         }

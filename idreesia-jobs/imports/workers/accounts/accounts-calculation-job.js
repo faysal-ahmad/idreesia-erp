@@ -17,12 +17,31 @@ export const worker = (job, callback) => {
   return calculateAllAccountBalancesFromMonth(
     companyId,
     moment(startingMonth, Formats.DATE_FORMAT)
-  ).finally(() => {
-    job.done();
-    if (callback) {
-      callback();
-    }
-  });
+  )
+    .then(() => {
+      AdminJobs.update(adminJobId, {
+        $set: {
+          status: "completed",
+          logs: adminJob.logs,
+          errorDetails: adminJob.errorDetails,
+        },
+      });
+    })
+    .catch(error => {
+      AdminJobs.update(adminJobId, {
+        $set: {
+          status: "errored",
+          logs: adminJob.logs,
+          errorDetails: error.toString(),
+        },
+      });
+    })
+    .finally(() => {
+      job.done();
+      if (callback) {
+        callback();
+      }
+    });
 };
 
 export default Jobs.processJobs(

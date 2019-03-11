@@ -54,8 +54,8 @@ class List extends Component {
   columns = [
     {
       title: "Job Type",
-      dataIndex: "jobtype",
-      key: "jobtype",
+      dataIndex: "jobType",
+      key: "jobType",
     },
     {
       title: "Job Details",

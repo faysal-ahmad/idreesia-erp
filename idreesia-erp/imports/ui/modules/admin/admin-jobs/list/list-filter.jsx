@@ -69,10 +69,12 @@ class ListFilter extends Component {
                   text: JobTypes.VOUCHERS_IMPORT,
                 },
                 {
-                  value: JobTypes.ACCOUNTS_CALCULATIONS,
-                  text: JobTypes.ACCOUNTS_CALCULATIONS,
+                  value: JobTypes.ACCOUNTS_CALCULATION,
+                  text: JobTypes.ACCOUNTS_CALCULATION,
                 },
               ]}
+              getDataValue={({ value }) => value}
+              getDataText={({ text }) => text}
               fieldName="jobType"
               fieldLabel="Job Type"
               fieldLayout={formItemLayout}
@@ -85,8 +87,10 @@ class ListFilter extends Component {
                 { value: "completed", text: "Completed" },
                 { value: "errored", text: "Errored" },
               ]}
-              fieldName="jobType"
-              fieldLabel="Job Type"
+              getDataValue={({ value }) => value}
+              getDataText={({ text }) => text}
+              fieldName="status"
+              fieldLabel="Status"
               fieldLayout={formItemLayout}
               getFieldDecorator={getFieldDecorator}
             />

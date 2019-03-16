@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -157,9 +157,9 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateKarkun',
+    name: "updateKarkun",
     options: {
-      refetchQueries: ['allKarkuns'],
+      refetchQueries: ["pagedKarkuns"],
     },
   }),
   graphql(formQuery, {

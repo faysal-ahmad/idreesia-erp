@@ -164,7 +164,7 @@ export default compose(
   graphql(formMutation, {
     name: "createKarkun",
     options: {
-      refetchQueries: ["allKarkuns"],
+      refetchQueries: ["pagedKarkuns"],
     },
   }),
   WithBreadcrumbs(["HR", "Karkuns", "New"])

@@ -45,25 +45,6 @@ export default {
         userId: { $ne: null },
       }).fetch();
     },
-    allKarkunsWithNoAccounts() {
-      return Karkuns.find({
-        userId: { $eq: null },
-      }).fetch();
-    },
-
-    allKarkuns(
-      obj,
-      params,
-      {
-        /* userId */
-      }
-    ) {
-      // if (!hasOnePermission(userId, [PermissionConstants.HR_VIEW_KARKUNS])) {
-      //  return [];
-      // }
-
-      return Karkuns.find({}).fetch();
-    },
 
     pagedKarkuns(obj, { queryString }) {
       return getKarkuns(queryString);

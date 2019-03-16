@@ -31,8 +31,6 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    karkunsListLoading: PropTypes.bool,
-    allKarkuns: PropTypes.array,
     loading: PropTypes.bool,
     physicalStoreId: PropTypes.string,
     createPurchaseForm: PropTypes.func,
@@ -92,9 +90,6 @@ class NewForm extends Component {
   }
 
   render() {
-    const { karkunsListLoading } = this.props;
-    if (karkunsListLoading) return null;
-
     const { getFieldDecorator } = this.props.form;
 
     return (

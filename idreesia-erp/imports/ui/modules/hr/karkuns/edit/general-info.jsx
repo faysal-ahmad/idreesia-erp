@@ -194,7 +194,7 @@ export default compose(
   graphql(formMutation, {
     name: "updateKarkun",
     options: {
-      refetchQueries: ["allKarkuns"],
+      refetchQueries: ["pagedKarkuns"],
     },
   }),
   graphql(formQuery, {

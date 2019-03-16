@@ -10,7 +10,6 @@ import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
-  WithKarkuns,
   WithPhysicalStoreId,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
@@ -152,7 +151,6 @@ const formQuery = gql`
 
 export default compose(
   Form.create(),
-  WithKarkuns(),
   WithPhysicalStoreId(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),

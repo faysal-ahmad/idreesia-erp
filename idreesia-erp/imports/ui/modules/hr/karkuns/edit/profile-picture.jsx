@@ -80,7 +80,7 @@ export default compose(
   graphql(formMutation, {
     name: "setKarkunProfileImage",
     options: {
-      refetchQueries: ["allKarkuns"],
+      refetchQueries: ["pagedKarkuns"],
     },
   }),
   graphql(formQuery, {

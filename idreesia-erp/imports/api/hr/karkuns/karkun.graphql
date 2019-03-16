@@ -33,8 +33,6 @@ type PagedKarkunType {
 
 extend type Query {
   allKarkunsWithAccounts: [KarkunType]
-  allKarkunsWithNoAccounts: [KarkunType]
-  allKarkuns: [KarkunType]
   pagedKarkuns(queryString: String): PagedKarkunType
   karkunById(_id: String!): KarkunType
   karkunByUserId(userId: String!): KarkunType

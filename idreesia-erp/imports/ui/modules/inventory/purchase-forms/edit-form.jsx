@@ -33,8 +33,6 @@ class EditForm extends Component {
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
-    karkunsListLoading: PropTypes.bool,
-    allKarkuns: PropTypes.array,
     formDataLoading: PropTypes.bool,
     purchaseFormById: PropTypes.object,
     updatePurchaseForm: PropTypes.func,
@@ -112,13 +110,10 @@ class EditForm extends Component {
 
   render() {
     const {
-      karkunsListLoading,
       formDataLoading,
       purchaseFormById,
     } = this.props;
-    if (karkunsListLoading || formDataLoading) {
-      return null;
-    }
+    if (formDataLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 

@@ -1,12 +1,17 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Button, Icon, Table } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Button, Icon, Popconfirm, Table, Tooltip, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
 
 class List extends Component {
   static propTypes = {
@@ -18,35 +23,38 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Karkun name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record) => <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>,
-    },
-    {
-      title: 'CNIC number',
-      dataIndex: 'cnicNumber',
-      key: 'cnicNumber',
-    },
-    {
-      title: 'User name',
-      dataIndex: 'user.username',
-      key: 'username',
-    },
-    {
-      key: 'action',
+      title: "Karkun name",
+      dataIndex: "name",
+      key: "name",
       render: (text, record) => (
-        <span>
-          <a href="javascript:;">
-            <Icon
-              type="delete"
-              style={{ fontSize: 20 }}
-              onClick={() => {
-                this.handleDeleteClicked(record);
-              }}
-            />
-          </a>
-        </span>
+        <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
+      ),
+    },
+    {
+      title: "CNIC number",
+      dataIndex: "cnicNumber",
+      key: "cnicNumber",
+    },
+    {
+      title: "User name",
+      dataIndex: "user.username",
+      key: "username",
+    },
+    {
+      key: "action",
+      render: (text, record) => (
+        <Popconfirm
+          title="Are you sure you want to delete this account?"
+          onConfirm={() => {
+            this.handleDeleteClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Delete">
+            <Icon type="delete" style={IconStyle} />
+          </Tooltip>
+        </Popconfirm>
       ),
     },
   ];
@@ -60,11 +68,11 @@ class List extends Component {
     const { deleteAccount } = this.props;
     deleteAccount({
       variables: {
-        karkunId: record.karkun._id,
-        karkunUserId: record._id,
+        karkunId: record._id,
+        karkunUserId: record.user._id,
       },
     }).catch(error => {
-      console.log(error);
+      message.error(error.message, 5);
     });
   };
 
@@ -78,10 +86,14 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={() => (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Account
-            </Button>
-          )}
+          <Button
+            type="primary"
+            icon="plus-circle-o"
+            onClick={this.handleNewClicked}
+          >
+            New Account
+          </Button>
+        )}
       />
     );
   }
@@ -109,13 +121,13 @@ const listQuery = gql`
 
 export default compose(
   graphql(formMutation, {
-    name: 'deleteAccount',
+    name: "deleteAccount",
     options: {
-      refetchQueries: ['allkarkunsWithAccounts'],
+      refetchQueries: ["allkarkunsWithAccounts"],
     },
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Accounts', 'List'])
+  WithBreadcrumbs(["Admin", "Setup", "Accounts", "List"])
 )(List);

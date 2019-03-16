@@ -8,9 +8,10 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 import {
   InputTextField,
-  SelectField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+
+import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 
 class NewForm extends Component {
   static propTypes = {
@@ -18,7 +19,6 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     createAccount: PropTypes.func,
-    allKarkunsWithNoAccounts: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -29,14 +29,14 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createAccount, history } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields((err, { karkun, userName, password }) => {
       if (err) return;
 
       createAccount({
         variables: {
-          karkunId: fieldsValue.karkunId,
-          userName: fieldsValue.userName,
-          password: fieldsValue.password,
+          karkunId: karkun._id,
+          userName,
+          password,
         },
       })
         .then(() => {
@@ -50,18 +50,14 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allKarkunsWithNoAccounts } = this.props;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <SelectField
-          data={allKarkunsWithNoAccounts}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="karkunId"
-          fieldLabel="Karkun Name"
+        <KarkunField
           required
           requiredMessage="Please select a karkun for creating the account."
+          fieldName="karkun"
+          fieldLabel="Karkun Name"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -104,25 +100,13 @@ const formMutation = gql`
   }
 `;
 
-const listQuery = gql`
-  query allKarkunsWithNoAccounts {
-    allKarkunsWithNoAccounts {
-      _id
-      name
-    }
-  }
-`;
-
 export default compose(
   Form.create(),
   graphql(formMutation, {
     name: "createAccount",
     options: {
-      refetchQueries: ["allkarkunsWithAccounts"],
+      refetchQueries: ["pagedKarkuns"],
     },
-  }),
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
   }),
   WithBreadcrumbs(["Admin", "Setup", "Account", "New"])
 )(NewForm);

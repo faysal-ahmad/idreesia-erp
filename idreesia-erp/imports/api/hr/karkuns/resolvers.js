@@ -217,6 +217,11 @@ export default {
         throw new Error(`User name '${userName}' is already in use.`);
       }
 
+      const existingkarkun = Karkuns.findOne(karkunId);
+      if (existingkarkun.userId) {
+        throw new Error(`This karkun already has a user account.`);
+      }
+
       const newUserId = Accounts.createUser({
         username: userName,
         password,

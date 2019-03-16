@@ -1,53 +1,55 @@
 import moment from "moment";
 import { map } from "lodash";
 
-import { Vouchers } from "meteor/idreesia-common/collections/accounts";
+import { Formats } from "meteor/idreesia-common/constants";
+import {
+  AccountHeads,
+  Vouchers
+} from "meteor/idreesia-common/collections/accounts";
 import calculateAccountBalancesForMonth from "./calculate-account-balances-for-month";
-import getAllAccounts from "./get-all-accounts";
-import getVouchersForMonth from "./get-vouchers-for-month";
 
-async function calculateAllAccountBalancesforMonth(
-  companyId,
-  numbers,
-  calculationMonth
-) {
-  const vouchers = await getVouchersForMonth(companyId, calculationMonth);
-  const voucherIds = map(vouchers, voucher => voucher._id);
-  return Promise.all(
-    numbers.map(number =>
-      calculateAccountBalancesForMonth(
-        companyId,
-        number,
-        calculationMonth,
-        voucherIds
-      )
-    )
-  );
+/**
+ *
+ * @param {string} companyId
+ * @param {moment} month
+ */
+function getVouchersForMonth(companyId, month) {
+  return Vouchers.find({
+    companyId: { $eq: companyId },
+    voucherDate: {
+      $gte: month.startOf("month").toDate()
+    },
+    voucherDate: {
+      $lte: month.endOf("month").toDate()
+    }
+  }).fetch();
 }
 
-export default async function calculateAllAccountBalancesFromMonth(
+/**
+ *
+ * @param {string} companyId
+ * @param {moment} startingMonth
+ */
+export default function calculateAllAccountBalancesFromMonth(
   companyId,
   startingMonth
 ) {
-  const allAccountHeads = await getAllAccounts(companyId);
-  const numbers = allAccountHeads.map(({ number }) => number);
+  const allAccountHeads = AccountHeads.find({ companyId }).fetch();
+
   const calculationMonth = startingMonth.clone();
   const endMonth = moment()
     .add(1, "months")
     .startOf("month");
 
-  const promises = [];
   while (calculationMonth.isBefore(endMonth)) {
-    promises.push(
-      calculateAllAccountBalancesforMonth(
-        companyId,
-        numbers,
-        calculationMonth.clone()
-      )
+    const vouchers = getVouchersForMonth(companyId, calculationMonth.clone());
+    const voucherIds = map(vouchers, voucher => voucher._id);
+    calculateAccountBalancesForMonth(
+      allAccountHeads,
+      calculationMonth.clone(),
+      voucherIds
     );
 
     calculationMonth.add(1, "months");
   }
-
-  return promises;
 }

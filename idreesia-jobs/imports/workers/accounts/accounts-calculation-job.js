@@ -14,34 +14,37 @@ export const worker = (job, callback) => {
   const jobDetails = JSON.parse(adminJob.jobDetails);
   const { companyId, startingMonth } = jobDetails;
 
-  return calculateAllAccountBalancesFromMonth(
-    companyId,
-    moment(startingMonth, Formats.DATE_FORMAT)
-  )
-    .then(() => {
-      AdminJobs.update(adminJobId, {
-        $set: {
-          status: "completed",
-          logs: adminJob.logs,
-          errorDetails: adminJob.errorDetails,
-        },
-      });
-    })
-    .catch(error => {
-      AdminJobs.update(adminJobId, {
-        $set: {
-          status: "errored",
-          logs: adminJob.logs,
-          errorDetails: error.toString(),
-        },
-      });
-    })
-    .finally(() => {
-      job.done();
-      if (callback) {
-        callback();
-      }
+  try {
+    calculateAllAccountBalancesFromMonth(
+      companyId,
+      moment(startingMonth, Formats.DATE_FORMAT)
+    );
+
+    AdminJobs.update(adminJobId, {
+      $set: {
+        status: "completed",
+        logs: adminJob.logs,
+        errorDetails: adminJob.errorDetails,
+      },
     });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    AdminJobs.update(adminJobId, {
+      $set: {
+        status: "errored",
+        logs: adminJob.logs,
+        errorDetails: error.toString(),
+      },
+    });
+  } finally {
+    // eslint-disable-next-line no-console
+    console.log(`--> Calculating account balances completed`);
+    job.done();
+    if (callback) {
+      callback();
+    }
+  }
 };
 
 export default Jobs.processJobs(

@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { Button, DatePicker, Table } from "antd";
 import { compose } from "react-apollo";
 import { keyBy, sortBy } from "lodash";
+import numeral from "numeral";
 
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithAccountHeadsByCompany,
   WithAccountMonthlyBalancesByCompany,
@@ -40,37 +39,36 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => {
-        let nameText = `[${record.number}] ${record.name}`;
+        const nameText = `[${record.number}] ${record.name}`;
         if (record.hasChildren) {
-          nameText = <b>{`${nameText}`}</b>;
+          return <b>{`${nameText}`}</b>;
         }
-
-        const url = paths.accountHeadsEditFormPath(
-          record.companyId,
-          record._id
-        );
-        return <Link to={url}>{nameText}</Link>;
+        return nameText;
       },
     },
     {
       title: "Previous Balance",
       dataIndex: "prevBalance",
       key: "prevBalance",
+      render: text => numeral(text).format("0,0"),
     },
     {
       title: "Credits",
       dataIndex: "credits",
       key: "credits",
+      render: text => numeral(text).format("0,0"),
     },
     {
       title: "Debits",
       dataIndex: "debits",
       key: "debits",
+      render: text => numeral(text).format("0,0"),
     },
     {
       title: "Balance",
       dataIndex: "balance",
       key: "balance",
+      render: text => numeral(text).format("0,0"),
     },
   ];
 

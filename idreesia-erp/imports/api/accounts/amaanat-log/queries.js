@@ -11,11 +11,7 @@ export default function getAmaanatLogs(queryString) {
 
   const {
     fromCity,
-    hasSadqaPortion,
-    hasHadiaPortion,
-    hasZakaatPortion,
-    hasLangarPortion,
-    hasOtherPortion,
+    hasPortion,
     startDate,
     endDate,
     pageIndex = "0",
@@ -30,62 +26,38 @@ export default function getAmaanatLogs(queryString) {
     });
   }
 
-  const conditions = [];
-  if (hasSadqaPortion === "true") {
-    conditions.push({
-      $ne: ["sadqaPortion", null],
-    });
-  }
-
-  if (hasHadiaPortion === "true") {
-    conditions.push({
-      $ne: ["hadiaPortion", null],
-    });
-  }
-
-  if (hasZakaatPortion === "true") {
-    conditions.push({
-      $ne: ["zakaatPortion", null],
-    });
-  }
-
-  if (hasLangarPortion === "true") {
-    conditions.push({
-      $ne: ["langarPortion", null],
-    });
-  }
-
-  if (hasOtherPortion === "true") {
-    conditions.push({
-      $ne: ["otherPortion", null],
-    });
-  }
-
-  if (conditions.length > 0) {
-    pipeline.push({
-      $project: {
-        _id: 1,
-        fromCity: 1,
-        receivedDate: 1,
-        totalAmount: 1,
-        hadiaPortion: 1,
-        sadqaPortion: 1,
-        zakaatPortion: 1,
-        langarPortion: 1,
-        otherPortion: 1,
-        otherPortionDescription: 1,
-        createdAt: 1,
-        createdBy: 1,
-        updatedAt: 1,
-        updatedBy: 1,
-        result: { $or: conditions },
-      },
-    });
-    pipeline.push({
-      $match: {
-        result: { $eq: true },
-      },
-    });
+  if (hasPortion) {
+    if (hasPortion === "hasHadiaPortion") {
+      pipeline.push({
+        $match: {
+          hadiaPortion: { $exists: true, $ne: null },
+        },
+      });
+    } else if (hasPortion === "hasSadqaPortion") {
+      pipeline.push({
+        $match: {
+          sadqaPortion: { $exists: true, $ne: null },
+        },
+      });
+    } else if (hasPortion === "hasZakaatPortion") {
+      pipeline.push({
+        $match: {
+          zakaatPortion: { $exists: true, $ne: null },
+        },
+      });
+    } else if (hasPortion === "hasLangarPortion") {
+      pipeline.push({
+        $match: {
+          langarPortion: { $exists: true, $ne: null },
+        },
+      });
+    } else if (hasPortion === "hasOtherPortion") {
+      pipeline.push({
+        $match: {
+          otherPortion: { $exists: true, $ne: null },
+        },
+      });
+    }
   }
 
   if (startDate) {
@@ -111,6 +83,7 @@ export default function getAmaanatLogs(queryString) {
     });
   }
 
+  console.log(JSON.stringify(pipeline));
   const countingPipeline = pipeline.concat({
     $count: "total",
   });

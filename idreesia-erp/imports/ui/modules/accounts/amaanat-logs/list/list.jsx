@@ -35,11 +35,7 @@ class List extends Component {
     pageSize: PropTypes.number,
     queryString: PropTypes.string,
     fromCity: PropTypes.string,
-    hasHadiaPortion: PropTypes.bool,
-    hasSadqaPortion: PropTypes.bool,
-    hasZakaatPortion: PropTypes.bool,
-    hasLangarPortion: PropTypes.bool,
-    hasOtherPortion: PropTypes.bool,
+    hasPortion: PropTypes.string,
     startDate: PropTypes.object,
     endDate: PropTypes.object,
     setPageParams: PropTypes.func,
@@ -189,11 +185,7 @@ class List extends Component {
   getTableHeader = () => {
     const {
       fromCity,
-      hasHadiaPortion,
-      hasSadqaPortion,
-      hasZakaatPortion,
-      hasLangarPortion,
-      hasOtherPortion,
+      hasPortion,
       startDate,
       endDate,
       setPageParams,
@@ -214,11 +206,7 @@ class List extends Component {
         {newButton}
         <ListFilter
           fromCity={fromCity}
-          hasHadiaPortion={hasHadiaPortion}
-          hasSadqaPortion={hasSadqaPortion}
-          hasZakaatPortion={hasZakaatPortion}
-          hasLangarPortion={hasLangarPortion}
-          hasOtherPortion={hasOtherPortion}
+          hasPortion={hasPortion}
           startDate={startDate}
           endDate={endDate}
           setPageParams={setPageParams}

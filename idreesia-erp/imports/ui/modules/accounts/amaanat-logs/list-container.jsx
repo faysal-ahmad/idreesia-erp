@@ -17,11 +17,7 @@ class ListContainer extends Component {
     pageIndex: 0,
     pageSize: 10,
     fromCity: null,
-    hasHadiaPortion: true,
-    hasSadqaPortion: true,
-    hasZakaatPortion: true,
-    hasLangarPortion: true,
-    hasOtherPortion: true,
+    hasPortion: null,
     startDate: null,
     endDate: null,
   };
@@ -47,17 +43,13 @@ class ListContainer extends Component {
       pageIndex,
       pageSize,
       fromCity,
-      hasHadiaPortion,
-      hasSadqaPortion,
-      hasZakaatPortion,
-      hasLangarPortion,
-      hasOtherPortion,
+      hasPortion,
       startDate,
       endDate,
     } = this.state;
 
-    const queryString = `?fromCity=${fromCity ||
-      ""}&hasHadiaPortion=${hasHadiaPortion}&hasSadqaPortion=${hasSadqaPortion}&hasZakaatPortion=${hasZakaatPortion}&hasLangarPortion=${hasLangarPortion}&hasOtherPortion=${hasOtherPortion}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    const queryString = `?fromCity=${fromCity || ""}&hasPortion=${hasPortion ||
+      ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
     return (
       <List
@@ -65,11 +57,7 @@ class ListContainer extends Component {
         pageIndex={pageIndex}
         pageSize={pageSize}
         fromCity={fromCity}
-        hasHadiaPortion={hasHadiaPortion}
-        hasSadqaPortion={hasSadqaPortion}
-        hasZakaatPortion={hasZakaatPortion}
-        hasLangarPortion={hasLangarPortion}
-        hasOtherPortion={hasOtherPortion}
+        hasPortion={hasPortion}
         startDate={startDate}
         endDate={endDate}
         setPageParams={this.setPageParams}

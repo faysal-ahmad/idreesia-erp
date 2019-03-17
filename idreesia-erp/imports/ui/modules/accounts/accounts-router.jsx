@@ -5,6 +5,11 @@ import { default as paths } from "./submodule-paths";
 import { VouchersList } from "./vouchers";
 import { AccountHeadsList, AccountHeadsEditForm } from "./account-heads";
 import { ActivitySheetList } from "./activity-sheet";
+import {
+  AmaanatLogsList,
+  AmaanatLogsNewForm,
+  AmaanatLogsEditForm,
+} from "./amaanat-logs";
 
 const AccountsRouter = () => (
   <Switch>
@@ -23,6 +28,13 @@ const AccountsRouter = () => (
     />
 
     <Route path={paths.vouchersPath(":companyId")} component={VouchersList} />
+
+    <Route path={paths.amaanatLogsNewFormPath} component={AmaanatLogsNewForm} />
+    <Route
+      path={paths.amaanatLogsEditFormPath()}
+      component={AmaanatLogsEditForm}
+    />
+    <Route path={paths.amaanatLogsPath} component={AmaanatLogsList} />
   </Switch>
 );
 

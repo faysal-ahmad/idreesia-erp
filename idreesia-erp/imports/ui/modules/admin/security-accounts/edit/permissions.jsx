@@ -62,8 +62,22 @@ const permissionsData = [
     key: "module-accounts",
     children: [
       {
-        title: "Import Data",
-        key: PermissionConstants.ACCOUNTS_IMPORT_DATA,
+        title: "Account Heads",
+        key: "module-accounts-account-heads",
+        children: [
+          {
+            title: "View Account Heads",
+            key: PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
+          },
+          {
+            title: "Manage Account Heads",
+            key: PermissionConstants.ACCOUNTS_ACCOUNT_HEADS,
+          },
+        ],
+      },
+      {
+        title: "View Activity Sheet",
+        key: PermissionConstants.ACCOUNTS_VIEW_ACTIVTY_SHEET,
       },
       {
         title: "Vouchers",
@@ -76,6 +90,20 @@ const permissionsData = [
           {
             title: "Manage Vouchers",
             key: PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
+          },
+        ],
+      },
+      {
+        title: "Amaanat Logs",
+        key: "module-accounts-amaanat-logs",
+        children: [
+          {
+            title: "View Amaanat Logs",
+            key: PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
+          },
+          {
+            title: "Manage Amaanat Logs",
+            key: PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
           },
         ],
       },

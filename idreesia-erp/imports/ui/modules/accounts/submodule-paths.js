@@ -27,4 +27,13 @@ export default class SubModulePaths {
   static vouchersPath(companyId) {
     return `${ModulePaths.accounts}/${companyId}/vouchers`;
   }
+
+  // *************************************************************************************
+  // Amaanat Logs Routes
+  // *************************************************************************************
+  static amaanatLogsPath = `${ModulePaths.accounts}/amaanat-logs`;
+  static amaanatLogsNewFormPath = `${SubModulePaths.amaanatLogsPath}/new`;
+  static amaanatLogsEditFormPath(logId = ":logId") {
+    return `${SubModulePaths.amaanatLogsPath}/${logId}`;
+  }
 }

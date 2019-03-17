@@ -4,11 +4,13 @@ export default class Permissions {
   // ****************************************************************************************
   static ACCOUNTS_VIEW_ACCOUNT_HEADS = "accounts-view-account-heads";
   static ACCOUNTS_MANAGE_ACCOUNT_HEADS = "accounts-manage-account-heads";
-
   static ACCOUNTS_VIEW_ACTIVTY_SHEET = "accounts-view-activity-sheet";
 
   static ACCOUNTS_VIEW_VOUCHERS = "accounts-view-vouchers";
   static ACCOUNTS_MANAGE_VOUCHERS = "accounts-manage-vouchers";
+
+  static ACCOUNTS_VIEW_AMAANAT_LOGS = "accounts-view-amaanat-logs";
+  static ACCOUNTS_MANAGE_AMAANAT_LOGS = "accounts-manage-amaanat-logs";
 
   // ****************************************************************************************
   // Admin Module

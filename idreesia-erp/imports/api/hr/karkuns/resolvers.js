@@ -1,3 +1,4 @@
+import { values } from "lodash";
 import {
   Duties,
   Karkuns,
@@ -34,6 +35,15 @@ export default {
   },
 
   Query: {
+    userById(obj, { _id }) {
+      const user = Meteor.users.findOne(_id);
+      if (user.username !== "erp-admin") return user;
+
+      const adminUser = Object.assign({}, user);
+      adminUser.permissions = values(PermissionConstants);
+      return adminUser;
+    },
+
     allKarkunsWithAccounts(obj, params, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_ACCOUNTS])

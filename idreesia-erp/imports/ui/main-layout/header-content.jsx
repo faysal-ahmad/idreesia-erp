@@ -26,6 +26,7 @@ class HeaderContent extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+    userById: PropTypes.object,
     setActiveModuleName: PropTypes.func,
   };
 
@@ -53,6 +54,24 @@ class HeaderContent extends Component {
     }
   }
 
+  isModuleAccessible = moduleName => {
+    // For a module to be accessible to the user, the user needs to have at least
+    // one permission for that module.
+    const {
+      userById: { permissions },
+    } = this.props;
+
+    const lcModuleName = moduleName.toLowerCase();
+    let isAccessible = false;
+    forEach(permissions, permission => {
+      if (permission.startsWith(lcModuleName)) {
+        isAccessible = true;
+      }
+    });
+
+    return isAccessible;
+  };
+
   render() {
     const menuItems = [];
     const selectedMenuItemKey = [];
@@ -61,12 +80,15 @@ class HeaderContent extends Component {
 
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName, index) => {
-      const modulePath = modulePathsMapping[moduleName];
-      menuItems.push(
-        <Menu.Item key={index.toString()}>{moduleName}</Menu.Item>
-      );
-      if (pathname.startsWith(modulePath)) {
-        selectedMenuItemKey.push(index.toString());
+      const isAccessible = this.isModuleAccessible(moduleName);
+      if (isAccessible) {
+        const modulePath = modulePathsMapping[moduleName];
+        menuItems.push(
+          <Menu.Item key={index.toString()}>{moduleName}</Menu.Item>
+        );
+        if (pathname.startsWith(modulePath)) {
+          selectedMenuItemKey.push(index.toString());
+        }
       }
     });
 

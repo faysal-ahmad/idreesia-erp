@@ -1,6 +1,8 @@
-export class ModuleNames {
-  static admin = 'Admin';
-  static accounts = 'Accounts';
-  static inventory = 'Inventory';
-  static hr = 'HR';
-}
+const ModuleNames = {
+  admin: "Admin",
+  accounts: "Accounts",
+  inventory: "Inventory",
+  hr: "HR",
+};
+
+export default ModuleNames;

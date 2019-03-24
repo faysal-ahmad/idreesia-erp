@@ -24,7 +24,7 @@ export default class DisplayBarcode extends Component {
 
   options = {
     width: 2,
-    height: 100,
+    height: 60,
     format: "CODE128B",
     displayValue: true,
     background: "#ffffff",

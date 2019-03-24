@@ -359,7 +359,7 @@ export default compose(
   graphql(formMutation, {
     name: "setPermissions",
     options: {
-      refetchQueries: ["allkarkunsWithAccounts"],
+      refetchQueries: ["allKarkunsWithAccounts"],
     },
   }),
   graphql(formQuery, {

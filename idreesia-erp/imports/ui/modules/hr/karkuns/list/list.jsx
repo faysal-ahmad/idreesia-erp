@@ -1,10 +1,24 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Button, Pagination, Table } from "antd";
+import {
+  Avatar,
+  Button,
+  Icon,
+  Pagination,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import ListFilter from "./list-filter";
+
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
 
 const ToolbarStyle = {
   display: "flex",
@@ -36,6 +50,7 @@ class List extends Component {
     handleNewClicked: PropTypes.func,
     showAddressColumn: PropTypes.bool,
 
+    deleteKarkun: PropTypes.func,
     loading: PropTypes.bool,
     pagedKarkuns: PropTypes.shape({
       totalResults: PropTypes.number,
@@ -54,7 +69,9 @@ class List extends Component {
       };
 
       if (record.imageId) {
-        const url = Meteor.absoluteUrl(`download-file?attachmentId=${record.imageId}`);
+        const url = Meteor.absoluteUrl(
+          `download-file?attachmentId=${record.imageId}`
+        );
         return (
           <div style={NameDivStyle} onClick={onClickHandler}>
             <Avatar shape="square" size="large" src={url} />
@@ -92,6 +109,24 @@ class List extends Component {
     key: "duties",
   };
 
+  actionsColumn = {
+    key: "action",
+    render: (text, record) => (
+      <Popconfirm
+        title="Are you sure you want to delete this karkun?"
+        onConfirm={() => {
+          this.handleDeleteClicked(record);
+        }}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Tooltip title="Delete">
+          <Icon type="delete" style={IconStyle} />
+        </Tooltip>
+      </Popconfirm>
+    ),
+  };
+
   getColumns = () => {
     const { showAddressColumn } = this.props;
     if (showAddressColumn) {
@@ -100,6 +135,7 @@ class List extends Component {
         this.cnicColumn,
         this.addressColumn,
         this.dutiesColumn,
+        this.actionsColumn,
       ];
     }
 
@@ -124,6 +160,17 @@ class List extends Component {
     setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
+    });
+  };
+
+  handleDeleteClicked = record => {
+    const { deleteKarkun } = this.props;
+    deleteKarkun({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
     });
   };
 
@@ -217,7 +264,19 @@ const listQuery = gql`
   }
 `;
 
+const formMutation = gql`
+  mutation deleteKarkun($_id: String!) {
+    deleteKarkun(_id: $_id)
+  }
+`;
+
 export default compose(
+  graphql(formMutation, {
+    name: "deleteKarkun",
+    options: {
+      refetchQueries: ["pagedKarkuns"],
+    },
+  }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ name, cnicNumber, dutyId, pageIndex, pageSize }) => ({

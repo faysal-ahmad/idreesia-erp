@@ -70,6 +70,8 @@ extend type Mutation {
     barcode: String
   ): KarkunType
 
+  deleteKarkun(_id: String!): Int
+
   setKarkunProfileImage(_id: String!, imageId: String!): KarkunType
 
   createAccount(
@@ -77,7 +79,7 @@ extend type Mutation {
     userName: String!
     password: String!
   ): KarkunType
-  deleteAccount(karkunId: String!, karkunUserId: String!): KarkunType
+  deleteAccount(karkunId: String!, karkunUserId: String!): Int
   setPermissions(
     karkunId: String!
     karkunUserId: String!

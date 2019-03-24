@@ -123,7 +123,7 @@ export default compose(
   graphql(formMutation, {
     name: "deleteAccount",
     options: {
-      refetchQueries: ["allkarkunsWithAccounts"],
+      refetchQueries: ["allKarkunsWithAccounts"],
     },
   }),
   graphql(listQuery, {

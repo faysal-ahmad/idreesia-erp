@@ -184,7 +184,7 @@ export default compose(
   graphql(formMutation, {
     name: "setInstanceAccess",
     options: {
-      refetchQueries: ["allkarkunsWithAccounts"],
+      refetchQueries: ["allKarkunsWithAccounts"],
     },
   }),
   graphql(formQuery, {

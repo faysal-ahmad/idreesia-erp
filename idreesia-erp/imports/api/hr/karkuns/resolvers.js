@@ -179,6 +179,18 @@ export default {
       return Karkuns.findOne(_id);
     },
 
+    deleteKarkun(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Karkuns in the System."
+        );
+      }
+
+      return Karkuns.remove(_id);
+    },
+
     setKarkunProfileImage(obj, { _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
@@ -252,8 +264,7 @@ export default {
         },
       });
 
-      Meteor.users.remove(karkunUserId);
-      return Karkuns.findOne(karkunId);
+      return Meteor.users.remove(karkunUserId);
     },
 
     setPermissions(obj, { karkunId, karkunUserId, permissions }, { user }) {

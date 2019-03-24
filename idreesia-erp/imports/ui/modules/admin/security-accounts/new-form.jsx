@@ -105,7 +105,7 @@ export default compose(
   graphql(formMutation, {
     name: "createAccount",
     options: {
-      refetchQueries: ["pagedKarkuns"],
+      refetchQueries: ["pagedKarkuns", "allKarkunsWithAccounts"],
     },
   }),
   WithBreadcrumbs(["Admin", "Setup", "Account", "New"])

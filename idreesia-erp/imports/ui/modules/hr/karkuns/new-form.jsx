@@ -155,7 +155,7 @@ const formMutation = gql`
     $emailAddress: String
     $address: String
     $city: String
-    $counrty: String
+    $country: String
   ) {
     createKarkun(
       firstName: $firstName
@@ -166,7 +166,7 @@ const formMutation = gql`
       emailAddress: $emailAddress
       address: $address
       city: $city
-      counrty: $counrty
+      country: $country
     ) {
       _id
       firstName

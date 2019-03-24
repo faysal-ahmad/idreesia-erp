@@ -11,10 +11,6 @@ export default class DisplayBarcode extends Component {
     disabled: PropTypes.bool,
   };
 
-  static defaultProps = {
-    value: "",
-  };
-
   handleGenerate = () => {
     const { onChange } = this.props;
     const updatedValue = Random.id(8);
@@ -33,11 +29,15 @@ export default class DisplayBarcode extends Component {
 
   render() {
     const { value, disabled } = this.props;
+    const barcodeNode = value ? (
+      <Barcode value={value} {...this.options} />
+    ) : null;
+
     if (!disabled) {
       return (
-        <Row type="flex" justify="start">
-          <Col>
-            <Barcode value={value} {...this.options} />
+        <Row type="flex" justify="start" align="middle" gutter={16}>
+          <Col order={1}>{barcodeNode}</Col>
+          <Col order={2}>
             <Button type="default" onClick={this.handleGenerate}>
               Generate
             </Button>

@@ -7,6 +7,7 @@ import { compose, graphql } from "react-apollo";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   BarcodeField,
+  InputCnicField,
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
@@ -101,7 +102,7 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={karkunById.cnicNumber}

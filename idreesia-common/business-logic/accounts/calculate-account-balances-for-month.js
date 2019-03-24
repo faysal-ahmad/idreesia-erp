@@ -138,7 +138,6 @@ function calculateAccountBalancesForLeafNode(accountHead, month, voucherIds) {
   });
 
   monthlyBalance.balance += monthlyBalance.credits - monthlyBalance.debits;
-  debugger;
 
   if (currentMonthlyBalance) {
     AccountMonthlyBalances.update(currentMonthlyBalance._id, {

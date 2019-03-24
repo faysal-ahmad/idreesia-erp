@@ -168,7 +168,7 @@ class List extends Component {
       accountMonthlyBalancesByCompanyId,
       "accountHeadId"
     );
-    debugger;
+
     // Put the monthly balance values into the account heads
     const accountHeadsWithBalances = accountHeadsByCompanyId.map(
       accountHead => {

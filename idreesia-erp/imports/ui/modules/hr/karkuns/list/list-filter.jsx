@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import {
+  InputCnicField,
   InputTextField,
   SelectField,
 } from "/imports/ui/modules/helpers/fields";
@@ -100,10 +101,11 @@ class ListFilter extends Component {
               initialValue={name}
               getFieldDecorator={getFieldDecorator}
             />
-            <InputTextField
+            <InputCnicField
               fieldName="cnicNumber"
               fieldLabel="CNIC Number"
               required={false}
+              requiredMessage="Please input a valid CNIC number."
               fieldLayout={formItemLayout}
               initialValue={cnicNumber}
               getFieldDecorator={getFieldDecorator}

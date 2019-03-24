@@ -52,7 +52,6 @@ class NewForm extends Component {
       ) => {
         if (err) return;
 
-        debugger;
         updateAmaanatLog({
           variables: {
             _id: amaanatLogById._id,

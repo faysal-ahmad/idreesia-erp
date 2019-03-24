@@ -23,7 +23,6 @@ class ListContainer extends Component {
   };
 
   setPageParams = pageParams => {
-    debugger;
     this.setState(pageParams);
   };
 
@@ -33,7 +32,6 @@ class ListContainer extends Component {
   };
 
   handleEditClicked = amaanatLog => {
-    debugger;
     const { history } = this.props;
     history.push(paths.amaanatLogsEditFormPath(amaanatLog._id));
   };

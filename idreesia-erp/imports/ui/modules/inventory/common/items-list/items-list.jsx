@@ -48,7 +48,6 @@ class ItemsList extends Component {
   }
 
   handleRemoveItemClicked = () => {
-    debugger;
     const { stockItems, selectedStockItemIds } = this.state;
     if (selectedStockItemIds && selectedStockItemIds.length > 0) {
       const updatedItemStocks = filter(stockItems, stockItem => {
@@ -97,7 +96,6 @@ class ItemsList extends Component {
 
     // Save this stock item in the state so that we can use it to display the label
     referenceStockItems.push(stockItem);
-    debugger;
 
     const { stockItems } = this.state;
     // If we have an existing item against this itemStockId, then add the

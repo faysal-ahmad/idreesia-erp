@@ -22,7 +22,6 @@ export default class CaptureBarcode extends Component {
   };
 
   onBarcodeCaptured = code => {
-    debugger;
     this.setState({ showForm: false });
     const { onBarcodeCaptured } = this.props;
     if (onBarcodeCaptured) {

@@ -7,6 +7,7 @@ import { compose, graphql } from "react-apollo";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
+  InputCnicField,
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
@@ -89,7 +90,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           required

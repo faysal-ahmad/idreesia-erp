@@ -33,10 +33,12 @@ export default {
   Mutation: {
     createKarkunDuty(
       obj,
-      { karkunId, dutyId, locationId, startTime, endTime, daysOfWeek },
+      { karkunId, dutyId, locationId, role, startTime, endTime, daysOfWeek },
       { user }
     ) {
-      if (!hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
         throw new Error(
           "You do not have permission to manage Karkun Duties in the System."
         );
@@ -56,6 +58,7 @@ export default {
         karkunId,
         dutyId,
         locationId,
+        role,
         startTime,
         endTime,
         daysOfWeek,
@@ -66,10 +69,21 @@ export default {
 
     updateKarkunDuty(
       obj,
-      { _id, karkunId, dutyId, locationId, startTime, endTime, daysOfWeek },
+      {
+        _id,
+        karkunId,
+        dutyId,
+        locationId,
+        role,
+        startTime,
+        endTime,
+        daysOfWeek,
+      },
       { user }
     ) {
-      if (!hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
         throw new Error(
           "You do not have permission to manage Karkun Duties in the System."
         );
@@ -89,6 +103,7 @@ export default {
           karkunId,
           dutyId,
           locationId,
+          role,
           startTime,
           endTime,
           daysOfWeek,
@@ -99,7 +114,9 @@ export default {
     },
 
     removeKarkunDuty(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
         throw new Error(
           "You do not have permission to manage Karkun Duties in the System."
         );

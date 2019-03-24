@@ -2,11 +2,25 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { Button, Divider, Icon, Table, Modal, message } from "antd";
+import {
+  Button,
+  Divider,
+  Icon,
+  Table,
+  Tooltip,
+  Modal,
+  Popconfirm,
+  message,
+} from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import DutyForm from "./duty-form";
+
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
 
 class DutyParticipation extends Component {
   static propTypes = {
@@ -37,6 +51,12 @@ class DutyParticipation extends Component {
       title: "Duty Name",
       dataIndex: "dutyName",
       key: "dutyName",
+      render: (text, record) => {
+        if (record.role) {
+          return `${text} (${record.role})`;
+        }
+        return text;
+      },
     },
     {
       title: "Location Name",
@@ -71,23 +91,28 @@ class DutyParticipation extends Component {
       key: "action",
       render: (text, record) => (
         <span>
-          <a href="javascript:;">
+          <Tooltip title="Edit">
             <Icon
               type="edit"
+              style={IconStyle}
               onClick={() => {
                 this.handleEditClicked(record);
               }}
             />
-          </a>
+          </Tooltip>
           <Divider type="vertical" />
-          <a href="javascript:;">
-            <Icon
-              type="delete"
-              onClick={() => {
-                this.handleDeleteClicked(record);
-              }}
-            />
-          </a>
+          <Popconfirm
+            title="Are you sure you want to delete this duty?"
+            onConfirm={() => {
+              this.handleDeleteClicked(record);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Delete">
+              <Icon type="delete" style={IconStyle} />
+            </Tooltip>
+          </Popconfirm>
         </span>
       ),
     },
@@ -130,6 +155,7 @@ class DutyParticipation extends Component {
             karkunId,
             dutyId: values.dutyId,
             locationId: values.locationId,
+            role: values.role,
             startTime: values.startTime ? values.startTime.format() : null,
             endTime: values.endTime ? values.endTime.format() : null,
             daysOfWeek: values.weekDays,
@@ -153,6 +179,7 @@ class DutyParticipation extends Component {
             karkunId,
             dutyId: values.dutyId,
             locationId: values.locationId,
+            role: values.role,
             startTime: values.startTime ? values.startTime.format() : null,
             endTime: values.endTime ? values.endTime.format() : null,
             daysOfWeek: values.weekDays,
@@ -236,6 +263,7 @@ const listQuery = gql`
       dutyName
       locationId
       locationName
+      role
       startTime
       endTime
       daysOfWeek
@@ -266,6 +294,7 @@ const createKarkunDutyMutation = gql`
     $karkunId: String!
     $dutyId: String!
     $locationId: String
+    $role: String
     $startTime: String
     $endTime: String
     $daysOfWeek: [String]
@@ -274,6 +303,7 @@ const createKarkunDutyMutation = gql`
       karkunId: $karkunId
       dutyId: $dutyId
       locationId: $locationId
+      role: $role
       startTime: $startTime
       endTime: $endTime
       daysOfWeek: $daysOfWeek
@@ -283,6 +313,7 @@ const createKarkunDutyMutation = gql`
       dutyName
       locationId
       locationName
+      role
       startTime
       endTime
       daysOfWeek
@@ -296,6 +327,7 @@ const updateKarkunDutyMutation = gql`
     $karkunId: String!
     $dutyId: String!
     $locationId: String
+    $role: String
     $startTime: String
     $endTime: String
     $daysOfWeek: [String]
@@ -305,6 +337,7 @@ const updateKarkunDutyMutation = gql`
       karkunId: $karkunId
       dutyId: $dutyId
       locationId: $locationId
+      role: $role
       startTime: $startTime
       endTime: $endTime
       daysOfWeek: $daysOfWeek
@@ -314,6 +347,7 @@ const updateKarkunDutyMutation = gql`
       dutyName
       locationId
       locationName
+      role
       startTime
       endTime
       daysOfWeek

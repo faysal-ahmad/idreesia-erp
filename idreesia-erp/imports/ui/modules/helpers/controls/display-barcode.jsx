@@ -7,7 +7,6 @@ import Barcode from "react-barcode";
 export default class DisplayBarcode extends Component {
   static propTypes = {
     value: PropTypes.string,
-    initialValue: PropTypes.string,
     onChange: PropTypes.func,
     disabled: PropTypes.bool,
   };

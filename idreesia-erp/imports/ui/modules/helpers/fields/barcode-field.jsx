@@ -32,7 +32,7 @@ export default class BarcodeField extends Component {
   };
 
   static defaultProps = {
-    initialValue: null,
+    initialValue: "",
     fieldLayout: formItemLayout,
   };
 

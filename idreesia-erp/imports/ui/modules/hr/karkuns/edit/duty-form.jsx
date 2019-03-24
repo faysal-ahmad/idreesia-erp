@@ -9,6 +9,8 @@ import {
   WeekDaysField,
 } from "/imports/ui/modules/helpers/fields";
 
+import allDutyRoles from "../../all-duty_roles";
+
 const DutyForm = props => {
   const { getFieldDecorator } = props.form;
   const { defaultValues, allDuties, allDutyLocations } = props;
@@ -35,6 +37,17 @@ const DutyForm = props => {
         fieldLabel="Location Name"
         required={false}
         initialValue={defaultValues.locationId}
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <SelectField
+        data={allDutyRoles}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="role"
+        fieldLabel="Role"
+        required={false}
+        initialValue={defaultValues.role}
         getFieldDecorator={getFieldDecorator}
       />
 

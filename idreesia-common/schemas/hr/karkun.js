@@ -21,6 +21,14 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  city: {
+    type: String,
+    optional: true,
+  },
+  country: {
+    type: String,
+    optional: true,
+  },
   contactNumber1: {
     type: String,
     optional: true,
@@ -34,6 +42,10 @@ export default new SimpleSchema({
     optional: true,
   },
   imageId: {
+    type: String,
+    optional: true,
+  },
+  barcode: {
     type: String,
     optional: true,
   },

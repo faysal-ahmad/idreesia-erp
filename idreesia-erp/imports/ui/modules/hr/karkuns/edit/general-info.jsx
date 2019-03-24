@@ -6,6 +6,7 @@ import { compose, graphql } from "react-apollo";
 
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
+  BarcodeField,
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
@@ -43,6 +44,9 @@ class GeneralInfo extends Component {
           contactNumber2,
           emailAddress,
           address,
+          city,
+          country,
+          barcode,
         }
       ) => {
         if (err) return;
@@ -57,6 +61,9 @@ class GeneralInfo extends Component {
             contactNumber2,
             emailAddress,
             address,
+            city,
+            country,
+            barcode,
           },
         })
           .then(() => {
@@ -135,6 +142,30 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <InputTextField
+          fieldName="city"
+          fieldLabel="City"
+          initialValue={karkunById.city}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="country"
+          fieldLabel="Country"
+          initialValue={karkunById.country}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <BarcodeField
+          fieldName="barcode"
+          fieldLabel="Barcode"
+          initialValue={karkunById.barcode}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -152,6 +183,9 @@ const formQuery = gql`
       contactNumber2
       emailAddress
       address
+      city
+      country
+      barcode
     }
   }
 `;
@@ -166,6 +200,9 @@ const formMutation = gql`
     $contactNumber2: String
     $emailAddress: String
     $address: String
+    $city: String
+    $country: String
+    $barcode: String
   ) {
     updateKarkun(
       _id: $_id
@@ -176,6 +213,9 @@ const formMutation = gql`
       contactNumber2: $contactNumber2
       emailAddress: $emailAddress
       address: $address
+      city: $city
+      country: $country
+      barcode: $barcode
     ) {
       _id
       firstName
@@ -185,6 +225,9 @@ const formMutation = gql`
       contactNumber2
       emailAddress
       address
+      city
+      country
+      barcode
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { ModulePaths } from '/imports/ui/constants';
+import { ModulePaths } from "/imports/ui/constants";
 
 export default class SubModulePaths {
   // *************************************************************************************
@@ -10,9 +10,12 @@ export default class SubModulePaths {
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
   static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
-  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
+  static dutyLocationsEditFormPath = `${
+    SubModulePaths.dutyLocationsPath
+  }/:dutyLocationId`;
 
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
+  static karkunsSearchPath = `${SubModulePaths.karkunsPath}/search`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
 }

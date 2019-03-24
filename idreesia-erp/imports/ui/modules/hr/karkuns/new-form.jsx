@@ -39,6 +39,8 @@ class NewForm extends Component {
           contactNumber2,
           emailAddress,
           address,
+          city,
+          country,
         }
       ) => {
         if (err) return;
@@ -52,6 +54,8 @@ class NewForm extends Component {
             contactNumber2,
             emailAddress,
             address,
+            city,
+            country,
           },
         })
           .then(() => {
@@ -122,6 +126,19 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <InputTextField
+          fieldName="city"
+          fieldLabel="City"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="country"
+          fieldLabel="Country"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -137,6 +154,8 @@ const formMutation = gql`
     $contactNumber2: String
     $emailAddress: String
     $address: String
+    $city: String
+    $counrty: String
   ) {
     createKarkun(
       firstName: $firstName
@@ -146,6 +165,8 @@ const formMutation = gql`
       contactNumber2: $contactNumber2
       emailAddress: $emailAddress
       address: $address
+      city: $city
+      counrty: $counrty
     ) {
       _id
       firstName
@@ -155,6 +176,8 @@ const formMutation = gql`
       contactNumber2
       emailAddress
       address
+      city
+      country
     }
   }
 `;

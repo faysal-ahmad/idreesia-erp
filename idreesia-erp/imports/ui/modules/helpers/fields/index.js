@@ -2,6 +2,7 @@ export { default as FormButtonsSaveCancel } from "./form-btns-save-cancel";
 export { default as FormButtonsClose } from "./form-btns-close";
 
 export { default as AutoCompleteField } from "./auto-complete-field";
+export { default as BarcodeField } from "./barcode-field";
 export { default as CheckboxField } from "./checkbox-field";
 export { default as DateField } from "./date-field";
 export { default as InputNumberField } from "./input-number-field";

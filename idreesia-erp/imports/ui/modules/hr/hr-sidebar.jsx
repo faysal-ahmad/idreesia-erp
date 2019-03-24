@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Menu, Icon } from 'antd';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Menu, Icon } from "antd";
 
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
-import SubModuleNames from './submodule-names';
-import { default as paths } from './submodule-paths';
+import { GlobalActionsCreator } from "/imports/ui/action-creators";
+import SubModuleNames from "./submodule-names";
+import { default as paths } from "./submodule-paths";
 
 const { SubMenu } = Menu;
 
@@ -13,26 +13,31 @@ class HRSidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
-    setActiveSubModuleName: PropTypes.func
+    setActiveSubModuleName: PropTypes.func,
   };
 
-  handleMenuItemSelected = ({ item, key, selectedKeys }) => {
+  handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case 'duties':
+      case "duties":
         setActiveSubModuleName(SubModuleNames.duties);
         history.push(paths.dutiesPath);
         break;
 
-      case 'duty-locations':
+      case "duty-locations":
         setActiveSubModuleName(SubModuleNames.dutyLocations);
         history.push(paths.dutyLocationsPath);
         break;
 
-      case 'karkuns':
+      case "karkuns":
         setActiveSubModuleName(SubModuleNames.karkuns);
         history.push(paths.karkunsPath);
+        break;
+
+      case "karkuns-search":
+        setActiveSubModuleName(SubModuleNames.karkuns);
+        history.push(paths.karkunsSearchPath);
         break;
 
       default:
@@ -44,11 +49,12 @@ class HRSidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={['home']}
-        style={{ height: '100%', borderRight: 0 }}
+        defaultSelectedKeys={["home"]}
+        style={{ height: "100%", borderRight: 0 }}
         onSelect={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">Karkuns</Menu.Item>
+        <Menu.Item key="karkuns-search">Karkuns Search</Menu.Item>
         <SubMenu
           key="setup"
           title={
@@ -65,19 +71,11 @@ class HRSidebar extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    activeModuleName: state.activeModuleName
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setActiveSubModuleName: subModuleName => {
-      dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  setActiveSubModuleName: subModuleName => {
+    dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
+  },
+});
 
 const HRSidebarContainer = connect(null, mapDispatchToProps)(HRSidebar);
 export default HRSidebarContainer;

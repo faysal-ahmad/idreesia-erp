@@ -15,7 +15,10 @@ type KarkunType {
   contactNumber2: String
   emailAddress: String
   address: String
+  city: String
+  country: String
   imageId: String
+  barcode: String
   duties: String
   userId: String
   user: UserType
@@ -35,6 +38,7 @@ extend type Query {
   allKarkunsWithAccounts: [KarkunType]
   pagedKarkuns(queryString: String): PagedKarkunType
   karkunById(_id: String!): KarkunType
+  karkunByBarcode(barcode: String!): KarkunType
   karkunByUserId(userId: String!): KarkunType
 }
 
@@ -47,6 +51,9 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     address: String
+    city: String
+    country: String
+    barcode: String
   ): KarkunType
 
   updateKarkun(
@@ -58,6 +65,9 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     address: String
+    city: String
+    country: String
+    barcode: String
   ): KarkunType
 
   setKarkunProfileImage(_id: String!, imageId: String!): KarkunType

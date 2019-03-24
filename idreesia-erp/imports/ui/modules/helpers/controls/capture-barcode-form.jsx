@@ -38,7 +38,7 @@ export default class CaptureBarcodeForm extends Component {
         },
         locator: {
           halfSample: true,
-          patchSize: "medium",
+          patchSize: "large",
         },
         decoder: {
           readers: ["code_128_reader"],

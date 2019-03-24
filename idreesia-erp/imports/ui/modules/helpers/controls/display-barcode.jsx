@@ -18,7 +18,7 @@ export default class DisplayBarcode extends Component {
 
   handleGenerate = () => {
     const { onChange } = this.props;
-    const updatedValue = Random.id();
+    const updatedValue = Random.id(8);
     if (onChange) onChange(updatedValue);
   };
 

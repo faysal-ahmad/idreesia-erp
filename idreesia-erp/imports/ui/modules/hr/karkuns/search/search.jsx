@@ -4,7 +4,7 @@ import { Row } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { CaptureBarcode } from "/imports/ui/modules/helpers/controls";
-import SearchResult from "./search/search-result";
+import SearchResult from "./search-result";
 
 class Search extends Component {
   static propTypes = {
@@ -28,6 +28,7 @@ class Search extends Component {
         <Row>
           <CaptureBarcode onBarcodeCaptured={this.onBarcodeCaptured} />
         </Row>
+        <br />
         <Row>
           <SearchResult barcode={this.state.barcode} />
         </Row>

@@ -19,12 +19,18 @@ import {
   TakePicture,
   UploadAttachment,
 } from "/imports/ui/modules/helpers/controls";
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 
 import AttachmentForm from "./attachment-form";
 
 const IconStyle = {
   cursor: "pointer",
   fontSize: 20,
+};
+
+const NameStyle = {
+  cursor: "pointer",
+  color: "#1890ff",
 };
 
 const FileIconStyle = {
@@ -76,12 +82,19 @@ class AttachmentsList extends Component {
         if (!iconType) iconType = "file";
 
         return (
-          <Row type="flex" align="middle" gutter={6}>
+          <Row
+            type="flex"
+            align="middle"
+            gutter={6}
+            onClick={() => {
+              this.handleNameClicked(record);
+            }}
+          >
             <Col order={1}>
               <Icon type={iconType} style={FileIconStyle} />
             </Col>
-            <Col order={2}>
-              <Tooltip title={record.mimeType}>{record.name}</Tooltip>
+            <Col order={2} style={NameStyle}>
+              {record.name}
             </Col>
           </Row>
         );
@@ -122,6 +135,11 @@ class AttachmentsList extends Component {
       ),
     },
   ];
+
+  handleNameClicked = record => {
+    const url = getDownloadUrl(record._id);
+    window.open(url, "_blank");
+  };
 
   handleEditClicked = record => {
     this.setState({ showForm: true, defaultValues: record });

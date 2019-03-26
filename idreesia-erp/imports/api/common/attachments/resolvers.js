@@ -10,21 +10,39 @@ export default {
   },
 
   Mutation: {
-    createAttachment(obj, { name, mimeType, data }) {
+    createAttachment(obj, { name, description, mimeType, data }, { user }) {
       let updateData = data;
       if (data.startsWith("data:image/jpeg;base64,")) {
         updateData = data.slice(23);
       }
+
+      const date = new Date();
       const attachmentId = Attachments.insert({
         name,
+        description,
         mimeType,
         data: updateData,
+        createdAt: date,
+        createdBy: user._id,
+        updatedAt: date,
+        updatedBy: user._id,
       });
 
       return Attachments.findOne(attachmentId);
     },
-    removeAttachment(obj, { _id }) {
-      return Attachments.remove(_id);
+
+    updateAttachment(obj, { _id, name, description }, { user }) {
+      const date = new Date();
+      Attachments.update(_id, {
+        $set: {
+          name,
+          description,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Attachments.findOne(_id);
     },
   },
 };

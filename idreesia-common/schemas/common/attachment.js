@@ -1,18 +1,22 @@
 import SimpleSchema from "simpl-schema";
 
+import { identifiable, timestamps } from "./";
+
 export default new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id,
-  },
   name: {
     type: String,
-    optional: true,
+    optional: true
+  },
+  description: {
+    type: String,
+    optional: true
   },
   mimeType: {
-    type: String,
+    type: String
   },
   data: {
-    type: String,
-  },
-});
+    type: String
+  }
+})
+  .extend(identifiable)
+  .extend(timestamps);

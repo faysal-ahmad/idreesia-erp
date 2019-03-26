@@ -3,13 +3,21 @@ import PropTypes from "prop-types";
 import { Button, Icon, Modal, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import moment from "moment";
 
 import TakePictureForm from "./take-picture-form";
 
 class TakePicture extends Component {
   static propTypes = {
+    enabled: PropTypes.bool,
+    buttonText: PropTypes.string,
     onPictureTaken: PropTypes.func,
     createAttachment: PropTypes.func,
+  };
+
+  static defaultProps = {
+    enabled: true,
+    buttonText: "Take Picture",
   };
 
   state = {
@@ -30,9 +38,11 @@ class TakePicture extends Component {
     const { createAttachment, onPictureTaken } = this.props;
     const picture = this.pictureForm.state.imageSrc;
     this.setState({ showForm: false });
+    const timestamp = moment();
 
     createAttachment({
       variables: {
+        name: `Image_${timestamp.format("DD-MM-YY_HH:mm")}.jpeg`,
         mimeType: "image/jpeg",
         data: picture,
       },
@@ -47,17 +57,19 @@ class TakePicture extends Component {
   };
 
   render() {
+    const { enabled, buttonText } = this.props;
     const { showForm } = this.state;
 
     return (
       <Fragment>
-        <Button type="default" onClick={this.updatePicture}>
-          <Icon type="instagram" />Take Picture
+        <Button type="default" enabled={enabled} onClick={this.updatePicture}>
+          <Icon type="instagram" />
+          {buttonText}
         </Button>
 
         <Modal
           visible={showForm}
-          title="Take Picture"
+          title={buttonText}
           okText="Save"
           width={400}
           destroyOnClose

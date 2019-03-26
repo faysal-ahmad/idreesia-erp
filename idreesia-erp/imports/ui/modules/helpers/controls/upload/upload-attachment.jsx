@@ -2,7 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Icon, Upload, message } from "antd";
 
-const UploadAttachment = ({ onUploadFinish }) => (
+const UploadAttachment = ({
+  onUploadFinish,
+  enabled = true,
+  buttonText = "Upload Picture",
+}) => (
   <Upload
     name="file"
     action="/upload-file"
@@ -17,13 +21,16 @@ const UploadAttachment = ({ onUploadFinish }) => (
       }
     }}
   >
-    <Button type="default">
-      <Icon type="upload" />Upload Picture
+    <Button type="default" enabled={enabled}>
+      <Icon type="upload" />
+      {buttonText}
     </Button>
   </Upload>
 );
 
 UploadAttachment.propTypes = {
+  enabled: PropTypes.bool,
+  buttonText: PropTypes.string,
   onUploadFinish: PropTypes.func,
 };
 

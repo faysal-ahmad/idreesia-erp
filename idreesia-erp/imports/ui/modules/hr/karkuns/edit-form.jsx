@@ -7,6 +7,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import GeneralInfo from "./edit/general-info";
 import ProfilePicture from "./edit/profile-picture";
 import DutyParticipation from "./edit/duty-participations";
+import AttachmentsList from "./edit/attachments-list";
 
 const EditForm = props => {
   const karkunId = get(props, ["match", "params", "karkunId"], null);
@@ -20,6 +21,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Duty Participation" key="3">
         <DutyParticipation karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="File Attachments" key="4">
+        <AttachmentsList karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

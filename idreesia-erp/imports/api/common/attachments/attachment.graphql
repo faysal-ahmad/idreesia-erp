@@ -1,8 +1,14 @@
 type Attachment {
   _id: String
   name: String
+  description: String
   mimeType: String
   data: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
 }
 
 extend type Query {
@@ -10,6 +16,12 @@ extend type Query {
 }
 
 extend type Mutation {
-  createAttachment(name: String, mimeType: String, data: String!): Attachment
-  removeAttachment(_id: String!): Int
+  createAttachment(
+    name: String
+    description: String
+    mimeType: String
+    data: String!
+  ): Attachment
+
+  updateAttachment(_id: String!, name: String, description: String): Attachment
 }

@@ -49,6 +49,13 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  attachmentIds: {
+    type: Array,
+    optional: true,
+  },
+  'attachmentIds.$': {
+    type: String,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

@@ -4,6 +4,7 @@ import {
   Karkuns,
   KarkunDuties,
 } from "meteor/idreesia-common/collections/hr";
+import { Attachments } from "meteor/idreesia-common/collections/common";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
@@ -31,6 +32,14 @@ export default {
         return dutyNames.join(", ");
       }
       return null;
+    },
+    attachments: karkunType => {
+      const { attachmentIds } = karkunType;
+      if (attachmentIds && attachmentIds.length > 0) {
+        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
+      }
+
+      return [];
     },
   },
 
@@ -219,6 +228,53 @@ export default {
         },
       });
 
+      return Karkuns.findOne(_id);
+    },
+
+    addKarkunAttachment(obj, { _id, attachmentId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
+        throw new Error(
+          "You do not have permission to create Karkuns in the System."
+        );
+      }
+
+      const date = new Date();
+      Karkuns.update(_id, {
+        $addToSet: {
+          attachmentIds: attachmentId,
+        },
+        $set: {
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Karkuns.findOne(_id);
+    },
+
+    removeKarkunAttachment(obj, { _id, attachmentId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
+        throw new Error(
+          "You do not have permission to create Karkuns in the System."
+        );
+      }
+
+      const date = new Date();
+      Karkuns.update(_id, {
+        $pull: {
+          attachmentIds: attachmentId,
+        },
+        $set: {
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      Attachments.remove(attachmentId);
       return Karkuns.findOne(_id);
     },
 

@@ -35,9 +35,10 @@
     "react-input-mask": "^2.0.4",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
-    "react-webcam": "^0.5.0",
+    "react-webcam": "^1.1.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "request": "^2.88.0",
     "simpl-schema": "^1.5.5"
   },
   "devDependencies": {

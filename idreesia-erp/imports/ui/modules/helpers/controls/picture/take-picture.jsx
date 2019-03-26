@@ -1,26 +1,27 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Button, Icon, Modal, message } from "antd";
-import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
 import moment from "moment";
 
+import { getUploadUrl } from "/imports/ui/modules/helpers/misc";
 import TakePictureForm from "./take-picture-form";
 
-class TakePicture extends Component {
+export default class TakePicture extends Component {
   static propTypes = {
-    enabled: PropTypes.bool,
+    disabled: PropTypes.bool,
     buttonText: PropTypes.string,
     onPictureTaken: PropTypes.func,
-    createAttachment: PropTypes.func,
   };
 
   static defaultProps = {
-    enabled: true,
+    disabled: false,
     buttonText: "Take Picture",
   };
 
   state = {
+    value: 1,
+    height: 300,
+    width: 350,
     showForm: false,
   };
 
@@ -34,21 +35,37 @@ class TakePicture extends Component {
     this.setState({ showForm: false });
   };
 
+  uploadAttachment = ({ name, mimeType, data }) =>
+    fetch(getUploadUrl(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        mimeType,
+        data,
+      }),
+    }).then(response => response.json());
+
   handlePictureFormSaved = () => {
-    const { createAttachment, onPictureTaken } = this.props;
-    const picture = this.pictureForm.state.imageSrc;
+    const { onPictureTaken } = this.props;
     this.setState({ showForm: false });
+    let data = this.pictureForm.state.imageSrc;
+    if (!data) return;
+
     const timestamp = moment();
 
-    createAttachment({
-      variables: {
-        name: `Image_${timestamp.format("DD-MM-YY_HH:mm")}.jpeg`,
-        mimeType: "image/jpeg",
-        data: picture,
-      },
+    if (data.startsWith("data:image/jpeg;base64,")) {
+      data = data.slice(23);
+    }
+
+    this.uploadAttachment({
+      name: `Image_${timestamp.format("DD-MM-YY_HH:mm")}.jpeg`,
+      mimeType: "image/jpeg",
+      data,
     })
-      .then(result => {
-        const attachmentId = result.data.createAttachment._id;
+      .then(({ attachmentId }) => {
         onPictureTaken(attachmentId);
       })
       .catch(error => {
@@ -56,13 +73,35 @@ class TakePicture extends Component {
       });
   };
 
+  setDimensions = value => {
+    if (value === 1) {
+      this.setState({
+        value,
+        height: 300,
+        width: 350,
+      });
+    } else if (value === 2) {
+      this.setState({
+        value,
+        height: 600,
+        width: 700,
+      });
+    } else if (value === 3) {
+      this.setState({
+        value,
+        height: 900,
+        width: 1050,
+      });
+    }
+  };
+
   render() {
-    const { enabled, buttonText } = this.props;
-    const { showForm } = this.state;
+    const { disabled, buttonText } = this.props;
+    const { value, height, width, showForm } = this.state;
 
     return (
       <Fragment>
-        <Button type="default" enabled={enabled} onClick={this.updatePicture}>
+        <Button type="default" disabled={disabled} onClick={this.updatePicture}>
           <Icon type="instagram" />
           {buttonText}
         </Button>
@@ -70,13 +109,17 @@ class TakePicture extends Component {
         <Modal
           visible={showForm}
           title={buttonText}
+          width={width + 50}
           okText="Save"
-          width={400}
           destroyOnClose
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >
           <TakePictureForm
+            value={value}
+            height={height}
+            width={width}
+            setDimensions={this.setDimensions}
             ref={f => {
               this.pictureForm = f;
             }}
@@ -86,15 +129,3 @@ class TakePicture extends Component {
     );
   }
 }
-
-const formMutation = gql`
-  mutation createAttachment($name: String, $mimeType: String, $data: String!) {
-    createAttachment(name: $name, mimeType: $mimeType, data: $data) {
-      _id
-    }
-  }
-`;
-
-export default compose(graphql(formMutation, { name: "createAttachment" }))(
-  TakePicture
-);

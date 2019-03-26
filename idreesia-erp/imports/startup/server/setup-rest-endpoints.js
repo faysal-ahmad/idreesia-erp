@@ -56,5 +56,23 @@ Meteor.startup(() => {
     })
   );
 
+  /**
+   * Endpoint for base64 image uploads
+   */
+  app.post(
+    "/upload-base64-file",
+    bodyParser.json({ limit: "5mb" }),
+    Meteor.bindEnvironment((req, res) => {
+      const { name, mimeType, data } = req.body;
+      const attachment = {
+        name,
+        mimeType,
+        data,
+      };
+      const attachmentId = Attachments.insert(attachment);
+      res.send(JSON.stringify({ attachmentId }));
+    })
+  );
+
   WebApp.connectHandlers.use(app);
 });

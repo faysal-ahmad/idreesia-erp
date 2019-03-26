@@ -4,7 +4,7 @@ import { Button, Icon, Upload, message } from "antd";
 
 const UploadAttachment = ({
   onUploadFinish,
-  enabled = true,
+  disabled = false,
   buttonText = "Upload Picture",
 }) => (
   <Upload
@@ -21,7 +21,7 @@ const UploadAttachment = ({
       }
     }}
   >
-    <Button type="default" enabled={enabled}>
+    <Button type="default" disabled={disabled}>
       <Icon type="upload" />
       {buttonText}
     </Button>
@@ -29,7 +29,7 @@ const UploadAttachment = ({
 );
 
 UploadAttachment.propTypes = {
-  enabled: PropTypes.bool,
+  disabled: PropTypes.bool,
   buttonText: PropTypes.string,
   onUploadFinish: PropTypes.func,
 };

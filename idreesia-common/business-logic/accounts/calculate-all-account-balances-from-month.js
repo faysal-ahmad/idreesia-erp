@@ -36,7 +36,7 @@ export default function calculateAllAccountBalancesFromMonth(
 ) {
   const allAccountHeads = AccountHeads.find({ companyId }).fetch();
 
-  const calculationMonth = startingMonth.clone();
+  const calculationMonth = startingMonth.clone().startOf("month");
   const endMonth = moment()
     .add(1, "months")
     .startOf("month");

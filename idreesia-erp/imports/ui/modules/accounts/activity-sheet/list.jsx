@@ -139,9 +139,10 @@ class List extends Component {
           />
           &nbsp;&nbsp;
           <DatePicker.MonthPicker
+            allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
-            defaultValue={month}
+            value={month}
           />
           &nbsp;&nbsp;
           <Button

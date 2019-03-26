@@ -50,10 +50,11 @@ class ListContainer extends Component {
     const { companyId, companyLoading, company } = this.props;
     if (companyLoading) return null;
 
+    const monthString = month.startOf("month").format(Formats.DATE_FORMAT);
     return (
       <List
         month={month}
-        monthString={month.format(Formats.DATE_FORMAT)}
+        monthString={monthString}
         companyId={companyId}
         company={company}
         setPageParams={this.setPageParams}

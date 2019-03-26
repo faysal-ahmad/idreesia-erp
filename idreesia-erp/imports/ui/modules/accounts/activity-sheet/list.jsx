@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, DatePicker, Table } from "antd";
+import { Button, DatePicker, Spin, Table } from "antd";
 import { compose } from "react-apollo";
 import { keyBy, sortBy } from "lodash";
 import numeral from "numeral";
@@ -164,7 +164,10 @@ class List extends Component {
       accountMonthlyBalancesByCompanyId,
     } = this.props;
 
-    if (accountHeadsLoading || accountMonthlyBalancesLoading) return null;
+    if (accountHeadsLoading || accountMonthlyBalancesLoading) {
+      return <Spin size="large" />;
+    }
+
     const accountMonthlyBalancesMap = keyBy(
       accountMonthlyBalancesByCompanyId,
       "accountHeadId"

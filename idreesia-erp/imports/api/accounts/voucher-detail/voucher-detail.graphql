@@ -16,5 +16,8 @@ type VoucherDetail {
 }
 
 extend type Query {
-  voucherDetailsByVoucherId(voucherId: String!): [VoucherDetail]
+  voucherDetailsByVoucherId(
+    companyId: String!
+    voucherId: String!
+  ): [VoucherDetail]
 }

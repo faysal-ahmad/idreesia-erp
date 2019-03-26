@@ -1,5 +1,5 @@
 import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
-import { hasOnePermission } from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
@@ -24,10 +24,15 @@ export default {
         return null;
       }
 
-      return AccountHeads.findOne({ _id });
+      const accountHead = AccountHeads.findOne({ _id });
+      if (hasInstanceAccess(user._id, accountHead.companyId) === false)
+        return null;
+      return accountHead;
     },
+
     accountHeadsByCompanyId(obj, { companyId }, { user }) {
       if (
+        hasInstanceAccess(user._id, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
@@ -43,10 +48,11 @@ export default {
   Mutation: {
     updateAccountHead(
       obj,
-      { _id, name, description, startingBalance },
+      { _id, companyId, name, description, startingBalance },
       { user }
     ) {
       if (
+        hasInstanceAccess(user._id, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
         ])

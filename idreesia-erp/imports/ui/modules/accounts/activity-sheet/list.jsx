@@ -126,6 +126,12 @@ class List extends Component {
     });
   };
 
+  handleCreditValueClicked = () => {};
+
+  handleDebitValueClicked = () => {};
+
+  handleBalanceValueClicked = () => {};
+
   getTableHeader = () => {
     const { month } = this.props;
     return (

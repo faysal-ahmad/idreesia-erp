@@ -68,6 +68,7 @@ class EditForm extends Component {
       updateAccountHead({
         variables: {
           _id: accountHeadById._id,
+          companyId,
           name,
           description,
           startingBalance,
@@ -126,17 +127,20 @@ class EditForm extends Component {
 const formMutation = gql`
   mutation updateAccountHead(
     $_id: String!
+    $companyId: String!
     $name: String!
     $description: String!
     $startingBalance: Float
   ) {
     updateAccountHead(
       _id: $_id
+      companyId: $companyId
       name: $name
       description: $description
       startingBalance: $startingBalance
     ) {
       _id
+      companyId
       name
       description
       type

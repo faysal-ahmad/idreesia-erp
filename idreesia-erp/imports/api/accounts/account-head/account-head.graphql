@@ -25,6 +25,7 @@ extend type Query {
 extend type Mutation {
   updateAccountHead(
     _id: String!
+    companyId: String!
     name: String!
     description: String
     startingBalance: Float

@@ -1,5 +1,8 @@
 import { Companies } from "meteor/idreesia-common/collections/accounts";
-import { hasOnePermission } from "/imports/api/security";
+import {
+  filterByInstanceAccess,
+  hasOnePermission,
+} from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
@@ -12,6 +15,12 @@ export default {
       }
 
       return Companies.find({}).fetch();
+    },
+
+    allAccessibleCompanies(obj, params, { user }) {
+      const companies = Companies.find({}).fetch();
+      const filteredCompanies = filterByInstanceAccess(user._id, companies);
+      return filteredCompanies;
     },
 
     companyById(obj, { id }, { user }) {
@@ -28,7 +37,9 @@ export default {
   Mutation: {
     createCompany(obj, { name, importData, connectivitySettings }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_MANAGE_COMPANIES,
+        ])
       ) {
         throw new Error(
           "You do not have permission to manage Companies in the System."
@@ -55,7 +66,9 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_MANAGE_COMPANIES,
+        ])
       ) {
         throw new Error(
           "You do not have permission to manage Companies in the System."

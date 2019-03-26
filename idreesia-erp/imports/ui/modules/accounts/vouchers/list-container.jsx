@@ -111,7 +111,7 @@ class ListContainer extends Component {
             paddingBottom: "108px",
           }}
         >
-          <DetailsForm voucherId={voucherIdForDetails} />
+          <DetailsForm companyId={companyId} voucherId={voucherIdForDetails} />
         </Drawer>
       </Fragment>
     );

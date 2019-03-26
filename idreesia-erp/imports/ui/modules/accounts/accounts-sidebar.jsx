@@ -15,7 +15,7 @@ class AccountsSidebar extends Component {
     setActiveSubModuleName: PropTypes.func,
 
     loading: PropTypes.bool,
-    allCompanies: PropTypes.array,
+    allAccessibleCompanies: PropTypes.array,
   };
 
   handleMenuItemSelected = ({ item, key }) => {
@@ -38,11 +38,20 @@ class AccountsSidebar extends Component {
   };
 
   render() {
-    const { loading, allCompanies } = this.props;
+    const { loading, allAccessibleCompanies } = this.props;
     if (loading) return null;
 
     const subMenus = [];
-    allCompanies.forEach(company => {
+    subMenus.push(
+      <Menu.Item key="amaanat-logs">
+        <span>
+          <Icon type="bars" />
+          Amaanat Logs
+        </span>
+      </Menu.Item>
+    );
+
+    allAccessibleCompanies.forEach(company => {
       subMenus.push(
         <Menu.SubMenu
           key={company._id}
@@ -72,15 +81,6 @@ class AccountsSidebar extends Component {
       );
     });
 
-    subMenus.push(
-      <Menu.Item key="amaanat-logs">
-        <span>
-          <Icon type="bars" />
-          Amaanat Logs
-        </span>
-      </Menu.Item>
-    );
-
     return (
       <Menu
         mode="inline"
@@ -95,8 +95,8 @@ class AccountsSidebar extends Component {
 }
 
 const listQuery = gql`
-  query allCompanies {
-    allCompanies {
+  query allAccessibleCompanies {
+    allAccessibleCompanies {
       _id
       name
     }

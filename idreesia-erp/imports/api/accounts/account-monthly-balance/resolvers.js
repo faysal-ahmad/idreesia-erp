@@ -1,5 +1,5 @@
 import { AccountMonthlyBalances } from "meteor/idreesia-common/collections/accounts";
-import { hasOnePermission } from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
@@ -10,6 +10,7 @@ export default {
       { user }
     ) {
       if (
+        hasInstanceAccess(user._id, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_ACTIVTY_SHEET,
         ])

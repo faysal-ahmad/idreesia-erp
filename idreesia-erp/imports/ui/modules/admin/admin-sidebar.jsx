@@ -52,9 +52,9 @@ class AdminSidebar extends Component {
         onSelect={this.handleMenuItemSelected}
       >
         <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
-        <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
-        <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
         <Menu.Item key="companies">Companies</Menu.Item>
+        <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
+        <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
       </Menu>
     );
   }

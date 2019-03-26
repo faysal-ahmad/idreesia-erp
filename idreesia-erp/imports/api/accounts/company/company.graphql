@@ -11,6 +11,7 @@ type Company {
 
 extend type Query {
   allCompanies: [Company]
+  allAccessibleCompanies: [Company]
   companyById(id: String!): Company
 }
 

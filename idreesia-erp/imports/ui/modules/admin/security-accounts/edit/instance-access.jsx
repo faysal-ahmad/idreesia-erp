@@ -20,6 +20,8 @@ class InstanceAccess extends Component {
 
     physicalStoresListLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
+    companiesListLoading: PropTypes.bool,
+    allCompanies: PropTypes.array,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -95,8 +97,11 @@ class InstanceAccess extends Component {
       karkunLoading,
       physicalStoresListLoading,
       allPhysicalStores,
+      companiesListLoading,
+      allCompanies,
     } = this.props;
-    if (karkunLoading || physicalStoresListLoading) return null;
+    if (karkunLoading || physicalStoresListLoading || companiesListLoading)
+      return null;
 
     const accessData = [
       {
@@ -105,6 +110,14 @@ class InstanceAccess extends Component {
         children: allPhysicalStores.map(physicalStore => ({
           title: physicalStore.name,
           key: physicalStore._id,
+        })),
+      },
+      {
+        title: "Companies",
+        key: "module-accounts-companies",
+        children: allCompanies.map(company => ({
+          title: company.name,
+          key: company._id,
         })),
       },
     ];
@@ -180,6 +193,15 @@ const physicalStoresListQuery = gql`
   }
 `;
 
+const companiesListQuery = gql`
+  query allCompanies {
+    allCompanies {
+      _id
+      name
+    }
+  }
+`;
+
 export default compose(
   graphql(formMutation, {
     name: "setInstanceAccess",
@@ -193,5 +215,8 @@ export default compose(
   }),
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
+  }),
+  graphql(companiesListQuery, {
+    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
   })
 )(InstanceAccess);

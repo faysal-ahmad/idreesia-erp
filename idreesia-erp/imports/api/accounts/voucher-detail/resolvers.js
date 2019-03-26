@@ -2,7 +2,7 @@ import {
   AccountHeads,
   VoucherDetails,
 } from "meteor/idreesia-common/collections/accounts";
-import { hasOnePermission } from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
@@ -14,8 +14,9 @@ export default {
       }),
   },
   Query: {
-    voucherDetailsByVoucherId(obj, { voucherId }, { user }) {
+    voucherDetailsByVoucherId(obj, { companyId, voucherId }, { user }) {
       if (
+        hasInstanceAccess(user._id, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
@@ -24,7 +25,10 @@ export default {
         return null;
       }
 
-      return VoucherDetails.find({ voucherId: { $eq: voucherId } }).fetch();
+      return VoucherDetails.find({
+        companyId: { $eq: companyId },
+        voucherId: { $eq: voucherId },
+      }).fetch();
     },
   },
 };

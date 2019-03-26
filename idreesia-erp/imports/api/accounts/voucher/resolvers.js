@@ -1,5 +1,5 @@
 import { Vouchers } from "meteor/idreesia-common/collections/accounts";
-import { hasOnePermission } from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getVouchers from "./queries";
@@ -8,6 +8,7 @@ export default {
   Query: {
     pagedVouchers(obj, { companyId, queryString }, { user }) {
       if (
+        hasInstanceAccess(user._id, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
@@ -32,7 +33,9 @@ export default {
         return null;
       }
 
-      return Vouchers.findOne(id);
+      const voucher = Vouchers.findOne(id);
+      if (hasInstanceAccess(user._id, voucher.companyId) === false) return null;
+      return voucher;
     },
   },
 };

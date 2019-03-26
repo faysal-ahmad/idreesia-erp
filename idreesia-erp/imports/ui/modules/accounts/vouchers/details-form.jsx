@@ -6,6 +6,7 @@ import { compose, graphql } from "react-apollo";
 
 class DetailsForm extends Component {
   static propTypes = {
+    companyId: PropTypes.string,
     voucherId: PropTypes.string,
     voucherDetailsByVoucherId: PropTypes.array,
     loading: PropTypes.bool,
@@ -56,8 +57,8 @@ class DetailsForm extends Component {
 }
 
 const listQuery = gql`
-  query voucherDetailsByVoucherId($voucherId: String!) {
-    voucherDetailsByVoucherId(voucherId: $voucherId) {
+  query voucherDetailsByVoucherId($companyId: String!, $voucherId: String!) {
+    voucherDetailsByVoucherId(companyId: $companyId, voucherId: $voucherId) {
       _id
       companyId
       accountHeadId
@@ -75,8 +76,9 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ voucherId }) => ({
+    options: ({ companyId, voucherId }) => ({
       variables: {
+        companyId,
         voucherId,
       },
     }),

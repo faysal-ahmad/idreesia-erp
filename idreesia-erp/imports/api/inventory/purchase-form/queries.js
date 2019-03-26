@@ -5,12 +5,11 @@ import { get } from "lodash";
 import { PurchaseForms } from "meteor/idreesia-common/collections/inventory";
 import { Formats } from "meteor/idreesia-common/constants";
 
-export function getPurchaseFormsByStockItemId(stockItemId, physicalStores) {
-  const physicalStoreIds = physicalStores.map(({ _id }) => _id);
+export function getPurchaseFormsByStockItemId(physicalStoreId, stockItemId) {
   const pipeline = [
     {
       $match: {
-        physicalStoreId: { $in: physicalStoreIds },
+        physicalStoreId: { $eq: physicalStoreId },
         items: {
           $elemMatch: {
             stockItemId: { $eq: stockItemId },

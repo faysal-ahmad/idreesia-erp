@@ -31,7 +31,7 @@ type PagedStockItem {
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
   stockItemById(_id: String!): StockItem
-  stockItemsById(_ids: [String]!): [StockItem]
+  stockItemsById(physicalStoreId: String!, _ids: [String]!): [StockItem]
 }
 
 extend type Mutation {

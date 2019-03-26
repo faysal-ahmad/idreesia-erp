@@ -227,8 +227,8 @@ class ItemsList extends Component {
 }
 
 const stockItemsByIdQuery = gql`
-  query stockItemsById($_ids: [String]!) {
-    stockItemsById(_ids: $_ids) {
+  query stockItemsById($physicalStoreId: String!, $_ids: [String]!) {
+    stockItemsById(physicalStoreId: $physicalStoreId, _ids: $_ids) {
       _id
       name
       formattedName
@@ -238,8 +238,8 @@ const stockItemsByIdQuery = gql`
 
 export default graphql(stockItemsByIdQuery, {
   props: ({ data }) => ({ ...data }),
-  options: ({ value }) => {
+  options: ({ physicalStoreId, value }) => {
     const _ids = value ? value.map(({ stockItemId }) => stockItemId) : [];
-    return { variables: { _ids } };
+    return { variables: { physicalStoreId, _ids } };
   },
 })(ItemsList);

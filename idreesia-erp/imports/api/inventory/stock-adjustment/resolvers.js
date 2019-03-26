@@ -1,14 +1,9 @@
 import { Karkuns } from "meteor/idreesia-common/collections/hr";
 import {
   StockAdjustments,
-  PhysicalStores,
   StockItems,
 } from "meteor/idreesia-common/collections/inventory";
-import {
-  filterByInstanceAccess,
-  hasInstanceAccess,
-  hasOnePermission,
-} from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getStockAdjustments, {
@@ -41,8 +36,13 @@ export default {
     },
   },
   Query: {
-    stockAdjustmentsByStockItem(obj, { stockItemId }, { user }) {
+    stockAdjustmentsByStockItem(
+      obj,
+      { physicalStoreId, stockItemId },
+      { user }
+    ) {
       if (
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
@@ -53,17 +53,7 @@ export default {
         return [];
       }
 
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-
-      return getStockAdjustmentsByStockItemId(
-        stockItemId,
-        filteredPhysicalStores
-      );
+      return getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId);
     },
 
     pagedStockAdjustments(obj, { physicalStoreId, queryString }, { user }) {
@@ -97,20 +87,13 @@ export default {
         return null;
       }
 
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return null;
-      const physicalStoreIds = physicalStores.map(
-        physicalStore => physicalStore._id
-      );
-
-      return StockAdjustments.findOne({
-        _id: { $eq: _id },
-        physicalStoreId: { $in: physicalStoreIds },
-      });
+      const stockAdjustment = StockAdjustments.findOne(_id);
+      if (
+        hasInstanceAccess(user._id, stockAdjustment.physicalStoreId) === false
+      ) {
+        return null;
+      }
+      return stockAdjustment;
     },
   },
 
@@ -188,7 +171,8 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) ===
+          false
       ) {
         throw new Error(
           "You do not have permission to manage Stock Adjustments in this Physical Store."
@@ -258,7 +242,8 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) ===
+          false
       ) {
         throw new Error(
           "You do not have permission to approve Stock Adjustments in this Physical Store."
@@ -291,7 +276,8 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) === false
+        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) ===
+          false
       ) {
         throw new Error(
           "You do not have permission to manage Stock Adjustments in this Physical Store."

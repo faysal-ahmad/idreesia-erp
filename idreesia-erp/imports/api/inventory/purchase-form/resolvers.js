@@ -1,14 +1,9 @@
 import { Karkuns } from "meteor/idreesia-common/collections/hr";
 import {
   PurchaseForms,
-  PhysicalStores,
   StockItems,
 } from "meteor/idreesia-common/collections/inventory";
-import {
-  filterByInstanceAccess,
-  hasInstanceAccess,
-  hasOnePermission,
-} from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getPurchaseForms, { getPurchaseFormsByStockItemId } from "./queries";
@@ -41,8 +36,9 @@ export default {
     },
   },
   Query: {
-    purchaseFormsByStockItem(obj, { stockItemId }, { user }) {
+    purchaseFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
       if (
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
@@ -52,14 +48,7 @@ export default {
         return [];
       }
 
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-
-      return getPurchaseFormsByStockItemId(stockItemId, filteredPhysicalStores);
+      return getPurchaseFormsByStockItemId(physicalStoreId, stockItemId);
     },
 
     pagedPurchaseForms(obj, { physicalStoreId, queryString }, { user }) {
@@ -91,20 +80,11 @@ export default {
         return null;
       }
 
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-      const physicalStoreIds = physicalStores.map(
-        physicalStore => physicalStore._id
-      );
-
-      return PurchaseForms.findOne({
-        _id: { $eq: _id },
-        physicalStoreId: { $in: physicalStoreIds },
-      });
+      const purchaseForm = PurchaseForms.findOne(_id);
+      if (hasInstanceAccess(user._id, purchaseForm.physicalStoreId) === false) {
+        return null;
+      }
+      return purchaseForm;
     },
   },
 

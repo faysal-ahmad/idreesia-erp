@@ -1,12 +1,5 @@
-import {
-  Locations,
-  PhysicalStores,
-} from "meteor/idreesia-common/collections/inventory";
-import {
-  filterByInstanceAccess,
-  hasOnePermission,
-  hasInstanceAccess,
-} from "/imports/api/security";
+import { Locations } from "meteor/idreesia-common/collections/inventory";
+import { hasOnePermission, hasInstanceAccess } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
@@ -20,21 +13,11 @@ export default {
   },
   Query: {
     locationById(obj, { _id }, { user }) {
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-
-      const physicalStoreIds = physicalStores.map(
-        physicalStore => physicalStore._id
-      );
-
-      return Locations.findOne({
-        _id: { $eq: _id },
-        physicalStoreId: { $in: physicalStoreIds },
-      });
+      const location = Locations.findOne(_id);
+      if (hasInstanceAccess(user._id, location.physicalStoreId) === false) {
+        return null;
+      }
+      return location;
     },
 
     locationsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {

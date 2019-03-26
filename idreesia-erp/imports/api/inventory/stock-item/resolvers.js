@@ -3,11 +3,7 @@ import {
   ItemCategories,
   StockItems,
 } from "meteor/idreesia-common/collections/inventory";
-import {
-  filterByInstanceAccess,
-  hasInstanceAccess,
-  hasOnePermission,
-} from "/imports/api/security";
+import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import getPagedStockItems from "./queries";
@@ -74,37 +70,20 @@ export default {
     },
 
     stockItemById(obj, { _id }, { user }) {
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-      const physicalStoreIds = physicalStores.map(
-        physicalStore => physicalStore._id
-      );
-
-      return StockItems.findOne({
-        _id: { $eq: _id },
-        physicalStoreId: { $in: physicalStoreIds },
-      });
+      const stockItem = StockItems.findOne(_id);
+      if (hasInstanceAccess(user._id, stockItem.physicalStoreId) === false) {
+        return null;
+      }
+      return stockItem;
     },
 
-    stockItemsById(obj, { _ids }, { user }) {
+    stockItemsById(obj, { physicalStoreId, _ids }, { user }) {
       if (!_ids || _ids.length === 0) return [];
-      const physicalStores = PhysicalStores.find({}).fetch();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
-        physicalStores
-      );
-      if (filteredPhysicalStores.length === 0) return [];
-      const physicalStoreIds = physicalStores.map(
-        physicalStore => physicalStore._id
-      );
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
 
       return StockItems.find({
         _id: { $in: _ids },
-        physicalStoreId: { $in: physicalStoreIds },
+        physicalStoreId: { $eq: physicalStoreId },
       }).fetch();
     },
   },

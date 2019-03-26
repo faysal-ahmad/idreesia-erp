@@ -19,6 +19,7 @@ const IconStyle = {
 
 class List extends Component {
   static propTypes = {
+    physicalStoreId: PropTypes.string,
     loading: PropTypes.bool,
     stockAdjustmentsByStockItem: PropTypes.array,
   };
@@ -106,8 +107,14 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query stockAdjustmentsByStockItem($stockItemId: String) {
-    stockAdjustmentsByStockItem(stockItemId: $stockItemId) {
+  query stockAdjustmentsByStockItem(
+    $physicalStoreId: String!
+    $stockItemId: String!
+  ) {
+    stockAdjustmentsByStockItem(
+      physicalStoreId: $physicalStoreId
+      stockItemId: $stockItemId
+    ) {
       _id
       physicalStoreId
       stockItemId
@@ -133,6 +140,8 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ stockItemId }) => ({ variables: { stockItemId } }),
+    options: ({ physicalStoreId, stockItemId }) => ({
+      variables: { physicalStoreId, stockItemId },
+    }),
   })
 )(List);

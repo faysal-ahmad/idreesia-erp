@@ -28,7 +28,10 @@ type PagedStockAdjustment {
 }
 
 extend type Query {
-  stockAdjustmentsByStockItem(stockItemId: String): [StockAdjustment]
+  stockAdjustmentsByStockItem(
+    physicalStoreId: String!
+    stockItemId: String!
+  ): [StockAdjustment]
   pagedStockAdjustments(
     physicalStoreId: String!
     queryString: String

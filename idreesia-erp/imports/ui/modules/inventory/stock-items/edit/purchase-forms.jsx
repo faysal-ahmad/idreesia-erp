@@ -1,33 +1,34 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Checkbox, Icon, Table, Tooltip } from 'antd';
-import moment from 'moment';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Checkbox, Icon, Table, Tooltip } from "antd";
+import moment from "moment";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
 const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
 };
 
 const IconStyle = {
-  cursor: 'pointer',
+  cursor: "pointer",
 };
 
 class List extends Component {
   static propTypes = {
+    physicalStoreId: PropTypes.string,
     loading: PropTypes.bool,
     purchaseFormsByStockItem: PropTypes.array,
   };
 
   columns = [
     {
-      title: 'Approved',
-      dataIndex: 'approvedOn',
-      key: 'approvedOn',
+      title: "Approved",
+      dataIndex: "approvedOn",
+      key: "approvedOn",
       render: text => {
         let value = false;
         if (text) value = true;
@@ -35,31 +36,33 @@ class List extends Component {
       },
     },
     {
-      title: 'Purchase Date',
-      dataIndex: 'purchaseDate',
-      key: 'purchaseDate',
+      title: "Purchase Date",
+      dataIndex: "purchaseDate",
+      key: "purchaseDate",
       render: text => {
         const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
+        return date.format("DD MMM, YYYY");
       },
     },
     {
-      title: 'Purchased By',
-      dataIndex: 'refPurchasedBy.name',
-      key: 'refPurchasedBy.name',
+      title: "Purchased By",
+      dataIndex: "refPurchasedBy.name",
+      key: "refPurchasedBy.name",
     },
     {
-      title: 'Items',
-      dataIndex: 'items',
-      key: 'items',
+      title: "Items",
+      dataIndex: "items",
+      key: "items",
       render: items => {
-        const formattedItems = items.map(item => `${item.itemTypeName} - ${item.quantity}`);
-        return formattedItems.join(', ');
+        const formattedItems = items.map(
+          item => `${item.itemTypeName} - ${item.quantity}`
+        );
+        return formattedItems.join(", ");
       },
     },
     {
-      title: 'Actions',
-      key: 'action',
+      title: "Actions",
+      key: "action",
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
@@ -89,14 +92,25 @@ class List extends Component {
     if (loading) return null;
 
     return (
-      <Table rowKey="_id" dataSource={purchaseFormsByStockItem} columns={this.columns} bordered />
+      <Table
+        rowKey="_id"
+        dataSource={purchaseFormsByStockItem}
+        columns={this.columns}
+        bordered
+      />
     );
   }
 }
 
 const listQuery = gql`
-  query purchaseFormsByStockItem($stockItemId: String) {
-    purchaseFormsByStockItem(stockItemId: $stockItemId) {
+  query purchaseFormsByStockItem(
+    $physicalStoreId: String!
+    $stockItemId: String!
+  ) {
+    purchaseFormsByStockItem(
+      physicalStoreId: $physicalStoreId
+      stockItemId: $stockItemId
+    ) {
       _id
       purchaseDate
       receivedBy
@@ -123,6 +137,8 @@ const listQuery = gql`
 export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ stockItemId }) => ({ variables: { stockItemId } }),
+    options: ({ physicalStoreId, stockItemId }) => ({
+      variables: { physicalStoreId, stockItemId },
+    }),
   })
 )(List);

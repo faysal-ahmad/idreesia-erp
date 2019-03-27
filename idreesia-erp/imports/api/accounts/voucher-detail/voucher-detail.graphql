@@ -8,6 +8,7 @@ type VoucherDetail {
   isCredit: Boolean
 
   refAccountHead: AccountHead
+  refVoucher: Voucher
 
   createdAt: String
   createdBy: String
@@ -15,9 +16,25 @@ type VoucherDetail {
   updatedBy: String
 }
 
+type PagedVoucherDetail {
+  data: [VoucherDetail]
+  totalResults: Int
+}
+
 extend type Query {
   voucherDetailsByVoucherId(
     companyId: String!
     voucherId: String!
   ): [VoucherDetail]
+
+  pagedVoucherDetails(
+    companyId: String!
+    accountHeadIds: [String]!
+    startDate: String!
+    endDate: String!
+    includeCredits: Boolean!
+    includeDebits: Boolean!
+    pageIndex: Float!
+    pageSize: Float!
+  ): PagedVoucherDetail
 }

@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, DatePicker, Spin, Table } from "antd";
+import { Button, DatePicker, Drawer, Spin, Table } from "antd";
 import { compose } from "react-apollo";
 import { keyBy, sortBy } from "lodash";
 import numeral from "numeral";
@@ -10,11 +10,18 @@ import {
   WithAccountMonthlyBalancesByCompany,
 } from "/imports/ui/modules/accounts/common/composers";
 
+import { VoucherDetailsList } from "../voucher-details";
+
 const ToolbarStyle = {
   display: "flex",
   flexFlow: "row nowrap",
   justifyContent: "space-between",
   width: "100%",
+};
+
+const ClickableNumberStyle = {
+  cursor: "pointer",
+  color: "#1890ff",
 };
 
 class List extends Component {
@@ -31,6 +38,13 @@ class List extends Component {
     accountHeadsByCompanyId: PropTypes.array,
     accountMonthlyBalancesLoading: PropTypes.bool,
     accountMonthlyBalancesByCompanyId: PropTypes.array,
+  };
+
+  state = {
+    showForm: false,
+    accountHeadWithMonthlyBalances: null,
+    includeCredits: true,
+    includeDebits: true,
   };
 
   columns = [
@@ -56,19 +70,55 @@ class List extends Component {
       title: "Credits",
       dataIndex: "credits",
       key: "credits",
-      render: text => numeral(text).format("0,0"),
+      render: (text, record) => {
+        const Style = text !== 0 ? ClickableNumberStyle : null;
+        return (
+          <div
+            style={Style}
+            onClick={() => {
+              this.handleCreditValueClicked(record);
+            }}
+          >
+            {numeral(text).format("0,0")}
+          </div>
+        );
+      },
     },
     {
       title: "Debits",
       dataIndex: "debits",
       key: "debits",
-      render: text => numeral(text).format("0,0"),
+      render: (text, record) => {
+        const Style = text !== 0 ? ClickableNumberStyle : null;
+        return (
+          <div
+            style={Style}
+            onClick={() => {
+              this.handleDebitValueClicked(record);
+            }}
+          >
+            {numeral(text).format("0,0")}
+          </div>
+        );
+      },
     },
     {
       title: "Balance",
       dataIndex: "balance",
       key: "balance",
-      render: text => numeral(text).format("0,0"),
+      render: (text, record) => {
+        const Style = text !== 0 ? ClickableNumberStyle : null;
+        return (
+          <div
+            style={Style}
+            onClick={() => {
+              this.handleBalanceValueClicked(record);
+            }}
+          >
+            {numeral(text).format("0,0")}
+          </div>
+        );
+      },
     },
   ];
 
@@ -126,11 +176,40 @@ class List extends Component {
     });
   };
 
-  handleCreditValueClicked = () => {};
+  handleCreditValueClicked = accountHeadWithMonthlyBalances => {
+    this.setState({
+      showForm: true,
+      accountHeadWithMonthlyBalances,
+      includeCredits: true,
+      includeDebits: false,
+    });
+  };
 
-  handleDebitValueClicked = () => {};
+  handleDebitValueClicked = accountHeadWithMonthlyBalances => {
+    this.setState({
+      showForm: true,
+      accountHeadWithMonthlyBalances,
+      includeCredits: false,
+      includeDebits: true,
+    });
+  };
 
-  handleBalanceValueClicked = () => {};
+  handleBalanceValueClicked = accountHeadWithMonthlyBalances => {
+    this.setState({
+      showForm: true,
+      accountHeadWithMonthlyBalances,
+      includeCredits: true,
+      includeDebits: true,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      showForm: false,
+      accountHeadWithMonthlyBalances: null,
+      filterBy: null,
+    });
+  };
 
   getTableHeader = () => {
     const { month } = this.props;
@@ -162,6 +241,28 @@ class List extends Component {
     );
   };
 
+  getVoucherDetailsList = () => {
+    const { month } = this.props;
+    const {
+      accountHeadWithMonthlyBalances,
+      includeCredits,
+      includeDebits,
+    } = this.state;
+
+    if (!accountHeadWithMonthlyBalances) return null;
+
+    return (
+      <VoucherDetailsList
+        companyId={accountHeadWithMonthlyBalances.companyId}
+        accountHeadIds={[accountHeadWithMonthlyBalances._id]}
+        startDate={month.clone().startOf("month")}
+        endDate={month.clone().endOf("month")}
+        includeCredits={includeCredits}
+        includeDebits={includeDebits}
+      />
+    );
+  };
+
   render() {
     const {
       accountHeadsLoading,
@@ -169,6 +270,7 @@ class List extends Component {
       accountMonthlyBalancesLoading,
       accountMonthlyBalancesByCompanyId,
     } = this.props;
+    const { showForm } = this.state;
 
     if (accountHeadsLoading || accountMonthlyBalancesLoading) {
       return <Spin size="large" />;
@@ -201,14 +303,30 @@ class List extends Component {
     const treeDataSource = this.treeify(accountHeadsWithBalances);
 
     return (
-      <Table
-        rowKey="_id"
-        title={this.getTableHeader}
-        dataSource={treeDataSource}
-        columns={this.columns}
-        pagination={false}
-        bordered
-      />
+      <Fragment>
+        <Table
+          rowKey="_id"
+          title={this.getTableHeader}
+          dataSource={treeDataSource}
+          columns={this.columns}
+          pagination={false}
+          bordered
+        />
+        <Drawer
+          title="Vouchers List"
+          width={800}
+          placement="left"
+          onClose={this.handleClose}
+          visible={showForm}
+          style={{
+            overflow: "auto",
+            height: "calc(100% - 108px)",
+            paddingBottom: "108px",
+          }}
+        >
+          {this.getVoucherDetailsList()}
+        </Drawer>
+      </Fragment>
     );
   }
 }

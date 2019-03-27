@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Button, DatePicker, Drawer, Spin, Table } from "antd";
 import { compose } from "react-apollo";
-import { keyBy, sortBy } from "lodash";
+import { filter, keyBy, sortBy } from "lodash";
 import numeral from "numeral";
 
 import {
@@ -107,7 +107,10 @@ class List extends Component {
       dataIndex: "balance",
       key: "balance",
       render: (text, record) => {
-        const Style = text !== 0 ? ClickableNumberStyle : null;
+        const Style =
+          record.credits !== 0 || record.credits !== 0
+            ? ClickableNumberStyle
+            : null;
         return (
           <div
             style={Style}
@@ -241,6 +244,27 @@ class List extends Component {
     );
   };
 
+  getChildAccountHeads = accountHead => {
+    const { accountHeadsByCompanyId } = this.props;
+    // Get all the account heads that have this as parent
+    const childAccountHeads = filter(
+      accountHeadsByCompanyId,
+      _accountHead => _accountHead.parent === accountHead.number
+    );
+
+    // If no child account heads are found, simply return
+    if (childAccountHeads.length === 0) return childAccountHeads;
+    // If we do have some child account heads, then call this method recursively
+    // on them, accumulate their responses and return that.
+    let accumulatedChildren = [].concat(childAccountHeads);
+    childAccountHeads.forEach(childAccountHead => {
+      accumulatedChildren = accumulatedChildren.concat(
+        this.getChildAccountHeads(childAccountHead)
+      );
+    });
+    return accumulatedChildren;
+  };
+
   getVoucherDetailsList = () => {
     const { month } = this.props;
     const {
@@ -251,10 +275,18 @@ class List extends Component {
 
     if (!accountHeadWithMonthlyBalances) return null;
 
+    debugger;
+    const accountHeadsForList = [accountHeadWithMonthlyBalances].concat(
+      this.getChildAccountHeads(accountHeadWithMonthlyBalances)
+    );
+    const accountHeadIds = accountHeadsForList.map(
+      _aacountHead => _aacountHead._id
+    );
+
     return (
       <VoucherDetailsList
         companyId={accountHeadWithMonthlyBalances.companyId}
-        accountHeadIds={[accountHeadWithMonthlyBalances._id]}
+        accountHeadIds={accountHeadIds}
         startDate={month.clone().startOf("month")}
         endDate={month.clone().endOf("month")}
         includeCredits={includeCredits}

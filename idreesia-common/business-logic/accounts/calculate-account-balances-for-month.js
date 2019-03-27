@@ -15,7 +15,7 @@ function accumulateAccountBalancesForNode(
   accountHead,
   allAccountHeads,
   month,
-  voucherIds
+  voucherDetails
 ) {
   const { companyId } = accountHead;
   // Does this account head has child account heads. If so then recursively calculate values for them.
@@ -28,7 +28,7 @@ function accumulateAccountBalancesForNode(
     return calculateAccountBalancesForLeafNode(
       accountHead,
       month.clone(),
-      voucherIds
+      voucherDetails
     );
   }
 
@@ -38,7 +38,7 @@ function accumulateAccountBalancesForNode(
       childAccountHead,
       allAccountHeads,
       month.clone(),
-      voucherIds
+      voucherDetails
     );
   });
 
@@ -94,13 +94,12 @@ function accumulateAccountBalancesForNode(
  * This method is used to calculate balances for the leaf nodes in the accounts
  * hierarchy. These values are calculated from vouchers and voucher details.
  */
-function calculateAccountBalancesForLeafNode(accountHead, month, voucherIds) {
+function calculateAccountBalancesForLeafNode(
+  accountHead,
+  month,
+  voucherDetails
+) {
   const { companyId } = accountHead;
-
-  const voucherDetails = VoucherDetails.find({
-    voucherId: { $in: voucherIds },
-    accountHeadId: { $eq: accountHead._id }
-  }).fetch();
 
   const prevMonthlyBalance = AccountMonthlyBalances.findOne({
     companyId,
@@ -129,11 +128,13 @@ function calculateAccountBalancesForLeafNode(accountHead, month, voucherIds) {
       : accountHead.startingBalance || 0
   };
 
-  voucherDetails.forEach(({ amount, isCredit }) => {
-    if (isCredit) {
-      monthlyBalance.credits += amount;
-    } else {
-      monthlyBalance.debits += amount;
+  voucherDetails.forEach(({ accountHeadId, amount, isCredit }) => {
+    if (accountHeadId === accountHead._id) {
+      if (isCredit) {
+        monthlyBalance.credits += amount;
+      } else {
+        monthlyBalance.debits += amount;
+      }
     }
   });
 
@@ -152,12 +153,12 @@ function calculateAccountBalancesForLeafNode(accountHead, month, voucherIds) {
  *
  * @param {*} allAccountHeads - List of all account heads
  * @param {*} month - The month for which the calculation needs to be performed
- * @param {*} voucherIds - Ids of all vouchers for the month
+ * @param {*} voucherDetails - All voucher details for the month
  */
 export default function calculateAccountBalancesForMonth(
   allAccountHeads,
   month,
-  voucherIds
+  voucherDetails
 ) {
   // Get all the root nodes and call method to perform calculation on them.
   const rootAccountHeads = filter(
@@ -170,7 +171,7 @@ export default function calculateAccountBalancesForMonth(
       accountHead,
       allAccountHeads,
       month,
-      voucherIds
+      voucherDetails
     );
   });
 }

@@ -1,10 +1,10 @@
 import moment from "moment";
 import { map } from "lodash";
 
-import { Formats } from "meteor/idreesia-common/constants";
 import {
   AccountHeads,
-  Vouchers
+  Vouchers,
+  VoucherDetails
 } from "meteor/idreesia-common/collections/accounts";
 import calculateAccountBalancesForMonth from "./calculate-account-balances-for-month";
 
@@ -14,15 +14,35 @@ import calculateAccountBalancesForMonth from "./calculate-account-balances-for-m
  * @param {moment} month
  */
 function getVouchersForMonth(companyId, month) {
-  return Vouchers.find({
+  const startDate = month
+    .clone()
+    .startOf("month")
+    .toDate();
+  const endDate = month
+    .clone()
+    .endOf("month")
+    .toDate();
+
+  const query = {
     companyId: { $eq: companyId },
     voucherDate: {
-      $gte: month.startOf("month").toDate()
-    },
-    voucherDate: {
-      $lte: month.endOf("month").toDate()
+      $lte: endDate,
+      $gte: startDate
     }
+  };
+
+  const vouchers = Vouchers.find(query).fetch();
+  return vouchers;
+}
+
+function getVoucherDetailsForMonth(companyId, month) {
+  const vouchers = getVouchersForMonth(companyId, month);
+  const voucherIds = map(vouchers, voucher => voucher._id);
+  const voucherDetails = VoucherDetails.find({
+    voucherId: { $in: voucherIds }
   }).fetch();
+
+  return voucherDetails;
 }
 
 /**
@@ -42,12 +62,14 @@ export default function calculateAllAccountBalancesFromMonth(
     .startOf("month");
 
   while (calculationMonth.isBefore(endMonth)) {
-    const vouchers = getVouchersForMonth(companyId, calculationMonth.clone());
-    const voucherIds = map(vouchers, voucher => voucher._id);
+    const voucherDetails = getVoucherDetailsForMonth(
+      companyId,
+      calculationMonth
+    );
     calculateAccountBalancesForMonth(
       allAccountHeads,
       calculationMonth.clone(),
-      voucherIds
+      voucherDetails
     );
 
     calculationMonth.add(1, "months");

@@ -27,7 +27,7 @@ export default async function importVoucherDetailsData(
         ({ VoucherDetailId, Amount, DrorCr, AccountNo }) => {
           const existingVoucherDetail = VoucherDetails.findOne({
             companyId,
-            externalReferenceId: VoucherDetailId,
+            externalReferenceId: VoucherDetailId.toString(),
           });
 
           const accountHead = accountHeadsMap[AccountNo];

@@ -36,7 +36,10 @@ export default async function importCategoriesData(company, adminUser) {
                 updatedBy: adminUser._id,
               },
               error => {
-                if (error) console.log(error);
+                if (error) {
+                  // eslint-disable-next-line no-console
+                  console.log(error);
+                }
               }
             );
           }

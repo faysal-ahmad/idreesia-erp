@@ -25,7 +25,7 @@ export default async function importVouchersData(
         ({ VoucherID, VoucherNo, VoucherDate, VoucherDescription, VOrder }) => {
           const existingVoucher = Vouchers.findOne({
             companyId,
-            externalReferenceId: VoucherID,
+            externalReferenceId: VoucherID.toString(),
           });
 
           if (!existingVoucher) {

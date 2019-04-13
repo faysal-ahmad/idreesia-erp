@@ -18,7 +18,7 @@ class DetailsForm extends Component {
       key: "accountHead",
       render: (text, record) => {
         const { refAccountHead } = record;
-        return `${refAccountHead.name} [${refAccountHead.number}]`;
+        return `[${refAccountHead.number}] ${refAccountHead.name}`;
       },
     },
     {

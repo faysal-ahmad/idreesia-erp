@@ -106,8 +106,6 @@ class GeneralInfo extends Component {
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={karkunById.cnicNumber}
-          required
-          requiredMessage="Please input the CNIC for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -196,7 +194,7 @@ const formMutation = gql`
     $_id: String!
     $firstName: String!
     $lastName: String!
-    $cnicNumber: String!
+    $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
     $emailAddress: String

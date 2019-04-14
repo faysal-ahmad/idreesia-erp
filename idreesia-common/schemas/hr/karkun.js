@@ -6,56 +6,57 @@ export default new SimpleSchema({
   // Points to login account if one exists for this karkun
   userId: {
     type: String,
-    optional: true,
+    optional: true
   },
   firstName: {
-    type: String,
+    type: String
   },
   lastName: {
-    type: String,
+    type: String
   },
   cnicNumber: {
     type: String,
+    optional: true
   },
   address: {
     type: String,
-    optional: true,
+    optional: true
   },
   city: {
     type: String,
-    optional: true,
+    optional: true
   },
   country: {
     type: String,
-    optional: true,
+    optional: true
   },
   contactNumber1: {
     type: String,
-    optional: true,
+    optional: true
   },
   contactNumber2: {
     type: String,
-    optional: true,
+    optional: true
   },
   emailAddress: {
     type: String,
-    optional: true,
+    optional: true
   },
   imageId: {
     type: String,
-    optional: true,
+    optional: true
   },
   barcode: {
     type: String,
-    optional: true,
+    optional: true
   },
   attachmentIds: {
     type: Array,
-    optional: true,
+    optional: true
   },
-  'attachmentIds.$': {
-    type: String,
-  },
+  "attachmentIds.$": {
+    type: String
+  }
 })
   .extend(identifiable)
   .extend(timestamps);

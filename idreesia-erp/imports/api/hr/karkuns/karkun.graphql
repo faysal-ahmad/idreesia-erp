@@ -50,7 +50,7 @@ extend type Mutation {
   createKarkun(
     firstName: String!
     lastName: String!
-    cnicNumber: String!
+    cnicNumber: String
     contactNumber1: String
     contactNumber2: String
     emailAddress: String
@@ -64,7 +64,7 @@ extend type Mutation {
     _id: String!
     firstName: String!
     lastName: String!
-    cnicNumber: String!
+    cnicNumber: String
     contactNumber1: String
     contactNumber2: String
     emailAddress: String

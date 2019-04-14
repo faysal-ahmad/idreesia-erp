@@ -109,15 +109,17 @@ export default {
         );
       }
 
-      const existingKarkun = Karkuns.findOne({
-        cnicNumber: { $eq: cnicNumber },
-      });
-      if (existingKarkun) {
-        throw new Error(
-          `This CNIC number is already set for ${existingKarkun.firstName} ${
-            existingKarkun.lastName
-          }.`
-        );
+      if (cnicNumber) {
+        const existingKarkun = Karkuns.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+        if (existingKarkun) {
+          throw new Error(
+            `This CNIC number is already set for ${existingKarkun.firstName} ${
+              existingKarkun.lastName
+            }.`
+          );
+        }
       }
 
       const date = new Date();
@@ -166,15 +168,17 @@ export default {
         );
       }
 
-      const existingKarkun = Karkuns.findOne({
-        cnicNumber: { $eq: cnicNumber },
-      });
-      if (existingKarkun && existingKarkun._id !== _id) {
-        throw new Error(
-          `This CNIC number is already set for ${existingKarkun.firstName} ${
-            existingKarkun.lastName
-          }.`
-        );
+      if (cnicNumber) {
+        const existingKarkun = Karkuns.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+        if (existingKarkun && existingKarkun._id !== _id) {
+          throw new Error(
+            `This CNIC number is already set for ${existingKarkun.firstName} ${
+              existingKarkun.lastName
+            }.`
+          );
+        }
       }
 
       const date = new Date();

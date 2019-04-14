@@ -93,8 +93,6 @@ class NewForm extends Component {
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          required
-          requiredMessage="Please input the CNIC for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -150,7 +148,7 @@ const formMutation = gql`
   mutation createKarkun(
     $firstName: String!
     $lastName: String!
-    $cnicNumber: String!
+    $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
     $emailAddress: String

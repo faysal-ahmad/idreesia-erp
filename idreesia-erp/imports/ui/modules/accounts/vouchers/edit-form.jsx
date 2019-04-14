@@ -1,108 +1,52 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { compose } from "react-apollo";
+import { get } from "lodash";
+import { Tabs } from "antd";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
-import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import {
+  WithCompanyId,
+  WithCompany,
+} from "/imports/ui/modules/accounts/common/composers";
+import { WithBreadcrumbs } from "/imports/ui/composers";
+
+import VoucherInfo from "./edit/voucher-info";
+import AttachmentsList from "./edit/attachments-list";
 
 class EditForm extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
-
-    loading: PropTypes.bool,
-    financialAccountById: PropTypes.object,
-    updateFinancialAccount: PropTypes.func,
+    setBreadcrumbs: PropTypes.func,
+    companyId: PropTypes.string,
+    company: PropTypes.object,
   };
 
-  handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.financialAccountsPath);
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, financialAccountById, updateFinancialAccount } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      updateFinancialAccount({
-        variables: {
-          id: financialAccountById._id,
-          name: fieldsValue.name,
-        },
-      })
-        .then(() => {
-          history.push(paths.financialAccountsPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
-  };
+  componentDidMount() {
+    const { company, setBreadcrumbs } = this.props;
+    if (company) {
+      setBreadcrumbs([company.name, "Vouchers", "Edit"]);
+    }
+  }
 
   render() {
-    const { loading, financialAccountById } = this.props;
-    if (loading) return null;
-    const { getFieldDecorator } = this.props.form;
-
+    const voucherId = get(this.props, ["match", "params", "voucherId"], null);
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={financialAccountById.name}
-          required
-          requiredMessage="Please input a name for the financial account."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Tabs defaultActiveKey="1">
+        <Tabs.TabPane tab="Voucher Info" key="1">
+          <VoucherInfo voucherId={voucherId} {...this.props} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="File Attachments" key="4">
+          <AttachmentsList voucherId={voucherId} {...this.props} />
+        </Tabs.TabPane>
+      </Tabs>
     );
   }
 }
 
-const formQuery = gql`
-  query financialAccountById($id: String!) {
-    financialAccountById(id: $id) {
-      _id
-      name
-      startingBalance
-      currentBalance
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateFinancialAccount($id: String!, $name: String!) {
-    updateFinancialAccount(id: $id, name: $name) {
-      _id
-      name
-      startingBalance
-      currentBalance
-    }
-  }
-`;
-
 export default compose(
-  Form.create(),
-  graphql(formMutation, {
-    name: 'updateFinancialAccount',
-    options: {
-      refetchQueries: ['allFinancialAccounts', 'allAccessibleFinancialAccounts'],
-    },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { accountId } = match.params;
-      return { variables: { id: accountId } };
-    },
-  }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Financial Accounts', 'Edit'])
+  WithCompanyId(),
+  WithCompany(),
+  WithBreadcrumbs(["Accounts", "Vouchers", "Edit"])
 )(EditForm);

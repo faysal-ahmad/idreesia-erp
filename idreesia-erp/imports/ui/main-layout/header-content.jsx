@@ -21,6 +21,7 @@ modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
 modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
 modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
 modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
+modulePathsMapping[ModuleNames.security] = ModulePaths.security;
 
 class HeaderContent extends Component {
   static propTypes = {

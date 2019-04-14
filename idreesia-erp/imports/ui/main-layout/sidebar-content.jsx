@@ -1,13 +1,14 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Layout } from 'antd';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Layout } from "antd";
 
-import { ModuleNames } from '../constants';
-import { AdminSidebar } from '../modules/admin';
-import { InventorySidebar } from '../modules/inventory';
-import { HRSidebar } from '../modules/hr';
-import { AccountsSidebar } from '../modules/accounts';
+import { ModuleNames } from "../constants";
+import { AdminSidebar } from "../modules/admin";
+import { InventorySidebar } from "../modules/inventory";
+import { HRSidebar } from "../modules/hr";
+import { AccountsSidebar } from "../modules/accounts";
+import { SecuritySidebar } from "../modules/security";
 
 const { Sider } = Layout;
 
@@ -32,12 +33,16 @@ const SidebarContent = props => {
       sidebar = <AccountsSidebar history={history} />;
       break;
 
+    case ModuleNames.security:
+      sidebar = <SecuritySidebar history={history} />;
+      break;
+
     default:
       break;
   }
 
   return (
-    <Sider width={200} style={{ background: '#fff' }}>
+    <Sider width={200} style={{ background: "#fff" }}>
       {sidebar}
     </Sider>
   );

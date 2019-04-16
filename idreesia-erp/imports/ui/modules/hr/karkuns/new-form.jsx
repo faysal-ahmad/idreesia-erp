@@ -59,8 +59,8 @@ class NewForm extends Component {
             country,
           },
         })
-          .then(() => {
-            history.push(paths.karkunsPath);
+          .then(({ data: { createKarkun: newKarkun } }) => {
+            history.push(`${paths.karkunsPath}/${newKarkun._id}`);
           })
           .catch(error => {
             message.error(error.message, 5);

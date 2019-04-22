@@ -2,7 +2,17 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import { default as paths } from "./submodule-paths";
-import { DutiesNewForm, DutiesEditForm, DutiesList } from "./duties";
+import {
+  DutiesNewForm,
+  DutiesEditForm,
+  DutiesList,
+  DutiesAttendance,
+} from "./duties";
+import {
+  DutyShiftsNewForm,
+  DutyShiftsEditForm,
+  DutyShiftsList,
+} from "./duty-shifts";
 import {
   DutyLocationsNewForm,
   DutyLocationsEditForm,
@@ -18,8 +28,13 @@ import {
 const HRRouter = () => (
   <Switch>
     <Route path={paths.dutiesNewFormPath} component={DutiesNewForm} />
-    <Route path={paths.dutiesEditFormPath} component={DutiesEditForm} />
+    <Route path={paths.dutiesAttendancePath()} component={DutiesAttendance} />
+    <Route path={paths.dutiesEditFormPath()} component={DutiesEditForm} />
     <Route path={paths.dutiesPath} component={DutiesList} />
+
+    <Route path={paths.dutyShiftsNewFormPath} component={DutyShiftsNewForm} />
+    <Route path={paths.dutyShiftsEditFormPath} component={DutyShiftsEditForm} />
+    <Route path={paths.dutyShiftsPath} component={DutyShiftsList} />
 
     <Route
       path={paths.dutyLocationsNewFormPath}

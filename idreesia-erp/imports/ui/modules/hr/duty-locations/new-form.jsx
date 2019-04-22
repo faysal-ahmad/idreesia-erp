@@ -1,12 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import {
+  InputTextField,
+  FormButtonsSaveCancel,
+} from "/imports/ui/modules/helpers/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -70,10 +73,10 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'createDutyLocation',
+    name: "createDutyLocation",
     options: {
-      refetchQueries: ['allDutyLocations'],
+      refetchQueries: ["allDutyLocations"],
     },
   }),
-  WithBreadcrumbs(['Inventory', 'Setup', 'Duty Locations', 'New'])
+  WithBreadcrumbs(["HR", "Setup", "Duty Locations", "New"])
 )(NewForm);

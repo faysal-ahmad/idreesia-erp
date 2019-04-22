@@ -1,12 +1,17 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Button, Icon, Table, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Button, Icon, Table, Tooltip, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
 
 class List extends Component {
   static propTypes = {
@@ -18,26 +23,27 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record) => <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>,
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>
+      ),
     },
     {
-      key: 'action',
+      key: "action",
       render: (text, record) => {
         if (record.usedCount === 0) {
           return (
-            <span>
-              <a href="javascript:;">
-                <Icon
-                  type="delete"
-                  onClick={() => {
-                    this.handleDeleteClicked(record);
-                  }}
-                />
-              </a>
-            </span>
+            <Tooltip title="Delete">
+              <Icon
+                style={IconStyle}
+                type="delete"
+                onClick={() => {
+                  this.handleDeleteClicked(record);
+                }}
+              />
+            </Tooltip>
           );
         }
         return null;
@@ -71,10 +77,14 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={() => (
-            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-              New Duty Location
-            </Button>
-          )}
+          <Button
+            type="primary"
+            icon="plus-circle-o"
+            onClick={this.handleNewClicked}
+          >
+            New Duty Location
+          </Button>
+        )}
       />
     );
   }
@@ -101,10 +111,10 @@ export default compose(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyLocationMutation, {
-    name: 'removeDutyLocation',
+    name: "removeDutyLocation",
     options: {
-      refetchQueries: ['allDutyLocations'],
+      refetchQueries: ["allDutyLocations"],
     },
   }),
-  WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'List'])
+  WithBreadcrumbs(["HR", "Setup", "Duty Locations", "List"])
 )(List);

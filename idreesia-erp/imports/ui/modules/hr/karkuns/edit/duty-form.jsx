@@ -1,19 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
-import moment from "moment";
 import { Form } from "antd";
 
-import {
-  SelectField,
-  TimeField,
-  WeekDaysField,
-} from "/imports/ui/modules/helpers/fields";
+import { SelectField, WeekDaysField } from "/imports/ui/modules/helpers/fields";
 
 import allDutyRoles from "../../all-duty_roles";
 
 const DutyForm = props => {
   const { getFieldDecorator } = props.form;
-  const { defaultValues, allDuties, allDutyLocations } = props;
+  const { defaultValues, allDuties, allDutyShifts, allDutyLocations } = props;
 
   return (
     <Form layout="horizontal">
@@ -26,6 +21,17 @@ const DutyForm = props => {
         required
         requiredMessage="Please select a duty from the list."
         initialValue={defaultValues.dutyId}
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <SelectField
+        data={allDutyShifts}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="shiftId"
+        fieldLabel="Shift Name"
+        required={false}
+        initialValue={defaultValues.shiftId}
         getFieldDecorator={getFieldDecorator}
       />
 
@@ -51,28 +57,6 @@ const DutyForm = props => {
         getFieldDecorator={getFieldDecorator}
       />
 
-      <TimeField
-        fieldName="startTime"
-        fieldLabel="Start Time"
-        required
-        requiredMessage="Please input start time for the duty."
-        initialValue={
-          defaultValues.startTime ? moment(defaultValues.startTime) : null
-        }
-        getFieldDecorator={getFieldDecorator}
-      />
-
-      <TimeField
-        fieldName="endTime"
-        fieldLabel="End Time"
-        required
-        requiredMessage="Please input end time for the duty."
-        initialValue={
-          defaultValues.endTime ? moment(defaultValues.endTime) : null
-        }
-        getFieldDecorator={getFieldDecorator}
-      />
-
       <WeekDaysField
         fieldName="weekDays"
         fieldLabel="Week Days"
@@ -88,6 +72,7 @@ DutyForm.propTypes = {
   form: PropTypes.object,
   defaultValues: PropTypes.object,
   allDuties: PropTypes.array,
+  allDutyShifts: PropTypes.array,
   allDutyLocations: PropTypes.array,
 };
 

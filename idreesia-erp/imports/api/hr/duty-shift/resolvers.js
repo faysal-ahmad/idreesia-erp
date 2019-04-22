@@ -1,90 +1,94 @@
 import {
-  DutyLocations,
+  DutyShifts,
   KarkunDuties,
 } from "meteor/idreesia-common/collections/hr";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
-  DutyLocationType: {
-    usedCount: dutyLocationType =>
+  DutyShiftType: {
+    usedCount: dutyShiftType =>
       KarkunDuties.find({
-        locationId: { $eq: dutyLocationType._id },
+        shiftId: { $eq: dutyShiftType._id },
       }).count(),
   },
 
   Query: {
-    allDutyLocations() {
-      return DutyLocations.find({}).fetch();
+    allDutyShifts() {
+      return DutyShifts.find({}).fetch();
     },
-    dutyLocationById(obj, { id }) {
-      return DutyLocations.findOne(id);
+    dutyShiftById(obj, { id }) {
+      return DutyShifts.findOne(id);
     },
   },
 
   Mutation: {
-    createDutyLocation(obj, { name }, { user }) {
+    createDutyShift(obj, { name, startTime, endTime }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Duty Locations Setup Data in the System."
+          "You do not have permission to manage Duty Shifts Setup Data in the System."
         );
       }
 
       const date = new Date();
-      const dutyLocationId = DutyLocations.insert({
+      const dutyShiftId = DutyShifts.insert({
         name,
+        startTime,
+        endTime,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
         updatedBy: user._id,
       });
 
-      return DutyLocations.findOne(dutyLocationId);
+      return DutyShifts.findOne(dutyShiftId);
     },
 
-    updateDutyLocation(obj, { id, name }, { user }) {
+    updateDutyShift(obj, { id, name, startTime, endTime }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Duty Locations Setup Data in the System."
+          "You do not have permission to manage Duty Shifts Setup Data in the System."
         );
       }
 
       const date = new Date();
-      DutyLocations.update(id, {
+      DutyShifts.update(id, {
         $set: {
           name,
+          startTime,
+          endTime,
           updatedAt: date,
           updatedBy: user._id,
         },
       });
 
-      return DutyLocations.findOne(id);
+      return DutyShifts.findOne(id);
     },
 
-    removeDutyLocation(obj, { _id }, { user }) {
+    removeDutyShift(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Duty Locations Setup Data in the System."
+          "You do not have permission to manage Duty Shifts Setup Data in the System."
         );
       }
 
       const usedCount = KarkunDuties.find({
-        locationId: { $eq: _id },
+        shiftId: { $eq: _id },
       }).count();
 
       if (usedCount > 0) {
         throw new Error(
-          "This location cannot be deleted as it is currently in use."
+          "This shift cannot be deleted as it is currently in use."
         );
       }
 
-      return DutyLocations.remove(_id);
+      return DutyShifts.remove(_id);
     },
   },
 };

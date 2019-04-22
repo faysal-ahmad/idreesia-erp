@@ -6,13 +6,22 @@ export default class SubModulePaths {
   // *************************************************************************************
   static dutiesPath = `${ModulePaths.hr}/duties`;
   static dutiesNewFormPath = `${SubModulePaths.dutiesPath}/new`;
-  static dutiesEditFormPath = `${SubModulePaths.dutiesPath}/:dutyId`;
+  static dutiesEditFormPath(dutyId = ":dutyId") {
+    return `${SubModulePaths.dutiesPath}/${dutyId}`;
+  }
+  static dutiesAttendancePath(dutyId = ":dutyId") {
+    return `${SubModulePaths.dutiesPath}/${dutyId}/attendance`;
+  }
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
   static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
   static dutyLocationsEditFormPath = `${
     SubModulePaths.dutyLocationsPath
   }/:dutyLocationId`;
+
+  static dutyShiftsPath = `${ModulePaths.hr}/duty-shifts`;
+  static dutyShiftsNewFormPath = `${SubModulePaths.dutyShiftsPath}/new`;
+  static dutyShiftsEditFormPath = `${SubModulePaths.dutyShiftsPath}/:shiftId`;
 
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
   static karkunsSearchPath = `${SubModulePaths.karkunsPath}/search`;

@@ -1,7 +1,6 @@
 /* eslint "no-script-url": "off" */
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import moment from "moment";
 import {
   Button,
   Divider,
@@ -31,6 +30,7 @@ class DutyParticipation extends Component {
     karkunId: PropTypes.string,
     karkunDutiesByKarkunId: PropTypes.array,
     allDuties: PropTypes.array,
+    allDutyShifts: PropTypes.array,
     allDutyLocations: PropTypes.array,
     createKarkunDuty: PropTypes.func,
     updateKarkunDuty: PropTypes.func,
@@ -64,22 +64,9 @@ class DutyParticipation extends Component {
       key: "locationName",
     },
     {
-      title: "Start Time",
-      dataIndex: "startTime",
-      key: "startTime",
-      render: text => {
-        const startTime = moment(text);
-        return startTime.isValid() ? startTime.format("h:mm a") : null;
-      },
-    },
-    {
-      title: "End Time",
-      dataIndex: "endTime",
-      key: "endTime",
-      render: text => {
-        const endTime = moment(text);
-        return endTime.isValid() ? endTime.format("h:mm a") : null;
-      },
+      title: "Shift Name",
+      dataIndex: "shiftName",
+      key: "shiftName",
     },
     {
       title: "Days of Week",
@@ -154,10 +141,9 @@ class DutyParticipation extends Component {
           variables: {
             karkunId,
             dutyId: values.dutyId,
+            shiftId: values.shiftId,
             locationId: values.locationId,
             role: values.role,
-            startTime: values.startTime ? values.startTime.format() : null,
-            endTime: values.endTime ? values.endTime.format() : null,
             daysOfWeek: values.weekDays,
           },
         }).catch(error => {
@@ -178,10 +164,9 @@ class DutyParticipation extends Component {
             _id,
             karkunId,
             dutyId: values.dutyId,
+            shiftId: values.shiftId,
             locationId: values.locationId,
             role: values.role,
-            startTime: values.startTime ? values.startTime.format() : null,
-            endTime: values.endTime ? values.endTime.format() : null,
             daysOfWeek: values.weekDays,
           },
         }).catch(error => {
@@ -193,7 +178,12 @@ class DutyParticipation extends Component {
 
   render() {
     const { showNewForm, showEditForm, defaultValues } = this.state;
-    const { karkunDutiesByKarkunId, allDuties, allDutyLocations } = this.props;
+    const {
+      karkunDutiesByKarkunId,
+      allDuties,
+      allDutyShifts,
+      allDutyLocations,
+    } = this.props;
 
     return (
       <Fragment>
@@ -228,6 +218,7 @@ class DutyParticipation extends Component {
             }}
             defaultValues={defaultValues}
             allDuties={allDuties}
+            allDutyShifts={allDutyShifts}
             allDutyLocations={allDutyLocations}
           />
         </Modal>
@@ -247,6 +238,7 @@ class DutyParticipation extends Component {
             }}
             defaultValues={defaultValues}
             allDuties={allDuties}
+            allDutyShifts={allDutyShifts}
             allDutyLocations={allDutyLocations}
           />
         </Modal>
@@ -261,12 +253,21 @@ const listQuery = gql`
       _id
       dutyId
       dutyName
+      shiftId
+      shiftName
       locationId
       locationName
       role
-      startTime
-      endTime
       daysOfWeek
+    }
+  }
+`;
+
+const shiftsListQuery = gql`
+  query allDutyShifts {
+    allDutyShifts {
+      _id
+      name
     }
   }
 `;
@@ -294,28 +295,26 @@ const createKarkunDutyMutation = gql`
     $karkunId: String!
     $dutyId: String!
     $locationId: String
+    $shiftId: String
     $role: String
-    $startTime: String
-    $endTime: String
     $daysOfWeek: [String]
   ) {
     createKarkunDuty(
       karkunId: $karkunId
       dutyId: $dutyId
+      shiftId: $shiftId
       locationId: $locationId
       role: $role
-      startTime: $startTime
-      endTime: $endTime
       daysOfWeek: $daysOfWeek
     ) {
       _id
       dutyId
       dutyName
+      shiftId
+      shiftName
       locationId
       locationName
       role
-      startTime
-      endTime
       daysOfWeek
     }
   }
@@ -326,30 +325,28 @@ const updateKarkunDutyMutation = gql`
     $_id: String!
     $karkunId: String!
     $dutyId: String!
+    $shiftId: String
     $locationId: String
     $role: String
-    $startTime: String
-    $endTime: String
     $daysOfWeek: [String]
   ) {
     updateKarkunDuty(
       _id: $_id
       karkunId: $karkunId
       dutyId: $dutyId
+      shiftId: $shiftId
       locationId: $locationId
       role: $role
-      startTime: $startTime
-      endTime: $endTime
       daysOfWeek: $daysOfWeek
     ) {
       _id
       dutyId
       dutyName
+      shiftId
+      shiftName
       locationId
       locationName
       role
-      startTime
-      endTime
       daysOfWeek
     }
   }
@@ -368,6 +365,9 @@ export default compose(
       const { karkunId } = match.params;
       return { variables: { karkunId } };
     },
+  }),
+  graphql(shiftsListQuery, {
+    props: ({ data }) => ({ ...data }),
   }),
   graphql(locationsListQuery, {
     props: ({ data }) => ({ ...data }),

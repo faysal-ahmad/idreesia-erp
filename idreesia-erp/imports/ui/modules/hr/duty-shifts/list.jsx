@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import moment from "moment";
 import { Button, Icon, Table, Tooltip, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -17,8 +18,8 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allDuties: PropTypes.array,
-    removeDuty: PropTypes.func,
+    allDutyShifts: PropTypes.array,
+    removeDutyShift: PropTypes.func,
   };
 
   columns = [
@@ -27,30 +28,36 @@ class List extends Component {
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
-        <Link to={`${paths.dutiesEditFormPath(record._id)}`}>{text}</Link>
+        <Link to={`${paths.dutyShiftsPath}/${record._id}`}>{text}</Link>
       ),
+    },
+    {
+      title: "Start Time",
+      dataIndex: "startTime",
+      key: "startTime",
+      render: text => {
+        const startTime = moment(text);
+        return startTime.isValid() ? startTime.format("h:mm a") : null;
+      },
+    },
+    {
+      title: "End Time",
+      dataIndex: "endTime",
+      key: "endTime",
+      render: text => {
+        const endTime = moment(text);
+        return endTime.isValid() ? endTime.format("h:mm a") : null;
+      },
     },
     {
       key: "action",
       render: (text, record) => {
-        const actions = [
-          <Tooltip key="attendance" title="Attendance Sheets">
-            <Icon
-              type="calendar"
-              style={IconStyle}
-              onClick={() => {
-                this.handleAttendanceClicked(record);
-              }}
-            />
-          </Tooltip>,
-        ];
-
         if (record.usedCount === 0) {
-          actions.push(
-            <Tooltip key="delete" title="Delete">
+          return (
+            <Tooltip title="Delete">
               <Icon
-                type="delete"
                 style={IconStyle}
+                type="delete"
                 onClick={() => {
                   this.handleDeleteClicked(record);
                 }}
@@ -58,25 +65,19 @@ class List extends Component {
             </Tooltip>
           );
         }
-
-        return <div>{actions}</div>;
+        return null;
       },
     },
   ];
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.dutiesNewFormPath);
-  };
-
-  handleAttendanceClicked = record => {
-    const { history } = this.props;
-    history.push(paths.dutiesAttendancePath(record._id));
+    history.push(paths.dutyShiftsNewFormPath);
   };
 
   handleDeleteClicked = record => {
-    const { removeDuty } = this.props;
-    removeDuty({
+    const { removeDutyShift } = this.props;
+    removeDutyShift({
       variables: {
         _id: record._id,
       },
@@ -86,12 +87,12 @@ class List extends Component {
   };
 
   render() {
-    const { allDuties } = this.props;
+    const { allDutyShifts } = this.props;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allDuties}
+        dataSource={allDutyShifts}
         columns={this.columns}
         bordered
         title={() => (
@@ -100,7 +101,7 @@ class List extends Component {
             icon="plus-circle-o"
             onClick={this.handleNewClicked}
           >
-            New Duty
+            New Duty Shift
           </Button>
         )}
       />
@@ -109,18 +110,20 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allDuties {
-    allDuties {
+  query allDutyShifts {
+    allDutyShifts {
       _id
       name
+      startTime
+      endTime
       usedCount
     }
   }
 `;
 
-const removeDutyMutation = gql`
-  mutation removeDuty($_id: String!) {
-    removeDuty(_id: $_id)
+const removeDutyShiftMutation = gql`
+  mutation removeDutyShift($_id: String!) {
+    removeDutyShift(_id: $_id)
   }
 `;
 
@@ -128,11 +131,11 @@ export default compose(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  graphql(removeDutyMutation, {
-    name: "removeDuty",
+  graphql(removeDutyShiftMutation, {
+    name: "removeDutyShift",
     options: {
-      refetchQueries: ["allDuties"],
+      refetchQueries: ["allDutyShifts"],
     },
   }),
-  WithBreadcrumbs(["HR", "Duties", "List"])
+  WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "List"])
 )(List);

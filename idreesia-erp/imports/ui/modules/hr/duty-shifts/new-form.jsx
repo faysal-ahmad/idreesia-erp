@@ -7,6 +7,7 @@ import { compose, graphql } from "react-apollo";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
+  TimeField,
   InputTextField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
@@ -16,27 +17,29 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createDuty: PropTypes.func,
+    createDutyShift: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.dutiesPath);
+    history.push(paths.dutyShiftsPath);
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createDuty, history } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    const { form, createDutyShift, history } = this.props;
+    form.validateFields((err, { name, startTime, endTime }) => {
       if (err) return;
 
-      createDuty({
+      createDutyShift({
         variables: {
-          name: fieldsValue.name,
+          name,
+          startTime,
+          endTime,
         },
       })
         .then(() => {
-          history.push(paths.dutiesPath);
+          history.push(paths.dutyShiftsPath);
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -46,14 +49,24 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="name"
-          fieldLabel="Duty Name"
+          fieldLabel="Name"
           required
-          requiredMessage="Please input a name for the duty."
+          requiredMessage="Please input a name for the duty shift."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <TimeField
+          fieldName="startTime"
+          fieldLabel="Start Time"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <TimeField
+          fieldName="endTime"
+          fieldLabel="End Time"
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -63,10 +76,16 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createDuty($name: String!) {
-    createDuty(name: $name) {
+  mutation createDutyShift(
+    $name: String!
+    $startTime: String
+    $endTime: String
+  ) {
+    createDutyShift(name: $name, startTime: $startTime, endTime: $endTime) {
       _id
       name
+      startTime
+      endTime
     }
   }
 `;
@@ -74,10 +93,10 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: "createDuty",
+    name: "createDutyShift",
     options: {
-      refetchQueries: ["allDuties"],
+      refetchQueries: ["allDutyShifts"],
     },
   }),
-  WithBreadcrumbs(["HR", "Duties", "New"])
+  WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "New"])
 )(NewForm);

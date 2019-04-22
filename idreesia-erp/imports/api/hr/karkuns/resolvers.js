@@ -8,7 +8,7 @@ import { Attachments } from "meteor/idreesia-common/collections/common";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
-import getKarkuns from "./queries";
+import { getKarkuns, getKarkunsByDutyId } from "./queries";
 
 export default {
   KarkunType: {
@@ -71,6 +71,10 @@ export default {
 
     karkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
+    },
+
+    karkunsByDutyId(obj, { dutyId }) {
+      return getKarkunsByDutyId(dutyId);
     },
 
     karkunByBarcode(obj, { barcode }) {

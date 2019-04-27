@@ -30,6 +30,9 @@ import KarkunResolvers from "./hr/karkuns/resolvers";
 import KarkunDutySchema from "./hr/karkun-duties/karkun-duty.graphql";
 import KarkunDutyResolvers from "./hr/karkun-duties/resolvers";
 
+import AttendanceSchema from "./hr/attendance/attendance.graphql";
+import AttendanceResolvers from "./hr/attendance/resolvers";
+
 /**
  * Schema and Resolvers for the Inventory module
  */
@@ -85,6 +88,7 @@ const typeDefs = [
   DutySchema,
   KarkunSchema,
   KarkunDutySchema,
+  AttendanceSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -113,6 +117,7 @@ const resolvers = merge(
   DutyResolvers,
   KarkunResolvers,
   KarkunDutyResolvers,
+  AttendanceResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,

@@ -24,6 +24,10 @@ import {
   KarkunsList,
   KarkunsSearch,
 } from "./karkuns";
+import {
+  AttendanceSheetsUploadForm,
+  AttendanceSheetsList,
+} from "./attendance-sheets";
 
 const HRRouter = () => (
   <Switch>
@@ -50,6 +54,12 @@ const HRRouter = () => (
     <Route path={paths.karkunsSearchPath} component={KarkunsSearch} />
     <Route path={paths.karkunsEditFormPath} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath} component={KarkunsList} />
+
+    <Route
+      path={paths.attendanceSheetsUploadFormPath}
+      component={AttendanceSheetsUploadForm}
+    />
+    <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
   </Switch>
 );
 

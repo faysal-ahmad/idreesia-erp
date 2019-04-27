@@ -3,4 +3,5 @@ export default class SubModuleNames {
   static dutyLocations = "Duty Locations";
   static dutyShifts = "Duty Shifts";
   static karkuns = "Karkuns";
+  static attendanceSheets = "Attendance Sheets";
 }

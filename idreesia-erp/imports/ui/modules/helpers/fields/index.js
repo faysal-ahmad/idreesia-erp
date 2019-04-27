@@ -6,6 +6,7 @@ export { default as BarcodeField } from "./barcode-field";
 export { default as CheckboxField } from "./checkbox-field";
 export { default as DateField } from "./date-field";
 export { default as InputCnicField } from "./input-cnic-field";
+export { default as InputFileField } from "./input-file-field";
 export { default as InputNumberField } from "./input-number-field";
 export { default as InputTextField } from "./input-text-field";
 export { default as InputTextAreaField } from "./input-text-area-field";

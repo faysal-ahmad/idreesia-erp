@@ -14,6 +14,11 @@ import {
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import {
+  WithAllDuties,
+  WithAllDutyShifts,
+  WithAllDutyLocations,
+} from "/imports/ui/modules/hr/common/composers";
 import DutyForm from "./duty-form";
 
 const IconStyle = {
@@ -263,33 +268,6 @@ const listQuery = gql`
   }
 `;
 
-const shiftsListQuery = gql`
-  query allDutyShifts {
-    allDutyShifts {
-      _id
-      name
-    }
-  }
-`;
-
-const locationsListQuery = gql`
-  query allDutyLocations {
-    allDutyLocations {
-      _id
-      name
-    }
-  }
-`;
-
-const dutiesListQuery = gql`
-  query allDuties {
-    allDuties {
-      _id
-      name
-    }
-  }
-`;
-
 const createKarkunDutyMutation = gql`
   mutation createKarkunDuty(
     $karkunId: String!
@@ -366,15 +344,6 @@ export default compose(
       return { variables: { karkunId } };
     },
   }),
-  graphql(shiftsListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(locationsListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(dutiesListQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
   graphql(createKarkunDutyMutation, {
     name: "createKarkunDuty",
     options: {
@@ -392,5 +361,8 @@ export default compose(
     options: {
       refetchQueries: ["karkunDutiesByKarkunId"],
     },
-  })
+  }),
+  WithAllDuties(),
+  WithAllDutyShifts(),
+  WithAllDutyLocations()
 )(DutyParticipation);

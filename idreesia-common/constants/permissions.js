@@ -33,6 +33,8 @@ const Permissions = {
   HR_MANAGE_SETUP_DATA: "hr-manage-setup-data",
   HR_VIEW_KARKUNS: "hr-view-karkuns",
   HR_MANAGE_KARKUNS: "hr-manage-karkuns",
+  HR_VIEW_ATTENDANCES: "hr-view-attendances",
+  HR_MANAGE_ATTENDANCES: "hr-manage-attendances",
 
   // ****************************************************************************************
   // Security Module

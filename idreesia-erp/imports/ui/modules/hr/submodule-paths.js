@@ -27,4 +27,9 @@ export default class SubModulePaths {
   static karkunsSearchPath = `${SubModulePaths.karkunsPath}/search`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
+
+  static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
+  static attendanceSheetsUploadFormPath = `${
+    SubModulePaths.attendanceSheetsPath
+  }/upload`;
 }

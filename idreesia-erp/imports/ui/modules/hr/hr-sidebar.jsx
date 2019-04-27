@@ -25,6 +25,11 @@ class HRSidebar extends Component {
         history.push(paths.dutiesPath);
         break;
 
+      case "attendance-sheets":
+        setActiveSubModuleName(SubModuleNames.attendanceSheets);
+        history.push(paths.attendanceSheetsPath);
+        break;
+
       case "duty-shifts":
         setActiveSubModuleName(SubModuleNames.dutyShifts);
         history.push(paths.dutyShiftsPath);
@@ -59,7 +64,7 @@ class HRSidebar extends Component {
         onSelect={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">Karkuns</Menu.Item>
-        <Menu.Item key="duties">Duties</Menu.Item>
+        <Menu.Item key="attendance-sheets">Attendance Sheets</Menu.Item>
         <SubMenu
           key="setup"
           title={
@@ -68,6 +73,7 @@ class HRSidebar extends Component {
             </span>
           }
         >
+          <Menu.Item key="duties">Duties</Menu.Item>
           <Menu.Item key="duty-shifts">Duty Shifts</Menu.Item>
           <Menu.Item key="duty-locations">Duty Locations</Menu.Item>
         </SubMenu>

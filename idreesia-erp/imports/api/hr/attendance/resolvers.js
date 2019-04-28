@@ -1,4 +1,11 @@
-import { Attendances, Karkuns } from "meteor/idreesia-common/collections/hr";
+import moment from "moment";
+import {
+  Attendances,
+  Karkuns,
+  Duties,
+  DutyShifts,
+  DutyLocations,
+} from "meteor/idreesia-common/collections/hr";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
@@ -10,10 +17,28 @@ export default {
       Karkuns.findOne({
         _id: { $eq: attendanceType.karkunId },
       }),
+    duty: attendanceType =>
+      Duties.findOne({
+        _id: { $eq: attendanceType.dutyId },
+      }),
+    shift: attendanceType => {
+      if (!attendanceType.shiftId) return null;
+      return DutyShifts.findOne({
+        _id: { $eq: attendanceType.shiftId },
+      });
+    },
+    location: attendanceType => {
+      if (!attendanceType.locationId) return null;
+      return DutyLocations.findOne({
+        _id: { $eq: attendanceType.locationId },
+      });
+    },
   },
 
   Query: {
-    attendanceByDutyId(obj, { dutyId, month }, { user }) {
+    attendanceByMonth(obj, { month, dutyId, shiftId }, { user }) {
+      if (!dutyId) return [];
+
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_ATTENDANCES,
@@ -23,9 +48,14 @@ export default {
         return [];
       }
 
+      const formattedMonth = moment(month)
+        .startOf("month")
+        .format("MM-YYYY");
+
       return Attendances.find({
+        month: formattedMonth,
         dutyId,
-        month,
+        shiftId,
       }).fetch();
     },
   },

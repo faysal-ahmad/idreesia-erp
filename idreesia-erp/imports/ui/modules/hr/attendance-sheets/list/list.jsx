@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, DatePicker, Select, Table } from "antd";
-import { compose } from "react-apollo";
-
-import { WithKarkunsByDuty } from "/imports/ui/modules/hr/common/composers";
+import { Avatar, Button, DatePicker, Select, Table } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
 const ToolbarStyle = {
   display: "flex",
   flexFlow: "row nowrap",
   justifyContent: "space-between",
+  alignItems: "center",
   width: "100%",
 };
 
@@ -16,21 +16,29 @@ const ToolbarSectionStyle = {
   display: "flex",
   flexFlow: "row nowrap",
   justifyContent: "left",
-  width: "100%",
 };
 
 const SelectStyle = {
   width: "300px",
 };
 
+const NameDivStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  width: "100%",
+  cursor: "pointer",
+};
+
 export class List extends Component {
   static propTypes = {
-    dutyId: PropTypes.string,
     selectedMonth: PropTypes.object,
+    selectedDutyId: PropTypes.string,
     allDuties: PropTypes.array,
 
-    karkunsByDutyId: PropTypes.array,
-    karkunsLoading: PropTypes.bool,
+    attendanceByMonth: PropTypes.array,
+    attendanceLoading: PropTypes.bool,
     setPageParams: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
   };
@@ -38,28 +46,51 @@ export class List extends Component {
   columns = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "karkun.name",
+      key: "karkun.name",
+      render: (text, record) => {
+        if (record.karkun.imageId) {
+          const url = Meteor.absoluteUrl(
+            `download-file?attachmentId=${record.karkun.imageId}`
+          );
+          return (
+            <div style={NameDivStyle}>
+              <Avatar shape="square" size="large" src={url} />
+              &nbsp;&nbsp;
+              {text}
+            </div>
+          );
+        }
+
+        return (
+          <div style={NameDivStyle}>
+            <Avatar shape="square" size="large" icon="picture" />
+            &nbsp;&nbsp;
+            {text}
+          </div>
+        );
+      },
     },
     {
-      title: "CNIC Number",
-      dataIndex: "cnicNumber",
-      key: "cnicNumber",
+      title: "Shift Name",
+      dataIndex: "shift.name",
+      key: "shift.name",
     },
     {
       title: "Present",
-      dataIndex: "present",
-      key: "present",
+      dataIndex: "presentCount",
+      key: "presentCount",
     },
     {
       title: "Absent",
-      dataIndex: "absent",
-      key: "absent",
+      dataIndex: "absentCount",
+      key: "absentCount",
     },
     {
       title: "Percentage",
       dataIndex: "percentage",
       key: "percentage",
+      render: text => `${text}%`,
     },
   ];
 
@@ -84,8 +115,22 @@ export class List extends Component {
     });
   };
 
+  handleDutySelectionChange = value => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      selectedDutyId: value,
+    });
+  };
+
+  handleShiftSelectionChange = value => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      selectedShiftId: value,
+    });
+  };
+
   getDutySelector = () => {
-    const { dutyId, allDuties } = this.props;
+    const { selectedDutyId, allDuties } = this.props;
 
     let options = [];
     if (allDuties) {
@@ -100,9 +145,8 @@ export class List extends Component {
       <Select
         type="default"
         style={SelectStyle}
-        onClick={this.handleDutySelectionChange}
-        defaultValue={dutyId}
-        onChange={this.handleSizeChange}
+        onChange={this.handleDutySelectionChange}
+        defaultValue={selectedDutyId}
       >
         {options}
       </Select>
@@ -116,28 +160,26 @@ export class List extends Component {
         <div style={ToolbarSectionStyle}>
           {this.getDutySelector()}
           &nbsp;&nbsp;
-          <div>
-            <Button
-              type="primary"
-              shape="circle"
-              icon="left"
-              onClick={this.handleMonthGoBack}
-            />
-            &nbsp;&nbsp;
-            <DatePicker.MonthPicker
-              allowClear={false}
-              format="MMM, YYYY"
-              onChange={this.handleMonthChange}
-              value={selectedMonth}
-            />
-            &nbsp;&nbsp;
-            <Button
-              type="primary"
-              shape="circle"
-              icon="right"
-              onClick={this.handleMonthGoForward}
-            />
-          </div>
+          <Button
+            type="primary"
+            shape="circle"
+            icon="left"
+            onClick={this.handleMonthGoBack}
+          />
+          &nbsp;&nbsp;
+          <DatePicker.MonthPicker
+            allowClear={false}
+            format="MMM, YYYY"
+            onChange={this.handleMonthChange}
+            value={selectedMonth}
+          />
+          &nbsp;&nbsp;
+          <Button
+            type="primary"
+            shape="circle"
+            icon="right"
+            onClick={this.handleMonthGoForward}
+          />
         </div>
         <div>
           <Button
@@ -153,14 +195,14 @@ export class List extends Component {
   };
 
   render() {
-    const { karkunsByDutyId } = this.props;
+    const { attendanceByMonth } = this.props;
 
     return (
       <Table
         rowKey="_id"
         title={this.getTableHeader}
         columns={this.columns}
-        dataSource={karkunsByDutyId}
+        dataSource={attendanceByMonth}
         pagination={false}
         bordered
       />
@@ -168,4 +210,35 @@ export class List extends Component {
   }
 }
 
-export default compose(WithKarkunsByDuty())(List);
+const attendanceByMonthQuery = gql`
+  query attendanceByMonth($month: String!, $dutyId: String) {
+    attendanceByMonth(month: $month, dutyId: $dutyId) {
+      _id
+      karkunId
+      month
+      dutyId
+      shiftId
+      absentCount
+      presentCount
+      percentage
+      karkun {
+        _id
+        name
+        imageId
+      }
+      shift {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export default compose(
+  graphql(attendanceByMonthQuery, {
+    props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
+    options: ({ selectedMonth, selectedDutyId }) => ({
+      variables: { month: selectedMonth, dutyId: selectedDutyId },
+    }),
+  })
+)(List);

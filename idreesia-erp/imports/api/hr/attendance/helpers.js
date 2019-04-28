@@ -25,17 +25,38 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     const karkun = Karkuns.findOne(karkunId);
     if (!karkun) return;
 
-    Attendances.insert({
+    const formattedMonth = moment(month)
+      .startOf("month")
+      .format("MM-YYYY");
+
+    // If there is already an attendance present for this karkun/month/duty/shift combination
+    // then update that, otherwise insert a new one.
+    const existingAttendance = Attendances.findOne({
       karkunId,
       dutyId,
       shiftId,
-      month: moment(month)
-        .startOf("month")
-        .format("MM-YYYY"),
-      absentCount: numAbsentCount,
-      presentCount: numPresentCount,
-      percentage: round(numPresentCount / numTotalCount * 100),
+      month: formattedMonth,
     });
+
+    if (!existingAttendance) {
+      Attendances.insert({
+        karkunId,
+        dutyId,
+        shiftId,
+        month: formattedMonth,
+        absentCount: numAbsentCount,
+        presentCount: numPresentCount,
+        percentage: round(numPresentCount / numTotalCount * 100),
+      });
+    } else {
+      Attendances.update(existingAttendance._id, {
+        $set: {
+          absentCount: numAbsentCount,
+          presentCount: numPresentCount,
+          percentage: round(numPresentCount / numTotalCount * 100),
+        },
+      });
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error);

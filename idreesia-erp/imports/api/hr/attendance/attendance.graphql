@@ -9,6 +9,9 @@ type AttendanceType {
   percentage: Float
 
   karkun: KarkunType
+  duty: DutyType
+  shift: DutyShiftType
+  location: DutyLocationType
 
   createdByName: String
   updatedByName: String
@@ -20,7 +23,11 @@ type AttendanceType {
 }
 
 extend type Query {
-  attendanceByDutyId(dutyId: String!, month: String!): [AttendanceType]
+  attendanceByMonth(
+    month: String!
+    dutyId: String
+    shiftId: String
+  ): [AttendanceType]
 }
 
 extend type Mutation {

@@ -11,8 +11,8 @@ import List from "./list/list";
 
 class ListContainer extends Component {
   static propTypes = {
-    allDutiesLoading: PropTypes.bool,
     allDuties: PropTypes.array,
+    allDutiesLoading: PropTypes.bool,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -40,7 +40,7 @@ class ListContainer extends Component {
 
     return (
       <List
-        dutyId={selectedDutyId}
+        selectedDutyId={selectedDutyId}
         selectedMonth={selectedMonth}
         setPageParams={this.setPageParams}
         handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}

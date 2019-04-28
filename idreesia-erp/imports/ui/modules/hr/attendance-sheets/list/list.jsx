@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 import { Avatar, Button, DatePicker, Select, Table } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+
+import { Formats } from "meteor/idreesia-common/constants";
 
 const ToolbarStyle = {
   display: "flex",
@@ -265,7 +268,10 @@ export default compose(
   graphql(attendanceByMonthQuery, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
     options: ({ selectedMonth, selectedDutyId }) => ({
-      variables: { month: selectedMonth, dutyId: selectedDutyId },
+      variables: {
+        month: selectedMonth.format(Formats.DATE_FORMAT),
+        dutyId: selectedDutyId,
+      },
     }),
   })
 )(List);

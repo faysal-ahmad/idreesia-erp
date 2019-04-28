@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Barcode from "react-barcode";
+import moment from "moment";
 
 const barcodeOptions = {
   width: 2,
@@ -18,6 +19,11 @@ export default class MeetingCards extends Component {
   };
 
   getCardMarkup(attendance) {
+    debugger;
+    const month = moment(`01-${attendance.month}`, "DD-MM-YYYY")
+      .add(1, "months")
+      .startOf("month");
+
     const headingImageUrl = "/images/heading.png";
     const karkunImageUrl = Meteor.absoluteUrl(
       `download-file?attachmentId=${attendance.karkun.imageId}`
@@ -28,7 +34,7 @@ export default class MeetingCards extends Component {
         <div className="heading_card_k">
           <img src={headingImageUrl} width="533" height="234" />
         </div>
-        <div className="date_card_k">1 May 2019</div>
+        <div className="date_card_k">{month.format("D MMM YYYY")}</div>
         <div className="pic_card_k">
           <img src={karkunImageUrl} width="601" height="423" />
         </div>

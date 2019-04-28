@@ -4,6 +4,7 @@ import moment from "moment";
 import { toInteger, round } from "lodash";
 
 import { Attendances, Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Formats } from "meteor/idreesia-common/constants";
 
 const ID_COLUMN = "ID (Programing Codes)";
 const PRESENT_COLUMN = "P";
@@ -26,7 +27,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     const karkun = Karkuns.findOne(karkunId);
     if (!karkun) return;
 
-    const formattedMonth = moment(month)
+    const formattedMonth = moment(month, Formats.DATE_FORMAT)
       .startOf("month")
       .format("MM-YYYY");
 

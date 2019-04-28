@@ -4,6 +4,7 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import {
   WithAllDuties,
@@ -43,7 +44,7 @@ class UploadForm extends Component {
       uploadAttendances({
         variables: {
           csv,
-          month,
+          month: month.format(Formats.DATE_FORMAT),
           dutyId,
           shiftId,
         },

@@ -58,6 +58,22 @@ export default {
         shiftId,
       }).fetch();
     },
+
+    attendanceByBarcodeIds(obj, { barcodeIds }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_ATTENDANCES,
+          PermissionConstants.HR_MANAGE_ATTENDANCES,
+        ])
+      ) {
+        return [];
+      }
+
+      const barcodeIdsArray = barcodeIds.split(",");
+      return Attendances.find({
+        meetingCardBarcodeId: { $in: barcodeIdsArray },
+      }).fetch();
+    },
   },
 
   Mutation: {

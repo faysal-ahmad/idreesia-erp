@@ -27,6 +27,7 @@ import {
 import {
   AttendanceSheetsUploadForm,
   AttendanceSheetsList,
+  AttendanceSheetsMeetingCards,
 } from "./attendance-sheets";
 
 const HRRouter = () => (
@@ -58,6 +59,10 @@ const HRRouter = () => (
     <Route
       path={paths.attendanceSheetsUploadFormPath}
       component={AttendanceSheetsUploadForm}
+    />
+    <Route
+      path={paths.attendanceSheetsMeetingCardsPath}
+      component={AttendanceSheetsMeetingCards}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
   </Switch>

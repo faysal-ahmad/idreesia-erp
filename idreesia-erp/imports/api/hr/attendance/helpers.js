@@ -1,3 +1,4 @@
+import { Random } from "meteor/random";
 import csv from "csvtojson";
 import moment from "moment";
 import { toInteger, round } from "lodash";
@@ -47,13 +48,20 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
         absentCount: numAbsentCount,
         presentCount: numPresentCount,
         percentage: round(numPresentCount / numTotalCount * 100),
+        meetingCardBarcodeId: Random.id(8),
       });
     } else {
+      let meetingCardBarcodeId = existingAttendance.meetingCardBarcodeId;
+      if (!meetingCardBarcodeId) {
+        meetingCardBarcodeId = Random.id(8);
+      }
+
       Attendances.update(existingAttendance._id, {
         $set: {
           absentCount: numAbsentCount,
           presentCount: numPresentCount,
           percentage: round(numPresentCount / numTotalCount * 100),
+          meetingCardBarcodeId,
         },
       });
     }

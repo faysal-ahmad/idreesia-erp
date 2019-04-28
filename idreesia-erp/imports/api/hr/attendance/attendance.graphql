@@ -7,6 +7,7 @@ type AttendanceType {
   absentCount: Int
   presentCount: Int
   percentage: Float
+  meetingCardBarcodeId: String
 
   karkun: KarkunType
   duty: DutyType
@@ -28,6 +29,7 @@ extend type Query {
     dutyId: String
     shiftId: String
   ): [AttendanceType]
+  attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
 }
 
 extend type Mutation {

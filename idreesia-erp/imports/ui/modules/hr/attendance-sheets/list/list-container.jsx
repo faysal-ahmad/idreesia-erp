@@ -7,7 +7,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 
-import List from "./list/list";
+import List from "./list";
 
 class ListContainer extends Component {
   static propTypes = {
@@ -33,6 +33,19 @@ class ListContainer extends Component {
     history.push(paths.attendanceSheetsUploadFormPath);
   };
 
+  handleViewCards = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    debugger;
+    const { history } = this.props;
+    const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
+    const barcodeIdsString = barcodeIds.join(",");
+    const path = `${
+      paths.attendanceSheetsMeetingCardsPath
+    }?barcodeIds=${barcodeIdsString}`;
+    history.push(path);
+  };
+
   render() {
     const { allDuties, allDutiesLoading } = this.props;
     const { selectedMonth, selectedDutyId } = this.state;
@@ -44,6 +57,7 @@ class ListContainer extends Component {
         selectedMonth={selectedMonth}
         setPageParams={this.setPageParams}
         handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
+        handleViewCards={this.handleViewCards}
         allDuties={allDuties}
       />
     );

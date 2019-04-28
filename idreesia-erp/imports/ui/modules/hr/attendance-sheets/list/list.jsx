@@ -41,6 +41,11 @@ export class List extends Component {
     attendanceLoading: PropTypes.bool,
     setPageParams: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
+    handleViewCards: PropTypes.func,
+  };
+
+  state = {
+    selectedRows: [],
   };
 
   columns = [
@@ -94,6 +99,14 @@ export class List extends Component {
     },
   ];
 
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
+
   handleMonthChange = value => {
     const { setPageParams } = this.props;
     setPageParams({
@@ -127,6 +140,14 @@ export class List extends Component {
     setPageParams({
       selectedShiftId: value,
     });
+  };
+
+  handleViewCards = () => {
+    const { handleViewCards } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewCards) {
+      handleViewCards(selectedRows);
+    }
   };
 
   getDutySelector = () => {
@@ -187,7 +208,11 @@ export class List extends Component {
             icon="upload"
             onClick={handleUploadAttendanceSheet}
           >
-            Upload Attendance Sheet
+            Upload Attendance
+          </Button>
+          &nbsp;
+          <Button type="primary" icon="idcard" onClick={this.handleViewCards}>
+            Duty Cards
           </Button>
         </div>
       </div>
@@ -202,6 +227,7 @@ export class List extends Component {
         rowKey="_id"
         title={this.getTableHeader}
         columns={this.columns}
+        rowSelection={this.rowSelection}
         dataSource={attendanceByMonth}
         pagination={false}
         bordered
@@ -221,6 +247,7 @@ const attendanceByMonthQuery = gql`
       absentCount
       presentCount
       percentage
+      meetingCardBarcodeId
       karkun {
         _id
         name

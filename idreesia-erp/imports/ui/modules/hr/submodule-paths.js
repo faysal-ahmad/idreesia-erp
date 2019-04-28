@@ -32,4 +32,7 @@ export default class SubModulePaths {
   static attendanceSheetsUploadFormPath = `${
     SubModulePaths.attendanceSheetsPath
   }/upload`;
+  static attendanceSheetsMeetingCardsPath = `${
+    SubModulePaths.attendanceSheetsPath
+  }/meeting-cards`;
 }

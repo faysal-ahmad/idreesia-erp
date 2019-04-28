@@ -32,4 +32,7 @@ export default new SimpleSchema({
     type: Number,
     optional: true
   },
+  meetingCardBarcodeId: {
+    type: String
+  }
 }).extend(identifiable);

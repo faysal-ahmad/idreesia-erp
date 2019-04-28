@@ -36,7 +36,6 @@ class ListContainer extends Component {
   handleViewCards = selectedRows => {
     if (!selectedRows || selectedRows.length === 0) return;
 
-    debugger;
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(",");

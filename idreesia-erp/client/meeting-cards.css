@@ -17,9 +17,11 @@
   font-size: 20px;
   font-weight: bold;
   margin: 0;
+  border: 0px;
+  padding-bottom: 0;
 }
 .k_location {
-  margin: 7px 0;
+  margin: 3px 0;
 }
 .card_karkon img {
   width: 100%;
@@ -28,25 +30,28 @@
 .heading_card_k {
   margin: 6px;
 }
+
 .percentage {
   background-color: #000;
   color: #fff;
   border-radius: 50%;
   width: 50px;
-  height: 35px;
+  height: 48px;
   font-weight: bold;
-  padding-top: 15px;
+  padding-top: 14px;
   position: relative;
-  margin-top: -46px;
+  margin-top: -58px;
   z-index: 99;
   margin-left: 5px;
 }
+
 .date_card_k {
   font-weight: bold;
   font-size: 20px;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 .pic_card_k {
   overflow: hidden;
-  height: 125px;
+  height: 115px;
+  margin-bottom: 10px;
 }

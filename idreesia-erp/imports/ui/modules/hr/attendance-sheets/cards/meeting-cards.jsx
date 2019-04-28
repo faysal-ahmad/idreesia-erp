@@ -19,7 +19,6 @@ export default class MeetingCards extends Component {
   };
 
   getCardMarkup(attendance) {
-    debugger;
     const month = moment(`01-${attendance.month}`, "DD-MM-YYYY")
       .add(1, "months")
       .startOf("month");

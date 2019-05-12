@@ -16,9 +16,8 @@ const DataStyle = {
 
 const SearchResult = props => {
   const { barcode, loading, attendanceByBarcodeId } = props;
-  if (!barcode || loading) {
-    return <Spin size="large" />;
-  }
+  if (!barcode) return null;
+  if (loading) return <Spin size="large" />;
 
   if (!attendanceByBarcodeId) {
     message.error(`No records found against scanned barcode ${barcode}`, 2);

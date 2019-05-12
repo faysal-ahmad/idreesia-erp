@@ -29,6 +29,7 @@ extend type Query {
     dutyId: String
     shiftId: String
   ): [AttendanceType]
+  attendanceByBarcodeId(barcodeId: String!): AttendanceType
   attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
 }
 

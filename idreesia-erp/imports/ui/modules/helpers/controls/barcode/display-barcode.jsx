@@ -18,8 +18,8 @@ export default class DisplayBarcode extends Component {
   };
 
   options = {
-    width: 2,
-    height: 60,
+    width: 1,
+    height: 20,
     format: "CODE128B",
     displayValue: true,
     background: "#ffffff",

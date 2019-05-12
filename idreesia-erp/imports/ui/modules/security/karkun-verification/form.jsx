@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Row } from "antd";
+import { Divider, Row } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { CaptureBarcode } from "/imports/ui/modules/helpers/controls";
+import { ScanBarcode } from "/imports/ui/modules/helpers/controls";
 import SearchResult from "./search-result";
 
 class Form extends Component {
@@ -13,7 +13,7 @@ class Form extends Component {
   };
 
   state = {
-    barcode: "",
+    barcode: "HG7Cphsu",
   };
 
   onBarcodeCaptured = code => {
@@ -26,9 +26,11 @@ class Form extends Component {
     return (
       <Fragment>
         <Row>
-          <CaptureBarcode onBarcodeCaptured={this.onBarcodeCaptured} />
+          <ScanBarcode onBarcodeCaptured={this.onBarcodeCaptured} />
         </Row>
-        <br />
+        <Row>
+          <Divider />
+        </Row>
         <Row>
           <SearchResult barcode={this.state.barcode} />
         </Row>

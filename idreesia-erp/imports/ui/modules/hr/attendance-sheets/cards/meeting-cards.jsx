@@ -4,13 +4,21 @@ import Barcode from "react-barcode";
 import moment from "moment";
 
 const barcodeOptions = {
-  width: 2,
-  height: 119,
+  width: 1,
+  height: 20,
   format: "CODE128B",
   displayValue: false,
   background: "#ffffff",
   lineColor: "#000000",
   margin: 5,
+};
+
+const ContainerStyle = {
+  display: "flex",
+  flexFlow: "row wrap",
+  justifyContent: "center",
+  width: "700px",
+  padding: "20px",
 };
 
 export default class MeetingCards extends Component {
@@ -59,6 +67,6 @@ export default class MeetingCards extends Component {
       this.getCardMarkup(attendance)
     );
 
-    return <div className="page_print">{cards}</div>;
+    return <div style={ContainerStyle}>{cards}</div>;
   }
 }

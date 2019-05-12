@@ -76,7 +76,9 @@ class EditForm extends Component {
           disabled
           fieldName="createdAt"
           fieldLabel="Created At"
-          initialValue={moment(dutyById.createdAt).format("DD-MM-YYYY hh:mm a")}
+          initialValue={moment(Date(dutyById.createdAt)).format(
+            "DD-MM-YYYY hh:mm a"
+          )}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -90,7 +92,9 @@ class EditForm extends Component {
           disabled
           fieldName="updatedAt"
           fieldLabel="Updated At"
-          initialValue={moment(dutyById.updatedAt).format("DD-MM-YYYY hh:mm a")}
+          initialValue={moment(Date(dutyById.updatedAt)).format(
+            "DD-MM-YYYY hh:mm a"
+          )}
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />

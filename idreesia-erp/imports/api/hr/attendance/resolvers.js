@@ -60,6 +60,21 @@ export default {
       }).fetch();
     },
 
+    attendanceByBarcodeId(obj, { barcodeId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_ATTENDANCES,
+          PermissionConstants.HR_MANAGE_ATTENDANCES,
+        ])
+      ) {
+        return [];
+      }
+
+      return Attendances.findOne({
+        meetingCardBarcodeId: { $eq: barcodeId },
+      });
+    },
+
     attendanceByBarcodeIds(obj, { barcodeIds }, { user }) {
       if (
         !hasOnePermission(user._id, [

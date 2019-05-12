@@ -4,6 +4,7 @@ export { default as AttachmentsList } from "./attachments/attachments-list";
 
 export { default as InputFile } from "./file/input-file";
 
+export { default as ScanBarcode } from "./barcode/scanner/scan-barcode";
 export { default as CaptureBarcode } from "./barcode/webcam/capture-barcode";
 export { default as DisplayBarcode } from "./barcode/display-barcode";
 

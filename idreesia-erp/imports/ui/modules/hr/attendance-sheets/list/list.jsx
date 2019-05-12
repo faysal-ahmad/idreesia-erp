@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import moment from "moment";
 import { Avatar, Button, DatePicker, Select, Table } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";

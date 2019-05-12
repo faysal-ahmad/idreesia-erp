@@ -35,7 +35,7 @@ export default class CaptureBarcode extends Component {
     return (
       <Fragment>
         <Button type="default" onClick={this.scanBarcode}>
-          <Icon type="tag" />Scan Barcode
+          <Icon type="tag" />Scan Barcode with Webcam
         </Button>
 
         <Modal

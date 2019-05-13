@@ -33,20 +33,8 @@ class List extends Component {
     {
       key: "action",
       render: (text, record) => {
-        const actions = [
-          <Tooltip key="attendance" title="Attendance Sheets">
-            <Icon
-              type="calendar"
-              style={IconStyle}
-              onClick={() => {
-                this.handleAttendanceClicked(record);
-              }}
-            />
-          </Tooltip>,
-        ];
-
         if (record.usedCount === 0) {
-          actions.push(
+          return (
             <Tooltip key="delete" title="Delete">
               <Icon
                 type="delete"
@@ -59,7 +47,7 @@ class List extends Component {
           );
         }
 
-        return <div>{actions}</div>;
+        return null;
       },
     },
   ];
@@ -67,11 +55,6 @@ class List extends Component {
   handleNewClicked = () => {
     const { history } = this.props;
     history.push(paths.dutiesNewFormPath);
-  };
-
-  handleAttendanceClicked = record => {
-    const { history } = this.props;
-    history.push(paths.dutiesAttendancePath(record._id));
   };
 
   handleDeleteClicked = record => {

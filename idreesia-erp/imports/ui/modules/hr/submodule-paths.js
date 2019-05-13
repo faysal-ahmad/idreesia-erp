@@ -9,9 +9,6 @@ export default class SubModulePaths {
   static dutiesEditFormPath(dutyId = ":dutyId") {
     return `${SubModulePaths.dutiesPath}/${dutyId}`;
   }
-  static dutiesAttendancePath(dutyId = ":dutyId") {
-    return `${SubModulePaths.dutiesPath}/${dutyId}/attendance`;
-  }
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
   static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;

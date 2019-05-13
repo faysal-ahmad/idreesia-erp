@@ -148,6 +148,16 @@ const permissionsData = [
     ],
   },
   {
+    title: "Security",
+    key: "module-security",
+    children: [
+      {
+        title: "Karkun Verification",
+        key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
+      },
+    ],
+  },
+  {
     title: "Inventory",
     key: "module-inventory",
     children: [

@@ -65,6 +65,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_ATTENDANCES,
           PermissionConstants.HR_MANAGE_ATTENDANCES,
+          PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
         return [];

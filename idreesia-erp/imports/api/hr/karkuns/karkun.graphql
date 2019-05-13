@@ -18,7 +18,6 @@ type KarkunType {
   city: String
   country: String
   imageId: String
-  barcode: String
   userId: String
   attachmentIds: [String]
 
@@ -43,7 +42,6 @@ extend type Query {
   pagedKarkuns(queryString: String): PagedKarkunType
   karkunById(_id: String!): KarkunType
   karkunsByDutyId(dutyId: String!): [KarkunType]
-  karkunByBarcode(barcode: String!): KarkunType
   karkunByUserId(userId: String!): KarkunType
 }
 
@@ -58,7 +56,6 @@ extend type Mutation {
     address: String
     city: String
     country: String
-    barcode: String
   ): KarkunType
 
   updateKarkun(
@@ -72,7 +69,6 @@ extend type Mutation {
     address: String
     city: String
     country: String
-    barcode: String
   ): KarkunType
 
   deleteKarkun(_id: String!): Int

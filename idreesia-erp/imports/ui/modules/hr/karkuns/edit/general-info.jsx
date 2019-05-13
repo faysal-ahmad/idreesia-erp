@@ -6,7 +6,6 @@ import { compose, graphql } from "react-apollo";
 
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
-  BarcodeField,
   InputCnicField,
   InputTextField,
   InputTextAreaField,
@@ -47,7 +46,6 @@ class GeneralInfo extends Component {
           address,
           city,
           country,
-          barcode,
         }
       ) => {
         if (err) return;
@@ -64,7 +62,6 @@ class GeneralInfo extends Component {
             address,
             city,
             country,
-            barcode,
           },
         })
           .then(() => {
@@ -157,14 +154,6 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <BarcodeField
-          fieldName="barcode"
-          fieldLabel="Barcode"
-          initialValue={karkunById.barcode}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -184,7 +173,6 @@ const formQuery = gql`
       address
       city
       country
-      barcode
     }
   }
 `;
@@ -201,7 +189,6 @@ const formMutation = gql`
     $address: String
     $city: String
     $country: String
-    $barcode: String
   ) {
     updateKarkun(
       _id: $_id
@@ -214,7 +201,6 @@ const formMutation = gql`
       address: $address
       city: $city
       country: $country
-      barcode: $barcode
     ) {
       _id
       firstName
@@ -226,7 +212,6 @@ const formMutation = gql`
       address
       city
       country
-      barcode
     }
   }
 `;

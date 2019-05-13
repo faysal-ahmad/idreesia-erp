@@ -24,7 +24,6 @@ export default class SubModulePaths {
   static dutyShiftsEditFormPath = `${SubModulePaths.dutyShiftsPath}/:shiftId`;
 
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
-  static karkunsSearchPath = `${SubModulePaths.karkunsPath}/search`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
 

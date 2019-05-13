@@ -77,10 +77,6 @@ export default {
       return getKarkunsByDutyId(dutyId);
     },
 
-    karkunByBarcode(obj, { barcode }) {
-      return Karkuns.findOne({ barcode });
-    },
-
     karkunByUserId(obj, { userId }) {
       return Karkuns.findOne({
         userId: { $eq: userId },
@@ -101,7 +97,6 @@ export default {
         address,
         city,
         country,
-        barcode,
       },
       { user }
     ) {
@@ -137,7 +132,6 @@ export default {
         address,
         city,
         country,
-        barcode,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -160,7 +154,6 @@ export default {
         address,
         city,
         country,
-        barcode,
       },
       { user }
     ) {
@@ -197,7 +190,6 @@ export default {
           address,
           city,
           country,
-          barcode,
           updatedAt: date,
           updatedBy: user._id,
         },

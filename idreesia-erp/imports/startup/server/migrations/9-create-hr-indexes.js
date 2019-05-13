@@ -7,6 +7,5 @@ Migrations.add({
   up() {
     const karkuns = Karkuns.rawCollection();
     karkuns.createIndex({ city: 1 }, { background: true });
-    karkuns.createIndex({ barcode: 1 }, { background: true });
   },
 });

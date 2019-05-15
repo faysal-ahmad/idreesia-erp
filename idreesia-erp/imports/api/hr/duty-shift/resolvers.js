@@ -1,4 +1,5 @@
 import {
+  Duties,
   DutyShifts,
   KarkunDuties,
 } from "meteor/idreesia-common/collections/hr";
@@ -7,6 +8,7 @@ import { Permissions as PermissionConstants } from "meteor/idreesia-common/const
 
 export default {
   DutyShiftType: {
+    duty: dutyShiftType => Duties.findOne(dutyShiftType.dutyId),
     usedCount: dutyShiftType =>
       KarkunDuties.find({
         shiftId: { $eq: dutyShiftType._id },
@@ -17,13 +19,20 @@ export default {
     allDutyShifts() {
       return DutyShifts.find({}).fetch();
     },
+
+    dutyShiftsByDutyId(obj, { dutyId }) {
+      return DutyShifts.find({
+        dutyId,
+      }).fetch();
+    },
+
     dutyShiftById(obj, { id }) {
       return DutyShifts.findOne(id);
     },
   },
 
   Mutation: {
-    createDutyShift(obj, { name, startTime, endTime }, { user }) {
+    createDutyShift(obj, { name, dutyId, startTime, endTime }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -35,6 +44,7 @@ export default {
       const date = new Date();
       const dutyShiftId = DutyShifts.insert({
         name,
+        dutyId,
         startTime,
         endTime,
         createdAt: date,
@@ -46,7 +56,7 @@ export default {
       return DutyShifts.findOne(dutyShiftId);
     },
 
-    updateDutyShift(obj, { id, name, startTime, endTime }, { user }) {
+    updateDutyShift(obj, { id, name, dutyId, startTime, endTime }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -59,6 +69,7 @@ export default {
       DutyShifts.update(id, {
         $set: {
           name,
+          dutyId,
           startTime,
           endTime,
           updatedAt: date,

@@ -8,15 +8,19 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   TimeField,
+  SelectField,
   InputTextField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+
+    allDuties: PropTypes.array,
     createDutyShift: PropTypes.func,
   };
 
@@ -28,12 +32,13 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createDutyShift, history } = this.props;
-    form.validateFields((err, { name, startTime, endTime }) => {
+    form.validateFields((err, { name, dutyId, startTime, endTime }) => {
       if (err) return;
 
       createDutyShift({
         variables: {
           name,
+          dutyId,
           startTime,
           endTime,
         },
@@ -49,6 +54,8 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { allDuties } = this.props;
+
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
@@ -56,6 +63,16 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the duty shift."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={allDuties}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="dutyId"
+          fieldLabel="Duty Name"
+          required
+          requiredMessage="Please select a duty from the list."
           getFieldDecorator={getFieldDecorator}
         />
         <TimeField
@@ -78,12 +95,19 @@ class NewForm extends Component {
 const formMutation = gql`
   mutation createDutyShift(
     $name: String!
+    $dutyId: String!
     $startTime: String
     $endTime: String
   ) {
-    createDutyShift(name: $name, startTime: $startTime, endTime: $endTime) {
+    createDutyShift(
+      name: $name
+      dutyId: $dutyId
+      startTime: $startTime
+      endTime: $endTime
+    ) {
       _id
       name
+      dutyId
       startTime
       endTime
     }
@@ -98,5 +122,6 @@ export default compose(
       refetchQueries: ["allDutyShifts"],
     },
   }),
+  WithAllDuties(),
   WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "New"])
 )(NewForm);

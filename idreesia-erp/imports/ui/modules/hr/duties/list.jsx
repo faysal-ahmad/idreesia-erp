@@ -31,6 +31,21 @@ class List extends Component {
       ),
     },
     {
+      title: "Shifts",
+      dataIndex: "shifts",
+      key: "shifts",
+      render: (text, record) => {
+        if (!record.shifts || record.shifts.length === 0) return null;
+        const shiftNames = record.shifts.map(shift => shift.name);
+        return shiftNames.join(", ");
+      },
+    },
+    {
+      title: "Karkuns",
+      dataIndex: "usedCount",
+      key: "usedCount",
+    },
+    {
       key: "action",
       render: (text, record) => {
         if (record.usedCount === 0) {
@@ -97,6 +112,10 @@ const listQuery = gql`
       _id
       name
       usedCount
+      shifts {
+        _id
+        name
+      }
     }
   }
 `;

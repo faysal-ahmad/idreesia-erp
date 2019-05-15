@@ -6,6 +6,9 @@ export default new SimpleSchema({
   name: {
     type: String
   },
+  dutyId: {
+    type: String
+  },
   startTime: {
     type: String,
     optional: true

@@ -9,9 +9,11 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   TimeField,
+  SelectField,
   InputTextField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
 
 class EditForm extends Component {
   static propTypes = {
@@ -20,6 +22,8 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    allDutiesLoading: PropTypes.bool,
+    allDuties: PropTypes.array,
     loading: PropTypes.bool,
     dutyShiftById: PropTypes.object,
     updateDutyShift: PropTypes.func,
@@ -33,13 +37,14 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, dutyShiftById, updateDutyShift } = this.props;
-    form.validateFields((err, { name, startTime, endTime }) => {
+    form.validateFields((err, { name, dutyId, startTime, endTime }) => {
       if (err) return;
 
       updateDutyShift({
         variables: {
           id: dutyShiftById._id,
           name,
+          dutyId,
           startTime,
           endTime,
         },
@@ -54,10 +59,11 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, dutyShiftById } = this.props;
+    const { loading, allDutiesLoading, allDuties, dutyShiftById } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (loading) return null;
+    if (loading || allDutiesLoading) return null;
 
+    debugger;
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
@@ -66,6 +72,16 @@ class EditForm extends Component {
           initialValue={dutyShiftById.name}
           required
           requiredMessage="Please input a name for the duty location."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={allDuties}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="dutyId"
+          fieldLabel="Duty Name"
+          required
+          requiredMessage="Please select a duty from the list."
           getFieldDecorator={getFieldDecorator}
         />
         <TimeField
@@ -96,6 +112,7 @@ const formQuery = gql`
     dutyShiftById(id: $id) {
       _id
       name
+      dutyId
       startTime
       endTime
     }
@@ -106,17 +123,20 @@ const formMutation = gql`
   mutation updateDutyShift(
     $id: String!
     $name: String!
+    $dutyId: String!
     $startTime: String
     $endTime: String
   ) {
     updateDutyShift(
       id: $id
       name: $name
+      dutyId: $dutyId
       startTime: $startTime
       endTime: $endTime
     ) {
       _id
       name
+      dutyId
       startTime
       endTime
     }
@@ -138,5 +158,6 @@ export default compose(
       return { variables: { id: shiftId } };
     },
   }),
+  WithAllDuties(),
   WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "Edit"])
 )(EditForm);

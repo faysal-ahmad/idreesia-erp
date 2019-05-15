@@ -1,9 +1,12 @@
 type DutyShiftType {
   _id: String
+  dutyId: String
   name: String
   startTime: String
   endTime: String
   usedCount: Int
+
+  duty: DutyType
 
   createdAt: String
   createdBy: String
@@ -13,18 +16,21 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
+  dutyShiftsByDutyId(dutyId: String!): [DutyShiftType]
   dutyShiftById(id: String!): DutyShiftType
 }
 
 extend type Mutation {
   createDutyShift(
     name: String!
+    dutyId: String!
     startTime: String
     endTime: String
   ): DutyShiftType
   updateDutyShift(
     id: String!
     name: String!
+    dutyId: String!
     startTime: String
     endTime: String
   ): DutyShiftType

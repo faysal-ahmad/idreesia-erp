@@ -24,12 +24,17 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
+      title: "Shift Name",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
         <Link to={`${paths.dutyShiftsPath}/${record._id}`}>{text}</Link>
       ),
+    },
+    {
+      title: "Duty Name",
+      dataIndex: "duty.name",
+      key: "duty.name",
     },
     {
       title: "Start Time",
@@ -117,6 +122,10 @@ const listQuery = gql`
       startTime
       endTime
       usedCount
+      duty {
+        _id
+        name
+      }
     }
   }
 `;

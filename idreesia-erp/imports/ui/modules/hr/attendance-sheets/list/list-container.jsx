@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { compose } from "react-apollo";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
+import { message } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
@@ -13,6 +15,7 @@ class ListContainer extends Component {
   static propTypes = {
     allDuties: PropTypes.array,
     allDutiesLoading: PropTypes.bool,
+    deleteAttendances: PropTypes.func,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -45,6 +48,24 @@ class ListContainer extends Component {
     history.push(path);
   };
 
+  handleDeleteAttendance = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { deleteAttendances } = this.props;
+    const ids = selectedRows.map(({ _id }) => _id);
+    deleteAttendances({
+      variables: {
+        ids,
+      },
+    })
+      .then(() => {
+        message.success("Selected attendance records have been deleted.", 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
   render() {
     const { allDuties, allDutiesLoading } = this.props;
     const { selectedMonth, selectedDutyId } = this.state;
@@ -57,13 +78,26 @@ class ListContainer extends Component {
         setPageParams={this.setPageParams}
         handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
         handleViewCards={this.handleViewCards}
+        handleDeleteAttendance={this.handleDeleteAttendance}
         allDuties={allDuties}
       />
     );
   }
 }
 
+const formMutation = gql`
+  mutation deleteAttendances($ids: [String]!) {
+    deleteAttendances(ids: $ids)
+  }
+`;
+
 export default compose(
+  graphql(formMutation, {
+    name: "deleteAttendances",
+    options: {
+      refetchQueries: ["attendanceByMonth"],
+    },
+  }),
   WithAllDuties(),
   WithBreadcrumbs(["HR", "Attendance Sheets", "List"])
 )(ListContainer);

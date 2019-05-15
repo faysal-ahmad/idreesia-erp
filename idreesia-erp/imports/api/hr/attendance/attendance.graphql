@@ -40,4 +40,6 @@ extend type Mutation {
     month: String!
     shiftId: String
   ): Int
+
+  deleteAttendances(ids: [String]!): Int
 }

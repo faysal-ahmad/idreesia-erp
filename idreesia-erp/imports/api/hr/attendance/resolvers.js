@@ -105,5 +105,19 @@ export default {
 
       return processAttendanceSheet(csv, month, dutyId, shiftId);
     },
+
+    deleteAttendances(obj, { ids }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+      ) {
+        throw new Error(
+          "You do not have permission to manage attendances in the System."
+        );
+      }
+
+      return Attendances.remove({
+        _id: { $in: ids },
+      });
+    },
   },
 };

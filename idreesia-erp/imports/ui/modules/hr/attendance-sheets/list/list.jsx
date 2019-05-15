@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Button, DatePicker, Select, Table } from "antd";
+import {
+  Avatar,
+  Button,
+  DatePicker,
+  Dropdown,
+  Icon,
+  Menu,
+  Select,
+  Table,
+} from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -21,7 +30,7 @@ const ToolbarSectionStyle = {
 };
 
 const SelectStyle = {
-  width: "300px",
+  width: "200px",
 };
 
 const NameDivStyle = {
@@ -30,7 +39,6 @@ const NameDivStyle = {
   justifyContent: "flex-start",
   alignItems: "center",
   width: "100%",
-  cursor: "pointer",
 };
 
 export class List extends Component {
@@ -44,6 +52,7 @@ export class List extends Component {
     setPageParams: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
     handleViewCards: PropTypes.func,
+    handleDeleteAttendance: PropTypes.func,
   };
 
   state = {
@@ -152,6 +161,14 @@ export class List extends Component {
     }
   };
 
+  handleDeleteAttendance = () => {
+    const { handleDeleteAttendance } = this.props;
+    const { selectedRows } = this.state;
+    if (handleDeleteAttendance) {
+      handleDeleteAttendance(selectedRows);
+    }
+  };
+
   getDutySelector = () => {
     const { selectedDutyId, allDuties } = this.props;
 
@@ -176,8 +193,34 @@ export class List extends Component {
     );
   };
 
+  getActionsMenu = () => {
+    const { handleUploadAttendanceSheet } = this.props;
+    const menu = (
+      <Menu>
+        <Menu.Item key="1" onClick={handleUploadAttendanceSheet}>
+          <Icon type="upload" />
+          Upload Attendance
+        </Menu.Item>
+        <Menu.Item key="2" onClick={this.handleViewCards}>
+          <Icon type="idcard" />
+          Print Duty Cards
+        </Menu.Item>
+        <Menu.Item key="3" onClick={this.handleDeleteAttendance}>
+          <Icon type="delete" />
+          Delete Attendance
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <Button icon="setting">Actions</Button>
+      </Dropdown>
+    );
+  };
+
   getTableHeader = () => {
-    const { selectedMonth, handleUploadAttendanceSheet } = this.props;
+    const { selectedMonth } = this.props;
     return (
       <div style={ToolbarStyle}>
         <div style={ToolbarSectionStyle}>
@@ -204,19 +247,7 @@ export class List extends Component {
             onClick={this.handleMonthGoForward}
           />
         </div>
-        <div>
-          <Button
-            type="primary"
-            icon="upload"
-            onClick={handleUploadAttendanceSheet}
-          >
-            Upload Attendance
-          </Button>
-          &nbsp;
-          <Button type="primary" icon="idcard" onClick={this.handleViewCards}>
-            Duty Cards
-          </Button>
-        </div>
+        <div>{this.getActionsMenu()}</div>
       </div>
     );
   };

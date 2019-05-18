@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import { filter } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs } from "/imports/ui/composers";
@@ -12,8 +13,8 @@ import {
 } from "/imports/ui/modules/hr/common/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
+  CascaderField,
   InputFileField,
-  SelectField,
   MonthField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
@@ -26,7 +27,9 @@ class UploadForm extends Component {
     form: PropTypes.object,
 
     allDuties: PropTypes.array,
+    allDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
+    allDutyShiftsLoading: PropTypes.bool,
     uploadAttendances: PropTypes.func,
   };
 
@@ -38,15 +41,15 @@ class UploadForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, uploadAttendances, history } = this.props;
-    form.validateFields((err, { csv, month, dutyId, shiftId }) => {
+    form.validateFields((err, { csv, month, dutyIdShiftId }) => {
       if (err) return;
 
       uploadAttendances({
         variables: {
           csv,
           month: month.format(Formats.DATE_FORMAT),
-          dutyId,
-          shiftId,
+          dutyId: dutyIdShiftId[0],
+          shiftId: dutyIdShiftId[1],
         },
       })
         .then(() => {
@@ -58,9 +61,33 @@ class UploadForm extends Component {
     });
   };
 
+  getDutyShiftCascaderData() {
+    const { allDuties, allDutyShifts } = this.props;
+    const data = allDuties.map(duty => {
+      const dutyShifts = filter(
+        allDutyShifts,
+        dutyShift => dutyShift.dutyId === duty._id
+      );
+      const dataItem = {
+        value: duty._id,
+        label: duty.name,
+        children: dutyShifts.map(dutyShift => ({
+          value: dutyShift._id,
+          label: dutyShift.name,
+        })),
+      };
+
+      return dataItem;
+    });
+
+    return data;
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { allDuties, allDutyShifts } = this.props;
+    const { allDutiesLoading, allDutyShiftsLoading } = this.props;
+    if (allDutiesLoading || allDutyShiftsLoading) return null;
+    const dutyShiftCascaderData = this.getDutyShiftCascaderData();
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -80,23 +107,13 @@ class UploadForm extends Component {
           requiredMessage="Select a month for the attendances."
           getFieldDecorator={getFieldDecorator}
         />
-        <SelectField
-          data={allDuties}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="dutyId"
-          fieldLabel="Duty Name"
+        <CascaderField
+          data={dutyShiftCascaderData}
+          changeOnSelect={false}
+          fieldName="dutyIdShiftId"
+          fieldLabel="Duty/Shift"
           required
-          requiredMessage="Please select a duty from the list."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <SelectField
-          data={allDutyShifts}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="shiftId"
-          fieldLabel="Shift Name"
+          requiredMessage="Please select a duty and shift from the list."
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />

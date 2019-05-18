@@ -19,6 +19,7 @@ const formItemLayout = {
 export default class CascaderField extends Component {
   static propTypes = {
     data: PropTypes.array,
+    changeOnSelect: PropTypes.bool,
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
@@ -32,12 +33,14 @@ export default class CascaderField extends Component {
 
   static defaultProps = {
     initialValue: null,
+    changeOnSelect: true,
     fieldLayout: formItemLayout,
   };
 
   getField() {
     const {
       data,
+      changeOnSelect,
       fieldName,
       placeholder,
       required,
@@ -56,7 +59,11 @@ export default class CascaderField extends Component {
       ];
 
       return getFieldDecorator(fieldName, { initialValue, rules })(
-        <Cascader options={data} placeholder={placeholder} changeOnSelect />
+        <Cascader
+          options={data}
+          placeholder={placeholder}
+          changeOnSelect={changeOnSelect}
+        />
       );
     }
 

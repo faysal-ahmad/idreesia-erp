@@ -6,7 +6,10 @@ import { compose, graphql } from "react-apollo";
 import { message } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
+import {
+  WithAllDuties,
+  WithAllDutyShifts,
+} from "/imports/ui/modules/hr/common/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 
 import List from "./list";
@@ -15,6 +18,8 @@ class ListContainer extends Component {
   static propTypes = {
     allDuties: PropTypes.array,
     allDutiesLoading: PropTypes.bool,
+    allDutyShifts: PropTypes.array,
+    allDutyShiftsLoading: PropTypes.bool,
     deleteAttendances: PropTypes.func,
 
     match: PropTypes.object,
@@ -25,6 +30,7 @@ class ListContainer extends Component {
   state = {
     selectedMonth: moment(),
     selectedDutyId: null,
+    selectedShiftId: null,
   };
 
   setPageParams = pageParams => {
@@ -67,19 +73,26 @@ class ListContainer extends Component {
   };
 
   render() {
-    const { allDuties, allDutiesLoading } = this.props;
-    const { selectedMonth, selectedDutyId } = this.state;
-    if (allDutiesLoading) return null;
+    const {
+      allDuties,
+      allDutyShifts,
+      allDutiesLoading,
+      allDutyShiftsLoading,
+    } = this.props;
+    const { selectedMonth, selectedDutyId, selectedShiftId } = this.state;
+    if (allDutiesLoading || allDutyShiftsLoading) return null;
 
     return (
       <List
         selectedDutyId={selectedDutyId}
+        selectedShiftId={selectedShiftId}
         selectedMonth={selectedMonth}
         setPageParams={this.setPageParams}
         handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
         handleViewCards={this.handleViewCards}
         handleDeleteAttendance={this.handleDeleteAttendance}
         allDuties={allDuties}
+        allDutyShifts={allDutyShifts}
       />
     );
   }
@@ -99,5 +112,6 @@ export default compose(
     },
   }),
   WithAllDuties(),
+  WithAllDutyShifts(),
   WithBreadcrumbs(["HR", "Attendance Sheets", "List"])
 )(ListContainer);

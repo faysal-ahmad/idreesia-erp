@@ -15,6 +15,7 @@ export default () => WrappedComponent => {
     query allDutyShifts {
       allDutyShifts {
         _id
+        dutyId
         name
         startTime
         endTime

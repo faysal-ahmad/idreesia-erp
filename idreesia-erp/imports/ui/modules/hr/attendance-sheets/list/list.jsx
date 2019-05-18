@@ -3,15 +3,16 @@ import PropTypes from "prop-types";
 import {
   Avatar,
   Button,
+  Cascader,
   DatePicker,
   Dropdown,
   Icon,
   Menu,
-  Select,
   Table,
 } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import { filter } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 
@@ -29,8 +30,8 @@ const ToolbarSectionStyle = {
   justifyContent: "left",
 };
 
-const SelectStyle = {
-  width: "200px",
+const CascaderStyle = {
+  width: "300px",
 };
 
 const NameDivStyle = {
@@ -45,7 +46,9 @@ export class List extends Component {
   static propTypes = {
     selectedMonth: PropTypes.object,
     selectedDutyId: PropTypes.string,
+    selectedShiftId: PropTypes.string,
     allDuties: PropTypes.array,
+    allDutyShifts: PropTypes.array,
 
     attendanceByMonth: PropTypes.array,
     attendanceLoading: PropTypes.bool,
@@ -139,17 +142,11 @@ export class List extends Component {
     });
   };
 
-  handleDutySelectionChange = value => {
+  handleDutyShiftSelectionChange = value => {
     const { setPageParams } = this.props;
     setPageParams({
-      selectedDutyId: value,
-    });
-  };
-
-  handleShiftSelectionChange = value => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      selectedShiftId: value,
+      selectedDutyId: value[0],
+      selectedShiftId: value[1],
     });
   };
 
@@ -169,27 +166,38 @@ export class List extends Component {
     }
   };
 
-  getDutySelector = () => {
-    const { selectedDutyId, allDuties } = this.props;
+  getDutyShiftSelector = () => {
+    const {
+      selectedDutyId,
+      selectedShiftId,
+      allDuties,
+      allDutyShifts,
+    } = this.props;
+    const data = allDuties.map(duty => {
+      const dutyShifts = filter(
+        allDutyShifts,
+        dutyShift => dutyShift.dutyId === duty._id
+      );
+      const dataItem = {
+        label: duty.name,
+        value: duty._id,
+        children: dutyShifts.map(dutyShift => ({
+          value: dutyShift._id,
+          label: dutyShift.name,
+        })),
+      };
 
-    let options = [];
-    if (allDuties) {
-      options = allDuties.map(duty => (
-        <Select.Option key={duty._id} value={duty._id}>
-          {duty.name}
-        </Select.Option>
-      ));
-    }
+      return dataItem;
+    });
 
     return (
-      <Select
-        type="default"
-        style={SelectStyle}
-        onChange={this.handleDutySelectionChange}
-        defaultValue={selectedDutyId}
-      >
-        {options}
-      </Select>
+      <Cascader
+        style={CascaderStyle}
+        onChange={this.handleDutyShiftSelectionChange}
+        defaultValue={[selectedDutyId, selectedShiftId]}
+        options={data}
+        changeOnSelect
+      />
     );
   };
 
@@ -224,7 +232,7 @@ export class List extends Component {
     return (
       <div style={ToolbarStyle}>
         <div style={ToolbarSectionStyle}>
-          {this.getDutySelector()}
+          {this.getDutyShiftSelector()}
           &nbsp;&nbsp;
           <Button
             type="primary"
@@ -258,6 +266,7 @@ export class List extends Component {
     return (
       <Table
         rowKey="_id"
+        size="small"
         title={this.getTableHeader}
         columns={this.columns}
         rowSelection={this.rowSelection}
@@ -297,10 +306,11 @@ const attendanceByMonthQuery = gql`
 export default compose(
   graphql(attendanceByMonthQuery, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
-    options: ({ selectedMonth, selectedDutyId }) => ({
+    options: ({ selectedMonth, selectedDutyId, selectedShiftId }) => ({
       variables: {
         month: selectedMonth.format(Formats.DATE_FORMAT),
         dutyId: selectedDutyId,
+        shiftId: selectedShiftId,
       },
     }),
   })

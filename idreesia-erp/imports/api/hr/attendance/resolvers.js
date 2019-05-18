@@ -53,11 +53,13 @@ export default {
         .startOf("month")
         .format("MM-YYYY");
 
-      return Attendances.find({
+      const query = {
         month: formattedMonth,
         dutyId,
-        shiftId,
-      }).fetch();
+      };
+      if (shiftId) query.shiftId = shiftId;
+
+      return Attendances.find(query).fetch();
     },
 
     attendanceByBarcodeId(obj, { barcodeId }, { user }) {

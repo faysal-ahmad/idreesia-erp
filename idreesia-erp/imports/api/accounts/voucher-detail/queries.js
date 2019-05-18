@@ -67,7 +67,6 @@ export default function getVoucherDetails(
     });
   }
 
-  console.log(JSON.stringify(pipeline));
   const countingPipeline = pipeline.concat({
     $count: "total",
   });

@@ -83,7 +83,6 @@ export default function getAmaanatLogs(queryString) {
     });
   }
 
-  console.log(JSON.stringify(pipeline));
   const countingPipeline = pipeline.concat({
     $count: "total",
   });

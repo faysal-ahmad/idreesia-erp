@@ -3,11 +3,12 @@ import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import { filter } from "lodash";
 
 import {
   InputCnicField,
   InputTextField,
-  SelectField,
+  CascaderField,
 } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
@@ -36,9 +37,8 @@ class ListFilter extends Component {
   };
 
   static defaultProps = {
+    cnicNumber: "",
     filterCriteria: {},
-    allDuties: [],
-    allDutyShifts: [],
   };
 
   handleReset = () => {
@@ -56,23 +56,53 @@ class ListFilter extends Component {
   handleSubmit = () => {
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { name, cnicNumber, dutyId, shiftId }) => {
+    form.validateFields((err, { name, cnicNumber, dutyIdShiftId }) => {
       if (err) return;
       setPageParams({
         pageIndex: 0,
         name,
         cnicNumber,
-        dutyId,
-        shiftId,
+        dutyId: dutyIdShiftId[0],
+        shiftId: dutyIdShiftId[1],
       });
     });
   };
 
-  handleDutyChanged = () => {};
+  getDutyShiftCascaderData() {
+    const { allDuties, allDutyShifts } = this.props;
+    const data = allDuties.map(duty => {
+      const dutyShifts = filter(
+        allDutyShifts,
+        dutyShift => dutyShift.dutyId === duty._id
+      );
+      const dataItem = {
+        value: duty._id,
+        label: duty.name,
+        children: dutyShifts.map(dutyShift => ({
+          value: dutyShift._id,
+          label: dutyShift.name,
+        })),
+      };
+
+      return dataItem;
+    });
+
+    return data;
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { name, cnicNumber, dutyId, allDuties, allDutyShifts } = this.props;
+    const {
+      name,
+      cnicNumber,
+      dutyId,
+      shiftId,
+      allDuties,
+      allDutyShifts,
+    } = this.props;
+    if (!allDuties || !allDutyShifts) return null;
+
+    const dutyShiftCascaderData = this.getDutyShiftCascaderData();
 
     return (
       <Collapse style={ContainerStyle}>
@@ -95,26 +125,13 @@ class ListFilter extends Component {
               initialValue={cnicNumber}
               getFieldDecorator={getFieldDecorator}
             />
-            <SelectField
-              data={allDuties}
-              getDataValue={({ _id }) => _id}
-              getDataText={duty => duty.name}
-              fieldName="dutyId"
-              fieldLabel="Duty"
+            <CascaderField
+              data={dutyShiftCascaderData}
+              fieldName="dutyIdShiftId"
+              fieldLabel="Duty/Shift"
               fieldLayout={formItemLayout}
+              initialValue={[dutyId, shiftId]}
               required={false}
-              initialValue={dutyId}
-              getFieldDecorator={getFieldDecorator}
-            />
-            <SelectField
-              data={allDutyShifts}
-              getDataValue={({ _id }) => _id}
-              getDataText={shift => shift.name}
-              fieldName="shiftId"
-              fieldLabel="Shift"
-              fieldLayout={formItemLayout}
-              required={false}
-              initialValue={dutyId}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
@@ -149,6 +166,7 @@ const allDutyShiftsListQuery = gql`
     allDutyShifts {
       _id
       name
+      dutyId
     }
   }
 `;

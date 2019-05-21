@@ -22,3 +22,12 @@ extend type Query {
   pagedVouchers(companyId: String!, queryString: String): PagedVoucher
   voucherById(id: String!): Voucher
 }
+
+extend type Mutation {
+  createVoucher(
+    companyId: String!
+    voucherType: String!
+    voucherDate: String!
+    description: String
+  ): Voucher
+}

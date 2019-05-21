@@ -24,8 +24,17 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Voucher Routes
   // *************************************************************************************
-  static vouchersPath(companyId) {
+  static vouchersPath(companyId = ":companyId") {
     return `${ModulePaths.accounts}/${companyId}/vouchers`;
+  }
+  static vouchersNewFormPath(companyId = ":companyId") {
+    return `${SubModulePaths.vouchersPath(companyId)}/new`;
+  }
+  static vouchersEditFormPath(
+    companyId = ":companyId",
+    voucherId = ":voucherId"
+  ) {
+    return `${SubModulePaths.vouchersPath(companyId)}/${voucherId}`;
   }
 
   // *************************************************************************************

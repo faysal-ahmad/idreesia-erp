@@ -38,4 +38,24 @@ export default {
       return voucher;
     },
   },
+  Mutation: {
+    createVoucher(
+      obj,
+      { companyId, voucherType, voucherDate, description },
+      { user }
+    ) {
+      if (
+        hasInstanceAccess(user._id, companyId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
+        ])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Vouchers in the System."
+        );
+
+        // TODO: Create Voucher
+      }
+    },
+  },
 };

@@ -2,7 +2,7 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import { default as paths } from "./submodule-paths";
-import { VouchersList } from "./vouchers";
+import { VouchersList, VouchersNewForm, VouchersEditForm } from "./vouchers";
 import { AccountHeadsList, AccountHeadsEditForm } from "./account-heads";
 import { ActivitySheetList } from "./activity-sheet";
 import {
@@ -27,7 +27,9 @@ const AccountsRouter = () => (
       component={ActivitySheetList}
     />
 
-    <Route path={paths.vouchersPath(":companyId")} component={VouchersList} />
+    <Route path={paths.vouchersNewFormPath()} component={VouchersNewForm} />
+    <Route path={paths.vouchersEditFormPath()} component={VouchersEditForm} />
+    <Route path={paths.vouchersPath()} component={VouchersList} />
 
     <Route path={paths.amaanatLogsNewFormPath} component={AmaanatLogsNewForm} />
     <Route

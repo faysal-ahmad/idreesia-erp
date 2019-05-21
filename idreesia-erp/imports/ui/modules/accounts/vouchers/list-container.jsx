@@ -4,7 +4,7 @@ import { compose } from "react-apollo";
 import { Drawer } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AccountSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithCompanyId,
   WithCompany,
@@ -36,14 +36,14 @@ class ListContainer extends Component {
   componentDidMount() {
     const { company, setBreadcrumbs } = this.props;
     if (company) {
-      setBreadcrumbs([company.name, "Vouchers", "List"]);
+      setBreadcrumbs(["Accounts", company.name, "Vouchers", "List"]);
     }
   }
 
   componentDidUpdate(prevProps) {
     const { company, setBreadcrumbs } = this.props;
     if (prevProps.company !== company) {
-      setBreadcrumbs([company.name, "Vouchers", "List"]);
+      setBreadcrumbs(["Accounts", company.name, "Vouchers", "List"]);
     }
   }
 
@@ -96,7 +96,7 @@ class ListContainer extends Component {
           companyId={companyId}
           setPageParams={this.setPageParams}
           handleItemSelected={this.handleItemSelected}
-          showNewButton={false}
+          showNewButton
           handleNewClicked={this.handleNewClicked}
           handleViewClicked={this.handleViewClicked}
         />

@@ -74,6 +74,16 @@ export default {
         );
       }
 
+      const usedCount = KarkunDuties.find({
+        locationId: { $eq: _id },
+      }).count();
+
+      if (usedCount > 0) {
+        throw new Error(
+          "This location cannot be deleted as it is currently in use."
+        );
+      }
+
       return DutyLocations.remove(_id);
     },
   },

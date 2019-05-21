@@ -32,6 +32,7 @@ export default class InputCnicField extends Component {
 
   static defaultProps = {
     initialValue: "",
+    required: false,
     fieldLayout: formItemLayout,
   };
 
@@ -50,7 +51,7 @@ export default class InputCnicField extends Component {
       const rules = [
         {
           required,
-          message: requiredMessage,
+          message: required ? requiredMessage : "",
           pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
         },
       ];

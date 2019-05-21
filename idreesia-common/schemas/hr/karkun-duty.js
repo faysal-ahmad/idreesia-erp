@@ -11,20 +11,17 @@ export default new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
+  shiftId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true
+  },
   locationId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
     optional: true
   },
   role: {
-    type: String,
-    optional: true
-  },
-  startTime: {
-    type: String,
-    optional: true
-  },
-  endTime: {
     type: String,
     optional: true
   },

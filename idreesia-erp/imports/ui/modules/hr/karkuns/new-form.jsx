@@ -59,8 +59,8 @@ class NewForm extends Component {
             country,
           },
         })
-          .then(() => {
-            history.push(paths.karkunsPath);
+          .then(({ data: { createKarkun: newKarkun } }) => {
+            history.push(`${paths.karkunsPath}/${newKarkun._id}`);
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -93,8 +93,6 @@ class NewForm extends Component {
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          required
-          requiredMessage="Please input the CNIC for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -150,7 +148,7 @@ const formMutation = gql`
   mutation createKarkun(
     $firstName: String!
     $lastName: String!
-    $cnicNumber: String!
+    $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
     $emailAddress: String

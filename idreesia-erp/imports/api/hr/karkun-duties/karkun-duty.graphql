@@ -2,13 +2,19 @@ type KarkunDutyType {
   _id: String
   karkunId: String
   dutyId: String
-  dutyName: String
+  shiftId: String
   locationId: String
-  locationName: String
   role: String
-  startTime: String
-  endTime: String
   daysOfWeek: [String]
+
+  dutyName: String
+  locationName: String
+  shiftName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
 }
 
 extend type Query {
@@ -20,10 +26,9 @@ extend type Mutation {
   createKarkunDuty(
     karkunId: String!
     dutyId: String!
+    shiftId: String
     locationId: String
     role: String
-    startTime: String
-    endTime: String
     daysOfWeek: [String]
   ): KarkunDutyType
 
@@ -31,10 +36,9 @@ extend type Mutation {
     _id: String!
     karkunId: String!
     dutyId: String!
+    shiftId: String
     locationId: String
     role: String
-    startTime: String
-    endTime: String
     daysOfWeek: [String]
   ): KarkunDutyType
 

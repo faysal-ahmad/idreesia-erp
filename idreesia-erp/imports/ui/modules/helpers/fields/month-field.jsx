@@ -19,6 +19,7 @@ const formItemLayout = {
  */
 export default class MonthField extends Component {
   static propTypes = {
+    allowClear: PropTypes.bool,
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
@@ -36,6 +37,7 @@ export default class MonthField extends Component {
 
   getField() {
     const {
+      allowClear,
       fieldName,
       required,
       requiredMessage,
@@ -50,7 +52,7 @@ export default class MonthField extends Component {
     ];
 
     return getFieldDecorator(fieldName, { initialValue, rules })(
-      <DatePicker.MonthPicker />
+      <DatePicker.MonthPicker allowClear={allowClear} />
     );
   }
 

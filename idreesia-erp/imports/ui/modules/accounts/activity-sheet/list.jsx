@@ -275,7 +275,6 @@ class List extends Component {
 
     if (!accountHeadWithMonthlyBalances) return null;
 
-    debugger;
     const accountHeadsForList = [accountHeadWithMonthlyBalances].concat(
       this.getChildAccountHeads(accountHeadWithMonthlyBalances)
     );

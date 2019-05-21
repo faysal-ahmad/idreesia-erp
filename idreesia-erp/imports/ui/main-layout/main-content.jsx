@@ -1,13 +1,14 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Layout } from 'antd';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Layout } from "antd";
 
-import { ModuleNames } from '../constants';
-import { AdminRouter } from '../modules/admin';
-import { InventoryRouter } from '../modules/inventory';
-import { HRRouter } from '../modules/hr';
-import { AccountsRouter } from '../modules/accounts';
+import { ModuleNames } from "../constants";
+import { AdminRouter } from "../modules/admin";
+import { InventoryRouter } from "../modules/inventory";
+import { HRRouter } from "../modules/hr";
+import { AccountsRouter } from "../modules/accounts";
+import { SecurityRouter } from "../modules/security";
 
 const { Content } = Layout;
 
@@ -32,13 +33,21 @@ const MainContent = props => {
       main = <AccountsRouter />;
       break;
 
+    case ModuleNames.security:
+      main = <SecurityRouter />;
+      break;
+
     default:
       main = <div />;
       break;
   }
 
   return (
-    <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>{main}</Content>
+    <Content
+      style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}
+    >
+      {main}
+    </Content>
   );
 };
 

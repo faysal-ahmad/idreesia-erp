@@ -6,7 +6,9 @@ export default class SubModulePaths {
   // *************************************************************************************
   static dutiesPath = `${ModulePaths.hr}/duties`;
   static dutiesNewFormPath = `${SubModulePaths.dutiesPath}/new`;
-  static dutiesEditFormPath = `${SubModulePaths.dutiesPath}/:dutyId`;
+  static dutiesEditFormPath(dutyId = ":dutyId") {
+    return `${SubModulePaths.dutiesPath}/${dutyId}`;
+  }
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
   static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
@@ -14,8 +16,19 @@ export default class SubModulePaths {
     SubModulePaths.dutyLocationsPath
   }/:dutyLocationId`;
 
+  static dutyShiftsPath = `${ModulePaths.hr}/duty-shifts`;
+  static dutyShiftsNewFormPath = `${SubModulePaths.dutyShiftsPath}/new`;
+  static dutyShiftsEditFormPath = `${SubModulePaths.dutyShiftsPath}/:shiftId`;
+
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
-  static karkunsSearchPath = `${SubModulePaths.karkunsPath}/search`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
+
+  static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
+  static attendanceSheetsUploadFormPath = `${
+    SubModulePaths.attendanceSheetsPath
+  }/upload`;
+  static attendanceSheetsMeetingCardsPath = `${
+    SubModulePaths.attendanceSheetsPath
+  }/meeting-cards`;
 }

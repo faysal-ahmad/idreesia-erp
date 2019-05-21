@@ -1,9 +1,9 @@
 import { parse } from "query-string";
-import { get } from "lodash";
+import { get, map } from "lodash";
 
-import { Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Karkuns, KarkunDuties } from "meteor/idreesia-common/collections/hr";
 
-export default function getKarkuns(queryString) {
+export function getKarkuns(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
@@ -68,4 +68,29 @@ export default function getKarkuns(queryString) {
     karkuns: results[0],
     totalResults: get(results[1], ["0", "total"], 0),
   }));
+}
+
+export function getKarkunsByDutyId(dutyId) {
+  const pipeline = [
+    {
+      $match: {
+        dutyId: { $eq: dutyId },
+      },
+    },
+    { $group: { _id: "$karkunId" } },
+    {
+      $lookup: {
+        from: "hr-karkuns",
+        localField: "_id",
+        foreignField: "_id",
+        as: "karkun",
+      },
+    },
+    { $unwind: "$karkun" },
+    { $sort: { "karkun.firstName": 1 } },
+  ];
+
+  return KarkunDuties.aggregate(pipeline)
+    .toArray()
+    .then(results => map(results, ({ karkun }) => karkun));
 }

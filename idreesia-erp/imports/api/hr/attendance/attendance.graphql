@@ -1,0 +1,45 @@
+type AttendanceType {
+  _id: String
+  karkunId: String
+  dutyId: String
+  shiftId: String
+  month: String
+  absentCount: Int
+  presentCount: Int
+  percentage: Float
+  meetingCardBarcodeId: String
+
+  karkun: KarkunType
+  duty: DutyType
+  shift: DutyShiftType
+  location: DutyLocationType
+
+  createdByName: String
+  updatedByName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  attendanceByMonth(
+    month: String!
+    dutyId: String
+    shiftId: String
+  ): [AttendanceType]
+  attendanceByBarcodeId(barcodeId: String!): AttendanceType
+  attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
+}
+
+extend type Mutation {
+  uploadAttendances(
+    csv: String!
+    dutyId: String!
+    month: String!
+    shiftId: String
+  ): Int
+
+  deleteAttendances(ids: [String]!): Int
+}

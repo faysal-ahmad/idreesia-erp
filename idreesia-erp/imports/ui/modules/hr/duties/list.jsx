@@ -1,15 +1,16 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Button, Icon, Table, Tooltip, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Button, Icon, Table, Tooltip, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 
 const IconStyle = {
-  cursor: 'pointer',
+  cursor: "pointer",
+  fontSize: 20,
 };
 
 class List extends Component {
@@ -22,29 +23,45 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record) => <Link to={`${paths.dutiesPath}/${record._id}`}>{text}</Link>,
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <Link to={`${paths.dutiesEditFormPath(record._id)}`}>{text}</Link>
+      ),
     },
     {
-      key: 'action',
+      title: "Shifts",
+      dataIndex: "shifts",
+      key: "shifts",
+      render: (text, record) => {
+        if (!record.shifts || record.shifts.length === 0) return null;
+        const shiftNames = record.shifts.map(shift => shift.name);
+        return shiftNames.join(", ");
+      },
+    },
+    {
+      title: "Karkuns",
+      dataIndex: "usedCount",
+      key: "usedCount",
+    },
+    {
+      key: "action",
       render: (text, record) => {
         if (record.usedCount === 0) {
           return (
-            <span>
-              <Tooltip title="Delete">
-                <Icon
-                  type="delete"
-                  style={IconStyle}
-                  onClick={() => {
-                    this.handleDeleteClicked(record);
-                  }}
-                />
-              </Tooltip>
-            </span>
+            <Tooltip key="delete" title="Delete">
+              <Icon
+                type="delete"
+                style={IconStyle}
+                onClick={() => {
+                  this.handleDeleteClicked(record);
+                }}
+              />
+            </Tooltip>
           );
         }
+
         return null;
       },
     },
@@ -76,7 +93,11 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={() => (
-          <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+          <Button
+            type="primary"
+            icon="plus-circle-o"
+            onClick={this.handleNewClicked}
+          >
             New Duty
           </Button>
         )}
@@ -91,6 +112,10 @@ const listQuery = gql`
       _id
       name
       usedCount
+      shifts {
+        _id
+        name
+      }
     }
   }
 `;
@@ -106,10 +131,10 @@ export default compose(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyMutation, {
-    name: 'removeDuty',
+    name: "removeDuty",
     options: {
-      refetchQueries: ['allDuties'],
+      refetchQueries: ["allDuties"],
     },
   }),
-  WithBreadcrumbs(['HR', 'Setup', 'Duties', 'List'])
+  WithBreadcrumbs(["HR", "Duties", "List"])
 )(List);

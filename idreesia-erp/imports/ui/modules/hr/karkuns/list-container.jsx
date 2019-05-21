@@ -20,6 +20,7 @@ class ListContainer extends Component {
     name: null,
     cnicNumber: null,
     dutyId: null,
+    shiftId: null,
   };
 
   setPageParams = pageParams => {
@@ -37,7 +38,14 @@ class ListContainer extends Component {
   };
 
   render() {
-    const { pageIndex, pageSize, name, cnicNumber, dutyId } = this.state;
+    const {
+      pageIndex,
+      pageSize,
+      name,
+      cnicNumber,
+      dutyId,
+      shiftId,
+    } = this.state;
 
     return (
       <List
@@ -46,6 +54,7 @@ class ListContainer extends Component {
         name={name}
         cnicNumber={cnicNumber}
         dutyId={dutyId}
+        shiftId={shiftId}
         setPageParams={this.setPageParams}
         handleItemSelected={this.handleItemSelected}
         showNewButton

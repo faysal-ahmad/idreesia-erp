@@ -2,6 +2,7 @@ import {
   KarkunDuties,
   Duties,
   DutyLocations,
+  DutyShifts,
 } from "meteor/idreesia-common/collections/hr";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
@@ -16,6 +17,11 @@ export default {
       if (!karkunDutyType.locationId) return null;
       const location = DutyLocations.findOne(karkunDutyType.locationId);
       return location ? location.name : null;
+    },
+    shiftName: karkunDutyType => {
+      if (!karkunDutyType.shiftId) return null;
+      const shift = DutyShifts.findOne(karkunDutyType.shiftId);
+      return shift ? shift.name : null;
     },
   },
 
@@ -33,7 +39,7 @@ export default {
   Mutation: {
     createKarkunDuty(
       obj,
-      { karkunId, dutyId, locationId, role, startTime, endTime, daysOfWeek },
+      { karkunId, dutyId, locationId, role, shiftId, daysOfWeek },
       { user }
     ) {
       if (
@@ -57,10 +63,9 @@ export default {
       const newDuty = {
         karkunId,
         dutyId,
+        shiftId,
         locationId,
         role,
-        startTime,
-        endTime,
         daysOfWeek,
       };
       const karkunDutyId = KarkunDuties.insert(newDuty);
@@ -69,16 +74,7 @@ export default {
 
     updateKarkunDuty(
       obj,
-      {
-        _id,
-        karkunId,
-        dutyId,
-        locationId,
-        role,
-        startTime,
-        endTime,
-        daysOfWeek,
-      },
+      { _id, karkunId, dutyId, shiftId, locationId, role, daysOfWeek },
       { user }
     ) {
       if (
@@ -102,10 +98,9 @@ export default {
         $set: {
           karkunId,
           dutyId,
+          shiftId,
           locationId,
           role,
-          startTime,
-          endTime,
           daysOfWeek,
         },
       });

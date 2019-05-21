@@ -44,6 +44,7 @@ class List extends Component {
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     dutyId: PropTypes.string,
+    shiftId: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
@@ -179,6 +180,7 @@ class List extends Component {
       name,
       cnicNumber,
       dutyId,
+      shiftId,
       setPageParams,
       showNewButton,
       handleNewClicked,
@@ -200,6 +202,7 @@ class List extends Component {
           name={name}
           cnicNumber={cnicNumber}
           dutyId={dutyId}
+          shiftId={shiftId}
           setPageParams={setPageParams}
         />
       </div>
@@ -279,10 +282,10 @@ export default compose(
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ name, cnicNumber, dutyId, pageIndex, pageSize }) => ({
+    options: ({ name, cnicNumber, dutyId, shiftId, pageIndex, pageSize }) => ({
       variables: {
         queryString: `?name=${name || ""}&cnicNumber=${cnicNumber ||
-          ""}&dutyId=${dutyId ||
+          ""}&dutyId=${dutyId || ""}&shiftId=${shiftId ||
           ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),

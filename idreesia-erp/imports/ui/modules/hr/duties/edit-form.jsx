@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
-import moment from 'moment';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
+import moment from "moment";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import {
+  InputTextField,
+  FormButtonsSaveCancel,
+} from "/imports/ui/modules/helpers/fields";
 
 class EditForm extends Component {
   static propTypes = {
@@ -73,7 +76,9 @@ class EditForm extends Component {
           disabled
           fieldName="createdAt"
           fieldLabel="Created At"
-          initialValue={moment(dutyById.createdAt).format('DD-MM-YYYY hh:mm a')}
+          initialValue={moment(Date(dutyById.createdAt)).format(
+            "DD-MM-YYYY hh:mm a"
+          )}
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -87,7 +92,9 @@ class EditForm extends Component {
           disabled
           fieldName="updatedAt"
           fieldLabel="Updated At"
-          initialValue={moment(dutyById.updatedAt).format('DD-MM-YYYY hh:mm a')}
+          initialValue={moment(Date(dutyById.updatedAt)).format(
+            "DD-MM-YYYY hh:mm a"
+          )}
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -125,9 +132,9 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateDuty',
+    name: "updateDuty",
     options: {
-      refetchQueries: ['allDuties'],
+      refetchQueries: ["allDuties"],
     },
   }),
   graphql(formQuery, {
@@ -137,5 +144,5 @@ export default compose(
       return { variables: { id: dutyId } };
     },
   }),
-  WithBreadcrumbs(['HR', 'Setup', 'Duties', 'Edit'])
+  WithBreadcrumbs(["HR", "Duties", "Edit"])
 )(EditForm);

@@ -8,7 +8,7 @@ import { Attachments } from "meteor/idreesia-common/collections/common";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
-import getKarkuns from "./queries";
+import { getKarkuns, getKarkunsByDutyId } from "./queries";
 
 export default {
   KarkunType: {
@@ -73,8 +73,8 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    karkunByBarcode(obj, { barcode }) {
-      return Karkuns.findOne({ barcode });
+    karkunsByDutyId(obj, { dutyId }) {
+      return getKarkunsByDutyId(dutyId);
     },
 
     karkunByUserId(obj, { userId }) {
@@ -97,7 +97,6 @@ export default {
         address,
         city,
         country,
-        barcode,
       },
       { user }
     ) {
@@ -109,15 +108,17 @@ export default {
         );
       }
 
-      const existingKarkun = Karkuns.findOne({
-        cnicNumber: { $eq: cnicNumber },
-      });
-      if (existingKarkun) {
-        throw new Error(
-          `This CNIC number is already set for ${existingKarkun.firstName} ${
-            existingKarkun.lastName
-          }.`
-        );
+      if (cnicNumber) {
+        const existingKarkun = Karkuns.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+        if (existingKarkun) {
+          throw new Error(
+            `This CNIC number is already set for ${existingKarkun.firstName} ${
+              existingKarkun.lastName
+            }.`
+          );
+        }
       }
 
       const date = new Date();
@@ -131,7 +132,6 @@ export default {
         address,
         city,
         country,
-        barcode,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -154,7 +154,6 @@ export default {
         address,
         city,
         country,
-        barcode,
       },
       { user }
     ) {
@@ -166,15 +165,17 @@ export default {
         );
       }
 
-      const existingKarkun = Karkuns.findOne({
-        cnicNumber: { $eq: cnicNumber },
-      });
-      if (existingKarkun && existingKarkun._id !== _id) {
-        throw new Error(
-          `This CNIC number is already set for ${existingKarkun.firstName} ${
-            existingKarkun.lastName
-          }.`
-        );
+      if (cnicNumber) {
+        const existingKarkun = Karkuns.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+        if (existingKarkun && existingKarkun._id !== _id) {
+          throw new Error(
+            `This CNIC number is already set for ${existingKarkun.firstName} ${
+              existingKarkun.lastName
+            }.`
+          );
+        }
       }
 
       const date = new Date();
@@ -189,7 +190,6 @@ export default {
           address,
           city,
           country,
-          barcode,
           updatedAt: date,
           updatedBy: user._id,
         },

@@ -3,6 +3,8 @@ type DutyType {
   name: String
   usedCount: Int
 
+  shifts: [DutyShiftType]
+
   createdByName: String
   updatedByName: String
 

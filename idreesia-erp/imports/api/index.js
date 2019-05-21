@@ -15,6 +15,9 @@ import AdminJobResolvers from "./admin/admin-job/resolvers";
 /**
  * Schema and Resolvers for the HR module
  */
+import DutyShiftSchema from "./hr/duty-shift/duty-shift.graphql";
+import DutyShiftResolvers from "./hr/duty-shift/resolvers";
+
 import DutyLocationSchema from "./hr/duty-location/duty-location.graphql";
 import DutyLocationResolvers from "./hr/duty-location/resolvers";
 
@@ -26,6 +29,9 @@ import KarkunResolvers from "./hr/karkuns/resolvers";
 
 import KarkunDutySchema from "./hr/karkun-duties/karkun-duty.graphql";
 import KarkunDutyResolvers from "./hr/karkun-duties/resolvers";
+
+import AttendanceSchema from "./hr/attendance/attendance.graphql";
+import AttendanceResolvers from "./hr/attendance/resolvers";
 
 /**
  * Schema and Resolvers for the Inventory module
@@ -77,10 +83,12 @@ import AmaanatLogResolvers from "./accounts/amaanat-log/resolvers";
 
 const typeDefs = [
   AttachmentSchema,
+  DutyShiftSchema,
   DutyLocationSchema,
   DutySchema,
   KarkunSchema,
   KarkunDutySchema,
+  AttendanceSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -104,10 +112,12 @@ const typeDefs = [
 const resolvers = merge(
   AttachmentResolvers,
 
+  DutyShiftResolvers,
   DutyLocationResolvers,
   DutyResolvers,
   KarkunResolvers,
   KarkunDutyResolvers,
+  AttendanceResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,

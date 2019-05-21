@@ -6741,6 +6741,13 @@ react-slick@~0.23.2:
     prettier "^1.14.3"
     resize-observer-polyfill "^1.5.0"
 
+react-to-print@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.1.1.tgz#82dd3251a2b2407ac1ec928cd6f22c3e910f0dce"
+  integrity sha512-gaiFJ+WpdyaNQ4jHXKWDHADBDZ541hAQsg73qO2JLI9FxXyyGAJUu4t+Sa117jo9DTR8H2dhMbRohYBm6p5mlQ==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-webcam@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-webcam/-/react-webcam-1.1.1.tgz#03c69c4d61e36b817063504fc09541b4fff52d2e"

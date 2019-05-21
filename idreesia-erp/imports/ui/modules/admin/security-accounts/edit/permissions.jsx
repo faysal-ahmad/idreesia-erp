@@ -131,6 +131,30 @@ const permissionsData = [
           },
         ],
       },
+      {
+        title: "Attendance Sheets",
+        key: "module-hr-attendance-sheets",
+        children: [
+          {
+            title: "View Attendance Sheets",
+            key: PermissionConstants.HR_VIEW_ATTENDANCES,
+          },
+          {
+            title: "Manage Attendance Sheets",
+            key: PermissionConstants.HR_MANAGE_ATTENDANCES,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Security",
+    key: "module-security",
+    children: [
+      {
+        title: "Karkun Verification",
+        key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
+      },
     ],
   },
   {

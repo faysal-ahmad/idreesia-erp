@@ -65,7 +65,7 @@ class ListContainer extends Component {
         handleItemSelected={this.handleItemSelected}
         showNewButton
         handleNewClicked={this.handleNewClicked}
-        showAddressColumn
+        showPhoneNumbersColumn
       />
     );
   }

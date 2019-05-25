@@ -33,7 +33,7 @@ export default class ListContainer extends Component {
         dutyId={dutyId}
         setPageParams={this.setPageParams}
         handleItemSelected={setSelectedValue}
-        showAddressColumn={false}
+        showPhoneNumbersColumn={false}
       />
     );
   }

@@ -51,7 +51,7 @@ class List extends Component {
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
-    showAddressColumn: PropTypes.bool,
+    showPhoneNumbersColumn: PropTypes.bool,
 
     deleteKarkun: PropTypes.func,
     loading: PropTypes.bool,
@@ -100,10 +100,17 @@ class List extends Component {
     key: "cnicNumber",
   };
 
-  addressColumn = {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
+  phoneNumberColumn = {
+    title: "Phone Number",
+    key: "phoneNumber",
+    render: (text, record) => {
+      const numbers = [];
+      if (record.contactNumber1) numbers.push(record.contactNumber1);
+      if (record.contactNumber2) numbers.push(record.contactNumber2);
+
+      if (numbers.length === 0) return "";
+      return numbers.join(", ");
+    },
   };
 
   dutiesColumn = {
@@ -131,12 +138,12 @@ class List extends Component {
   };
 
   getColumns = () => {
-    const { showAddressColumn } = this.props;
-    if (showAddressColumn) {
+    const { showPhoneNumbersColumn } = this.props;
+    if (showPhoneNumbersColumn) {
       return [
         this.nameColumn,
         this.cnicColumn,
-        this.addressColumn,
+        this.phoneNumberColumn,
         this.dutiesColumn,
         this.actionsColumn,
       ];
@@ -265,7 +272,8 @@ const listQuery = gql`
         firstName
         lastName
         cnicNumber
-        address
+        contactNumber1
+        contactNumber2
         imageId
         duties
       }

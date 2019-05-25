@@ -12,7 +12,7 @@ import { getKarkuns, getKarkunsByDutyId } from "./queries";
 
 export default {
   KarkunType: {
-    name: karkunType => `${karkunType.firstName} ${karkunType.lastName}`,
+    name: karkunType => `${karkunType.firstName} ${karkunType.lastName || ""}`,
     user: karkunType => {
       if (!karkunType.userId) return null;
       return Meteor.users.findOne(karkunType.userId);

@@ -69,7 +69,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     // If there is already an attendance present for this karkun/month/duty/shift combination
     // then update that, otherwise insert a new one.
     const existingAttendance = Attendances.findOne({
-      karkunId: Karkuns._id,
+      karkunId: karkun._id,
       dutyId,
       shiftId,
       month: formattedMonth,
@@ -77,7 +77,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
 
     if (!existingAttendance) {
       Attendances.insert({
-        karkunId: Karkuns._id,
+        karkunId: karkun._id,
         dutyId,
         shiftId,
         month: formattedMonth,

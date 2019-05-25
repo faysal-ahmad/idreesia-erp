@@ -72,6 +72,11 @@ class ListContainer extends Component {
       });
   };
 
+  handleItemSelected = attendance => {
+    const { history } = this.props;
+    history.push(`${paths.karkunsPath}/${attendance.karkunId}`);
+  };
+
   render() {
     const {
       allDuties,
@@ -91,6 +96,7 @@ class ListContainer extends Component {
         handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
         handleViewCards={this.handleViewCards}
         handleDeleteAttendance={this.handleDeleteAttendance}
+        handleItemSelected={this.handleItemSelected}
         allDuties={allDuties}
         allDutyShifts={allDutyShifts}
       />

@@ -37,7 +37,7 @@ export default {
 
   Query: {
     allDuties() {
-      return Duties.find({}).fetch();
+      return Duties.find({}, { sort: { name: 1 } }).fetch();
     },
     dutyById(obj, { id }) {
       return Duties.findOne(id);

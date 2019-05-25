@@ -12,7 +12,8 @@ export default new SimpleSchema({
     type: String
   },
   lastName: {
-    type: String
+    type: String,
+    optional: true
   },
   cnicNumber: {
     type: String,
@@ -39,6 +40,10 @@ export default new SimpleSchema({
     optional: true
   },
   emailAddress: {
+    type: String,
+    optional: true
+  },
+  bloodGroup: {
     type: String,
     optional: true
   },

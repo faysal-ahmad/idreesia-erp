@@ -97,6 +97,7 @@ export default {
         address,
         city,
         country,
+        bloodGroup,
       },
       { user }
     ) {
@@ -132,6 +133,7 @@ export default {
         address,
         city,
         country,
+        bloodGroup,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -154,6 +156,7 @@ export default {
         address,
         city,
         country,
+        bloodGroup,
       },
       { user }
     ) {
@@ -190,6 +193,7 @@ export default {
           address,
           city,
           country,
+          bloodGroup,
           updatedAt: date,
           updatedBy: user._id,
         },

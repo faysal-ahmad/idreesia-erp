@@ -8,6 +8,7 @@ import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputCnicField,
   InputTextField,
+  SelectField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
@@ -46,6 +47,7 @@ class GeneralInfo extends Component {
           address,
           city,
           country,
+          bloodGroup,
         }
       ) => {
         if (err) return;
@@ -62,6 +64,7 @@ class GeneralInfo extends Component {
             address,
             city,
             country,
+            bloodGroup,
           },
         })
           .then(() => {
@@ -119,6 +122,26 @@ class GeneralInfo extends Component {
           fieldLabel="Contact No. 2"
           initialValue={karkunById.contactNumber2}
           required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <SelectField
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={[
+            { label: "A-", value: "A-" },
+            { label: "A+", value: "A+" },
+            { label: "B-", value: "B-" },
+            { label: "B+", value: "B+" },
+            { label: "AB-", value: "AB-" },
+            { label: "AB+", value: "AB+" },
+            { label: "O-", value: "O-" },
+            { label: "O+", value: "O+" },
+          ]}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
+          initialValue={karkunById.bloodGroup}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -189,6 +212,7 @@ const formMutation = gql`
     $address: String
     $city: String
     $country: String
+    $bloodGroup: String
   ) {
     updateKarkun(
       _id: $_id
@@ -201,6 +225,7 @@ const formMutation = gql`
       address: $address
       city: $city
       country: $country
+      bloodGroup: $bloodGroup
     ) {
       _id
       firstName
@@ -212,6 +237,7 @@ const formMutation = gql`
       address
       city
       country
+      bloodGroup
     }
   }
 `;

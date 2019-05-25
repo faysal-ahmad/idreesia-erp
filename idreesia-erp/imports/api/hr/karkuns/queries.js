@@ -7,7 +7,15 @@ export function getKarkuns(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
-  const { name, cnicNumber, dutyId, pageIndex = "0", pageSize = "10" } = params;
+  const {
+    name,
+    cnicNumber,
+    phoneNumber,
+    bloodGroup,
+    dutyId,
+    pageIndex = "0",
+    pageSize = "10",
+  } = params;
 
   if (name) {
     if (name.length === 1) {
@@ -25,6 +33,22 @@ export function getKarkuns(queryString) {
     pipeline.push({
       $match: {
         cnicNumber: { $eq: cnicNumber },
+      },
+    });
+  }
+
+  if (phoneNumber) {
+    pipeline.push({
+      $match: {
+        $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
+      },
+    });
+  }
+
+  if (bloodGroup) {
+    pipeline.push({
+      $match: {
+        bloodGroup: { $eq: bloodGroup },
       },
     });
   }

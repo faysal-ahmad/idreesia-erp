@@ -43,6 +43,8 @@ class List extends Component {
     pageSize: PropTypes.number,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    bloodGroup: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     setPageParams: PropTypes.func,
@@ -179,6 +181,8 @@ class List extends Component {
     const {
       name,
       cnicNumber,
+      phoneNumber,
+      bloodGroup,
       dutyId,
       shiftId,
       setPageParams,
@@ -201,6 +205,8 @@ class List extends Component {
         <ListFilter
           name={name}
           cnicNumber={cnicNumber}
+          phoneNumber={phoneNumber}
+          bloodGroup={bloodGroup}
           dutyId={dutyId}
           shiftId={shiftId}
           setPageParams={setPageParams}

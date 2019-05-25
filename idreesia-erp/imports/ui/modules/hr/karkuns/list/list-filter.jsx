@@ -9,6 +9,7 @@ import {
   InputCnicField,
   InputTextField,
   CascaderField,
+  SelectField,
 } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
@@ -31,6 +32,8 @@ class ListFilter extends Component {
     allDutyShifts: PropTypes.array,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    bloodGroup: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     setPageParams: PropTypes.func,
@@ -56,16 +59,20 @@ class ListFilter extends Component {
   handleSubmit = () => {
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { name, cnicNumber, dutyIdShiftId }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        name,
-        cnicNumber,
-        dutyId: dutyIdShiftId[0],
-        shiftId: dutyIdShiftId[1],
-      });
-    });
+    form.validateFields(
+      (err, { name, cnicNumber, phoneNumber, bloodGroup, dutyIdShiftId }) => {
+        if (err) return;
+        setPageParams({
+          pageIndex: 0,
+          name,
+          cnicNumber,
+          phoneNumber,
+          bloodGroup,
+          dutyId: dutyIdShiftId[0],
+          shiftId: dutyIdShiftId[1],
+        });
+      }
+    );
   };
 
   getDutyShiftCascaderData() {
@@ -95,6 +102,8 @@ class ListFilter extends Component {
     const {
       name,
       cnicNumber,
+      phoneNumber,
+      bloodGroup,
       dutyId,
       shiftId,
       allDuties,
@@ -123,6 +132,34 @@ class ListFilter extends Component {
               requiredMessage="Please input a valid CNIC number."
               fieldLayout={formItemLayout}
               initialValue={cnicNumber}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputTextField
+              fieldName="phoneNumber"
+              fieldLabel="Phone Number"
+              required={false}
+              fieldLayout={formItemLayout}
+              initialValue={phoneNumber}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <SelectField
+              fieldName="bloodGroup"
+              fieldLabel="Blood Group"
+              required={false}
+              data={[
+                { label: "A-", value: "A-" },
+                { label: "A+", value: "A+" },
+                { label: "B-", value: "B-" },
+                { label: "B+", value: "B+" },
+                { label: "AB-", value: "AB-" },
+                { label: "AB+", value: "AB+" },
+                { label: "O-", value: "O-" },
+                { label: "O+", value: "O+" },
+              ]}
+              getDataValue={({ value }) => value}
+              getDataText={({ label }) => label}
+              fieldLayout={formItemLayout}
+              initialValue={bloodGroup}
               getFieldDecorator={getFieldDecorator}
             />
             <CascaderField

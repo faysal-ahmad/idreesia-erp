@@ -19,6 +19,8 @@ class ListContainer extends Component {
     pageSize: 10,
     name: null,
     cnicNumber: null,
+    phoneNumber: null,
+    bloodGroup: null,
     dutyId: null,
     shiftId: null,
   };
@@ -43,6 +45,8 @@ class ListContainer extends Component {
       pageSize,
       name,
       cnicNumber,
+      phoneNumber,
+      bloodGroup,
       dutyId,
       shiftId,
     } = this.state;
@@ -53,6 +57,8 @@ class ListContainer extends Component {
         pageSize={pageSize}
         name={name}
         cnicNumber={cnicNumber}
+        phoneNumber={phoneNumber}
+        bloodGroup={bloodGroup}
         dutyId={dutyId}
         shiftId={shiftId}
         setPageParams={this.setPageParams}

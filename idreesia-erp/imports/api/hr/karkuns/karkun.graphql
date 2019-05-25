@@ -17,6 +17,7 @@ type KarkunType {
   address: String
   city: String
   country: String
+  bloodGroup: String
   imageId: String
   userId: String
   attachmentIds: [String]
@@ -56,6 +57,7 @@ extend type Mutation {
     address: String
     city: String
     country: String
+    bloodGroup: String
   ): KarkunType
 
   updateKarkun(
@@ -69,6 +71,7 @@ extend type Mutation {
     address: String
     city: String
     country: String
+    bloodGroup: String
   ): KarkunType
 
   deleteKarkun(_id: String!): Int

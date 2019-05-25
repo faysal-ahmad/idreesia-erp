@@ -6,14 +6,37 @@ import { toInteger, round } from "lodash";
 import { Attendances, Karkuns } from "meteor/idreesia-common/collections/hr";
 import { Formats } from "meteor/idreesia-common/constants";
 
-const ID_COLUMN = "ID (Programing Codes)";
+const ID_COLUMN = "System ID";
+const CNIC_COLUMN = "CNIC";
+const NAME_COLUMN = "Name";
+const PHONE_COLUMN = "Phone No.";
+const BLOOD_GROUP_COLUMN = "Blood Group";
 const PRESENT_COLUMN = "P";
 const ABSENT_COLUMN = "A";
 const TOTAL_COLUMN = "Day";
 
+function createKarkun(karkunCnic, karkunName, phoneNumber, bloodGroup) {
+  const names = karkunName.split(" ");
+  if (names.length < 1) return null;
+
+  const karkunId = Karkuns.insert({
+    firstName: names[0].trim(),
+    lastName: names[1] ? names[1].trim() : "",
+    cnicNumber: karkunCnic,
+    contactNumber1: phoneNumber,
+    bloodGroup,
+  });
+
+  return Karkuns.findOne(karkunId);
+}
+
 function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
   try {
     const karkunId = jsonRecord[ID_COLUMN];
+    const karkunCnic = jsonRecord[CNIC_COLUMN];
+    const karkunName = jsonRecord[NAME_COLUMN];
+    const phoneNumber = jsonRecord[PHONE_COLUMN];
+    const bloodGroup = jsonRecord[BLOOD_GROUP_COLUMN];
     const totalCount = jsonRecord[TOTAL_COLUMN];
     const presentCount = jsonRecord[PRESENT_COLUMN];
     const absentCount = jsonRecord[ABSENT_COLUMN];
@@ -22,9 +45,21 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     const numPresentCount = toInteger(presentCount);
     const numAbsentCount = toInteger(absentCount);
 
-    if (!karkunId) return;
-    // Verify that this karkun exists
-    const karkun = Karkuns.findOne(karkunId);
+    if (!karkunId && !karkunCnic) return;
+
+    let karkun;
+    if (karkunId) {
+      karkun = Karkuns.findOne(karkunId);
+    } else {
+      karkun = Karkuns.findOne({
+        cnicNumber: { $eq: karkunCnic },
+      });
+
+      if (!karkun) {
+        karkun = createKarkun(karkunCnic, karkunName, phoneNumber, bloodGroup);
+      }
+    }
+
     if (!karkun) return;
 
     const formattedMonth = moment(month, Formats.DATE_FORMAT)
@@ -34,7 +69,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     // If there is already an attendance present for this karkun/month/duty/shift combination
     // then update that, otherwise insert a new one.
     const existingAttendance = Attendances.findOne({
-      karkunId,
+      karkunId: Karkuns._id,
       dutyId,
       shiftId,
       month: formattedMonth,
@@ -42,7 +77,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
 
     if (!existingAttendance) {
       Attendances.insert({
-        karkunId,
+        karkunId: Karkuns._id,
         dutyId,
         shiftId,
         month: formattedMonth,

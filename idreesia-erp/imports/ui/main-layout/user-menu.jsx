@@ -33,6 +33,7 @@ class UserMenu extends Component {
 
     switch (key) {
       case "logout":
+        Meteor.logoutOtherClients();
         Meteor.logout(error => {
           if (error) console.log(error);
           history.push("/");

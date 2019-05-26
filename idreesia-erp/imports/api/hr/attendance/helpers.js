@@ -81,6 +81,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
         dutyId,
         shiftId,
         month: formattedMonth,
+        totalCount: numTotalCount,
         absentCount: numAbsentCount,
         presentCount: numPresentCount,
         percentage: round(numPresentCount / numTotalCount * 100),
@@ -94,6 +95,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
 
       Attendances.update(existingAttendance._id, {
         $set: {
+          totalCount: numTotalCount,
           absentCount: numAbsentCount,
           presentCount: numPresentCount,
           percentage: round(numPresentCount / numTotalCount * 100),

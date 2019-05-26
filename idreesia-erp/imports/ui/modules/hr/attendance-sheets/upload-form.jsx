@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import { filter } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs } from "/imports/ui/composers";
@@ -18,6 +17,8 @@ import {
   MonthField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+
+import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
 
 class UploadForm extends Component {
   static propTypes = {
@@ -61,33 +62,16 @@ class UploadForm extends Component {
     });
   };
 
-  getDutyShiftCascaderData() {
-    const { allDuties, allDutyShifts } = this.props;
-    const data = allDuties.map(duty => {
-      const dutyShifts = filter(
-        allDutyShifts,
-        dutyShift => dutyShift.dutyId === duty._id
-      );
-      const dataItem = {
-        value: duty._id,
-        label: duty.name,
-        children: dutyShifts.map(dutyShift => ({
-          value: dutyShift._id,
-          label: dutyShift.name,
-        })),
-      };
-
-      return dataItem;
-    });
-
-    return data;
-  }
-
   render() {
     const { getFieldDecorator } = this.props.form;
     const { allDutiesLoading, allDutyShiftsLoading } = this.props;
     if (allDutiesLoading || allDutyShiftsLoading) return null;
-    const dutyShiftCascaderData = this.getDutyShiftCascaderData();
+
+    const { allDuties, allDutyShifts } = this.props;
+    const dutyShiftCascaderData = getDutyShiftCascaderData(
+      allDuties,
+      allDutyShifts
+    );
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>

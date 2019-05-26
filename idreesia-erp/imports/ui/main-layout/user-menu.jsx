@@ -1,9 +1,11 @@
 import { Meteor } from "meteor/meteor";
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Dropdown, Menu } from "antd";
+import { Avatar, Dropdown, Menu, Modal, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
+
+import ChangePasswordForm from "./change-password-form";
 
 const ContainerStyle = {
   display: "flex",
@@ -20,6 +22,12 @@ class UserMenu extends Component {
     karkunByUserId: PropTypes.object,
   };
 
+  state = {
+    showChangePasswordForm: false,
+  };
+
+  changePasswordForm;
+
   handleMenuItemClicked = ({ key }) => {
     const { history } = this.props;
 
@@ -31,9 +39,43 @@ class UserMenu extends Component {
         });
         break;
 
+      case "change-password":
+        this.setState({
+          showChangePasswordForm: true,
+        });
+        break;
+
       default:
         break;
     }
+  };
+
+  handleChagePassword = () => {
+    this.changePasswordForm.validateFields(null, (err, values) => {
+      if (!err) {
+        const { oldPassword, newPassword } = values;
+
+        Accounts.changePassword(oldPassword, newPassword, error => {
+          this.setState({
+            showChangePasswordForm: false,
+          });
+
+          if (!error) {
+            Meteor.logoutOtherClients();
+            message.success("Your password has been changed.", 5);
+            history.push(location.pathname);
+          } else {
+            message.error(error.message, 5);
+          }
+        });
+      }
+    });
+  };
+
+  handleChangePasswordCancelled = () => {
+    this.setState({
+      showChangePasswordForm: false,
+    });
   };
 
   render() {
@@ -53,18 +95,34 @@ class UserMenu extends Component {
         style={{ height: "100%", borderRight: 0 }}
         onClick={this.handleMenuItemClicked}
       >
+        <Menu.Item key="change-password">Change Password</Menu.Item>
+        <Menu.Divider />
         <Menu.Item key="logout">Logout</Menu.Item>
       </Menu>
     );
 
     return (
-      <Dropdown overlay={menu} placement="bottomLeft">
-        <div style={ContainerStyle}>
-          <div style={{ color: "#FFFFFF" }}>{userName}</div>
-          &nbsp; &nbsp;
-          {avatar}
-        </div>
-      </Dropdown>
+      <Fragment>
+        <Dropdown overlay={menu} placement="bottomLeft">
+          <div style={ContainerStyle}>
+            <div style={{ color: "#FFFFFF" }}>{userName}</div>
+            &nbsp; &nbsp;
+            {avatar}
+          </div>
+        </Dropdown>
+        <Modal
+          title="Change Password"
+          visible={this.state.showChangePasswordForm}
+          onOk={this.handleChagePassword}
+          onCancel={this.handleChangePasswordCancelled}
+        >
+          <ChangePasswordForm
+            ref={f => {
+              this.changePasswordForm = f;
+            }}
+          />
+        </Modal>
+      </Fragment>
     );
   }
 }

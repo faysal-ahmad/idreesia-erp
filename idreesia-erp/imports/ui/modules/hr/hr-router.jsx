@@ -51,12 +51,12 @@ const HRRouter = () => (
       component={AttendanceSheetsNewForm}
     />
     <Route
-      path={paths.attendanceSheetsEditFormPath()}
-      component={AttendanceSheetsEditForm}
-    />
-    <Route
       path={paths.attendanceSheetsUploadFormPath}
       component={AttendanceSheetsUploadForm}
+    />
+    <Route
+      path={paths.attendanceSheetsEditFormPath()}
+      component={AttendanceSheetsEditForm}
     />
     <Route
       path={paths.attendanceSheetsMeetingCardsPath}

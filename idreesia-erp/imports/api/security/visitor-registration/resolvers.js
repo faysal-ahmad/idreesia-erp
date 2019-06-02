@@ -11,15 +11,42 @@ export default {
   },
 
   Query: {
-    pagedVisitors(obj, { queryString }) {
+    pagedVisitors(obj, { queryString }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITOR_REGISTRATIONS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
+        ])
+      ) {
+        return [];
+      }
+
       return getVisitors(queryString);
     },
 
-    visitorById(obj, { _id }) {
+    visitorById(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITOR_REGISTRATIONS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
+        ])
+      ) {
+        return null;
+      }
+
       return Visitors.findOne(_id);
     },
 
-    visitorByCnic(obj, { cnic }) {
+    visitorByCnic(obj, { cnic }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITOR_REGISTRATIONS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
+        ])
+      ) {
+        return null;
+      }
+
       return Visitors.findOne({
         cnicNumber: { $eq: cnic },
       });
@@ -44,7 +71,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
         ])
       ) {
         throw new Error(
@@ -103,7 +130,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
         ])
       ) {
         throw new Error(
@@ -147,7 +174,7 @@ export default {
     deleteVisitor(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
         ])
       ) {
         throw new Error(
@@ -161,7 +188,7 @@ export default {
     setVisitorImage(obj, { _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
         ])
       ) {
         throw new Error(

@@ -155,6 +155,20 @@ const permissionsData = [
         title: "Karkun Verification",
         key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
       },
+      {
+        title: "Visitor Registration",
+        key: "module-security-visitor-registration",
+        children: [
+          {
+            title: "View Visitor Registrations",
+            key: PermissionConstants.SECURITY_VIEW_VISITOR_REGISTRATIONS,
+          },
+          {
+            title: "Manage Visitor Registrations",
+            key: PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
+          },
+        ],
+      },
     ],
   },
   {

@@ -4,7 +4,7 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
   InputCnicField,
   InputTextField,
@@ -63,7 +63,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.push(paths.karkunsPath);
+            history.push(paths.visitorRegistrationPath);
           })
           .catch(error => {
             message.error(error.message, 5);

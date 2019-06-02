@@ -5,7 +5,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
   InputCnicField,
   InputTextField,
@@ -23,7 +23,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.karkunsPath);
+    history.push(paths.visitorRegistrationPath);
   };
 
   handleSubmit = e => {

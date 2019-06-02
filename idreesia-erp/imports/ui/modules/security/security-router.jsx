@@ -7,6 +7,7 @@ import {
   VisitorRegistrationScanForm,
   VisitorRegistrationNewForm,
   VisitorRegistrationEditForm,
+  VisitorRegistrationList,
 } from "./visitor-registeration";
 
 const SecurityRouter = () => (
@@ -16,6 +17,10 @@ const SecurityRouter = () => (
       component={KarkunVerificationForm}
     />
 
+    <Route
+      path={paths.visitorRegistrationListPath}
+      component={VisitorRegistrationList}
+    />
     <Route
       path={paths.visitorRegistrationNewFormPath}
       component={VisitorRegistrationNewForm}

@@ -15,8 +15,8 @@ import AdminJobResolvers from "./admin/admin-job/resolvers";
 /**
  * Schema and Resolvers for the Security module
  */
-import VisitorSchema from "./security/visitor-registration/visitor.graphql";
-import VisitorResolvers from "./security/visitor-registration/resolvers";
+import VisitorSchema from "./security/visitor/visitor.graphql";
+import VisitorResolvers from "./security/visitor/resolvers";
 
 /**
  * Schema and Resolvers for the HR module

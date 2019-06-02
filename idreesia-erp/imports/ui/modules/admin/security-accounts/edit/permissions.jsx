@@ -160,12 +160,12 @@ const permissionsData = [
         key: "module-security-visitor-registration",
         children: [
           {
-            title: "View Visitor Registrations",
-            key: PermissionConstants.SECURITY_VIEW_VISITOR_REGISTRATIONS,
+            title: "View Visitors",
+            key: PermissionConstants.SECURITY_VIEW_VISITORS,
           },
           {
-            title: "Manage Visitor Registrations",
-            key: PermissionConstants.SECURITY_MANAGE_VISITOR_REGISTRATIONS,
+            title: "Manage Visitors",
+            key: PermissionConstants.SECURITY_MANAGE_VISITORS,
           },
         ],
       },

@@ -40,9 +40,8 @@ const Permissions = {
   // Security Module
   // ****************************************************************************************
   SECURITY_VIEW_KARKUN_VERIFICATION: "security-view-karkun-verification",
-  SECURITY_VIEW_VISITOR_REGISTRATIONS: "security-view-visitor-registrations",
-  SECURITY_MANAGE_VISITOR_REGISTRATIONS:
-    "security-manage-visitor-registrations",
+  SECURITY_VIEW_VISITORS: "security-view-visitors",
+  SECURITY_MANAGE_VISITORS: "security-manage-visitors",
 
   // ****************************************************************************************
   // Inventory Module

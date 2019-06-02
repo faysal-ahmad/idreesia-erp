@@ -12,4 +12,10 @@ export default class SubModulePaths {
   static visitorRegistrationPath = `${
     ModulePaths.security
   }/visitor-registration`;
+  static visitorRegistrationNewFormPath = `${
+    SubModulePaths.visitorRegistrationPath
+  }/new`;
+  static visitorRegistrationEditFormPath(visitorId = ":visitorId") {
+    return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
+  }
 }

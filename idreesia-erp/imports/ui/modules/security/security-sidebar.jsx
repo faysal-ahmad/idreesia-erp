@@ -23,6 +23,11 @@ class SecuritySidebar extends Component {
         history.push(paths.karkunVerificationPath);
         break;
 
+      case "visitor-registration":
+        setActiveSubModuleName(SubModuleNames.visitorRegistration);
+        history.push(paths.visitorRegistrationPath);
+        break;
+
       default:
         break;
     }
@@ -38,8 +43,14 @@ class SecuritySidebar extends Component {
       >
         <Menu.Item key="karkun-verification">
           <span>
-            <Icon type="user" />
+            <Icon type="barcode" />
             Karkun Verification
+          </span>
+        </Menu.Item>
+        <Menu.Item key="visitor-registration">
+          <span>
+            <Icon type="idcard" />
+            Visitor Registration
           </span>
         </Menu.Item>
       </Menu>

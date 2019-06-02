@@ -7,10 +7,16 @@ import AttachmentSchema from "./common/attachments/attachment.graphql";
 import AttachmentResolvers from "./common/attachments/resolvers";
 
 /**
- * Schema and Resolvers for the HR module
+ * Schema and Resolvers for the Admin module
  */
 import AdminJobSchema from "./admin/admin-job/admin-job.graphql";
 import AdminJobResolvers from "./admin/admin-job/resolvers";
+
+/**
+ * Schema and Resolvers for the Security module
+ */
+import VisitorSchema from "./security/visitor-registration/visitor.graphql";
+import VisitorResolvers from "./security/visitor-registration/resolvers";
 
 /**
  * Schema and Resolvers for the HR module
@@ -83,6 +89,10 @@ import AmaanatLogResolvers from "./accounts/amaanat-log/resolvers";
 
 const typeDefs = [
   AttachmentSchema,
+  AdminJobSchema,
+
+  VisitorSchema,
+
   DutyShiftSchema,
   DutyLocationSchema,
   DutySchema,
@@ -105,12 +115,13 @@ const typeDefs = [
   VoucherDetailSchema,
   AccountMonthlyBalanceSchema,
   AmaanatLogSchema,
-
-  AdminJobSchema,
 ];
 
 const resolvers = merge(
   AttachmentResolvers,
+  AdminJobResolvers,
+
+  VisitorResolvers,
 
   DutyShiftResolvers,
   DutyLocationResolvers,
@@ -133,9 +144,7 @@ const resolvers = merge(
   VoucherResolvers,
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
-  AmaanatLogResolvers,
-
-  AdminJobResolvers
+  AmaanatLogResolvers
 );
 
 export { typeDefs, resolvers };

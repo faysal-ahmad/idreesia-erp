@@ -10,6 +10,7 @@ import "./6-move-categories-into-store";
 import "./7-move-locations-into-store";
 import "./8-create-account-indexes";
 import "./9-create-hr-indexes";
+import "./10-create-security-indexes";
 
 Migrations.config({
   log: true,

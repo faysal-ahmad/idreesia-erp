@@ -1,0 +1,18 @@
+import SimpleSchema from "simpl-schema";
+
+import { identifiable } from "../common";
+
+export default new SimpleSchema({
+  visitorId: {
+    type: String
+  },
+  fromDate: {
+    type: Date
+  },
+  toDate: {
+    type: Date
+  },
+  stayCardBarcodeId: {
+    type: String
+  }
+}).extend(identifiable);

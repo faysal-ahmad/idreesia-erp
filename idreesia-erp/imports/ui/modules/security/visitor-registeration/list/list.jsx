@@ -192,7 +192,7 @@ class List extends Component {
     if (showNewButton) {
       newButton = (
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Visitor Registration
+          New Visitor
         </Button>
       );
     }
@@ -262,6 +262,9 @@ const listQuery = gql`
         cnicNumber
         contactNumber1
         contactNumber2
+        address
+        city
+        country
         imageId
       }
     }

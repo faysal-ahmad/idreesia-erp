@@ -60,6 +60,7 @@ export default {
         firstName,
         lastName,
         cnicNumber,
+        ehadDate,
         contactNumber1,
         contactNumber2,
         emailAddress,
@@ -97,6 +98,7 @@ export default {
         firstName,
         lastName,
         cnicNumber,
+        ehadDate,
         contactNumber1,
         contactNumber2,
         emailAddress,
@@ -119,6 +121,7 @@ export default {
         firstName,
         lastName,
         cnicNumber,
+        ehadDate,
         contactNumber1,
         contactNumber2,
         emailAddress,
@@ -157,6 +160,7 @@ export default {
           firstName,
           lastName,
           cnicNumber,
+          ehadDate,
           contactNumber1,
           contactNumber2,
           emailAddress,
@@ -200,6 +204,30 @@ export default {
       Visitors.update(_id, {
         $set: {
           imageId,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Visitors.findOne(_id);
+    },
+
+    updateNotes(obj, { _id, criminalRecord, otherNotes }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Visitors in the System."
+        );
+      }
+
+      const date = new Date();
+      Visitors.update(_id, {
+        $set: {
+          criminalRecord,
+          otherNotes,
           updatedAt: date,
           updatedBy: user._id,
         },

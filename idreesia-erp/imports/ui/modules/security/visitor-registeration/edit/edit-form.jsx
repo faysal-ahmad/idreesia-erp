@@ -6,6 +6,7 @@ import { Tabs } from "antd";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import GeneralInfo from "./general-info";
 import Picture from "./picture";
+import Notes from "./notes";
 
 const EditForm = props => {
   const visitorId = get(props, ["match", "params", "visitorId"], null);
@@ -16,6 +17,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Picture" key="2">
         <Picture visitorId={visitorId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Notes" key="3">
+        <Notes visitorId={visitorId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

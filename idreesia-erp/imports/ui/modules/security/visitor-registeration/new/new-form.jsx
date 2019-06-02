@@ -10,6 +10,7 @@ import {
   InputCnicField,
   InputTextField,
   InputTextAreaField,
+  MonthField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 
@@ -36,6 +37,7 @@ class NewForm extends Component {
           firstName,
           lastName,
           cnicNumber,
+          ehadDate,
           contactNumber1,
           contactNumber2,
           address,
@@ -50,6 +52,7 @@ class NewForm extends Component {
             firstName,
             lastName,
             cnicNumber,
+            ehadDate,
             contactNumber1,
             contactNumber2,
             address,
@@ -91,6 +94,18 @@ class NewForm extends Component {
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
+          required
+          requiredMessage="Please input the CNIC for the visitor."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <MonthField
+          fieldName="ehadDate"
+          fieldLabel="Ehad Date"
+          allowClear={false}
+          format="MMM, YYYY"
+          required
+          requiredMessage="Please specify the Ehad date for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -139,7 +154,8 @@ const formMutation = gql`
   mutation createVisitor(
     $firstName: String!
     $lastName: String!
-    $cnicNumber: String
+    $cnicNumber: String!
+    $ehadDate: String!
     $contactNumber1: String
     $contactNumber2: String
     $address: String
@@ -150,6 +166,7 @@ const formMutation = gql`
       firstName: $firstName
       lastName: $lastName
       cnicNumber: $cnicNumber
+      ehadDate: $ehadDate
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
       address: $address
@@ -160,6 +177,7 @@ const formMutation = gql`
       firstName
       lastName
       cnicNumber
+      ehadDate
       contactNumber1
       contactNumber2
       address

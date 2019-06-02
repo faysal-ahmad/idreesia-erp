@@ -4,12 +4,15 @@ type VisitorType {
   firstName: String
   lastName: String
   cnicNumber: String
+  ehadDate: String
   contactNumber1: String
   contactNumber2: String
   address: String
   city: String
   country: String
   imageId: String
+  criminalRecord: String
+  otherNotes: String
 
   createdAt: String
   createdBy: String
@@ -33,6 +36,7 @@ extend type Mutation {
     firstName: String!
     lastName: String!
     cnicNumber: String
+    ehadDate: String
     contactNumber1: String
     contactNumber2: String
     emailAddress: String
@@ -46,6 +50,7 @@ extend type Mutation {
     firstName: String!
     lastName: String!
     cnicNumber: String
+    ehadDate: String
     contactNumber1: String
     contactNumber2: String
     emailAddress: String
@@ -57,4 +62,9 @@ extend type Mutation {
   deleteVisitor(_id: String!): Int
 
   setVisitorImage(_id: String!, imageId: String!): VisitorType
+  updateNotes(
+    _id: String!
+    criminalRecord: String
+    otherNotes: String
+  ): VisitorType
 }

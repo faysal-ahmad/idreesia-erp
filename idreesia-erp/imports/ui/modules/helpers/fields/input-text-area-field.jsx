@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Input, Form } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Input, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },

@@ -7,12 +7,13 @@ export default new SimpleSchema({
     type: String
   },
   lastName: {
-    type: String,
-    optional: true
+    type: String
   },
   cnicNumber: {
-    type: String,
-    optional: true
+    type: String
+  },
+  ehadDate: {
+    type: Date
   },
   address: {
     type: String,
@@ -34,16 +35,17 @@ export default new SimpleSchema({
     type: String,
     optional: true
   },
-  imageId: {
+  criminalRecord: {
     type: String,
     optional: true
   },
-  attachmentIds: {
-    type: Array,
+  otherNotes: {
+    type: String,
     optional: true
   },
-  "attachmentIds.$": {
-    type: String
+  imageId: {
+    type: String,
+    optional: true
   }
 })
   .extend(identifiable)

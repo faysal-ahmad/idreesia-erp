@@ -25,6 +25,7 @@ export default class MonthField extends Component {
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
     initialValue: PropTypes.object,
+    format: PropTypes.string,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
@@ -32,6 +33,7 @@ export default class MonthField extends Component {
 
   static defaultProps = {
     initialValue: moment(),
+    format: "MM-YYYY",
     fieldLayout: formItemLayout,
   };
 
@@ -43,6 +45,7 @@ export default class MonthField extends Component {
       requiredMessage,
       getFieldDecorator,
       initialValue,
+      format,
     } = this.props;
     const rules = [
       {
@@ -52,7 +55,7 @@ export default class MonthField extends Component {
     ];
 
     return getFieldDecorator(fieldName, { initialValue, rules })(
-      <DatePicker.MonthPicker allowClear={allowClear} />
+      <DatePicker.MonthPicker allowClear={allowClear} format={format} />
     );
   }
 

@@ -51,7 +51,7 @@ export default class MeetingCards extends Component {
           {attendance.duty.name} <br />
           {attendance.shift.name}
         </p>
-        <div>
+        <div className="barcode_card_k">
           <Barcode
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}

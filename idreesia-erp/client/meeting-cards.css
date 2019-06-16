@@ -1,31 +1,33 @@
 .card_karkon {
-  width: 197px;
-  height: 338px;
+  width: 173px;
+  height: 306px;
   border: 1px solid #000000;
   border-radius: 10px;
   float: left;
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   overflow: hidden;
-  margin-right: 20px;
-  margin-bottom: 7px;
+  margin-right: -1px;
+  margin-bottom: -1px;
 }
+
 .name_card_k {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   margin: 0;
-  border: 0px;
-  padding-bottom: 0;
 }
+
 .k_location {
-  margin: 3px 0;
+  margin: 7px 0;
 }
+
 .card_karkon img {
   width: 100%;
   height: auto;
 }
+
 .heading_card_k {
-  margin: 6px;
+  margin: 5px 16px;
 }
 
 .percentage {
@@ -33,22 +35,34 @@
   color: #fff;
   border-radius: 50%;
   width: 50px;
-  height: 48px;
+  height: 35px;
   font-weight: bold;
-  padding-top: 14px;
+  padding-top: 15px;
   position: relative;
-  margin-top: -58px;
+  margin-top: -46px;
   z-index: 99;
   margin-left: 5px;
 }
 
 .date_card_k {
   font-weight: bold;
-  font-size: 20px;
-  margin-bottom: 2px;
+  font-size: 16px;
+  margin-bottom: 6px;
+  background-color: black;
+  color: #fff;
+  padding: 3px 0;
 }
+
 .pic_card_k {
   overflow: hidden;
-  height: 115px;
-  margin-bottom: 10px;
+  height: 125px;
+  border-radius: 50%;
+  width: 125px;
+  margin: auto;
+  border: 1px solid #ccc;
+}
+
+.barcode_card_k {
+  width: 120px;
+  margin: 6px auto;
 }

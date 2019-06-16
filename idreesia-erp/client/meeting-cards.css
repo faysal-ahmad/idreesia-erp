@@ -18,7 +18,7 @@
 }
 
 .k_location {
-  margin: 7px 0;
+  margin: auto;
 }
 
 .card_karkon img {
@@ -64,5 +64,5 @@
 
 .barcode_card_k {
   width: 120px;
-  margin: 6px auto;
+  margin: auto;
 }

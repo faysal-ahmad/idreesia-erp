@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Pagination, Table, Tooltip, message } from "antd";
+import {
+  Button,
+  Icon,
+  Pagination,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -130,15 +138,18 @@ class List extends Component {
                   }}
                 />
               </Tooltip>
-              <Tooltip title="Delete">
-                <Icon
-                  type="delete"
-                  style={IconStyle}
-                  onClick={() => {
-                    this.handleDeleteClicked(record);
-                  }}
-                />
-              </Tooltip>
+              <Popconfirm
+                title="Are you sure you want to delete this stock adjustment?"
+                onConfirm={() => {
+                  this.handleDeleteClicked(record);
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Tooltip title="Delete">
+                  <Icon type="delete" style={IconStyle} />
+                </Tooltip>
+              </Popconfirm>
             </div>
           );
         }

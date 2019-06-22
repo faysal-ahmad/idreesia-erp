@@ -32,32 +32,6 @@ export default {
       const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
       return physicalStore.name;
     },
-    formattedUOM: stockItem => {
-      let uom = null;
-      switch (stockItem.unitOfMeasurement) {
-        case "quantity":
-          uom = "Quantity";
-          break;
-        case "ft":
-          uom = "Length (ft)";
-          break;
-        case "m":
-          uom = "Length (m)";
-          break;
-        case "kg":
-          uom = "Weight (kg)";
-          break;
-        case "lbs":
-          uom = "Weight (lbs)";
-          break;
-        case "l":
-          uom = "Volume (liters)";
-          break;
-        default:
-          break;
-      }
-      return uom;
-    },
     purchaseFormsCount: stockItem =>
       PurchaseForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },

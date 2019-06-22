@@ -15,7 +15,6 @@ type StockItem {
   formattedName: String
   categoryName: String
   physicalStoreName: String
-  formattedUOM: String
   purchaseFormsCount: Float
   issuanceFormsCount: Float
   stockAdjustmentsCount: Float

@@ -6,7 +6,6 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
@@ -36,8 +35,8 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.stockAdjustmentsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -45,7 +44,6 @@ class EditForm extends Component {
     const {
       form,
       history,
-      physicalStoreId,
       updateStockAdjustment,
       stockAdjustmentById: { _id },
     } = this.props;
@@ -68,7 +66,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.stockAdjustmentsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

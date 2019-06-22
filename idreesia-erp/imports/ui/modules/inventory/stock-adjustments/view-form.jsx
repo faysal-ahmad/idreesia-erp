@@ -7,7 +7,6 @@ import { compose, graphql } from "react-apollo";
 import { noop } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   InputTextField,
@@ -32,8 +31,8 @@ class ViewForm extends Component {
   };
 
   handleClose = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.stockAdjustmentsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   render() {

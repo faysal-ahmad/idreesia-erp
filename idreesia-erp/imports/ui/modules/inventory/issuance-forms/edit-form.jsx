@@ -7,7 +7,6 @@ import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
@@ -46,8 +45,8 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -95,7 +94,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.issuanceFormsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

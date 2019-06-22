@@ -8,10 +8,7 @@ import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import {
-  WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   InputTextField,
   DateField,
@@ -40,8 +37,8 @@ class ViewForm extends Component {
   };
 
   handleClose = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.purchaseFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   getItemsField() {

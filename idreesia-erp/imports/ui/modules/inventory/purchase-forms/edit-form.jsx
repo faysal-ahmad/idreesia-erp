@@ -7,7 +7,6 @@ import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
@@ -39,8 +38,8 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.purchaseFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -75,7 +74,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.purchaseFormsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -109,10 +108,7 @@ class EditForm extends Component {
   }
 
   render() {
-    const {
-      formDataLoading,
-      purchaseFormById,
-    } = this.props;
+    const { formDataLoading, purchaseFormById } = this.props;
     if (formDataLoading) return null;
 
     const { getFieldDecorator } = this.props.form;

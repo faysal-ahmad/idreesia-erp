@@ -55,7 +55,7 @@ class List extends Component {
       key: "items",
       render: items => {
         const formattedItems = items.map(
-          item => `${item.itemTypeName} - ${item.quantity}`
+          item => `${item.stockItemName} - ${item.quantity}`
         );
         return formattedItems.join(", ");
       },
@@ -90,6 +90,7 @@ class List extends Component {
   render() {
     const { loading, purchaseFormsByStockItem } = this.props;
     if (loading) return null;
+    debugger;
 
     return (
       <Table
@@ -120,7 +121,7 @@ const listQuery = gql`
       items {
         stockItemId
         quantity
-        itemTypeName
+        stockItemName
       }
       refReceivedBy {
         _id

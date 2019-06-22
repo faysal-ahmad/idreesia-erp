@@ -60,7 +60,7 @@ class List extends Component {
       render: items => {
         const formattedItems = items.map(item => (
           <li key={`${item.stockItemId}${item.isInflow}`}>
-            {`${item.itemTypeName} [${item.quantity} ${
+            {`${item.stockItemName} [${item.quantity} ${
               item.isInflow ? "Returned" : "Issued"
             }]`}
           </li>
@@ -129,7 +129,7 @@ const listQuery = gql`
         stockItemId
         quantity
         isInflow
-        itemTypeName
+        stockItemName
       }
       refIssuedTo {
         _id

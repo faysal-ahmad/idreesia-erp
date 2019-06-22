@@ -29,6 +29,7 @@ const NameDivStyle = {
   justifyContent: "flex-start",
   alignItems: "center",
   width: "100%",
+  cursor: "pointer",
 };
 
 const ActionsStyle = {

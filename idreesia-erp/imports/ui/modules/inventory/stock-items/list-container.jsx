@@ -23,11 +23,12 @@ class ListContainer extends Component {
     const { queryParams, history, location } = this.props;
 
     let nameVal;
-    if (newParams.hasOwnProperty("name")) nameVal = name;
+    if (newParams.hasOwnProperty("name")) nameVal = name || "";
     else nameVal = queryParams.name || "";
 
     let categoryIdVal;
-    if (newParams.hasOwnProperty("categoryId")) categoryIdVal = categoryId;
+    if (newParams.hasOwnProperty("categoryId"))
+      categoryIdVal = categoryId || "";
     else categoryIdVal = queryParams.categoryId || "";
 
     let pageIndexVal;

@@ -16,6 +16,9 @@ type StockItem {
   categoryName: String
   physicalStoreName: String
   formattedUOM: String
+  purchaseFormsCount: Float
+  issuanceFormsCount: Float
+  stockAdjustmentsCount: Float
 
   createdAt: String
   createdBy: String
@@ -55,6 +58,8 @@ extend type Mutation {
     categoryId: String!
     minStockLevel: Float
   ): StockItem
+
+  removeStockItem(_id: String!, physicalStoreId: String!): Int
 
   setStockItemImage(_id: String!, imageId: String!): StockItem
 }

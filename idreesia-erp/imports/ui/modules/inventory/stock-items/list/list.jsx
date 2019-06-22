@@ -1,7 +1,16 @@
 import { Meteor } from "meteor/meteor";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Button, Table, Pagination } from "antd";
+import {
+  Avatar,
+  Button,
+  Icon,
+  Table,
+  Tooltip,
+  Pagination,
+  Popconfirm,
+  message,
+} from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -22,6 +31,19 @@ const NameDivStyle = {
   width: "100%",
 };
 
+const ActionsStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+};
+
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
+
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -33,6 +55,7 @@ class List extends Component {
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
+    removeStockItem: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedStockItems: PropTypes.shape({
@@ -111,7 +134,58 @@ class List extends Component {
         return text;
       },
     },
+    {
+      title: "Actions",
+      key: "action",
+      render: (text, record) => {
+        const {
+          purchaseFormsCount,
+          issuanceFormsCount,
+          stockAdjustmentsCount,
+        } = record;
+
+        if (
+          purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
+          0
+        ) {
+          return (
+            <div style={ActionsStyle}>
+              <Popconfirm
+                title="Are you sure you want to delete this stock item?"
+                onConfirm={() => {
+                  this.handleDeleteClicked(record);
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Tooltip title="Delete">
+                  <Icon type="delete" style={IconStyle} />
+                </Tooltip>
+              </Popconfirm>
+            </div>
+          );
+        }
+
+        return null;
+      },
+    },
   ];
+
+  handleDeleteClicked = stockItem => {
+    const { removeStockItem } = this.props;
+    removeStockItem({
+      variables: {
+        _id: stockItem._id,
+        physicalStoreId: stockItem.physicalStoreId,
+      },
+    })
+      .then(() => {
+        message.success("Stock item has been deleted.", 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
 
   onChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
@@ -222,8 +296,17 @@ const listQuery = gql`
         minStockLevel
         currentStockLevel
         totalStockLevel
+        purchaseFormsCount
+        issuanceFormsCount
+        stockAdjustmentsCount
       }
     }
+  }
+`;
+
+const formMutationRemove = gql`
+  mutation removeStockItem($_id: String!, $physicalStoreId: String!) {
+    removeStockItem(_id: $_id, physicalStoreId: $physicalStoreId)
   }
 `;
 
@@ -237,5 +320,11 @@ export default compose(
           ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
+  }),
+  graphql(formMutationRemove, {
+    name: "removeStockItem",
+    options: {
+      refetchQueries: ["pagedStockItems"],
+    },
   })
 )(List);

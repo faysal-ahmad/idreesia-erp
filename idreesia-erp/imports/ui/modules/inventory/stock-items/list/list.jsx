@@ -54,6 +54,7 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
+    showActions: PropTypes.bool,
     handleNewClicked: PropTypes.func,
     removeStockItem: PropTypes.func,
 
@@ -64,112 +65,120 @@ class List extends Component {
     }),
   };
 
-  columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text, record) => {
-        const onClickHandler = () => {
-          const { handleItemSelected } = this.props;
-          handleItemSelected(record);
-        };
+  getColumns = () => {
+    const { showActions } = this.props;
+    const columns = [
+      {
+        title: "Name",
+        dataIndex: "name",
+        key: "name",
+        render: (text, record) => {
+          const onClickHandler = () => {
+            const { handleItemSelected } = this.props;
+            handleItemSelected(record);
+          };
 
-        if (record.imageId) {
-          const url = Meteor.absoluteUrl(
-            `download-file?attachmentId=${record.imageId}`
-          );
+          if (record.imageId) {
+            const url = Meteor.absoluteUrl(
+              `download-file?attachmentId=${record.imageId}`
+            );
+            return (
+              <div style={NameDivStyle} onClick={onClickHandler}>
+                <Avatar shape="square" size="large" src={url} />
+                &nbsp;&nbsp;
+                {text}
+              </div>
+            );
+          }
+
           return (
             <div style={NameDivStyle} onClick={onClickHandler}>
-              <Avatar shape="square" size="large" src={url} />
+              <Avatar shape="square" size="large" icon="picture" />
               &nbsp;&nbsp;
               {text}
             </div>
           );
-        }
+        },
+      },
+      {
+        title: "Company",
+        dataIndex: "company",
+        key: "company",
+      },
+      {
+        title: "Details",
+        dataIndex: "details",
+        key: "details",
+      },
+      {
+        title: "Category",
+        dataIndex: "categoryName",
+        key: "categoryName",
+      },
+      {
+        title: "Min Stock",
+        dataIndex: "minStockLevel",
+        key: "minStockLevel",
+        render: (text, record) => {
+          if (!text) return "";
+          if (record.unitOfMeasurement !== "quantity")
+            return `${text} ${record.unitOfMeasurement}`;
+          return text;
+        },
+      },
+      {
+        title: "Current Stock",
+        dataIndex: "currentStockLevel",
+        key: "currentStockLevel",
+        render: (text, record) => {
+          if (!text) return "";
+          if (record.unitOfMeasurement !== "quantity")
+            return `${text} ${record.unitOfMeasurement}`;
+          return text;
+        },
+      },
+    ];
 
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" icon="picture" />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      },
-    },
-    {
-      title: "Company",
-      dataIndex: "company",
-      key: "company",
-    },
-    {
-      title: "Details",
-      dataIndex: "details",
-      key: "details",
-    },
-    {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
-    },
-    {
-      title: "Min Stock",
-      dataIndex: "minStockLevel",
-      key: "minStockLevel",
-      render: (text, record) => {
-        if (!text) return "";
-        if (record.unitOfMeasurement !== "quantity")
-          return `${text} ${record.unitOfMeasurement}`;
-        return text;
-      },
-    },
-    {
-      title: "Current Stock",
-      dataIndex: "currentStockLevel",
-      key: "currentStockLevel",
-      render: (text, record) => {
-        if (!text) return "";
-        if (record.unitOfMeasurement !== "quantity")
-          return `${text} ${record.unitOfMeasurement}`;
-        return text;
-      },
-    },
-    {
-      title: "Actions",
-      key: "action",
-      render: (text, record) => {
-        const {
-          purchaseFormsCount,
-          issuanceFormsCount,
-          stockAdjustmentsCount,
-        } = record;
+    if (showActions) {
+      columns.push({
+        title: "Actions",
+        key: "action",
+        render: (text, record) => {
+          const {
+            purchaseFormsCount,
+            issuanceFormsCount,
+            stockAdjustmentsCount,
+          } = record;
 
-        if (
-          purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
-          0
-        ) {
-          return (
-            <div style={ActionsStyle}>
-              <Popconfirm
-                title="Are you sure you want to delete this stock item?"
-                onConfirm={() => {
-                  this.handleDeleteClicked(record);
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Tooltip title="Delete">
-                  <Icon type="delete" style={IconStyle} />
-                </Tooltip>
-              </Popconfirm>
-            </div>
-          );
-        }
+          if (
+            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
+            0
+          ) {
+            return (
+              <div style={ActionsStyle}>
+                <Popconfirm
+                  title="Are you sure you want to delete this stock item?"
+                  onConfirm={() => {
+                    this.handleDeleteClicked(record);
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Tooltip title="Delete">
+                    <Icon type="delete" style={IconStyle} />
+                  </Tooltip>
+                </Popconfirm>
+              </div>
+            );
+          }
 
-        return null;
-      },
-    },
-  ];
+          return null;
+        },
+      });
+    }
+
+    return columns;
+  };
 
   handleDeleteClicked = stockItem => {
     const { removeStockItem } = this.props;
@@ -252,7 +261,7 @@ class List extends Component {
       <Table
         rowKey="_id"
         dataSource={data}
-        columns={this.columns}
+        columns={this.getColumns()}
         bordered
         size="small"
         pagination={false}

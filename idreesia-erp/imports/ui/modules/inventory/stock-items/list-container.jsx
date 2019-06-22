@@ -73,6 +73,7 @@ class ListContainer extends Component {
         setPageParams={this.setPageParams}
         handleItemSelected={this.handleItemSelected}
         showNewButton
+        showActions
         handleNewClicked={this.handleNewClicked}
       />
     );

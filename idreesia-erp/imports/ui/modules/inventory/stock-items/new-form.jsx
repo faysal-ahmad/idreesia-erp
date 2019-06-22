@@ -5,7 +5,6 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
   InputNumberField,
@@ -33,8 +32,8 @@ class NewForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.stockItemsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -68,7 +67,7 @@ class NewForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.stockItemsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

@@ -3,9 +3,12 @@ import PropTypes from "prop-types";
 import { compose } from "react-apollo";
 import { toSafeInteger } from "lodash";
 
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 
 import List from "./list/list";
 
@@ -16,6 +19,7 @@ class ListContainer extends Component {
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
   };
 
   setPageParams = newParams => {
@@ -84,5 +88,11 @@ class ListContainer extends Component {
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
-  WithBreadcrumbs(["Inventory", "Stock Items", "List"])
+  WithPhysicalStore(),
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Stock Items, List`;
+    }
+    return `Inventory, Stock Items, List`;
+  })
 )(ListContainer);

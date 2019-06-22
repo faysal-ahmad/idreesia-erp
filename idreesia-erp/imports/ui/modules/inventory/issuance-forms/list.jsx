@@ -15,9 +15,10 @@ import { compose, graphql } from "react-apollo";
 import { toSafeInteger } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -53,6 +54,7 @@ class List extends Component {
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
@@ -399,6 +401,7 @@ const listQuery = gql`
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutationRemove, {
     name: "removeIssuanceForm",
@@ -426,5 +429,10 @@ export default compose(
       variables: { physicalStoreId, queryString },
     }),
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "List"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Issuance Forms, List`;
+    }
+    return `Inventory, Issuance Forms, List`;
+  })
 )(List);

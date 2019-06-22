@@ -1,15 +1,26 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Pagination, Popconfirm, Table, Tooltip, message } from "antd";
+import {
+  Button,
+  Icon,
+  Pagination,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import { toSafeInteger } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 
 import ListFilter from "./list-filter";
 
@@ -42,6 +53,7 @@ class List extends Component {
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     loading: PropTypes.bool,
     pagedPurchaseForms: PropTypes.shape({
@@ -358,6 +370,7 @@ const listQuery = gql`
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutationRemove, {
     name: "removePurchaseForm",
     options: {
@@ -384,5 +397,10 @@ export default compose(
       variables: { physicalStoreId, queryString },
     }),
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Purchase Forms", "List"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Purchase Forms, List`;
+    }
+    return `Inventory, Purchase Forms, List`;
+  })
 )(List);

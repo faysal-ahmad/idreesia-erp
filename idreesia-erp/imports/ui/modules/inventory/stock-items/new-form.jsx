@@ -4,7 +4,7 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
   InputTextField,
   InputNumberField,
@@ -12,6 +12,7 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithItemCategoriesByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -24,10 +25,11 @@ class NewForm extends Component {
     location: PropTypes.object,
     match: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     itemCategoriesLoading: PropTypes.bool,
     itemCategoriesByPhysicalStoreId: PropTypes.array,
-    physicalStoreId: PropTypes.string,
     createStockItem: PropTypes.func,
   };
 
@@ -180,6 +182,7 @@ const formMutation = gql`
 export default compose(
   Form.create({ name: "newStockItemForm" }),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithItemCategoriesByPhysicalStore(),
   graphql(formMutation, {
     name: "createStockItem",
@@ -187,5 +190,10 @@ export default compose(
       refetchQueries: ["pagedStockItems"],
     },
   }),
-  WithBreadcrumbs(["Inventory", "Stock Items", "New"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Stock Items, New`;
+    }
+    return `Inventory, Stock Items, New`;
+  })
 )(NewForm);

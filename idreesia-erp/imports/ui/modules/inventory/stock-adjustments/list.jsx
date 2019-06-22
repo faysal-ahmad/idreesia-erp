@@ -15,9 +15,12 @@ import { compose, graphql } from "react-apollo";
 import { toSafeInteger } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import { getNameWithImageRenderer } from "/imports/ui/modules/helpers/controls";
 
 import ListFilter from "./list-filter";
@@ -51,6 +54,7 @@ class List extends Component {
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     loading: PropTypes.bool,
     pagedStockAdjustments: PropTypes.shape({
@@ -380,6 +384,7 @@ const listQuery = gql`
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutationRemove, {
     name: "removeStockAdjustment",
     options: {
@@ -406,5 +411,10 @@ export default compose(
       variables: { physicalStoreId, queryString },
     }),
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Stock Adjustments", "List"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Stock Adjustments, List`;
+    }
+    return `Inventory, Stock Adjustments, List`;
+  })
 )(List);

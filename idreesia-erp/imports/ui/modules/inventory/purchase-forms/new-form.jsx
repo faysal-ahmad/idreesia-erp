@@ -5,8 +5,11 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
   FormButtonsSaveCancel,
@@ -29,9 +32,10 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     loading: PropTypes.bool,
-    physicalStoreId: PropTypes.string,
     createPurchaseForm: PropTypes.func,
   };
 
@@ -176,6 +180,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutation, {
     name: "createPurchaseForm",
     options: {
@@ -186,5 +191,10 @@ export default compose(
       ],
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Purchase Forms", "New"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Purchase Forms, New`;
+    }
+    return `Inventory, Purchase Forms, New`;
+  })
 )(NewForm);

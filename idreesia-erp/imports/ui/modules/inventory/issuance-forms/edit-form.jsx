@@ -6,8 +6,9 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -36,6 +37,7 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
@@ -279,6 +281,7 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "updateIssuanceForm",
@@ -297,5 +300,10 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "Edit"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Issuance Forms, Edit`;
+    }
+    return `Inventory, Issuance Forms, Edit`;
+  })
 )(EditForm);

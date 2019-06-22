@@ -5,8 +5,11 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
   InputTextField,
@@ -27,10 +30,11 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     stockAdjustmentById: PropTypes.object,
-    physicalStoreId: PropTypes.string,
     updateStockAdjustment: PropTypes.func,
   };
 
@@ -208,6 +212,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutation, {
     name: "updateStockAdjustment",
     options: {
@@ -225,5 +230,10 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Stock Adjustments", "Edit"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Stock Adjustments, Edit`;
+    }
+    return `Inventory, Stock Adjustments, Edit`;
+  })
 )(EditForm);

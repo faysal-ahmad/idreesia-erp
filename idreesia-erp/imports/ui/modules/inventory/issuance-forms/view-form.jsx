@@ -7,8 +7,11 @@ import { compose, graphql } from "react-apollo";
 import { noop } from "lodash";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   InputTextField,
   DateField,
@@ -31,6 +34,7 @@ class ViewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
@@ -170,6 +174,7 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
@@ -177,5 +182,10 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "View"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Issuance Forms, View`;
+    }
+    return `Inventory, Issuance Forms, View`;
+  })
 )(ViewForm);

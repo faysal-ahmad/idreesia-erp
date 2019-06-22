@@ -4,7 +4,7 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
@@ -13,6 +13,7 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -24,6 +25,7 @@ class NewForm extends Component {
     form: PropTypes.object,
 
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
     createLocation: PropTypes.func,
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
@@ -110,6 +112,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "createLocation",
@@ -117,5 +120,10 @@ export default compose(
       refetchQueries: ["locationsByPhysicalStoreId"],
     },
   }),
-  WithBreadcrumbs(["Inventory", "Setup", "Locations", "New"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Setup, Locations, New`;
+    }
+    return `Inventory, Setup, Locations, New`;
+  })
 )(NewForm);

@@ -54,15 +54,6 @@ class List extends Component {
 
   columns = [
     {
-      title: "Approved",
-      dataIndex: "approvedOn",
-      key: "approvedOn",
-      render: text => {
-        if (text) return <Icon type="check" />;
-        return null;
-      },
-    },
-    {
       title: "Purchase Date",
       dataIndex: "purchaseDate",
       key: "purchaseDate",

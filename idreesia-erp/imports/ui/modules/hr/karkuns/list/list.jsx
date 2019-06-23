@@ -52,6 +52,7 @@ class List extends Component {
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
     showPhoneNumbersColumn: PropTypes.bool,
+    predefinedFilterName: PropTypes.string,
 
     deleteKarkun: PropTypes.func,
     loading: PropTypes.bool,
@@ -195,6 +196,7 @@ class List extends Component {
       setPageParams,
       showNewButton,
       handleNewClicked,
+      predefinedFilterName,
     } = this.props;
 
     let newButton = null;
@@ -206,9 +208,9 @@ class List extends Component {
       );
     }
 
-    return (
-      <div style={ToolbarStyle}>
-        {newButton}
+    let listFilter = null;
+    if (!predefinedFilterName) {
+      listFilter = (
         <ListFilter
           name={name}
           cnicNumber={cnicNumber}
@@ -218,6 +220,14 @@ class List extends Component {
           shiftId={shiftId}
           setPageParams={setPageParams}
         />
+      );
+    }
+
+    if (!newButton && !listFilter) return null;
+    return (
+      <div style={ToolbarStyle}>
+        {newButton}
+        {listFilter}
       </div>
     );
   };
@@ -296,10 +306,19 @@ export default compose(
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ name, cnicNumber, dutyId, shiftId, pageIndex, pageSize }) => ({
+    options: ({
+      name,
+      cnicNumber,
+      dutyId,
+      shiftId,
+      predefinedFilterName,
+      pageIndex,
+      pageSize,
+    }) => ({
       variables: {
         queryString: `?name=${name || ""}&cnicNumber=${cnicNumber ||
           ""}&dutyId=${dutyId || ""}&shiftId=${shiftId ||
+          ""}&predefinedFilterName=${predefinedFilterName ||
           ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),

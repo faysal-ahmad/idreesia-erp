@@ -20,6 +20,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -131,6 +132,9 @@ class EditForm extends Component {
           requiredMessage="Please select a name for adjusted By."
           initialValue={stockAdjustmentById.refAdjustedBy}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
+          }
         />
 
         <InputTextAreaField

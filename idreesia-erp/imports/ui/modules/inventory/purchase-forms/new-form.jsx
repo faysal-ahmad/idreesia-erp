@@ -17,6 +17,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -111,6 +112,9 @@ class NewForm extends Component {
           fieldLabel="Received By / Returned By"
           placeholder="Received By / Returned By"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
+          }
         />
         <KarkunField
           required
@@ -119,6 +123,9 @@ class NewForm extends Component {
           fieldLabel="Purchased By / Returned To"
           placeholder="Purchased By / Returned To"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
+          }
         />
 
         <Form.Item label="Purchased Items" {...formItemExtendedLayout}>

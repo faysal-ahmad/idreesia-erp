@@ -6,11 +6,12 @@ import List from "../list/list";
 export default class ListContainer extends Component {
   static propTypes = {
     setSelectedValue: PropTypes.func,
+    predefinedFilterName: PropTypes.string,
   };
 
   state = {
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
     name: null,
     cnicNumber: null,
     dutyId: null,
@@ -21,7 +22,7 @@ export default class ListContainer extends Component {
   };
 
   render() {
-    const { setSelectedValue } = this.props;
+    const { predefinedFilterName, setSelectedValue } = this.props;
     const { pageIndex, pageSize, name, cnicNumber, dutyId } = this.state;
 
     return (
@@ -34,6 +35,7 @@ export default class ListContainer extends Component {
         setPageParams={this.setPageParams}
         handleItemSelected={setSelectedValue}
         showPhoneNumbersColumn={false}
+        predefinedFilterName={predefinedFilterName}
       />
     );
   }

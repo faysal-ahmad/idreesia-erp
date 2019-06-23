@@ -25,6 +25,7 @@ export default class Field extends Component {
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
     initialValue: PropTypes.object,
+    predefinedFilterName: PropTypes.string,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
@@ -45,6 +46,7 @@ export default class Field extends Component {
       requiredMessage,
       getFieldDecorator,
       initialValue,
+      predefinedFilterName,
     } = this.props;
 
     const rules = [
@@ -57,7 +59,13 @@ export default class Field extends Component {
     return getFieldDecorator(fieldName, {
       initialValue,
       rules,
-    })(<Input placeholder={placeholder} disabled={disabled} />);
+    })(
+      <Input
+        placeholder={placeholder}
+        disabled={disabled}
+        predefinedFilterName={predefinedFilterName}
+      />
+    );
   }
 
   render() {

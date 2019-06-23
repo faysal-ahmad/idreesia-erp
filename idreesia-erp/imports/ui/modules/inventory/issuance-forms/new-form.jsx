@@ -20,6 +20,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -131,6 +132,9 @@ class NewForm extends Component {
           fieldLabel="Issued By / Received By"
           placeholder="Issued By / Received By"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
+          }
         />
         <KarkunField
           required
@@ -139,6 +143,9 @@ class NewForm extends Component {
           fieldLabel="Issued To / Returned By"
           placeholder="Issued To / Returned By"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
+          }
         />
 
         <InputTextField

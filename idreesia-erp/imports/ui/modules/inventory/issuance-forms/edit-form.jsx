@@ -21,6 +21,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -160,6 +161,9 @@ class EditForm extends Component {
           placeholder="Issued By / Received By"
           initialValue={issuanceFormById.refIssuedBy}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
+          }
         />
         <KarkunField
           required
@@ -169,6 +173,9 @@ class EditForm extends Component {
           placeholder="Issued To / Returned By"
           initialValue={issuanceFormById.refIssuedTo}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
+          }
         />
         <InputTextField
           fieldName="handedOverTo"

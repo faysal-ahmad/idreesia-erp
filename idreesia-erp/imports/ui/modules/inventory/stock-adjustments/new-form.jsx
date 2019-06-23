@@ -19,6 +19,7 @@ import {
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 import { StockItemField } from "/imports/ui/modules/inventory/stock-items/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -134,6 +135,9 @@ class NewForm extends Component {
           required
           requiredMessage="Please select a name for adjusted By."
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
+          }
         />
 
         <InputTextAreaField

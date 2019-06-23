@@ -4,7 +4,6 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputCnicField,
   InputTextField,
@@ -28,7 +27,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.karkunsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -68,7 +67,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.push(paths.karkunsPath);
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

@@ -24,7 +24,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.karkunsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {

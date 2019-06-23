@@ -14,7 +14,10 @@ export default class ListContainer extends Component {
     pageSize: 20,
     name: null,
     cnicNumber: null,
+    phoneNumber: null,
+    bloodGroup: null,
     dutyId: null,
+    shiftId: null,
   };
 
   setPageParams = pageParams => {
@@ -23,7 +26,16 @@ export default class ListContainer extends Component {
 
   render() {
     const { predefinedFilterName, setSelectedValue } = this.props;
-    const { pageIndex, pageSize, name, cnicNumber, dutyId } = this.state;
+    const {
+      pageIndex,
+      pageSize,
+      name,
+      cnicNumber,
+      phoneNumber,
+      bloodGroup,
+      dutyId,
+      shiftId,
+    } = this.state;
 
     return (
       <List
@@ -31,7 +43,10 @@ export default class ListContainer extends Component {
         pageSize={pageSize}
         name={name}
         cnicNumber={cnicNumber}
+        phoneNumber={phoneNumber}
+        bloodGroup={bloodGroup}
         dutyId={dutyId}
+        shiftId={shiftId}
         setPageParams={this.setPageParams}
         handleItemSelected={setSelectedValue}
         showPhoneNumbersColumn={false}

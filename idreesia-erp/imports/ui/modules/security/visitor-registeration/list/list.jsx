@@ -192,7 +192,7 @@ class List extends Component {
     if (showNewButton) {
       newButton = (
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Visitor
+          New Visitor Registration
         </Button>
       );
     }
@@ -257,9 +257,9 @@ const listQuery = gql`
       data {
         _id
         name
-        firstName
-        lastName
+        parentName
         cnicNumber
+        referenceName
         contactNumber1
         contactNumber2
         address

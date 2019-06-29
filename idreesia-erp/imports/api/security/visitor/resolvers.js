@@ -5,11 +5,6 @@ import { Permissions as PermissionConstants } from "meteor/idreesia-common/const
 import { getVisitors } from "./queries";
 
 export default {
-  VisitorType: {
-    name: visitorType =>
-      `${visitorType.firstName} ${visitorType.lastName || ""}`,
-  },
-
   Query: {
     pagedVisitors(obj, { queryString }, { user }) {
       if (
@@ -57,10 +52,11 @@ export default {
     createVisitor(
       obj,
       {
-        firstName,
-        lastName,
+        name,
+        parentName,
         cnicNumber,
         ehadDate,
+        referenceName,
         contactNumber1,
         contactNumber2,
         emailAddress,
@@ -95,10 +91,11 @@ export default {
 
       const date = new Date();
       const visitorId = Visitors.insert({
-        firstName,
-        lastName,
+        name,
+        parentName,
         cnicNumber,
         ehadDate,
+        referenceName,
         contactNumber1,
         contactNumber2,
         emailAddress,
@@ -118,10 +115,11 @@ export default {
       obj,
       {
         _id,
-        firstName,
-        lastName,
+        name,
+        parentName,
         cnicNumber,
         ehadDate,
+        referenceName,
         contactNumber1,
         contactNumber2,
         emailAddress,
@@ -157,10 +155,11 @@ export default {
       const date = new Date();
       Visitors.update(_id, {
         $set: {
-          firstName,
-          lastName,
+          name,
+          parentName,
           cnicNumber,
           ehadDate,
+          referenceName,
           contactNumber1,
           contactNumber2,
           emailAddress,

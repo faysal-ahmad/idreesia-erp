@@ -39,10 +39,11 @@ class GeneralInfo extends Component {
       (
         err,
         {
-          firstName,
-          lastName,
+          name,
+          parentName,
           cnicNumber,
           ehadDate,
+          referenceName,
           contactNumber1,
           contactNumber2,
           address,
@@ -55,10 +56,11 @@ class GeneralInfo extends Component {
         updateVisitor({
           variables: {
             _id: visitorById._id,
-            firstName,
-            lastName,
+            name,
+            parentName,
             cnicNumber,
             ehadDate,
+            referenceName,
             contactNumber1,
             contactNumber2,
             address,
@@ -84,20 +86,20 @@ class GeneralInfo extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
-          fieldName="firstName"
-          fieldLabel="First Name"
-          initialValue={visitorById.firstName}
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={visitorById.name}
           required
           requiredMessage="Please input the first name for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="lastName"
-          fieldLabel="Last Name"
-          initialValue={visitorById.lastName}
+          fieldName="parentName"
+          fieldLabel="S/O"
+          initialValue={visitorById.parentName}
           required
-          requiredMessage="Please input the last name for the visitor."
+          requiredMessage="Please input the parent name for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -118,6 +120,15 @@ class GeneralInfo extends Component {
           format="MMM, YYYY"
           required
           requiredMessage="Please specify the Ehad date for the visitor."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="referenceName"
+          fieldLabel="R/O"
+          initialValue={visitorById.referenceName}
+          required
+          requiredMessage="Please input the referene name for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -171,10 +182,11 @@ const formQuery = gql`
   query visitorById($_id: String!) {
     visitorById(_id: $_id) {
       _id
-      firstName
-      lastName
+      name
+      parentName
       cnicNumber
       ehadDate
+      referenceName
       contactNumber1
       contactNumber2
       address
@@ -187,10 +199,11 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateVisitor(
     $_id: String!
-    $firstName: String!
-    $lastName: String!
+    $name: String!
+    $parentName: String!
     $cnicNumber: String!
     $ehadDate: String!
+    $referenceName: String!
     $contactNumber1: String
     $contactNumber2: String
     $address: String
@@ -199,10 +212,11 @@ const formMutation = gql`
   ) {
     updateVisitor(
       _id: $_id
-      firstName: $firstName
-      lastName: $lastName
+      name: $name
+      parentName: $parentName
       cnicNumber: $cnicNumber
       ehadDate: $ehadDate
+      referenceName: $referenceName
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
       address: $address
@@ -210,10 +224,11 @@ const formMutation = gql`
       country: $country
     ) {
       _id
-      firstName
-      lastName
+      name
+      parentName
       cnicNumber
       ehadDate
+      referenceName
       contactNumber1
       contactNumber2
       address

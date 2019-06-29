@@ -3,10 +3,10 @@ import SimpleSchema from "simpl-schema";
 import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
-  firstName: {
+  name: {
     type: String
   },
-  lastName: {
+  parentName: {
     type: String
   },
   cnicNumber: {
@@ -14,6 +14,9 @@ export default new SimpleSchema({
   },
   ehadDate: {
     type: Date
+  },
+  referenceName: {
+    type: String
   },
   address: {
     type: String,

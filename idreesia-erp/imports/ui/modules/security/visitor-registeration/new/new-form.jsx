@@ -34,10 +34,11 @@ class NewForm extends Component {
       (
         err,
         {
-          firstName,
-          lastName,
+          name,
+          parentName,
           cnicNumber,
           ehadDate,
+          referenceName,
           contactNumber1,
           contactNumber2,
           address,
@@ -49,10 +50,11 @@ class NewForm extends Component {
 
         createVisitor({
           variables: {
-            firstName,
-            lastName,
+            name,
+            parentName,
             cnicNumber,
             ehadDate,
+            referenceName,
             contactNumber1,
             contactNumber2,
             address,
@@ -76,18 +78,18 @@ class NewForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
-          fieldName="firstName"
-          fieldLabel="First Name"
+          fieldName="name"
+          fieldLabel="Name"
           required
-          requiredMessage="Please input the first name for the visitor."
+          requiredMessage="Please input the name for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="lastName"
-          fieldLabel="Last Name"
+          fieldName="parentName"
+          fieldLabel="S/O"
           required
-          requiredMessage="Please input the last name for the visitor."
+          requiredMessage="Please input the parent name for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -110,6 +112,14 @@ class NewForm extends Component {
         />
 
         <InputTextField
+          fieldName="referenceName"
+          fieldLabel="R/O"
+          required
+          requiredMessage="Please input the reference name for the visitor."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
           fieldName="contactNumber1"
           fieldLabel="Contact Number 1"
           required={false}
@@ -127,7 +137,6 @@ class NewForm extends Component {
           fieldName="address"
           fieldLabel="Address"
           required={false}
-          requiredMessage="Please input the address for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -152,10 +161,11 @@ class NewForm extends Component {
 
 const formMutation = gql`
   mutation createVisitor(
-    $firstName: String!
-    $lastName: String!
+    $name: String!
+    $parentName: String!
     $cnicNumber: String!
     $ehadDate: String!
+    $referenceName: String!
     $contactNumber1: String
     $contactNumber2: String
     $address: String
@@ -163,10 +173,11 @@ const formMutation = gql`
     $country: String
   ) {
     createVisitor(
-      firstName: $firstName
-      lastName: $lastName
+      name: $name
+      parentName: $parentName
       cnicNumber: $cnicNumber
       ehadDate: $ehadDate
+      referenceName: $referenceName
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
       address: $address
@@ -174,10 +185,11 @@ const formMutation = gql`
       country: $country
     ) {
       _id
-      firstName
-      lastName
+      name
+      parentName
       cnicNumber
       ehadDate
+      referenceName
       contactNumber1
       contactNumber2
       address

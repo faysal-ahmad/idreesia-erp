@@ -1,10 +1,10 @@
 type VisitorType {
   _id: String
   name: String
-  firstName: String
-  lastName: String
+  parentName: String
   cnicNumber: String
   ehadDate: String
+  referenceName: String
   contactNumber1: String
   contactNumber2: String
   address: String
@@ -33,10 +33,11 @@ extend type Query {
 
 extend type Mutation {
   createVisitor(
-    firstName: String!
-    lastName: String!
-    cnicNumber: String
-    ehadDate: String
+    name: String!
+    parentName: String!
+    cnicNumber: String!
+    ehadDate: String!
+    referenceName: String!
     contactNumber1: String
     contactNumber2: String
     emailAddress: String
@@ -47,10 +48,11 @@ extend type Mutation {
 
   updateVisitor(
     _id: String!
-    firstName: String!
-    lastName: String!
-    cnicNumber: String
-    ehadDate: String
+    name: String!
+    parentName: String!
+    cnicNumber: String!
+    ehadDate: String!
+    referenceName: String!
     contactNumber1: String
     contactNumber2: String
     emailAddress: String

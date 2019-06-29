@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Checkbox, Icon, Table, Tooltip } from "antd";
+import { Icon, Table, Tooltip } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 
 const ActionsStyle = {
   display: "flex",
@@ -19,22 +21,14 @@ const IconStyle = {
 
 class List extends Component {
   static propTypes = {
+    history: PropTypes.object,
+    location: PropTypes.object,
     physicalStoreId: PropTypes.string,
     loading: PropTypes.bool,
     purchaseFormsByStockItem: PropTypes.array,
   };
 
   columns = [
-    {
-      title: "Approved",
-      dataIndex: "approvedOn",
-      key: "approvedOn",
-      render: text => {
-        let value = false;
-        if (text) value = true;
-        return <Checkbox checked={value} disabled />;
-      },
-    },
     {
       title: "Purchase Date",
       dataIndex: "purchaseDate",
@@ -55,7 +49,7 @@ class List extends Component {
       key: "items",
       render: items => {
         const formattedItems = items.map(
-          item => `${item.itemTypeName} - ${item.quantity}`
+          item => `${item.stockItemName} - ${item.quantity}`
         );
         return formattedItems.join(", ");
       },
@@ -64,32 +58,55 @@ class List extends Component {
       title: "Actions",
       key: "action",
       render: (text, record) => {
+        let tooltipTitle;
+        let iconType;
+        let handler;
+
         if (!record.approvedOn) {
-          return (
-            <div style={ActionsStyle}>
-              <Tooltip title="Approve">
-                <Icon
-                  type="check-square-o"
-                  style={IconStyle}
-                  onClick={() => {
-                    this.handleApproveClicked(record);
-                  }}
-                />
-              </Tooltip>
-            </div>
-          );
+          tooltipTitle = "Edit";
+          iconType = "edit";
+          handler = this.handleEditClicked;
+        } else {
+          tooltipTitle = "View";
+          iconType = "file";
+          handler = this.handleViewClicked;
         }
 
-        return null;
+        return (
+          <div style={ActionsStyle}>
+            <Tooltip title={tooltipTitle}>
+              <Icon
+                type={iconType}
+                style={IconStyle}
+                onClick={() => {
+                  handler(record);
+                }}
+              />
+            </Tooltip>
+          </div>
+        );
       },
     },
   ];
 
-  handleApproveClicked = () => {};
+  handleViewClicked = purchaseForm => {
+    const { history, physicalStoreId } = this.props;
+    history.push(
+      paths.purchaseFormsViewFormPath(physicalStoreId, purchaseForm._id)
+    );
+  };
+
+  handleEditClicked = purchaseForm => {
+    const { history, physicalStoreId } = this.props;
+    history.push(
+      paths.purchaseFormsEditFormPath(physicalStoreId, purchaseForm._id)
+    );
+  };
 
   render() {
     const { loading, purchaseFormsByStockItem } = this.props;
     if (loading) return null;
+    debugger;
 
     return (
       <Table
@@ -120,7 +137,7 @@ const listQuery = gql`
       items {
         stockItemId
         quantity
-        itemTypeName
+        stockItemName
       }
       refReceivedBy {
         _id

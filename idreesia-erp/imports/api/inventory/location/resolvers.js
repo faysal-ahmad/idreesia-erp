@@ -22,9 +22,12 @@ export default {
 
     locationsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
-      return Locations.find({
-        physicalStoreId: { $eq: physicalStoreId },
-      }).fetch();
+      return Locations.find(
+        {
+          physicalStoreId: { $eq: physicalStoreId },
+        },
+        { sort: { name: 1 } }
+      ).fetch();
     },
   },
 

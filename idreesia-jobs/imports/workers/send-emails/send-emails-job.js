@@ -19,7 +19,6 @@ export const worker = (job, callback) => {
     const recepients = [
       { email: "faisal.idreesi@gmail.com", name: "Faisal Ahmad" },
       { email: "naeemyahya@gmail.com", name: "Dr. Yahya Naeem" },
-      { email: "381hrd@gmail.com", name: "381 HR" },
     ];
 
     return sendEmail({

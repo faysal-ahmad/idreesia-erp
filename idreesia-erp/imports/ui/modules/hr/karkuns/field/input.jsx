@@ -1,8 +1,16 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Drawer, Icon, Input } from "antd";
+import { Tabs, Drawer, Icon, Input } from "antd";
 
 import ListContainer from "./list-container";
+
+const ContainerStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  width: "100%",
+};
 
 export default class CustomInput extends Component {
   static propTypes = {
@@ -10,6 +18,7 @@ export default class CustomInput extends Component {
     disabled: PropTypes.bool,
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
+    predefinedFilterName: PropTypes.string,
   };
 
   state = {
@@ -39,8 +48,38 @@ export default class CustomInput extends Component {
     }
   };
 
+  setSelectedValueFromQuickSelection = item => {
+    const { onChange } = this.props;
+    this.handleClose();
+    if (onChange) {
+      onChange(item);
+    }
+  };
+
   render() {
-    const { placeholder, value } = this.props;
+    const { placeholder, value, predefinedFilterName } = this.props;
+
+    let containersNode;
+    if (predefinedFilterName) {
+      containersNode = (
+        <Tabs>
+          <Tabs.TabPane tab="Recently Used" key="1">
+            <ListContainer
+              setSelectedValue={this.setSelectedValue}
+              predefinedFilterName={predefinedFilterName}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="All Karkuns" key="2">
+            <ListContainer setSelectedValue={this.setSelectedValue} />
+          </Tabs.TabPane>
+        </Tabs>
+      );
+    } else {
+      containersNode = (
+        <ListContainer setSelectedValue={this.setSelectedValue} />
+      );
+    }
+
     return (
       <Fragment>
         <Drawer
@@ -54,15 +93,17 @@ export default class CustomInput extends Component {
             paddingBottom: "108px",
           }}
         >
-          <ListContainer setSelectedValue={this.setSelectedValue} />
+          {containersNode}
         </Drawer>
-        <Input
-          type="text"
-          value={value ? value.name : ""}
-          readOnly
-          addonAfter={<Icon type="edit" onClick={this.handleEditClick} />}
-          placeholder={placeholder}
-        />
+        <div style={ContainerStyle}>
+          <Input
+            type="text"
+            value={value ? value.name : ""}
+            readOnly
+            addonAfter={<Icon type="edit" onClick={this.handleEditClick} />}
+            placeholder={placeholder}
+          />
+        </div>
       </Fragment>
     );
   }

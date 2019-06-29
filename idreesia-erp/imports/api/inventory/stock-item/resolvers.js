@@ -2,6 +2,9 @@ import {
   PhysicalStores,
   ItemCategories,
   StockItems,
+  PurchaseForms,
+  IssuanceForms,
+  StockAdjustments,
 } from "meteor/idreesia-common/collections/inventory";
 import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
@@ -29,32 +32,29 @@ export default {
       const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
       return physicalStore.name;
     },
-    formattedUOM: stockItem => {
-      let uom = null;
-      switch (stockItem.unitOfMeasurement) {
-        case "quantity":
-          uom = "Quantity";
-          break;
-        case "ft":
-          uom = "Length (ft)";
-          break;
-        case "m":
-          uom = "Length (m)";
-          break;
-        case "kg":
-          uom = "Weight (kg)";
-          break;
-        case "lbs":
-          uom = "Weight (lbs)";
-          break;
-        case "l":
-          uom = "Volume (liters)";
-          break;
-        default:
-          break;
-      }
-      return uom;
-    },
+    purchaseFormsCount: stockItem =>
+      PurchaseForms.find({
+        physicalStoreId: { $eq: stockItem.physicalStoreId },
+        items: {
+          $elemMatch: {
+            stockItemId: { $eq: stockItem._id },
+          },
+        },
+      }).count(),
+    issuanceFormsCount: stockItem =>
+      IssuanceForms.find({
+        physicalStoreId: { $eq: stockItem.physicalStoreId },
+        items: {
+          $elemMatch: {
+            stockItemId: { $eq: stockItem._id },
+          },
+        },
+      }).count(),
+    stockAdjustmentsCount: stockItem =>
+      StockAdjustments.find({
+        physicalStoreId: { $eq: stockItem.physicalStoreId },
+        stockItemId: { $eq: stockItem._id },
+      }).count(),
   },
 
   Query: {
@@ -183,6 +183,54 @@ export default {
       });
 
       return StockItems.findOne(_id);
+    },
+
+    removeStockItem(obj, { _id, physicalStoreId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Stock Items in the System."
+        );
+      }
+
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+        throw new Error(
+          "You do not have permission to manage Stock Items in this Physical Store."
+        );
+      }
+
+      // Check that there are no purchase/issuance forms, or stock adjustments
+      // against this stock item.
+      const purchaseFormsCount = PurchaseForms.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        items: {
+          $elemMatch: {
+            stockItemId: { $eq: _id },
+          },
+        },
+      }).count();
+      const issuanceFormsCount = IssuanceForms.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        items: {
+          $elemMatch: {
+            stockItemId: { $eq: _id },
+          },
+        },
+      }).count();
+      const stockAdjustmentsCount = StockAdjustments.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        stockItemId: { $eq: _id },
+      }).count();
+
+      if (
+        purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
+        0
+      ) {
+        return StockItems.remove(_id);
+      }
+
+      return 0;
     },
 
     setStockItemImage(obj, { _id, imageId }, { user }) {

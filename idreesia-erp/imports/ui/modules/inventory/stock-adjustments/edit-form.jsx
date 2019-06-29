@@ -5,9 +5,11 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
   InputTextField,
@@ -18,6 +20,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -28,16 +31,17 @@ class EditForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     stockAdjustmentById: PropTypes.object,
-    physicalStoreId: PropTypes.string,
     updateStockAdjustment: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.stockAdjustmentsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -45,7 +49,6 @@ class EditForm extends Component {
     const {
       form,
       history,
-      physicalStoreId,
       updateStockAdjustment,
       stockAdjustmentById: { _id },
     } = this.props;
@@ -68,7 +71,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.stockAdjustmentsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -129,6 +132,9 @@ class EditForm extends Component {
           requiredMessage="Please select a name for adjusted By."
           initialValue={stockAdjustmentById.refAdjustedBy}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
+          }
         />
 
         <InputTextAreaField
@@ -210,6 +216,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutation, {
     name: "updateStockAdjustment",
     options: {
@@ -227,5 +234,10 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Stock Adjustments", "Edit"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Stock Adjustments, Edit`;
+    }
+    return `Inventory, Stock Adjustments, Edit`;
+  })
 )(EditForm);

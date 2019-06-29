@@ -6,9 +6,9 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -21,6 +21,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -37,6 +38,7 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
@@ -46,8 +48,8 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -95,7 +97,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.issuanceFormsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -159,6 +161,9 @@ class EditForm extends Component {
           placeholder="Issued By / Received By"
           initialValue={issuanceFormById.refIssuedBy}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
+          }
         />
         <KarkunField
           required
@@ -168,6 +173,9 @@ class EditForm extends Component {
           placeholder="Issued To / Returned By"
           initialValue={issuanceFormById.refIssuedTo}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
+          }
         />
         <InputTextField
           fieldName="handedOverTo"
@@ -280,6 +288,7 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "updateIssuanceForm",
@@ -298,5 +307,10 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "Edit"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Issuance Forms, Edit`;
+    }
+    return `Inventory, Issuance Forms, Edit`;
+  })
 )(EditForm);

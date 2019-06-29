@@ -1,4 +1,5 @@
 export { default as WithPhysicalStoreId } from "./with-physical-store-id";
+export { default as WithPhysicalStore } from "./with-physical-store";
 export {
   default as WithLocationsByPhysicalStore,
 } from "./with-locations-by-physical-store";

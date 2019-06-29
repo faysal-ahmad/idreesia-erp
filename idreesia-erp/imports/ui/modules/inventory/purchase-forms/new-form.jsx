@@ -5,9 +5,11 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
   FormButtonsSaveCancel,
@@ -15,6 +17,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -30,15 +33,16 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     loading: PropTypes.bool,
-    physicalStoreId: PropTypes.string,
     createPurchaseForm: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.purchaseFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -59,7 +63,7 @@ class NewForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.purchaseFormsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -108,6 +112,9 @@ class NewForm extends Component {
           fieldLabel="Received By / Returned By"
           placeholder="Received By / Returned By"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
+          }
         />
         <KarkunField
           required
@@ -116,6 +123,9 @@ class NewForm extends Component {
           fieldLabel="Purchased By / Returned To"
           placeholder="Purchased By / Returned To"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
+          }
         />
 
         <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
@@ -177,6 +187,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutation, {
     name: "createPurchaseForm",
     options: {
@@ -187,5 +198,10 @@ export default compose(
       ],
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Purchase Forms", "New"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Purchase Forms, New`;
+    }
+    return `Inventory, Purchase Forms, New`;
+  })
 )(NewForm);

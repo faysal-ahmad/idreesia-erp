@@ -29,7 +29,7 @@ class EditForm extends Component {
     form: PropTypes.object,
 
     attendanceById: PropTypes.object,
-    loading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
     allDuties: PropTypes.array,
     allDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
@@ -82,8 +82,13 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, allDutiesLoading, allDutyShiftsLoading } = this.props;
-    if ((loading, allDutiesLoading || allDutyShiftsLoading)) return null;
+    const {
+      formDataLoading,
+      allDutiesLoading,
+      allDutyShiftsLoading,
+    } = this.props;
+    if (formDataLoading || allDutiesLoading || allDutyShiftsLoading)
+      return null;
 
     const { getFieldDecorator } = this.props.form;
     const { allDuties, allDutyShifts, attendanceById } = this.props;
@@ -92,7 +97,6 @@ class EditForm extends Component {
       allDutyShifts
     );
 
-    debugger;
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <KarkunField
@@ -215,7 +219,7 @@ export default compose(
   WithAllDuties(),
   WithAllDutyShifts(),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { attendanceId } = match.params;
       return { variables: { _id: attendanceId } };

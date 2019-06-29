@@ -1,15 +1,24 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Pagination, Table, Tooltip, message } from "antd";
+import {
+  Button,
+  Icon,
+  Pagination,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import { toSafeInteger } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -45,6 +54,7 @@ class List extends Component {
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
@@ -58,15 +68,6 @@ class List extends Component {
   };
 
   columns = [
-    {
-      title: "Approved",
-      dataIndex: "approvedOn",
-      key: "approvedOn",
-      render: text => {
-        if (text) return <Icon type="check" />;
-        return null;
-      },
-    },
     {
       title: "Issue Date",
       dataIndex: "issueDate",
@@ -133,15 +134,18 @@ class List extends Component {
                   }}
                 />
               </Tooltip>
-              <Tooltip title="Delete">
-                <Icon
-                  type="delete"
-                  style={IconStyle}
-                  onClick={() => {
-                    this.handleDeleteClicked(record);
-                  }}
-                />
-              </Tooltip>
+              <Popconfirm
+                title="Are you sure you want to delete this issuance form?"
+                onConfirm={() => {
+                  this.handleDeleteClicked(record);
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Tooltip title="Delete">
+                  <Icon type="delete" style={IconStyle} />
+                </Tooltip>
+              </Popconfirm>
             </div>
           );
         }
@@ -397,6 +401,7 @@ const listQuery = gql`
 export default compose(
   WithQueryParams(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutationRemove, {
     name: "removeIssuanceForm",
@@ -424,5 +429,10 @@ export default compose(
       variables: { physicalStoreId, queryString },
     }),
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "List"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Issuance Forms, List`;
+    }
+    return `Inventory, Issuance Forms, List`;
+  })
 )(List);

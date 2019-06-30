@@ -1,0 +1,31 @@
+type VisitorStayType {
+  _id: String
+  visitorId: String
+  fromDate: String
+  toDate: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVisitorStayType {
+  totalResults: Int
+  data: [VisitorStayType]
+}
+
+extend type Query {
+  pagedVisitorStaysByVisitorId(queryString: String!): PagedVisitorStayType
+  visitorStayById(_id: String!): VisitorStayType
+}
+
+extend type Mutation {
+  createVisitorStay(
+    visitorId: String!
+    fromDate: String!
+    toDate: String!
+  ): VisitorStayType
+
+  deleteVisitorStay(_id: String!): Int
+}

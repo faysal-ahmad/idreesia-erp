@@ -13,7 +13,10 @@ export default {
           PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
-        return [];
+        return {
+          data: [],
+          totalResults: 0,
+        };
       }
 
       return getVisitors(queryString);

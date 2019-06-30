@@ -1,10 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import { Drawer } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 
 import List from "./list";
+import { VisitorStaysList } from "/imports/ui/modules/security/visitor-stays";
 
 class ListContainer extends Component {
   static propTypes = {
@@ -20,6 +22,8 @@ class ListContainer extends Component {
     name: null,
     cnicNumber: null,
     phoneNumber: null,
+    showStayList: false,
+    visitorIdForStayList: null,
   };
 
   setPageParams = pageParams => {
@@ -36,21 +40,51 @@ class ListContainer extends Component {
     history.push(paths.visitorRegistrationEditFormPath(visitor._id));
   };
 
+  handleShowStayList = visitor => {
+    this.setState({
+      showStayList: true,
+      visitorIdForStayList: visitor._id,
+    });
+  };
+
+  handleStayListClose = () => {
+    this.setState({
+      showStayList: false,
+    });
+  };
+
   render() {
+    const { visitorIdForStayList } = this.state;
     const { pageIndex, pageSize, name, cnicNumber, phoneNumber } = this.state;
 
     return (
-      <List
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        name={name}
-        cnicNumber={cnicNumber}
-        phoneNumber={phoneNumber}
-        setPageParams={this.setPageParams}
-        handleItemSelected={this.handleItemSelected}
-        showNewButton
-        handleNewClicked={this.handleNewClicked}
-      />
+      <Fragment>
+        <List
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          name={name}
+          cnicNumber={cnicNumber}
+          phoneNumber={phoneNumber}
+          setPageParams={this.setPageParams}
+          handleItemSelected={this.handleItemSelected}
+          handleShowStayList={this.handleShowStayList}
+          showNewButton
+          handleNewClicked={this.handleNewClicked}
+        />
+        <Drawer
+          title="Stay History"
+          width={600}
+          onClose={this.handleStayListClose}
+          visible={this.state.showStayList}
+          style={{
+            overflow: "auto",
+            height: "calc(100% - 108px)",
+            paddingBottom: "108px",
+          }}
+        >
+          <VisitorStaysList visitorId={visitorIdForStayList} />
+        </Drawer>
+      </Fragment>
     );
   }
 }

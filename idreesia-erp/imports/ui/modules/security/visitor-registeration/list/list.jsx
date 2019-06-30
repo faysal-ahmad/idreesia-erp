@@ -15,6 +15,10 @@ import { compose, graphql } from "react-apollo";
 
 import ListFilter from "./list-filter";
 
+const StatusStyle = {
+  fontSize: 20,
+};
+
 const IconStyle = {
   cursor: "pointer",
   fontSize: 20,
@@ -37,6 +41,14 @@ const NameDivStyle = {
   cursor: "pointer",
 };
 
+const ActionsStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-around",
+  alignItems: "center",
+  width: "100%",
+};
+
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -46,6 +58,7 @@ class List extends Component {
     phoneNumber: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
+    handleShowStayList: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
 
@@ -55,6 +68,34 @@ class List extends Component {
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
+  };
+
+  statusColumn = {
+    title: "",
+    key: "status",
+    render: (text, record) => {
+      if (record.criminalRecord) {
+        return (
+          <Icon
+            type="warning"
+            style={StatusStyle}
+            theme="twoTone"
+            twoToneColor="red"
+          />
+        );
+      } else if (record.otherNotes) {
+        return (
+          <Icon
+            type="warning"
+            style={StatusStyle}
+            theme="twoTone"
+            twoToneColor="orange"
+          />
+        );
+      }
+
+      return null;
+    },
   };
 
   nameColumn = {
@@ -123,22 +164,34 @@ class List extends Component {
   actionsColumn = {
     key: "action",
     render: (text, record) => (
-      <Popconfirm
-        title="Are you sure you want to delete this visitor registration?"
-        onConfirm={() => {
-          this.handleDeleteClicked(record);
-        }}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Tooltip title="Delete">
-          <Icon type="delete" style={IconStyle} />
+      <div style={ActionsStyle}>
+        <Tooltip title="Stay History">
+          <Icon
+            type="history"
+            style={IconStyle}
+            onClick={() => {
+              this.handleStayHistoryClicked(record);
+            }}
+          />
         </Tooltip>
-      </Popconfirm>
+        <Popconfirm
+          title="Are you sure you want to delete this visitor registration?"
+          onConfirm={() => {
+            this.handleDeleteClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Delete">
+            <Icon type="delete" style={IconStyle} />
+          </Tooltip>
+        </Popconfirm>
+      </div>
     ),
   };
 
   getColumns = () => [
+    this.statusColumn,
     this.nameColumn,
     this.cnicColumn,
     this.phoneNumberColumn,
@@ -176,6 +229,11 @@ class List extends Component {
     }).catch(error => {
       message.error(error.message, 5);
     });
+  };
+
+  handleStayHistoryClicked = visitor => {
+    const { handleShowStayList } = this.props;
+    if (handleShowStayList) handleShowStayList(visitor);
   };
 
   getTableHeader = () => {
@@ -266,6 +324,8 @@ const listQuery = gql`
         city
         country
         imageId
+        criminalRecord
+        otherNotes
       }
     }
   }

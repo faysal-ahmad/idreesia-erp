@@ -5,7 +5,6 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
   InputCnicField,
   InputTextField,
@@ -29,7 +28,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.visitorRegistrationPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -69,7 +68,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.push(paths.visitorRegistrationPath);
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

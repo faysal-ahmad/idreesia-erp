@@ -4,7 +4,6 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
   InputTextAreaField,
   FormButtonsSaveCancel,
@@ -25,7 +24,7 @@ class Notes extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.visitorRegistrationPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -42,7 +41,7 @@ class Notes extends Component {
         },
       })
         .then(() => {
-          history.push(paths.visitorRegistrationPath);
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);

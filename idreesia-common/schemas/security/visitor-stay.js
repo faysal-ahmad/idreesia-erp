@@ -11,8 +11,5 @@ export default new SimpleSchema({
   },
   toDate: {
     type: Date
-  },
-  stayCardBarcodeId: {
-    type: String
   }
 }).extend(identifiable);

@@ -18,6 +18,9 @@ import AdminJobResolvers from "./admin/admin-job/resolvers";
 import VisitorSchema from "./security/visitor/visitor.graphql";
 import VisitorResolvers from "./security/visitor/resolvers";
 
+import VisitorStaySchema from "./security/visitor-stay/visitor-stay.graphql";
+import VisitorStayResolvers from "./security/visitor-stay/resolvers";
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -92,6 +95,7 @@ const typeDefs = [
   AdminJobSchema,
 
   VisitorSchema,
+  VisitorStaySchema,
 
   DutyShiftSchema,
   DutyLocationSchema,
@@ -122,6 +126,7 @@ const resolvers = merge(
   AdminJobResolvers,
 
   VisitorResolvers,
+  VisitorStayResolvers,
 
   DutyShiftResolvers,
   DutyLocationResolvers,

@@ -32,6 +32,12 @@ const ToolbarStyle = {
   width: "100%",
 };
 
+const ButtonGroupStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  alignItems: "center",
+};
+
 const NameDivStyle = {
   display: "flex",
   flexFlow: "row nowrap",
@@ -61,6 +67,7 @@ class List extends Component {
     handleShowStayList: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
+    handleScanClicked: PropTypes.func,
 
     deleteVisitor: PropTypes.func,
     loading: PropTypes.bool,
@@ -244,6 +251,7 @@ class List extends Component {
       setPageParams,
       showNewButton,
       handleNewClicked,
+      handleScanClicked,
     } = this.props;
 
     let newButton = null;
@@ -257,7 +265,13 @@ class List extends Component {
 
     return (
       <div style={ToolbarStyle}>
-        {newButton}
+        <div style={ButtonGroupStyle}>
+          {newButton}
+          &nbsp;
+          <Button icon="scan" onClick={handleScanClicked}>
+            Scan Visitor CNIC
+          </Button>
+        </div>
         <ListFilter
           name={name}
           cnicNumber={cnicNumber}

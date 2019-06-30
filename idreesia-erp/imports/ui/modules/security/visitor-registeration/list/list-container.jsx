@@ -35,6 +35,11 @@ class ListContainer extends Component {
     history.push(paths.visitorRegistrationNewFormPath);
   };
 
+  handleScanClicked = () => {
+    const { history } = this.props;
+    history.push(paths.visitorRegistrationPath);
+  };
+
   handleItemSelected = visitor => {
     const { history } = this.props;
     history.push(paths.visitorRegistrationEditFormPath(visitor._id));
@@ -70,6 +75,7 @@ class ListContainer extends Component {
           handleShowStayList={this.handleShowStayList}
           showNewButton
           handleNewClicked={this.handleNewClicked}
+          handleScanClicked={this.handleScanClicked}
         />
         <Drawer
           title="Stay History"

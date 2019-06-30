@@ -1,0 +1,22 @@
+.ant-card-head-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.ant-card-body div {
+  border-bottom: 2px solid black;
+  font-family: arial;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.ant-card-body h2 {
+  border-bottom: 3px solid black;
+  margin: 0px;
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+.ant-modal-content {
+  max-width: 340px;
+}

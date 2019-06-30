@@ -71,11 +71,11 @@ class StayCard extends Component {
           <h2>Stay Time</h2>
           <div>
             <b>From:</b>{" "}
-            {moment(new Date(visitorStayById.fromDate)).format("DD MMMM, YYYY")}
+            {moment(Number(visitorStayById.fromDate)).format("DD MMMM, YYYY")}
           </div>
           <div>
             <b>To:</b>{" "}
-            {moment(new Date(visitorStayById.toDate)).format("DD MMMM, YYYY")}
+            {moment(Number(visitorStayById.toDate)).format("DD MMMM, YYYY")}
           </div>
           <div>
             <Barcode value={visitorStayById._id} {...barcodeOptions} />
@@ -90,6 +90,7 @@ class StayCard extends Component {
             )}
             content={() => this.cardRef.current}
           />
+          &nbsp;
           <Button type="default" onClick={() => this.props.onCloseCard()}>
             Close
           </Button>

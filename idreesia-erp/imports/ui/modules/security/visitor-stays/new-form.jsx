@@ -24,7 +24,7 @@ class NewForm extends Component {
       const fromDate = moment();
       const toDate = moment();
       if (numOfDays > 1) {
-        toDate.addDays(numOfDays - 1);
+        toDate.add(numOfDays - 1, "days");
       }
 
       createVisitorStay({

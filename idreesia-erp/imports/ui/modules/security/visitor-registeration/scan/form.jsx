@@ -4,7 +4,7 @@ import { Button, Divider, Row, Col } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
-import { ScanCnic } from "/imports/ui/modules/helpers/controls";
+import { ScanCnicQRCode } from "/imports/ui/modules/helpers/controls";
 import SearchResult from "./search-result";
 
 class Form extends Component {
@@ -34,11 +34,14 @@ class Form extends Component {
   };
 
   render() {
+    const searchResults = this.state.cnicNumber ? (
+      <SearchResult cnicNumber={this.state.cnicNumber} />
+    ) : null;
     return (
       <Fragment>
         <Row type="flex" justify="space-between">
           <Col order={1}>
-            <ScanCnic onCnicCaptured={this.onCnicCaptured} />
+            <ScanCnicQRCode onCnicCaptured={this.onCnicCaptured} />
           </Col>
           <Col order={2}>
             <Button size="large" icon="search" onClick={this.handleSearch}>
@@ -57,9 +60,7 @@ class Form extends Component {
         <Row>
           <Divider />
         </Row>
-        <Row>
-          <SearchResult cnicNumber={this.state.cnicNumber} />
-        </Row>
+        <Row>{searchResults}</Row>
       </Fragment>
     );
   }

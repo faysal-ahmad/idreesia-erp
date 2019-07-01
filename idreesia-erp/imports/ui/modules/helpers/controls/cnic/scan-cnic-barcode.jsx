@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Col, Input, Row } from "antd";
+import { debounce } from "lodash";
 
-export default class ScanCnic extends Component {
+export default class ScanCnicBarcode extends Component {
   static propTypes = {
     onCnicCaptured: PropTypes.func,
   };
@@ -21,19 +22,38 @@ export default class ScanCnic extends Component {
     window.removeEventListener("keypress", this.handleKeyPress);
   };
 
-  handleKeyPress = event => {
-    if (event.which === 13) {
-      const code = this.keyBuffer.join("");
-      this.setState({ code });
+  sendBarcode = debounce(
+    () => {
+      const scannedInput = this.keyBuffer.join("");
       this.keyBuffer = [];
+      let barcode;
+      if (scannedInput.length === 8) {
+        barcode = scannedInput;
+      } else if (scannedInput.length > 50) {
+        // Extract the CNIC number from the scanned input
+        const parts = scannedInput.split("Enter");
+        const idPart = parts[1];
+
+        barcode = idPart;
+        if (idPart.length > 13) {
+          barcode = idPart.slice(0, 13);
+        }
+      }
+
+      this.setState({ code: barcode });
 
       const { onCnicCaptured } = this.props;
       if (onCnicCaptured) {
-        onCnicCaptured(code);
+        onCnicCaptured(barcode);
       }
-    } else {
-      this.keyBuffer.push(event.key);
-    }
+    },
+    50,
+    { trailing: true, maxWait: 1000 }
+  );
+
+  handleKeyPress = event => {
+    this.keyBuffer.push(event.key);
+    this.sendBarcode();
   };
 
   render() {

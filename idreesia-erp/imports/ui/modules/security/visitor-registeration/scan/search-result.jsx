@@ -3,14 +3,33 @@ import PropTypes from "prop-types";
 import { Row, Col, Spin, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import moment from "moment";
+
+import { VisitorStaysList } from "/imports/ui/modules/security/visitor-stays";
 
 const LabelStyle = {
   fontWeight: "bold",
-  fontSize: 26,
+  fontSize: 22,
 };
 
 const DataStyle = {
-  fontSize: 26,
+  fontSize: 22,
+};
+
+const SearchResultRow = ({ label, text }) => (
+  <Row type="flex" gutter={16}>
+    <Col order={1}>
+      <span style={LabelStyle}>{label}:</span>
+    </Col>
+    <Col order={2}>
+      <span style={DataStyle}>{text}</span>
+    </Col>
+  </Row>
+);
+
+SearchResultRow.propTypes = {
+  label: PropTypes.string,
+  text: PropTypes.string,
 };
 
 const SearchResult = props => {
@@ -23,38 +42,42 @@ const SearchResult = props => {
     return null;
   }
 
-  const { name, imageId } = visitorByCnic;
+  const {
+    _id,
+    name,
+    parentName,
+    ehadDate,
+    referenceName,
+    contactNumber1,
+    city,
+    country,
+    imageId,
+  } = visitorByCnic;
 
   const url = imageId
     ? Meteor.absoluteUrl(`download-file?attachmentId=${imageId}`)
     : null;
 
-  const imageColumn = url ? (
-    <Col order={1}>
-      <img src={url} style={{ width: "250px" }} />
-    </Col>
-  ) : null;
+  const image = url ? <img src={url} style={{ width: "250px" }} /> : null;
 
   return (
     <Row type="flex" gutter={16}>
-      {imageColumn}
+      <Col order={1}>
+        {image}
+        <SearchResultRow label="Name" text={name} />
+        <SearchResultRow label="CNIC" text={cnicNumber} />
+        <SearchResultRow label="S/O" text={parentName} />
+        <SearchResultRow
+          label="Ehad Date"
+          text={moment(Number(ehadDate)).format("DD MMMM, YYYY")}
+        />
+        <SearchResultRow label="R/O" text={referenceName} />
+        <SearchResultRow label="Phone" text={contactNumber1} />
+        <SearchResultRow label="City" text={city} />
+        <SearchResultRow label="Country" text={country} />
+      </Col>
       <Col order={2}>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>Name:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{name}</span>
-          </Col>
-        </Row>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>CNIC:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{cnicNumber}</span>
-          </Col>
-        </Row>
+        <VisitorStaysList visitorId={_id} />
       </Col>
     </Row>
   );
@@ -72,6 +95,11 @@ const formQuery = gql`
       _id
       name
       cnicNumber
+      parentName
+      ehadDate
+      referenceName
+      contactNumber1
+      city
       imageId
     }
   }

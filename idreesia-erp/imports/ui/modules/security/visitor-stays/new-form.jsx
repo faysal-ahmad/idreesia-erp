@@ -1,15 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Form, Row, message } from "antd";
+import { Button, Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import moment from "moment";
 
-import { DateField } from "/imports/ui/modules/helpers/fields";
-
-const RowStyle = {
-  height: "40px",
-  paddingRight: "100px",
-};
+import { InputNumberField } from "/imports/ui/modules/helpers/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -22,8 +18,14 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, visitorId, createVisitorStay } = this.props;
-    form.validateFields((err, { fromDate, toDate }) => {
+    form.validateFields((err, { numOfDays }) => {
       if (err) return;
+
+      const fromDate = moment();
+      const toDate = moment();
+      if (numOfDays > 1) {
+        toDate.addDays(numOfDays - 1);
+      }
 
       createVisitorStay({
         variables: {
@@ -44,33 +46,19 @@ class NewForm extends Component {
 
     return (
       <Form layout="inline" onSubmit={this.handleSubmit}>
-        <Row type="flex" justify="end" style={RowStyle}>
-          <DateField
-            fieldName="fromDate"
-            fieldLabel="From"
-            fieldLayout={null}
-            allowClear={false}
-            required
-            requiredMessage="Please select a from date."
-            getFieldDecorator={getFieldDecorator}
-          />
-          <DateField
-            fieldName="toDate"
-            fieldLabel="To"
-            fieldLayout={null}
-            allowClear={false}
-            required
-            requiredMessage="Please select a to date."
-            getFieldDecorator={getFieldDecorator}
-          />
-        </Row>
-        <Row type="flex" justify="end" style={RowStyle}>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon="plus-circle-o">
-              Add Stay
-            </Button>
-          </Form.Item>
-        </Row>
+        <InputNumberField
+          fieldName="numOfDays"
+          fieldLabel="Num of days"
+          fieldLayout={null}
+          initialValue={1}
+          minValue={1}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <Form.Item>
+          <Button type="primary" htmlType="submit" icon="plus-circle-o">
+            Add Stay
+          </Button>
+        </Form.Item>
       </Form>
     );
   }

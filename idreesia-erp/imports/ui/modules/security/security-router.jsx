@@ -9,11 +9,13 @@ import {
   VisitorRegistrationEditForm,
   VisitorRegistrationList,
 } from "./visitor-registeration";
+import { VisitorCardVerificationForm } from "./visitor-card-verification";
+import { VisitorStayReport } from "./visitor-stay-report";
 
 const SecurityRouter = () => (
   <Switch>
     <Route
-      path={paths.karkunVerificationPath}
+      path={paths.karkunCardVerificationPath}
       component={KarkunVerificationForm}
     />
 
@@ -33,6 +35,13 @@ const SecurityRouter = () => (
       path={paths.visitorRegistrationPath}
       component={VisitorRegistrationScanForm}
     />
+
+    <Route
+      path={paths.visitorCardVerificationPath}
+      component={VisitorCardVerificationForm}
+    />
+
+    <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
   </Switch>
 );
 

@@ -38,7 +38,7 @@ class List extends Component {
 
     deleteVisitorStay: PropTypes.func,
     loading: PropTypes.bool,
-    pagedVisitorStaysByVisitorId: PropTypes.shape({
+    pagedVisitorStays: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
@@ -169,7 +169,7 @@ class List extends Component {
       pageIndex,
       pageSize,
       visitorId,
-      pagedVisitorStaysByVisitorId: { totalResults, data },
+      pagedVisitorStays: { totalResults, data },
     } = this.props;
     const { showStayCard, visitorStayId } = this.state;
 
@@ -217,8 +217,8 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query pagedVisitorStaysByVisitorId($queryString: String!) {
-    pagedVisitorStaysByVisitorId(queryString: $queryString) {
+  query pagedVisitorStays($queryString: String!) {
+    pagedVisitorStays(queryString: $queryString) {
       totalResults
       data {
         _id
@@ -240,7 +240,7 @@ export default compose(
   graphql(formMutation, {
     name: "deleteVisitorStay",
     options: {
-      refetchQueries: ["pagedVisitorStaysByVisitorId"],
+      refetchQueries: ["pagedVisitorStays"],
     },
   }),
   graphql(listQuery, {

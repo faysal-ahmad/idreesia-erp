@@ -39,4 +39,4 @@ class Form extends Component {
   }
 }
 
-export default WithBreadcrumbs(["Security", "Karkun Card Verification"])(Form);
+export default WithBreadcrumbs(["Security", "Visitor Card Verification"])(Form);

@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
 
+import { Formats } from "meteor/idreesia-common/constants";
 import { InputNumberField } from "/imports/ui/modules/helpers/fields";
 
 class NewForm extends Component {
@@ -30,8 +31,8 @@ class NewForm extends Component {
       createVisitorStay({
         variables: {
           visitorId,
-          fromDate,
-          toDate,
+          fromDate: fromDate.format(Formats.DATE_FORMAT),
+          toDate: toDate.format(Formats.DATE_FORMAT),
         },
       }).catch(error => {
         message.error(error.message, 5);
@@ -88,7 +89,7 @@ export default compose(
   graphql(formMutation, {
     name: "createVisitorStay",
     options: {
-      refetchQueries: ["pagedVisitorStaysByVisitorId"],
+      refetchQueries: ["pagedVisitorStays"],
     },
   })
 )(NewForm);

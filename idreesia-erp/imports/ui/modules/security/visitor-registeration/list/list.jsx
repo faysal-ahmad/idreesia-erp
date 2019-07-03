@@ -329,12 +329,9 @@ const listQuery = gql`
       data {
         _id
         name
-        parentName
         cnicNumber
-        referenceName
         contactNumber1
         contactNumber2
-        address
         city
         country
         imageId

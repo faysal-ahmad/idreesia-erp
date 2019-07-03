@@ -3,6 +3,12 @@ type VisitorStayType {
   visitorId: String
   fromDate: String
   toDate: String
+  approved: Boolean
+  approvedOn: String
+  approvedBy: String
+  approvalNotes: String
+
+  refVisitor: VisitorType
 
   createdAt: String
   createdBy: String
@@ -16,7 +22,7 @@ type PagedVisitorStayType {
 }
 
 extend type Query {
-  pagedVisitorStaysByVisitorId(queryString: String!): PagedVisitorStayType
+  pagedVisitorStays(queryString: String!): PagedVisitorStayType
   visitorStayById(_id: String!): VisitorStayType
 }
 
@@ -27,5 +33,10 @@ extend type Mutation {
     toDate: String!
   ): VisitorStayType
 
+  approveVisitorStay(
+    _id: String!
+    approved: Boolean!
+    notes: String
+  ): VisitorStayType
   deleteVisitorStay(_id: String!): Int
 }

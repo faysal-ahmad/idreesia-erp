@@ -1,4 +1,6 @@
 export default class SubModuleNames {
-  static karkunVerification = "Karkun Verification";
+  static karkunCardVerification = "Karkun Card Verification";
   static visitorRegistration = "Visitor Registration";
+  static visitorCardVerification = "Visitor Card Verification";
+  static visitorStayReport = "Visitor's Stay Report";
 }

@@ -2,9 +2,11 @@ import { ModulePaths } from "/imports/ui/constants";
 
 export default class SubModulePaths {
   // *************************************************************************************
-  // Karkun Verification Routes
+  // Karkun Card Verification Routes
   // *************************************************************************************
-  static karkunVerificationPath = `${ModulePaths.security}/karkun-verification`;
+  static karkunCardVerificationPath = `${
+    ModulePaths.security
+  }/karkun-card-verification`;
 
   // *************************************************************************************
   // Visitor Registration Routes
@@ -21,4 +23,16 @@ export default class SubModulePaths {
   static visitorRegistrationEditFormPath(visitorId = ":visitorId") {
     return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
   }
+
+  // *************************************************************************************
+  // Visitor Card Verification Routes
+  // *************************************************************************************
+  static visitorCardVerificationPath = `${
+    ModulePaths.security
+  }/visitor-card-verification`;
+
+  // *************************************************************************************
+  // Visitor's Stay Report Routes
+  // *************************************************************************************
+  static visitorStayReportPath = `${ModulePaths.security}/visitor-stay-report`;
 }

@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "antd": "^3.19.8",
+    "antd": "^3.20.0",
     "apollo-boost": "^0.1.28",
     "apollo-server-express": "^2.4.6",
     "bcrypt": "^2.0.1",

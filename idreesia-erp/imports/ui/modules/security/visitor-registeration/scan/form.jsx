@@ -51,6 +51,7 @@ class Form extends Component {
             <Button
               size="large"
               icon="user-add"
+              type="primary"
               onClick={this.handleNewVisitor}
             >
               New Visitor Registration

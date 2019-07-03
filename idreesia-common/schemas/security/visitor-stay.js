@@ -11,5 +11,20 @@ export default new SimpleSchema({
   },
   toDate: {
     type: Date
+  },
+  approved: {
+    type: Boolean
+  },
+  approvedOn: {
+    type: Date,
+    optional: true
+  },
+  approvedBy: {
+    type: String,
+    optional: true
+  },
+  approvalNotes: {
+    type: String,
+    optional: true
   }
 }).extend(identifiable);

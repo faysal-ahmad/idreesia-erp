@@ -68,8 +68,8 @@ export default {
       const date = new Date();
       const visitorStayId = VisitorStays.insert({
         visitorId,
-        fromDate,
-        toDate,
+        fromDate: mFromDate.toDate(),
+        toDate: mToDate.toDate(),
         approved,
         createdAt: date,
         createdBy: user._id,

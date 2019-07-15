@@ -7,6 +7,7 @@ export default class ListContainer extends Component {
   static propTypes = {
     visitorId: PropTypes.string,
     showNewButton: PropTypes.bool,
+    showNewForm: PropTypes.bool,
   };
 
   state = {
@@ -18,10 +19,8 @@ export default class ListContainer extends Component {
     this.setState(pageParams);
   };
 
-  handleNewClicked = () => {};
-
   render() {
-    const { visitorId, showNewButton } = this.props;
+    const { visitorId, showNewForm, showNewButton } = this.props;
     const { pageIndex, pageSize } = this.state;
 
     return (
@@ -29,8 +28,8 @@ export default class ListContainer extends Component {
         pageIndex={pageIndex}
         pageSize={pageSize}
         visitorId={visitorId}
+        showNewForm={showNewForm}
         showNewButton={showNewButton}
-        handleNewClicked={this.handleNewClicked}
       />
     );
   }

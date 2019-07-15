@@ -42,7 +42,6 @@ const Permissions = {
   SECURITY_VIEW_KARKUN_VERIFICATION: "security-view-karkun-verification",
   SECURITY_VIEW_VISITORS: "security-view-visitors",
   SECURITY_MANAGE_VISITORS: "security-manage-visitors",
-  SECURITY_APPROVE_VISITOR_STAYS: "security-approve-visitor-stays",
 
   // ****************************************************************************************
   // Inventory Module

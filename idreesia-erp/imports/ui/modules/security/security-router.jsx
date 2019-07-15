@@ -9,7 +9,7 @@ import {
   VisitorRegistrationEditForm,
   VisitorRegistrationList,
 } from "./visitor-registeration";
-import { VisitorCardVerificationForm } from "./visitor-card-verification";
+import { VisitorCardVerificationForm } from "./visitor-stays";
 import { VisitorStayReport } from "./visitor-stay-report";
 
 const SecurityRouter = () => (

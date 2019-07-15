@@ -4,7 +4,7 @@ import { Collapse, Form, Row, Button } from "antd";
 import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { CheckboxField, DateField } from "/imports/ui/modules/helpers/fields";
+import { DateField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
   width: "500px",
@@ -30,10 +30,9 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { approvalStatus, startDate, endDate }) => {
+    form.validateFields((err, { startDate, endDate }) => {
       if (err) return;
       setPageParams({
-        approvalStatus,
         startDate,
         endDate,
         pageIndex: 0,
@@ -44,7 +43,6 @@ class ListFilter extends Component {
   handleReset = () => {
     const { setPageParams } = this.props;
     setPageParams({
-      approvalStatus: ["approved", "unapproved"],
       startDate: null,
       endDate: null,
       pageIndex: 0,
@@ -54,30 +52,16 @@ class ListFilter extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
-      queryParams: { startDate, endDate, showApproved, showUnapproved },
+      queryParams: { startDate, endDate },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
     const mEndDate = moment(endDate, Formats.DATE_FORMAT);
-    const status = [];
-    if (!showApproved || showApproved === "true") status.push("approved");
-    if (!showUnapproved || showUnapproved === "true") status.push("unapproved");
 
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
-            <CheckboxField
-              fieldName="approvalStatus"
-              fieldLabel="Status"
-              fieldLayout={formItemLayout}
-              options={[
-                { label: "Approved", value: "approved" },
-                { label: "Unapproved", value: "unapproved" },
-              ]}
-              initialValue={status}
-              getFieldDecorator={getFieldDecorator}
-            />
             <DateField
               fieldName="startDate"
               fieldLabel="Start Date"

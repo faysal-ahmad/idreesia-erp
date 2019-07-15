@@ -59,7 +59,7 @@ class ListContainer extends Component {
   };
 
   render() {
-    const { visitorIdForStayList } = this.state;
+    const { showStayList, visitorIdForStayList } = this.state;
     const { pageIndex, pageSize, name, cnicNumber, phoneNumber } = this.state;
 
     return (
@@ -81,14 +81,18 @@ class ListContainer extends Component {
           title="Stay History"
           width={600}
           onClose={this.handleStayListClose}
-          visible={this.state.showStayList}
+          visible={showStayList}
           style={{
             overflow: "auto",
             height: "calc(100% - 108px)",
             paddingBottom: "108px",
           }}
         >
-          <VisitorStaysList visitorId={visitorIdForStayList} />
+          <VisitorStaysList
+            showNewForm
+            showNewButton={false}
+            visitorId={visitorIdForStayList}
+          />
         </Drawer>
       </Fragment>
     );

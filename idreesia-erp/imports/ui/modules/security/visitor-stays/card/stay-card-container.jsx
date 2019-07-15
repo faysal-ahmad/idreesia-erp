@@ -1,30 +1,13 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import Barcode from "react-barcode";
-import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import ReactToPrint from "react-to-print";
-import { Button, Card, Icon } from "antd";
+import { Button, Icon } from "antd";
 
-const barcodeOptions = {
-  width: 1,
-  height: 20,
-  format: "CODE128B",
-  displayValue: false,
-  background: "#ffffff",
-  lineColor: "#000000",
-  margin: 5,
-};
+import StayCard from "./stay-card";
 
-const ConatinerStyle = {
-  display: "flex",
-  flexFlow: "column nowrap",
-  justifyContent: "flex-start",
-  width: "100%",
-};
-
-class StayCard extends Component {
+class StayCardContainer extends Component {
   static propTypes = {
     visitorId: PropTypes.string,
     visitorStayId: PropTypes.string,
@@ -42,45 +25,13 @@ class StayCard extends Component {
 
   getCardMarkup() {
     const { visitorById, visitorStayById } = this.props;
-    const title = visitorById.criminalRecord
-      ? "Night Stay Card - (D)"
-      : "Night Stay Card";
-
     return (
       <Fragment>
-        <Card ref={this.cardRef} title={title} style={ConatinerStyle}>
-          <h2>Personal Information</h2>
-          <div>
-            <b>Name:</b> {visitorById.name}
-          </div>
-          <div>
-            <b>S/O:</b> {visitorById.parentName}
-          </div>
-          <div>
-            <b>R/O:</b> {visitorById.referenceName}
-          </div>
-          <div>
-            <b>City:</b> {visitorById.city}
-          </div>
-          <div>
-            <b>CNIC:</b> {visitorById.cnicNumber}
-          </div>
-          <div>
-            <b>Phone:</b> {visitorById.contactNumber1}
-          </div>
-          <h2>Stay Time</h2>
-          <div>
-            <b>From:</b>{" "}
-            {moment(Number(visitorStayById.fromDate)).format("DD MMMM, YYYY")}
-          </div>
-          <div>
-            <b>To:</b>{" "}
-            {moment(Number(visitorStayById.toDate)).format("DD MMMM, YYYY")}
-          </div>
-          <div>
-            <Barcode value={visitorStayById._id} {...barcodeOptions} />
-          </div>
-        </Card>
+        <StayCard
+          ref={this.cardRef}
+          visitor={visitorById}
+          visitorStay={visitorStayById}
+        />
         <div style={{ paddingTop: "5px" }}>
           <ReactToPrint
             trigger={() => (
@@ -140,4 +91,4 @@ export default compose(
     props: ({ data }) => ({ visitorStayLoading: data.loading, ...data }),
     options: ({ visitorStayId }) => ({ variables: { _id: visitorStayId } }),
   })
-)(StayCard);
+)(StayCardContainer);

@@ -11,8 +11,6 @@ export function getVisitorStays(queryString) {
 
   const {
     visitorId,
-    showApproved,
-    showUnapproved,
     startDate,
     endDate,
     pageIndex = "0",
@@ -23,25 +21,6 @@ export function getVisitorStays(queryString) {
     pipeline.push({
       $match: {
         visitorId: { $eq: visitorId },
-      },
-    });
-  }
-
-  if (showApproved === "false" && showUnapproved === "false") {
-    return {
-      data: [],
-      totalResults: 0,
-    };
-  } else if (showApproved === "true" && showUnapproved === "false") {
-    pipeline.push({
-      $match: {
-        approvedOn: { $ne: null },
-      },
-    });
-  } else if (showApproved === "false" && showUnapproved === "true") {
-    pipeline.push({
-      $match: {
-        approvedOn: { $eq: null },
       },
     });
   }

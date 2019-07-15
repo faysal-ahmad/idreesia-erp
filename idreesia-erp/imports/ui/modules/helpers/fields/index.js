@@ -1,5 +1,6 @@
 export { default as FormButtonsSaveCancel } from "./form-btns-save-cancel";
 export { default as FormButtonsClose } from "./form-btns-close";
+export { default as FormButtonsSubmit } from "./form-btns-submit";
 
 export { default as AutoCompleteField } from "./auto-complete-field";
 export { default as BarcodeField } from "./barcode-field";

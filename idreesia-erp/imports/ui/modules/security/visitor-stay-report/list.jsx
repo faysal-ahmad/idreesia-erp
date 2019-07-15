@@ -1,12 +1,15 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Pagination, Icon, Modal, Table, Tooltip, message } from "antd";
+import { Avatar, Button, Pagination, Icon, Modal, Table } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
+import { find } from "lodash";
+
+import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 import ListFilter from "./list-filter";
-import ApprovalForm from "./approval-form";
+import ViewForm from "../visitor-stays/view-form";
 
 const StatusStyle = {
   fontSize: 20,
@@ -20,26 +23,20 @@ const ToolbarStyle = {
   width: "100%",
 };
 
-const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-around",
-  alignItems: "center",
-  width: "100%",
-};
-
 const NameDivStyle = {
   display: "flex",
   flexFlow: "row nowrap",
   justifyContent: "flex-start",
   alignItems: "center",
   width: "100%",
+  color: "#1890FF",
   cursor: "pointer",
 };
 
-const IconStyle = {
+const StayDetailDivStyle = {
+  width: "100%",
+  color: "#1890FF",
   cursor: "pointer",
-  fontSize: 20,
 };
 
 class List extends Component {
@@ -51,7 +48,6 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
 
-    deleteVisitorStay: PropTypes.func,
     loading: PropTypes.bool,
     pagedVisitorStays: PropTypes.shape({
       totalResults: PropTypes.number,
@@ -60,7 +56,7 @@ class List extends Component {
   };
 
   state = {
-    showApprovalDialog: false,
+    showViewDialog: false,
     visitorStayId: null,
   };
 
@@ -127,20 +123,6 @@ class List extends Component {
     },
   };
 
-  phoneNumberColumn = {
-    title: "Phone Number",
-    key: "refVisitor.phoneNumber",
-    render: (text, record) => {
-      const { refVisitor } = record;
-      const numbers = [];
-      if (refVisitor.contactNumber1) numbers.push(refVisitor.contactNumber1);
-      if (refVisitor.contactNumber2) numbers.push(refVisitor.contactNumber2);
-
-      if (numbers.length === 0) return "";
-      return numbers.join(", ");
-    },
-  };
-
   cityCountryColumn = {
     title: "City / Country",
     key: "cityCountry",
@@ -153,51 +135,60 @@ class List extends Component {
     },
   };
 
-  numOfDaysColumn = {
-    title: "Num of days",
-    key: "numOfDays",
+  stayDetailsColumn = {
+    title: "Stay Details",
+    key: "stayDetails",
     render: (text, record) => {
       const fromDate = moment(Number(record.fromDate));
       const toDate = moment(Number(record.toDate));
       const days = moment.duration(toDate.diff(fromDate)).asDays() + 1;
-      if (days === 1) {
-        return `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
-      }
-      return `${days} days - [${fromDate.format(
-        "DD MMM, YYYY"
-      )} - ${toDate.format("DD MMM, YYYY")}]`;
-    },
-  };
 
-  actionsColumn = {
-    key: "action",
-    render: (text, record) => {
-      const title = record.approved ? "Unapprove" : "Approve";
-      const iconType = record.approved ? "close-circle" : "check-circle";
+      let detail;
+      if (days === 1) {
+        detail = `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
+      } else {
+        detail = `${days} days - [${fromDate.format(
+          "DD MMM, YYYY"
+        )} - ${toDate.format("DD MMM, YYYY")}]`;
+      }
 
       return (
-        <div style={ActionsStyle}>
-          <Tooltip title={title}>
-            <Icon
-              type={iconType}
-              style={IconStyle}
-              onClick={() => {
-                this.handleApproveRejectClicked(record);
-              }}
-            />
-          </Tooltip>
+        <div
+          style={StayDetailDivStyle}
+          onClick={() => {
+            this.handleStayDetailClicked(record._id);
+          }}
+        >
+          {detail}
         </div>
       );
     },
   };
 
+  stayReasonColumn = {
+    title: "Stay Reason",
+    key: "stayReason",
+    dataIndex: "stayReason",
+    render: text => {
+      if (!text) return null;
+      const reason = find(StayReasons, ({ _id }) => _id === text);
+      return reason.name;
+    },
+  };
+
+  dutyShiftNameColumn = {
+    title: "Duty / Shift",
+    key: "dutyShiftName",
+    dataIndex: "dutyShiftName",
+  };
+
   getColumns = () => [
     this.statusColumn,
     this.nameColumn,
-    this.phoneNumberColumn,
     this.cityCountryColumn,
-    this.numOfDaysColumn,
-    this.actionsColumn,
+    this.stayDetailsColumn,
+    this.stayReasonColumn,
+    this.dutyShiftNameColumn,
   ];
 
   onChange = (pageIndex, pageSize) => {
@@ -216,29 +207,17 @@ class List extends Component {
     });
   };
 
-  handleDeleteClicked = record => {
-    const { deleteVisitorStay } = this.props;
-    deleteVisitorStay({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
+  handleStayDetailClicked = visitorStayId => {
+    this.setState({
+      visitorStayId,
+      showViewDialog: true,
     });
   };
 
-  handleApproveRejectClicked = record => {
+  handleStayDetailClose = () => {
     this.setState({
-      showApprovalDialog: true,
-      visitorStayId: record._id,
-      approved: record.approved,
-    });
-  };
-
-  handleCloseApproveReject = () => {
-    this.setState({
-      showApprovalDialog: false,
       visitorStayId: null,
+      showViewDialog: false,
     });
   };
 
@@ -256,7 +235,7 @@ class List extends Component {
     const { loading } = this.props;
     if (loading) return null;
 
-    const { visitorStayId, approved, showApprovalDialog } = this.state;
+    const { visitorStayId, showViewDialog } = this.state;
     const {
       pageIndex,
       pageSize,
@@ -266,13 +245,10 @@ class List extends Component {
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 10;
 
-    const approvalForm = visitorStayId ? (
-      <ApprovalForm
-        approved={approved}
-        visitorStayId={visitorStayId}
-        handleClose={this.handleCloseApproveReject}
-      />
-    ) : null;
+    const viewForm =
+      visitorStayId && showViewDialog ? (
+        <ViewForm visitorStayId={visitorStayId} />
+      ) : null;
 
     return (
       <Fragment>
@@ -299,13 +275,21 @@ class List extends Component {
           )}
         />
         <Modal
-          title={approved ? "Unapprove Visitor Stay" : "Approve Visitor Stay"}
-          visible={showApprovalDialog}
-          closable={false}
-          footer={null}
+          title="Visitor Stay"
+          visible={showViewDialog}
+          onCancel={this.handleStayDetailClose}
           width={400}
+          footer={[
+            <Button
+              key="close"
+              type="primary"
+              onClick={this.handleStayDetailClose}
+            >
+              Close
+            </Button>,
+          ]}
         >
-          <div>{approvalForm}</div>
+          <div>{viewForm}</div>
         </Modal>
       </Fragment>
     );
@@ -321,9 +305,8 @@ const listQuery = gql`
         visitorId
         fromDate
         toDate
-        approved
-        approvedOn
-        approvedBy
+        stayReason
+        dutyShiftName
         refVisitor {
           _id
           name
@@ -341,19 +324,7 @@ const listQuery = gql`
   }
 `;
 
-const formMutation = gql`
-  mutation deleteVisitorStay($_id: String!) {
-    deleteVisitorStay(_id: $_id)
-  }
-`;
-
 export default compose(
-  graphql(formMutation, {
-    name: "deleteVisitorStay",
-    options: {
-      refetchQueries: ["pagedVisitorStays"],
-    },
-  }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ queryString }) => ({

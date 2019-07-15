@@ -45,7 +45,7 @@ class Form extends Component {
           </Col>
           <Col order={2}>
             <Button size="large" icon="search" onClick={this.handleSearch}>
-              Search
+              Manual Search
             </Button>
             &nbsp;
             <Button

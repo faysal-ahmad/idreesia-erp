@@ -18,26 +18,8 @@ class ListContainer extends Component {
   };
 
   setPageParams = newParams => {
-    const {
-      approvalStatus,
-      startDate,
-      endDate,
-      pageIndex,
-      pageSize,
-    } = newParams;
+    const { startDate, endDate, pageIndex, pageSize } = newParams;
     const { queryParams, history } = this.props;
-
-    let showApprovedVal;
-    let showUnapprovedVal;
-    if (newParams.hasOwnProperty("approvalStatus")) {
-      showApprovedVal =
-        approvalStatus.indexOf("approved") !== -1 ? "true" : "false";
-      showUnapprovedVal =
-        approvalStatus.indexOf("unapproved") !== -1 ? "true" : "false";
-    } else {
-      showApprovedVal = queryParams.showApproved || "true";
-      showUnapprovedVal = queryParams.showUnapproved || "true";
-    }
 
     let startDateVal;
     if (newParams.hasOwnProperty("startDate"))
@@ -59,7 +41,7 @@ class ListContainer extends Component {
 
     const path = `${
       location.pathname
-    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    }?startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 

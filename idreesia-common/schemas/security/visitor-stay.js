@@ -12,18 +12,26 @@ export default new SimpleSchema({
   toDate: {
     type: Date
   },
-  approved: {
-    type: Boolean
+  numOfDays: {
+    type: Number
   },
-  approvedOn: {
-    type: Date,
-    optional: true
-  },
-  approvedBy: {
+  stayReason: {
     type: String,
     optional: true
   },
-  approvalNotes: {
+  stayAllowedBy: {
+    type: String,
+    optional: true
+  },
+  dutyId: {
+    type: String,
+    optional: true
+  },
+  shiftId: {
+    type: String,
+    optional: true
+  },
+  notes: {
     type: String,
     optional: true
   }

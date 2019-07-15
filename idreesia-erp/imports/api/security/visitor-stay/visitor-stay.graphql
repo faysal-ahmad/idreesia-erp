@@ -3,12 +3,15 @@ type VisitorStayType {
   visitorId: String
   fromDate: String
   toDate: String
-  approved: Boolean
-  approvedOn: String
-  approvedBy: String
-  approvalNotes: String
+  numOfDays: Float
+  stayReason: String
+  stayAllowedBy: String
+  dutyId: String
+  shiftId: String
+  notes: String
 
   refVisitor: VisitorType
+  dutyShiftName: String
 
   createdAt: String
   createdBy: String
@@ -31,12 +34,23 @@ extend type Mutation {
     visitorId: String!
     fromDate: String!
     toDate: String!
-  ): VisitorStayType
-
-  approveVisitorStay(
-    _id: String!
-    approved: Boolean!
+    stayReason: String
+    stayAllowedBy: String
+    dutyId: String
+    shiftId: String
     notes: String
   ): VisitorStayType
+
+  updateVisitorStay(
+    _id: String!
+    fromDate: String!
+    toDate: String!
+    stayReason: String
+    stayAllowedBy: String
+    dutyId: String
+    shiftId: String
+    notes: String
+  ): VisitorStayType
+
   deleteVisitorStay(_id: String!): Int
 }

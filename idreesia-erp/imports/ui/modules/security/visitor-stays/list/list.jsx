@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import {
+  Button,
   Pagination,
   Icon,
   Popconfirm,
@@ -12,9 +13,13 @@ import {
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
+import { find } from "lodash";
 
-import NewForm from "./new-form";
-import StayCard from "./stay-card";
+import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
+
+import NewForm from "../new-form";
+import EditForm from "../edit-form";
+import StayCard from "../card/stay-card-container";
 
 const ActionsStyle = {
   display: "flex",
@@ -34,6 +39,8 @@ class List extends Component {
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
     visitorId: PropTypes.string,
+    showNewButton: PropTypes.bool,
+    showNewForm: PropTypes.bool,
     setPageParams: PropTypes.func,
 
     deleteVisitorStay: PropTypes.func,
@@ -45,37 +52,36 @@ class List extends Component {
   };
 
   state = {
+    showNewFormModal: false,
+    showEditFormModal: false,
     showStayCard: false,
     visitorStayId: null,
   };
 
-  fromDateColumn = {
-    title: "From date",
-    dataIndex: "fromDate",
-    key: "fromDate",
-    render: text => {
-      const date = moment(Number(text));
-      return date.format("DD MMM, YYYY");
-    },
-  };
-
-  toDateColumn = {
-    title: "To date",
-    dataIndex: "toDate",
-    key: "toDate",
-    render: text => {
-      const date = moment(Number(text));
-      return date.format("DD MMM, YYYY");
-    },
-  };
-
-  numOfDaysColumn = {
-    title: "Num of days",
-    key: "numOfDays",
+  stayDetailsColumn = {
+    title: "Stay Details",
+    key: "stayDetails",
     render: (text, record) => {
       const fromDate = moment(Number(record.fromDate));
       const toDate = moment(Number(record.toDate));
-      return moment.duration(toDate.diff(fromDate)).asDays() + 1;
+      const days = moment.duration(toDate.diff(fromDate)).asDays() + 1;
+      if (days === 1) {
+        return `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
+      }
+      return `${days} days - [${fromDate.format(
+        "DD MMM, YYYY"
+      )} - ${toDate.format("DD MMM, YYYY")}]`;
+    },
+  };
+
+  stayReasonColumn = {
+    title: "Stay Reason",
+    key: "stayReason",
+    dataIndex: "stayReason",
+    render: text => {
+      if (!text) return null;
+      const reason = find(StayReasons, ({ _id }) => _id === text);
+      return reason.name;
     },
   };
 
@@ -83,6 +89,15 @@ class List extends Component {
     key: "action",
     render: (text, record) => (
       <div style={ActionsStyle}>
+        <Tooltip title="Edit stay">
+          <Icon
+            type="edit"
+            style={IconStyle}
+            onClick={() => {
+              this.handleEditClicked(record);
+            }}
+          />
+        </Tooltip>
         <Tooltip title="View card">
           <Icon
             type="idcard"
@@ -109,9 +124,8 @@ class List extends Component {
   };
 
   getColumns = () => [
-    this.fromDateColumn,
-    this.toDateColumn,
-    this.numOfDaysColumn,
+    this.stayDetailsColumn,
+    this.stayReasonColumn,
     this.actionsColumn,
   ];
 
@@ -156,9 +170,51 @@ class List extends Component {
     });
   };
 
+  handleNewClicked = () => {
+    this.setState({
+      showNewFormModal: true,
+    });
+  };
+
+  handleCloseNewForm = () => {
+    this.setState({
+      showNewFormModal: false,
+    });
+  };
+
+  handleEditClicked = record => {
+    this.setState({
+      showEditFormModal: true,
+      visitorStayId: record._id,
+    });
+  };
+
+  handleCloseEditForm = () => {
+    this.setState({
+      showEditFormModal: false,
+      visitorStayId: null,
+    });
+  };
+
   getTableHeader = () => {
-    const { visitorId } = this.props;
-    return <NewForm visitorId={visitorId} />;
+    const { visitorId, showNewButton, showNewForm } = this.props;
+    if (showNewForm) {
+      return <NewForm visitorId={visitorId} />;
+    }
+
+    if (showNewButton) {
+      return (
+        <Button
+          type="primary"
+          icon="plus-circle-o"
+          onClick={this.handleNewClicked}
+        >
+          Add New Stay
+        </Button>
+      );
+    }
+
+    return null;
   };
 
   render() {
@@ -171,18 +227,57 @@ class List extends Component {
       visitorId,
       pagedVisitorStays: { totalResults, data },
     } = this.props;
-    const { showStayCard, visitorStayId } = this.state;
+    const {
+      showNewFormModal,
+      showEditFormModal,
+      showStayCard,
+      visitorStayId,
+    } = this.state;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 10;
 
-    const card = visitorStayId ? (
-      <StayCard
-        visitorId={visitorId}
-        visitorStayId={visitorStayId}
-        onCloseCard={this.handleCloseViewCard}
-      />
+    const card =
+      showStayCard && visitorStayId ? (
+        <Modal closable={false} visible={showStayCard} footer={null}>
+          <StayCard
+            visitorId={visitorId}
+            visitorStayId={visitorStayId}
+            onCloseCard={this.handleCloseViewCard}
+          />
+        </Modal>
+      ) : null;
+
+    const newForm = showNewFormModal ? (
+      <Modal
+        title="New Stay"
+        visible={showNewFormModal}
+        width={600}
+        footer={null}
+        onCancel={this.handleCloseNewForm}
+      >
+        <NewForm
+          visitorId={visitorId}
+          handleAddItem={this.handleCloseNewForm}
+        />
+      </Modal>
     ) : null;
+
+    const editForm =
+      showEditFormModal && visitorStayId ? (
+        <Modal
+          title="Edit Stay"
+          visible={showEditFormModal}
+          width={600}
+          footer={null}
+          onCancel={this.handleCloseEditForm}
+        >
+          <EditForm
+            visitorStayId={visitorStayId}
+            handleSaveItem={this.handleCloseEditForm}
+          />
+        </Modal>
+      ) : null;
 
     return (
       <Fragment>
@@ -208,9 +303,9 @@ class List extends Component {
             />
           )}
         />
-        <Modal closable={false} visible={showStayCard} footer={null}>
-          {card}
-        </Modal>
+        {newForm}
+        {editForm}
+        {card}
       </Fragment>
     );
   }
@@ -225,6 +320,7 @@ const listQuery = gql`
         visitorId
         fromDate
         toDate
+        stayReason
       }
     }
   }

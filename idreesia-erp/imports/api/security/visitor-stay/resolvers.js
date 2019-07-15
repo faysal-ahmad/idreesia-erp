@@ -1,4 +1,5 @@
 import moment from "moment";
+import { Duties, DutyShifts } from "meteor/idreesia-common/collections/hr";
 
 import {
   Visitors,
@@ -16,6 +17,16 @@ export default {
       Visitors.findOne({
         _id: { $eq: visitorStay.visitorId },
       }),
+    dutyShiftName: visitorStay => {
+      if (!visitorStay.dutyId) return null;
+      const duty = Duties.findOne(visitorStay.dutyId);
+      const shift = visitorStay.shiftId
+        ? DutyShifts.findOne(visitorStay.shiftId)
+        : null;
+
+      if (!shift) return duty.name;
+      return `${duty.name} - ${shift.name}`;
+    },
   },
   Query: {
     pagedVisitorStays(obj, { queryString }, { user }) {
@@ -49,7 +60,20 @@ export default {
   },
 
   Mutation: {
-    createVisitorStay(obj, { visitorId, fromDate, toDate }, { user }) {
+    createVisitorStay(
+      obj,
+      {
+        visitorId,
+        fromDate,
+        toDate,
+        stayReason,
+        stayAllowedBy,
+        dutyId,
+        shiftId,
+        notes,
+      },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -63,14 +87,18 @@ export default {
       const mFromDate = moment(fromDate, Formats.DATE_FORMAT);
       const mToDate = moment(toDate, Formats.DATE_FORMAT);
       const days = moment.duration(mToDate.diff(mFromDate)).asDays() + 1;
-      const approved = !(days > 3);
 
       const date = new Date();
       const visitorStayId = VisitorStays.insert({
         visitorId,
         fromDate: mFromDate.toDate(),
         toDate: mToDate.toDate(),
-        approved,
+        numOfDays: days,
+        stayReason,
+        stayAllowedBy,
+        dutyId,
+        shiftId,
+        notes,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -80,23 +108,47 @@ export default {
       return VisitorStays.findOne(visitorStayId);
     },
 
-    approveVisitorStay(obj, { _id, approved, notes }, { user }) {
+    updateVisitorStay(
+      obj,
+      {
+        _id,
+        fromDate,
+        toDate,
+        stayReason,
+        stayAllowedBy,
+        dutyId,
+        shiftId,
+        notes,
+      },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_APPROVE_VISITOR_STAYS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to approve Visitor Stays in the System."
+          "You do not have permission to manage Visitors in the System."
         );
       }
 
+      const mFromDate = moment(fromDate, Formats.DATE_FORMAT);
+      const mToDate = moment(toDate, Formats.DATE_FORMAT);
+      const days = moment.duration(mToDate.diff(mFromDate)).asDays() + 1;
+
+      const date = new Date();
       VisitorStays.update(_id, {
         $set: {
-          approved,
-          approvedOn: new Date(),
-          approvedBy: user._id,
-          approvalNotes: notes,
+          fromDate: mFromDate.toDate(),
+          toDate: mToDate.toDate(),
+          numOfDays: days,
+          stayReason,
+          stayAllowedBy,
+          dutyId,
+          shiftId,
+          notes,
+          updatedAt: date,
+          updatedBy: user._id,
         },
       });
 

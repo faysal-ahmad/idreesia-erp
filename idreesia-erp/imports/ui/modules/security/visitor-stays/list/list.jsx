@@ -8,6 +8,8 @@ import {
   Table,
   Tooltip,
   Modal,
+  Row,
+  Col,
   message,
 } from "antd";
 import gql from "graphql-tag";
@@ -20,14 +22,6 @@ import StayReasons from "/imports/ui/modules/security/common/constants/stay-reas
 import NewForm from "../new-form";
 import EditForm from "../edit-form";
 import StayCard from "../card/stay-card-container";
-
-const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-around",
-  alignItems: "center",
-  width: "100%",
-};
 
 const IconStyle = {
   cursor: "pointer",
@@ -95,8 +89,13 @@ class List extends Component {
         return <Tooltip title={title}>Cancelled</Tooltip>;
       }
 
-      return (
-        <div style={ActionsStyle}>
+      const fromDate = moment(Number(record.fromDate));
+      const toDate = moment(Number(record.toDate));
+      const currentDate = moment();
+      const isValid = currentDate.isBetween(fromDate, toDate);
+
+      const editAction = isValid ? (
+        <Col>
           <Tooltip title="Edit stay">
             <Icon
               type="edit"
@@ -106,15 +105,11 @@ class List extends Component {
               }}
             />
           </Tooltip>
-          <Tooltip title="View card">
-            <Icon
-              type="idcard"
-              style={IconStyle}
-              onClick={() => {
-                this.handleShowCardClicked(record);
-              }}
-            />
-          </Tooltip>
+        </Col>
+      ) : null;
+
+      const cancelAction = isValid ? (
+        <Col>
           <Popconfirm
             title="Are you sure you want to cancel this stay entry?"
             onConfirm={() => {
@@ -127,7 +122,25 @@ class List extends Component {
               <Icon type="stop" style={IconStyle} />
             </Tooltip>
           </Popconfirm>
-        </div>
+        </Col>
+      ) : null;
+
+      return (
+        <Row type="flex" justify="start" align="middle" gutter={16}>
+          <Col>
+            <Tooltip title="View card">
+              <Icon
+                type="idcard"
+                style={IconStyle}
+                onClick={() => {
+                  this.handleShowCardClicked(record);
+                }}
+              />
+            </Tooltip>
+          </Col>
+          {editAction}
+          {cancelAction}
+        </Row>
       );
     },
   };

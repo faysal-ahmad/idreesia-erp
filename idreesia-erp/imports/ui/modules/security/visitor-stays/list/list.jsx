@@ -43,7 +43,7 @@ class List extends Component {
     showNewForm: PropTypes.bool,
     setPageParams: PropTypes.func,
 
-    deleteVisitorStay: PropTypes.func,
+    cancelVisitorStay: PropTypes.func,
     loading: PropTypes.bool,
     pagedVisitorStays: PropTypes.shape({
       totalResults: PropTypes.number,
@@ -87,40 +87,49 @@ class List extends Component {
 
   actionsColumn = {
     key: "action",
-    render: (text, record) => (
-      <div style={ActionsStyle}>
-        <Tooltip title="Edit stay">
-          <Icon
-            type="edit"
-            style={IconStyle}
-            onClick={() => {
-              this.handleEditClicked(record);
-            }}
-          />
-        </Tooltip>
-        <Tooltip title="View card">
-          <Icon
-            type="idcard"
-            style={IconStyle}
-            onClick={() => {
-              this.handleShowCardClicked(record);
-            }}
-          />
-        </Tooltip>
-        <Popconfirm
-          title="Are you sure you want to delete this stay entry?"
-          onConfirm={() => {
-            this.handleDeleteClicked(record);
-          }}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Tooltip title="Delete">
-            <Icon type="delete" style={IconStyle} />
+    render: (text, record) => {
+      if (record.cancelledDate) {
+        const title = `Cancelled on ${moment(
+          Number(record.cancelledDate)
+        ).format("DD MMM, YYYY")}`;
+        return <Tooltip title={title}>Cancelled</Tooltip>;
+      }
+
+      return (
+        <div style={ActionsStyle}>
+          <Tooltip title="Edit stay">
+            <Icon
+              type="edit"
+              style={IconStyle}
+              onClick={() => {
+                this.handleEditClicked(record);
+              }}
+            />
           </Tooltip>
-        </Popconfirm>
-      </div>
-    ),
+          <Tooltip title="View card">
+            <Icon
+              type="idcard"
+              style={IconStyle}
+              onClick={() => {
+                this.handleShowCardClicked(record);
+              }}
+            />
+          </Tooltip>
+          <Popconfirm
+            title="Are you sure you want to cancel this stay entry?"
+            onConfirm={() => {
+              this.handleCancelClicked(record);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Cancel">
+              <Icon type="stop" style={IconStyle} />
+            </Tooltip>
+          </Popconfirm>
+        </div>
+      );
+    },
   };
 
   getColumns = () => [
@@ -145,9 +154,9 @@ class List extends Component {
     });
   };
 
-  handleDeleteClicked = record => {
-    const { deleteVisitorStay } = this.props;
-    deleteVisitorStay({
+  handleCancelClicked = record => {
+    const { cancelVisitorStay } = this.props;
+    cancelVisitorStay({
       variables: {
         _id: record._id,
       },
@@ -321,20 +330,28 @@ const listQuery = gql`
         fromDate
         toDate
         stayReason
+        cancelledDate
       }
     }
   }
 `;
 
 const formMutation = gql`
-  mutation deleteVisitorStay($_id: String!) {
-    deleteVisitorStay(_id: $_id)
+  mutation cancelVisitorStay($_id: String!) {
+    cancelVisitorStay(_id: $_id) {
+      _id
+      visitorId
+      fromDate
+      toDate
+      stayReason
+      cancelledDate
+    }
   }
 `;
 
 export default compose(
   graphql(formMutation, {
-    name: "deleteVisitorStay",
+    name: "cancelVisitorStay",
     options: {
       refetchQueries: ["pagedVisitorStays"],
     },

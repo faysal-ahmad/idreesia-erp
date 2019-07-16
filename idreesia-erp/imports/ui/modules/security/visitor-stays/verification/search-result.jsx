@@ -1,34 +1,44 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import { Row, Col, Spin, message } from "antd";
+import { Row, Col, Icon, Spin } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import moment from "moment";
+
+const ErrorStatusStyle = {
+  color: "red",
+  fontSize: 36,
+};
+
+const SuccessStatusStyle = {
+  color: "green",
+  fontSize: 40,
+};
 
 import StayCard from "../card/stay-card";
 
-const LabelStyle = {
-  fontWeight: "bold",
-  fontSize: 26,
+const ScanStatus = ({ message, isError }) => {
+  const statusStyle = isError ? ErrorStatusStyle : SuccessStatusStyle;
+  return (
+    <Row type="flex" justify="left" align="middle" gutter={16}>
+      <Col>
+        <Icon
+          style={statusStyle}
+          type="close-circle"
+          theme="twoTone"
+          twoToneColor={statusStyle.color}
+        />
+      </Col>
+      <Col>
+        <div style={statusStyle}>{message}</div>
+      </Col>
+    </Row>
+  );
 };
 
-const DataStyle = {
-  fontSize: 26,
-};
-
-const SearchResultRow = ({ label, text }) => (
-  <Row type="flex" gutter={16}>
-    <Col order={1}>
-      <span style={LabelStyle}>{label}:</span>
-    </Col>
-    <Col order={2}>
-      <span style={DataStyle}>{text}</span>
-    </Col>
-  </Row>
-);
-
-SearchResultRow.propTypes = {
-  label: PropTypes.string,
-  text: PropTypes.string,
+ScanStatus.propTypes = {
+  message: PropTypes.string,
+  isError: PropTypes.bool,
 };
 
 const SearchResult = props => {
@@ -37,16 +47,43 @@ const SearchResult = props => {
   if (loading) return <Spin size="large" />;
 
   if (!visitorStayById) {
-    message.error(`No records found against scanned barcode ${barcode}`, 2);
-    return null;
+    return <ScanStatus isError message="Card Not Found" />;
+  }
+
+  const fromDate = moment(Number(visitorStayById.fromDate));
+  const toDate = moment(Number(visitorStayById.toDate));
+  const currentDate = moment();
+
+  let statusRow;
+  if (visitorStayById.cancelledDate) {
+    statusRow = <ScanStatus isError message="Card Cancelled" />;
+  } else if (currentDate.isBetween(fromDate, toDate)) {
+    statusRow = <ScanStatus isError={false} message="Card Valid" />;
+  } else {
+    statusRow = <ScanStatus isError message="Card Expired" />;
   }
 
   const visitor = visitorStayById.refVisitor;
+  const url = visitor.imageId
+    ? Meteor.absoluteUrl(`download-file?attachmentId=${visitor.imageId}`)
+    : null;
+
+  const imageColumn = url ? (
+    <Col order={2}>
+      <img src={url} style={{ width: "250px" }} />
+    </Col>
+  ) : null;
 
   return (
-    <Row type="flex" gutter={16}>
-      <StayCard visitor={visitor} visitorStay={visitorStayById} />
-    </Row>
+    <Fragment>
+      {statusRow}
+      <Row type="flex" gutter={16}>
+        <Col order={1}>
+          <StayCard visitor={visitor} visitorStay={visitorStayById} />
+        </Col>
+        {imageColumn}
+      </Row>
+    </Fragment>
   );
 };
 
@@ -68,6 +105,7 @@ const formQuery = gql`
       stayAllowedBy
       dutyShiftName
       notes
+      cancelledDate
       refVisitor {
         _id
         name

@@ -9,6 +9,7 @@ type VisitorStayType {
   dutyId: String
   shiftId: String
   notes: String
+  cancelledDate: String
 
   refVisitor: VisitorType
   dutyShiftName: String
@@ -52,5 +53,6 @@ extend type Mutation {
     notes: String
   ): VisitorStayType
 
+  cancelVisitorStay(_id: String!): VisitorStayType
   deleteVisitorStay(_id: String!): Int
 }

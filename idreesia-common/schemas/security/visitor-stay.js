@@ -34,5 +34,9 @@ export default new SimpleSchema({
   notes: {
     type: String,
     optional: true
+  },
+  cancelledDate: {
+    type: Date,
+    optional: true
   }
 }).extend(identifiable);

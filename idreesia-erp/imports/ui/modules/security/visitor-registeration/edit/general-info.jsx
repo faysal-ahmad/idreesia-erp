@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { Divider, Form, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -102,6 +102,32 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <InputTextField
+          fieldName="city"
+          fieldLabel="City"
+          initialValue={visitorById.city}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="country"
+          fieldLabel="Country"
+          initialValue={visitorById.country}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextAreaField
+          fieldName="address"
+          fieldLabel="Address"
+          initialValue={visitorById.address}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <Divider />
+
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
@@ -133,7 +159,7 @@ class GeneralInfo extends Component {
 
         <InputTextField
           fieldName="contactNumber1"
-          fieldLabel="Contact No. 1"
+          fieldLabel="Mobile Number"
           initialValue={visitorById.contactNumber1}
           required={false}
           getFieldDecorator={getFieldDecorator}
@@ -141,32 +167,8 @@ class GeneralInfo extends Component {
 
         <InputTextField
           fieldName="contactNumber2"
-          fieldLabel="Contact No. 2"
+          fieldLabel="Home Number"
           initialValue={visitorById.contactNumber2}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          initialValue={visitorById.address}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="city"
-          fieldLabel="City"
-          initialValue={visitorById.city}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="country"
-          fieldLabel="Country"
-          initialValue={visitorById.country}
           required={false}
           getFieldDecorator={getFieldDecorator}
         />

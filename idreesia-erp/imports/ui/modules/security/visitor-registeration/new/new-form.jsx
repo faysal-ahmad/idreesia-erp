@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { Divider, Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -93,6 +93,29 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <InputTextField
+          fieldName="city"
+          fieldLabel="City"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="country"
+          fieldLabel="Country"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextAreaField
+          fieldName="address"
+          fieldLabel="Address"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <Divider />
+
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
@@ -121,38 +144,18 @@ class NewForm extends Component {
 
         <InputTextField
           fieldName="contactNumber1"
-          fieldLabel="Contact Number 1"
+          fieldLabel="Mobile Number"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="contactNumber2"
-          fieldLabel="Contact Number 2"
+          fieldLabel="Home Number"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="city"
-          fieldLabel="City"
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="country"
-          fieldLabel="Country"
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );

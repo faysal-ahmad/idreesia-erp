@@ -17,6 +17,16 @@ export default {
       Visitors.findOne({
         _id: { $eq: visitorStay.visitorId },
       }),
+    dutyName: visitorStay => {
+      if (!visitorStay.dutyId) return null;
+      const duty = Duties.findOne(visitorStay.dutyId);
+      return duty ? duty.name : null;
+    },
+    shiftName: visitorStay => {
+      if (!visitorStay.shiftId) return null;
+      const shift = DutyShifts.findOne(visitorStay.shiftId);
+      return shift ? shift.name : null;
+    },
     dutyShiftName: visitorStay => {
       if (!visitorStay.dutyId) return null;
       const duty = Duties.findOne(visitorStay.dutyId);

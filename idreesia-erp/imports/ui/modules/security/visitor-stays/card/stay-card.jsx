@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 import Barcode from "react-barcode";
 import moment from "moment";
 import { Card } from "antd";
+import { find } from "lodash";
+
+import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 const barcodeOptions = {
   width: 1,
@@ -26,6 +29,31 @@ const StayCard = ({ visitor, visitorStay }) => {
     ? "Night Stay Card - (D)"
     : "Night Stay Card";
 
+  const reason = visitorStay.stayReason
+    ? find(StayReasons, ({ _id }) => _id === visitorStay.stayReason)
+    : null;
+  const reasonText = reason ? reason.name : "";
+
+  let dutyDetails = [];
+  if (visitorStay.dutyName) {
+    dutyDetails = [
+      <h2 key="dutyHeader">Duty Details</h2>,
+      <div key="dutyName">
+        <b>Duty:</b>
+        {` ${visitorStay.dutyName}`}
+      </div>,
+    ];
+
+    if (visitorStay.shiftName) {
+      dutyDetails.push(
+        <div key="shiftName">
+          <b>Shift:</b>
+          {` ${visitorStay.shiftName}`}
+        </div>
+      );
+    }
+  }
+
   return (
     <Card title={title} style={ConatinerStyle}>
       <h2>Personal Information</h2>
@@ -47,7 +75,7 @@ const StayCard = ({ visitor, visitorStay }) => {
       <div>
         <b>Phone:</b> {visitor.contactNumber1}
       </div>
-      <h2>Stay Time</h2>
+      <h2>Stay Details</h2>
       <div>
         <b>From:</b>{" "}
         {moment(Number(visitorStay.fromDate)).format("DD MMMM, YYYY")}
@@ -55,6 +83,10 @@ const StayCard = ({ visitor, visitorStay }) => {
       <div>
         <b>To:</b> {moment(Number(visitorStay.toDate)).format("DD MMMM, YYYY")}
       </div>
+      <div>
+        <b>Reason:</b> {reasonText}
+      </div>
+      {dutyDetails}
       <div>
         <Barcode value={visitorStay._id} {...barcodeOptions} />
       </div>

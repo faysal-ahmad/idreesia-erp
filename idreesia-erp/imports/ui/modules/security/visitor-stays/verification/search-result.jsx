@@ -103,13 +103,16 @@ const formQuery = gql`
       numOfDays
       stayReason
       stayAllowedBy
-      dutyShiftName
+      stayReason
+      dutyName
+      shiftName
       notes
       cancelledDate
       refVisitor {
         _id
         name
         parentName
+        referenceName
         cnicNumber
         contactNumber1
         contactNumber2

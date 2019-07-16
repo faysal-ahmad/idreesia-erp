@@ -12,6 +12,8 @@ type VisitorStayType {
   cancelledDate: String
 
   refVisitor: VisitorType
+  dutyName: String
+  shiftName: String
   dutyShiftName: String
 
   createdAt: String

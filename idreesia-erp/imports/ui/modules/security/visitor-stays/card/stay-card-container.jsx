@@ -78,6 +78,9 @@ const formQueryVisitorStay = gql`
       _id
       fromDate
       toDate
+      stayReason
+      dutyName
+      shiftName
     }
   }
 `;

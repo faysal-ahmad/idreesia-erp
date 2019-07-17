@@ -16,13 +16,23 @@ const DataStyle = {
   fontSize: 22,
 };
 
-const SearchResultRow = ({ label, text }) => (
+const WarningDataStyle = {
+  fontSize: 22,
+  color: "orange",
+};
+
+const ErrorDataStyle = {
+  fontSize: 22,
+  color: "red",
+};
+
+const SearchResultRow = ({ label, text, dataStyle }) => (
   <Row type="flex" gutter={16}>
     <Col order={1}>
       <span style={LabelStyle}>{label}:</span>
     </Col>
     <Col order={2}>
-      <span style={DataStyle}>{text}</span>
+      <span style={dataStyle}>{text}</span>
     </Col>
   </Row>
 );
@@ -30,6 +40,7 @@ const SearchResultRow = ({ label, text }) => (
 SearchResultRow.propTypes = {
   label: PropTypes.string,
   text: PropTypes.string,
+  dataStyle: PropTypes.object,
 };
 
 const SearchResult = props => {
@@ -52,6 +63,8 @@ const SearchResult = props => {
     city,
     country,
     imageId,
+    criminalRecord,
+    otherNotes,
   } = visitorByCnic;
 
   const url = imageId
@@ -60,21 +73,34 @@ const SearchResult = props => {
 
   const image = url ? <img src={url} style={{ width: "250px" }} /> : null;
 
+  let dataStyle = DataStyle;
+  if (otherNotes) dataStyle = WarningDataStyle;
+  if (criminalRecord) dataStyle = ErrorDataStyle;
+
   return (
     <Row type="flex" justify="space-between" gutter={16}>
       <Col order={1}>
         {image}
-        <SearchResultRow label="Name" text={name} />
-        <SearchResultRow label="CNIC" text={cnicNumber} />
-        <SearchResultRow label="S/O" text={parentName} />
+        <SearchResultRow label="Name" text={name} dataStyle={dataStyle} />
+        <SearchResultRow label="CNIC" text={cnicNumber} dataStyle={dataStyle} />
+        <SearchResultRow label="S/O" text={parentName} dataStyle={dataStyle} />
         <SearchResultRow
           label="Ehad Date"
           text={moment(Number(ehadDate)).format("DD MMMM, YYYY")}
+          dataStyle={dataStyle}
         />
-        <SearchResultRow label="R/O" text={referenceName} />
-        <SearchResultRow label="Phone" text={contactNumber1} />
-        <SearchResultRow label="City" text={city} />
-        <SearchResultRow label="Country" text={country} />
+        <SearchResultRow
+          label="R/O"
+          text={referenceName}
+          dataStyle={dataStyle}
+        />
+        <SearchResultRow
+          label="Phone"
+          text={contactNumber1}
+          dataStyle={dataStyle}
+        />
+        <SearchResultRow label="City" text={city} dataStyle={dataStyle} />
+        <SearchResultRow label="Country" text={country} dataStyle={dataStyle} />
       </Col>
       <Col order={2}>
         <VisitorStaysList visitorId={_id} showDutyColumn showNewButton />
@@ -101,6 +127,8 @@ const formQuery = gql`
       contactNumber1
       city
       imageId
+      criminalRecord
+      otherNotes
     }
   }
 `;

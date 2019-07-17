@@ -23,12 +23,7 @@ const EditForm = props => {
         <Notes visitorId={visitorId} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Stay History" key="4">
-        <VisitorStaysList
-          visitorId={visitorId}
-          showNewForm={false}
-          showNewButton
-          {...props}
-        />
+        <VisitorStaysList visitorId={visitorId} showNewButton {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

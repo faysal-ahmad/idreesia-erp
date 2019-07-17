@@ -61,7 +61,7 @@ const SearchResult = props => {
   const image = url ? <img src={url} style={{ width: "250px" }} /> : null;
 
   return (
-    <Row type="flex" gutter={16}>
+    <Row type="flex" justify="space-between" gutter={16}>
       <Col order={1}>
         {image}
         <SearchResultRow label="Name" text={name} />
@@ -77,7 +77,7 @@ const SearchResult = props => {
         <SearchResultRow label="Country" text={country} />
       </Col>
       <Col order={2}>
-        <VisitorStaysList visitorId={_id} />
+        <VisitorStaysList visitorId={_id} showDutyColumn showNewButton />
       </Col>
     </Row>
   );

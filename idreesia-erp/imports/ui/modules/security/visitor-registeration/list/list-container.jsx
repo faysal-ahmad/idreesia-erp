@@ -88,11 +88,7 @@ class ListContainer extends Component {
             paddingBottom: "108px",
           }}
         >
-          <VisitorStaysList
-            showNewForm
-            showNewButton={false}
-            visitorId={visitorIdForStayList}
-          />
+          <VisitorStaysList showNewButton visitorId={visitorIdForStayList} />
         </Drawer>
       </Fragment>
     );

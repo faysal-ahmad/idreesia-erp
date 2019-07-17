@@ -34,7 +34,7 @@ class List extends Component {
     pageSize: PropTypes.number,
     visitorId: PropTypes.string,
     showNewButton: PropTypes.bool,
-    showNewForm: PropTypes.bool,
+    showDutyColumn: PropTypes.bool,
     setPageParams: PropTypes.func,
 
     cancelVisitorStay: PropTypes.func,
@@ -77,6 +77,12 @@ class List extends Component {
       const reason = find(StayReasons, ({ _id }) => _id === text);
       return reason.name;
     },
+  };
+
+  dutyShiftNameColumn = {
+    title: "Duty / Shift",
+    key: "dutyShiftName",
+    dataIndex: "dutyShiftName",
   };
 
   actionsColumn = {
@@ -145,11 +151,19 @@ class List extends Component {
     },
   };
 
-  getColumns = () => [
-    this.stayDetailsColumn,
-    this.stayReasonColumn,
-    this.actionsColumn,
-  ];
+  getColumns = () => {
+    const { showDutyColumn } = this.props;
+    if (showDutyColumn) {
+      return [
+        this.stayDetailsColumn,
+        this.stayReasonColumn,
+        this.dutyShiftNameColumn,
+        this.actionsColumn,
+      ];
+    }
+
+    return [this.stayDetailsColumn, this.stayReasonColumn, this.actionsColumn];
+  };
 
   onChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
@@ -219,11 +233,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { visitorId, showNewButton, showNewForm } = this.props;
-    if (showNewForm) {
-      return <NewForm visitorId={visitorId} />;
-    }
-
+    const { showNewButton } = this.props;
     if (showNewButton) {
       return (
         <Button
@@ -343,6 +353,7 @@ const listQuery = gql`
         fromDate
         toDate
         stayReason
+        dutyShiftName
         cancelledDate
       }
     }

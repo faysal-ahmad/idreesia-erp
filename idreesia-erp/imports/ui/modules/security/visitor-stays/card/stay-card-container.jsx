@@ -35,14 +35,18 @@ class StayCardContainer extends Component {
         <div style={{ paddingTop: "5px" }}>
           <ReactToPrint
             trigger={() => (
-              <Button type="default">
+              <Button type="primary" size="large">
                 <Icon type="printer" />Print
               </Button>
             )}
             content={() => this.cardRef.current}
           />
           &nbsp;
-          <Button type="default" onClick={() => this.props.onCloseCard()}>
+          <Button
+            size="large"
+            type="default"
+            onClick={() => this.props.onCloseCard()}
+          >
             Close
           </Button>
         </div>

@@ -1,24 +1,15 @@
-/*
-.ant-card-head-title {
-  font-size: 24px;
-  font-weight: bold;
-}
-*/
-.ant-card-body div {
+.stay_card_item {
   border-bottom: 2px solid black;
   font-family: arial;
   font-weight: bold;
   font-size: 16px;
+  color: black;
 }
 
-.ant-card-body h2 {
+.stay_card_section {
   border-bottom: 3px solid black;
   margin: 0px;
   margin: 8px 0;
   font-weight: bold;
+  color: black;
 }
-/*
-.ant-modal-content {
-  max-width: 340px;
-}
-*/

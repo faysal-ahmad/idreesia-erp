@@ -271,7 +271,12 @@ class List extends Component {
 
     const card =
       showStayCard && visitorStayId ? (
-        <Modal closable={false} visible={showStayCard} footer={null}>
+        <Modal
+          closable={false}
+          visible={showStayCard}
+          width={400}
+          footer={null}
+        >
           <StayCard
             visitorId={visitorId}
             visitorStayId={visitorStayId}

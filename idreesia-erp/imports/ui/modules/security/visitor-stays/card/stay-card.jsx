@@ -24,6 +24,11 @@ const ConatinerStyle = {
   width: "340px",
 };
 
+const HeadStyle = {
+  fontSize: "24px",
+  fontWeight: "bold",
+};
+
 const StayCard = ({ visitor, visitorStay }) => {
   const title = visitor.criminalRecord
     ? "Night Stay Card - (D)"
@@ -37,8 +42,10 @@ const StayCard = ({ visitor, visitorStay }) => {
   let dutyDetails = [];
   if (visitorStay.dutyName) {
     dutyDetails = [
-      <h2 key="dutyHeader">Duty Details</h2>,
-      <div key="dutyName">
+      <h2 className="stay_card_section" key="dutyHeader">
+        Duty Details
+      </h2>,
+      <div className="stay_card_item" key="dutyName">
         <b>Duty:</b>
         {` ${visitorStay.dutyName}`}
       </div>,
@@ -46,7 +53,7 @@ const StayCard = ({ visitor, visitorStay }) => {
 
     if (visitorStay.shiftName) {
       dutyDetails.push(
-        <div key="shiftName">
+        <div className="stay_card_item" key="shiftName">
           <b>Shift:</b>
           {` ${visitorStay.shiftName}`}
         </div>
@@ -55,39 +62,39 @@ const StayCard = ({ visitor, visitorStay }) => {
   }
 
   return (
-    <Card title={title} style={ConatinerStyle}>
-      <h2>Personal Information</h2>
-      <div>
+    <Card title={title} style={ConatinerStyle} headStyle={HeadStyle}>
+      <h2 className="stay_card_section">Personal Information</h2>
+      <div className="stay_card_item">
         <b>Name:</b> {visitor.name}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>S/O:</b> {visitor.parentName}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>R/O:</b> {visitor.referenceName}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>City:</b> {visitor.city}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>CNIC:</b> {visitor.cnicNumber}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>Phone:</b> {visitor.contactNumber1}
       </div>
-      <h2>Stay Details</h2>
-      <div>
+      <h2 className="stay_card_section">Stay Details</h2>
+      <div className="stay_card_item">
         <b>From:</b>{" "}
         {moment(Number(visitorStay.fromDate)).format("DD MMMM, YYYY")}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>To:</b> {moment(Number(visitorStay.toDate)).format("DD MMMM, YYYY")}
       </div>
-      <div>
+      <div className="stay_card_item">
         <b>Reason:</b> {reasonText}
       </div>
       {dutyDetails}
-      <div>
+      <div className="stay_card_item">
         <Barcode value={visitorStay._id} {...barcodeOptions} />
       </div>
     </Card>

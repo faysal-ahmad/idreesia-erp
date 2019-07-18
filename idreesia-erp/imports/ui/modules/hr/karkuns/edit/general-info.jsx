@@ -110,7 +110,7 @@ class GeneralInfo extends Component {
 
         <InputTextField
           fieldName="contactNumber1"
-          fieldLabel="Contact No. 1"
+          fieldLabel="Mobile Number"
           initialValue={karkunById.contactNumber1}
           required={false}
           getFieldDecorator={getFieldDecorator}
@@ -118,7 +118,7 @@ class GeneralInfo extends Component {
 
         <InputTextField
           fieldName="contactNumber2"
-          fieldLabel="Contact No. 2"
+          fieldLabel="Home Number"
           initialValue={karkunById.contactNumber2}
           required={false}
           getFieldDecorator={getFieldDecorator}

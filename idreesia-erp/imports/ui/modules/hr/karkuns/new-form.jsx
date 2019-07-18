@@ -101,14 +101,14 @@ class NewForm extends Component {
 
         <InputTextField
           fieldName="contactNumber1"
-          fieldLabel="Contact Number 1"
+          fieldLabel="Mobile Number"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="contactNumber2"
-          fieldLabel="Contact Number 2"
+          fieldLabel="Home Number"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />

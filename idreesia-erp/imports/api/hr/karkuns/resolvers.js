@@ -1,5 +1,6 @@
 import { values } from "lodash";
 import {
+  Jobs,
   Duties,
   Karkuns,
   KarkunDuties,
@@ -16,6 +17,10 @@ export default {
     user: karkunType => {
       if (!karkunType.userId) return null;
       return Meteor.users.findOne(karkunType.userId);
+    },
+    job: karkunType => {
+      if (!karkunType.jobId) return null;
+      return Jobs.findOne(karkunType.jobId);
     },
     duties: karkunType => {
       const karkunDuties = KarkunDuties.find({
@@ -214,12 +219,48 @@ export default {
       return Karkuns.remove(_id);
     },
 
+    setKarkunEmploymentInfo(
+      obj,
+      {
+        _id,
+        isEmployee,
+        jobId,
+        employmentStartDate,
+        employmentEndDate,
+        currentSalary,
+      },
+      { user }
+    ) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Karkuns in the System."
+        );
+      }
+
+      const date = new Date();
+      Karkuns.update(_id, {
+        $set: {
+          isEmployee,
+          jobId,
+          employmentStartDate,
+          employmentEndDate,
+          currentSalary,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Karkuns.findOne(_id);
+    },
+
     setKarkunProfileImage(obj, { _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to create Karkuns in the System."
+          "You do not have permission to manage Karkuns in the System."
         );
       }
 
@@ -240,7 +281,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to create Karkuns in the System."
+          "You do not have permission to manage Karkuns in the System."
         );
       }
 
@@ -263,7 +304,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to create Karkuns in the System."
+          "You do not have permission to manage Karkuns in the System."
         );
       }
 

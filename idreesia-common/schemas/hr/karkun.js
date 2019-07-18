@@ -57,6 +57,26 @@ export default new SimpleSchema({
   },
   "attachmentIds.$": {
     type: String
+  },
+  isEmployee: {
+    type: Boolean,
+    optional: true
+  },
+  jobId: {
+    type: String,
+    optional: true
+  },
+  employmentStartDate: {
+    type: Date,
+    optional: true
+  },
+  employmentEndDate: {
+    type: Date,
+    optional: true
+  },
+  currentSalary: {
+    type: Number,
+    optional: true
   }
 })
   .extend(identifiable)

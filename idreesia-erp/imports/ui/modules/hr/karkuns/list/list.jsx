@@ -102,8 +102,8 @@ class List extends Component {
   };
 
   phoneNumberColumn = {
-    title: "Phone Number",
-    key: "phoneNumber",
+    title: "Contact Number",
+    key: "contactNumber",
     render: (text, record) => {
       const numbers = [];
       if (record.contactNumber1) numbers.push(record.contactNumber1);

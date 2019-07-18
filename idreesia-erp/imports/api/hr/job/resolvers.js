@@ -1,15 +1,13 @@
-import { Jobs } from "meteor/idreesia-common/collections/hr";
+import { Jobs, Karkuns } from "meteor/idreesia-common/collections/hr";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 export default {
-  DutyType: {
-    usedCount: dutyType => 0,
-    /*
-      KarkunDuties.find({
-        dutyId: { $eq: dutyType._id },
+  JobType: {
+    usedCount: jobType =>
+      Karkuns.find({
+        jobId: { $eq: jobType._id },
       }).count(),
-    */
   },
 
   Query: {

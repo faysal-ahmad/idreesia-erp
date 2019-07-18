@@ -22,7 +22,14 @@ type KarkunType {
   userId: String
   attachmentIds: [String]
 
+  isEmployee: Boolean
+  jobId: String
+  employmentStartDate: String
+  employmentEndDate: String
+  currentSalary: Float
+
   user: UserType
+  job: JobType
   duties: String
   attachments: [Attachment]
 
@@ -75,6 +82,15 @@ extend type Mutation {
   ): KarkunType
 
   deleteKarkun(_id: String!): Int
+
+  setKarkunEmploymentInfo(
+    _id: String!
+    isEmployee: Boolean!
+    jobId: String
+    employmentStartDate: String
+    employmentEndDate: String
+    currentSalary: Float
+  ): KarkunType
 
   setKarkunProfileImage(_id: String!, imageId: String!): KarkunType
   addKarkunAttachment(_id: String!, attachmentId: String!): KarkunType

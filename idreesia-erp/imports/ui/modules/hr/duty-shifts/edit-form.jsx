@@ -24,7 +24,7 @@ class EditForm extends Component {
 
     allDutiesLoading: PropTypes.bool,
     allDuties: PropTypes.array,
-    loading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
     dutyShiftById: PropTypes.object,
     updateDutyShift: PropTypes.func,
   };
@@ -59,10 +59,16 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, allDutiesLoading, allDuties, dutyShiftById } = this.props;
+    const {
+      formDataLoading,
+      allDutiesLoading,
+      allDuties,
+      dutyShiftById,
+    } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (loading || allDutiesLoading) return null;
+    if (formDataLoading || allDutiesLoading) return null;
 
+    debugger;
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
@@ -151,7 +157,7 @@ export default compose(
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { shiftId } = match.params;
       return { variables: { id: shiftId } };

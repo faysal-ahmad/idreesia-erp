@@ -4,6 +4,12 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Data Setup Routes
   // *************************************************************************************
+  static jobsPath = `${ModulePaths.hr}/jobs`;
+  static jobsNewFormPath = `${SubModulePaths.jobsPath}/new`;
+  static jobsEditFormPath(jobId = ":jobId") {
+    return `${SubModulePaths.jobsPath}/${jobId}`;
+  }
+
   static dutiesPath = `${ModulePaths.hr}/duties`;
   static dutiesNewFormPath = `${SubModulePaths.dutiesPath}/new`;
   static dutiesEditFormPath(dutyId = ":dutyId") {

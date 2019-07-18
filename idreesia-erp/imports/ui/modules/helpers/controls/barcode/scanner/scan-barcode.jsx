@@ -23,7 +23,7 @@ export default class ScanBarcode extends Component {
 
   handleKeyPress = event => {
     if (event.which === 13) {
-      const code = this.keyBuffer.join("");
+      const code = "2q7C78WyzQwZMHS8M"; // this.keyBuffer.join("");
       this.setState({ code });
       this.keyBuffer = [];
 

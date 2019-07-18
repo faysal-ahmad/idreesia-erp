@@ -1,0 +1,23 @@
+type JobType {
+  _id: String
+  name: String
+  description: String
+
+  usedCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allJobs: [JobType]
+  jobById(id: String!): JobType
+}
+
+extend type Mutation {
+  createJob(name: String!, description: String): JobType
+  updateJob(id: String!, name: String!, description: String): JobType
+  removeJob(_id: String!): Int
+}

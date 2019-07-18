@@ -20,6 +20,11 @@ class HRSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
+      case "jobs":
+        setActiveSubModuleName(SubModuleNames.jobs);
+        history.push(paths.jobsPath);
+        break;
+
       case "duties":
         setActiveSubModuleName(SubModuleNames.duties);
         history.push(paths.dutiesPath);
@@ -73,6 +78,7 @@ class HRSidebar extends Component {
             </span>
           }
         >
+          <Menu.Item key="jobs">Jobs</Menu.Item>
           <Menu.Item key="duties">Duties</Menu.Item>
           <Menu.Item key="duty-shifts">Duty Shifts</Menu.Item>
           <Menu.Item key="duty-locations">Duty Locations</Menu.Item>

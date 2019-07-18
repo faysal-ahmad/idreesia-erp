@@ -7,6 +7,7 @@ import { compose, graphql } from "react-apollo";
 
 import {
   InputCnicField,
+  InputMobileField,
   InputTextField,
   InputTextAreaField,
   MonthField,
@@ -157,7 +158,7 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           initialValue={visitorById.contactNumber1}

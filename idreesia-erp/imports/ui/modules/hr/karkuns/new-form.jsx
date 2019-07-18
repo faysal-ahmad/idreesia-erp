@@ -8,6 +8,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputCnicField,
+  InputMobileField,
   InputTextField,
   SelectField,
   InputTextAreaField,
@@ -99,7 +100,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           required={false}

@@ -17,7 +17,7 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputCnicField extends Component {
+export default class InputMobileField extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
@@ -52,12 +52,12 @@ export default class InputCnicField extends Component {
         {
           required,
           message: required ? requiredMessage : "",
-          // pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
+          // pattern: /^[0-9+]{4}-[0-9+]{7}$/,
         },
       ];
 
       return getFieldDecorator(fieldName, { initialValue, rules })(
-        <InputMask mask="99999-9999999-9" placeholder={placeholder} />
+        <InputMask mask="9999-9999999" placeholder={placeholder} />
       );
     }
 

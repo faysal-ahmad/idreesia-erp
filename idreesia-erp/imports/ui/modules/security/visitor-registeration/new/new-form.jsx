@@ -8,6 +8,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
   InputCnicField,
+  InputMobileField,
   InputTextField,
   InputTextAreaField,
   MonthField,
@@ -142,7 +143,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           required={false}

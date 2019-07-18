@@ -6,6 +6,7 @@ import { compose, graphql } from "react-apollo";
 
 import {
   InputCnicField,
+  InputMobileField,
   InputTextField,
   SelectField,
   InputTextAreaField,
@@ -108,7 +109,7 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           initialValue={karkunById.contactNumber1}

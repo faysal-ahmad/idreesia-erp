@@ -22,7 +22,7 @@ class EmploymentInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    loading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
     allJobs: PropTypes.array,
@@ -72,9 +72,9 @@ class EmploymentInfo extends Component {
   };
 
   render() {
-    const { loading, allJobsLoading, karkunById, allJobs } = this.props;
+    const { formDataLoading, allJobsLoading, karkunById, allJobs } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (loading || allJobsLoading) return null;
+    if (formDataLoading || allJobsLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -180,7 +180,7 @@ export default compose(
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };

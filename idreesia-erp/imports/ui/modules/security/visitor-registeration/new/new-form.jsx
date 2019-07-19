@@ -7,6 +7,7 @@ import { compose, graphql } from "react-apollo";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
+  AutoCompleteField,
   InputCnicField,
   InputMobileField,
   InputTextField,
@@ -15,12 +16,22 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 
+import {
+  WithDistinctCities,
+  WithDistinctCountries,
+} from "/imports/ui/modules/security/common/composers";
+
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
     createVisitor: PropTypes.func,
+
+    distinctCitiesLoading: PropTypes.bool,
+    distinctCities: PropTypes.array,
+    distinctCountriesLoading: PropTypes.bool,
+    distinctCountries: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -74,6 +85,14 @@ class NewForm extends Component {
   };
 
   render() {
+    const {
+      distinctCities,
+      distinctCitiesLoading,
+      distinctCountries,
+      distinctCountriesLoading,
+    } = this.props;
+    if (distinctCitiesLoading || distinctCountriesLoading) return null;
+
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -94,17 +113,21 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <AutoCompleteField
           fieldName="city"
           fieldLabel="City"
-          required={false}
+          dataSource={distinctCities}
+          required
+          requiredMessage="Please input the city for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <AutoCompleteField
           fieldName="country"
           fieldLabel="Country"
-          required={false}
+          dataSource={distinctCountries}
+          required
+          requiredMessage="Please input the country for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -211,5 +234,7 @@ export default compose(
       refetchQueries: ["pagedVisitors"],
     },
   }),
+  WithDistinctCities(),
+  WithDistinctCountries(),
   WithBreadcrumbs(["Security", "Visitor Registration", "New"])
 )(NewForm);

@@ -90,6 +90,7 @@ class List extends Component {
         dataSource={allJobs}
         columns={this.columns}
         bordered
+        pagination={{ defaultPageSize: 20 }}
         title={() => (
           <Button
             type="primary"

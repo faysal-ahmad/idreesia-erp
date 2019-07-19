@@ -75,6 +75,7 @@ class List extends Component {
         rowKey="_id"
         dataSource={allDutyLocations}
         columns={this.columns}
+        pagination={{ defaultPageSize: 20 }}
         bordered
         title={() => (
           <Button

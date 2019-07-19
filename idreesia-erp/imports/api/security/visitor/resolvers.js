@@ -1,6 +1,7 @@
 import { Visitors } from "meteor/idreesia-common/collections/security";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+import { compact } from "lodash";
 
 import { getVisitors } from "./queries";
 
@@ -48,6 +49,24 @@ export default {
       return Visitors.findOne({
         cnicNumber: { $eq: cnic },
       });
+    },
+
+    distinctCities() {
+      const distincFunction = Meteor.wrapAsync(
+        Visitors.rawCollection().distinct,
+        Visitors.rawCollection()
+      );
+
+      return compact(distincFunction("city"));
+    },
+
+    distinctCountries() {
+      const distincFunction = Meteor.wrapAsync(
+        Visitors.rawCollection().distinct,
+        Visitors.rawCollection()
+      );
+
+      return compact(distincFunction("country"));
     },
   },
 

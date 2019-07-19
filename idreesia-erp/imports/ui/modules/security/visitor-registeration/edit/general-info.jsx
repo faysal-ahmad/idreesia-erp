@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import {
+  AutoCompleteField,
   InputCnicField,
   InputMobileField,
   InputTextField,
@@ -14,6 +15,11 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 
+import {
+  WithDistinctCities,
+  WithDistinctCountries,
+} from "/imports/ui/modules/security/common/composers";
+
 class GeneralInfo extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -21,10 +27,15 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    loading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
     visitorId: PropTypes.string,
     visitorById: PropTypes.object,
     updateVisitor: PropTypes.func,
+
+    distinctCitiesLoading: PropTypes.bool,
+    distinctCities: PropTypes.array,
+    distinctCountriesLoading: PropTypes.bool,
+    distinctCountries: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -79,9 +90,18 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { loading, visitorById } = this.props;
+    const {
+      formDataLoading,
+      visitorById,
+      distinctCities,
+      distinctCitiesLoading,
+      distinctCountries,
+      distinctCountriesLoading,
+    } = this.props;
+    if (formDataLoading || distinctCitiesLoading || distinctCountriesLoading)
+      return null;
+
     const { getFieldDecorator } = this.props.form;
-    if (loading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -103,19 +123,23 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <AutoCompleteField
           fieldName="city"
           fieldLabel="City"
+          dataSource={distinctCities}
           initialValue={visitorById.city}
-          required={false}
+          required
+          requiredMessage="Please input the city for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <AutoCompleteField
           fieldName="country"
           fieldLabel="Country"
+          dataSource={distinctCountries}
           initialValue={visitorById.country}
-          required={false}
+          required
+          requiredMessage="Please input the country for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -249,10 +273,12 @@ export default compose(
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { visitorId } = match.params;
       return { variables: { _id: visitorId } };
     },
-  })
+  }),
+  WithDistinctCities(),
+  WithDistinctCountries()
 )(GeneralInfo);

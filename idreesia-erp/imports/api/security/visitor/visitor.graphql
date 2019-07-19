@@ -29,6 +29,9 @@ extend type Query {
   pagedVisitors(queryString: String): PagedVisitorType
   visitorById(_id: String!): VisitorType
   visitorByCnic(cnic: String!): VisitorType
+
+  distinctCities: [String]
+  distinctCountries: [String]
 }
 
 extend type Mutation {

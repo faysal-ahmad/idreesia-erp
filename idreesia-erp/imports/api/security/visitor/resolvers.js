@@ -1,7 +1,8 @@
+import { compact } from "lodash";
+
 import { Visitors } from "meteor/idreesia-common/collections/security";
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
-import { compact } from "lodash";
 
 import { getVisitors } from "./queries";
 

@@ -1,6 +1,7 @@
 import moment from "moment";
-import { Duties, DutyShifts } from "meteor/idreesia-common/collections/hr";
+import { compact } from "lodash";
 
+import { Duties, DutyShifts } from "meteor/idreesia-common/collections/hr";
 import {
   Visitors,
   VisitorStays,
@@ -66,6 +67,15 @@ export default {
       }
 
       return VisitorStays.findOne(_id);
+    },
+
+    distinctStayAllowedBy() {
+      const distincFunction = Meteor.wrapAsync(
+        VisitorStays.rawCollection().distinct,
+        VisitorStays.rawCollection()
+      );
+
+      return compact(distincFunction("stayAllowedBy"));
     },
   },
 

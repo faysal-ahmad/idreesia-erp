@@ -7,9 +7,9 @@ import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import {
+  AutoCompleteField,
   CascaderField,
   InputNumberField,
-  InputTextField,
   InputTextAreaField,
   SelectField,
   FormButtonsSubmit,
@@ -19,6 +19,7 @@ import {
   WithAllDuties,
   WithAllDutyShifts,
 } from "/imports/ui/modules/hr/common/composers";
+import { WithDistinctStayAllowedBy } from "/imports/ui/modules/security/common/composers";
 import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
 
 import StayReasons from "../common/constants/stay-reasons";
@@ -36,6 +37,8 @@ class EditForm extends Component {
     allDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
     allDutyShiftsLoading: PropTypes.bool,
+    distinctStayAllowedBy: PropTypes.array,
+    distinctStayAllowedByLoading: PropTypes.bool,
   };
 
   handleSubmit = e => {
@@ -84,11 +87,18 @@ class EditForm extends Component {
       visitorStayById,
       allDutiesLoading,
       allDutyShiftsLoading,
+      distinctStayAllowedByLoading,
       allDuties,
       allDutyShifts,
+      distinctStayAllowedBy,
       form: { getFieldDecorator },
     } = this.props;
-    if (formDataLoading || allDutiesLoading || allDutyShiftsLoading)
+    if (
+      formDataLoading ||
+      allDutiesLoading ||
+      allDutyShiftsLoading ||
+      distinctStayAllowedByLoading
+    )
       return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
@@ -114,9 +124,10 @@ class EditForm extends Component {
           initialValue={visitorStayById.stayReason}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
+        <AutoCompleteField
           fieldName="stayAllowedBy"
           fieldLabel="Stay Allowed By"
+          dataSource={distinctStayAllowedBy}
           initialValue={visitorStayById.stayAllowedBy}
           getFieldDecorator={getFieldDecorator}
         />
@@ -205,5 +216,6 @@ export default compose(
     },
   }),
   WithAllDuties(),
-  WithAllDutyShifts()
+  WithAllDutyShifts(),
+  WithDistinctStayAllowedBy()
 )(EditForm);

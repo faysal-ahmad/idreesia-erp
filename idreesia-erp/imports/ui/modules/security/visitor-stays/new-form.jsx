@@ -7,9 +7,9 @@ import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import {
+  AutoCompleteField,
   CascaderField,
   InputNumberField,
-  InputTextField,
   InputTextAreaField,
   SelectField,
   FormButtonsSubmit,
@@ -19,6 +19,7 @@ import {
   WithAllDuties,
   WithAllDutyShifts,
 } from "/imports/ui/modules/hr/common/composers";
+import { WithDistinctStayAllowedBy } from "/imports/ui/modules/security/common/composers";
 import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
 
 import StayReasons from "../common/constants/stay-reasons";
@@ -34,6 +35,8 @@ class NewForm extends Component {
     allDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
     allDutyShiftsLoading: PropTypes.bool,
+    distinctStayAllowedBy: PropTypes.array,
+    distinctStayAllowedByLoading: PropTypes.bool,
   };
 
   handleSubmit = e => {
@@ -75,11 +78,18 @@ class NewForm extends Component {
     const {
       allDutiesLoading,
       allDutyShiftsLoading,
+      distinctStayAllowedByLoading,
       allDuties,
       allDutyShifts,
+      distinctStayAllowedBy,
       form: { getFieldDecorator },
     } = this.props;
-    if (allDutiesLoading || allDutyShiftsLoading) return null;
+    if (
+      allDutiesLoading ||
+      allDutyShiftsLoading ||
+      distinctStayAllowedByLoading
+    )
+      return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
       allDuties,
@@ -103,9 +113,10 @@ class NewForm extends Component {
           fieldLabel="Stay Reason"
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
+        <AutoCompleteField
           fieldName="stayAllowedBy"
           fieldLabel="Stay Allowed By"
+          dataSource={distinctStayAllowedBy}
           getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
@@ -170,5 +181,6 @@ export default compose(
     },
   }),
   WithAllDuties(),
-  WithAllDutyShifts()
+  WithAllDutyShifts(),
+  WithDistinctStayAllowedBy()
 )(NewForm);

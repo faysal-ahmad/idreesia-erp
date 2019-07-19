@@ -11,13 +11,13 @@ export default () => WrappedComponent => {
     distinctCities: PropTypes.array,
   };
 
-  const withAllDutiesQuery = gql`
+  const withDistinctCitiesQuery = gql`
     query distinctCities {
       distinctCities
     }
   `;
 
-  return graphql(withAllDutiesQuery, {
+  return graphql(withDistinctCitiesQuery, {
     props: ({ data }) => ({ distinctCitiesLoading: data.loading, ...data }),
     options: {
       fetchPolicy: "no-cache",

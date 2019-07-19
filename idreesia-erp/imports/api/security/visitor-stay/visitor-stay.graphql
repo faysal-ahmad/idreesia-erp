@@ -30,6 +30,7 @@ type PagedVisitorStayType {
 extend type Query {
   pagedVisitorStays(queryString: String!): PagedVisitorStayType
   visitorStayById(_id: String!): VisitorStayType
+  distinctStayAllowedBy: [String]
 }
 
 extend type Mutation {

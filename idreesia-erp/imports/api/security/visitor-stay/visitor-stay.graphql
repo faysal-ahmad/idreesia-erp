@@ -11,6 +11,8 @@ type VisitorStayType {
   notes: String
   cancelledDate: String
 
+  isValid: Boolean
+  isExpired: Boolean
   refVisitor: VisitorType
   dutyName: String
   shiftName: String
@@ -36,8 +38,7 @@ extend type Query {
 extend type Mutation {
   createVisitorStay(
     visitorId: String!
-    fromDate: String!
-    toDate: String!
+    numOfDays: Float!
     stayReason: String
     stayAllowedBy: String
     dutyId: String
@@ -47,8 +48,7 @@ extend type Mutation {
 
   updateVisitorStay(
     _id: String!
-    fromDate: String!
-    toDate: String!
+    numOfDays: Float!
     stayReason: String
     stayAllowedBy: String
     dutyId: String

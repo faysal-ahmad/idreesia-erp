@@ -3,9 +3,7 @@ import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import moment from "moment";
 
-import { Formats } from "meteor/idreesia-common/constants";
 import {
   AutoCompleteField,
   CascaderField,
@@ -46,17 +44,10 @@ class NewForm extends Component {
       (err, { numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, notes }) => {
         if (err) return;
 
-        const fromDate = moment();
-        const toDate = moment();
-        if (numOfDays > 1) {
-          toDate.add(numOfDays - 1, "days");
-        }
-
         createVisitorStay({
           variables: {
             visitorId,
-            fromDate: fromDate.format(Formats.DATE_FORMAT),
-            toDate: toDate.format(Formats.DATE_FORMAT),
+            numOfDays,
             stayReason,
             stayAllowedBy,
             dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
@@ -141,8 +132,7 @@ class NewForm extends Component {
 const formMutation = gql`
   mutation createVisitorStay(
     $visitorId: String!
-    $fromDate: String!
-    $toDate: String!
+    $numOfDays: Float!
     $stayReason: String
     $stayAllowedBy: String
     $dutyId: String
@@ -151,8 +141,7 @@ const formMutation = gql`
   ) {
     createVisitorStay(
       visitorId: $visitorId
-      fromDate: $fromDate
-      toDate: $toDate
+      numOfDays: $numOfDays
       stayReason: $stayReason
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId

@@ -6,14 +6,22 @@ import {
   Visitors,
   VisitorStays,
 } from "meteor/idreesia-common/collections/security";
+
 import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
-import { Formats } from "meteor/idreesia-common/constants";
 
 import { getVisitorStays } from "./queries";
 
 export default {
   VisitorStayType: {
+    isValid: visitorStay => {
+      const toDate = moment(Number(visitorStay.toDate));
+      return moment().isBefore(toDate);
+    },
+    isExpired: visitorStay => {
+      const toDate = moment(Number(visitorStay.toDate));
+      return moment().isAfter(toDate);
+    },
     refVisitor: visitorStay =>
       Visitors.findOne({
         _id: { $eq: visitorStay.visitorId },
@@ -84,8 +92,7 @@ export default {
       obj,
       {
         visitorId,
-        fromDate,
-        toDate,
+        numOfDays,
         stayReason,
         stayAllowedBy,
         dutyId,
@@ -104,16 +111,23 @@ export default {
         );
       }
 
-      const mFromDate = moment(fromDate, Formats.DATE_FORMAT);
-      const mToDate = moment(toDate, Formats.DATE_FORMAT);
-      const days = moment.duration(mToDate.diff(mFromDate)).asDays() + 1;
+      // We are going to assume that if the current time is before midnight, but
+      // close to it, then the stay is for the next day's date.
+      // But if it is after midnight, then it is for the current date.
+      const fromDate = moment();
+      if (fromDate.hour() > 21) fromDate.add(1, "d");
+
+      const toDate = fromDate.clone();
+      if (numOfDays > 1) {
+        toDate.add(numOfDays - 1, "days");
+      }
 
       const date = new Date();
       const visitorStayId = VisitorStays.insert({
         visitorId,
-        fromDate: mFromDate.toDate(),
-        toDate: mToDate.toDate(),
-        numOfDays: days,
+        fromDate: fromDate.startOf("day").toDate(),
+        toDate: toDate.endOf("day").toDate(),
+        numOfDays,
         stayReason,
         stayAllowedBy,
         dutyId,
@@ -130,16 +144,7 @@ export default {
 
     updateVisitorStay(
       obj,
-      {
-        _id,
-        fromDate,
-        toDate,
-        stayReason,
-        stayAllowedBy,
-        dutyId,
-        shiftId,
-        notes,
-      },
+      { _id, numOfDays, stayReason, stayAllowedBy, dutyId, shiftId, notes },
       { user }
     ) {
       if (
@@ -152,16 +157,18 @@ export default {
         );
       }
 
-      const mFromDate = moment(fromDate, Formats.DATE_FORMAT);
-      const mToDate = moment(toDate, Formats.DATE_FORMAT);
-      const days = moment.duration(mToDate.diff(mFromDate)).asDays() + 1;
+      const existingStay = VisitorStays.findOne(_id);
+      const fromDate = moment(Number(existingStay.fromDate));
+      const toDate = fromDate.clone();
+      if (numOfDays > 1) {
+        toDate.add(numOfDays - 1, "days");
+      }
 
       const date = new Date();
       VisitorStays.update(_id, {
         $set: {
-          fromDate: mFromDate.toDate(),
-          toDate: mToDate.toDate(),
-          numOfDays: days,
+          toDate: toDate.endOf("day").toDate(),
+          numOfDays,
           stayReason,
           stayAllowedBy,
           dutyId,

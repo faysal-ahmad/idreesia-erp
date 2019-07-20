@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { Row, Col, Icon, Spin } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import moment from "moment";
 
 const ErrorStatusStyle = {
   color: "red",
@@ -50,14 +49,10 @@ const SearchResult = props => {
     return <ScanStatus isError message="Card Not Found" />;
   }
 
-  const fromDate = moment(Number(visitorStayById.fromDate));
-  const toDate = moment(Number(visitorStayById.toDate));
-  const currentDate = moment();
-
   let statusRow;
   if (visitorStayById.cancelledDate) {
     statusRow = <ScanStatus isError message="Card Cancelled" />;
-  } else if (currentDate.isBetween(fromDate, toDate)) {
+  } else if (visitorStayById.isValid) {
     statusRow = <ScanStatus isError={false} message="Card Valid" />;
   } else {
     statusRow = <ScanStatus isError message="Card Expired" />;
@@ -108,6 +103,7 @@ const formQuery = gql`
       shiftName
       notes
       cancelledDate
+      isValid
       refVisitor {
         _id
         name

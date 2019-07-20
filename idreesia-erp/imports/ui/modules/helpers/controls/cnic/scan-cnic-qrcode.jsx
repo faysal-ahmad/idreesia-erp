@@ -33,26 +33,36 @@ export default class ScanCnicQRCode extends Component {
           17,
           24
         )}-${scannedInput.slice(24, 25)}`;
+
+        this.setState({ code: barcode });
+        const { onCnicCaptured } = this.props;
+        if (onCnicCaptured) {
+          onCnicCaptured(barcode);
+        }
       } else if (scannedInput.length > 50) {
         // Extract the CNIC number from the scanned input
         const parts = scannedInput.split("Enter");
-        const idPart = parts[1];
+        if (parts.length === 10) {
+          const idPart = parts[1];
 
-        barcode = idPart;
-        if (idPart.length > 13) {
-          barcode = idPart.slice(0, 13);
+          barcode = idPart;
+          if (idPart.length > 13) {
+            barcode = `${idPart.slice(0, 5)}-${idPart.slice(
+              5,
+              12
+            )}-${idPart.slice(12, 13)}`;
+          }
+
+          this.setState({ code: barcode });
+          const { onCnicCaptured } = this.props;
+          if (onCnicCaptured) {
+            onCnicCaptured(barcode);
+          }
         }
       }
-
-      this.setState({ code: barcode });
-
-      const { onCnicCaptured } = this.props;
-      if (onCnicCaptured) {
-        onCnicCaptured(barcode);
-      }
     },
-    50,
-    { trailing: true, maxWait: 1000 }
+    100,
+    { trailing: true, maxWait: 2000 }
   );
 
   handleKeyPress = event => {

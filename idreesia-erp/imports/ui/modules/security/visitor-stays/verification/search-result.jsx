@@ -125,6 +125,9 @@ const formQuery = gql`
 export default compose(
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ barcode }) => ({ variables: { _id: barcode } }),
+    options: ({ barcode }) => ({
+      variables: { _id: barcode },
+      fetchPolicy: "network-only",
+    }),
   })
 )(SearchResult);

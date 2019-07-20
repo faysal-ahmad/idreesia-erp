@@ -90,9 +90,11 @@ const StayCard = ({ visitor, visitorStay }) => {
       <div className="stay_card_item">
         <b>To:</b> {moment(Number(visitorStay.toDate)).format("DD MMMM, YYYY")}
       </div>
-      <div className="stay_card_item">
-        <b>Reason:</b> {reasonText}
-      </div>
+      {reasonText ? (
+        <div className="stay_card_item">
+          <b>Reason:</b> {reasonText}
+        </div>
+      ) : null}
       {dutyDetails}
       <div className="stay_card_item">
         <Barcode value={visitorStay._id} {...barcodeOptions} />

@@ -173,7 +173,7 @@ class GeneralInfo extends Component {
           <SwitchField
             fieldName="isMinor"
             fieldLabel="Is Minor"
-            initialValue={visitorById.isMinor}
+            initialValue={visitorById.isMinor || false}
             handleChange={this.handleIsMinorChanged}
             getFieldDecorator={getFieldDecorator}
           />
@@ -181,7 +181,7 @@ class GeneralInfo extends Component {
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={visitorById.cnicNumber}
+            initialValue={visitorById.cnicNumber || ""}
             required
             requiredMessage="Please input the CNIC for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -210,7 +210,7 @@ class GeneralInfo extends Component {
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={visitorById.contactNumber1}
+            initialValue={visitorById.contactNumber1 || ""}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />

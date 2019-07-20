@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Row, Col, Spin, message } from "antd";
+import { Row, Col, Spin, Icon } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
@@ -26,6 +26,11 @@ const ErrorDataStyle = {
   color: "red",
 };
 
+const NoRecordFoundStyle = {
+  color: "orange",
+  fontSize: 36,
+};
+
 const SearchResultRow = ({ label, text, dataStyle }) => (
   <Row type="flex" gutter={16}>
     <Col order={1}>
@@ -49,8 +54,23 @@ const SearchResult = props => {
   if (loading) return <Spin size="large" />;
 
   if (!visitorByCnic) {
-    message.error(`No records found against scanned CNIC ${cnicNumber}`, 2);
-    return null;
+    return (
+      <Row type="flex" justify="start" align="middle" gutter={16}>
+        <Col>
+          <Icon
+            style={NoRecordFoundStyle}
+            type="exclamation-circle"
+            theme="twoTone"
+            twoToneColor={NoRecordFoundStyle.color}
+          />
+        </Col>
+        <Col>
+          <div style={NoRecordFoundStyle}>
+            {"No records found against scanned CNIC."}
+          </div>
+        </Col>
+      </Row>
+    );
   }
 
   const {
@@ -136,6 +156,9 @@ const formQuery = gql`
 export default compose(
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ cnicNumber }) => ({ variables: { cnic: cnicNumber } }),
+    options: ({ cnicNumber }) => ({
+      variables: { cnic: cnicNumber },
+      fetchPolicy: "network-only",
+    }),
   })
 )(SearchResult);

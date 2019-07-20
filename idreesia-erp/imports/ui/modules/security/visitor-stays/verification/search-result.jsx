@@ -19,7 +19,7 @@ import StayCard from "../card/stay-card";
 const ScanStatus = ({ message, isError }) => {
   const statusStyle = isError ? ErrorStatusStyle : SuccessStatusStyle;
   return (
-    <Row type="flex" justify="left" align="middle" gutter={16}>
+    <Row type="flex" justify="start" align="middle" gutter={16}>
       <Col>
         <Icon
           style={statusStyle}

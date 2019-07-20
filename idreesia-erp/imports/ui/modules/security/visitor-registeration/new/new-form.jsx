@@ -158,6 +158,7 @@ class NewForm extends Component {
         <SwitchField
           fieldName="isMinor"
           fieldLabel="Is Minor"
+          initialValue={false}
           handleChange={this.handleIsMinorChanged}
           getFieldDecorator={getFieldDecorator}
         />

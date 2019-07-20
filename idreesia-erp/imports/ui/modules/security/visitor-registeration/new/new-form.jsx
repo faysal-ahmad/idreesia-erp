@@ -5,7 +5,6 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import {
   AutoCompleteField,
   InputCnicField,
@@ -13,6 +12,7 @@ import {
   InputTextField,
   InputTextAreaField,
   MonthField,
+  SwitchField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 
@@ -34,9 +34,14 @@ class NewForm extends Component {
     distinctCountries: PropTypes.array,
   };
 
+  state = {
+    cnicRequired: true,
+    mobileRequired: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.visitorRegistrationPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -48,6 +53,7 @@ class NewForm extends Component {
         {
           name,
           parentName,
+          isMinor,
           cnicNumber,
           ehadDate,
           referenceName,
@@ -60,10 +66,12 @@ class NewForm extends Component {
       ) => {
         if (err) return;
 
+        debugger;
         createVisitor({
           variables: {
             name,
             parentName,
+            isMinor,
             cnicNumber,
             ehadDate,
             referenceName,
@@ -74,14 +82,21 @@ class NewForm extends Component {
             country,
           },
         })
-          .then(({ data: { createVisitor: newVisitor } }) => {
-            history.push(`${paths.visitorRegistrationPath}/${newVisitor._id}`);
+          .then(() => {
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
           });
       }
     );
+  };
+
+  handleIsMinorChanged = checked => {
+    this.setState({
+      cnicRequired: !checked,
+      mobileRequired: checked,
+    });
   };
 
   render() {
@@ -140,10 +155,17 @@ class NewForm extends Component {
 
         <Divider />
 
+        <SwitchField
+          fieldName="isMinor"
+          fieldLabel="Is Minor"
+          handleChange={this.handleIsMinorChanged}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          required
+          required={this.state.cnicRequired}
           requiredMessage="Please input the CNIC for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
@@ -169,7 +191,8 @@ class NewForm extends Component {
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
-          required={false}
+          required={this.state.mobileRequired}
+          requiredMessage="Please input the mobile number for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -190,6 +213,7 @@ const formMutation = gql`
   mutation createVisitor(
     $name: String!
     $parentName: String!
+    $isMinor: Boolean!
     $cnicNumber: String!
     $ehadDate: String!
     $referenceName: String!
@@ -202,6 +226,7 @@ const formMutation = gql`
     createVisitor(
       name: $name
       parentName: $parentName
+      isMinor: $isMinor
       cnicNumber: $cnicNumber
       ehadDate: $ehadDate
       referenceName: $referenceName
@@ -214,6 +239,7 @@ const formMutation = gql`
       _id
       name
       parentName
+      isMinor
       cnicNumber
       ehadDate
       referenceName

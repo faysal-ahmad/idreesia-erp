@@ -20,6 +20,7 @@ export default class SwitchField extends Component {
     fieldLayout: PropTypes.object,
     initialValue: PropTypes.bool,
     getFieldDecorator: PropTypes.func,
+    handleChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -31,7 +32,14 @@ export default class SwitchField extends Component {
     const { fieldName, getFieldDecorator, initialValue } = this.props;
 
     return getFieldDecorator(fieldName, { initialValue })(
-      <Switch defaultChecked={initialValue} />
+      <Switch
+        defaultChecked={initialValue}
+        onChange={checked => {
+          if (this.props.handleChange) {
+            this.props.handleChange(checked);
+          }
+        }}
+      />
     );
   }
 

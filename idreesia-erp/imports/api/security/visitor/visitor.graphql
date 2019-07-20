@@ -2,6 +2,7 @@ type VisitorType {
   _id: String
   name: String
   parentName: String
+  isMinor: Boolean
   cnicNumber: String
   ehadDate: String
   referenceName: String
@@ -38,7 +39,8 @@ extend type Mutation {
   createVisitor(
     name: String!
     parentName: String!
-    cnicNumber: String!
+    isMinor: Boolean!
+    cnicNumber: String
     ehadDate: String!
     referenceName: String!
     contactNumber1: String
@@ -53,7 +55,8 @@ extend type Mutation {
     _id: String!
     name: String!
     parentName: String!
-    cnicNumber: String!
+    isMinor: Boolean!
+    cnicNumber: String
     ehadDate: String!
     referenceName: String!
     contactNumber1: String

@@ -9,8 +9,12 @@ export default new SimpleSchema({
   parentName: {
     type: String
   },
+  isMinor: {
+    type: Boolean
+  },
   cnicNumber: {
-    type: String
+    type: String,
+    optional: true
   },
   ehadDate: {
     type: Date

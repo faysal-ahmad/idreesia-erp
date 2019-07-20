@@ -5,6 +5,7 @@ import { hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
 import { getVisitors } from "./queries";
+import { checkCnicNotInUse, checkContactNotInUse } from "./utilities";
 
 export default {
   Query: {
@@ -77,6 +78,7 @@ export default {
       {
         name,
         parentName,
+        isMinor,
         cnicNumber,
         ehadDate,
         referenceName,
@@ -99,23 +101,15 @@ export default {
         );
       }
 
-      if (cnicNumber) {
-        const existingVisitor = Visitors.findOne({
-          cnicNumber: { $eq: cnicNumber },
-        });
-        if (existingVisitor) {
-          throw new Error(
-            `This CNIC number is already set for ${existingVisitor.firstName} ${
-              existingVisitor.lastName
-            }.`
-          );
-        }
-      }
+      if (cnicNumber) checkCnicNotInUse(cnicNumber);
+      if (contactNumber1) checkContactNotInUse(contactNumber1);
+      if (contactNumber2) checkContactNotInUse(contactNumber2);
 
       const date = new Date();
       const visitorId = Visitors.insert({
         name,
         parentName,
+        isMinor,
         cnicNumber,
         ehadDate,
         referenceName,
@@ -140,6 +134,7 @@ export default {
         _id,
         name,
         parentName,
+        isMinor,
         cnicNumber,
         ehadDate,
         referenceName,
@@ -162,24 +157,16 @@ export default {
         );
       }
 
-      if (cnicNumber) {
-        const existingVisitor = Visitors.findOne({
-          cnicNumber: { $eq: cnicNumber },
-        });
-        if (existingVisitor && existingVisitor._id !== _id) {
-          throw new Error(
-            `This CNIC number is already set for ${existingVisitor.firstName} ${
-              existingVisitor.lastName
-            }.`
-          );
-        }
-      }
+      if (cnicNumber) checkCnicNotInUse(cnicNumber, _id);
+      if (contactNumber1) checkContactNotInUse(contactNumber1, _id);
+      if (contactNumber2) checkContactNotInUse(contactNumber2, _id);
 
       const date = new Date();
       Visitors.update(_id, {
         $set: {
           name,
           parentName,
+          isMinor,
           cnicNumber,
           ehadDate,
           referenceName,

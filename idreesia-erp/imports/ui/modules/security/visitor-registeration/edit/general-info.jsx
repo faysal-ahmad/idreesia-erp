@@ -12,6 +12,7 @@ import {
   InputTextField,
   InputTextAreaField,
   MonthField,
+  SwitchField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import { RecordInfo } from "/imports/ui/modules/helpers/controls";
@@ -39,6 +40,11 @@ class GeneralInfo extends Component {
     distinctCountries: PropTypes.array,
   };
 
+  state = {
+    cnicRequired: true,
+    mobileRequired: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
@@ -53,6 +59,7 @@ class GeneralInfo extends Component {
         {
           name,
           parentName,
+          isMinor,
           cnicNumber,
           ehadDate,
           referenceName,
@@ -70,6 +77,7 @@ class GeneralInfo extends Component {
             _id: visitorById._id,
             name,
             parentName,
+            isMinor,
             cnicNumber,
             ehadDate,
             referenceName,
@@ -88,6 +96,13 @@ class GeneralInfo extends Component {
           });
       }
     );
+  };
+
+  handleIsMinorChanged = checked => {
+    this.setState({
+      cnicRequired: !checked,
+      mobileRequired: checked,
+    });
   };
 
   render() {
@@ -155,6 +170,14 @@ class GeneralInfo extends Component {
 
           <Divider />
 
+          <SwitchField
+            fieldName="isMinor"
+            fieldLabel="Is Minor"
+            initialValue={visitorById.isMinor}
+            handleChange={this.handleIsMinorChanged}
+            getFieldDecorator={getFieldDecorator}
+          />
+
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
@@ -214,6 +237,7 @@ const formQuery = gql`
       _id
       name
       parentName
+      isMinor
       cnicNumber
       ehadDate
       referenceName
@@ -235,6 +259,7 @@ const formMutation = gql`
     $_id: String!
     $name: String!
     $parentName: String!
+    $isMinor: Boolean!
     $cnicNumber: String!
     $ehadDate: String!
     $referenceName: String!
@@ -248,6 +273,7 @@ const formMutation = gql`
       _id: $_id
       name: $name
       parentName: $parentName
+      isMinor: $isMinor
       cnicNumber: $cnicNumber
       ehadDate: $ehadDate
       referenceName: $referenceName
@@ -260,6 +286,7 @@ const formMutation = gql`
       _id
       name
       parentName
+      isMinor
       cnicNumber
       ehadDate
       referenceName

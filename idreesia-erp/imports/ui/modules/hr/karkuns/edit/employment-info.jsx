@@ -149,7 +149,7 @@ const formMutation = gql`
     $_id: String!
     $isEmployee: Boolean!
     $jobId: String
-    $employmentStartDate: String!
+    $employmentStartDate: String
     $employmentEndDate: String
     $currentSalary: Float
   ) {

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Divider, Form, message } from "antd";
 import moment from "moment";
@@ -14,6 +14,7 @@ import {
   MonthField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 import {
   WithDistinctCities,
@@ -104,102 +105,105 @@ class GeneralInfo extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={visitorById.name}
-          required
-          requiredMessage="Please input the first name for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={visitorById.name}
+            required
+            requiredMessage="Please input the first name for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="parentName"
-          fieldLabel="S/O"
-          initialValue={visitorById.parentName}
-          required
-          requiredMessage="Please input the parent name for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="parentName"
+            fieldLabel="S/O"
+            initialValue={visitorById.parentName}
+            required
+            requiredMessage="Please input the parent name for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <AutoCompleteField
-          fieldName="city"
-          fieldLabel="City"
-          dataSource={distinctCities}
-          initialValue={visitorById.city}
-          required
-          requiredMessage="Please input the city for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <AutoCompleteField
+            fieldName="city"
+            fieldLabel="City"
+            dataSource={distinctCities}
+            initialValue={visitorById.city}
+            required
+            requiredMessage="Please input the city for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <AutoCompleteField
-          fieldName="country"
-          fieldLabel="Country"
-          dataSource={distinctCountries}
-          initialValue={visitorById.country}
-          required
-          requiredMessage="Please input the country for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <AutoCompleteField
+            fieldName="country"
+            fieldLabel="Country"
+            dataSource={distinctCountries}
+            initialValue={visitorById.country}
+            required
+            requiredMessage="Please input the country for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          initialValue={visitorById.address}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="address"
+            fieldLabel="Address"
+            initialValue={visitorById.address}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <Divider />
+          <Divider />
 
-        <InputCnicField
-          fieldName="cnicNumber"
-          fieldLabel="CNIC Number"
-          initialValue={visitorById.cnicNumber}
-          required
-          requiredMessage="Please input the CNIC for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputCnicField
+            fieldName="cnicNumber"
+            fieldLabel="CNIC Number"
+            initialValue={visitorById.cnicNumber}
+            required
+            requiredMessage="Please input the CNIC for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <MonthField
-          fieldName="ehadDate"
-          fieldLabel="Ehad Date"
-          initialValue={moment(Number(visitorById.ehadDate))}
-          allowClear={false}
-          format="MMM, YYYY"
-          required
-          requiredMessage="Please specify the Ehad date for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <MonthField
+            fieldName="ehadDate"
+            fieldLabel="Ehad Date"
+            initialValue={moment(Number(visitorById.ehadDate))}
+            allowClear={false}
+            format="MMM, YYYY"
+            required
+            requiredMessage="Please specify the Ehad date for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="referenceName"
-          fieldLabel="R/O"
-          initialValue={visitorById.referenceName}
-          required
-          requiredMessage="Please input the referene name for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="referenceName"
+            fieldLabel="R/O"
+            initialValue={visitorById.referenceName}
+            required
+            requiredMessage="Please input the referene name for the visitor."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputMobileField
-          fieldName="contactNumber1"
-          fieldLabel="Mobile Number"
-          initialValue={visitorById.contactNumber1}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputMobileField
+            fieldName="contactNumber1"
+            fieldLabel="Mobile Number"
+            initialValue={visitorById.contactNumber1}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="contactNumber2"
-          fieldLabel="Home Number"
-          initialValue={visitorById.contactNumber2}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="contactNumber2"
+            fieldLabel="Home Number"
+            initialValue={visitorById.contactNumber2}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={visitorById} />
+      </Fragment>
     );
   }
 }
@@ -218,6 +222,10 @@ const formQuery = gql`
       address
       city
       country
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { values } from "lodash";
+import { compact, values } from "lodash";
 import {
   Jobs,
   Duties,
@@ -86,6 +86,31 @@ export default {
       return Karkuns.findOne({
         userId: { $eq: userId },
       });
+    },
+
+    karkunNames(obj, { ids }) {
+      const names = [];
+      if (!ids) return names;
+
+      const idsToSearch = compact(ids);
+      idsToSearch.forEach(id => {
+        const karkun = Karkuns.findOne({
+          userId: { $eq: id },
+        });
+
+        if (karkun) {
+          names.push(`${karkun.firstName} ${karkun.lastName}`);
+        } else {
+          const user = Meteor.users.findOne(id);
+          if (user.username === "erp-admin") {
+            names.push("ERP Admin");
+          } else {
+            names.push("Unknown User");
+          }
+        }
+      });
+
+      return names;
     },
   },
 

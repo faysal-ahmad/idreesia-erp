@@ -51,6 +51,8 @@ extend type Query {
   karkunById(_id: String!): KarkunType
   karkunsByDutyId(dutyId: String!): [KarkunType]
   karkunByUserId(userId: String!): KarkunType
+
+  karkunNames(ids: [String]): [String]
 }
 
 extend type Mutation {

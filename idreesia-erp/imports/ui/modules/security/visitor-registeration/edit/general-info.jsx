@@ -11,10 +11,10 @@ import {
   InputMobileField,
   InputTextField,
   InputTextAreaField,
-  MonthField,
   SwitchField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
 import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 import {
@@ -39,6 +39,18 @@ class GeneralInfo extends Component {
     distinctCountriesLoading: PropTypes.bool,
     distinctCountries: PropTypes.array,
   };
+
+  static getDerivedStateFromProps(props) {
+    const { visitorById } = props;
+    if (visitorById) {
+      return {
+        cnicRequired: !visitorById.isMinor,
+        mobileRequired: visitorById.isMinor,
+      };
+    }
+
+    return null;
+  }
 
   state = {
     cnicRequired: true,
@@ -182,19 +194,17 @@ class GeneralInfo extends Component {
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
             initialValue={visitorById.cnicNumber || ""}
-            required
+            required={this.state.cnicRequired}
             requiredMessage="Please input the CNIC for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
 
-          <MonthField
+          <EhadDurationField
             fieldName="ehadDate"
-            fieldLabel="Ehad Date"
-            initialValue={moment(Number(visitorById.ehadDate))}
-            allowClear={false}
-            format="MMM, YYYY"
+            fieldLabel="Ehad Duration"
             required
-            requiredMessage="Please specify the Ehad date for the visitor."
+            initialValue={moment(Number(visitorById.ehadDate))}
+            requiredMessage="Please specify the Ehad duration for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -211,7 +221,7 @@ class GeneralInfo extends Component {
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
             initialValue={visitorById.contactNumber1 || ""}
-            required={false}
+            required={this.state.mobileRequired}
             getFieldDecorator={getFieldDecorator}
           />
 

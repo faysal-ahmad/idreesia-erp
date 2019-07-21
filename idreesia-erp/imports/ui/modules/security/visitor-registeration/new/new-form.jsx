@@ -11,11 +11,10 @@ import {
   InputMobileField,
   InputTextField,
   InputTextAreaField,
-  MonthField,
   SwitchField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
-
+import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
 import {
   WithDistinctCities,
   WithDistinctCountries,
@@ -171,13 +170,11 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <MonthField
+        <EhadDurationField
           fieldName="ehadDate"
-          fieldLabel="Ehad Date"
-          allowClear={false}
-          format="MMM, YYYY"
+          fieldLabel="Ehad Duration"
           required
-          requiredMessage="Please specify the Ehad date for the visitor."
+          requiredMessage="Please specify the Ehad duration for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 

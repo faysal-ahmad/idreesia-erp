@@ -10,6 +10,7 @@ type KarkunType {
   name: String
   firstName: String
   lastName: String
+  ehadDate: String
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
@@ -59,6 +60,7 @@ extend type Mutation {
   createKarkun(
     firstName: String!
     lastName: String!
+    ehadDate: String
     cnicNumber: String
     contactNumber1: String
     contactNumber2: String
@@ -73,6 +75,7 @@ extend type Mutation {
     _id: String!
     firstName: String!
     lastName: String!
+    ehadDate: String
     cnicNumber: String
     contactNumber1: String
     contactNumber2: String

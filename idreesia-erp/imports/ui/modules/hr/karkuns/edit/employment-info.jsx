@@ -81,7 +81,7 @@ class EmploymentInfo extends Component {
         <SwitchField
           fieldName="isEmployee"
           fieldLabel="Is Employee"
-          initialValue={karkunById.isEmployee}
+          initialValue={karkunById.isEmployee || false}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -176,7 +176,7 @@ export default compose(
   graphql(formMutation, {
     name: "setKarkunEmploymentInfo",
     options: {
-      refetchQueries: ["pagedKarkuns"],
+      refetchQueries: ["pagedKarkuns", "allJobs"],
     },
   }),
   graphql(formQuery, {

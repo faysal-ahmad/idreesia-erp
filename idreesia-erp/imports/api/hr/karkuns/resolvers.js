@@ -120,6 +120,7 @@ export default {
       {
         firstName,
         lastName,
+        ehadDate,
         cnicNumber,
         contactNumber1,
         contactNumber2,
@@ -156,6 +157,7 @@ export default {
       const karkunId = Karkuns.insert({
         firstName,
         lastName,
+        ehadDate,
         cnicNumber,
         contactNumber1,
         contactNumber2,
@@ -179,6 +181,7 @@ export default {
         _id,
         firstName,
         lastName,
+        ehadDate,
         cnicNumber,
         contactNumber1,
         contactNumber2,
@@ -216,6 +219,7 @@ export default {
         $set: {
           firstName,
           lastName,
+          ehadDate,
           cnicNumber,
           contactNumber1,
           contactNumber2,

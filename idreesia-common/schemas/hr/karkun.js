@@ -15,6 +15,10 @@ export default new SimpleSchema({
     type: String,
     optional: true
   },
+  ehadDate: {
+    type: Date,
+    optional: true
+  },
   cnicNumber: {
     type: String,
     optional: true

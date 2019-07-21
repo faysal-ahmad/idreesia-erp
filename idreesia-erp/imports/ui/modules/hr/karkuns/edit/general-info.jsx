@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import moment from "moment";
 
 import {
   InputCnicField,
@@ -12,6 +13,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
 import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class GeneralInfo extends Component {
@@ -41,6 +43,7 @@ class GeneralInfo extends Component {
         {
           firstName,
           lastName,
+          ehadDate,
           cnicNumber,
           contactNumber1,
           contactNumber2,
@@ -58,6 +61,7 @@ class GeneralInfo extends Component {
             _id: karkunById._id,
             firstName,
             lastName,
+            ehadDate,
             cnicNumber,
             contactNumber1,
             contactNumber2,
@@ -101,6 +105,17 @@ class GeneralInfo extends Component {
             initialValue={karkunById.lastName}
             required
             requiredMessage="Please input the last name for the karkun."
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <EhadDurationField
+            fieldName="ehadDate"
+            fieldLabel="Ehad Duration"
+            initialValue={
+              karkunById.ehadDate
+                ? moment(Number(karkunById.ehadDate))
+                : moment()
+            }
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -193,6 +208,7 @@ const formQuery = gql`
       _id
       firstName
       lastName
+      ehadDate
       cnicNumber
       contactNumber1
       contactNumber2
@@ -213,6 +229,7 @@ const formMutation = gql`
     $_id: String!
     $firstName: String!
     $lastName: String!
+    $ehadDate: String
     $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
@@ -226,6 +243,7 @@ const formMutation = gql`
       _id: $_id
       firstName: $firstName
       lastName: $lastName
+      ehadDate: $ehadDate
       cnicNumber: $cnicNumber
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
@@ -238,6 +256,7 @@ const formMutation = gql`
       _id
       firstName
       lastName
+      ehadDate
       cnicNumber
       contactNumber1
       contactNumber2

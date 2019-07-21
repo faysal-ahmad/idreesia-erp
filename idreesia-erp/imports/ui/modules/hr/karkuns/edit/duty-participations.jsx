@@ -359,7 +359,7 @@ export default compose(
   graphql(removeKarkunDutyMutation, {
     name: "removeKarkunDuty",
     options: {
-      refetchQueries: ["karkunDutiesByKarkunId"],
+      refetchQueries: ["pagedKarkuns", "karkunDutiesByKarkunId", "allDuties"],
     },
   }),
   WithAllDuties(),

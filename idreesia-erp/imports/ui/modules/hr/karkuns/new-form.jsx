@@ -14,6 +14,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -37,6 +38,7 @@ class NewForm extends Component {
         {
           firstName,
           lastName,
+          ehadDate,
           cnicNumber,
           contactNumber1,
           contactNumber2,
@@ -53,6 +55,7 @@ class NewForm extends Component {
           variables: {
             firstName,
             lastName,
+            ehadDate,
             cnicNumber,
             contactNumber1,
             contactNumber2,
@@ -91,6 +94,12 @@ class NewForm extends Component {
           fieldLabel="Last Name"
           required
           requiredMessage="Please input the last name for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <EhadDurationField
+          fieldName="ehadDate"
+          fieldLabel="Ehad Duration"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -171,6 +180,7 @@ const formMutation = gql`
   mutation createKarkun(
     $firstName: String!
     $lastName: String!
+    $ehadDate: String
     $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
@@ -183,6 +193,7 @@ const formMutation = gql`
     createKarkun(
       firstName: $firstName
       lastName: $lastName
+      ehadDate: $ehadDate
       cnicNumber: $cnicNumber
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
@@ -195,6 +206,7 @@ const formMutation = gql`
       _id
       firstName
       lastName
+      ehadDate
       cnicNumber
       contactNumber1
       contactNumber2

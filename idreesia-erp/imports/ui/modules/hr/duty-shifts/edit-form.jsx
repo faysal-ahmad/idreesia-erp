@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import moment from "moment";
@@ -14,6 +14,7 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class EditForm extends Component {
   static propTypes = {
@@ -70,44 +71,47 @@ class EditForm extends Component {
 
     debugger;
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={dutyShiftById.name}
-          required
-          requiredMessage="Please input a name for the duty location."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <SelectField
-          data={allDuties}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="dutyId"
-          fieldLabel="Duty Name"
-          required
-          requiredMessage="Please select a duty from the list."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <TimeField
-          fieldName="startTime"
-          fieldLabel="Start Time"
-          initialValue={
-            dutyShiftById.startTime ? moment(dutyShiftById.startTime) : null
-          }
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={dutyShiftById.name}
+            required
+            requiredMessage="Please input a name for the duty location."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SelectField
+            data={allDuties}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name }) => name}
+            fieldName="dutyId"
+            fieldLabel="Duty Name"
+            required
+            requiredMessage="Please select a duty from the list."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <TimeField
+            fieldName="startTime"
+            fieldLabel="Start Time"
+            initialValue={
+              dutyShiftById.startTime ? moment(dutyShiftById.startTime) : null
+            }
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <TimeField
-          fieldName="endTime"
-          fieldLabel="End Time"
-          initialValue={
-            dutyShiftById.endTime ? moment(dutyShiftById.endTime) : null
-          }
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+          <TimeField
+            fieldName="endTime"
+            fieldLabel="End Time"
+            initialValue={
+              dutyShiftById.endTime ? moment(dutyShiftById.endTime) : null
+            }
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={dutyShiftById} />
+      </Fragment>
     );
   }
 }
@@ -120,6 +124,10 @@ const formQuery = gql`
       dutyId
       startTime
       endTime
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -144,6 +152,10 @@ const formMutation = gql`
       dutyId
       startTime
       endTime
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

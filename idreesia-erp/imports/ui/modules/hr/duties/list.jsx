@@ -31,6 +31,11 @@ class List extends Component {
       ),
     },
     {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
       title: "Shifts",
       dataIndex: "shifts",
       key: "shifts",

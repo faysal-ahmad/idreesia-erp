@@ -1,12 +1,16 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component, Fragment } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { InputTextField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import {
+  InputTextField,
+  FormButtonsSaveCancel,
+} from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class EditForm extends Component {
   static propTypes = {
@@ -28,13 +32,13 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, dutyLocationById, updateDutyLocation } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields((err, { name }) => {
       if (err) return;
 
       updateDutyLocation({
         variables: {
           id: dutyLocationById._id,
-          name: fieldsValue.name,
+          name,
         },
       })
         .then(() => {
@@ -52,17 +56,20 @@ class EditForm extends Component {
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={dutyLocationById.name}
-          required
-          requiredMessage="Please input a name for the duty location."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={dutyLocationById.name}
+            required
+            requiredMessage="Please input a name for the duty location."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={dutyLocationById} />
+      </Fragment>
     );
   }
 }
@@ -72,6 +79,10 @@ const formQuery = gql`
     dutyLocationById(id: $id) {
       _id
       name
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -81,6 +92,10 @@ const formMutation = gql`
     updateDutyLocation(id: $id, name: $name) {
       _id
       name
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -88,9 +103,9 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateDutyLocation',
+    name: "updateDutyLocation",
     options: {
-      refetchQueries: ['allDutyLocations'],
+      refetchQueries: ["allDutyLocations"],
     },
   }),
   graphql(formQuery, {
@@ -100,5 +115,5 @@ export default compose(
       return { variables: { id: dutyLocationId } };
     },
   }),
-  WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'Edit'])
+  WithBreadcrumbs(["HR", "Setup", "Duty Locations", "Edit"])
 )(EditForm);

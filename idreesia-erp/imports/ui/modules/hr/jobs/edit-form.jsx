@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
@@ -11,6 +11,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class EditForm extends Component {
   static propTypes = {
@@ -57,24 +58,27 @@ class EditForm extends Component {
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Job Name"
-          initialValue={jobById.name}
-          required
-          requiredMessage="Please input a name for the job."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextAreaField
-          disabled
-          fieldName="description"
-          fieldLabel="Description"
-          initialValue={jobById.description}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Job Name"
+            initialValue={jobById.name}
+            required
+            requiredMessage="Please input a name for the job."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextAreaField
+            disabled
+            fieldName="description"
+            fieldLabel="Description"
+            initialValue={jobById.description}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={jobById} />
+      </Fragment>
     );
   }
 }
@@ -85,6 +89,10 @@ const formQuery = gql`
       _id
       name
       description
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -95,6 +103,10 @@ const formMutation = gql`
       _id
       name
       description
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

@@ -1,16 +1,17 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import moment from "moment";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputTextField,
+  InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class EditForm extends Component {
   static propTypes = {
@@ -32,13 +33,14 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, dutyById, updateDuty } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields((err, { name, description }) => {
       if (err) return;
 
       updateDuty({
         variables: {
           id: dutyById._id,
-          name: fieldsValue.name,
+          name,
+          description,
         },
       })
         .then(() => {
@@ -56,49 +58,26 @@ class EditForm extends Component {
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Duty Name"
-          initialValue={dutyById.name}
-          required
-          requiredMessage="Please input a name for the duty."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          disabled
-          fieldName="createdByName"
-          fieldLabel="Created By"
-          initialValue={dutyById.createdByName}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          disabled
-          fieldName="createdAt"
-          fieldLabel="Created At"
-          initialValue={moment(Date(dutyById.createdAt)).format(
-            "DD-MM-YYYY hh:mm a"
-          )}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          disabled
-          fieldName="updatedByName"
-          fieldLabel="Updated By"
-          initialValue={dutyById.updatedByName}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          disabled
-          fieldName="updatedAt"
-          fieldLabel="Updated At"
-          initialValue={moment(Date(dutyById.updatedAt)).format(
-            "DD-MM-YYYY hh:mm a"
-          )}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Duty Name"
+            initialValue={dutyById.name}
+            required
+            requiredMessage="Please input a name for the duty."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextAreaField
+            fieldName="description"
+            fieldLabel="Description"
+            initialValue={dutyById.description}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={dutyById} />
+      </Fragment>
     );
   }
 }
@@ -108,23 +87,25 @@ const formQuery = gql`
     dutyById(id: $id) {
       _id
       name
+      description
       createdAt
-      createdByName
+      createdBy
       updatedAt
-      updatedByName
+      updatedBy
     }
   }
 `;
 
 const formMutation = gql`
-  mutation updateDuty($id: String!, $name: String!) {
-    updateDuty(id: $id, name: $name) {
+  mutation updateDuty($id: String!, $name: String!, $description: String) {
+    updateDuty(id: $id, name: $name, description: $description) {
       _id
       name
+      description
       createdAt
-      createdByName
+      createdBy
       updatedAt
-      updatedByName
+      updatedBy
     }
   }
 `;

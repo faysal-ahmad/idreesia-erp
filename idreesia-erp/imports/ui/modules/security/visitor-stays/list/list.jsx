@@ -58,7 +58,7 @@ class List extends Component {
     render: (text, record) => {
       const fromDate = moment(Number(record.fromDate));
       const toDate = moment(Number(record.toDate));
-      const days = moment.duration(toDate.diff(fromDate)).asDays() + 1;
+      const days = record.numOfDays;
       if (days === 1) {
         return `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
       }
@@ -357,6 +357,7 @@ const listQuery = gql`
         visitorId
         fromDate
         toDate
+        numOfDays
         stayReason
         dutyShiftName
         cancelledDate
@@ -372,6 +373,7 @@ const formMutation = gql`
       visitorId
       fromDate
       toDate
+      numOfDays
       stayReason
       cancelledDate
     }

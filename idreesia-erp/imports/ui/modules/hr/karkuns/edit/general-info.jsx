@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
@@ -12,6 +12,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -83,102 +84,105 @@ class GeneralInfo extends Component {
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="firstName"
-          fieldLabel="First Name"
-          initialValue={karkunById.firstName}
-          required
-          requiredMessage="Please input the first name for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="firstName"
+            fieldLabel="First Name"
+            initialValue={karkunById.firstName}
+            required
+            requiredMessage="Please input the first name for the karkun."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="lastName"
-          fieldLabel="Last Name"
-          initialValue={karkunById.lastName}
-          required
-          requiredMessage="Please input the last name for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="lastName"
+            fieldLabel="Last Name"
+            initialValue={karkunById.lastName}
+            required
+            requiredMessage="Please input the last name for the karkun."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputCnicField
-          fieldName="cnicNumber"
-          fieldLabel="CNIC Number"
-          initialValue={karkunById.cnicNumber}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputCnicField
+            fieldName="cnicNumber"
+            fieldLabel="CNIC Number"
+            initialValue={karkunById.cnicNumber || ""}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputMobileField
-          fieldName="contactNumber1"
-          fieldLabel="Mobile Number"
-          initialValue={karkunById.contactNumber1}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputMobileField
+            fieldName="contactNumber1"
+            fieldLabel="Mobile Number"
+            initialValue={karkunById.contactNumber1 || ""}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="contactNumber2"
-          fieldLabel="Home Number"
-          initialValue={karkunById.contactNumber2}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="contactNumber2"
+            fieldLabel="Home Number"
+            initialValue={karkunById.contactNumber2}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <SelectField
-          fieldName="bloodGroup"
-          fieldLabel="Blood Group"
-          required={false}
-          data={[
-            { label: "A-", value: "A-" },
-            { label: "A+", value: "A+" },
-            { label: "B-", value: "B-" },
-            { label: "B+", value: "B+" },
-            { label: "AB-", value: "AB-" },
-            { label: "AB+", value: "AB+" },
-            { label: "O-", value: "O-" },
-            { label: "O+", value: "O+" },
-          ]}
-          getDataValue={({ value }) => value}
-          getDataText={({ label }) => label}
-          initialValue={karkunById.bloodGroup}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <SelectField
+            fieldName="bloodGroup"
+            fieldLabel="Blood Group"
+            required={false}
+            data={[
+              { label: "A-", value: "A-" },
+              { label: "A+", value: "A+" },
+              { label: "B-", value: "B-" },
+              { label: "B+", value: "B+" },
+              { label: "AB-", value: "AB-" },
+              { label: "AB+", value: "AB+" },
+              { label: "O-", value: "O-" },
+              { label: "O+", value: "O+" },
+            ]}
+            getDataValue={({ value }) => value}
+            getDataText={({ label }) => label}
+            initialValue={karkunById.bloodGroup}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="emailAddress"
-          fieldLabel="Email"
-          initialValue={karkunById.emailAddress}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="emailAddress"
+            fieldLabel="Email"
+            initialValue={karkunById.emailAddress}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          initialValue={karkunById.address}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="address"
+            fieldLabel="Address"
+            initialValue={karkunById.address}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="city"
-          fieldLabel="City"
-          initialValue={karkunById.city}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="city"
+            fieldLabel="City"
+            initialValue={karkunById.city}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="country"
-          fieldLabel="Country"
-          initialValue={karkunById.country}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextField
+            fieldName="country"
+            fieldLabel="Country"
+            initialValue={karkunById.country}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={karkunById} />
+      </Fragment>
     );
   }
 }
@@ -196,6 +200,10 @@ const formQuery = gql`
       address
       city
       country
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -238,6 +246,10 @@ const formMutation = gql`
       city
       country
       bloodGroup
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

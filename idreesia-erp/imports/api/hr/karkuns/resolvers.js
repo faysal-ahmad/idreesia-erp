@@ -241,6 +241,7 @@ export default {
         );
       }
 
+      KarkunDuties.remove({ karkunId: _id });
       return Karkuns.remove(_id);
     },
 

@@ -15,7 +15,14 @@ const PRESENT_COLUMN = "P";
 const ABSENT_COLUMN = "A";
 const TOTAL_COLUMN = "Day";
 
-function createKarkun(karkunCnic, karkunName, phoneNumber, bloodGroup) {
+function createKarkun(
+  karkunCnic,
+  karkunName,
+  phoneNumber,
+  bloodGroup,
+  date,
+  user
+) {
   const names = karkunName.split(" ");
   if (names.length < 1) return null;
 
@@ -25,12 +32,16 @@ function createKarkun(karkunCnic, karkunName, phoneNumber, bloodGroup) {
     cnicNumber: karkunCnic,
     contactNumber1: phoneNumber,
     bloodGroup,
+    createdAt: date,
+    createdBy: user._id,
+    updatedAt: date,
+    updatedBy: user._id,
   });
 
   return Karkuns.findOne(karkunId);
 }
 
-function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
+function processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user) {
   try {
     const karkunId = jsonRecord[ID_COLUMN];
     const karkunCnic = jsonRecord[CNIC_COLUMN];
@@ -56,7 +67,14 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
       });
 
       if (!karkun) {
-        karkun = createKarkun(karkunCnic, karkunName, phoneNumber, bloodGroup);
+        karkun = createKarkun(
+          karkunCnic,
+          karkunName,
+          phoneNumber,
+          bloodGroup,
+          date,
+          user
+        );
       }
     }
 
@@ -109,7 +127,14 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
   }
 }
 
-export function processAttendanceSheet(csvData, month, dutyId, shiftId) {
+export function processAttendanceSheet(
+  csvData,
+  month,
+  dutyId,
+  shiftId,
+  date,
+  user
+) {
   const lines = csvData.split("\n");
   lines.splice(0, 1);
   const updatedCsvData = lines.join("\n");
@@ -119,7 +144,7 @@ export function processAttendanceSheet(csvData, month, dutyId, shiftId) {
     .then(
       Meteor.bindEnvironment(jsonData => {
         jsonData.forEach(jsonRecord => {
-          processJsonRecord(jsonRecord, month, dutyId, shiftId);
+          processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user);
         });
 
         return jsonData.length;

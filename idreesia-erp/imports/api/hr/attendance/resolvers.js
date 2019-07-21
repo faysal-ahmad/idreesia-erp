@@ -229,7 +229,8 @@ export default {
         );
       }
 
-      return processAttendanceSheet(csv, month, dutyId, shiftId);
+      const date = new Date();
+      return processAttendanceSheet(csv, month, dutyId, shiftId, date, user);
     },
 
     deleteAttendances(obj, { ids }, { user }) {

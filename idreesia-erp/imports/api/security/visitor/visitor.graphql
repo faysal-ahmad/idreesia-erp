@@ -45,7 +45,6 @@ extend type Mutation {
     referenceName: String!
     contactNumber1: String
     contactNumber2: String
-    emailAddress: String
     address: String
     city: String
     country: String
@@ -61,7 +60,6 @@ extend type Mutation {
     referenceName: String!
     contactNumber1: String
     contactNumber2: String
-    emailAddress: String
     address: String
     city: String
     country: String

@@ -8,6 +8,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 
 class Notes extends Component {
   static propTypes = {
@@ -24,7 +25,7 @@ class Notes extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.goBack();
+    history.push(`${paths.visitorRegistrationPath}`);
   };
 
   handleSubmit = e => {
@@ -41,7 +42,7 @@ class Notes extends Component {
         },
       })
         .then(() => {
-          history.goBack();
+          history.push(`${paths.visitorRegistrationPath}`);
         })
         .catch(error => {
           message.error(error.message, 5);

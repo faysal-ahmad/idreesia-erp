@@ -21,6 +21,7 @@ import {
   WithDistinctCities,
   WithDistinctCountries,
 } from "/imports/ui/modules/security/common/composers";
+import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -59,7 +60,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.goBack();
+    history.push(`${paths.visitorRegistrationPath}`);
   };
 
   handleSubmit = e => {
@@ -101,7 +102,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.goBack();
+            history.push(`${paths.visitorRegistrationPath}`);
           })
           .catch(error => {
             message.error(error.message, 5);

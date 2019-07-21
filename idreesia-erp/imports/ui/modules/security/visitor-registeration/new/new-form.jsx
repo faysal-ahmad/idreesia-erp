@@ -19,6 +19,7 @@ import {
   WithDistinctCities,
   WithDistinctCountries,
 } from "/imports/ui/modules/security/common/composers";
+import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 
 class NewForm extends Component {
   static propTypes = {
@@ -65,7 +66,6 @@ class NewForm extends Component {
       ) => {
         if (err) return;
 
-        debugger;
         createVisitor({
           variables: {
             name,
@@ -81,8 +81,8 @@ class NewForm extends Component {
             country,
           },
         })
-          .then(() => {
-            history.goBack();
+          .then(({ data: { createVisitor: newVisitor } }) => {
+            history.push(`${paths.visitorRegistrationEditFormPath(newVisitor._id)}`);
           })
           .catch(error => {
             message.error(error.message, 5);

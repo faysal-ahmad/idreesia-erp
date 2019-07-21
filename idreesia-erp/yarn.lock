@@ -6840,10 +6840,10 @@ react-slick@~0.24.0:
     lodash.debounce "^4.0.8"
     resize-observer-polyfill "^1.5.0"
 
-react-to-print@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.1.1.tgz#82dd3251a2b2407ac1ec928cd6f22c3e910f0dce"
-  integrity sha512-gaiFJ+WpdyaNQ4jHXKWDHADBDZ541hAQsg73qO2JLI9FxXyyGAJUu4t+Sa117jo9DTR8H2dhMbRohYBm6p5mlQ==
+react-to-print@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.2.0.tgz#e936b340459bc3b9a43b560bd9c351ed1985b678"
+  integrity sha512-BNYSTJIzb69NihBzf7BR4xoAdpyRlqe3kWNvTmDzfxwUcEA8wawxVaOCc1vp7B4mPBTETDm+MH47vEZPY2bJ8Q==
   dependencies:
     prop-types "^15.6.2"
 

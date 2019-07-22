@@ -5,6 +5,7 @@ import { Avatar, Dropdown, Menu, Modal, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import ChangePasswordForm from "./change-password-form";
 
 const ContainerStyle = {
@@ -35,7 +36,10 @@ class UserMenu extends Component {
       case "logout":
         Meteor.logoutOtherClients();
         Meteor.logout(error => {
-          if (error) console.log(error);
+          if (error) {
+            // eslint-disable-next-line no-console
+            console.log(error);
+          }
           history.push("/");
         });
         break;
@@ -85,9 +89,7 @@ class UserMenu extends Component {
 
     let avatar = <Avatar size="large" icon="user" />;
     if (karkunByUserId && karkunByUserId.imageId) {
-      const url = Meteor.absoluteUrl(
-        `download-file?attachmentId=${karkunByUserId.imageId}`
-      );
+      const url = getDownloadUrl(karkunByUserId.imageId);
       avatar = <Avatar size="large" src={url} />;
     }
 

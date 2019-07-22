@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../build/ngrok http 3000
+../build/ngrok http -bind-tls=true 3000

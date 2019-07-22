@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import { VisitorStaysList } from "/imports/ui/modules/security/visitor-stays";
 
 const LabelStyle = {
@@ -87,10 +88,7 @@ const SearchResult = props => {
     otherNotes,
   } = visitorByCnic;
 
-  const url = imageId
-    ? Meteor.absoluteUrl(`download-file?attachmentId=${imageId}`)
-    : null;
-
+  const url = getDownloadUrl(imageId);
   const image = url ? <img src={url} style={{ width: "250px" }} /> : null;
 
   let dataStyle = DataStyle;

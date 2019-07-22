@@ -15,6 +15,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import { filter } from "lodash";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import { Formats } from "meteor/idreesia-common/constants";
 
 const ToolbarStyle = {
@@ -84,9 +85,7 @@ export class List extends Component {
         };
 
         if (record.karkun.imageId) {
-          const url = Meteor.absoluteUrl(
-            `download-file?attachmentId=${record.karkun.imageId}`
-          );
+          const url = getDownloadUrl(record.karkun.imageId);
           return (
             <div style={NameDivStyle} onClick={onClickHandler}>
               <Avatar shape="square" size="large" src={url} />

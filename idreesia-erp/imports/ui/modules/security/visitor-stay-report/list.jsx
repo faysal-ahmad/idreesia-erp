@@ -6,6 +6,7 @@ import { compose, graphql } from "react-apollo";
 import moment from "moment";
 import { find } from "lodash";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 import ListFilter from "./list-filter";
@@ -101,9 +102,7 @@ class List extends Component {
       };
 
       if (record.imageId) {
-        const url = Meteor.absoluteUrl(
-          `download-file?attachmentId=${refVisitor.imageId}`
-        );
+        const url = getDownloadUrl(refVisitor.imageId);
         return (
           <div style={NameDivStyle} onClick={onClickHandler}>
             <Avatar shape="square" size="large" src={url} />

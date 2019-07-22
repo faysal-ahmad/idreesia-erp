@@ -5,6 +5,8 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+
 const LabelStyle = {
   fontWeight: "bold",
   fontSize: 26,
@@ -33,10 +35,7 @@ const SearchResult = props => {
     location,
   } = attendanceByBarcodeId;
 
-  const url = karkun.imageId
-    ? Meteor.absoluteUrl(`download-file?attachmentId=${karkun.imageId}`)
-    : null;
-
+  const url = getDownloadUrl(karkun.imageId);
   const imageColumn = url ? (
     <Col order={1}>
       <img src={url} style={{ width: "250px" }} />

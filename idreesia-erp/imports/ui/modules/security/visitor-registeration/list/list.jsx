@@ -13,6 +13,7 @@ import {
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import ListFilter from "./list-filter";
 
 const StatusStyle = {
@@ -117,9 +118,7 @@ class List extends Component {
       };
 
       if (record.imageId) {
-        const url = Meteor.absoluteUrl(
-          `download-file?attachmentId=${record.imageId}`
-        );
+        const url = getDownloadUrl(record.imageId);
         return (
           <div style={NameDivStyle} onClick={onClickHandler}>
             <Avatar shape="square" size="large" src={url} />

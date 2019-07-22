@@ -4,6 +4,9 @@ import { Row, Col, Icon, Spin } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+import StayCard from "../card/stay-card";
+
 const ErrorStatusStyle = {
   color: "red",
   fontSize: 36,
@@ -13,8 +16,6 @@ const SuccessStatusStyle = {
   color: "green",
   fontSize: 40,
 };
-
-import StayCard from "../card/stay-card";
 
 const ScanStatus = ({ message, isError }) => {
   const statusStyle = isError ? ErrorStatusStyle : SuccessStatusStyle;
@@ -59,10 +60,7 @@ const SearchResult = props => {
   }
 
   const visitor = visitorStayById.refVisitor;
-  const url = visitor.imageId
-    ? Meteor.absoluteUrl(`download-file?attachmentId=${visitor.imageId}`)
-    : null;
-
+  const url = getDownloadUrl(visitor.imageId);
   const imageColumn = url ? (
     <Col order={2}>
       <img src={url} style={{ width: "250px" }} />

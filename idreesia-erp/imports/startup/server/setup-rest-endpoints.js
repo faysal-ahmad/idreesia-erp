@@ -4,11 +4,28 @@ import multer from "multer";
 import bodyParser from "body-parser";
 
 import Attachments from "meteor/idreesia-common/collections/common/attachments";
+import Configurations from "meteor/idreesia-common/collections/common/configurations";
 
 Meteor.startup(() => {
   const app = express();
   const storage = multer.memoryStorage();
   const upload = multer({ storage });
+
+  /**
+   * Prints the ngrok redirect url
+   */
+  app.get(
+    "/redirect",
+    Meteor.bindEnvironment((req, res) => {
+      const config = Configurations.findOne({ name: "ngrok_url" });
+      if (config) {
+        res.redirect(config.value);
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
+    })
+  );
 
   /**
    * Endpoint for file downloads

@@ -1,4 +1,5 @@
 import "./setup-rest-endpoints";
+import "./start-ngrok-server";
 import "./migrations";
 
 import { ApolloServer } from "apollo-server-express";

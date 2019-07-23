@@ -86,7 +86,7 @@ class AccountsSidebar extends Component {
         mode="inline"
         defaultSelectedKeys={["home"]}
         style={{ height: "100%", borderRight: 0 }}
-        onSelect={this.handleMenuItemSelected}
+        onClick={this.handleMenuItemSelected}
       >
         {subMenus}
       </Menu>

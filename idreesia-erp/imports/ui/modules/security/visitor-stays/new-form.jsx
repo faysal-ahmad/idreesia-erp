@@ -55,8 +55,8 @@ class NewForm extends Component {
             notes,
           },
         })
-          .then(() => {
-            if (handleAddItem) handleAddItem();
+          .then(({ data: { createVisitorStay: newVisitorStay } }) => {
+            if (handleAddItem) handleAddItem(newVisitorStay);
           })
           .catch(error => {
             message.error(error.message, 5);

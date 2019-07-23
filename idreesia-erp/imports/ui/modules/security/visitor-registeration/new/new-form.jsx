@@ -140,6 +140,7 @@ class NewForm extends Component {
           fieldName="country"
           fieldLabel="Country"
           dataSource={distinctCountries}
+          initialValue="Pakistan"
           required
           requiredMessage="Please input the country for the visitor."
           getFieldDecorator={getFieldDecorator}

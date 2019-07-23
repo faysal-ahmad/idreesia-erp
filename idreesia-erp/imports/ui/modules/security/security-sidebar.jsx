@@ -16,6 +16,7 @@ class SecuritySidebar extends Component {
 
   handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
+    debugger;
 
     switch (key) {
       case "karkun-card-verification":
@@ -49,7 +50,7 @@ class SecuritySidebar extends Component {
         mode="inline"
         defaultSelectedKeys={["home"]}
         style={{ height: "100%", borderRight: 0 }}
-        onSelect={this.handleMenuItemSelected}
+        onClick={this.handleMenuItemSelected}
       >
         <Menu.SubMenu key="karkuns" title={<span>Karkuns</span>}>
           <Menu.Item key="karkun-card-verification">

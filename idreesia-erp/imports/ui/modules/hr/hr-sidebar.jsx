@@ -66,7 +66,7 @@ class HRSidebar extends Component {
         mode="inline"
         defaultSelectedKeys={["home"]}
         style={{ height: "100%", borderRight: 0 }}
-        onSelect={this.handleMenuItemSelected}
+        onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">Karkuns</Menu.Item>
         <Menu.Item key="attendance-sheets">Attendance Sheets</Menu.Item>

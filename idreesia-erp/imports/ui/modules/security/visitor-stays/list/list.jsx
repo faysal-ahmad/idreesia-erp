@@ -212,9 +212,11 @@ class List extends Component {
     });
   };
 
-  handleCloseNewForm = () => {
+  handleCloseNewForm = newVisitorStay => {
     this.setState({
       showNewFormModal: false,
+      showStayCard: true,
+      visitorStayId: newVisitorStay._id,
     });
   };
 

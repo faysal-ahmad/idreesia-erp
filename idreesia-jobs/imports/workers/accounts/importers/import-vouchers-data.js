@@ -10,8 +10,34 @@ VOrder
 /* eslint "no-param-reassign": "off" */
 import sql from "mssql";
 import moment from "moment";
+import { toInteger } from "lodash";
 import { Formats } from "meteor/idreesia-common/constants";
 import { Vouchers } from "meteor/idreesia-common/collections/accounts";
+
+function splitVoucherNumber(voucherNo) {
+  let voucherType = null;
+  let voucherNumber = null;
+
+  if (voucherNo.startsWith("JV")) {
+    voucherType = voucherNo.slice(0, 2);
+    voucherNumber = voucherNo.slice(3);
+  } else if (
+    voucherNo.startsWith("BPV") ||
+    voucherNo.startsWith("BRV") ||
+    voucherNo.startsWith("CPV") ||
+    voucherNo.startsWith("CRV")
+  ) {
+    voucherType = voucherNo.slice(0, 3);
+    voucherNumber = voucherNo.slice(4);
+  } else {
+    return null;
+  }
+
+  return {
+    voucherType,
+    voucherNumber: toInteger(voucherNumber),
+  };
+}
 
 export default async function importVouchersData(
   companyId,
@@ -29,21 +55,26 @@ export default async function importVouchersData(
           });
 
           if (!existingVoucher) {
-            const date = new Date();
-            const voucherId = Vouchers.insert({
-              companyId,
-              externalReferenceId: VoucherID,
-              voucherNumber: VoucherNo,
-              voucherDate: VoucherDate,
-              description: VoucherDescription,
-              order: VOrder,
-              createdAt: date,
-              createdBy: adminUser._id,
-              updatedAt: date,
-              updatedBy: adminUser._id,
-            });
+            const splitVoucherNo = splitVoucherNumber(VoucherNo);
 
-            importedVoucherIds.push(voucherId);
+            if (splitVoucherNo) {
+              const date = new Date();
+              const voucherId = Vouchers.insert({
+                companyId,
+                externalReferenceId: VoucherID,
+                voucherType: splitVoucherNo.voucherType,
+                voucherNumber: splitVoucherNo.voucherNumber,
+                voucherDate: VoucherDate,
+                description: VoucherDescription,
+                order: VOrder,
+                createdAt: date,
+                createdBy: adminUser._id,
+                updatedAt: date,
+                updatedBy: adminUser._id,
+              });
+
+              importedVoucherIds.push(voucherId);
+            }
           }
         }
       );

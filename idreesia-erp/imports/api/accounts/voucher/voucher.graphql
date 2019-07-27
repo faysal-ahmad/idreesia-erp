@@ -3,6 +3,7 @@ type Voucher {
   companyId: String
   externalReferenceId: String
   voucherNumber: String
+  voucherType: String
   voucherDate: String
   description: String
   order: Float

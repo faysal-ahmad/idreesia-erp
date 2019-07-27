@@ -46,6 +46,8 @@ class List extends Component {
       title: "Voucher No.",
       dataIndex: "voucherNumber",
       key: "voucherNumber",
+      render: (text, record) =>
+        `${record.voucherType} - ${record.voucherNumber}`,
     },
     {
       title: "Voucher Date",
@@ -179,6 +181,7 @@ const listQuery = gql`
         companyId
         externalReferenceId
         voucherNumber
+        voucherType
         voucherDate
         description
         order

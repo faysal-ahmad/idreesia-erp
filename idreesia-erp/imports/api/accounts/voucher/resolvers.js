@@ -53,9 +53,21 @@ export default {
         throw new Error(
           "You do not have permission to manage Vouchers in the System."
         );
-
-        // TODO: Create Voucher
       }
+
+      const date = new Date();
+      const voucherId = Vouchers.insert({
+        companyId,
+        voucherType,
+        voucherDate,
+        description,
+        createdAt: date,
+        createdBy: user._id,
+        updatedAt: date,
+        updatedBy: user._id,
+      });
+
+      return Vouchers.findOne(voucherId);
     },
   },
 };

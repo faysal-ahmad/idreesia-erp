@@ -1,28 +1,32 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
   companyId: {
-    type: String,
+    type: String
   },
   externalReferenceId: {
     type: String,
-    optional: true,
+    optional: true
   },
   voucherNumber: {
+    type: Number
+  },
+  voucherType: {
     type: String,
+    allowedValues: ["BPV", "BRV", "CPV", "CRV", "JV"]
   },
   voucherDate: {
-    type: Date,
+    type: Date
   },
   description: {
     type: String,
-    optional: true,
+    optional: true
   },
   order: {
-    type: Number,
-  },
+    type: Number
+  }
 })
   .extend(identifiable)
   .extend(timestamps);

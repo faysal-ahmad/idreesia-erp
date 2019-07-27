@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import { message } from "antd";
 import { compose, graphql } from "react-apollo";
 
+import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
 import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
 
 class AttachmentsList extends Component {
@@ -12,18 +13,20 @@ class AttachmentsList extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    loading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
-    addKarkunAttachment: PropTypes.func,
-    removeKarkunAttachment: PropTypes.func,
+    companyId: PropTypes.string,
+    formDataLoading: PropTypes.bool,
+    voucherId: PropTypes.string,
+    voucherById: PropTypes.object,
+    addVoucherAttachment: PropTypes.func,
+    removeVoucherAttachment: PropTypes.func,
   };
 
   handleAttachmentAdded = attachmentId => {
-    const { addKarkunAttachment, karkunById } = this.props;
-    addKarkunAttachment({
+    const { addVoucherAttachment, companyId, voucherById } = this.props;
+    addVoucherAttachment({
       variables: {
-        _id: karkunById._id,
+        _id: voucherById._id,
+        companyId,
         attachmentId,
       },
     }).catch(error => {
@@ -32,10 +35,11 @@ class AttachmentsList extends Component {
   };
 
   handleAttachmentRemoved = attachmentId => {
-    const { removeKarkunAttachment, karkunById } = this.props;
-    removeKarkunAttachment({
+    const { removeVoucherAttachment, companyId, voucherById } = this.props;
+    removeVoucherAttachment({
       variables: {
-        _id: karkunById._id,
+        _id: voucherById._id,
+        companyId,
         attachmentId,
       },
     }).catch(error => {
@@ -44,12 +48,12 @@ class AttachmentsList extends Component {
   };
 
   render() {
-    const { karkunById, loading } = this.props;
-    if (loading) return null;
+    const { voucherById, formDataLoading } = this.props;
+    if (formDataLoading) return null;
 
     return (
       <AttachmentsListControl
-        attachments={karkunById.attachments}
+        attachments={voucherById.attachments}
         handleAttachmentAdded={this.handleAttachmentAdded}
         handleAttachmentRemoved={this.handleAttachmentRemoved}
       />
@@ -58,8 +62,8 @@ class AttachmentsList extends Component {
 }
 
 const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
+  query voucherById($_id: String!, $companyId: String!) {
+    voucherById(_id: $_id, companyId: $companyId) {
       _id
       attachments {
         _id
@@ -72,8 +76,16 @@ const formQuery = gql`
 `;
 
 const addAttachmentMutation = gql`
-  mutation addKarkunAttachment($_id: String!, $attachmentId: String!) {
-    addKarkunAttachment(_id: $_id, attachmentId: $attachmentId) {
+  mutation addVoucherAttachment(
+    $_id: String!
+    $companyId: String!
+    $attachmentId: String!
+  ) {
+    addVoucherAttachment(
+      _id: $_id
+      companyId: $companyId
+      attachmentId: $attachmentId
+    ) {
       _id
       attachments {
         _id
@@ -86,8 +98,16 @@ const addAttachmentMutation = gql`
 `;
 
 const removeAttachmentMutation = gql`
-  mutation removeKarkunAttachment($_id: String!, $attachmentId: String!) {
-    removeKarkunAttachment(_id: $_id, attachmentId: $attachmentId) {
+  mutation removeVoucherAttachment(
+    $_id: String!
+    $companyId: String!
+    $attachmentId: String!
+  ) {
+    removeVoucherAttachment(
+      _id: $_id
+      companyId: $companyId
+      attachmentId: $attachmentId
+    ) {
       _id
       attachments {
         _id
@@ -100,17 +120,18 @@ const removeAttachmentMutation = gql`
 `;
 
 export default compose(
+  WithCompanyId(),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
+    options: ({ companyId, match }) => {
+      const { voucherId } = match.params;
+      return { variables: { _id: voucherId, companyId } };
     },
   }),
   graphql(addAttachmentMutation, {
-    name: "addKarkunAttachment",
+    name: "addVoucherAttachment",
   }),
   graphql(removeAttachmentMutation, {
-    name: "removeKarkunAttachment",
+    name: "removeVoucherAttachment",
   })
 )(AttachmentsList);

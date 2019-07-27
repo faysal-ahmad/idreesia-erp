@@ -7,6 +7,9 @@ type Voucher {
   voucherDate: String
   description: String
   order: Float
+  attachmentIds: [String]
+
+  attachments: [Attachment]
 
   createdAt: String
   createdBy: String
@@ -21,7 +24,7 @@ type PagedVoucher {
 
 extend type Query {
   pagedVouchers(companyId: String!, queryString: String): PagedVoucher
-  voucherById(id: String!): Voucher
+  voucherById(_id: String!, companyId: String!): Voucher
 }
 
 extend type Mutation {
@@ -30,5 +33,18 @@ extend type Mutation {
     voucherType: String!
     voucherDate: String!
     description: String
+  ): Voucher
+
+  updateVoucher(_id: String!, description: String): Voucher
+
+  addVoucherAttachment(
+    _id: String!
+    companyId: String!
+    attachmentId: String!
+  ): Voucher
+  removeVoucherAttachment(
+    _id: String!
+    companyId: String!
+    attachmentId: String!
   ): Voucher
 }

@@ -26,6 +26,13 @@ export default new SimpleSchema({
   },
   order: {
     type: Number
+  },
+  attachmentIds: {
+    type: Array,
+    optional: true
+  },
+  "attachmentIds.$": {
+    type: String
   }
 })
   .extend(identifiable)

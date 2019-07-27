@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import { Button, Icon, Table, Tooltip, Pagination } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import moment from "moment";
 import { Formats } from "meteor/idreesia-common/constants";
 
+import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import ListFilter from "./list-filter";
 
 const ToolbarStyle = {
@@ -46,8 +48,11 @@ class List extends Component {
       title: "Voucher No.",
       dataIndex: "voucherNumber",
       key: "voucherNumber",
-      render: (text, record) =>
-        `${record.voucherType} - ${record.voucherNumber}`,
+      render: (text, record) => {
+        const voucherNumber = `${record.voucherType} - ${record.voucherNumber}`;
+        const url = paths.vouchersEditFormPath(record.companyId, record._id);
+        return <Link to={url}>{voucherNumber}</Link>;
+      },
     },
     {
       title: "Voucher Date",

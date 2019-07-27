@@ -5,7 +5,58 @@ import { get } from "lodash";
 import { Vouchers } from "meteor/idreesia-common/collections/accounts";
 import { Formats } from "meteor/idreesia-common/constants";
 
-export default function getVouchers(companyId, queryString) {
+export function getInfoForNewVoucher(companyId, voucherType, voucherDate) {
+  const currentDate = moment(voucherDate);
+
+  let year = moment().year();
+  if (currentDate.month() <= 5) {
+    year -= 1;
+  }
+
+  const startDate = moment(`${year}-07-01 00:00:00`, "YYYY-MM-DD hh:mm:ss");
+  const endDate = moment(`${year + 1}-06-30 23:59:59`, "YYYY-MM-DD hh:mm:ss");
+  // Find the voucher for this company, having the passed voucher type, between the
+  // start and end date, that has the largest voucher number.
+  const voucher1 = Vouchers.findOne(
+    {
+      companyId,
+      voucherType,
+      voucherDate: {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate(),
+      },
+    },
+    {
+      sort: {
+        voucherNumber: -1,
+      },
+    }
+  );
+
+  // Find the voucher for this company, between the start and end date, that has
+  // the largest order.
+  const voucher2 = Vouchers.findOne(
+    {
+      companyId,
+      voucherDate: {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate(),
+      },
+    },
+    {
+      sort: {
+        order: -1,
+      },
+    }
+  );
+
+  return {
+    voucherNumber: voucher1 ? voucher1.voucherNumber + 1 : 1,
+    order: voucher2 ? voucher2.order + 1 : 1,
+  };
+}
+
+export function getVouchers(companyId, queryString) {
   const params = parse(queryString);
   const pipeline = [
     {

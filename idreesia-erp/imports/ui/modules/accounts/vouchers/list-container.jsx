@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { compose } from "react-apollo";
 import { Drawer } from "antd";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithCompanyId,
@@ -32,20 +32,6 @@ class ListContainer extends Component {
     showDetails: false,
     voucherIdForDetails: null,
   };
-
-  componentDidMount() {
-    const { company, setBreadcrumbs } = this.props;
-    if (company) {
-      setBreadcrumbs(["Accounts", company.name, "Vouchers", "List"]);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { company, setBreadcrumbs } = this.props;
-    if (prevProps.company !== company) {
-      setBreadcrumbs(["Accounts", company.name, "Vouchers", "List"]);
-    }
-  }
 
   setPageParams = pageParams => {
     this.setState(pageParams);
@@ -121,5 +107,10 @@ class ListContainer extends Component {
 export default compose(
   WithCompanyId(),
   WithCompany(),
-  WithBreadcrumbs(["Accounts", "Vouchers", "List"])
+  WithDynamicBreadcrumbs(({ company }) => {
+    if (company) {
+      return `Accounts, ${company.name}, Vouchers, List`;
+    }
+    return `Accounts, Vouchers, List`;
+  })
 )(ListContainer);

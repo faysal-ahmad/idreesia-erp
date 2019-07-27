@@ -4,7 +4,7 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
   WithCompanyId,
@@ -25,25 +25,11 @@ class NewForm extends Component {
     form: PropTypes.object,
     setBreadcrumbs: PropTypes.func,
 
-    createVoucher: PropTypes.func,
     companyId: PropTypes.string,
+    companyLoading: PropTypes.bool,
     company: PropTypes.object,
+    createVoucher: PropTypes.func,
   };
-
-  componentDidMount() {
-    const { company, setBreadcrumbs } = this.props;
-    debugger;
-    if (company) {
-      setBreadcrumbs(["Accounts", company.name, "Vouchers", "New"]);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { company, setBreadcrumbs } = this.props;
-    if (prevProps.company !== company) {
-      setBreadcrumbs(["Accounts", company.name, "Vouchers", "New"]);
-    }
-  }
 
   handleCancel = () => {
     const { history } = this.props;
@@ -65,6 +51,7 @@ class NewForm extends Component {
         },
       })
         .then(({ data: { createVoucher: newVoucher } }) => {
+          debugger;
           history.push(paths.vouchersEditFormPath(companyId, newVoucher._id));
         })
         .catch(error => {
@@ -74,7 +61,9 @@ class NewForm extends Component {
   };
 
   render() {
+    const { companyLoading } = this.props;
     const { getFieldDecorator } = this.props.form;
+    if (companyLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -139,6 +128,7 @@ const formMutation = gql`
       _id
       companyId
       externalReferenceId
+      voucherType
       voucherNumber
       voucherDate
       description
@@ -157,5 +147,10 @@ export default compose(
       refetchQueries: ["pagedVouchers"],
     },
   }),
-  WithBreadcrumbs(["Accounts", "Vouchers", "New"])
+  WithDynamicBreadcrumbs(({ company }) => {
+    if (company) {
+      return `Accounts, ${company.name}, Vouchers, New`;
+    }
+    return `Accounts, Vouchers, New`;
+  })
 )(NewForm);

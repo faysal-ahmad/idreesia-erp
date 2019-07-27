@@ -4,8 +4,11 @@ import { get } from "lodash";
 import { Tabs } from "antd";
 import { compose } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 
 import GeneralInfo from "./edit/general-info";
 import Picture from "./edit/picture";
@@ -41,9 +44,16 @@ EditForm.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
   physicalStoreId: PropTypes.string,
+  physicalStore: PropTypes.object,
 };
 
 export default compose(
-  WithBreadcrumbs(["Inventory", "Stock Items", "Edit"]),
-  WithPhysicalStoreId()
+  WithPhysicalStoreId(),
+  WithPhysicalStore(),
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Stock Items, Edit`;
+    }
+    return `Inventory, Stock Items, Edit`;
+  })
 )(EditForm);

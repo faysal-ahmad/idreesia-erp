@@ -5,6 +5,8 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+
 const ActionsStyle = {
   display: "flex",
   flexFlow: "row nowrap",
@@ -19,21 +21,14 @@ const IconStyle = {
 
 class List extends Component {
   static propTypes = {
+    history: PropTypes.object,
+    location: PropTypes.object,
     physicalStoreId: PropTypes.string,
     loading: PropTypes.bool,
     stockAdjustmentsByStockItem: PropTypes.array,
   };
 
   columns = [
-    {
-      title: "Approved",
-      dataIndex: "approvedOn",
-      key: "approvedOn",
-      render: text => {
-        if (text) return <Icon type="check" />;
-        return null;
-      },
-    },
     {
       title: "Adjustment",
       dataIndex: "quantity",
@@ -68,28 +63,50 @@ class List extends Component {
       title: "Actions",
       key: "action",
       render: (text, record) => {
+        let tooltipTitle;
+        let iconType;
+        let handler;
+
         if (!record.approvedOn) {
-          return (
-            <div style={ActionsStyle}>
-              <Tooltip title="Approve">
-                <Icon
-                  type="check-square-o"
-                  style={IconStyle}
-                  onClick={() => {
-                    this.handleApproveClicked(record);
-                  }}
-                />
-              </Tooltip>
-            </div>
-          );
+          tooltipTitle = "Edit";
+          iconType = "edit";
+          handler = this.handleEditClicked;
+        } else {
+          tooltipTitle = "View";
+          iconType = "file";
+          handler = this.handleViewClicked;
         }
 
-        return null;
+        return (
+          <div style={ActionsStyle}>
+            <Tooltip title={tooltipTitle}>
+              <Icon
+                type={iconType}
+                style={IconStyle}
+                onClick={() => {
+                  handler(record);
+                }}
+              />
+            </Tooltip>
+          </div>
+        );
       },
     },
   ];
 
-  handleApproveClicked = () => {};
+  handleViewClicked = adjustment => {
+    const { history, physicalStoreId } = this.props;
+    history.push(
+      paths.stockAdjustmentsViewFormPath(physicalStoreId, adjustment._id)
+    );
+  };
+
+  handleEditClicked = adjustment => {
+    const { history, physicalStoreId } = this.props;
+    history.push(
+      paths.stockAdjustmentsEditFormPath(physicalStoreId, adjustment._id)
+    );
+  };
 
   render() {
     const { loading, stockAdjustmentsByStockItem } = this.props;

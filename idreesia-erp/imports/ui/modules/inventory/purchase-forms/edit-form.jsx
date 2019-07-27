@@ -6,9 +6,11 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
   FormButtonsSaveCancel,
@@ -16,6 +18,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -32,6 +35,7 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     purchaseFormById: PropTypes.object,
@@ -39,8 +43,8 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.purchaseFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -75,7 +79,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.purchaseFormsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -109,10 +113,7 @@ class EditForm extends Component {
   }
 
   render() {
-    const {
-      formDataLoading,
-      purchaseFormById,
-    } = this.props;
+    const { formDataLoading, purchaseFormById } = this.props;
     if (formDataLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
@@ -135,6 +136,9 @@ class EditForm extends Component {
           placeholder="Received By / Returned By"
           initialValue={purchaseFormById.refReceivedBy}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
+          }
         />
         <KarkunField
           required
@@ -144,6 +148,9 @@ class EditForm extends Component {
           placeholder="Purchased By / Returned To"
           initialValue={purchaseFormById.refPurchasedBy}
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
+          }
         />
 
         <Form.Item label="Purchaseed Items" {...formItemExtendedLayout}>
@@ -236,6 +243,7 @@ const formQuery = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(formMutation, {
     name: "updatePurchaseForm",
     options: {
@@ -253,5 +261,10 @@ export default compose(
       return { variables: { _id: formId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Purchase Forms", "Edit"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Purchase Forms, Edit`;
+    }
+    return `Inventory, Purchase Forms, Edit`;
+  })
 )(EditForm);

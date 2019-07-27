@@ -8,10 +8,13 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputCnicField,
+  InputMobileField,
   InputTextField,
+  SelectField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -23,7 +26,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.karkunsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -35,6 +38,7 @@ class NewForm extends Component {
         {
           firstName,
           lastName,
+          ehadDate,
           cnicNumber,
           contactNumber1,
           contactNumber2,
@@ -42,6 +46,7 @@ class NewForm extends Component {
           address,
           city,
           country,
+          bloodGroup,
         }
       ) => {
         if (err) return;
@@ -50,6 +55,7 @@ class NewForm extends Component {
           variables: {
             firstName,
             lastName,
+            ehadDate,
             cnicNumber,
             contactNumber1,
             contactNumber2,
@@ -57,6 +63,7 @@ class NewForm extends Component {
             address,
             city,
             country,
+            bloodGroup,
           },
         })
           .then(({ data: { createKarkun: newKarkun } }) => {
@@ -90,23 +97,48 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <EhadDurationField
+          fieldName="ehadDate"
+          fieldLabel="Ehad Duration"
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputMobileField
           fieldName="contactNumber1"
-          fieldLabel="Contact Number 1"
+          fieldLabel="Mobile Number"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="contactNumber2"
-          fieldLabel="Contact Number 2"
+          fieldLabel="Home Number"
           required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <SelectField
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={[
+            { label: "A-", value: "A-" },
+            { label: "A+", value: "A+" },
+            { label: "B-", value: "B-" },
+            { label: "B+", value: "B+" },
+            { label: "AB-", value: "AB-" },
+            { label: "AB+", value: "AB+" },
+            { label: "O-", value: "O-" },
+            { label: "O+", value: "O+" },
+          ]}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -148,6 +180,7 @@ const formMutation = gql`
   mutation createKarkun(
     $firstName: String!
     $lastName: String!
+    $ehadDate: String
     $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
@@ -155,10 +188,12 @@ const formMutation = gql`
     $address: String
     $city: String
     $country: String
+    $bloodGroup: String
   ) {
     createKarkun(
       firstName: $firstName
       lastName: $lastName
+      ehadDate: $ehadDate
       cnicNumber: $cnicNumber
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
@@ -166,10 +201,12 @@ const formMutation = gql`
       address: $address
       city: $city
       country: $country
+      bloodGroup: $bloodGroup
     ) {
       _id
       firstName
       lastName
+      ehadDate
       cnicNumber
       contactNumber1
       contactNumber2
@@ -177,6 +214,7 @@ const formMutation = gql`
       address
       city
       country
+      bloodGroup
     }
   }
 `;

@@ -4,9 +4,10 @@ import PropTypes from "prop-types";
 import { Button, Table } from "antd";
 import { compose } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithItemCategoriesByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -16,6 +17,8 @@ class List extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
+
     itemCategoriesLoading: PropTypes.bool,
     itemCategoriesByPhysicalStoreId: PropTypes.array,
   };
@@ -77,6 +80,12 @@ class List extends Component {
 
 export default compose(
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithItemCategoriesByPhysicalStore(),
-  WithBreadcrumbs(["Inventory", "Setup", "Item Categories", "List"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Setup, Item Categories, List`;
+    }
+    return `Inventory, Setup, Item Categories, List`;
+  })
 )(List);

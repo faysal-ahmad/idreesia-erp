@@ -5,6 +5,8 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+
 const ActionsStyle = {
   display: "flex",
   flexFlow: "row nowrap",
@@ -19,21 +21,14 @@ const IconStyle = {
 
 class List extends Component {
   static propTypes = {
+    history: PropTypes.object,
+    location: PropTypes.object,
     physicalStoreId: PropTypes.string,
     loading: PropTypes.bool,
     issuanceFormsByStockItem: PropTypes.array,
   };
 
   columns = [
-    {
-      title: "Approved",
-      dataIndex: "approvedOn",
-      key: "approvedOn",
-      render: text => {
-        if (text) return <Icon type="check" />;
-        return null;
-      },
-    },
     {
       title: "Issue Date",
       dataIndex: "issueDate",
@@ -60,7 +55,7 @@ class List extends Component {
       render: items => {
         const formattedItems = items.map(item => (
           <li key={`${item.stockItemId}${item.isInflow}`}>
-            {`${item.itemTypeName} [${item.quantity} ${
+            {`${item.stockItemName} [${item.quantity} ${
               item.isInflow ? "Returned" : "Issued"
             }]`}
           </li>
@@ -72,28 +67,50 @@ class List extends Component {
       title: "Actions",
       key: "action",
       render: (text, record) => {
+        let tooltipTitle;
+        let iconType;
+        let handler;
+
         if (!record.approvedOn) {
-          return (
-            <div style={ActionsStyle}>
-              <Tooltip title="Approve">
-                <Icon
-                  type="check-square-o"
-                  style={IconStyle}
-                  onClick={() => {
-                    this.handleApproveClicked(record);
-                  }}
-                />
-              </Tooltip>
-            </div>
-          );
+          tooltipTitle = "Edit";
+          iconType = "edit";
+          handler = this.handleEditClicked;
+        } else {
+          tooltipTitle = "View";
+          iconType = "file";
+          handler = this.handleViewClicked;
         }
 
-        return null;
+        return (
+          <div style={ActionsStyle}>
+            <Tooltip title={tooltipTitle}>
+              <Icon
+                type={iconType}
+                style={IconStyle}
+                onClick={() => {
+                  handler(record);
+                }}
+              />
+            </Tooltip>
+          </div>
+        );
       },
     },
   ];
 
-  handleApproveClicked = () => {};
+  handleViewClicked = issuanceForm => {
+    const { history, physicalStoreId } = this.props;
+    history.push(
+      paths.issuanceFormsViewFormPath(physicalStoreId, issuanceForm._id)
+    );
+  };
+
+  handleEditClicked = issuanceForm => {
+    const { history, physicalStoreId } = this.props;
+    history.push(
+      paths.issuanceFormsEditFormPath(physicalStoreId, issuanceForm._id)
+    );
+  };
 
   render() {
     const { loading, issuanceFormsByStockItem } = this.props;
@@ -129,7 +146,7 @@ const listQuery = gql`
         stockItemId
         quantity
         isInflow
-        itemTypeName
+        stockItemName
       }
       refIssuedTo {
         _id

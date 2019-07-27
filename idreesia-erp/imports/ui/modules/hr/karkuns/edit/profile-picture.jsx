@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Row, Col, message } from "antd";
@@ -9,6 +8,7 @@ import {
   TakePicture,
   UploadAttachment,
 } from "/imports/ui/modules/helpers/controls";
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 
 class ProfilePicture extends Component {
   static propTypes = {
@@ -33,11 +33,7 @@ class ProfilePicture extends Component {
   render() {
     const { loading, karkunById } = this.props;
     if (loading) return null;
-    const url = karkunById.imageId
-      ? Meteor.absoluteUrl(`download-file?attachmentId=${
-          karkunById.imageId
-        }`)
-      : null;
+    const url = getDownloadUrl(karkunById.imageId);
 
     return (
       <Fragment>

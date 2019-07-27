@@ -1,5 +1,6 @@
-import { values } from "lodash";
+import { compact, values } from "lodash";
 import {
+  Jobs,
   Duties,
   Karkuns,
   KarkunDuties,
@@ -12,10 +13,14 @@ import { getKarkuns, getKarkunsByDutyId } from "./queries";
 
 export default {
   KarkunType: {
-    name: karkunType => `${karkunType.firstName} ${karkunType.lastName}`,
+    name: karkunType => `${karkunType.firstName} ${karkunType.lastName || ""}`,
     user: karkunType => {
       if (!karkunType.userId) return null;
       return Meteor.users.findOne(karkunType.userId);
+    },
+    job: karkunType => {
+      if (!karkunType.jobId) return null;
+      return Jobs.findOne(karkunType.jobId);
     },
     duties: karkunType => {
       const karkunDuties = KarkunDuties.find({
@@ -82,6 +87,31 @@ export default {
         userId: { $eq: userId },
       });
     },
+
+    karkunNames(obj, { ids }) {
+      const names = [];
+      if (!ids) return names;
+
+      const idsToSearch = compact(ids);
+      idsToSearch.forEach(id => {
+        const karkun = Karkuns.findOne({
+          userId: { $eq: id },
+        });
+
+        if (karkun) {
+          names.push(`${karkun.firstName} ${karkun.lastName}`);
+        } else {
+          const user = Meteor.users.findOne(id);
+          if (user.username === "erp-admin") {
+            names.push("ERP Admin");
+          } else {
+            names.push("Unknown User");
+          }
+        }
+      });
+
+      return names;
+    },
   },
 
   Mutation: {
@@ -90,6 +120,7 @@ export default {
       {
         firstName,
         lastName,
+        ehadDate,
         cnicNumber,
         contactNumber1,
         contactNumber2,
@@ -97,6 +128,7 @@ export default {
         address,
         city,
         country,
+        bloodGroup,
       },
       { user }
     ) {
@@ -125,6 +157,7 @@ export default {
       const karkunId = Karkuns.insert({
         firstName,
         lastName,
+        ehadDate,
         cnicNumber,
         contactNumber1,
         contactNumber2,
@@ -132,6 +165,7 @@ export default {
         address,
         city,
         country,
+        bloodGroup,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -147,6 +181,7 @@ export default {
         _id,
         firstName,
         lastName,
+        ehadDate,
         cnicNumber,
         contactNumber1,
         contactNumber2,
@@ -154,6 +189,7 @@ export default {
         address,
         city,
         country,
+        bloodGroup,
       },
       { user }
     ) {
@@ -183,6 +219,7 @@ export default {
         $set: {
           firstName,
           lastName,
+          ehadDate,
           cnicNumber,
           contactNumber1,
           contactNumber2,
@@ -190,6 +227,7 @@ export default {
           address,
           city,
           country,
+          bloodGroup,
           updatedAt: date,
           updatedBy: user._id,
         },
@@ -207,7 +245,44 @@ export default {
         );
       }
 
+      KarkunDuties.remove({ karkunId: _id });
       return Karkuns.remove(_id);
+    },
+
+    setKarkunEmploymentInfo(
+      obj,
+      {
+        _id,
+        isEmployee,
+        jobId,
+        employmentStartDate,
+        employmentEndDate,
+        currentSalary,
+      },
+      { user }
+    ) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Karkuns in the System."
+        );
+      }
+
+      const date = new Date();
+      Karkuns.update(_id, {
+        $set: {
+          isEmployee,
+          jobId,
+          employmentStartDate,
+          employmentEndDate,
+          currentSalary,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Karkuns.findOne(_id);
     },
 
     setKarkunProfileImage(obj, { _id, imageId }, { user }) {
@@ -215,7 +290,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to create Karkuns in the System."
+          "You do not have permission to manage Karkuns in the System."
         );
       }
 
@@ -236,7 +311,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to create Karkuns in the System."
+          "You do not have permission to manage Karkuns in the System."
         );
       }
 
@@ -259,7 +334,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to create Karkuns in the System."
+          "You do not have permission to manage Karkuns in the System."
         );
       }
 

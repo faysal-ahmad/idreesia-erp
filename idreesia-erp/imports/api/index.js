@@ -7,10 +7,19 @@ import AttachmentSchema from "./common/attachments/attachment.graphql";
 import AttachmentResolvers from "./common/attachments/resolvers";
 
 /**
- * Schema and Resolvers for the HR module
+ * Schema and Resolvers for the Admin module
  */
 import AdminJobSchema from "./admin/admin-job/admin-job.graphql";
 import AdminJobResolvers from "./admin/admin-job/resolvers";
+
+/**
+ * Schema and Resolvers for the Security module
+ */
+import VisitorSchema from "./security/visitor/visitor.graphql";
+import VisitorResolvers from "./security/visitor/resolvers";
+
+import VisitorStaySchema from "./security/visitor-stay/visitor-stay.graphql";
+import VisitorStayResolvers from "./security/visitor-stay/resolvers";
 
 /**
  * Schema and Resolvers for the HR module
@@ -23,6 +32,9 @@ import DutyLocationResolvers from "./hr/duty-location/resolvers";
 
 import DutySchema from "./hr/duty/duty.graphql";
 import DutyResolvers from "./hr/duty/resolvers";
+
+import JobSchema from "./hr/job/job.graphql";
+import JobResolvers from "./hr/job/resolvers";
 
 import KarkunSchema from "./hr/karkuns/karkun.graphql";
 import KarkunResolvers from "./hr/karkuns/resolvers";
@@ -83,9 +95,15 @@ import AmaanatLogResolvers from "./accounts/amaanat-log/resolvers";
 
 const typeDefs = [
   AttachmentSchema,
+  AdminJobSchema,
+
+  VisitorSchema,
+  VisitorStaySchema,
+
   DutyShiftSchema,
   DutyLocationSchema,
   DutySchema,
+  JobSchema,
   KarkunSchema,
   KarkunDutySchema,
   AttendanceSchema,
@@ -105,16 +123,19 @@ const typeDefs = [
   VoucherDetailSchema,
   AccountMonthlyBalanceSchema,
   AmaanatLogSchema,
-
-  AdminJobSchema,
 ];
 
 const resolvers = merge(
   AttachmentResolvers,
+  AdminJobResolvers,
+
+  VisitorResolvers,
+  VisitorStayResolvers,
 
   DutyShiftResolvers,
   DutyLocationResolvers,
   DutyResolvers,
+  JobResolvers,
   KarkunResolvers,
   KarkunDutyResolvers,
   AttendanceResolvers,
@@ -133,9 +154,7 @@ const resolvers = merge(
   VoucherResolvers,
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
-  AmaanatLogResolvers,
-
-  AdminJobResolvers
+  AmaanatLogResolvers
 );
 
 export { typeDefs, resolvers };

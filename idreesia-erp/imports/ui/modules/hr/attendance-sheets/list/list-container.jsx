@@ -37,6 +37,16 @@ class ListContainer extends Component {
     this.setState(pageParams);
   };
 
+  handleNewAttendance = () => {
+    const { history } = this.props;
+    history.push(paths.attendanceSheetsNewFormPath);
+  };
+
+  handleEditAttendance = attendance => {
+    const { history } = this.props;
+    history.push(paths.attendanceSheetsEditFormPath(attendance._id));
+  };
+
   handleUploadAttendanceSheet = () => {
     const { history } = this.props;
     history.push(paths.attendanceSheetsUploadFormPath);
@@ -72,6 +82,11 @@ class ListContainer extends Component {
       });
   };
 
+  handleItemSelected = attendance => {
+    const { history } = this.props;
+    history.push(`${paths.karkunsPath}/${attendance.karkunId}`);
+  };
+
   render() {
     const {
       allDuties,
@@ -88,9 +103,12 @@ class ListContainer extends Component {
         selectedShiftId={selectedShiftId}
         selectedMonth={selectedMonth}
         setPageParams={this.setPageParams}
+        handleNewAttendance={this.handleNewAttendance}
+        handleEditAttendance={this.handleEditAttendance}
         handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
         handleViewCards={this.handleViewCards}
         handleDeleteAttendance={this.handleDeleteAttendance}
+        handleItemSelected={this.handleItemSelected}
         allDuties={allDuties}
         allDutyShifts={allDutyShifts}
       />

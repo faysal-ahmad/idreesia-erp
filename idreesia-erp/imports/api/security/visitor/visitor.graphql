@@ -1,0 +1,76 @@
+type VisitorType {
+  _id: String
+  name: String
+  parentName: String
+  isMinor: Boolean
+  cnicNumber: String
+  ehadDate: String
+  referenceName: String
+  contactNumber1: String
+  contactNumber2: String
+  address: String
+  city: String
+  country: String
+  imageId: String
+  criminalRecord: String
+  otherNotes: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVisitorType {
+  totalResults: Int
+  data: [VisitorType]
+}
+
+extend type Query {
+  pagedVisitors(queryString: String): PagedVisitorType
+  visitorById(_id: String!): VisitorType
+  visitorByCnic(cnic: String!): VisitorType
+
+  distinctCities: [String]
+  distinctCountries: [String]
+}
+
+extend type Mutation {
+  createVisitor(
+    name: String!
+    parentName: String!
+    isMinor: Boolean!
+    cnicNumber: String
+    ehadDate: String!
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+  ): VisitorType
+
+  updateVisitor(
+    _id: String!
+    name: String!
+    parentName: String!
+    isMinor: Boolean!
+    cnicNumber: String
+    ehadDate: String!
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+  ): VisitorType
+
+  deleteVisitor(_id: String!): Int
+
+  setVisitorImage(_id: String!, imageId: String!): VisitorType
+  updateNotes(
+    _id: String!
+    criminalRecord: String
+    otherNotes: String
+  ): VisitorType
+}

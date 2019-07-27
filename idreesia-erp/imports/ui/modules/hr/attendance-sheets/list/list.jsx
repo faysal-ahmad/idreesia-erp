@@ -9,11 +9,13 @@ import {
   Icon,
   Menu,
   Table,
+  Tooltip,
 } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import { filter } from "lodash";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import { Formats } from "meteor/idreesia-common/constants";
 
 const ToolbarStyle = {
@@ -34,12 +36,18 @@ const CascaderStyle = {
   width: "300px",
 };
 
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
+};
+
 const NameDivStyle = {
   display: "flex",
   flexFlow: "row nowrap",
   justifyContent: "flex-start",
   alignItems: "center",
   width: "100%",
+  cursor: "pointer",
 };
 
 export class List extends Component {
@@ -53,6 +61,9 @@ export class List extends Component {
     attendanceByMonth: PropTypes.array,
     attendanceLoading: PropTypes.bool,
     setPageParams: PropTypes.func,
+    handleItemSelected: PropTypes.func,
+    handleNewAttendance: PropTypes.func,
+    handleEditAttendance: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
     handleViewCards: PropTypes.func,
     handleDeleteAttendance: PropTypes.func,
@@ -68,12 +79,15 @@ export class List extends Component {
       dataIndex: "karkun.name",
       key: "karkun.name",
       render: (text, record) => {
+        const onClickHandler = () => {
+          const { handleItemSelected } = this.props;
+          handleItemSelected(record);
+        };
+
         if (record.karkun.imageId) {
-          const url = Meteor.absoluteUrl(
-            `download-file?attachmentId=${record.karkun.imageId}`
-          );
+          const url = getDownloadUrl(record.karkun.imageId);
           return (
-            <div style={NameDivStyle}>
+            <div style={NameDivStyle} onClick={onClickHandler}>
               <Avatar shape="square" size="large" src={url} />
               &nbsp;&nbsp;
               {text}
@@ -82,7 +96,7 @@ export class List extends Component {
         }
 
         return (
-          <div style={NameDivStyle}>
+          <div style={NameDivStyle} onClick={onClickHandler}>
             <Avatar shape="square" size="large" icon="picture" />
             &nbsp;&nbsp;
             {text}
@@ -110,6 +124,23 @@ export class List extends Component {
       dataIndex: "percentage",
       key: "percentage",
       render: text => `${text}%`,
+    },
+    {
+      key: "action",
+      render: (text, record) => {
+        const { handleEditAttendance } = this.props;
+        return (
+          <Tooltip key="edit" title="Edit">
+            <Icon
+              type="edit"
+              style={IconStyle}
+              onClick={() => {
+                handleEditAttendance(record);
+              }}
+            />
+          </Tooltip>
+        );
+      },
     },
   ];
 
@@ -202,18 +233,23 @@ export class List extends Component {
   };
 
   getActionsMenu = () => {
-    const { handleUploadAttendanceSheet } = this.props;
+    const { handleNewAttendance, handleUploadAttendanceSheet } = this.props;
     const menu = (
       <Menu>
-        <Menu.Item key="1" onClick={handleUploadAttendanceSheet}>
+        <Menu.Item key="1" onClick={handleNewAttendance}>
+          <Icon type="plus-circle" />
+          New Attendance
+        </Menu.Item>
+        <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
           <Icon type="upload" />
           Upload Attendance
         </Menu.Item>
-        <Menu.Item key="2" onClick={this.handleViewCards}>
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={this.handleViewCards}>
           <Icon type="idcard" />
           Print Duty Cards
         </Menu.Item>
-        <Menu.Item key="3" onClick={this.handleDeleteAttendance}>
+        <Menu.Item key="4" onClick={this.handleDeleteAttendance}>
           <Icon type="delete" />
           Delete Attendance
         </Menu.Item>

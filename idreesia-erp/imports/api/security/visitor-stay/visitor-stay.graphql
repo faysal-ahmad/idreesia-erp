@@ -1,0 +1,61 @@
+type VisitorStayType {
+  _id: String
+  visitorId: String
+  fromDate: String
+  toDate: String
+  numOfDays: Float
+  stayReason: String
+  stayAllowedBy: String
+  dutyId: String
+  shiftId: String
+  notes: String
+  cancelledDate: String
+
+  isValid: Boolean
+  isExpired: Boolean
+  refVisitor: VisitorType
+  dutyName: String
+  shiftName: String
+  dutyShiftName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVisitorStayType {
+  totalResults: Int
+  data: [VisitorStayType]
+}
+
+extend type Query {
+  pagedVisitorStays(queryString: String!): PagedVisitorStayType
+  visitorStayById(_id: String!): VisitorStayType
+  distinctStayAllowedBy: [String]
+}
+
+extend type Mutation {
+  createVisitorStay(
+    visitorId: String!
+    numOfDays: Float!
+    stayReason: String
+    stayAllowedBy: String
+    dutyId: String
+    shiftId: String
+    notes: String
+  ): VisitorStayType
+
+  updateVisitorStay(
+    _id: String!
+    numOfDays: Float!
+    stayReason: String
+    stayAllowedBy: String
+    dutyId: String
+    shiftId: String
+    notes: String
+  ): VisitorStayType
+
+  cancelVisitorStay(_id: String!): VisitorStayType
+  deleteVisitorStay(_id: String!): Int
+}

@@ -4,7 +4,7 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
@@ -13,6 +13,7 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -25,6 +26,7 @@ class EditForm extends Component {
     form: PropTypes.object,
 
     physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
     loading: PropTypes.bool,
     locationById: PropTypes.object,
     locationsLoading: PropTypes.bool,
@@ -143,6 +145,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "updateLocation",
@@ -157,5 +160,10 @@ export default compose(
       return { variables: { _id: locationId } };
     },
   }),
-  WithBreadcrumbs(["Inventory", "Setup", "Locations", "Edit"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Setup, Locations, Edit`;
+    }
+    return `Inventory, Setup, Locations, Edit`;
+  })
 )(EditForm);

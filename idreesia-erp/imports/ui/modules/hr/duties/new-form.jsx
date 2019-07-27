@@ -8,6 +8,7 @@ import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 import {
   InputTextField,
+  InputTextAreaField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 
@@ -27,12 +28,13 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createDuty, history } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields((err, { name, description }) => {
       if (err) return;
 
       createDuty({
         variables: {
-          name: fieldsValue.name,
+          name,
+          description,
         },
       })
         .then(() => {
@@ -56,6 +58,11 @@ class NewForm extends Component {
           requiredMessage="Please input a name for the duty."
           getFieldDecorator={getFieldDecorator}
         />
+        <InputTextAreaField
+          fieldName="description"
+          fieldLabel="Description"
+          getFieldDecorator={getFieldDecorator}
+        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -63,10 +70,11 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createDuty($name: String!) {
-    createDuty(name: $name) {
+  mutation createDuty($name: String!, $description: String) {
+    createDuty(name: $name, description: $description) {
       _id
       name
+      description
     }
   }
 `;

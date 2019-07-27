@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { AutoComplete, Form } from 'antd';
-import { get } from 'lodash';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { AutoComplete, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -18,7 +17,7 @@ const formItemLayout = {
  */
 export default class AutoCompleteField extends Component {
   static propTypes = {
-    data: PropTypes.array,
+    dataSource: PropTypes.array,
     getDataValue: PropTypes.func,
     getDataText: PropTypes.func,
     fieldName: PropTypes.string,
@@ -33,9 +32,7 @@ export default class AutoCompleteField extends Component {
   };
 
   static defaultProps = {
-    data: [],
-    getDataValue: ({ _id }) => _id,
-    getDataText: ({ name }) => name,
+    dataSource: [],
     initialValue: null,
     fieldLayout: formItemLayout,
     optionRenderer: text => text,
@@ -43,28 +40,14 @@ export default class AutoCompleteField extends Component {
 
   getField() {
     const {
-      data,
-      getDataValue,
-      getDataText,
+      dataSource,
       fieldName,
       required,
       requiredMessage,
       placeholder,
       getFieldDecorator,
       initialValue,
-      optionRenderer,
     } = this.props;
-
-    const options = [];
-    data.forEach(dataObj => {
-      const value = getDataValue(dataObj);
-      const text = getDataText(dataObj);
-      options.push(
-        <AutoComplete.Option key={value} value={value} text={text}>
-          {optionRenderer(text, dataObj)}
-        </AutoComplete.Option>
-      );
-    });
 
     const rules = required
       ? [
@@ -75,20 +58,12 @@ export default class AutoCompleteField extends Component {
         ]
       : null;
 
-    const filterOption = (inputValue, option) => {
-      const optionText = get(option, ['props', 'text'], '');
-      return optionText.indexOf(inputValue) !== -1;
-    };
-
     return getFieldDecorator(fieldName, { initialValue, rules })(
       <AutoComplete
         placeholder={placeholder}
-        optionLabelProp="text"
+        dataSource={dataSource}
         backfill
-        filterOption={filterOption}
-      >
-        {options}
-      </AutoComplete>
+      />
     );
   }
 

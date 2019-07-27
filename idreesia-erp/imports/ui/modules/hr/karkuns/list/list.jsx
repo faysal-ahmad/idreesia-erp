@@ -13,6 +13,7 @@ import {
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import ListFilter from "./list-filter";
 
 const IconStyle = {
@@ -43,13 +44,16 @@ class List extends Component {
     pageSize: PropTypes.number,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    bloodGroup: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
-    showAddressColumn: PropTypes.bool,
+    showPhoneNumbersColumn: PropTypes.bool,
+    predefinedFilterName: PropTypes.string,
 
     deleteKarkun: PropTypes.func,
     loading: PropTypes.bool,
@@ -70,9 +74,7 @@ class List extends Component {
       };
 
       if (record.imageId) {
-        const url = Meteor.absoluteUrl(
-          `download-file?attachmentId=${record.imageId}`
-        );
+        const url = getDownloadUrl(record.imageId);
         return (
           <div style={NameDivStyle} onClick={onClickHandler}>
             <Avatar shape="square" size="large" src={url} />
@@ -98,10 +100,17 @@ class List extends Component {
     key: "cnicNumber",
   };
 
-  addressColumn = {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
+  phoneNumberColumn = {
+    title: "Contact Number",
+    key: "contactNumber",
+    render: (text, record) => {
+      const numbers = [];
+      if (record.contactNumber1) numbers.push(record.contactNumber1);
+      if (record.contactNumber2) numbers.push(record.contactNumber2);
+
+      if (numbers.length === 0) return "";
+      return numbers.join(", ");
+    },
   };
 
   dutiesColumn = {
@@ -129,12 +138,12 @@ class List extends Component {
   };
 
   getColumns = () => {
-    const { showAddressColumn } = this.props;
-    if (showAddressColumn) {
+    const { showPhoneNumbersColumn } = this.props;
+    if (showPhoneNumbersColumn) {
       return [
         this.nameColumn,
         this.cnicColumn,
-        this.addressColumn,
+        this.phoneNumberColumn,
         this.dutiesColumn,
         this.actionsColumn,
       ];
@@ -179,11 +188,14 @@ class List extends Component {
     const {
       name,
       cnicNumber,
+      phoneNumber,
+      bloodGroup,
       dutyId,
       shiftId,
       setPageParams,
       showNewButton,
       handleNewClicked,
+      predefinedFilterName,
     } = this.props;
 
     let newButton = null;
@@ -195,16 +207,26 @@ class List extends Component {
       );
     }
 
-    return (
-      <div style={ToolbarStyle}>
-        {newButton}
+    let listFilter = null;
+    if (!predefinedFilterName) {
+      listFilter = (
         <ListFilter
           name={name}
           cnicNumber={cnicNumber}
+          phoneNumber={phoneNumber}
+          bloodGroup={bloodGroup}
           dutyId={dutyId}
           shiftId={shiftId}
           setPageParams={setPageParams}
         />
+      );
+    }
+
+    if (!newButton && !listFilter) return null;
+    return (
+      <div style={ToolbarStyle}>
+        {newButton}
+        {listFilter}
       </div>
     );
   };
@@ -259,7 +281,8 @@ const listQuery = gql`
         firstName
         lastName
         cnicNumber
-        address
+        contactNumber1
+        contactNumber2
         imageId
         duties
       }
@@ -282,10 +305,19 @@ export default compose(
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ name, cnicNumber, dutyId, shiftId, pageIndex, pageSize }) => ({
+    options: ({
+      name,
+      cnicNumber,
+      dutyId,
+      shiftId,
+      predefinedFilterName,
+      pageIndex,
+      pageSize,
+    }) => ({
       variables: {
         queryString: `?name=${name || ""}&cnicNumber=${cnicNumber ||
           ""}&dutyId=${dutyId || ""}&shiftId=${shiftId ||
+          ""}&predefinedFilterName=${predefinedFilterName ||
           ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),

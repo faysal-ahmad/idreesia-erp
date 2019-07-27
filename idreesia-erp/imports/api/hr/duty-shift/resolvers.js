@@ -17,7 +17,7 @@ export default {
 
   Query: {
     allDutyShifts() {
-      return DutyShifts.find({}).fetch();
+      return DutyShifts.find({}, { sort: { dutyId: 1 } }).fetch();
     },
 
     dutyShiftsByDutyId(obj, { dutyId }) {

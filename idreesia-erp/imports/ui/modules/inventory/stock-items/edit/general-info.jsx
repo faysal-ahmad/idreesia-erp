@@ -4,7 +4,6 @@ import { Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
 import {
   InputTextField,
   InputNumberField,
@@ -30,19 +29,13 @@ class EditForm extends Component {
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.stockItemsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const {
-      physicalStoreId,
-      stockItemById,
-      updateStockItem,
-      form,
-      history,
-    } = this.props;
+    const { stockItemById, updateStockItem, form, history } = this.props;
     form.validateFields(
       (
         err,
@@ -61,7 +54,7 @@ class EditForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.stockItemsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

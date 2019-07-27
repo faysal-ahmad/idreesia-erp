@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import Barcode from "react-barcode";
 import moment from "moment";
 
+import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+
 const barcodeOptions = {
   width: 1,
   height: 20,
@@ -32,9 +34,7 @@ export default class MeetingCards extends Component {
       .startOf("month");
 
     const headingImageUrl = "/images/heading.png";
-    const karkunImageUrl = Meteor.absoluteUrl(
-      `download-file?attachmentId=${attendance.karkun.imageId}`
-    );
+    const karkunImageUrl = getDownloadUrl(attendance.karkun.imageId);
 
     return (
       <div key={attendance._id} className="card_karkon">
@@ -51,7 +51,7 @@ export default class MeetingCards extends Component {
           {attendance.duty.name} <br />
           {attendance.shift.name}
         </p>
-        <div>
+        <div className="barcode_card_k">
           <Barcode
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}

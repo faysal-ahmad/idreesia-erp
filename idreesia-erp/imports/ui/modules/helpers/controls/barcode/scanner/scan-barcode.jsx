@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Col, Input, Row } from "antd";
+import { debounce } from "lodash";
 
 export default class ScanBarcode extends Component {
   static propTypes = {
@@ -21,19 +22,24 @@ export default class ScanBarcode extends Component {
     window.removeEventListener("keypress", this.handleKeyPress);
   };
 
-  handleKeyPress = event => {
-    if (event.which === 13) {
-      const code = this.keyBuffer.join("");
-      this.setState({ code });
+  sendBarcode = debounce(
+    () => {
+      const scannedCode = this.keyBuffer.join("");
       this.keyBuffer = [];
+      this.setState({ code: scannedCode });
 
       const { onBarcodeCaptured } = this.props;
       if (onBarcodeCaptured) {
-        onBarcodeCaptured(code);
+        onBarcodeCaptured(scannedCode);
       }
-    } else {
-      this.keyBuffer.push(event.key);
-    }
+    },
+    50,
+    { trailing: true, maxWait: 1000 }
+  );
+
+  handleKeyPress = event => {
+    this.keyBuffer.push(event.key);
+    this.sendBarcode();
   };
 
   render() {

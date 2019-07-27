@@ -17,27 +17,11 @@ export default {
       KarkunDuties.find({
         dutyId: { $eq: dutyType._id },
       }).count(),
-    createdByName: dutyType => {
-      const karkun = Karkuns.findOne({
-        userId: { $eq: dutyType.createdBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
-    updatedByName: dutyType => {
-      const karkun = Karkuns.findOne({
-        userId: { $eq: dutyType.updatedBy },
-      });
-
-      if (!karkun) return null;
-      return `${karkun.firstName} ${karkun.lastName}`;
-    },
   },
 
   Query: {
     allDuties() {
-      return Duties.find({}).fetch();
+      return Duties.find({}, { sort: { name: 1 } }).fetch();
     },
     dutyById(obj, { id }) {
       return Duties.findOne(id);
@@ -45,7 +29,7 @@ export default {
   },
 
   Mutation: {
-    createDuty(obj, { name }, { user }) {
+    createDuty(obj, { name, description }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -57,6 +41,7 @@ export default {
       const date = new Date();
       const dutyId = Duties.insert({
         name,
+        description,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -66,7 +51,7 @@ export default {
       return Duties.findOne(dutyId);
     },
 
-    updateDuty(obj, { id, name }, { user }) {
+    updateDuty(obj, { id, name, description }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -79,6 +64,7 @@ export default {
       Duties.update(id, {
         $set: {
           name,
+          description,
           updatedAt: date,
           updatedBy: user._id,
         },

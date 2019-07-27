@@ -52,7 +52,7 @@ export default class InputCnicField extends Component {
         {
           required,
           message: required ? requiredMessage : "",
-          pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
+          // pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
         },
       ];
 

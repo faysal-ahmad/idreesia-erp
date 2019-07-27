@@ -12,7 +12,12 @@ export default new SimpleSchema({
     type: String
   },
   lastName: {
-    type: String
+    type: String,
+    optional: true
+  },
+  ehadDate: {
+    type: Date,
+    optional: true
   },
   cnicNumber: {
     type: String,
@@ -42,6 +47,10 @@ export default new SimpleSchema({
     type: String,
     optional: true
   },
+  bloodGroup: {
+    type: String,
+    optional: true
+  },
   imageId: {
     type: String,
     optional: true
@@ -52,6 +61,26 @@ export default new SimpleSchema({
   },
   "attachmentIds.$": {
     type: String
+  },
+  isEmployee: {
+    type: Boolean,
+    optional: true
+  },
+  jobId: {
+    type: String,
+    optional: true
+  },
+  employmentStartDate: {
+    type: Date,
+    optional: true
+  },
+  employmentEndDate: {
+    type: Date,
+    optional: true
+  },
+  currentSalary: {
+    type: Number,
+    optional: true
   }
 })
   .extend(identifiable)

@@ -10,6 +10,7 @@ type KarkunType {
   name: String
   firstName: String
   lastName: String
+  ehadDate: String
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
@@ -17,11 +18,19 @@ type KarkunType {
   address: String
   city: String
   country: String
+  bloodGroup: String
   imageId: String
   userId: String
   attachmentIds: [String]
 
+  isEmployee: Boolean
+  jobId: String
+  employmentStartDate: String
+  employmentEndDate: String
+  currentSalary: Float
+
   user: UserType
+  job: JobType
   duties: String
   attachments: [Attachment]
 
@@ -43,12 +52,15 @@ extend type Query {
   karkunById(_id: String!): KarkunType
   karkunsByDutyId(dutyId: String!): [KarkunType]
   karkunByUserId(userId: String!): KarkunType
+
+  karkunNames(ids: [String]): [String]
 }
 
 extend type Mutation {
   createKarkun(
     firstName: String!
     lastName: String!
+    ehadDate: String
     cnicNumber: String
     contactNumber1: String
     contactNumber2: String
@@ -56,12 +68,14 @@ extend type Mutation {
     address: String
     city: String
     country: String
+    bloodGroup: String
   ): KarkunType
 
   updateKarkun(
     _id: String!
     firstName: String!
     lastName: String!
+    ehadDate: String
     cnicNumber: String
     contactNumber1: String
     contactNumber2: String
@@ -69,9 +83,19 @@ extend type Mutation {
     address: String
     city: String
     country: String
+    bloodGroup: String
   ): KarkunType
 
   deleteKarkun(_id: String!): Int
+
+  setKarkunEmploymentInfo(
+    _id: String!
+    isEmployee: Boolean!
+    jobId: String
+    employmentStartDate: String
+    employmentEndDate: String
+    currentSalary: Float
+  ): KarkunType
 
   setKarkunProfileImage(_id: String!, imageId: String!): KarkunType
   addKarkunAttachment(_id: String!, attachmentId: String!): KarkunType

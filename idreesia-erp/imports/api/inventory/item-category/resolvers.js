@@ -24,9 +24,12 @@ export default {
 
     itemCategoriesByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
-      return ItemCategories.find({
-        physicalStoreId: { $eq: physicalStoreId },
-      }).fetch();
+      return ItemCategories.find(
+        {
+          physicalStoreId: { $eq: physicalStoreId },
+        },
+        { sort: { name: 1 } }
+      ).fetch();
     },
   },
 

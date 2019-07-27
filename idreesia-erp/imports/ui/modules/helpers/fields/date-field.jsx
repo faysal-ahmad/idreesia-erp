@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { DatePicker, Form } from 'antd';
-import moment from 'moment';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { DatePicker, Form } from "antd";
+import moment from "moment";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -19,6 +19,7 @@ const formItemLayout = {
  */
 export default class DateField extends Component {
   static propTypes = {
+    allowClear: PropTypes.bool,
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
@@ -35,7 +36,14 @@ export default class DateField extends Component {
   };
 
   getField() {
-    const { fieldName, required, requiredMessage, getFieldDecorator, initialValue } = this.props;
+    const {
+      fieldName,
+      required,
+      requiredMessage,
+      getFieldDecorator,
+      initialValue,
+      allowClear,
+    } = this.props;
     const rules = [
       {
         required,
@@ -44,7 +52,7 @@ export default class DateField extends Component {
     ];
 
     return getFieldDecorator(fieldName, { initialValue, rules })(
-      <DatePicker format="DD MMM, YYYY" />
+      <DatePicker format="DD MMM, YYYY" allowClear={allowClear} />
     );
   }
 

@@ -9,6 +9,7 @@ import ApolloClient from "apollo-boost";
 
 import App from "../imports/ui/app";
 import "./meeting-cards.css";
+import "./stay-cards.css";
 import "../node_modules/antd/dist/antd.css";
 
 const client = new ApolloClient({

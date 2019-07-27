@@ -2,6 +2,7 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import { default as paths } from "./submodule-paths";
+import { JobsNewForm, JobsEditForm, JobsList } from "./jobs";
 import { DutiesNewForm, DutiesEditForm, DutiesList } from "./duties";
 import {
   DutyShiftsNewForm,
@@ -15,6 +16,8 @@ import {
 } from "./duty-locations";
 import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from "./karkuns";
 import {
+  AttendanceSheetsNewForm,
+  AttendanceSheetsEditForm,
   AttendanceSheetsUploadForm,
   AttendanceSheetsList,
   AttendanceSheetsMeetingCards,
@@ -22,6 +25,10 @@ import {
 
 const HRRouter = () => (
   <Switch>
+    <Route path={paths.jobsNewFormPath} component={JobsNewForm} />
+    <Route path={paths.jobsEditFormPath()} component={JobsEditForm} />
+    <Route path={paths.jobsPath} component={JobsList} />
+
     <Route path={paths.dutiesNewFormPath} component={DutiesNewForm} />
     <Route path={paths.dutiesEditFormPath()} component={DutiesEditForm} />
     <Route path={paths.dutiesPath} component={DutiesList} />
@@ -45,12 +52,20 @@ const HRRouter = () => (
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
     <Route
+      path={paths.attendanceSheetsNewFormPath}
+      component={AttendanceSheetsNewForm}
+    />
+    <Route
       path={paths.attendanceSheetsUploadFormPath}
       component={AttendanceSheetsUploadForm}
     />
     <Route
       path={paths.attendanceSheetsMeetingCardsPath}
       component={AttendanceSheetsMeetingCards}
+    />
+    <Route
+      path={paths.attendanceSheetsEditFormPath()}
+      component={AttendanceSheetsEditForm}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
   </Switch>

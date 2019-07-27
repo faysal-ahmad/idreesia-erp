@@ -20,6 +20,10 @@ export default new SimpleSchema({
     type: String,
     optional: true
   },
+  totalCount: {
+    type: Number,
+    optional: true
+  },
   absentCount: {
     type: Number,
     optional: true

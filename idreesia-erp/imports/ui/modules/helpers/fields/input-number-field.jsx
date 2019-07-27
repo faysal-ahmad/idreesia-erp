@@ -50,7 +50,7 @@ export default class InputNumberField extends Component {
     } = this.props;
 
     const additionalProps = {};
-    if (minValue) additionalProps.min = minValue;
+    if (minValue || minValue === 0) additionalProps.min = minValue;
     if (maxValue) additionalProps.max = maxValue;
 
     if (!disabled) {

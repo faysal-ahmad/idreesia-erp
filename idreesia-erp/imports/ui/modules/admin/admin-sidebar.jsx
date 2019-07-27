@@ -49,7 +49,7 @@ class AdminSidebar extends Component {
         mode="inline"
         defaultSelectedKeys={["home"]}
         style={{ height: "100%", borderRight: 0 }}
-        onSelect={this.handleMenuItemSelected}
+        onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
         <Menu.Item key="companies">Companies</Menu.Item>

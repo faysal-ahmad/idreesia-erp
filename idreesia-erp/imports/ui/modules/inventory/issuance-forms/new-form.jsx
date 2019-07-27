@@ -5,9 +5,9 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
+  WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
@@ -20,6 +20,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 
 const FormStyle = {
   width: "800px",
@@ -35,18 +36,17 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+    physicalStoreId: PropTypes.string,
+    physicalStore: PropTypes.object,
 
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
-
-    loading: PropTypes.bool,
-    physicalStoreId: PropTypes.string,
     createIssuanceForm: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.issuanceFormsPath(physicalStoreId));
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -80,7 +80,7 @@ class NewForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.issuanceFormsPath(physicalStoreId));
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -132,6 +132,9 @@ class NewForm extends Component {
           fieldLabel="Issued By / Received By"
           placeholder="Issued By / Received By"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
+          }
         />
         <KarkunField
           required
@@ -140,6 +143,9 @@ class NewForm extends Component {
           fieldLabel="Issued To / Returned By"
           placeholder="Issued To / Returned By"
           getFieldDecorator={getFieldDecorator}
+          predefinedFilterName={
+            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
+          }
         />
 
         <InputTextField
@@ -212,6 +218,7 @@ const formMutation = gql`
 export default compose(
   Form.create(),
   WithPhysicalStoreId(),
+  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: "createIssuanceForm",
@@ -223,5 +230,10 @@ export default compose(
       ],
     },
   }),
-  WithBreadcrumbs(["Inventory", "Forms", "Issuance Forms", "New"])
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Issuance Forms, New`;
+    }
+    return `Inventory, Issuance Forms, New`;
+  })
 )(NewForm);

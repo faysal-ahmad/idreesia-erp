@@ -12,8 +12,8 @@ export default class ListContainer extends Component {
   state = {
     pageIndex: 0,
     pageSize: 10,
-    itemCategoryId: null,
-    itemTypeName: null,
+    categoryId: null,
+    name: null,
   };
 
   setPageParams = pageParams => {

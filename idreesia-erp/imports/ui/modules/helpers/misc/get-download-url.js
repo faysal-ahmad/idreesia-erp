@@ -1,5 +1,4 @@
-import { Meteor } from "meteor/meteor";
-
 export default function getDownloadUrl(attachmentId) {
-  return Meteor.absoluteUrl(`download-file?attachmentId=${attachmentId}`);
+  if (!attachmentId) return null;
+  return `${window.location.origin}/download-file?attachmentId=${attachmentId}`;
 }

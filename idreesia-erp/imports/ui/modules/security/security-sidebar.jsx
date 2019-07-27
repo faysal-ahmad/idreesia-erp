@@ -16,11 +16,27 @@ class SecuritySidebar extends Component {
 
   handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
+    debugger;
 
     switch (key) {
-      case "karkun-verification":
-        setActiveSubModuleName(SubModuleNames.karkunVerification);
-        history.push(paths.karkunVerificationPath);
+      case "karkun-card-verification":
+        setActiveSubModuleName(SubModuleNames.karkunCardVerification);
+        history.push(paths.karkunCardVerificationPath);
+        break;
+
+      case "visitor-registration":
+        setActiveSubModuleName(SubModuleNames.visitorRegistration);
+        history.push(paths.visitorRegistrationPath);
+        break;
+
+      case "visitor-card-verification":
+        setActiveSubModuleName(SubModuleNames.visitorCardVerification);
+        history.push(paths.visitorCardVerificationPath);
+        break;
+
+      case "visitor-stay-report":
+        setActiveSubModuleName(SubModuleNames.visitorStayReport);
+        history.push(paths.visitorStayReportPath);
         break;
 
       default:
@@ -34,14 +50,33 @@ class SecuritySidebar extends Component {
         mode="inline"
         defaultSelectedKeys={["home"]}
         style={{ height: "100%", borderRight: 0 }}
-        onSelect={this.handleMenuItemSelected}
+        onClick={this.handleMenuItemSelected}
       >
-        <Menu.Item key="karkun-verification">
-          <span>
-            <Icon type="user" />
-            Karkun Verification
-          </span>
-        </Menu.Item>
+        <Menu.SubMenu key="karkuns" title={<span>Karkuns</span>}>
+          <Menu.Item key="karkun-card-verification">
+            <span>
+              <Icon type="barcode" />
+              Card Verification
+            </span>
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="visitors" title={<span>Visitors</span>}>
+          <Menu.Item key="visitor-registration">
+            <span>
+              <Icon type="idcard" />Registration
+            </span>
+          </Menu.Item>
+          <Menu.Item key="visitor-card-verification">
+            <span>
+              <Icon type="barcode" />Card Verification
+            </span>
+          </Menu.Item>
+          <Menu.Item key="visitor-stay-report">
+            <span>
+              <Icon type="solution" />Stay Report
+            </span>
+          </Menu.Item>
+        </Menu.SubMenu>
       </Menu>
     );
   }

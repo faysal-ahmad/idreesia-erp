@@ -1,0 +1,15 @@
+.stay_card_item {
+  border-bottom: 2px solid black;
+  font-family: arial;
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+}
+
+.stay_card_section {
+  border-bottom: 3px solid black;
+  margin: 0px;
+  margin: 8px 0;
+  font-weight: bold;
+  color: black;
+}

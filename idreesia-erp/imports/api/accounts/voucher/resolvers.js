@@ -1,6 +1,9 @@
 import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
-import { Vouchers } from "meteor/idreesia-common/collections/accounts";
+import {
+  Vouchers,
+  VoucherDetails,
+} from "meteor/idreesia-common/collections/accounts";
 import { Attachments } from "meteor/idreesia-common/collections/common";
 
 import { getVouchers, getInfoForNewVoucher } from "./queries";
@@ -15,6 +18,7 @@ export default {
 
       return [];
     },
+    voucherDetails: voucher => VoucherDetails.find({ voucherId: { $eq: voucher._id } }).fetch(),
   },
 
   Query: {

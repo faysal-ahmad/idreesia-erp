@@ -10,6 +10,7 @@ type Voucher {
   attachmentIds: [String]
 
   attachments: [Attachment]
+  voucherDetails: [VoucherDetail]
 
   createdAt: String
   createdBy: String

@@ -12,6 +12,7 @@ import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 
 import VoucherInfo from "./edit/voucher-info";
 import AttachmentsList from "./edit/attachments-list";
+import VoucherDetails from "./edit/voucher-details";
 
 const EditForm = props => {
   const voucherId = get(props, ["match", "params", "voucherId"], null);
@@ -20,7 +21,10 @@ const EditForm = props => {
       <Tabs.TabPane tab="Voucher Info" key="1">
         <VoucherInfo voucherId={voucherId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="File Attachments" key="4">
+      <Tabs.TabPane tab="Voucher Details" key="2">
+        <VoucherDetails voucherId={voucherId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="File Attachments" key="3">
         <AttachmentsList voucherId={voucherId} {...props} />
       </Tabs.TabPane>
     </Tabs>

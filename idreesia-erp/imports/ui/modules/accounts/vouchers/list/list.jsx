@@ -17,6 +17,14 @@ const ToolbarStyle = {
   width: "100%",
 };
 
+const ItemStyle = {
+  display: "flex",
+  flexFlow: "row nowrap",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+};
+
 const IconStyle = {
   cursor: "pointer",
   fontSize: 20,
@@ -67,6 +75,24 @@ class List extends Component {
       title: "Description",
       dataIndex: "description",
       key: "description",
+    },
+    {
+      title: "Voucher Details",
+      key: "details",
+      render: (text, record) => {
+        const { voucherDetails } = record;
+        const formattedDetails = voucherDetails.map(voucherDetail => (
+          <li key={voucherDetail._id} style={ItemStyle}>
+            <span>{`[${voucherDetail.refAccountHead.number}] ${
+              voucherDetail.refAccountHead.name
+            }`}</span>
+            <span>{`Rs. ${voucherDetail.amount} ${
+              voucherDetail.isCredit ? "Credit" : "Debit"
+            }`}</span>
+          </li>
+        ));
+        return <ul>{formattedDetails}</ul>;
+      },
     },
     {
       key: "action",
@@ -190,6 +216,19 @@ const listQuery = gql`
         voucherDate
         description
         order
+        voucherDetails {
+          _id
+          companyId
+          voucherId
+          accountHeadId
+          amount
+          isCredit
+          refAccountHead {
+            _id
+            name
+            number
+          }
+        }
       }
     }
   }

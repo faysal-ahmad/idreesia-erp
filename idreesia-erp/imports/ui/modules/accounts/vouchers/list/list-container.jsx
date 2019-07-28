@@ -1,7 +1,6 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { compose } from "react-apollo";
-import { Drawer } from "antd";
 
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
@@ -10,8 +9,7 @@ import {
   WithCompany,
 } from "/imports/ui/modules/accounts/common/composers";
 
-import List from "./list/list";
-import DetailsForm from "./details-form";
+import List from "./list";
 
 class ListContainer extends Component {
   static propTypes = {
@@ -68,38 +66,22 @@ class ListContainer extends Component {
       startDate,
       endDate,
       voucherNumber,
-      voucherIdForDetails,
     } = this.state;
 
     return (
-      <Fragment>
-        <List
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          startDate={startDate}
-          endDate={endDate}
-          voucherNumber={voucherNumber}
-          companyId={companyId}
-          setPageParams={this.setPageParams}
-          handleItemSelected={this.handleItemSelected}
-          showNewButton
-          handleNewClicked={this.handleNewClicked}
-          handleViewClicked={this.handleViewClicked}
-        />
-        <Drawer
-          title="Voucher Details"
-          width={600}
-          onClose={this.handleDetailsClose}
-          visible={this.state.showDetails}
-          style={{
-            overflow: "auto",
-            height: "calc(100% - 108px)",
-            paddingBottom: "108px",
-          }}
-        >
-          <DetailsForm companyId={companyId} voucherId={voucherIdForDetails} />
-        </Drawer>
-      </Fragment>
+      <List
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        startDate={startDate}
+        endDate={endDate}
+        voucherNumber={voucherNumber}
+        companyId={companyId}
+        setPageParams={this.setPageParams}
+        handleItemSelected={this.handleItemSelected}
+        showNewButton
+        handleNewClicked={this.handleNewClicked}
+        handleViewClicked={this.handleViewClicked}
+      />
     );
   }
 }

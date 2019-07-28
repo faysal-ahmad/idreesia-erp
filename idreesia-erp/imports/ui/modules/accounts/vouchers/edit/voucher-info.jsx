@@ -14,7 +14,7 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 
-class GeneralInfo extends Component {
+class VoucherInfo extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
@@ -136,4 +136,4 @@ export default compose(
       return { variables: { _id: voucherId, companyId } };
     },
   })
-)(GeneralInfo);
+)(VoucherInfo);

@@ -16,7 +16,7 @@ import {
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
 
-class NewForm extends Component {
+class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -237,4 +237,4 @@ export default compose(
     },
   }),
   WithBreadcrumbs(["Accounts", "Amaanat Logs", "Edit"])
-)(NewForm);
+)(EditForm);

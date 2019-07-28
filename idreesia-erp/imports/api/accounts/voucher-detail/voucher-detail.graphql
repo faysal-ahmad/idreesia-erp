@@ -4,6 +4,7 @@ type VoucherDetail {
   externalReferenceId: String
   voucherId: String
   accountHeadId: String
+  description: String
   amount: Float
   isCredit: Boolean
 
@@ -22,6 +23,8 @@ type PagedVoucherDetail {
 }
 
 extend type Query {
+  voucherDetailById(_id: String!, companyId: String!): VoucherDetail
+
   voucherDetailsByVoucherId(
     companyId: String!
     voucherId: String!
@@ -37,4 +40,27 @@ extend type Query {
     pageIndex: Float!
     pageSize: Float!
   ): PagedVoucherDetail
+}
+
+extend type Mutation {
+  createVoucherDetail(
+    companyId: String!
+    voucherId: String!
+    accountHeadId: String!
+    description: String
+    amount: Float!
+    isCredit: Boolean!
+  ): VoucherDetail
+
+  updateVoucherDetail(
+    _id: String!
+    companyId: String!
+    voucherId: String!
+    accountHeadId: String!
+    description: String
+    amount: Float!
+    isCredit: Boolean!
+  ): VoucherDetail
+
+  removeVoucherDetail(_id: String!, companyId: String!): Int
 }

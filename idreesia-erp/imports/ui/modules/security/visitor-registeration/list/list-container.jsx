@@ -19,9 +19,9 @@ class ListContainer extends Component {
   state = {
     pageIndex: 0,
     pageSize: 20,
-    name: null,
-    cnicNumber: null,
-    phoneNumber: null,
+    name: "",
+    cnicNumber: "",
+    phoneNumber: "",
     showStayList: false,
     visitorIdForStayList: null,
   };

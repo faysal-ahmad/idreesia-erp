@@ -4,6 +4,7 @@ import { Collapse, Form, Row, Button } from "antd";
 
 import {
   InputCnicField,
+  InputMobileField,
   InputTextField,
 } from "/imports/ui/modules/helpers/fields";
 
@@ -31,6 +32,7 @@ class ListFilter extends Component {
 
   static defaultProps = {
     cnicNumber: "",
+    phoneNumber: "",
     filterCriteria: {},
   };
 
@@ -39,8 +41,9 @@ class ListFilter extends Component {
     form.resetFields();
     setPageParams({
       pageIndex: 0,
-      name: null,
-      cnicNumber: null,
+      name: "",
+      cnicNumber: "",
+      phoneNumber: "",
     });
   };
 
@@ -83,7 +86,7 @@ class ListFilter extends Component {
               initialValue={cnicNumber}
               getFieldDecorator={getFieldDecorator}
             />
-            <InputTextField
+            <InputMobileField
               fieldName="phoneNumber"
               fieldLabel="Phone Number"
               required={false}

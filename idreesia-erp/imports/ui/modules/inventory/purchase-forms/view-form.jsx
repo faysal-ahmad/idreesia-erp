@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form } from "antd";
 import moment from "moment";
@@ -18,6 +18,7 @@ import {
   FormButtonsClose,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 const FormStyle = {
   width: "800px",
@@ -78,46 +79,49 @@ class ViewForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
-        <DateField
-          fieldName="purchaseDate"
-          fieldLabel="Purchase Date"
-          initialValue={moment(Number(purchaseFormById.purchaseDate))}
-          required
-          requiredMessage="Please input a purchase date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="receivedBy"
-          fieldLabel="Received By"
-          initialValue={purchaseFormById.refReceivedBy.name}
-          required
-          requiredMessage="Please input a name in received by."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="purchasedBy"
-          fieldLabel="Purchased By"
-          initialValue={purchaseFormById.refPurchasedBy.name}
-          required
-          requiredMessage="Please input a name in purchased by."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+          <DateField
+            fieldName="purchaseDate"
+            fieldLabel="Purchase Date"
+            initialValue={moment(Number(purchaseFormById.purchaseDate))}
+            required
+            requiredMessage="Please input a purchase date."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="receivedBy"
+            fieldLabel="Received By"
+            initialValue={purchaseFormById.refReceivedBy.name}
+            required
+            requiredMessage="Please input a name in received by."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="purchasedBy"
+            fieldLabel="Purchased By"
+            initialValue={purchaseFormById.refPurchasedBy.name}
+            required
+            requiredMessage="Please input a name in purchased by."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
+          <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
+            {this.getItemsField()}
+          </Form.Item>
 
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          required={false}
-          initialValue={purchaseFormById.notes}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="notes"
+            fieldLabel="Notes"
+            required={false}
+            initialValue={purchaseFormById.notes}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsClose handleClose={this.handleClose} />
-      </Form>
+          <FormButtonsClose handleClose={this.handleClose} />
+        </Form>
+        <RecordInfo record={purchaseFormById} />
+      </Fragment>
     );
   }
 }
@@ -130,7 +134,12 @@ const formQuery = gql`
       receivedBy
       purchasedBy
       physicalStoreId
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
       approvedOn
+      approvedBy
       items {
         stockItemId
         quantity

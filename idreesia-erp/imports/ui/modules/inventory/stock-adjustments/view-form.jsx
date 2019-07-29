@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form } from "antd";
 import moment from "moment";
@@ -17,6 +17,7 @@ import {
   FormButtonsClose,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 const FormStyle = {
   width: "800px",
@@ -55,41 +56,44 @@ class ViewForm extends Component {
     }
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
-        <InputTextField
-          fieldName="stockItemId"
-          fieldLabel="Stock Item Name"
-          initialValue={stockAdjustmentById.refStockItem.formattedName}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="adjustment"
-          fieldLabel="Adjustment"
-          initialValue={adjustment}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="adjustedBy"
-          fieldLabel="Adjusted By"
-          initialValue={stockAdjustmentById.refAdjustedBy.name}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <DateField
-          fieldName="adjustedDate"
-          fieldLabel="Adjusted Date"
-          initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+          <InputTextField
+            fieldName="stockItemId"
+            fieldLabel="Stock Item Name"
+            initialValue={stockAdjustmentById.refStockItem.formattedName}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="adjustment"
+            fieldLabel="Adjustment"
+            initialValue={adjustment}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="adjustedBy"
+            fieldLabel="Adjusted By"
+            initialValue={stockAdjustmentById.refAdjustedBy.name}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <DateField
+            fieldName="adjustedDate"
+            fieldLabel="Adjusted Date"
+            initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextAreaField
-          fieldName="adjustmentReason"
-          fieldLabel="Adjustment Reason"
-          initialValue={stockAdjustmentById.adjustmentReason}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="adjustmentReason"
+            fieldLabel="Adjustment Reason"
+            initialValue={stockAdjustmentById.adjustmentReason}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsClose handleClose={this.handleClose} />
-      </Form>
+          <FormButtonsClose handleClose={this.handleClose} />
+        </Form>
+        <RecordInfo record={stockAdjustmentById} />
+      </Fragment>
     );
   }
 }
@@ -105,6 +109,12 @@ const formQuery = gql`
       quantity
       isInflow
       adjustmentReason
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
+      approvedOn
+      approvedBy
       refStockItem {
         _id
         name

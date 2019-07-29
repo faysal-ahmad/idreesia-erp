@@ -13,7 +13,7 @@ const ListStyle = {
 
 const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
   if (formDataLoading || !karkunNames || karkunNames.length === 0) return null;
-  const { createdAt, updatedAt } = record;
+  const { createdAt, updatedAt, approvedOn } = record;
 
   const strCreatedAt = createdAt
     ? moment(Number(createdAt)).format(Formats.DATE_TIME_FORMAT)
@@ -21,6 +21,20 @@ const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
   const strUpdatedAt = updatedAt
     ? moment(Number(updatedAt)).format(Formats.DATE_TIME_FORMAT)
     : null;
+  const strApprovedOn = approvedOn
+    ? moment(Number(approvedOn)).format(Formats.DATE_TIME_FORMAT)
+    : null;
+
+  let approvalNode = null;
+  if (strApprovedOn) {
+    approvalNode = (
+      <List.Item>
+        <Typography.Text type="secondary">
+          {`Approved by ${karkunNames[2]} on ${strApprovedOn}`}
+        </Typography.Text>
+      </List.Item>
+    );
+  }
 
   return (
     <List size="small" bordered style={ListStyle}>
@@ -34,6 +48,7 @@ const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
           {`Updated by ${karkunNames[1]} on ${strUpdatedAt}`}
         </Typography.Text>
       </List.Item>
+      {approvalNode}
     </List>
   );
 };
@@ -44,6 +59,8 @@ RecordInfo.propTypes = {
     createdBy: PropTypes.string,
     updatedAt: PropTypes.string,
     updatedBy: PropTypes.string,
+    approvedOn: PropTypes.string,
+    approvedBy: PropTypes.string,
   }),
   formDataLoading: PropTypes.bool,
   karkunNames: PropTypes.array,
@@ -59,7 +76,9 @@ export default compose(
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ record }) => ({
-      variables: { ids: [record.createdBy, record.updatedBy] },
+      variables: {
+        ids: [record.createdBy, record.updatedBy, record.approvedBy],
+      },
     }),
   })
 )(RecordInfo);

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form } from "antd";
 import moment from "moment";
@@ -18,6 +18,7 @@ import {
   FormButtonsClose,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 const FormStyle = {
   width: "800px",
@@ -79,62 +80,65 @@ class ViewForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
-        <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
-          initialValue={moment(Number(issuanceFormById.issueDate))}
-          required
-          requiredMessage="Please input an issue date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="issuedBy"
-          fieldLabel="Issued By"
-          initialValue={issuanceFormById.refIssuedBy.name}
-          required
-          requiredMessage="Please input a name in issued by."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="issuedTo"
-          fieldLabel="Issued To"
-          initialValue={issuanceFormById.refIssuedTo.name}
-          required
-          requiredMessage="Please input a name in issued to."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="handedOverTo"
-          fieldLabel="Handed Over To / By"
-          initialValue={issuanceFormById.handedOverTo}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="locationId"
-          fieldLabel="For Location"
-          initialValue={
-            issuanceFormById.refLocation
-              ? issuanceFormById.refLocation.name
-              : null
-          }
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+          <DateField
+            fieldName="issueDate"
+            fieldLabel="Issue Date"
+            initialValue={moment(Number(issuanceFormById.issueDate))}
+            required
+            requiredMessage="Please input an issue date."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="issuedBy"
+            fieldLabel="Issued By"
+            initialValue={issuanceFormById.refIssuedBy.name}
+            required
+            requiredMessage="Please input a name in issued by."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="issuedTo"
+            fieldLabel="Issued To"
+            initialValue={issuanceFormById.refIssuedTo.name}
+            required
+            requiredMessage="Please input a name in issued to."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="handedOverTo"
+            fieldLabel="Handed Over To / By"
+            initialValue={issuanceFormById.handedOverTo}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="locationId"
+            fieldLabel="For Location"
+            initialValue={
+              issuanceFormById.refLocation
+                ? issuanceFormById.refLocation.name
+                : null
+            }
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
+          <Form.Item label="Issued Items" {...formItemExtendedLayout}>
+            {this.getItemsField()}
+          </Form.Item>
 
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          required={false}
-          initialValue={issuanceFormById.notes}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="notes"
+            fieldLabel="Notes"
+            required={false}
+            initialValue={issuanceFormById.notes}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsClose handleClose={this.handleClose} />
-      </Form>
+          <FormButtonsClose handleClose={this.handleClose} />
+        </Form>
+        <RecordInfo record={issuanceFormById} />
+      </Fragment>
     );
   }
 }
@@ -148,7 +152,12 @@ const formQuery = gql`
       issuedTo
       handedOverTo
       physicalStoreId
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
       approvedOn
+      approvedBy
       items {
         stockItemId
         quantity

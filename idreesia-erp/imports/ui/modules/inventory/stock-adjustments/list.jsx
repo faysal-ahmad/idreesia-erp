@@ -80,7 +80,13 @@ class List extends Component {
         const path = approvedOn
           ? paths.stockAdjustmentsViewFormPath(physicalStoreId, _id)
           : paths.stockAdjustmentsEditFormPath(physicalStoreId, _id);
-        return getNameWithImageRenderer(_id, imageId, formattedName, path);
+        return getNameWithImageRenderer(
+          _id,
+          imageId,
+          formattedName,
+          path,
+          "picture"
+        );
       },
     },
     {

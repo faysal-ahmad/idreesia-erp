@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
@@ -11,6 +11,7 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import { WithItemCategoriesByPhysicalStore } from "/imports/ui/modules/inventory/common/composers";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 import allUnitOfMeasurements from "../all-unit-of-measurements";
 
@@ -74,59 +75,62 @@ class EditForm extends Component {
     if (loading || itemCategoriesLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={stockItemById.name}
-          required
-          requiredMessage="Please input a name for the stock item."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="company"
-          fieldLabel="Company"
-          initialValue={stockItemById.company}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="details"
-          fieldLabel="Details"
-          initialValue={stockItemById.details}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <SelectField
-          data={itemCategoriesByPhysicalStoreId}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="categoryId"
-          fieldLabel="Category"
-          required
-          requiredMessage="Please select an item category."
-          initialValue={stockItemById.categoryId}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <SelectField
-          data={allUnitOfMeasurements}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="unitOfMeasurement"
-          fieldLabel="Measurement Unit"
-          required
-          requiredMessage="Please select a unit of measurement."
-          initialValue={stockItemById.unitOfMeasurement}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="minStockLevel"
-          fieldLabel="Min Stock Level"
-          initialValue={stockItemById.minStockLevel}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={stockItemById.name}
+            required
+            requiredMessage="Please input a name for the stock item."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="company"
+            fieldLabel="Company"
+            initialValue={stockItemById.company}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="details"
+            fieldLabel="Details"
+            initialValue={stockItemById.details}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SelectField
+            data={itemCategoriesByPhysicalStoreId}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name }) => name}
+            fieldName="categoryId"
+            fieldLabel="Category"
+            required
+            requiredMessage="Please select an item category."
+            initialValue={stockItemById.categoryId}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SelectField
+            data={allUnitOfMeasurements}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name }) => name}
+            fieldName="unitOfMeasurement"
+            fieldLabel="Measurement Unit"
+            required
+            requiredMessage="Please select a unit of measurement."
+            initialValue={stockItemById.unitOfMeasurement}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputNumberField
+            fieldName="minStockLevel"
+            fieldLabel="Min Stock Level"
+            initialValue={stockItemById.minStockLevel}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={stockItemById} />
+      </Fragment>
     );
   }
 }
@@ -157,6 +161,10 @@ const formMutation = gql`
       categoryId
       unitOfMeasurement
       minStockLevel
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -171,6 +179,10 @@ const formQuery = gql`
       categoryId
       unitOfMeasurement
       minStockLevel
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

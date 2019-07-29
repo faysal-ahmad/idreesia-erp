@@ -12,7 +12,13 @@ const NameDivStyle = {
   width: "100%",
 };
 
-export function getNameWithImageRenderer(id, imageId, name, path) {
+export function getNameWithImageRenderer(
+  id,
+  imageId,
+  name,
+  path,
+  iconToUse = "user"
+) {
   if (imageId) {
     const url = getDownloadUrl(imageId);
     return (
@@ -26,7 +32,7 @@ export function getNameWithImageRenderer(id, imageId, name, path) {
 
   return (
     <div style={NameDivStyle}>
-      <Avatar shape="square" size="large" icon="user" />
+      <Avatar shape="square" size="large" icon={iconToUse} />
       &nbsp;
       <Link to={path}>{name}</Link>
     </div>

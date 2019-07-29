@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import moment from "moment";
@@ -19,6 +19,7 @@ import {
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 const FormStyle = {
   width: "800px",
@@ -119,54 +120,61 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
-        <DateField
-          fieldName="purchaseDate"
-          fieldLabel="Purchase Date"
-          initialValue={moment(Number(purchaseFormById.purchaseDate))}
-          required
-          requiredMessage="Please input a purchase date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <KarkunField
-          required
-          requiredMessage="Please select a name for Received By / Returned By."
-          fieldName="receivedBy"
-          fieldLabel="Received By / Returned By"
-          placeholder="Received By / Returned By"
-          initialValue={purchaseFormById.refReceivedBy}
-          getFieldDecorator={getFieldDecorator}
-          predefinedFilterName={
-            PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
-          }
-        />
-        <KarkunField
-          required
-          requiredMessage="Please select a name for Purchased By / Returned To."
-          fieldName="purchasedBy"
-          fieldLabel="Purchased By / Returned To"
-          placeholder="Purchased By / Returned To"
-          initialValue={purchaseFormById.refPurchasedBy}
-          getFieldDecorator={getFieldDecorator}
-          predefinedFilterName={
-            PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
-          }
-        />
+      <Fragment>
+        <Form
+          layout="horizontal"
+          style={FormStyle}
+          onSubmit={this.handleSubmit}
+        >
+          <DateField
+            fieldName="purchaseDate"
+            fieldLabel="Purchase Date"
+            initialValue={moment(Number(purchaseFormById.purchaseDate))}
+            required
+            requiredMessage="Please input a purchase date."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <KarkunField
+            required
+            requiredMessage="Please select a name for Received By / Returned By."
+            fieldName="receivedBy"
+            fieldLabel="Received By / Returned By"
+            placeholder="Received By / Returned By"
+            initialValue={purchaseFormById.refReceivedBy}
+            getFieldDecorator={getFieldDecorator}
+            predefinedFilterName={
+              PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
+            }
+          />
+          <KarkunField
+            required
+            requiredMessage="Please select a name for Purchased By / Returned To."
+            fieldName="purchasedBy"
+            fieldLabel="Purchased By / Returned To"
+            placeholder="Purchased By / Returned To"
+            initialValue={purchaseFormById.refPurchasedBy}
+            getFieldDecorator={getFieldDecorator}
+            predefinedFilterName={
+              PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
+            }
+          />
 
-        <Form.Item label="Purchaseed Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
+          <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
+            {this.getItemsField()}
+          </Form.Item>
 
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          required={false}
-          initialValue={purchaseFormById.notes}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="notes"
+            fieldLabel="Notes"
+            required={false}
+            initialValue={purchaseFormById.notes}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={purchaseFormById} />
+      </Fragment>
     );
   }
 }
@@ -193,6 +201,10 @@ const formMutation = gql`
       _id
       purchaseDate
       physicalStoreId
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
       items {
         stockItemId
         quantity
@@ -221,6 +233,10 @@ const formQuery = gql`
       purchasedBy
       physicalStoreId
       approvedOn
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
       items {
         stockItemId
         quantity

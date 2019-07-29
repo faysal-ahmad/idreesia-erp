@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
@@ -17,6 +17,7 @@ import {
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class EditForm extends Component {
   static propTypes = {
@@ -81,31 +82,34 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={locationById.name}
-          required
-          requiredMessage="Please input a name for the location."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <TreeSelectField
-          data={locationsByPhysicalStoreId}
-          skipValue={locationById._id}
-          fieldName="parentId"
-          fieldLabel="Parent Location"
-          initialValue={locationById.parentId}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-          initialValue={locationById.description}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={locationById.name}
+            required
+            requiredMessage="Please input a name for the location."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <TreeSelectField
+            data={locationsByPhysicalStoreId}
+            skipValue={locationById._id}
+            fieldName="parentId"
+            fieldLabel="Parent Location"
+            initialValue={locationById.parentId}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextAreaField
+            fieldName="description"
+            fieldLabel="Description"
+            initialValue={locationById.description}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={locationById} />
+      </Fragment>
     );
   }
 }
@@ -117,6 +121,10 @@ const formQuery = gql`
       name
       parentId
       description
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -138,6 +146,10 @@ const formMutation = gql`
       name
       parentId
       description
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
@@ -14,6 +14,7 @@ import {
   WithPhysicalStore,
   WithPhysicalStoreId,
 } from "/imports/ui/modules/inventory/common/composers";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 class EditForm extends Component {
   static propTypes = {
@@ -67,17 +68,20 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={itemCategoryById.name}
-          required
-          requiredMessage="Please input a name for the item category."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={itemCategoryById.name}
+            required
+            requiredMessage="Please input a name for the item category."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={itemCategoryById} />
+      </Fragment>
     );
   }
 }
@@ -87,6 +91,10 @@ const formQuery = gql`
     itemCategoryById(id: $id) {
       _id
       name
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
@@ -96,6 +104,10 @@ const formMutation = gql`
     updateItemCategory(id: $id, name: $name) {
       _id
       name
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;

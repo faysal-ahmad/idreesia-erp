@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import moment from "moment";
@@ -22,6 +22,7 @@ import {
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
 import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
+import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 const FormStyle = {
   width: "800px",
@@ -144,69 +145,76 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
-        <DateField
-          fieldName="issueDate"
-          fieldLabel="Issue Date"
-          initialValue={moment(Number(issuanceFormById.issueDate))}
-          required
-          requiredMessage="Please input an issue date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <KarkunField
-          required
-          requiredMessage="Please select a name for Issued By / Received By."
-          fieldName="issuedBy"
-          fieldLabel="Issued By / Received By"
-          placeholder="Issued By / Received By"
-          initialValue={issuanceFormById.refIssuedBy}
-          getFieldDecorator={getFieldDecorator}
-          predefinedFilterName={
-            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
-          }
-        />
-        <KarkunField
-          required
-          requiredMessage="Please select a name for Issued To / Returned By."
-          fieldName="issuedTo"
-          fieldLabel="Issued To / Returned By"
-          placeholder="Issued To / Returned By"
-          initialValue={issuanceFormById.refIssuedTo}
-          getFieldDecorator={getFieldDecorator}
-          predefinedFilterName={
-            PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
-          }
-        />
-        <InputTextField
-          fieldName="handedOverTo"
-          fieldLabel="Handed Over To / By"
-          required={false}
-          initialValue={issuanceFormById.handedOverTo}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <TreeSelectField
-          data={locationsByPhysicalStoreId}
-          fieldName="locationId"
-          fieldLabel="For Location"
-          placeholder="Select a Location"
-          initialValue={issuanceFormById.locationId}
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form
+          layout="horizontal"
+          style={FormStyle}
+          onSubmit={this.handleSubmit}
+        >
+          <DateField
+            fieldName="issueDate"
+            fieldLabel="Issue Date"
+            initialValue={moment(Number(issuanceFormById.issueDate))}
+            required
+            requiredMessage="Please input an issue date."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <KarkunField
+            required
+            requiredMessage="Please select a name for Issued By / Received By."
+            fieldName="issuedBy"
+            fieldLabel="Issued By / Received By"
+            placeholder="Issued By / Received By"
+            initialValue={issuanceFormById.refIssuedBy}
+            getFieldDecorator={getFieldDecorator}
+            predefinedFilterName={
+              PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
+            }
+          />
+          <KarkunField
+            required
+            requiredMessage="Please select a name for Issued To / Returned By."
+            fieldName="issuedTo"
+            fieldLabel="Issued To / Returned By"
+            placeholder="Issued To / Returned By"
+            initialValue={issuanceFormById.refIssuedTo}
+            getFieldDecorator={getFieldDecorator}
+            predefinedFilterName={
+              PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
+            }
+          />
+          <InputTextField
+            fieldName="handedOverTo"
+            fieldLabel="Handed Over To / By"
+            required={false}
+            initialValue={issuanceFormById.handedOverTo}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <TreeSelectField
+            data={locationsByPhysicalStoreId}
+            fieldName="locationId"
+            fieldLabel="For Location"
+            placeholder="Select a Location"
+            initialValue={issuanceFormById.locationId}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
+          <Form.Item label="Issued Items" {...formItemExtendedLayout}>
+            {this.getItemsField()}
+          </Form.Item>
 
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          required={false}
-          initialValue={issuanceFormById.notes}
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="notes"
+            fieldLabel="Notes"
+            required={false}
+            initialValue={issuanceFormById.notes}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={issuanceFormById} />
+      </Fragment>
     );
   }
 }
@@ -238,6 +246,10 @@ const formMutation = gql`
       issueDate
       locationId
       physicalStoreId
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
       items {
         stockItemId
         quantity
@@ -267,6 +279,10 @@ const formQuery = gql`
       locationId
       physicalStoreId
       approvedOn
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
       items {
         stockItemId
         quantity

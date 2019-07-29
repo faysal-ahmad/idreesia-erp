@@ -97,14 +97,14 @@ class ViewForm extends Component {
         />
         <InputTextField
           fieldName="purchasedBy"
-          fieldLabel="Purchaseed By"
+          fieldLabel="Purchased By"
           initialValue={purchaseFormById.refPurchasedBy.name}
           required
           requiredMessage="Please input a name in purchased by."
           getFieldDecorator={getFieldDecorator}
         />
 
-        <Form.Item label="Purchaseed Items" {...formItemExtendedLayout}>
+        <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>
 

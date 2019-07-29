@@ -5,8 +5,7 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import { ItemsList } from "../common/items-list";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { ItemsList } from "../../common/items-list";
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
@@ -272,15 +271,6 @@ export default compose(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { formId } = match.params;
-      return { variables: { _id: formId } };
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Purchase Forms, Edit`;
-    }
-    return `Inventory, Purchase Forms, Edit`;
+    options: ({ purchaseFormId }) => ({ variables: { _id: purchaseFormId } }),
   })
 )(EditForm);

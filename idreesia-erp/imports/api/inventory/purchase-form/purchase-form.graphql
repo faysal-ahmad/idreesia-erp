@@ -6,7 +6,9 @@ type PurchaseForm {
   physicalStoreId: String
   items: [ItemWithQuantityAndPrice]
   notes: String
+  attachmentIds: [String]
 
+  attachments: [Attachment]
   refReceivedBy: KarkunType
   refPurchasedBy: KarkunType
   refCreatedBy: KarkunType
@@ -59,6 +61,17 @@ extend type Mutation {
   ): PurchaseForm
 
   approvePurchaseForm(_id: String!): PurchaseForm
+
+  addFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): Voucher
+  removeFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): Voucher
 
   removePurchaseForm(_id: String!): Int
 }

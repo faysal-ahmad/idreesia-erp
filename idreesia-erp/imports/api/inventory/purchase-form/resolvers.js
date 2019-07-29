@@ -3,6 +3,7 @@ import {
   PurchaseForms,
   StockItems,
 } from "meteor/idreesia-common/collections/inventory";
+import { Attachments } from "meteor/idreesia-common/collections/common";
 import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 
@@ -10,6 +11,14 @@ import getPurchaseForms, { getPurchaseFormsByStockItemId } from "./queries";
 
 export default {
   PurchaseForm: {
+    attachments: purchaseForm => {
+      const { attachmentIds } = purchaseForm;
+      if (attachmentIds && attachmentIds.length > 0) {
+        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
+      }
+
+      return [];
+    },
     refReceivedBy: purchaseForm =>
       Karkuns.findOne({
         _id: { $eq: purchaseForm.receivedBy },
@@ -240,6 +249,74 @@ export default {
         },
       });
 
+      return PurchaseForms.findOne(_id);
+    },
+
+    addFormAttachment(obj, { _id, physicalStoreId, attachmentId }, { user }) {
+      if (
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
+        ])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Purchase Forms in the System."
+        );
+      }
+
+      const date = new Date();
+      PurchaseForms.update(
+        {
+          _id,
+          physicalStoreId,
+        },
+        {
+          $addToSet: {
+            attachmentIds: attachmentId,
+          },
+          $set: {
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
+
+      return PurchaseForms.findOne(_id);
+    },
+
+    removeFormAttachment(
+      obj,
+      { _id, physicalStoreId, attachmentId },
+      { user }
+    ) {
+      if (
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
+        ])
+      ) {
+        throw new Error(
+          "You do not have permission to manage Purchase Forms in the System."
+        );
+      }
+
+      const date = new Date();
+      PurchaseForms.update(
+        { _id, physicalStoreId },
+        {
+          $pull: {
+            attachmentIds: attachmentId,
+          },
+          $set: {
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
+
+      Attachments.remove(attachmentId);
       return PurchaseForms.findOne(_id);
     },
 

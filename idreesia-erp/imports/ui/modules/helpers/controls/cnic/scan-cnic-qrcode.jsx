@@ -28,7 +28,18 @@ export default class ScanCnicQRCode extends Component {
       this.keyBuffer = [];
 
       let barcode;
-      if (scannedInput.length === 26) {
+      if (scannedInput.length === 25) {
+        barcode = `${scannedInput.slice(11, 16)}-${scannedInput.slice(
+          16,
+          23
+        )}-${scannedInput.slice(23, 24)}`;
+
+        this.setState({ code: barcode });
+        const { onCnicCaptured } = this.props;
+        if (onCnicCaptured) {
+          onCnicCaptured(barcode);
+        }
+      } else if (scannedInput.length === 26) {
         barcode = `${scannedInput.slice(12, 17)}-${scannedInput.slice(
           17,
           24

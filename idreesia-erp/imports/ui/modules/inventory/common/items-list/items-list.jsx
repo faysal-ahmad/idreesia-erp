@@ -2,16 +2,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
-import { Button, Table, message } from "antd";
+import { Icon, Table, Tooltip, message } from "antd";
 import { filter, find } from "lodash";
 
 import { default as ItemForm } from "./item-form";
 
-const ButtonBarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-end",
-  width: "100%",
+const IconStyle = {
+  cursor: "pointer",
+  fontSize: 20,
 };
 
 class ItemsList extends Component {
@@ -25,6 +23,7 @@ class ItemsList extends Component {
     outflowLabel: PropTypes.string,
     loading: PropTypes.bool,
     stockItemsById: PropTypes.array,
+    showPrice: PropTypes.bool,
     refForm: PropTypes.object,
   };
 
@@ -37,44 +36,21 @@ class ItemsList extends Component {
     this.state = {
       referenceStockItems: [],
       stockItems: props.value
-        ? props.value.map(({ stockItemId, quantity, isInflow }) => ({
+        ? props.value.map(({ stockItemId, quantity, price, isInflow }) => ({
             stockItemId,
             quantity,
+            price,
             isInflow,
           }))
         : [],
-      selectedStockItemIds: [],
     };
   }
-
-  handleRemoveItemClicked = () => {
-    const { stockItems, selectedStockItemIds } = this.state;
-    if (selectedStockItemIds && selectedStockItemIds.length > 0) {
-      const updatedItemStocks = filter(stockItems, stockItem => {
-        const rowKey = `${stockItem.stockItemId}_${
-          stockItem.isInflow ? "inflow" : "outflow"
-        }`;
-        return selectedStockItemIds.indexOf(rowKey) === -1;
-      });
-
-      const state = Object.assign({}, this.state, {
-        stockItems: updatedItemStocks,
-        selectedStockItemIds: [],
-      });
-      this.setState(state);
-
-      const { onChange } = this.props;
-      if (onChange) {
-        onChange(updatedItemStocks);
-      }
-    }
-  };
 
   handleAddItem = () => {
     const { refForm, outflowLabel } = this.props;
     const { referenceStockItems } = this.state;
     const fieldValues = refForm.getFieldsValue();
-    const { stockItem, quantity, status } = fieldValues;
+    const { stockItem, quantity, price, status } = fieldValues;
     if (!stockItem || !quantity || !status) {
       message.info(
         "You need to select a stock item, and specify the quantity.",
@@ -105,9 +81,15 @@ class ItemsList extends Component {
       isInflow,
     });
     if (!existingItem) {
-      stockItems.push({ stockItemId: stockItem._id, quantity, isInflow });
+      stockItems.push({
+        stockItemId: stockItem._id,
+        quantity,
+        isInflow,
+        price,
+      });
     } else {
       existingItem.quantity += quantity;
+      existingItem.price += price;
     }
 
     this.setState({ stockItems });
@@ -116,14 +98,7 @@ class ItemsList extends Component {
       onChange(stockItems);
     }
 
-    refForm.resetFields(["stockItem", "quantity", "status"]);
-  };
-
-  handleRowSelectionChanged = selectedRowKeys => {
-    const state = Object.assign({}, this.state, {
-      selectedStockItemIds: selectedRowKeys,
-    });
-    this.setState(state);
+    refForm.resetFields(["stockItem", "quantity", "price", "status"]);
   };
 
   getStockItemName(stockItemId) {
@@ -136,10 +111,9 @@ class ItemsList extends Component {
     return null;
   }
 
-  columns = () => {
-    const { inflowLabel, outflowLabel } = this.props;
-
-    return [
+  getColumns = () => {
+    const { inflowLabel, outflowLabel, showPrice, readOnly } = this.props;
+    const columns = [
       {
         title: "Item Name",
         dataIndex: "stockItemId",
@@ -158,6 +132,32 @@ class ItemsList extends Component {
         },
       },
     ];
+
+    if (showPrice) {
+      columns.push({
+        title: "Price",
+        dataIndex: "price",
+        key: "price",
+      });
+    }
+
+    if (!readOnly) {
+      columns.push({
+        key: "actions",
+        render: (text, record) => (
+          <Tooltip title="Delete">
+            <Icon
+              type="delete"
+              style={IconStyle}
+              onClick={() => {
+                this.handleDeleteClicked(record);
+              }}
+            />
+          </Tooltip>
+        ),
+      });
+    }
+    return columns;
   };
 
   getTableHeader = () => {
@@ -168,6 +168,7 @@ class ItemsList extends Component {
       defaultLabel,
       inflowLabel,
       outflowLabel,
+      showPrice,
     } = this.props;
 
     if (readOnly) return null;
@@ -178,49 +179,42 @@ class ItemsList extends Component {
         defaultLabel={defaultLabel}
         inflowLabel={inflowLabel}
         outflowLabel={outflowLabel}
+        showPrice={showPrice}
         handleAddItem={this.handleAddItem}
       />
     );
   };
 
+  handleDeleteClicked = ({ stockItemId, isInflow }) => {
+    const { stockItems } = this.state;
+    const updatedItemStocks = filter(
+      stockItems,
+      item => item.stockItemId !== stockItemId || item.isInflow !== isInflow
+    );
+    this.setState({
+      stockItems: updatedItemStocks,
+    });
+
+    const { onChange } = this.props;
+    if (onChange) {
+      onChange(updatedItemStocks);
+    }
+  };
+
   render() {
-    const { loading, readOnly } = this.props;
+    const { loading } = this.props;
     if (loading) return null;
-    const { selectedStockItemIds } = this.state;
-    const rowSelection = readOnly
-      ? null
-      : {
-          selectedRowKeys: selectedStockItemIds,
-          onChange: this.handleRowSelectionChanged,
-        };
 
     return (
       <Table
         rowKey={item =>
           `${item.stockItemId}_${item.isInflow ? "inflow" : "outflow"}`
         }
-        rowSelection={rowSelection}
-        columns={this.columns()}
+        columns={this.getColumns()}
         bordered
         pagination={false}
         dataSource={this.state.stockItems}
         title={this.getTableHeader}
-        footer={
-          this.props.readOnly
-            ? null
-            : () => (
-                <div style={ButtonBarStyle}>
-                  <Button
-                    type="default"
-                    icon="minus-circle-o"
-                    onClick={this.handleRemoveItemClicked}
-                    disabled={selectedStockItemIds.length === 0}
-                  >
-                    Remove Item
-                  </Button>
-                </div>
-              )
-        }
       />
     );
   }

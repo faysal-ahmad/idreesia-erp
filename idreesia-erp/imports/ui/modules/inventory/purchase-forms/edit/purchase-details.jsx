@@ -115,6 +115,7 @@ class EditForm extends Component {
         defaultLabel="Purchased"
         inflowLabel="Purchased"
         outflowLabel="Returned"
+        showPrice
         physicalStoreId={physicalStoreId}
       />
     );

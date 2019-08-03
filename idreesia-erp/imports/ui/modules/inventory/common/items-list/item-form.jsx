@@ -21,6 +21,7 @@ const ItemForm = ({
   inflowLabel,
   outflowLabel,
   handleAddItem,
+  showPrice,
 }) => (
   <Row type="flex" justify="start" style={RowStyle}>
     <StockItemField
@@ -37,6 +38,15 @@ const ItemForm = ({
       minValue={1}
       getFieldDecorator={getFieldDecorator}
     />
+    {showPrice ? (
+      <InputNumberField
+        fieldName="price"
+        placeholder="Price"
+        fieldLayout={null}
+        minValue={1}
+        getFieldDecorator={getFieldDecorator}
+      />
+    ) : null}
     <SelectField
       allowClear={false}
       data={[
@@ -65,6 +75,7 @@ ItemForm.propTypes = {
   defaultLabel: PropTypes.string,
   inflowLabel: PropTypes.string,
   outflowLabel: PropTypes.string,
+  showPrice: PropTypes.bool,
   handleAddItem: PropTypes.func,
 };
 

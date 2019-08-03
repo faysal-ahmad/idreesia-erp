@@ -42,7 +42,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     startDate,
     endDate,
     pageIndex = "0",
-    pageSize = "10",
+    pageSize = "20",
   } = params;
 
   if (showApproved === "false" && showUnapproved === "false") {

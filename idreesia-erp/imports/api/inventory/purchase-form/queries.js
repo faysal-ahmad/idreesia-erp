@@ -42,7 +42,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     endDate,
     vendorId,
     pageIndex = "0",
-    pageSize = "10",
+    pageSize = "20",
   } = params;
 
   if (showApproved === "false" && showUnapproved === "false") {

@@ -95,14 +95,6 @@ class ListFilter extends Component {
               initialValue={status}
               getFieldDecorator={getFieldDecorator}
             />
-            <TreeSelectField
-              data={allLocations}
-              fieldName="locationId"
-              fieldLabel="Location"
-              fieldLayout={formItemLayout}
-              initialValue={locationId}
-              getFieldDecorator={getFieldDecorator}
-            />
             <DateField
               fieldName="startDate"
               fieldLabel="Start Date"
@@ -119,6 +111,15 @@ class ListFilter extends Component {
               initialValue={mEndDate.isValid() ? mEndDate : null}
               getFieldDecorator={getFieldDecorator}
             />
+            <TreeSelectField
+              data={allLocations}
+              fieldName="locationId"
+              fieldLabel="Location"
+              fieldLayout={formItemLayout}
+              initialValue={locationId}
+              getFieldDecorator={getFieldDecorator}
+            />
+
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleReset}>

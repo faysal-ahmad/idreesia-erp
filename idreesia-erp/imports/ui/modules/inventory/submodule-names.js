@@ -4,6 +4,7 @@ export default class SubModuleNames {
   static purchaseForms = "Purchase Forms";
   static stockAdjustments = "Stock Adjustments";
 
+  static vendors = "Vendors";
   static itemCategories = "Item Categories";
   static locations = "Locations";
 }

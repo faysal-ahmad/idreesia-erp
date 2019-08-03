@@ -32,6 +32,19 @@ export default class SubModulePaths {
     return `${SubModulePaths.locationsPath(physicalStoreId)}/${locationId}`;
   }
 
+  static vendorsPath(physicalStoreId = ":physicalStoreId") {
+    return `${ModulePaths.inventory}/${physicalStoreId}/vendors`;
+  }
+  static vendorsNewFormPath(physicalStoreId = ":physicalStoreId") {
+    return `${SubModulePaths.vendorsPath(physicalStoreId)}/new`;
+  }
+  static vendorsEditFormPath(
+    physicalStoreId = ":physicalStoreId",
+    vendorId = ":vendorId"
+  ) {
+    return `${SubModulePaths.vendorsPath(physicalStoreId)}/${vendorId}`;
+  }
+
   // *************************************************************************************
   // Stock Items Routes
   // *************************************************************************************

@@ -1,0 +1,43 @@
+type Vendor {
+  _id: String
+  physicalStoreId: String
+  name: String
+  contactPerson: String
+  contactNumber: String
+  address: String
+  notes: String
+
+  usageCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  vendorById(_id: String!): Vendor
+  vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
+}
+
+extend type Mutation {
+  createVendor(
+    name: String!
+    physicalStoreId: String!
+    contactPerson: String
+    contactNumber: String
+    address: String
+    notes: String
+  ): Vendor
+
+  updateVendor(
+    _id: String!
+    name: String
+    contactPerson: String
+    contactNumber: String
+    address: String
+    notes: String
+  ): Vendor
+
+  removeVendor(_id: String!): Int
+}

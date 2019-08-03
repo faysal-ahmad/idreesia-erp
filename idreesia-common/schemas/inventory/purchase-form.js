@@ -1,33 +1,38 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from "simpl-schema";
 
-import { ItemWithQuantityAndPrice } from './common';
-import { approvable, identifiable, timestamps } from '../common';
+import { ItemWithQuantityAndPrice } from "./common";
+import { approvable, identifiable, timestamps } from "../common";
 
 export default new SimpleSchema({
   purchaseDate: {
-    type: Date,
+    type: Date
   },
   receivedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
+    regEx: SimpleSchema.RegEx.Id
   },
   purchasedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
+    regEx: SimpleSchema.RegEx.Id
   },
   physicalStoreId: {
     type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  vendorId: {
+    type: String,
     regEx: SimpleSchema.RegEx.Id,
+    optional: true
   },
   items: {
-    type: Array,
+    type: Array
   },
-  'items.$': {
-    type: ItemWithQuantityAndPrice,
+  "items.$": {
+    type: ItemWithQuantityAndPrice
   },
   notes: {
     type: String,
-    optional: true,
+    optional: true
   },
   attachmentIds: {
     type: Array,

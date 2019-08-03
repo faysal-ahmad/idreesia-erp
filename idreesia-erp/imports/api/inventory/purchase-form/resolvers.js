@@ -2,6 +2,7 @@ import { Karkuns } from "meteor/idreesia-common/collections/hr";
 import {
   PurchaseForms,
   StockItems,
+  Vendors,
 } from "meteor/idreesia-common/collections/inventory";
 import { Attachments } from "meteor/idreesia-common/collections/common";
 import { hasInstanceAccess, hasOnePermission } from "/imports/api/security";
@@ -43,6 +44,10 @@ export default {
       }
       return null;
     },
+    refVendor: purchaseForm =>
+      Vendors.findOne({
+        _id: { $eq: purchaseForm.vendorId },
+      }),
   },
   Query: {
     purchaseFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
@@ -100,7 +105,15 @@ export default {
   Mutation: {
     createPurchaseForm(
       obj,
-      { purchaseDate, receivedBy, purchasedBy, physicalStoreId, items, notes },
+      {
+        purchaseDate,
+        receivedBy,
+        purchasedBy,
+        physicalStoreId,
+        vendorId,
+        items,
+        notes,
+      },
       { user }
     ) {
       if (
@@ -126,6 +139,7 @@ export default {
         receivedBy,
         purchasedBy,
         physicalStoreId,
+        vendorId,
         items,
         notes,
         createdAt: date,
@@ -153,6 +167,7 @@ export default {
         receivedBy,
         purchasedBy,
         physicalStoreId,
+        vendorId,
         items,
         notes,
       },
@@ -208,6 +223,7 @@ export default {
             receivedBy,
             purchasedBy,
             physicalStoreId,
+            vendorId,
             items,
             notes,
             updatedAt: date,

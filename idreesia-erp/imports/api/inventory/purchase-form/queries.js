@@ -40,6 +40,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     showUnapproved,
     startDate,
     endDate,
+    vendorId,
     pageIndex = "0",
     pageSize = "10",
   } = params;
@@ -86,6 +87,16 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
       },
     });
   }
+
+  if (vendorId) {
+    pipeline.push({
+      $match: { vendorId: { $eq: vendorId } },
+    });
+  }
+
+  pipeline.push({
+    $sort: { purchaseDate: -1 },
+  });
 
   const countingPipeline = pipeline.concat({
     $count: "total",

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { Divider, Form, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -9,9 +9,11 @@ import { ItemsList } from "../../common/items-list";
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
+  WithVendorsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
+  SelectField,
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
@@ -25,8 +27,8 @@ const FormStyle = {
 };
 
 const formItemExtendedLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 0 },
+  wrapperCol: { span: 20 },
 };
 
 class EditForm extends Component {
@@ -37,6 +39,8 @@ class EditForm extends Component {
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
+    vendorsLoading: PropTypes.bool,
+    vendorsByPhysicalStoreId: PropTypes.array,
     formDataLoading: PropTypes.bool,
     purchaseFormById: PropTypes.object,
     updatePurchaseForm: PropTypes.func,
@@ -57,7 +61,10 @@ class EditForm extends Component {
       purchaseFormById: { _id },
     } = this.props;
     form.validateFields(
-      (err, { purchaseDate, receivedBy, purchasedBy, items, notes }) => {
+      (
+        err,
+        { purchaseDate, vendorId, receivedBy, purchasedBy, items, notes }
+      ) => {
         if (err) return;
 
         const updatedItems = items.map(
@@ -71,6 +78,7 @@ class EditForm extends Component {
           variables: {
             _id,
             purchaseDate,
+            vendorId,
             receivedBy: receivedBy._id,
             purchasedBy: purchasedBy._id,
             physicalStoreId,
@@ -113,8 +121,13 @@ class EditForm extends Component {
   }
 
   render() {
-    const { formDataLoading, purchaseFormById } = this.props;
-    if (formDataLoading) return null;
+    const {
+      formDataLoading,
+      vendorsLoading,
+      purchaseFormById,
+      vendorsByPhysicalStoreId,
+    } = this.props;
+    if (formDataLoading || vendorsLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
 
@@ -131,6 +144,15 @@ class EditForm extends Component {
             initialValue={moment(Number(purchaseFormById.purchaseDate))}
             required
             requiredMessage="Please input a purchase date."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SelectField
+            data={vendorsByPhysicalStoreId}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name }) => name}
+            fieldName="vendorId"
+            fieldLabel="Vendor"
+            initialValue={purchaseFormById.vendorId}
             getFieldDecorator={getFieldDecorator}
           />
           <KarkunField
@@ -157,11 +179,6 @@ class EditForm extends Component {
               PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
             }
           />
-
-          <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
-            {this.getItemsField()}
-          </Form.Item>
-
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
@@ -169,6 +186,11 @@ class EditForm extends Component {
             initialValue={purchaseFormById.notes}
             getFieldDecorator={getFieldDecorator}
           />
+
+          <Divider>Purchased / Returned Items</Divider>
+          <Form.Item {...formItemExtendedLayout}>
+            {this.getItemsField()}
+          </Form.Item>
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
@@ -185,6 +207,7 @@ const formMutation = gql`
     $receivedBy: String!
     $purchasedBy: String!
     $physicalStoreId: String!
+    $vendorId: String
     $items: [ItemWithQuantityAndPriceInput]
     $notes: String
   ) {
@@ -194,12 +217,14 @@ const formMutation = gql`
       receivedBy: $receivedBy
       purchasedBy: $purchasedBy
       physicalStoreId: $physicalStoreId
+      vendorId: $vendorId
       items: $items
       notes: $notes
     ) {
       _id
       purchaseDate
       physicalStoreId
+      vendorId
       createdAt
       createdBy
       updatedAt
@@ -231,6 +256,7 @@ const formQuery = gql`
       receivedBy
       purchasedBy
       physicalStoreId
+      vendorId
       approvedOn
       createdAt
       createdBy
@@ -259,6 +285,7 @@ export default compose(
   Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
+  WithVendorsByPhysicalStore(),
   graphql(formMutation, {
     name: "updatePurchaseForm",
     options: {
@@ -266,6 +293,7 @@ export default compose(
         "pagedPurchaseForms",
         "purchaseFormsByStockItem",
         "pagedStockItems",
+        "vendorsByPhysicalStoreId",
       ],
     },
   }),

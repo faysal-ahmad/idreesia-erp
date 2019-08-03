@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { Divider, Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -9,9 +9,11 @@ import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
+  WithVendorsByPhysicalStore,
 } from "/imports/ui/modules/inventory/common/composers";
 import {
   DateField,
+  SelectField,
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
@@ -24,8 +26,8 @@ const FormStyle = {
 };
 
 const formItemExtendedLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 0 },
+  wrapperCol: { span: 20 },
 };
 
 class NewForm extends Component {
@@ -36,7 +38,8 @@ class NewForm extends Component {
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
-    loading: PropTypes.bool,
+    vendorsLoading: PropTypes.bool,
+    vendorsByPhysicalStoreId: PropTypes.array,
     createPurchaseForm: PropTypes.func,
   };
 
@@ -49,12 +52,16 @@ class NewForm extends Component {
     e.preventDefault();
     const { form, history, physicalStoreId, createPurchaseForm } = this.props;
     form.validateFields(
-      (err, { purchaseDate, receivedBy, purchasedBy, items, notes }) => {
+      (
+        err,
+        { purchaseDate, vendorId, receivedBy, purchasedBy, items, notes }
+      ) => {
         if (err) return;
 
         createPurchaseForm({
           variables: {
             purchaseDate,
+            vendorId,
             receivedBy: receivedBy._id,
             purchasedBy: purchasedBy._id,
             physicalStoreId,
@@ -94,6 +101,8 @@ class NewForm extends Component {
   }
 
   render() {
+    const { vendorsLoading, vendorsByPhysicalStoreId } = this.props;
+    if (vendorsLoading) return null;
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -103,6 +112,14 @@ class NewForm extends Component {
           fieldLabel="Purchase Date"
           required
           requiredMessage="Please input a purchase date."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          data={vendorsByPhysicalStoreId}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="vendorId"
+          fieldLabel="Vendor"
           getFieldDecorator={getFieldDecorator}
         />
         <KarkunField
@@ -128,16 +145,17 @@ class NewForm extends Component {
           }
         />
 
-        <Form.Item label="Purchased Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
-
         <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
+
+        <Divider>Purchased / Returned Items</Divider>
+        <Form.Item {...formItemExtendedLayout}>
+          {this.getItemsField()}
+        </Form.Item>
 
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
@@ -151,6 +169,7 @@ const formMutation = gql`
     $receivedBy: String!
     $purchasedBy: String!
     $physicalStoreId: String!
+    $vendorId: String
     $items: [ItemWithQuantityAndPriceInput]
     $notes: String
   ) {
@@ -159,12 +178,14 @@ const formMutation = gql`
       receivedBy: $receivedBy
       purchasedBy: $purchasedBy
       physicalStoreId: $physicalStoreId
+      vendorId: $vendorId
       items: $items
       notes: $notes
     ) {
       _id
       purchaseDate
       physicalStoreId
+      vendorId
       items {
         stockItemId
         quantity
@@ -188,6 +209,7 @@ export default compose(
   Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
+  WithVendorsByPhysicalStore(),
   graphql(formMutation, {
     name: "createPurchaseForm",
     options: {
@@ -195,6 +217,7 @@ export default compose(
         "pagedPurchaseForms",
         "purchaseFormsByStockItem",
         "pagedStockItems",
+        "vendorsByPhysicalStoreId",
       ],
     },
   }),

@@ -4,6 +4,7 @@ type PurchaseForm {
   receivedBy: String
   purchasedBy: String
   physicalStoreId: String
+  vendorId: String
   items: [ItemWithQuantityAndPrice]
   notes: String
   attachmentIds: [String]
@@ -14,6 +15,7 @@ type PurchaseForm {
   refCreatedBy: KarkunType
   refUpdatedBy: KarkunType
   refApprovedBy: KarkunType
+  refVendor: Vendor
 
   createdAt: String
   createdBy: String
@@ -46,6 +48,7 @@ extend type Mutation {
     receivedBy: String!
     purchasedBy: String!
     physicalStoreId: String!
+    vendorId: String
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
@@ -56,6 +59,7 @@ extend type Mutation {
     receivedBy: String!
     purchasedBy: String!
     physicalStoreId: String!
+    vendorId: String
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm

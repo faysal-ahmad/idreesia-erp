@@ -2,9 +2,15 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 import moment from "moment";
+import { compose } from "react-apollo";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { CheckboxField, DateField } from "/imports/ui/modules/helpers/fields";
+import {
+  CheckboxField,
+  DateField,
+  SelectField,
+} from "/imports/ui/modules/helpers/fields";
+import { WithVendorsByPhysicalStore } from "/imports/ui/modules/inventory/common/composers";
 
 const ContainerStyle = {
   width: "500px",
@@ -25,27 +31,40 @@ class ListFilter extends Component {
 
     refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
+    vendorsLoading: PropTypes.bool,
+    vendorsByPhysicalStoreId: PropTypes.array,
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { form, refreshPage } = this.props;
 
-    form.validateFields((err, { approvalStatus, startDate, endDate }) => {
-      if (err) return;
-      refreshPage({
-        approvalStatus,
-        startDate,
-        endDate,
-        pageIndex: 0,
-      });
-    });
+    form.validateFields(
+      (err, { approvalStatus, startDate, endDate, vendorId }) => {
+        if (err) return;
+        refreshPage({
+          approvalStatus,
+          startDate,
+          endDate,
+          vendorId,
+          pageIndex: 0,
+        });
+      }
+    );
   };
 
   render() {
+    const { vendorsLoading, vendorsByPhysicalStoreId } = this.props;
+    if (vendorsLoading) return null;
     const { getFieldDecorator } = this.props.form;
     const {
-      queryParams: { startDate, endDate, showApproved, showUnapproved },
+      queryParams: {
+        startDate,
+        endDate,
+        vendorId,
+        showApproved,
+        showUnapproved,
+      },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -85,6 +104,16 @@ class ListFilter extends Component {
               initialValue={mEndDate.isValid() ? mEndDate : null}
               getFieldDecorator={getFieldDecorator}
             />
+            <SelectField
+              data={vendorsByPhysicalStoreId}
+              getDataValue={({ _id }) => _id}
+              getDataText={({ name }) => name}
+              fieldName="vendorId"
+              fieldLabel="Vendor"
+              fieldLayout={formItemLayout}
+              initialValue={vendorId}
+              getFieldDecorator={getFieldDecorator}
+            />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleCancel}>
@@ -103,4 +132,4 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create()(ListFilter);
+export default compose(WithVendorsByPhysicalStore(), Form.create())(ListFilter);

@@ -160,6 +160,7 @@ class List extends Component {
       approvalStatus,
       startDate,
       endDate,
+      vendorId,
       pageIndex,
       pageSize,
     } = newParams;
@@ -187,6 +188,10 @@ class List extends Component {
       endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : "";
     else endDateVal = queryParams.endDateVal || "";
 
+    let vendorIdVal;
+    if (newParams.hasOwnProperty("vendorId")) vendorIdVal = vendorId || "";
+    else vendorIdVal = queryParams.vendorId || "";
+
     let pageIndexVal;
     if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
@@ -197,7 +202,7 @@ class List extends Component {
 
     const path = `${
       location.pathname
-    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&vendorId=${vendorIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -257,7 +262,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { queryParams } = this.props;
+    const { physicalStoreId, queryParams } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -268,7 +273,11 @@ class List extends Component {
         >
           New Purchase Form
         </Button>
-        <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />
+        <ListFilter
+          physicalStoreId={physicalStoreId}
+          refreshPage={this.refreshPage}
+          queryParams={queryParams}
+        />
       </div>
     );
   };

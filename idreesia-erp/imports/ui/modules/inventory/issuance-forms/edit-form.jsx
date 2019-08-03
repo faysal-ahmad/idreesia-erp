@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { Divider, Form, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
@@ -29,8 +29,8 @@ const FormStyle = {
 };
 
 const formItemExtendedLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 0 },
+  wrapperCol: { span: 20 },
 };
 
 class EditForm extends Component {
@@ -199,10 +199,6 @@ class EditForm extends Component {
             getFieldDecorator={getFieldDecorator}
           />
 
-          <Form.Item label="Issued Items" {...formItemExtendedLayout}>
-            {this.getItemsField()}
-          </Form.Item>
-
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
@@ -210,6 +206,11 @@ class EditForm extends Component {
             initialValue={issuanceFormById.notes}
             getFieldDecorator={getFieldDecorator}
           />
+
+          <Divider>Issued / Returned Items</Divider>
+          <Form.Item {...formItemExtendedLayout}>
+            {this.getItemsField()}
+          </Form.Item>
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>

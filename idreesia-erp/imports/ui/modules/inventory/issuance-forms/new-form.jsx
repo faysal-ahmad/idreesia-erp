@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { Divider, Form, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -27,8 +27,8 @@ const FormStyle = {
 };
 
 const formItemExtendedLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 0 },
+  wrapperCol: { span: 20 },
 };
 
 class NewForm extends Component {
@@ -163,16 +163,17 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <Form.Item label="Issued Items" {...formItemExtendedLayout}>
-          {this.getItemsField()}
-        </Form.Item>
-
         <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
+
+        <Divider>Issued / Returned Items</Divider>
+        <Form.Item {...formItemExtendedLayout}>
+          {this.getItemsField()}
+        </Form.Item>
 
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>

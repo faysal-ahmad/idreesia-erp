@@ -30,6 +30,7 @@ const NameDivStyle = {
   alignItems: "center",
   width: "100%",
   cursor: "pointer",
+  color: "#1890ff",
 };
 
 const ActionsStyle = {

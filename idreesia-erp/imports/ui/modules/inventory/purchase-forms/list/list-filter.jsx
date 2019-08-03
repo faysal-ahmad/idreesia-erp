@@ -53,6 +53,17 @@ class ListFilter extends Component {
     );
   };
 
+  handleReset = () => {
+    const { refreshPage } = this.props;
+    refreshPage({
+      approvalStatus: ["approved", "unapproved"],
+      vendorId: "",
+      startDate: null,
+      endDate: null,
+      pageIndex: 0,
+    });
+  };
+
   render() {
     const { vendorsLoading, vendorsByPhysicalStoreId } = this.props;
     if (vendorsLoading) return null;
@@ -116,7 +127,7 @@ class ListFilter extends Component {
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleCancel}>
+                <Button type="default" onClick={this.handleReset}>
                   Reset
                 </Button>
                 &nbsp;

@@ -28,14 +28,19 @@ export default class AutoCompleteField extends Component {
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
     initialValue: PropTypes.string,
-    optionRenderer: PropTypes.func,
+    filterOption: PropTypes.func,
   };
 
   static defaultProps = {
     dataSource: [],
     initialValue: null,
     fieldLayout: formItemLayout,
-    optionRenderer: text => text,
+    filterOption: (_inputValue, option) => {
+      const key = option.key.toLowerCase();
+      const inputValue = _inputValue.toLowerCase();
+      if (key.startsWith(inputValue)) return true;
+      return false;
+    },
   };
 
   getField() {
@@ -47,6 +52,7 @@ export default class AutoCompleteField extends Component {
       placeholder,
       getFieldDecorator,
       initialValue,
+      filterOption,
     } = this.props;
 
     const rules = required
@@ -63,6 +69,7 @@ export default class AutoCompleteField extends Component {
         placeholder={placeholder}
         dataSource={dataSource}
         backfill
+        filterOption={filterOption}
       />
     );
   }

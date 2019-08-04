@@ -153,7 +153,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <Divider>Purchased / Returned Items</Divider>
+        <Divider orientation="left">Purchased / Returned Items</Divider>
         <Form.Item {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>

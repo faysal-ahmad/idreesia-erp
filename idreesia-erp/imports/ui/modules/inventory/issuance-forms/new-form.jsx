@@ -170,7 +170,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <Divider>Issued / Returned Items</Divider>
+        <Divider orientation="left">Issued / Returned Items</Divider>
         <Form.Item {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>

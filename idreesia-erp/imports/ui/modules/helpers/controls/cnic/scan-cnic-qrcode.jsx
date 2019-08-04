@@ -24,18 +24,30 @@ export default class ScanCnicQRCode extends Component {
 
   sendBarcode = debounce(
     () => {
+      const { onCnicCaptured } = this.props;
       const scannedInput = this.keyBuffer.join("");
-      this.keyBuffer = [];
+      setTimeout(() => {
+        this.keyBuffer = [];
+      }, 3000);
 
       let barcode;
-      if (scannedInput.length === 25) {
+      if (scannedInput.length === 15) {
+        barcode = `${scannedInput.slice(0, 5)}-${scannedInput.slice(
+          5,
+          12
+        )}-${scannedInput.slice(12, 13)}`;
+
+        this.setState({ code: barcode });
+        if (onCnicCaptured) {
+          onCnicCaptured(barcode);
+        }
+      } else if (scannedInput.length === 25) {
         barcode = `${scannedInput.slice(11, 16)}-${scannedInput.slice(
           16,
           23
         )}-${scannedInput.slice(23, 24)}`;
 
         this.setState({ code: barcode });
-        const { onCnicCaptured } = this.props;
         if (onCnicCaptured) {
           onCnicCaptured(barcode);
         }
@@ -46,15 +58,19 @@ export default class ScanCnicQRCode extends Component {
         )}-${scannedInput.slice(24, 25)}`;
 
         this.setState({ code: barcode });
-        const { onCnicCaptured } = this.props;
         if (onCnicCaptured) {
           onCnicCaptured(barcode);
         }
       } else if (scannedInput.length > 50) {
-        // Extract the CNIC number from the scanned input
+        // Old 2D CNIC Formats
         const parts = scannedInput.split("Enter");
-        if (parts.length === 10) {
-          const idPart = parts[1];
+        if (parts.length > 6) {
+          let idPart;
+          if (parts[2].lnegth >= 13) {
+            idPart = parts[2];
+          } else {
+            idPart = parts[1];
+          }
 
           barcode = idPart;
           if (idPart.length > 13) {
@@ -65,11 +81,12 @@ export default class ScanCnicQRCode extends Component {
           }
 
           this.setState({ code: barcode });
-          const { onCnicCaptured } = this.props;
           if (onCnicCaptured) {
             onCnicCaptured(barcode);
           }
         }
+      } else if (onCnicCaptured) {
+        onCnicCaptured(null);
       }
     },
     100,

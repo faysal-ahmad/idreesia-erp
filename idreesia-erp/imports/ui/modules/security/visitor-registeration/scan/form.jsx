@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, Divider, Row, Col } from "antd";
+import { Button, Divider, Row, Col, message } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
@@ -18,9 +18,13 @@ class Form extends Component {
   };
 
   onCnicCaptured = cnic => {
-    this.setState({
-      cnicNumber: cnic,
-    });
+    if (!cnic) {
+      message.error("CNIC number was not recognized.", 3);
+    } else {
+      this.setState({
+        cnicNumber: cnic,
+      });
+    }
   };
 
   handleSearch = () => {

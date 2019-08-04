@@ -48,9 +48,13 @@ export default {
         return null;
       }
 
-      return Visitors.findOne({
-        cnicNumber: { $eq: cnic },
-      });
+      if (cnic) {
+        return Visitors.findOne({
+          cnicNumber: { $eq: cnic },
+        });
+      }
+
+      return null;
     },
 
     distinctCities() {

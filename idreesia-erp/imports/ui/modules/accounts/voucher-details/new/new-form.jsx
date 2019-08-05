@@ -5,11 +5,12 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
 import {
-  InputTextField,
   InputTextAreaField,
   InputNumberField,
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
+import { WithAccountHeadsByCompany } from "/imports/ui/modules/accounts/common/composers";
+import { AccountSelectionField } from "/imports/ui/modules/accounts/common/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -17,6 +18,8 @@ class NewForm extends Component {
 
     companyId: PropTypes.string,
     voucherId: PropTypes.string,
+    accountHeadsLoading: PropTypes.bool,
+    accountHeadsByCompanyId: PropTypes.array,
     handleCloseForm: PropTypes.func,
     createVoucherDetail: PropTypes.func,
   };
@@ -60,13 +63,17 @@ class NewForm extends Component {
   };
 
   render() {
+    const { accountHeadsLoading, accountHeadsByCompanyId } = this.props;
+    if (accountHeadsLoading) return null;
     const { getFieldDecorator } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
+        <AccountSelectionField
+          data={accountHeadsByCompanyId}
           fieldName="accountHeadId"
           fieldLabel="Account"
+          showSearch
           required
           requiredMessage="Please select an account."
           getFieldDecorator={getFieldDecorator}
@@ -128,6 +135,7 @@ const formMutation = gql`
 
 export default compose(
   Form.create(),
+  WithAccountHeadsByCompany(),
   graphql(formMutation, {
     name: "createVoucherDetail",
     options: {

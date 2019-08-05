@@ -8,21 +8,7 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
-/**
- * data: Array of objects (containing text and value)
- * getDataValue: Function that returns the "value" from the above data object
- * getDataText: Function that returns the "text" from the above data object
- * fieldName: Name of the property in which the form field value would be saved.
- * fieldLabel: Label to display before the form field.
- * placeholder: Placeholder text to show in the form field.
- * fieldLayout: Layout settings for the form field.
- * required: Whether a value is required for this field.
- * requiredMessage: Message to show if the value is not entered.
- * getFieldDecorator: Function from the Form component.
- * initialValue: Initial values to set in the form field.
- * handleValueChanged: Callback for whenever the selected value changes.
- */
-export default class TreeSelectField extends Component {
+export default class AccountSelectionField extends Component {
   static propTypes = {
     data: PropTypes.array,
     getDataValue: PropTypes.func,
@@ -43,9 +29,9 @@ export default class TreeSelectField extends Component {
 
   static defaultProps = {
     data: [],
-    getDataValue: ({ _id }) => _id,
-    getParentValue: ({ parentId }) => parentId,
-    getDataText: ({ name }) => name,
+    getDataValue: ({ number }) => number,
+    getParentValue: ({ parent }) => parent,
+    getDataText: ({ number, name }) => `[${number}] ${name}`,
     initialValue: null,
     showSearch: false,
     fieldLayout: formItemLayout,
@@ -74,6 +60,13 @@ export default class TreeSelectField extends Component {
     return treeNodes;
   };
 
+  filterTreeNode = (_inputValue, treeNode) => {
+    const title = treeNode.props.title.toLowerCase();
+    const inputValue = _inputValue.toLowerCase();
+    if (title.indexOf(inputValue) !== -1) return true;
+    return false;
+  };
+
   getField = () => {
     const {
       data,
@@ -87,7 +80,7 @@ export default class TreeSelectField extends Component {
       initialValue,
     } = this.props;
 
-    const treeNodes = this.getTreeNodes(data, null);
+    const treeNodes = this.getTreeNodes(data, 0);
     const rules = required
       ? [
           {
@@ -104,6 +97,7 @@ export default class TreeSelectField extends Component {
         allowClear
         showSearch={showSearch}
         treeDefaultExpandAll
+        filterTreeNode={this.filterTreeNode}
       >
         {treeNodes}
       </TreeSelect>

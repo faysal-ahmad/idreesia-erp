@@ -12,6 +12,7 @@ import {
   WithCompany,
   WithAccountHeadsByCompany,
 } from "/imports/ui/modules/accounts/common/composers";
+import { treeify } from "/imports/ui/modules/accounts/common/utilities";
 
 class List extends Component {
   static propTypes = {
@@ -69,43 +70,10 @@ class List extends Component {
     }
   }
 
-  treeify(
-    list,
-    idAttr = "number",
-    parentAttr = "parent",
-    childrenAttr = "children"
-  ) {
-    const sortedList = sortBy(list, "number");
-    const treeList = [];
-    const lookup = {};
-    sortedList.forEach(obj => {
-      lookup[obj[idAttr]] = obj;
-      // eslint-disable-next-line no-param-reassign
-      obj[childrenAttr] = [];
-    });
-
-    sortedList.forEach(obj => {
-      if (obj[parentAttr] !== 0) {
-        lookup[obj[parentAttr]][childrenAttr].push(obj);
-      } else {
-        treeList.push(obj);
-      }
-    });
-
-    sortedList.forEach(obj => {
-      if (obj[childrenAttr].length === 0) {
-        // eslint-disable-next-line no-param-reassign
-        delete obj[childrenAttr];
-      }
-    });
-
-    return treeList;
-  }
-
   render() {
     const { accountHeadsLoading, accountHeadsByCompanyId } = this.props;
     if (accountHeadsLoading) return null;
-    const treeDataSource = this.treeify(accountHeadsByCompanyId);
+    const treeDataSource = treeify(accountHeadsByCompanyId);
 
     return (
       <Table

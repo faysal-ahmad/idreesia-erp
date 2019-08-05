@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Button, DatePicker, Drawer, Spin, Table } from "antd";
 import { compose } from "react-apollo";
-import { filter, keyBy, sortBy } from "lodash";
+import { filter, keyBy } from "lodash";
 import numeral from "numeral";
 
 import {
@@ -10,6 +10,7 @@ import {
   WithAccountMonthlyBalancesByCompany,
 } from "/imports/ui/modules/accounts/common/composers";
 
+import { treeify } from "/imports/ui/modules/accounts/common/utilities";
 import { VoucherDetailsList } from "../voucher-details";
 
 const ToolbarStyle = {
@@ -124,39 +125,6 @@ class List extends Component {
       },
     },
   ];
-
-  treeify(
-    list,
-    idAttr = "number",
-    parentAttr = "parent",
-    childrenAttr = "children"
-  ) {
-    const sortedList = sortBy(list, "number");
-    const treeList = [];
-    const lookup = {};
-    sortedList.forEach(obj => {
-      lookup[obj[idAttr]] = obj;
-      // eslint-disable-next-line no-param-reassign
-      obj[childrenAttr] = [];
-    });
-
-    sortedList.forEach(obj => {
-      if (obj[parentAttr] !== 0) {
-        lookup[obj[parentAttr]][childrenAttr].push(obj);
-      } else {
-        treeList.push(obj);
-      }
-    });
-
-    sortedList.forEach(obj => {
-      if (obj[childrenAttr].length === 0) {
-        // eslint-disable-next-line no-param-reassign
-        delete obj[childrenAttr];
-      }
-    });
-
-    return treeList;
-  }
 
   handleMonthChange = value => {
     const { setPageParams } = this.props;
@@ -331,7 +299,7 @@ class List extends Component {
       }
     );
 
-    const treeDataSource = this.treeify(accountHeadsWithBalances);
+    const treeDataSource = treeify(accountHeadsWithBalances);
 
     return (
       <Fragment>

@@ -53,6 +53,11 @@ class VoucherDetails extends Component {
       },
     },
     {
+      title: "Description",
+      key: "description",
+      dataIndex: "description",
+    },
+    {
       title: "Credit",
       key: "credit",
       render: (text, record) => {

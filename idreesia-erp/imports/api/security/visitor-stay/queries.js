@@ -14,7 +14,7 @@ export function getVisitorStays(queryString) {
     startDate,
     endDate,
     pageIndex = "0",
-    pageSize = "10",
+    pageSize = "20",
   } = params;
 
   if (visitorId) {
@@ -55,7 +55,7 @@ export function getVisitorStays(queryString) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { fromDate: -1 } },
+    { $sort: { updatedAt: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

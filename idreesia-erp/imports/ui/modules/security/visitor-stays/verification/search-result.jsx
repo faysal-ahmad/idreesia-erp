@@ -1,9 +1,11 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import { Row, Col, Icon, Spin } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
+import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import StayCard from "../card/stay-card";
 
@@ -15,6 +17,12 @@ const ErrorStatusStyle = {
 const SuccessStatusStyle = {
   color: "green",
   fontSize: 40,
+};
+
+const ColumnStyle = {
+  display: "flex",
+  flexFlow: "column nowrap",
+  alignItems: "center",
 };
 
 const ScanStatus = ({ message, isError }) => {
@@ -61,11 +69,8 @@ const SearchResult = props => {
 
   const visitor = visitorStayById.refVisitor;
   const url = getDownloadUrl(visitor.imageId);
-  const imageColumn = url ? (
-    <Col order={2}>
-      <img src={url} style={{ width: "250px" }} />
-    </Col>
-  ) : null;
+  const imageNode = url ? <img src={url} style={{ width: "250px" }} /> : null;
+  const registerationUrl = paths.visitorRegistrationEditFormPath(visitor._id);
 
   return (
     <Fragment>
@@ -74,7 +79,12 @@ const SearchResult = props => {
         <Col order={1}>
           <StayCard visitor={visitor} visitorStay={visitorStayById} />
         </Col>
-        {imageColumn}
+        <Col order={2}>
+          <div style={ColumnStyle}>
+            <Link to={registerationUrl}>Open Registeration</Link>
+            {imageNode}
+          </div>
+        </Col>
       </Row>
     </Fragment>
   );

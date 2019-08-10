@@ -101,7 +101,7 @@ class List extends Component {
         handleItemSelected(refVisitor);
       };
 
-      if (record.imageId) {
+      if (refVisitor.imageId) {
         const url = getDownloadUrl(refVisitor.imageId);
         return (
           <div style={NameDivStyle} onClick={onClickHandler}>
@@ -242,7 +242,7 @@ class List extends Component {
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-    const numPageSize = pageSize || 10;
+    const numPageSize = pageSize || 20;
 
     const viewForm =
       visitorStayId && showViewDialog ? (

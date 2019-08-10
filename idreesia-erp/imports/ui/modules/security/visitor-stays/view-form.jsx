@@ -13,7 +13,7 @@ const ViewForm = ({ formDataLoading, visitorStayById }) => {
 
   const fromDate = moment(Number(visitorStayById.fromDate));
   const toDate = moment(Number(visitorStayById.toDate));
-  const days = moment.duration(toDate.diff(fromDate)).asDays() + 1;
+  const days = visitorStayById.numOfDays;
 
   let detail;
   if (days === 1) {
@@ -42,7 +42,7 @@ const ViewForm = ({ formDataLoading, visitorStayById }) => {
         <b>Stay Reason:</b> {stayReason}
       </List.Item>
       <List.Item>
-        <b>Stay Allowed by:</b> {visitorStayById.stayAllowedBy}
+        <b>Stay Allowed By:</b> {visitorStayById.stayAllowedBy}
       </List.Item>
       <List.Item>
         <b>Duty / Shift:</b> {visitorStayById.dutyShiftName}

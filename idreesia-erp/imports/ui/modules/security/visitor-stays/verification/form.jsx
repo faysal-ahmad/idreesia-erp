@@ -13,7 +13,7 @@ class Form extends Component {
   };
 
   state = {
-    barcode: "2gAZxK9Tmxy9Wuvws",
+    barcode: "",
   };
 
   onBarcodeCaptured = code => {

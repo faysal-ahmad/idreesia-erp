@@ -17,16 +17,22 @@ const barcodeOptions = {
   margin: 5,
 };
 
-const ConatinerStyle = {
-  display: "flex",
-  flexFlow: "column nowrap",
-  justifyContent: "flex-start",
-  width: "340px",
-};
-
 const HeadStyle = {
+  color: "black",
   fontSize: "24px",
   fontWeight: "bold",
+  textAlign: "center",
+};
+
+const BodyStyle = {
+  paddingTop: "0px",
+};
+
+const FooterStyle = {
+  color: "black",
+  fontSize: "12px",
+  textAlign: "center",
+  paddingTop: "4px",
 };
 
 export default class StayCard extends Component {
@@ -76,7 +82,12 @@ export default class StayCard extends Component {
     const reasonText = reason ? reason.name : "";
 
     return (
-      <Card title={title} style={ConatinerStyle} headStyle={HeadStyle}>
+      <Card
+        size="small"
+        title={title}
+        headStyle={HeadStyle}
+        bodyStyle={BodyStyle}
+      >
         <h2 className="stay_card_section">Personal Information</h2>
         <div className="stay_card_item">
           <b>Name:</b> {visitor.name}
@@ -113,6 +124,10 @@ export default class StayCard extends Component {
         {dutyDetails}
         <div className="stay_card_item">
           <Barcode value={visitorStay._id} {...barcodeOptions} />
+        </div>
+        <div style={FooterStyle}>
+          381 A-Block, Shah Rukn-e-Alam Colony, Multan<br />
+          Ph: 061-111-111-381
         </div>
       </Card>
     );

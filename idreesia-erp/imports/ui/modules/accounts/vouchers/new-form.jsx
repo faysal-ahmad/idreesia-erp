@@ -32,8 +32,8 @@ class NewForm extends Component {
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.financialAccountsPath);
+    const { history, companyId } = this.props;
+    history.push(paths.vouchersPath(companyId));
   };
 
   handleSubmit = e => {
@@ -51,7 +51,6 @@ class NewForm extends Component {
         },
       })
         .then(({ data: { createVoucher: newVoucher } }) => {
-          debugger;
           history.push(paths.vouchersEditFormPath(companyId, newVoucher._id));
         })
         .catch(error => {

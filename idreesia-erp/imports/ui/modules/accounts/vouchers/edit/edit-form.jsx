@@ -10,9 +10,9 @@ import {
 } from "/imports/ui/modules/accounts/common/composers";
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 
-import VoucherInfo from "./edit/voucher-info";
-import AttachmentsList from "./edit/attachments-list";
-import VoucherDetails from "./edit/voucher-details";
+import VoucherInfo from "./voucher-info";
+import AttachmentsList from "./attachments-list";
+import VoucherDetails from "./voucher-details";
 
 const EditForm = props => {
   const voucherId = get(props, ["match", "params", "voucherId"], null);

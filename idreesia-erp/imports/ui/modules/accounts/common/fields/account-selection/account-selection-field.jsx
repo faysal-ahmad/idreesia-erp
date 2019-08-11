@@ -98,6 +98,7 @@ export default class AccountSelectionField extends Component {
         showSearch={showSearch}
         treeDefaultExpandAll
         filterTreeNode={this.filterTreeNode}
+        style={{ width: "100%" }}
       >
         {treeNodes}
       </TreeSelect>

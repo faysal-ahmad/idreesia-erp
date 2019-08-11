@@ -1,13 +1,12 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Modal, Popconfirm, Table, Tooltip, message } from "antd";
+import { Icon, Popconfirm, Table, Tooltip, message } from "antd";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
-import {
-  VoucherDetailsNewForm,
-  VoucherDetailsEditForm,
-} from "../../voucher-details";
+import VoucherDetailNewForm from "./voucher-detail-new-form";
+import VoucherDetailEditForm from "./voucher-detail-edit-form";
+import { WithAccountHeadsByCompany } from "/imports/ui/modules/accounts/common/composers";
 
 const ClickableLinkStyle = {
   cursor: "pointer",
@@ -23,15 +22,15 @@ class VoucherDetails extends Component {
   static propTypes = {
     companyId: PropTypes.string,
     voucherId: PropTypes.string,
+    formDataLoading: PropTypes.bool,
     voucherDetailsByVoucherId: PropTypes.array,
-    loading: PropTypes.bool,
+    accountHeadsLoading: PropTypes.bool,
+    accountHeadsByCompanyId: PropTypes.array,
     removeVoucherDetail: PropTypes.func,
   };
 
   state = {
-    showNewFormModal: false,
-    showEditFormModal: false,
-    voucherDetailId: null,
+    voucherDetailForEditing: null,
   };
 
   columns = [
@@ -93,24 +92,32 @@ class VoucherDetails extends Component {
     },
   ];
 
-  getTableHeader = () => (
-    <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
-      New Item
-    </Button>
-  );
+  getTableHeader = () => {
+    const { voucherDetailForEditing } = this.state;
+    const { companyId, voucherId, accountHeadsByCompanyId } = this.props;
 
-  handleNewClicked = () => {
-    this.setState({
-      showNewFormModal: true,
-      showEditFormModal: false,
-    });
+    if (voucherDetailForEditing) {
+      return (
+        <VoucherDetailEditForm
+          voucherDetail={voucherDetailForEditing}
+          accountHeadsByCompanyId={accountHeadsByCompanyId}
+          handleCloseForm={this.handleCloseEditForm}
+        />
+      );
+    }
+
+    return (
+      <VoucherDetailNewForm
+        companyId={companyId}
+        voucherId={voucherId}
+        accountHeadsByCompanyId={accountHeadsByCompanyId}
+      />
+    );
   };
 
   handleEditClicked = record => {
     this.setState({
-      showNewFormModal: false,
-      showEditFormModal: true,
-      voucherDetailId: record._id,
+      voucherDetailForEditing: record,
     });
   };
 
@@ -126,70 +133,30 @@ class VoucherDetails extends Component {
     });
   };
 
-  handleCloseNewForm = () => {
-    this.setState({
-      showNewFormModal: false,
-    });
-  };
-
   handleCloseEditForm = () => {
     this.setState({
-      showEditFormModal: false,
-      voucherDetailId: null,
+      voucherDetailForEditing: null,
     });
   };
 
   render() {
-    const { loading, companyId, voucherDetailsByVoucherId } = this.props;
-    if (loading) return null;
-    const { showNewFormModal, showEditFormModal, voucherDetailId } = this.state;
-
-    const newForm = showNewFormModal ? (
-      <Modal
-        title="New Item"
-        visible={showNewFormModal}
-        width={600}
-        footer={null}
-        onCancel={this.handleCloseNewForm}
-      >
-        <VoucherDetailsNewForm
-          companyId={companyId}
-          voucherId={voucherDetailsByVoucherId._id}
-          handleCloseForm={this.handleCloseNewForm}
-        />
-      </Modal>
-    ) : null;
-
-    const editForm = showEditFormModal ? (
-      <Modal
-        title="Edit Item"
-        visible={showEditFormModal}
-        width={600}
-        footer={null}
-        onCancel={this.handleCloseEditForm}
-      >
-        <VoucherDetailsEditForm
-          companyId={companyId}
-          voucherDetailId={voucherDetailId}
-          handleCloseForm={this.handleCloseEditForm}
-        />
-      </Modal>
-    ) : null;
+    const {
+      formDataLoading,
+      accountHeadsLoading,
+      voucherDetailsByVoucherId,
+    } = this.props;
+    if (formDataLoading || accountHeadsLoading) return null;
 
     return (
-      <Fragment>
-        <Table
-          rowKey="_id"
-          dataSource={voucherDetailsByVoucherId}
-          columns={this.columns}
-          title={this.getTableHeader}
-          bordered
-          size="small"
-          pagination={false}
-        />
-        {newForm}
-        {editForm}
-      </Fragment>
+      <Table
+        rowKey="_id"
+        dataSource={voucherDetailsByVoucherId}
+        columns={this.columns}
+        title={this.getTableHeader}
+        bordered
+        size="small"
+        pagination={false}
+      />
     );
   }
 }
@@ -199,6 +166,7 @@ const listQuery = gql`
     voucherDetailsByVoucherId(companyId: $companyId, voucherId: $voucherId) {
       _id
       companyId
+      voucherId
       accountHeadId
       amount
       isCredit
@@ -225,12 +193,13 @@ export default compose(
     },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ companyId, voucherId }) => ({
       variables: {
         companyId,
         voucherId,
       },
     }),
-  })
+  }),
+  WithAccountHeadsByCompany()
 )(VoucherDetails);

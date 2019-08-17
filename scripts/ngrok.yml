@@ -1,0 +1,11 @@
+authtoken: 2hR5a8Gytr6EuC8GmScUM_6hRhZE4DceTGCFmXiqC3e
+tunnels:
+  erp_server:
+    addr: 3000
+    proto: http
+    bind_tls: true
+    region: ap
+    subdomain: 381-erp-server
+  ssh_server:
+    addr: 22
+    proto: tcp

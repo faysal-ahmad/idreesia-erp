@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../build/ngrok http -bind-tls=true 3000
+../build/ngrok start erp_server ssh_server -config=./ngrok.yml

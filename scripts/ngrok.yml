@@ -4,7 +4,7 @@ tunnels:
     addr: 3000
     proto: http
     bind_tls: true
-    region: ap
+    region: us
     subdomain: 381-erp-server
   ssh_server:
     addr: 22

@@ -19,8 +19,8 @@ import {
   InputTextAreaField,
 } from "/imports/ui/modules/helpers/fields";
 
+import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
 import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 
 const FormStyle = {

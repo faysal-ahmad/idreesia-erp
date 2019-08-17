@@ -22,7 +22,6 @@ accounts-password@1.5.1
 
 idreesia-common
 
-swydo:graphql
 underscore@1.0.10
 apollo
 percolate:migrations

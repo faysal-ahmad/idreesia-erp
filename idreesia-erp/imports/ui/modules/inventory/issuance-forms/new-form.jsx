@@ -20,7 +20,7 @@ import {
 } from "/imports/ui/modules/helpers/fields";
 
 import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { PredefinedFilterNames } from "/imports/ui/modules/hr/common/constants";
+import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
 
 const FormStyle = {
   width: "800px",

@@ -10,12 +10,12 @@ type ItemCategory {
   updatedBy: String
 }
 
-type Query {
+extend type Query {
   itemCategoryById(id: String!): ItemCategory
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
 }
 
-type Mutation {
+extend type Mutation {
   createItemCategory(name: String!, physicalStoreId: String!): ItemCategory
   updateItemCategory(id: String!, name: String!): ItemCategory
 }

@@ -11,11 +11,11 @@ type Attachment {
   updatedBy: String
 }
 
-extend type Query {
+type Query {
   attachmentsById(ids: [String]!): [Attachment]
 }
 
-extend type Mutation {
+type Mutation {
   createAttachment(
     name: String
     description: String

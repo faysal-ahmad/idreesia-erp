@@ -126,7 +126,7 @@ const typeDefs = [
   VoucherSchema,
   VoucherDetailSchema,
   AccountMonthlyBalanceSchema,
-  AmaanatLogSchema,
+  AmaanatLogSchema
 ];
 
 const resolvers = merge(

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
@@ -66,6 +66,6 @@ class ListContainer extends Component {
   }
 }
 
-export default compose(WithBreadcrumbs(["Accounts", "Amaanat Logs"]))(
+export default flowRight(WithBreadcrumbs(["Accounts", "Amaanat Logs"]))(
   ListContainer
 );

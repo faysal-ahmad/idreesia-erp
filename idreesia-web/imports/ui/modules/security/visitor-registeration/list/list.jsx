@@ -11,7 +11,8 @@ import {
   message,
 } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import ListFilter from "./list-filter";
@@ -348,7 +349,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formMutation, {
     name: "deleteVisitor",
     options: {

@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { flowRight } from "lodash";
+import { graphql } from "react-apollo";
 
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
@@ -136,7 +137,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   WithCompanyId(),
   WithCompany(),

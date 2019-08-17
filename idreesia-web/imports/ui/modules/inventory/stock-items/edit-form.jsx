@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { get } from "lodash";
 import { Tabs } from "antd";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
@@ -47,7 +47,7 @@ EditForm.propTypes = {
   physicalStore: PropTypes.object,
 };
 
-export default compose(
+export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithDynamicBreadcrumbs(({ physicalStore }) => {

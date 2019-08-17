@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Pagination, Table } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { flowRight } from "lodash";
+import { graphql } from "react-apollo";
 
 import { Formats } from "meteor/idreesia-common/constants";
 
@@ -172,7 +173,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({

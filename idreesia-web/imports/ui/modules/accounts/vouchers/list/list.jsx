@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Button, Icon, Table, Tooltip, Pagination } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { flowRight } from "lodash";
+import { graphql } from "react-apollo";
 import moment from "moment";
 import { Formats } from "meteor/idreesia-common/constants";
 
@@ -234,7 +235,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({

@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 class EditForm extends Component {
   static propTypes = {
@@ -31,7 +32,12 @@ class EditForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, physicalStoreById, updatePhysicalStore } = this.props;
+    const {
+      form,
+      history,
+      physicalStoreById,
+      updatePhysicalStore,
+    } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
@@ -90,7 +96,11 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updatePhysicalStore($id: String!, $name: String!, $address: String!) {
+  mutation updatePhysicalStore(
+    $id: String!
+    $name: String!
+    $address: String!
+  ) {
     updatePhysicalStore(id: $id, name: $name, address: $address) {
       _id
       name
@@ -99,12 +109,12 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'updatePhysicalStore',
+    name: "updatePhysicalStore",
     options: {
-      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+      refetchQueries: ["allPhysicalStores", "allAccessiblePhysicalStores"],
     },
   }),
   graphql(formQuery, {
@@ -114,5 +124,5 @@ export default compose(
       return { variables: { id: physicalStoreId } };
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])
+  WithBreadcrumbs(["Admin", "Setup", "Physical Stores", "Edit"])
 )(EditForm);

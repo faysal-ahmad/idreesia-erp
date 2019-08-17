@@ -2,7 +2,8 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { Button, Divider } from "antd";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 import ReactToPrint from "react-to-print";
 
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
@@ -76,7 +77,7 @@ const attendanceByBarcodeIdsQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   WithQueryParams(),
   graphql(attendanceByBarcodeIdsQuery, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),

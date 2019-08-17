@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 import ReactToPrint from "react-to-print";
 import { Button, Icon } from "antd";
 
@@ -89,7 +90,7 @@ const formQueryVisitorStay = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formQueryVisitor, {
     props: ({ data }) => ({ visitorLoading: data.loading, ...data }),
     options: ({ visitorId }) => ({ variables: { _id: visitorId } }),

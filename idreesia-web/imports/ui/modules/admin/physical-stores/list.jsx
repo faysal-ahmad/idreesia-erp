@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Button, Table } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Button, Table } from "antd";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 
 class List extends Component {
   static propTypes = {
@@ -17,17 +18,17 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
       render: (text, record) => (
         <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
       ),
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
     },
   ];
 
@@ -45,7 +46,11 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={() => (
-          <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClicked}>
+          <Button
+            type="primary"
+            icon="plus-circle-o"
+            onClick={this.handleNewClicked}
+          >
             New Physical Store
           </Button>
         )}
@@ -64,9 +69,9 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])
+  WithBreadcrumbs(["Admin", "Setup", "Physical Stores", "List"])
 )(List);

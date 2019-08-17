@@ -2,9 +2,9 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Divider, Form } from "antd";
 import moment from "moment";
-import { noop } from "lodash";
+import { flowRight, noop } from "lodash";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 
 import { ItemsList } from "../common/items-list";
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
@@ -174,7 +174,7 @@ const formQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),

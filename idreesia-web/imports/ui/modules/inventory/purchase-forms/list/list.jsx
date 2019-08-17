@@ -11,8 +11,8 @@ import {
 } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
-import { toSafeInteger } from "lodash";
+import { graphql } from "react-apollo";
+import { flowRight, toSafeInteger } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
@@ -385,7 +385,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),

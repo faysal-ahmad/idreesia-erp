@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Icon, Popconfirm, Table, Tooltip, message } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { flowRight } from "lodash";
+import { graphql } from "react-apollo";
 
 import VoucherDetailNewForm from "./voucher-detail-new-form";
 import VoucherDetailEditForm from "./voucher-detail-edit-form";
@@ -185,7 +186,7 @@ const listMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listMutation, {
     name: "removeVoucherDetail",
     options: {

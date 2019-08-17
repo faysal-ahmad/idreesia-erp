@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
@@ -160,7 +161,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   graphql(formMutation, {
     name: "updateDutyShift",

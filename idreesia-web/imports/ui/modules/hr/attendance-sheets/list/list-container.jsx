@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 import { message } from "antd";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
@@ -122,7 +123,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formMutation, {
     name: "deleteAttendances",
     options: {

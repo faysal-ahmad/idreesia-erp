@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { Form } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
-import { noop } from "lodash";
+import { graphql } from "react-apollo";
+import { flowRight, noop } from "lodash";
 
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
@@ -128,7 +128,7 @@ const formQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),

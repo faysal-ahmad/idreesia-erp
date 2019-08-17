@@ -3,7 +3,8 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Menu, Icon } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { GlobalActionsCreator } from "/imports/ui/action-creators";
 import SubModuleNames from "./submodule-names";
@@ -146,7 +147,7 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const InventorySidebarContainer = compose(
+const InventorySidebarContainer = flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),

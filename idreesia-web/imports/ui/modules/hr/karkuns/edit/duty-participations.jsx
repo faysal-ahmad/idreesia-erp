@@ -12,7 +12,8 @@ import {
   message,
 } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { flowRight } from "lodash";
+import { graphql } from "react-apollo";
 
 import {
   WithAllDuties,
@@ -336,7 +337,7 @@ const removeKarkunDutyMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {

@@ -2,8 +2,8 @@ import React, { Fragment, Component } from "react";
 import PropTypes from "prop-types";
 import { Button, Row, Tree, message } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
-import { filter } from "lodash";
+import { graphql } from "react-apollo";
+import { filter, flowRight } from "lodash";
 
 import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
 import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
@@ -393,7 +393,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formMutation, {
     name: "setPermissions",
     options: {

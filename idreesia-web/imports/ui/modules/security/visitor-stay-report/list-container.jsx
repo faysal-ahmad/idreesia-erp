@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { compose } from "react-apollo";
-import { toSafeInteger } from "lodash";
+import { flowRight, toSafeInteger } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
@@ -69,7 +68,7 @@ class ListContainer extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(["Security", "Visitor's Stay Report"])
 )(ListContainer);

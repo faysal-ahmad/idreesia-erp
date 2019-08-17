@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { message } from "antd";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
@@ -123,7 +124,7 @@ const removeAttachmentMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   WithPhysicalStoreId(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),

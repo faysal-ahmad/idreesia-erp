@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Layout, Breadcrumb } from "antd";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithLoggedInUser } from "/imports/ui/composers";
 import { HeaderContent, SidebarContent, MainContent } from "./";
@@ -64,7 +64,7 @@ const mapStateToProps = state => ({
   breadcrumbs: state.breadcrumbs,
 });
 
-const LoggedInRouteContainer = compose(
+const LoggedInRouteContainer = flowRight(
   WithLoggedInUser(),
   connect(mapStateToProps)
 )(LoggedInRoute);

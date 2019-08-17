@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 import moment from "moment";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import {
@@ -143,4 +143,6 @@ class ListFilter extends Component {
   }
 }
 
-export default compose(WithVendorsByPhysicalStore(), Form.create())(ListFilter);
+export default flowRight(WithVendorsByPhysicalStore(), Form.create())(
+  ListFilter
+);

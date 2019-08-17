@@ -11,9 +11,9 @@ import {
   Popconfirm,
   message,
 } from "antd";
-import { noop } from "lodash";
+import { flowRight, noop } from "lodash";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 
 import {
   TakePicture,
@@ -243,7 +243,7 @@ const updateAttachmentMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(updateAttachmentMutation, {
     name: "updateAttachment",
   })

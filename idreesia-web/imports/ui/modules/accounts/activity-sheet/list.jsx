@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Button, DatePicker, Drawer, Spin, Table } from "antd";
-import { compose } from "react-apollo";
-import { filter, keyBy } from "lodash";
+import { filter, flowRight, keyBy } from "lodash";
 import numeral from "numeral";
 
 import {
@@ -330,7 +329,7 @@ class List extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   WithAccountHeadsByCompany(),
   WithAccountMonthlyBalancesByCompany()
 )(List);

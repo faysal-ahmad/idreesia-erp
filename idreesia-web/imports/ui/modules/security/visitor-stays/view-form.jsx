@@ -2,9 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { List } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import moment from "moment";
-import { find } from "lodash";
+import { find, flowRight } from "lodash";
 
 import StayReasons from "../common/constants/stay-reasons";
 
@@ -76,7 +76,7 @@ const formQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ visitorStayId }) => ({ variables: { _id: visitorStayId } }),

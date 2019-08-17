@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { JobTypes } from "meteor/idreesia-common/constants";
@@ -83,7 +83,7 @@ class NewForm extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   Form.create(),
   WithCompanies(),
   WithAdminJobsMutation(),

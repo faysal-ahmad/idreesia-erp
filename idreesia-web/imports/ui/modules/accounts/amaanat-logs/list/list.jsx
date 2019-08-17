@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Button, Icon, Pagination, Table, Tooltip, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { flowRight } from "lodash";
+import { graphql } from "react-apollo";
 import numeral from "numeral";
 
 import ListFilter from "./list-filter";
@@ -282,7 +283,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formMutationRemove, {
     name: "removeAmaanatLog",
     options: {

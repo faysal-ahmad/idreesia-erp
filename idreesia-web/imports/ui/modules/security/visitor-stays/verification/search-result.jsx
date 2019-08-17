@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Row, Col, Icon, Spin } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
@@ -130,7 +131,7 @@ const formQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ barcode }) => ({

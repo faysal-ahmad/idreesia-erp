@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Divider, Form, message } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import {
@@ -82,7 +83,9 @@ class NewForm extends Component {
           },
         })
           .then(({ data: { createVisitor: newVisitor } }) => {
-            history.push(`${paths.visitorRegistrationEditFormPath(newVisitor._id)}`);
+            history.push(
+              `${paths.visitorRegistrationEditFormPath(newVisitor._id)}`
+            );
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -251,7 +254,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   graphql(formMutation, {
     name: "createVisitor",

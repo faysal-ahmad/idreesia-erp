@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
-import { filter } from "lodash";
+import { graphql } from "react-apollo";
+import { filter, flowRight } from "lodash";
 
 import {
   InputCnicField,
@@ -208,7 +208,7 @@ const allDutyShiftsListQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create({ name: "karkunsListFilter" }),
   graphql(allDutiesListQuery, {
     props: ({ data }) => ({ ...data }),

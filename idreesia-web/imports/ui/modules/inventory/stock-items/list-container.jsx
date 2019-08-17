@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 import { toSafeInteger } from "lodash";
 
 import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
@@ -85,7 +85,7 @@ class ListContainer extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),

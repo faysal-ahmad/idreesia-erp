@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Button, Icon, Popconfirm, Table, Tooltip, message } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
@@ -119,7 +120,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formMutation, {
     name: "deleteAccount",
     options: {

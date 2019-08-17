@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Button, Table } from "antd";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
@@ -89,7 +89,7 @@ class List extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),

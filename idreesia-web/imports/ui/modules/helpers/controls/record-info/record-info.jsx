@@ -2,7 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { List, Typography } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
@@ -72,7 +73,7 @@ const formQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ record }) => ({

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Collapse, Form, Row, Button } from "antd";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import {
   InputTextField,
@@ -99,7 +99,7 @@ class ListFilter extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   Form.create({ name: "itemTypeListFilter" }),
   WithItemCategoriesByPhysicalStore()
 )(ListFilter);

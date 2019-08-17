@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { compose } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { Formats } from "meteor/idreesia-common/constants";
 import { WithBreadcrumbs } from "/imports/ui/composers";
@@ -63,7 +63,7 @@ class ListContainer extends Component {
   }
 }
 
-export default compose(
+export default flowRight(
   WithCompanyId(),
   WithCompany(),
   WithBreadcrumbs(["Accounts", "Activity Sheet"])

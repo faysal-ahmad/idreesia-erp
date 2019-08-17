@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { compose } from "react-apollo";
-import { get } from "lodash";
+import { flowRight, get } from "lodash";
 import { Tabs } from "antd";
 
 import {
@@ -40,7 +39,7 @@ EditForm.propTypes = {
   company: PropTypes.object,
 };
 
-export default compose(
+export default flowRight(
   WithCompanyId(),
   WithCompany(),
   WithDynamicBreadcrumbs(({ company }) => {

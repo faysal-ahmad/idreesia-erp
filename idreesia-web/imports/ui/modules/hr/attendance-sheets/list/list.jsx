@@ -12,8 +12,8 @@ import {
   Tooltip,
 } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
-import { filter } from "lodash";
+import { graphql } from "react-apollo";
+import { filter, flowRight } from "lodash";
 
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import { Formats } from "meteor/idreesia-common/constants";
@@ -339,7 +339,7 @@ const attendanceByMonthQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(attendanceByMonthQuery, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
     options: ({ selectedMonth, selectedDutyId, selectedShiftId }) => ({

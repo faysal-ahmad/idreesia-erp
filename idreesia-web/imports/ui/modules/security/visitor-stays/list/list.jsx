@@ -13,9 +13,9 @@ import {
   message,
 } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import moment from "moment";
-import { find } from "lodash";
+import { find, flowRight } from "lodash";
 
 import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
@@ -382,7 +382,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(formMutation, {
     name: "cancelVisitorStay",
     options: {

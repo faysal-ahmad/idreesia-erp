@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Divider, Form, message } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { ItemsList } from "../common/items-list";
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
@@ -216,7 +217,7 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),

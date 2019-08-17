@@ -4,7 +4,8 @@ import { capitalize } from "lodash";
 import { Button, Icon, Pagination, Select, Table, Tooltip } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { JobTypes } from "meteor/idreesia-common/constants";
 
@@ -244,7 +245,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ jobType, status, pageIndex, pageSize }) => ({

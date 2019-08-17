@@ -2,9 +2,9 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Avatar, Button, Pagination, Icon, Modal, Table } from "antd";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import moment from "moment";
-import { find } from "lodash";
+import { find, flowRight } from "lodash";
 
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
@@ -324,7 +324,7 @@ const listQuery = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ queryString }) => ({

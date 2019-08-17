@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, message } from 'antd';
-import gql from 'graphql-tag';
-import { compose, graphql } from 'react-apollo';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, message } from "antd";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { WithBreadcrumbs } from "/imports/ui/composers";
+import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
+} from "/imports/ui/modules/helpers/fields";
 
 class NewForm extends Component {
   static propTypes = {
@@ -79,13 +80,13 @@ const formMutation = gql`
   }
 `;
 
-export default compose(
+export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'createPhysicalStore',
+    name: "createPhysicalStore",
     options: {
-      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+      refetchQueries: ["allPhysicalStores", "allAccessiblePhysicalStores"],
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New'])
+  WithBreadcrumbs(["Admin", "Setup", "Physical Stores", "New"])
 )(NewForm);

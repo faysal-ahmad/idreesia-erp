@@ -5,11 +5,11 @@ pm2 stop ecosystem.config.js
 cd ../
 
 # checkout the master branch
-# git checkout master
-# git pull
+git checkout master
+git pull
 
-# build the idreesia-erp application
-cd ./idreesia-erp
+# build the idreesia-web application
+cd ./idreesia-web
 meteor yarn install
 meteor yarn build
 cd ../
@@ -20,8 +20,8 @@ meteor yarn install
 meteor yarn build
 cd ../
 
-# go to the built idreesia-erp application and install the dependencies
-cd ./build/idreesia-erp/bundle/programs/server
+# go to the built idreesia-web application and install the dependencies
+cd ./build/idreesia-web/bundle/programs/server
 npm install
 cd ../../../../..
 

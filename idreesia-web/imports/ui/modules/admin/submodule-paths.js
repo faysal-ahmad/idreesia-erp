@@ -1,4 +1,4 @@
-import { ModulePaths } from "/imports/ui/constants";
+import { ModulePaths } from "meteor/idreesia-common/constants";
 
 export default class SubModulePaths {
   // *************************************************************************************

@@ -1,8 +1,10 @@
-export default class SubModuleNames {
-  static jobs = "Jobs";
-  static duties = "Duties";
-  static dutyLocations = "Duty Locations";
-  static dutyShifts = "Duty Shifts";
-  static karkuns = "Karkuns";
-  static attendanceSheets = "Attendance Sheets";
-}
+const SubModuleNames = {
+  jobs: "Jobs",
+  duties: "Duties",
+  dutyLocations: "Duty Locations",
+  dutyShifts: "Duty Shifts",
+  karkuns: "Karkuns",
+  attendanceSheets: "Attendance Sheets",
+};
+
+export default SubModuleNames;

@@ -82,7 +82,8 @@
     "react/prefer-es6-class": "off",
     "react/jsx-props-no-spreading": "off",
     "react/static-property-placement": "off",
-    "react/state-in-constructor": "off"
+    "react/state-in-constructor": "off",
+    "lines-between-class-members": "off"
   },
   "parser": "babel-eslint",
   "parserOptions": {

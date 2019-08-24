@@ -1,6 +1,8 @@
-export default class SubModuleNames {
-  static accountHeads = "Account Heads";
-  static activitySheet = "Activity Sheet";
-  static vouchers = "Vouchers";
-  static amaanatLogs = "Amaanat Logs";
-}
+const SubModuleNames = {
+  accountHeads: "Account Heads",
+  activitySheet: "Activity Sheet",
+  vouchers: "Vouchers",
+  amaanatLogs: "Amaanat Logs",
+};
+
+export default SubModuleNames;

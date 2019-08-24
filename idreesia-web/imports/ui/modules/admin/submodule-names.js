@@ -1,6 +1,8 @@
-export default class SubModuleNames {
-  static adminJobs = "Admin Jobs";
-  static companies = "Companies";
-  static accounts = "Security Accounts";
-  static physicalStores = "Physical Stores";
-}
+const SubModuleNames = {
+  adminJobs: "Admin Jobs",
+  companies: "Companies",
+  accounts: "Security Accounts",
+  physicalStores: "Physical Stores",
+};
+
+export default SubModuleNames;

@@ -1,6 +1,8 @@
-export default class SubModuleNames {
-  static karkunCardVerification = "Karkun Card Verification";
-  static visitorRegistration = "Visitor Registration";
-  static visitorCardVerification = "Visitor Card Verification";
-  static visitorStayReport = "Visitor's Stay Report";
-}
+const SubModuleNames = {
+  karkunCardVerification: "Karkun Card Verification",
+  visitorRegistration: "Visitor Registration",
+  visitorCardVerification: "Visitor Card Verification",
+  visitorStayReport: "Visitor's Stay Report",
+};
+
+export default SubModuleNames;

@@ -1,10 +1,12 @@
-export default class SubModuleNames {
-  static stockItems = "Stock Items";
-  static issuanceForms = "Issuance Forms";
-  static purchaseForms = "Purchase Forms";
-  static stockAdjustments = "Stock Adjustments";
+const SubModuleNames = {
+  stockItems: "Stock Items",
+  issuanceForms: "Issuance Forms",
+  purchaseForms: "Purchase Forms",
+  stockAdjustments: "Stock Adjustments",
 
-  static vendors = "Vendors";
-  static itemCategories = "Item Categories";
-  static locations = "Locations";
-}
+  vendors: "Vendors",
+  itemCategories: "Item Categories",
+  locations: "Locations",
+};
+
+export default SubModuleNames;

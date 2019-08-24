@@ -1,15 +1,5 @@
-export default class ActionNames {
-  // ****************************************************************************************
-  // Global Action Names
-  // ****************************************************************************************
-  static GLOBAL_SET_BREADCRUMB = 'GLOBAL_SET_BREADCRUMB';
+const ActionNames = {
+  GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME: 'GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME',
+};
 
-  static GLOBAL_SET_ACTIVE_MODULE_NAME = 'GLOBAL_SET_ACTIVE_MODULE_NAME';
-
-  static GLOBAL_SET_ACTIVE_SUBMODULE_NAME = 'GLOBAL_SET_ACTIVE_SUBMODULE_NAME';
-
-  // ****************************************************************************************
-  // List Action Names
-  // ****************************************************************************************
-  static UPDATE_LIST_DATA = 'UPDATE_LIST_DATA';
-}
+export default ActionNames;

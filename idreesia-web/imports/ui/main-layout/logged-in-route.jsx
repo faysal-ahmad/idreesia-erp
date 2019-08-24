@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Layout, Breadcrumb } from "antd";
 import { flowRight } from "lodash";
 
-import { WithLoggedInUser } from "/imports/ui/composers";
+import { withLoggedInUser } from "meteor/idreesia-common/composers/common";
 import HeaderContent from "./header-content";
 import SidebarContent from "./sidebar-content";
 import MainContent from "./main-content";
@@ -67,7 +67,7 @@ const mapStateToProps = state => ({
 });
 
 const LoggedInRouteContainer = flowRight(
-  WithLoggedInUser(),
+  withLoggedInUser(),
   connect(mapStateToProps)
 )(LoggedInRoute);
 

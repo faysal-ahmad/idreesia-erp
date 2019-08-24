@@ -1,23 +1,11 @@
-import { ActionNames } from '../constants';
-
-export function breadcrumbs(previousValue, action) {
-  let newValue;
-  if (!previousValue) newValue = [];
-  else newValue = previousValue;
-
-  if (action.type === ActionNames.GLOBAL_SET_BREADCRUMB) {
-    newValue = action.breadcrumbs;
-  }
-
-  return newValue;
-}
+import { ActionNames } from '/imports/ui/constants';
 
 export function activeModuleName(previousValue, action) {
   let newValue;
   if (!previousValue) newValue = null;
   else newValue = previousValue;
 
-  if (action.type === ActionNames.GLOBAL_SET_ACTIVE_MODULE_NAME) {
+  if (action.type === ActionNames.GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME) {
     newValue = action.activeModuleName;
   }
 
@@ -29,9 +17,7 @@ export function activeSubModuleName(previousValue, action) {
   if (!previousValue) newValue = null;
   else newValue = previousValue;
 
-  if (action.type === ActionNames.GLOBAL_SET_ACTIVE_MODULE_NAME) {
-    newValue = null;
-  } else if (action.type === ActionNames.GLOBAL_SET_ACTIVE_SUBMODULE_NAME) {
+  if (action.type === ActionNames.GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME) {
     newValue = action.activeSubModuleName;
   }
 

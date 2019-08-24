@@ -63,17 +63,20 @@ class SecuritySidebar extends Component {
         <Menu.SubMenu key="visitors" title={<span>Visitors</span>}>
           <Menu.Item key="visitor-registration">
             <span>
-              <Icon type="idcard" />Registration
+              <Icon type="idcard" />
+              Registration
             </span>
           </Menu.Item>
           <Menu.Item key="visitor-card-verification">
             <span>
-              <Icon type="barcode" />Card Verification
+              <Icon type="barcode" />
+              Card Verification
             </span>
           </Menu.Item>
           <Menu.Item key="visitor-stay-report">
             <span>
-              <Icon type="solution" />Stay Report
+              <Icon type="solution" />
+              Stay Report
             </span>
           </Menu.Item>
         </Menu.SubMenu>

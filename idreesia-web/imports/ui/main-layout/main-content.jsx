@@ -1,9 +1,9 @@
 import React from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Layout } from "antd";
 
 import { ModuleNames } from "meteor/idreesia-common/constants";
+import { withActiveModule } from "meteor/idreesia-common/composers/common";
 import { AdminRouter } from "../modules/admin";
 import { InventoryRouter } from "../modules/inventory";
 import { HRRouter } from "../modules/hr";
@@ -58,10 +58,5 @@ MainContent.propTypes = {
   activeSubModuleName: PropTypes.string,
 };
 
-const mapStateToProps = state => ({
-  activeModuleName: state.activeModuleName,
-  activeSubModuleName: state.activeSubModuleName,
-});
-
-const MainContentContainer = connect(mapStateToProps)(MainContent);
+const MainContentContainer = withActiveModule()(MainContent);
 export default MainContentContainer;

@@ -2,7 +2,7 @@
   "name": "idreesia-mobile",
   "private": true,
   "scripts": {
-    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp METEOR_PACKAGE_DIRS=../ meteor run ios-device --port 3001 --settings ./private/env/settings.json",
+    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp METEOR_PACKAGE_DIRS=../ meteor run ios-device --port 3002 --settings ./private/env/settings.json",
     "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build/idreesia-mobile",
     "visualize": "meteor --production --extra-packages bundle-visualizer"
   },

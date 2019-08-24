@@ -86,7 +86,7 @@ class EditForm extends Component {
 
   render() {
     const { accountHeadByIdLoading, accountHeadById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { form: { getFieldDecorator } } = this.props;
     if (accountHeadByIdLoading) return null;
 
     return (

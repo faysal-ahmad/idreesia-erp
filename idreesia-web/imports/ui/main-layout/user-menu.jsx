@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Avatar, Dropdown, Menu, Modal, message } from "antd";
 import gql from "graphql-tag";
@@ -85,6 +85,7 @@ class UserMenu extends Component {
 
   render() {
     const { karkunByUserId } = this.props;
+    const { showChangePasswordForm } = this.state;
     const userName = karkunByUserId ? karkunByUserId.name : "";
 
     let avatar = <Avatar size="large" icon="user" />;
@@ -105,7 +106,7 @@ class UserMenu extends Component {
     );
 
     return (
-      <Fragment>
+      <>
         <Dropdown overlay={menu} placement="bottomLeft">
           <div style={ContainerStyle}>
             <div style={{ color: "#FFFFFF" }}>{userName}</div>
@@ -115,7 +116,7 @@ class UserMenu extends Component {
         </Dropdown>
         <Modal
           title="Change Password"
-          visible={this.state.showChangePasswordForm}
+          visible={showChangePasswordForm}
           onOk={this.handleChagePassword}
           onCancel={this.handleChangePasswordCancelled}
         >
@@ -125,7 +126,7 @@ class UserMenu extends Component {
             }}
           />
         </Modal>
-      </Fragment>
+      </>
     );
   }
 }

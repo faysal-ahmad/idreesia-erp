@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Button, DatePicker, Drawer, Spin, Table } from "antd";
 import { filter, flowRight, keyBy } from "lodash";
@@ -301,7 +301,7 @@ class List extends Component {
     const treeDataSource = treeify(accountHeadsWithBalances);
 
     return (
-      <Fragment>
+      <>
         <Table
           rowKey="_id"
           title={this.getTableHeader}
@@ -324,7 +324,7 @@ class List extends Component {
         >
           {this.getVoucherDetailsList()}
         </Drawer>
-      </Fragment>
+      </>
     );
   }
 }

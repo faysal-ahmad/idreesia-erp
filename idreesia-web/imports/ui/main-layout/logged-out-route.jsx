@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { LoginForm } from "./";
+import LoginForm from "./login-form";
 
 const loginFormWrapperStyle = {
   width: "300px",

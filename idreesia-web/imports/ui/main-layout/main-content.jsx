@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Layout } from "antd";
 
-import { ModuleNames } from "../constants";
+import { ModuleNames } from "meteor/idreesia-common/constants";
 import { AdminRouter } from "../modules/admin";
 import { InventoryRouter } from "../modules/inventory";
 import { HRRouter } from "../modules/hr";

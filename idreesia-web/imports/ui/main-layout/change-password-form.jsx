@@ -10,7 +10,7 @@ class ChangePasswordForm extends Component {
   };
 
   getOldPasswordField() {
-    const { getFieldDecorator } = this.props.form;
+    const { form: { getFieldDecorator } } = this.props;
     const rules = [
       {
         required: true,
@@ -27,7 +27,7 @@ class ChangePasswordForm extends Component {
   }
 
   getNewPasswordField() {
-    const { getFieldDecorator } = this.props.form;
+    const { form: { getFieldDecorator } } = this.props;
     const rules = [
       {
         required: true,

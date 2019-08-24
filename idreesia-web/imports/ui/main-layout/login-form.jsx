@@ -14,9 +14,9 @@ class LoginForm extends Component {
   };
 
   handleSubmit = e => {
-    const { history, location } = this.props;
+    const { history, location, form } = this.props;
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    form.validateFields((err, values) => {
       if (!err) {
         const { userName, password } = values;
         Meteor.loginWithPassword(userName, password, error => {
@@ -31,7 +31,7 @@ class LoginForm extends Component {
   };
 
   getUserNameField() {
-    const { getFieldDecorator } = this.props.form;
+    const { form : { getFieldDecorator } } = this.props;
     const rules = [
       {
         required: true,
@@ -47,7 +47,7 @@ class LoginForm extends Component {
   }
 
   getPasswordField() {
-    const { getFieldDecorator } = this.props.form;
+    const { form : { getFieldDecorator } } = this.props;
     const rules = [
       {
         required: true,

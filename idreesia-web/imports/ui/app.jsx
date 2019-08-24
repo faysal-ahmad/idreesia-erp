@@ -16,7 +16,7 @@ const App = () => {
     return (
       <Provider store={store}>
         <Switch>
-          <Route path="/" component={LoggedInRoute} />;
+          <Route path="/" component={LoggedInRoute} />
         </Switch>
       </Provider>
     );
@@ -25,7 +25,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <Switch>
-        <Route path="/" component={LoggedOutRoute} />;
+        <Route path="/" component={LoggedOutRoute} />
       </Switch>
     </Provider>
   );

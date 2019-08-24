@@ -5,7 +5,9 @@ import { Layout, Breadcrumb } from "antd";
 import { flowRight } from "lodash";
 
 import { WithLoggedInUser } from "/imports/ui/composers";
-import { HeaderContent, SidebarContent, MainContent } from "./";
+import HeaderContent from "./header-content";
+import SidebarContent from "./sidebar-content";
+import MainContent from "./main-content";
 
 class LoggedInRoute extends Component {
   static propTypes = {

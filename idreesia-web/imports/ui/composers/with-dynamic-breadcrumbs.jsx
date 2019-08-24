@@ -10,7 +10,7 @@ export default getBreadcrumbs => WrappedComponent => {
       setBreadcrumbs: PropTypes.func,
     };
 
-    componentWillMount() {
+    componentDidMount() {
       const { setBreadcrumbs } = this.props;
       const breadcrumbs = getBreadcrumbs(this.props)
         .split(",")

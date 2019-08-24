@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import { Layout, Menu } from "antd";
 import { keys, forEach } from "lodash";
 
-import { ModuleNames, ModulePaths } from "../constants";
+import { ModuleNames, ModulePaths } from "meteor/idreesia-common/constants";
 import { GlobalActionsCreator } from "../action-creators";
-import { UserMenu } from "./";
+import UserMenu from "./user-menu";
 
 const ContainerStyle = {
   display: "flex",
@@ -39,7 +39,7 @@ class HeaderContent extends Component {
     setActiveModuleName(moduleName);
   };
 
-  componentWillMount() {
+  componentDidMount() {
     // We need to set the active module on initial mount
     const { location, setActiveModuleName } = this.props;
     const { pathname } = location;

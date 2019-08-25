@@ -1,18 +1,19 @@
-import React from "react";
-import { render } from "react-dom";
-import { Meteor } from "meteor/meteor";
-import { Accounts } from "meteor/accounts-base";
-import { BrowserRouter } from "react-router-dom";
+import React from 'react';
+import { render } from 'react-dom';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { BrowserRouter } from 'react-router-dom';
 import attachFastClick from 'fastclick';
 
-import { ApolloProvider } from "react-apollo";
-import ApolloClient from "apollo-boost";
+import { ApolloProvider } from 'react-apollo';
+import ApolloClient from 'apollo-boost';
 import 'antd-mobile/dist/antd-mobile.css';
 
-import App from "../imports/ui/app";
+import App from '../imports/ui/app';
 
+const uri = `${Meteor.absoluteUrl()}/graphql`;
 const client = new ApolloClient({
-  uri: "/graphql",
+  uri,
   request: operation =>
     operation.setContext(() => ({
       headers: {
@@ -29,6 +30,6 @@ Meteor.startup(() => {
         <App />
       </ApolloProvider>
     </BrowserRouter>,
-    document.getElementById("render-target")
+    document.getElementById('render-target')
   );
 });

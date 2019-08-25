@@ -1,59 +1,62 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from "../common";
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   name: {
-    type: String
+    type: String,
   },
   parentName: {
-    type: String
+    type: String,
   },
   isMinor: {
-    type: Boolean
+    type: Boolean,
+  },
+  verified: {
+    type: Boolean,
   },
   cnicNumber: {
     type: String,
-    optional: true
+    optional: true,
   },
   ehadDate: {
-    type: Date
+    type: Date,
   },
   referenceName: {
-    type: String
+    type: String,
   },
   address: {
     type: String,
-    optional: true
+    optional: true,
   },
   city: {
     type: String,
-    optional: true
+    optional: true,
   },
   country: {
     type: String,
-    optional: true
+    optional: true,
   },
   contactNumber1: {
     type: String,
-    optional: true
+    optional: true,
   },
   contactNumber2: {
     type: String,
-    optional: true
+    optional: true,
   },
   criminalRecord: {
     type: String,
-    optional: true
+    optional: true,
   },
   otherNotes: {
     type: String,
-    optional: true
+    optional: true,
   },
   imageId: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

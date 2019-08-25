@@ -18,7 +18,7 @@ import {
   WithAllDuties,
   WithAllDutyShifts,
 } from "/imports/ui/modules/hr/common/composers";
-import { WithDistinctStayAllowedBy } from "/imports/ui/modules/security/common/composers";
+import { WithDistinctStayAllowedBy } from "meteor/idreesia-common/composers/security";
 import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
 
 import StayReasons from "../common/constants/stay-reasons";

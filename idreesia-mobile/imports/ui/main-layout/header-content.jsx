@@ -66,7 +66,7 @@ class HeaderContent extends Component {
 
     const { history, setActiveModuleAndSubModuleName } = this.props;
     setActiveModuleAndSubModuleName(moduleName, subModuleName);
-    history.push(SecuritySubModulePaths.visitorRegistrationListPath);
+    history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
   }
 
   getSubModuleDisplayName = () => {
@@ -97,7 +97,7 @@ class HeaderContent extends Component {
       <>
         <div className={show ? 'menu-active' : ''}>
           <div>
-            <NavBar 
+            <NavBar
               icon={<Icon type="ellipsis" />}
               onLeftClick={this.handleClick}
               className="top-nav-bar"

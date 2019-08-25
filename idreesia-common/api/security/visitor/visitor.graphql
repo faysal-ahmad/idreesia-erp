@@ -14,6 +14,7 @@ type VisitorType {
   imageId: String
   criminalRecord: String
   otherNotes: String
+  verified: Boolean
 
   createdAt: String
   createdBy: String

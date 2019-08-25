@@ -1,11 +1,12 @@
-import { compact } from "lodash";
+import { isNil, compact } from 'lodash';
+import { Accounts } from 'meteor/accounts-base';
 
-import { Visitors } from "meteor/idreesia-common/collections/security";
-import { hasOnePermission } from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+import { Visitors } from 'meteor/idreesia-common/collections/security';
+import { hasOnePermission } from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getVisitors } from "./queries";
-import { checkCnicNotInUse, checkContactNotInUse } from "./utilities";
+import { getVisitors } from './queries';
+import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
 
 export default {
   Query: {
@@ -13,12 +14,12 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         return {
           data: [],
-          totalResults: 0
+          totalResults: 0,
         };
       }
 
@@ -29,7 +30,7 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         return null;
@@ -42,7 +43,7 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         return null;
@@ -50,7 +51,7 @@ export default {
 
       if (cnic) {
         return Visitors.findOne({
-          cnicNumber: { $eq: cnic }
+          cnicNumber: { $eq: cnic },
         });
       }
 
@@ -63,7 +64,7 @@ export default {
         Visitors.rawCollection()
       );
 
-      return compact(distincFunction("city"));
+      return compact(distincFunction('city'));
     },
 
     distinctCountries() {
@@ -72,8 +73,8 @@ export default {
         Visitors.rawCollection()
       );
 
-      return compact(distincFunction("country"));
-    }
+      return compact(distincFunction('country'));
+    },
   },
 
   Mutation: {
@@ -91,23 +92,25 @@ export default {
         emailAddress,
         address,
         city,
-        country
+        country,
       },
       { user }
     ) {
       if (
+        user &&
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Visitors in the System."
+          'You do not have permission to manage Visitors in the System.'
         );
       }
 
       if (cnicNumber) checkCnicNotInUse(cnicNumber);
       if (contactNumber1) checkContactNotInUse(contactNumber1);
       if (contactNumber2) checkContactNotInUse(contactNumber2);
+      const guestUser = Accounts.findUserByUsername('erp-guest');
 
       const date = new Date();
       const visitorId = Visitors.insert({
@@ -123,10 +126,11 @@ export default {
         address,
         city,
         country,
+        verified: !isNil(user),
         createdAt: date,
-        createdBy: user._id,
+        createdBy: user ? user._id : guestUser._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user ? user._id : guestUser._id,
       });
 
       return Visitors.findOne(visitorId);
@@ -147,17 +151,17 @@ export default {
         emailAddress,
         address,
         city,
-        country
+        country,
       },
       { user }
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Visitors in the System."
+          'You do not have permission to manage Visitors in the System.'
         );
       }
 
@@ -180,9 +184,10 @@ export default {
           address,
           city,
           country,
+          verified: !isNil(user),
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Visitors.findOne(_id);
@@ -191,11 +196,11 @@ export default {
     deleteVisitor(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Visitors in the System."
+          'You do not have permission to manage Visitors in the System.'
         );
       }
 
@@ -205,11 +210,11 @@ export default {
     setVisitorImage(obj, { _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Visitors in the System."
+          'You do not have permission to manage Visitors in the System.'
         );
       }
 
@@ -218,8 +223,8 @@ export default {
         $set: {
           imageId,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Visitors.findOne(_id);
@@ -228,11 +233,11 @@ export default {
     updateNotes(obj, { _id, criminalRecord, otherNotes }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Visitors in the System."
+          'You do not have permission to manage Visitors in the System.'
         );
       }
 
@@ -242,11 +247,11 @@ export default {
           criminalRecord,
           otherNotes,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Visitors.findOne(_id);
-    }
-  }
+    },
+  },
 };

@@ -5,6 +5,10 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
+import {
+  WithDistinctCities,
+  WithDistinctCountries,
+} from "meteor/idreesia-common/composers/security";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import {
   AutoCompleteField,
@@ -16,10 +20,6 @@ import {
   FormButtonsSaveCancel,
 } from "/imports/ui/modules/helpers/fields";
 import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
-import {
-  WithDistinctCities,
-  WithDistinctCountries,
-} from "/imports/ui/modules/security/common/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 
 class NewForm extends Component {
@@ -103,6 +103,7 @@ class NewForm extends Component {
 
   render() {
     const {
+      form,
       distinctCities,
       distinctCitiesLoading,
       distinctCountries,
@@ -110,7 +111,8 @@ class NewForm extends Component {
     } = this.props;
     if (distinctCitiesLoading || distinctCountriesLoading) return null;
 
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = form;
+    const { cnicRequired, mobileRequired } = this.state;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -169,7 +171,7 @@ class NewForm extends Component {
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          required={this.state.cnicRequired}
+          required={cnicRequired}
           requiredMessage="Please input the CNIC for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
@@ -193,7 +195,7 @@ class NewForm extends Component {
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
-          required={this.state.mobileRequired}
+          required={mobileRequired}
           requiredMessage="Please input the mobile number for the visitor."
           getFieldDecorator={getFieldDecorator}
         />

@@ -21,7 +21,7 @@ import { RecordInfo } from "/imports/ui/modules/helpers/controls";
 import {
   WithDistinctCities,
   WithDistinctCountries,
-} from "/imports/ui/modules/security/common/composers";
+} from "meteor/idreesia-common/composers/security";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 
 class GeneralInfo extends Component {

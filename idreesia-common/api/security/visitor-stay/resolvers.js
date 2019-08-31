@@ -111,10 +111,10 @@ export default {
       }
 
       // We are going to assume that if the current time is before midnight, but
-      // close to it, then the stay is for the next day's date.
+      // after 6 PM, then the stay is for the next day's date.
       // But if it is after midnight, then it is for the current date.
       const fromDate = moment();
-      if (fromDate.hour() > 21) fromDate.add(1, "d");
+      if (fromDate.hour() >= 18) fromDate.add(1, "d");
 
       const toDate = fromDate.clone();
       if (numOfDays > 1) {

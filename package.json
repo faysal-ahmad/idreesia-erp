@@ -2,8 +2,8 @@
   "name": "idreesia-erp-suite",
   "private": true,
   "devDependencies": {
-    "babel-eslint": "^10.0.2",
-    "eslint": "^6.2.2",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.3.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-import": "^2.18.2",
@@ -13,7 +13,7 @@
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^2.0.1",
     "husky": "^3.0.4",
-    "lint-staged": "^9.2.3",
+    "lint-staged": "^9.2.5",
     "prettier": "^1.18.2",
     "regenerator-runtime": "^0.13.3"
   },

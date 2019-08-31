@@ -1,9 +1,9 @@
-import moment from "moment";
-import { Formats, JobTypes } from "meteor/idreesia-common/constants";
-import { AdminJobs } from "meteor/idreesia-common/collections/admin";
-import { calculateAllAccountBalancesFromMonth } from "meteor/idreesia-common/business-logic/accounts";
+import moment from 'moment';
+import { Formats, JobTypes } from 'meteor/idreesia-common/constants';
+import { AdminJobs } from 'meteor/idreesia-common/collections/admin';
+import { calculateAllAccountBalancesFromMonth } from 'meteor/idreesia-common/business-logic/accounts';
 
-import Jobs from "imports/collections/jobs";
+import Jobs from '/imports/collections/jobs';
 
 export const worker = (job, callback) => {
   // eslint-disable-next-line no-console
@@ -22,7 +22,7 @@ export const worker = (job, callback) => {
 
     AdminJobs.update(adminJobId, {
       $set: {
-        status: "completed",
+        status: 'completed',
         logs: adminJob.logs,
         errorDetails: adminJob.errorDetails,
       },
@@ -32,7 +32,7 @@ export const worker = (job, callback) => {
     console.error(error);
     AdminJobs.update(adminJobId, {
       $set: {
-        status: "errored",
+        status: 'errored',
         logs: adminJob.logs,
         errorDetails: error.toString(),
       },

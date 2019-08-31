@@ -1,7 +1,7 @@
-import { JobTypes } from "meteor/idreesia-common/constants";
-import { Job } from "meteor/vsivsi:job-collection";
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import { Job } from 'meteor/vsivsi:job-collection';
 
-import Jobs from "imports/collections/jobs";
+import Jobs from '/imports/collections/jobs';
 
 export const worker = (job, callback) => {
   const jobIds = Jobs.find({ status: { $in: Job.jobStatusRemovable } }).map(

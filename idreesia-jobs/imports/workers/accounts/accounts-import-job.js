@@ -1,9 +1,9 @@
-import { JobTypes } from "meteor/idreesia-common/constants";
-import { AdminJobs } from "meteor/idreesia-common/collections/admin";
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import { AdminJobs } from 'meteor/idreesia-common/collections/admin';
 
-import Jobs from "imports/collections/jobs";
+import Jobs from '/imports/collections/jobs';
 
-import importData from "./importers/import-data";
+import importData from './importers/import-data';
 
 export const worker = (job, callback) => {
   // eslint-disable-next-line no-console
@@ -13,7 +13,7 @@ export const worker = (job, callback) => {
   const adminJob = AdminJobs.findOne(adminJobId);
   const jobDetails = JSON.parse(adminJob.jobDetails);
 
-  return importData(adminJob, jobDetails, "account-heads")
+  return importData(adminJob, jobDetails, 'account-heads')
     .then(() => {
       AdminJobs.update(adminJobId, {
         $set: {

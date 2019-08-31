@@ -1,14 +1,13 @@
-import { JobCollection } from "meteor/vsivsi:job-collection";
-import { isUndefined } from "lodash";
-
-import { JobTypes } from "meteor/idreesia-common/constants";
+import { isUndefined } from 'lodash';
+import { JobCollection } from 'meteor/vsivsi:job-collection';
+import { JobTypes } from 'meteor/idreesia-common/constants';
 import {
   CleanupJob,
   SendEmailsJob,
   AccountsImportJob,
   VouchersImportJob,
   AccountsCalculationJob,
-} from "imports/models";
+} from '/imports/models';
 
 const JobModels = {
   [JobTypes.CLEANUP_JOB]: CleanupJob,
@@ -19,13 +18,13 @@ const JobModels = {
 };
 
 class Jobs extends JobCollection {
-  constructor(name = "jobs", options = {}) {
+  constructor(name = 'jobs', options = {}) {
     super(name, options);
   }
 
   create(type, params = {}, options = {}) {
     if (!JobModels[type]) {
-      throw new Meteor.Error("not-found", "Job type could not be found.", {
+      throw new Meteor.Error('not-found', 'Job type could not be found.', {
         type,
       });
     }

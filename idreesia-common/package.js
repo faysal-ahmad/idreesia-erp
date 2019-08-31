@@ -10,5 +10,4 @@ Package.onUse(api => {
   api.use('aldeed:collection2-core');
   api.use('swydo:graphql@0.4.0');
   api.use('accounts-password@1.5.1');
-  api.use('apollo');
 });

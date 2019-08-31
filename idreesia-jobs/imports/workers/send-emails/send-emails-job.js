@@ -1,11 +1,11 @@
-import mjmltohtml from "mjml";
+import mjmltohtml from 'mjml';
 
-import { JobTypes } from "meteor/idreesia-common/constants";
-import { PhysicalStores } from "meteor/idreesia-common/collections/inventory";
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import { PhysicalStores } from 'meteor/idreesia-common/collections/inventory';
 
-import Jobs from "imports/collections/jobs";
-import sendEmail from "./sendgrid/send-email";
-import getDailySummary from "./email-templates/daily-summary-report/get-daily-summary";
+import Jobs from '/imports/collections/jobs';
+import sendEmail from './sendgrid/send-email';
+import getDailySummary from './email-templates/daily-summary-report/get-daily-summary';
 
 export const worker = (job, callback) => {
   // eslint-disable-next-line no-console
@@ -17,14 +17,14 @@ export const worker = (job, callback) => {
     const html = mjmltohtml(template).html;
 
     const recepients = [
-      { email: "faisal.idreesi@gmail.com", name: "Faisal Ahmad" },
-      { email: "naeemyahya@gmail.com", name: "Dr. Yahya Naeem" },
+      { email: 'faisal.idreesi@gmail.com', name: 'Faisal Ahmad' },
+      { email: 'naeemyahya@gmail.com', name: 'Dr. Yahya Naeem' },
     ];
 
     return sendEmail({
-      from: "erp-server@idreesia.org",
+      from: 'erp-server@idreesia.org',
       to: recepients,
-      replyTo: "no-reply@idreesia.org",
+      replyTo: 'no-reply@idreesia.org',
       subject: `Inventory Summary for ${physicalStore.name}`,
       html,
     });

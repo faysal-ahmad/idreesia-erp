@@ -1,8 +1,8 @@
-import { values } from "lodash";
-import { Job } from "meteor/vsivsi:job-collection";
+import { values } from 'lodash';
+import { Job } from 'meteor/vsivsi:job-collection';
 
-import { JobTypes } from "meteor/idreesia-common/constants";
-import Jobs from "imports/collections/jobs";
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import Jobs from '/imports/collections/jobs';
 
 export default class extends Job {
   constructor(type, params = {}) {

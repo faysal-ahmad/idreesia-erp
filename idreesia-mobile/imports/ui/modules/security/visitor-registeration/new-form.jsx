@@ -86,10 +86,10 @@ class NewForm extends Component {
         })
           .then(() => {
             form.resetFields();
-            Toast.info('Visition information was saved.', 1);
+            Toast.info('Visitor information was saved.', 1);
           })
           .catch(() => {
-            Toast.fail('Visition information was not saved.', 1);
+            Toast.fail('Visitor information was not saved.', 1);
           });
       }
     );

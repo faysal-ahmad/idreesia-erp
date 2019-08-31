@@ -7,7 +7,6 @@ import { graphql } from "react-apollo";
 import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
 import {
   InputTextField,
@@ -31,7 +30,7 @@ class VoucherInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.karkunsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -48,7 +47,7 @@ class VoucherInfo extends Component {
         },
       })
         .then(() => {
-          history.push(paths.vouchersPath(companyId));
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -57,8 +56,8 @@ class VoucherInfo extends Component {
   };
 
   render() {
-    const { formDataLoading, voucherById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { form, formDataLoading, voucherById } = this.props;
+    const { getFieldDecorator } = form;
     if (formDataLoading) return null;
 
     return (

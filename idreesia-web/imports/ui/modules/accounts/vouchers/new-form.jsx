@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 
+import { VoucherType } from 'meteor/idreesia-common/constants/accounts'
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import {
@@ -61,8 +62,8 @@ class NewForm extends Component {
   };
 
   render() {
-    const { companyLoading } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { companyLoading, form } = this.props;
+    const { getFieldDecorator } = form;
     if (companyLoading) return null;
 
     return (
@@ -70,19 +71,19 @@ class NewForm extends Component {
         <SelectField
           data={[
             {
-              value: "BPV",
+              value: VoucherType.BANK_PAYMENT_VOUCHER,
               text: "Bank Payment Voucher",
             },
             {
-              value: "BRV",
+              value: VoucherType.BANK_RECEIPT_VOUCHER,
               text: "Bank Receipt Voucher",
             },
             {
-              value: "CPV",
+              value: VoucherType.CASH_PAYMENT_VOUCHER,
               text: "Cash Payment Voucher",
             },
             {
-              value: "CRV",
+              value: VoucherType.CASH_RECEIPT_VOUCHER,
               text: "Cash Receipt Voucher",
             },
           ]}

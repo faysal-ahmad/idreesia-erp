@@ -173,7 +173,7 @@ class List extends Component {
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-    const numPageSize = pageSize || 10;
+    const numPageSize = pageSize || 20;
 
     return (
       <Table
@@ -187,7 +187,7 @@ class List extends Component {
         footer={() => (
           <Pagination
             defaultCurrent={1}
-            defaultPageSize={10}
+            defaultPageSize={20}
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger

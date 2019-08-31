@@ -71,7 +71,7 @@ export function getVouchers(companyId, queryString) {
     endDate,
     voucherNumber,
     pageIndex = "0",
-    pageSize = "10",
+    pageSize = "20",
   } = params;
 
   if (voucherNumber) {

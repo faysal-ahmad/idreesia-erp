@@ -1,6 +1,6 @@
 {
   "extends": ["airbnb", "prettier"],
-  "plugins": ["meteor", "jsx-a11y"],
+  "plugins": ["meteor", "react", "jsx-a11y"],
   "env": {
     "browser": true,
     "meteor": true,

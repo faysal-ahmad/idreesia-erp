@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 
+import { VoucherType } from 'meteor/idreesia-common/constants/accounts'
 import VoucherDetailNewForm from "./voucher-detail-new-form";
 import VoucherDetailEditForm from "./voucher-detail-edit-form";
 import { WithAccountHeadsByCompany } from "/imports/ui/modules/accounts/common/composers";
@@ -19,11 +20,20 @@ const IconStyle = {
   fontSize: 20,
 };
 
+const BackgroundColors = {
+  [VoucherType.BANK_PAYMENT_VOUCHER]: "#E6F4E3",
+  [VoucherType.BANK_RECEIPT_VOUCHER]: "#FFFACD",
+  [VoucherType.CASH_PAYMENT_VOUCHER]: "#FFFACD",
+  [VoucherType.CASH_RECEIPT_VOUCHER]: "#E6F4E3",
+}
+
 class VoucherDetails extends Component {
   static propTypes = {
     companyId: PropTypes.string,
     voucherId: PropTypes.string,
     formDataLoading: PropTypes.bool,
+    voucherById: PropTypes.object,
+    listDataLoading: PropTypes.bool,
     voucherDetailsByVoucherId: PropTypes.array,
     accountHeadsLoading: PropTypes.bool,
     accountHeadsByCompanyId: PropTypes.array,
@@ -143,10 +153,14 @@ class VoucherDetails extends Component {
   render() {
     const {
       formDataLoading,
+      listDataLoading,
       accountHeadsLoading,
+      voucherById,
       voucherDetailsByVoucherId,
     } = this.props;
-    if (formDataLoading || accountHeadsLoading) return null;
+    if (formDataLoading || listDataLoading || accountHeadsLoading) return null;
+
+    const backgroundColor = BackgroundColors[voucherById.voucherType];
 
     return (
       <Table
@@ -156,11 +170,23 @@ class VoucherDetails extends Component {
         title={this.getTableHeader}
         bordered
         size="small"
+        style={{
+          backgroundColor,
+        }}
         pagination={false}
       />
     );
   }
 }
+
+const formQuery = gql`
+  query voucherById($_id: String!, $companyId: String!) {
+    voucherById(_id: $_id, companyId: $companyId) {
+      _id
+      voucherType
+    }
+  }
+`;
 
 const listQuery = gql`
   query voucherDetailsByVoucherId($companyId: String!, $voucherId: String!) {
@@ -193,8 +219,14 @@ export default flowRight(
       refetchQueries: ["voucherDetailsByVoucherId", "pagedVoucherDetails"],
     },
   }),
-  graphql(listQuery, {
+  graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
+    options: ({ companyId, voucherId }) => {
+      return { variables: { _id: voucherId, companyId } };
+    },
+  }),
+  graphql(listQuery, {
+    props: ({ data }) => ({ listDataLoading: data.loading, ...data }),
     options: ({ companyId, voucherId }) => ({
       variables: {
         companyId,

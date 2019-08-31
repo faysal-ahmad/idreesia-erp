@@ -15,10 +15,10 @@ meteor yarn build
 cd ../
 
 # build the idreesia-mobile application
-cd ./idreesia-mobile
-meteor yarn install
-meteor yarn build
-cd ../
+# cd ./idreesia-mobile
+# meteor yarn install
+# meteor yarn build
+# cd ../
 
 # build the idreesia-jobs application
 cd ./idreesia-jobs

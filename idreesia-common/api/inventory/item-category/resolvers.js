@@ -1,19 +1,19 @@
 import {
   ItemCategories,
-  StockItems
-} from "meteor/idreesia-common/collections/inventory";
+  StockItems,
+} from 'meteor/idreesia-common/collections/inventory';
 import {
   hasOnePermission,
-  hasInstanceAccess
-} from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  hasInstanceAccess,
+} from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   ItemCategory: {
     stockItemCount: itemCategory =>
       StockItems.find({
-        categoryId: { $eq: itemCategory._id }
-      }).count()
+        categoryId: { $eq: itemCategory._id },
+      }).count(),
   },
 
   Query: {
@@ -29,11 +29,11 @@ export default {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
       return ItemCategories.find(
         {
-          physicalStoreId: { $eq: physicalStoreId }
+          physicalStoreId: { $eq: physicalStoreId },
         },
         { sort: { name: 1 } }
       ).fetch();
-    }
+    },
   },
 
   Mutation: {
@@ -42,13 +42,13 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in the System."
+          'You do not have permission to manage Inventory Setup Data in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in this Physical Store."
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
         );
       }
 
@@ -59,7 +59,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       return ItemCategories.findOne(itemCategoryId);
@@ -70,7 +70,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in the System."
+          'You do not have permission to manage Inventory Setup Data in the System.'
         );
       }
 
@@ -81,7 +81,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in this Physical Store."
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
         );
       }
 
@@ -90,11 +90,11 @@ export default {
         $set: {
           name,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return ItemCategories.findOne(id);
-    }
-  }
+    },
+  },
 };

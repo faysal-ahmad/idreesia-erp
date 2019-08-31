@@ -1,42 +1,42 @@
-import { Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Karkuns } from 'meteor/idreesia-common/collections/hr';
 import {
   StockAdjustments,
-  StockItems
-} from "meteor/idreesia-common/collections/inventory";
+  StockItems,
+} from 'meteor/idreesia-common/collections/inventory';
 import {
   hasInstanceAccess,
-  hasOnePermission
-} from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  hasOnePermission,
+} from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import getStockAdjustments, {
-  getStockAdjustmentsByStockItemId
-} from "./queries";
+  getStockAdjustmentsByStockItemId,
+} from './queries';
 
 export default {
   StockAdjustment: {
     refStockItem: stockAdjustment =>
       StockItems.findOne({
-        _id: { $eq: stockAdjustment.stockItemId }
+        _id: { $eq: stockAdjustment.stockItemId },
       }),
     refAdjustedBy: stockAdjustment =>
       Karkuns.findOne({
-        _id: { $eq: stockAdjustment.adjustedBy }
+        _id: { $eq: stockAdjustment.adjustedBy },
       }),
     refCreatedBy: stockAdjustment =>
       Karkuns.findOne({
-        _id: { $eq: stockAdjustment.createdBy }
+        _id: { $eq: stockAdjustment.createdBy },
       }),
     refUpdatedBy: stockAdjustment =>
       Karkuns.findOne({
-        _id: { $eq: stockAdjustment.updatedBy }
+        _id: { $eq: stockAdjustment.updatedBy },
       }),
     refApprovedBy: stockAdjustment => {
       if (stockAdjustment.approvedBy) return null;
       return Karkuns.findOne({
-        _id: { $eq: stockAdjustment.approvedBy }
+        _id: { $eq: stockAdjustment.approvedBy },
       });
-    }
+    },
   },
   Query: {
     stockAdjustmentsByStockItem(
@@ -50,7 +50,7 @@ export default {
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         return [];
@@ -66,12 +66,12 @@ export default {
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         return {
           data: [],
-          totalResults: 0
+          totalResults: 0,
         };
       }
 
@@ -84,7 +84,7 @@ export default {
           PermissionConstants.IN_VIEW_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ITEMS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         return null;
@@ -97,7 +97,7 @@ export default {
         return null;
       }
       return stockAdjustment;
-    }
+    },
   },
 
   Mutation: {
@@ -110,24 +110,24 @@ export default {
         adjustedBy,
         quantity,
         isInflow,
-        adjustmentReason
+        adjustmentReason,
       },
       { user }
     ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Adjustments in the System."
+          'You do not have permission to manage Stock Adjustments in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Stock Adjustments in this Physical Store."
+          'You do not have permission to manage Stock Adjustments in this Physical Store.'
         );
       }
 
@@ -143,7 +143,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       if (isInflow) {
@@ -163,11 +163,11 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Adjustments in the System."
+          'You do not have permission to manage Stock Adjustments in the System.'
         );
       }
 
@@ -178,7 +178,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Adjustments in this Physical Store."
+          'You do not have permission to manage Stock Adjustments in this Physical Store.'
         );
       }
 
@@ -213,7 +213,7 @@ export default {
         {
           _id: { $eq: _id },
           approvedOn: { $eq: null },
-          approvedBy: { $eq: null }
+          approvedBy: { $eq: null },
         },
         {
           $set: {
@@ -223,8 +223,8 @@ export default {
             isInflow,
             adjustmentReason,
             updatedAt: date,
-            updatedBy: user._id
-          }
+            updatedBy: user._id,
+          },
         }
       );
 
@@ -234,11 +234,11 @@ export default {
     approveStockAdjustment(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to approve Stock Adjustments in the System."
+          'You do not have permission to approve Stock Adjustments in the System.'
         );
       }
 
@@ -249,7 +249,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to approve Stock Adjustments in this Physical Store."
+          'You do not have permission to approve Stock Adjustments in this Physical Store.'
         );
       }
 
@@ -257,8 +257,8 @@ export default {
       StockAdjustments.update(_id, {
         $set: {
           approvedOn: date,
-          approvedBy: user._id
-        }
+          approvedBy: user._id,
+        },
       });
 
       return StockAdjustments.findOne(_id);
@@ -268,11 +268,11 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS
+          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Adjustments in the System."
+          'You do not have permission to manage Stock Adjustments in the System.'
         );
       }
 
@@ -283,7 +283,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Adjustments in this Physical Store."
+          'You do not have permission to manage Stock Adjustments in this Physical Store.'
         );
       }
 
@@ -301,6 +301,6 @@ export default {
       }
 
       return StockAdjustments.remove(_id);
-    }
-  }
+    },
+  },
 };

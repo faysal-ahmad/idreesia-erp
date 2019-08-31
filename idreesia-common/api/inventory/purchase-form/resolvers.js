@@ -1,17 +1,17 @@
-import { Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Karkuns } from 'meteor/idreesia-common/collections/hr';
 import {
   PurchaseForms,
   StockItems,
-  Vendors
-} from "meteor/idreesia-common/collections/inventory";
-import { Attachments } from "meteor/idreesia-common/collections/common";
+  Vendors,
+} from 'meteor/idreesia-common/collections/inventory';
+import { Attachments } from 'meteor/idreesia-common/collections/common';
 import {
   hasInstanceAccess,
-  hasOnePermission
-} from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  hasOnePermission,
+} from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import getPurchaseForms, { getPurchaseFormsByStockItemId } from "./queries";
+import getPurchaseForms, { getPurchaseFormsByStockItemId } from './queries';
 
 export default {
   PurchaseForm: {
@@ -25,32 +25,32 @@ export default {
     },
     refReceivedBy: purchaseForm =>
       Karkuns.findOne({
-        _id: { $eq: purchaseForm.receivedBy }
+        _id: { $eq: purchaseForm.receivedBy },
       }),
     refPurchasedBy: purchaseForm =>
       Karkuns.findOne({
-        _id: { $eq: purchaseForm.purchasedBy }
+        _id: { $eq: purchaseForm.purchasedBy },
       }),
     refCreatedBy: purchaseForm =>
       Karkuns.findOne({
-        _id: { $eq: purchaseForm.createdBy }
+        _id: { $eq: purchaseForm.createdBy },
       }),
     refUpdatedBy: purchaseForm =>
       Karkuns.findOne({
-        _id: { $eq: purchaseForm.updatedBy }
+        _id: { $eq: purchaseForm.updatedBy },
       }),
     refApprovedBy: purchaseForm => {
       if (purchaseForm.approvedBy) {
         return Karkuns.findOne({
-          _id: { $eq: purchaseForm.approvedBy }
+          _id: { $eq: purchaseForm.approvedBy },
         });
       }
       return null;
     },
     refVendor: purchaseForm =>
       Vendors.findOne({
-        _id: { $eq: purchaseForm.vendorId }
-      })
+        _id: { $eq: purchaseForm.vendorId },
+      }),
   },
   Query: {
     purchaseFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
@@ -59,7 +59,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         return [];
@@ -74,12 +74,12 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         return {
           purchaseForms: [],
-          totalResults: 0
+          totalResults: 0,
         };
       }
 
@@ -91,7 +91,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         return null;
@@ -102,7 +102,7 @@ export default {
         return null;
       }
       return purchaseForm;
-    }
+    },
   },
 
   Mutation: {
@@ -115,24 +115,24 @@ export default {
         physicalStoreId,
         vendorId,
         items,
-        notes
+        notes,
       },
       { user }
     ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in the System."
+          'You do not have permission to manage Purchase Forms in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in this Physical Store."
+          'You do not have permission to manage Purchase Forms in this Physical Store.'
         );
       }
 
@@ -148,7 +148,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       items.forEach(({ stockItemId, quantity, isInflow }) => {
@@ -172,24 +172,24 @@ export default {
         physicalStoreId,
         vendorId,
         items,
-        notes
+        notes,
       },
       { user }
     ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in the System."
+          'You do not have permission to manage Purchase Forms in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in this Physical Store."
+          'You do not have permission to manage Purchase Forms in this Physical Store.'
         );
       }
 
@@ -218,7 +218,7 @@ export default {
         {
           _id: { $eq: _id },
           approvedOn: { $eq: null },
-          approvedBy: { $eq: null }
+          approvedBy: { $eq: null },
         },
         {
           $set: {
@@ -230,8 +230,8 @@ export default {
             items,
             notes,
             updatedAt: date,
-            updatedBy: user._id
-          }
+            updatedBy: user._id,
+          },
         }
       );
 
@@ -241,11 +241,11 @@ export default {
     approvePurchaseForm(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to approve Purchase Forms in the System."
+          'You do not have permission to approve Purchase Forms in the System.'
         );
       }
 
@@ -256,7 +256,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to approve Purchase Forms in this Physical Store."
+          'You do not have permission to approve Purchase Forms in this Physical Store.'
         );
       }
 
@@ -264,8 +264,8 @@ export default {
       PurchaseForms.update(_id, {
         $set: {
           approvedOn: date,
-          approvedBy: user._id
-        }
+          approvedBy: user._id,
+        },
       });
 
       return PurchaseForms.findOne(_id);
@@ -276,11 +276,11 @@ export default {
         hasInstanceAccess(user._id, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in the System."
+          'You do not have permission to manage Purchase Forms in the System.'
         );
       }
 
@@ -288,16 +288,16 @@ export default {
       PurchaseForms.update(
         {
           _id,
-          physicalStoreId
+          physicalStoreId,
         },
         {
           $addToSet: {
-            attachmentIds: attachmentId
+            attachmentIds: attachmentId,
           },
           $set: {
             updatedAt: date,
-            updatedBy: user._id
-          }
+            updatedBy: user._id,
+          },
         }
       );
 
@@ -313,11 +313,11 @@ export default {
         hasInstanceAccess(user._id, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in the System."
+          'You do not have permission to manage Purchase Forms in the System.'
         );
       }
 
@@ -326,12 +326,12 @@ export default {
         { _id, physicalStoreId },
         {
           $pull: {
-            attachmentIds: attachmentId
+            attachmentIds: attachmentId,
           },
           $set: {
             updatedAt: date,
-            updatedBy: user._id
-          }
+            updatedBy: user._id,
+          },
         }
       );
 
@@ -343,11 +343,11 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in the System."
+          'You do not have permission to manage Purchase Forms in the System.'
         );
       }
 
@@ -358,7 +358,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to manage Purchase Forms in this Physical Store."
+          'You do not have permission to manage Purchase Forms in this Physical Store.'
         );
       }
 
@@ -373,6 +373,6 @@ export default {
       });
 
       return PurchaseForms.remove(_id);
-    }
-  }
+    },
+  },
 };

@@ -1,10 +1,10 @@
-import { parse } from "query-string";
-import { StockItems } from "meteor/idreesia-common/collections/inventory";
-import { get } from "lodash";
+import { parse } from 'query-string';
+import { StockItems } from 'meteor/idreesia-common/collections/inventory';
+import { get } from 'lodash';
 
 export default function getPagedStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
-  const { categoryId, name, pageIndex = "0", pageSize = "10" } = params;
+  const { categoryId, name, pageIndex = '0', pageSize = '10' } = params;
   const pipeline = [];
 
   if (name) {
@@ -34,7 +34,7 @@ export default function getPagedStockItems(queryString, physicalStoreId) {
   }
 
   const countingPipeline = pipeline.concat({
-    $count: "total",
+    $count: 'total',
   });
 
   const nPageIndex = parseInt(pageIndex, 10);
@@ -49,6 +49,6 @@ export default function getPagedStockItems(queryString, physicalStoreId) {
   const totalResults = StockItems.aggregate(countingPipeline).toArray();
   return Promise.all([stockItems, totalResults]).then(results => ({
     data: results[0],
-    totalResults: get(results[1], ["0", "total"], 0),
+    totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

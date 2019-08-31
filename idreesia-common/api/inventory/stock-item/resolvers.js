@@ -4,15 +4,15 @@ import {
   StockItems,
   PurchaseForms,
   IssuanceForms,
-  StockAdjustments
-} from "meteor/idreesia-common/collections/inventory";
+  StockAdjustments,
+} from 'meteor/idreesia-common/collections/inventory';
 import {
   hasInstanceAccess,
-  hasOnePermission
-} from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  hasOnePermission,
+} from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import getPagedStockItems from "./queries";
+import getPagedStockItems from './queries';
 
 export default {
   StockItem: {
@@ -40,24 +40,24 @@ export default {
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         items: {
           $elemMatch: {
-            stockItemId: { $eq: stockItem._id }
-          }
-        }
+            stockItemId: { $eq: stockItem._id },
+          },
+        },
       }).count(),
     issuanceFormsCount: stockItem =>
       IssuanceForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         items: {
           $elemMatch: {
-            stockItemId: { $eq: stockItem._id }
-          }
-        }
+            stockItemId: { $eq: stockItem._id },
+          },
+        },
       }).count(),
     stockAdjustmentsCount: stockItem =>
       StockAdjustments.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
-        stockItemId: { $eq: stockItem._id }
-      }).count()
+        stockItemId: { $eq: stockItem._id },
+      }).count(),
   },
 
   Query: {
@@ -65,7 +65,7 @@ export default {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         return {
           data: [],
-          totalResults: 0
+          totalResults: 0,
         };
       }
 
@@ -86,9 +86,9 @@ export default {
 
       return StockItems.find({
         _id: { $in: _ids },
-        physicalStoreId: { $eq: physicalStoreId }
+        physicalStoreId: { $eq: physicalStoreId },
       }).fetch();
-    }
+    },
   },
 
   Mutation: {
@@ -102,7 +102,7 @@ export default {
         categoryId,
         physicalStoreId,
         minStockLevel,
-        currentStockLevel
+        currentStockLevel,
       },
       { user }
     ) {
@@ -110,13 +110,13 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Items in the System."
+          'You do not have permission to manage Stock Items in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Stock Items in this Physical Store."
+          'You do not have permission to manage Stock Items in this Physical Store.'
         );
       }
 
@@ -134,7 +134,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       return StockItems.findOne(stockItemId);
@@ -149,7 +149,7 @@ export default {
         details,
         unitOfMeasurement,
         categoryId,
-        minStockLevel
+        minStockLevel,
       },
       { user }
     ) {
@@ -157,7 +157,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Items in the System."
+          'You do not have permission to manage Stock Items in the System.'
         );
       }
 
@@ -167,7 +167,7 @@ export default {
         hasInstanceAccess(user._id, existingStockItem.physicalStoreId) === false
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Items in the System."
+          'You do not have permission to manage Stock Items in the System.'
         );
       }
 
@@ -181,8 +181,8 @@ export default {
           categoryId,
           minStockLevel,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return StockItems.findOne(_id);
@@ -193,13 +193,13 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Items in the System."
+          'You do not have permission to manage Stock Items in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Stock Items in this Physical Store."
+          'You do not have permission to manage Stock Items in this Physical Store.'
         );
       }
 
@@ -209,21 +209,21 @@ export default {
         physicalStoreId: { $eq: physicalStoreId },
         items: {
           $elemMatch: {
-            stockItemId: { $eq: _id }
-          }
-        }
+            stockItemId: { $eq: _id },
+          },
+        },
       }).count();
       const issuanceFormsCount = IssuanceForms.find({
         physicalStoreId: { $eq: physicalStoreId },
         items: {
           $elemMatch: {
-            stockItemId: { $eq: _id }
-          }
-        }
+            stockItemId: { $eq: _id },
+          },
+        },
       }).count();
       const stockAdjustmentsCount = StockAdjustments.find({
         physicalStoreId: { $eq: physicalStoreId },
-        stockItemId: { $eq: _id }
+        stockItemId: { $eq: _id },
       }).count();
 
       if (
@@ -241,7 +241,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
-          "You do not have permission to manage Stock Items in the System."
+          'You do not have permission to manage Stock Items in the System.'
         );
       }
 
@@ -250,11 +250,11 @@ export default {
         $set: {
           imageId,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return StockItems.findOne(_id);
-    }
-  }
+    },
+  },
 };

@@ -1,51 +1,51 @@
-import { Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Karkuns } from 'meteor/idreesia-common/collections/hr';
 import {
   Locations,
   IssuanceForms,
-  StockItems
-} from "meteor/idreesia-common/collections/inventory";
+  StockItems,
+} from 'meteor/idreesia-common/collections/inventory';
 import {
   hasInstanceAccess,
-  hasOnePermission
-} from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  hasOnePermission,
+} from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import getIssuanceForms, { getIssuanceFormsByStockItemId } from "./queries";
+import getIssuanceForms, { getIssuanceFormsByStockItemId } from './queries';
 
 export default {
   IssuanceForm: {
     refLocation: issuanceForm => {
       if (issuanceForm.locationId) {
         return Locations.findOne({
-          _id: { $eq: issuanceForm.locationId }
+          _id: { $eq: issuanceForm.locationId },
         });
       }
       return null;
     },
     refIssuedBy: issuanceForm =>
       Karkuns.findOne({
-        _id: { $eq: issuanceForm.issuedBy }
+        _id: { $eq: issuanceForm.issuedBy },
       }),
     refIssuedTo: issuanceForm =>
       Karkuns.findOne({
-        _id: { $eq: issuanceForm.issuedTo }
+        _id: { $eq: issuanceForm.issuedTo },
       }),
     refCreatedBy: issuanceForm =>
       Karkuns.findOne({
-        _id: { $eq: issuanceForm.createdBy }
+        _id: { $eq: issuanceForm.createdBy },
       }),
     refUpdatedBy: issuanceForm =>
       Karkuns.findOne({
-        _id: { $eq: issuanceForm.updatedBy }
+        _id: { $eq: issuanceForm.updatedBy },
       }),
     refApprovedBy: issuanceForm => {
       if (issuanceForm.approvedBy) {
         return Karkuns.findOne({
-          _id: { $eq: issuanceForm.approvedBy }
+          _id: { $eq: issuanceForm.approvedBy },
         });
       }
       return null;
-    }
+    },
   },
   Query: {
     issuanceFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
@@ -54,7 +54,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         return [];
@@ -69,12 +69,12 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         return {
           issuanceForms: [],
-          totalResults: 0
+          totalResults: 0,
         };
       }
 
@@ -86,7 +86,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         return null;
@@ -97,7 +97,7 @@ export default {
         return null;
       }
       return issuanceForm;
-    }
+    },
   },
 
   Mutation: {
@@ -111,24 +111,24 @@ export default {
         physicalStoreId,
         locationId,
         items,
-        notes
+        notes,
       },
       { user }
     ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Issuance Forms in the System."
+          'You do not have permission to manage Issuance Forms in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Issuance Forms in this Physical Store."
+          'You do not have permission to manage Issuance Forms in this Physical Store.'
         );
       }
 
@@ -145,7 +145,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       items.forEach(({ stockItemId, quantity, isInflow }) => {
@@ -170,24 +170,24 @@ export default {
         physicalStoreId,
         locationId,
         items,
-        notes
+        notes,
       },
       { user }
     ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Issuance Forms in the System."
+          'You do not have permission to manage Issuance Forms in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Issuance Forms in this Physical Store."
+          'You do not have permission to manage Issuance Forms in this Physical Store.'
         );
       }
 
@@ -216,7 +216,7 @@ export default {
         {
           _id: { $eq: _id },
           approvedOn: { $eq: null },
-          approvedBy: { $eq: null }
+          approvedBy: { $eq: null },
         },
         {
           $set: {
@@ -229,8 +229,8 @@ export default {
             items,
             notes,
             updatedAt: date,
-            updatedBy: user._id
-          }
+            updatedBy: user._id,
+          },
         }
       );
 
@@ -240,11 +240,11 @@ export default {
     approveIssuanceForm(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to approve Issuance Forms in the System."
+          'You do not have permission to approve Issuance Forms in the System.'
         );
       }
 
@@ -255,7 +255,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to approve Issuance Forms in this Physical Store."
+          'You do not have permission to approve Issuance Forms in this Physical Store.'
         );
       }
 
@@ -263,8 +263,8 @@ export default {
       IssuanceForms.update(_id, {
         $set: {
           approvedOn: date,
-          approvedBy: user._id
-        }
+          approvedBy: user._id,
+        },
       });
 
       return IssuanceForms.findOne(_id);
@@ -274,11 +274,11 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
       ) {
         throw new Error(
-          "You do not have permission to manage Issuance Forms in the System."
+          'You do not have permission to manage Issuance Forms in the System.'
         );
       }
 
@@ -289,7 +289,7 @@ export default {
           false
       ) {
         throw new Error(
-          "You do not have permission to manage Issuance Forms in this Physical Store."
+          'You do not have permission to manage Issuance Forms in this Physical Store.'
         );
       }
 
@@ -304,6 +304,6 @@ export default {
       });
 
       return IssuanceForms.remove(_id);
-    }
-  }
+    },
+  },
 };

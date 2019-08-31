@@ -1,19 +1,19 @@
 import {
   Vendors,
-  PurchaseForms
-} from "meteor/idreesia-common/collections/inventory";
+  PurchaseForms,
+} from 'meteor/idreesia-common/collections/inventory';
 import {
   hasOnePermission,
-  hasInstanceAccess
-} from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  hasInstanceAccess,
+} from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   Vendor: {
     usageCount: vendor =>
       PurchaseForms.find({
-        vendorId: { $eq: vendor._id }
-      }).count()
+        vendorId: { $eq: vendor._id },
+      }).count(),
   },
   Query: {
     vendorById(obj, { _id }, { user }) {
@@ -28,11 +28,11 @@ export default {
       if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
       return Vendors.find(
         {
-          physicalStoreId: { $eq: physicalStoreId }
+          physicalStoreId: { $eq: physicalStoreId },
         },
         { sort: { name: 1 } }
       ).fetch();
-    }
+    },
   },
 
   Mutation: {
@@ -45,13 +45,13 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in the System."
+          'You do not have permission to manage Inventory Setup Data in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, physicalStoreId) === false) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in this Physical Store."
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
         );
       }
 
@@ -66,7 +66,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       return Vendors.findOne(vendorId);
@@ -81,7 +81,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in the System."
+          'You do not have permission to manage Inventory Setup Data in the System.'
         );
       }
 
@@ -91,7 +91,7 @@ export default {
         hasInstanceAccess(user._id, existingVendor.physicalStoreId) === false
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in this Physical Store."
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
         );
       }
 
@@ -104,8 +104,8 @@ export default {
           address,
           notes,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Vendors.findOne(_id);
@@ -116,7 +116,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in the System."
+          'You do not have permission to manage Inventory Setup Data in the System.'
         );
       }
 
@@ -126,11 +126,11 @@ export default {
         hasInstanceAccess(user._id, existingVendor.physicalStoreId) === false
       ) {
         throw new Error(
-          "You do not have permission to manage Inventory Setup Data in this Physical Store."
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
         );
       }
 
       return Vendors.remove(_id);
-    }
-  }
+    },
+  },
 };

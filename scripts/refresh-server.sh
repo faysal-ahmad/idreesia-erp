@@ -32,9 +32,9 @@ npm install
 cd ../../../../..
 
 # go to the built idreesia-mobile application and install the dependencies
-cd ./build/idreesia-mobile/bundle/programs/server
-npm install
-cd ../../../../..
+# cd ./build/idreesia-mobile/bundle/programs/server
+# npm install
+# cd ../../../../..
 
 # go to the built idreesia-jobs application and install the dependencies
 cd ./build/idreesia-jobs/bundle/programs/server

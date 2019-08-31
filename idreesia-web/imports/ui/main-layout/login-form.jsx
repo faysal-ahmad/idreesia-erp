@@ -23,7 +23,7 @@ class LoginForm extends Component {
           if (!error) {
             history.push(location.pathname);
             // eslint-disable-next-line no-console
-            console.log(`Login successful. Routing to location.pathname`);
+            console.log(`Login successful. Routing to ${location.pathname}`);
           } else {
             message.error(error.message, 5);
           }

@@ -1,9 +1,9 @@
-import { parse } from "query-string";
-import moment from "moment";
-import { get } from "lodash";
+import { parse } from 'query-string';
+import moment from 'moment';
+import { get } from 'lodash';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { VisitorStays } from "meteor/idreesia-common/collections/security";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { VisitorStays } from 'meteor/idreesia-common/collections/security';
 
 export function getVisitorStays(queryString) {
   const params = parse(queryString);
@@ -13,8 +13,8 @@ export function getVisitorStays(queryString) {
     visitorId,
     startDate,
     endDate,
-    pageIndex = "0",
-    pageSize = "20",
+    pageIndex = '0',
+    pageSize = '20',
   } = params;
 
   if (visitorId) {
@@ -30,7 +30,7 @@ export function getVisitorStays(queryString) {
       $match: {
         fromDate: {
           $gte: moment(startDate, Formats.DATE_FORMAT)
-            .startOf("day")
+            .startOf('day')
             .toDate(),
         },
       },
@@ -41,7 +41,7 @@ export function getVisitorStays(queryString) {
       $match: {
         toDate: {
           $lte: moment(endDate, Formats.DATE_FORMAT)
-            .endOf("day")
+            .endOf('day')
             .toDate(),
         },
       },
@@ -49,13 +49,13 @@ export function getVisitorStays(queryString) {
   }
 
   const countingPipeline = pipeline.concat({
-    $count: "total",
+    $count: 'total',
   });
 
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { updatedAt: -1 } },
+    { $sort: { fromDate: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
@@ -65,6 +65,6 @@ export function getVisitorStays(queryString) {
 
   return Promise.all([visitors, totalResults]).then(results => ({
     data: results[0],
-    totalResults: get(results[1], ["0", "total"], 0),
+    totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

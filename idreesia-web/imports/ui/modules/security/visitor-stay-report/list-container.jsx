@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { flowRight, toSafeInteger } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight, toSafeInteger } from 'lodash';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import List from "./list";
+import List from './list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -21,26 +21,24 @@ class ListContainer extends Component {
     const { queryParams, history } = this.props;
 
     let startDateVal;
-    if (newParams.hasOwnProperty("startDate"))
-      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : "";
-    else startDateVal = queryParams.startDateVal || "";
+    if (newParams.hasOwnProperty('startDate'))
+      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
+    else startDateVal = queryParams.startDate || '';
 
     let endDateVal;
-    if (newParams.hasOwnProperty("endDate"))
-      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : "";
-    else endDateVal = queryParams.endDateVal || "";
+    if (newParams.hasOwnProperty('endDate'))
+      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
+    else endDateVal = queryParams.endDate || '';
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
+    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 20;
+    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${
-      location.pathname
-    }?startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -70,5 +68,5 @@ class ListContainer extends Component {
 
 export default flowRight(
   WithQueryParams(),
-  WithBreadcrumbs(["Security", "Visitor's Stay Report"])
+  WithBreadcrumbs(['Security', "Visitor's Stay Report"])
 )(ListContainer);

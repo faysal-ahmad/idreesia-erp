@@ -59,6 +59,7 @@ extend type Mutation {
   ): StockItem
 
   removeStockItem(_id: String!, physicalStoreId: String!): Int
-
   setStockItemImage(_id: String!, imageId: String!): StockItem
+  mergeStockItems(ids: [String]!, physicalStoreId: String!): StockItem
+  recalculateStockLevels(ids: [String]!, physicalStoreId: String!): [StockItem]
 }

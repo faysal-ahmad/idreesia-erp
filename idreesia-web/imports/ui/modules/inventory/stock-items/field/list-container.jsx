@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import List from "../list/list";
+import List from '../list/list';
 
 export default class ListContainer extends Component {
   static propTypes = {

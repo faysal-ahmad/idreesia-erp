@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Input, Select, Row, Col } from "antd";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Input, Select, Row, Col } from 'antd';
+import moment from 'moment';
 
 export default class CustomInput extends Component {
   static propTypes = {
@@ -43,6 +43,7 @@ export default class CustomInput extends Component {
   };
 
   handleMonthChange = month => {
+    debugger;
     const { value, onChange } = this.props;
     const currentDate = moment();
     const newValue = value.clone();
@@ -61,7 +62,7 @@ export default class CustomInput extends Component {
         <Row type="flex" align="middle" gutter={10}>
           <Col span={5}>
             <Select
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               onChange={this.handleYearChange}
               value={yearValue}
             >
@@ -71,7 +72,7 @@ export default class CustomInput extends Component {
           <Col>years</Col>
           <Col span={5}>
             <Select
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               onChange={this.handleMonthChange}
               value={monthValue}
             >

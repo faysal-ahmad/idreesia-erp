@@ -13,6 +13,7 @@ import {
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import getPagedStockItems from './queries';
+import { mergeStockItems, recalculateStockLevels } from './helpers';
 
 export default {
   StockItem: {
@@ -255,6 +256,50 @@ export default {
       });
 
       return StockItems.findOne(_id);
+    },
+
+    mergeStockItems(obj, { ids, physicalStoreId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Stock Items in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Stock Items in this Physical Store.'
+        );
+      }
+
+      mergeStockItems(ids, physicalStoreId);
+      return StockItems.findOne(ids[0]);
+    },
+
+    recalculateStockLevels(obj, { ids, physicalStoreId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Stock Items in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Stock Items in this Physical Store.'
+        );
+      }
+
+      ids.forEach(id => {
+        recalculateStockLevels(id, physicalStoreId);
+      });
+
+      return StockItems.find({
+        _id: { $in: ids },
+        physicalStoreId: { $eq: physicalStoreId },
+      }).fetch();
     },
   },
 };

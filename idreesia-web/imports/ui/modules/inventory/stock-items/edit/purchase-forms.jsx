@@ -1,23 +1,23 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Icon, Table, Tooltip } from "antd";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Icon, Table, Tooltip } from 'antd';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
 };
 
 class List extends Component {
@@ -31,45 +31,49 @@ class List extends Component {
 
   columns = [
     {
-      title: "Purchase Date",
-      dataIndex: "purchaseDate",
-      key: "purchaseDate",
+      title: 'Purchase Date',
+      dataIndex: 'purchaseDate',
+      key: 'purchaseDate',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD MMM, YYYY");
+        return date.format('DD MMM, YYYY');
       },
     },
     {
-      title: "Purchased By",
-      dataIndex: "refPurchasedBy.name",
-      key: "refPurchasedBy.name",
+      title: 'Purchased By',
+      dataIndex: 'refPurchasedBy.name',
+      key: 'refPurchasedBy.name',
     },
     {
-      title: "Items",
-      dataIndex: "items",
-      key: "items",
+      title: 'Items',
+      dataIndex: 'items',
+      key: 'items',
       render: items => {
-        const formattedItems = items.map(
-          item => `${item.stockItemName} - ${item.quantity}`
-        );
-        return formattedItems.join(", ");
+        const formattedItems = items.map(item => (
+          <li key={`${item.stockItemId}${item.isInflow}`}>
+            {`${item.stockItemName} [${item.quantity} ${
+              item.isInflow ? 'Purchased' : 'Returned'
+            }]`}
+          </li>
+        ));
+        return <ul>{formattedItems}</ul>;
       },
     },
     {
-      title: "Actions",
-      key: "action",
+      title: 'Actions',
+      key: 'action',
       render: (text, record) => {
         let tooltipTitle;
         let iconType;
         let handler;
 
         if (!record.approvedOn) {
-          tooltipTitle = "Edit";
-          iconType = "edit";
+          tooltipTitle = 'Edit';
+          iconType = 'edit';
           handler = this.handleEditClicked;
         } else {
-          tooltipTitle = "View";
-          iconType = "file";
+          tooltipTitle = 'View';
+          iconType = 'file';
           handler = this.handleViewClicked;
         }
 
@@ -138,6 +142,7 @@ const listQuery = gql`
       items {
         stockItemId
         quantity
+        isInflow
         stockItemName
       }
       refReceivedBy {

@@ -1,49 +1,51 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Avatar,
-  Button,
+  Dropdown,
   Icon,
+  Menu,
+  Modal,
   Table,
   Tooltip,
   Pagination,
   Popconfirm,
   message,
-} from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+} from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import ListFilter from "./list-filter";
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import ListFilter from './list-filter';
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  width: '100%',
 };
 
 const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-  cursor: "pointer",
-  color: "#1890ff",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
+  cursor: 'pointer',
+  color: '#1890ff',
 };
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -57,9 +59,12 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
+    showSelectionColumn: PropTypes.bool,
     showActions: PropTypes.bool,
     handleNewClicked: PropTypes.func,
     removeStockItem: PropTypes.func,
+    mergeStockItems: PropTypes.func,
+    recalculateStockLevels: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedStockItems: PropTypes.shape({
@@ -68,13 +73,17 @@ class List extends Component {
     }),
   };
 
+  state = {
+    selectedRows: [],
+  };
+
   getColumns = () => {
     const { showActions } = this.props;
     const columns = [
       {
-        title: "Name",
-        dataIndex: "name",
-        key: "name",
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
         render: (text, record) => {
           const onClickHandler = () => {
             const { handleItemSelected } = this.props;
@@ -102,48 +111,48 @@ class List extends Component {
         },
       },
       {
-        title: "Company",
-        dataIndex: "company",
-        key: "company",
+        title: 'Company',
+        dataIndex: 'company',
+        key: 'company',
       },
       {
-        title: "Details",
-        dataIndex: "details",
-        key: "details",
+        title: 'Details',
+        dataIndex: 'details',
+        key: 'details',
       },
       {
-        title: "Category",
-        dataIndex: "categoryName",
-        key: "categoryName",
+        title: 'Category',
+        dataIndex: 'categoryName',
+        key: 'categoryName',
       },
       {
-        title: "Min Stock",
-        dataIndex: "minStockLevel",
-        key: "minStockLevel",
+        title: 'Min Stock',
+        dataIndex: 'minStockLevel',
+        key: 'minStockLevel',
         render: (text, record) => {
-          if (!text) return "";
-          if (record.unitOfMeasurement !== "quantity")
+          if (!text) return '';
+          if (record.unitOfMeasurement !== 'quantity')
             return `${text} ${record.unitOfMeasurement}`;
           return text;
         },
       },
       {
-        title: "Current Stock",
-        dataIndex: "currentStockLevel",
-        key: "currentStockLevel",
+        title: 'Current Stock',
+        dataIndex: 'currentStockLevel',
+        key: 'currentStockLevel',
         render: (text, record) => {
-          if (!text) return "";
-          if (record.unitOfMeasurement !== "quantity")
-            return `${text} ${record.unitOfMeasurement}`;
-          return text;
+          const stockLevel = text || 0;
+          if (record.unitOfMeasurement !== 'quantity')
+            return `${stockLevel} ${record.unitOfMeasurement}`;
+          return stockLevel;
         },
       },
     ];
 
     if (showActions) {
       columns.push({
-        title: "Actions",
-        key: "action",
+        title: 'Actions',
+        key: 'action',
         render: (text, record) => {
           const {
             purchaseFormsCount,
@@ -181,6 +190,14 @@ class List extends Component {
     return columns;
   };
 
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
+
   handleDeleteClicked = stockItem => {
     const { removeStockItem } = this.props;
     removeStockItem({
@@ -190,7 +207,45 @@ class List extends Component {
       },
     })
       .then(() => {
-        message.success("Stock item has been deleted.", 5);
+        message.success('Stock item has been deleted.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleMergeClicked = () => {
+    const { selectedRows } = this.state;
+    const { physicalStoreId, mergeStockItems } = this.props;
+
+    const ids = selectedRows.map(({ _id }) => _id);
+    mergeStockItems({
+      variables: {
+        ids,
+        physicalStoreId,
+      },
+    })
+      .then(() => {
+        message.success('Stock items have been merged.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleRecalculateClicked = () => {
+    const { selectedRows } = this.state;
+    const { physicalStoreId, recalculateStockLevels } = this.props;
+
+    const ids = selectedRows.map(({ _id }) => _id);
+    recalculateStockLevels({
+      variables: {
+        ids,
+        physicalStoreId,
+      },
+    })
+      .then(() => {
+        message.success('Stock levels have been recalculated.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -213,6 +268,26 @@ class List extends Component {
     });
   };
 
+  handleMenuClick = ({ key }) => {
+    const { selectedRows } = this.state;
+    if (key === 'merge') {
+      if (selectedRows.length <= 1) {
+        message.info('You need to select multiple stock items to merge.', 5);
+        return;
+      }
+
+      Modal.confirm({
+        title: 'Merge selected items',
+        content:
+          'Are you sure you want to merge these items? This cannot be undone.',
+        onOk: this.handleMergeClicked,
+        onCancel() {},
+      });
+    } else if (key === 'recalculate') {
+      this.handleRecalculateClicked();
+    }
+  };
+
   getTableHeader = () => {
     const {
       name,
@@ -223,12 +298,24 @@ class List extends Component {
       handleNewClicked,
     } = this.props;
 
+    const menu = (
+      <Menu onClick={this.handleMenuClick}>
+        <Menu.Item key="merge">Merge Selected Items</Menu.Item>
+        <Menu.Item key="recalculate">Recalculate Stock Level</Menu.Item>
+      </Menu>
+    );
+
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+        <Dropdown.Button
+          type="primary"
+          icon={<Icon type="down" />}
+          onClick={handleNewClicked}
+          overlay={menu}
+        >
           New Stock Item
-        </Button>
+        </Dropdown.Button>
       );
     }
 
@@ -252,11 +339,12 @@ class List extends Component {
     const {
       pageIndex,
       pageSize,
+      showSelectionColumn,
       pagedStockItems: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-    const numPageSize = pageSize || 10;
+    const numPageSize = pageSize || 20;
 
     return (
       <Table
@@ -267,10 +355,11 @@ class List extends Component {
         size="small"
         pagination={false}
         title={this.getTableHeader}
+        rowSelection={showSelectionColumn ? this.rowSelection : null}
         footer={() => (
           <Pagination
             defaultCurrent={1}
-            defaultPageSize={10}
+            defaultPageSize={20}
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
@@ -320,21 +409,57 @@ const formMutationRemove = gql`
   }
 `;
 
+const formMutationMerge = gql`
+  mutation mergeStockItems($ids: [String]!, $physicalStoreId: String!) {
+    mergeStockItems(ids: $ids, physicalStoreId: $physicalStoreId) {
+      _id
+      currentStockLevel
+      purchaseFormsCount
+      issuanceFormsCount
+      stockAdjustmentsCount
+    }
+  }
+`;
+
+const formMutationRecalculate = gql`
+  mutation recalculateStockLevels($ids: [String]!, $physicalStoreId: String!) {
+    recalculateStockLevels(ids: $ids, physicalStoreId: $physicalStoreId) {
+      _id
+      currentStockLevel
+      purchaseFormsCount
+      issuanceFormsCount
+      stockAdjustmentsCount
+    }
+  }
+`;
+
 export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ physicalStoreId, categoryId, name, pageIndex, pageSize }) => ({
       variables: {
         physicalStoreId,
-        queryString: `?categoryId=${categoryId || ""}&name=${name ||
-          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+        queryString: `?categoryId=${categoryId || ''}&name=${name ||
+          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   }),
   graphql(formMutationRemove, {
-    name: "removeStockItem",
+    name: 'removeStockItem',
     options: {
-      refetchQueries: ["pagedStockItems"],
+      refetchQueries: ['pagedStockItems'],
+    },
+  }),
+  graphql(formMutationMerge, {
+    name: 'mergeStockItems',
+    options: {
+      refetchQueries: ['pagedStockItems'],
+    },
+  }),
+  graphql(formMutationRecalculate, {
+    name: 'recalculateStockLevels',
+    options: {
+      refetchQueries: ['pagedStockItems'],
     },
   })
 )(List);

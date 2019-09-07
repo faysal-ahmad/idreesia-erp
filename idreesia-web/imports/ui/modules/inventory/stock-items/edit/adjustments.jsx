@@ -1,23 +1,23 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Icon, Table, Tooltip } from "antd";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Icon, Table, Tooltip } from 'antd';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
 };
 
 class List extends Component {
@@ -31,9 +31,9 @@ class List extends Component {
 
   columns = [
     {
-      title: "Adjustment",
-      dataIndex: "quantity",
-      key: "quantity",
+      title: 'Adjustment',
+      dataIndex: 'quantity',
+      key: 'quantity',
       render: (text, record) => {
         if (record.isInflow) {
           return `Increased by ${text}`;
@@ -42,39 +42,39 @@ class List extends Component {
       },
     },
     {
-      title: "Adjustment Date",
-      dataIndex: "adjustmentDate",
-      key: "adjustmentDate",
+      title: 'Adjustment Date',
+      dataIndex: 'adjustmentDate',
+      key: 'adjustmentDate',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD MMM, YYYY");
+        return date.format('DD MMM, YYYY');
       },
     },
     {
-      title: "Adjusted By",
-      dataIndex: "refAdjustedBy.name",
-      key: "adjustedBy",
+      title: 'Adjusted By',
+      dataIndex: 'refAdjustedBy.name',
+      key: 'adjustedBy',
     },
     {
-      title: "Adjusted Reason",
-      dataIndex: "adjustmentReason",
-      key: "adjustmentReason",
+      title: 'Adjusted Reason',
+      dataIndex: 'adjustmentReason',
+      key: 'adjustmentReason',
     },
     {
-      title: "Actions",
-      key: "action",
+      title: 'Actions',
+      key: 'action',
       render: (text, record) => {
         let tooltipTitle;
         let iconType;
         let handler;
 
         if (!record.approvedOn) {
-          tooltipTitle = "Edit";
-          iconType = "edit";
+          tooltipTitle = 'Edit';
+          iconType = 'edit';
           handler = this.handleEditClicked;
         } else {
-          tooltipTitle = "View";
-          iconType = "file";
+          tooltipTitle = 'View';
+          iconType = 'file';
           handler = this.handleViewClicked;
         }
 
@@ -142,11 +142,6 @@ const listQuery = gql`
       isInflow
       adjustmentReason
       approvedOn
-      refStockItem {
-        _id
-        itemTypeFormattedName
-        itemTypeImageId
-      }
       refAdjustedBy {
         _id
         name

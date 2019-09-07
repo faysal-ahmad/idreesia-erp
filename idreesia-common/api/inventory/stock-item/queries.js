@@ -4,7 +4,7 @@ import { get } from 'lodash';
 
 export default function getPagedStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
-  const { categoryId, name, pageIndex = '0', pageSize = '10' } = params;
+  const { categoryId, name, pageIndex = '0', pageSize = '20' } = params;
   const pipeline = [];
 
   if (name) {

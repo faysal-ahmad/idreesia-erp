@@ -1,49 +1,49 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from "../common";
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   name: {
-    type: String
+    type: String,
   },
   company: {
     type: String,
-    optional: true
+    optional: true,
   },
   details: {
     type: String,
-    optional: true
+    optional: true,
   },
   categoryId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   unitOfMeasurement: {
     type: String,
-    allowedValues: ["quantity", "ft", "m", "kg", "lbs", "l"]
+    allowedValues: ['quantity', 'ft', 'm', 'kg', 'lbs', 'l'],
   },
   imageId: {
     type: String,
-    optional: true
+    optional: true,
   },
   startingStockLevel: {
-    type: Number
+    type: Number,
   },
   minStockLevel: {
     type: Number,
-    optional: true
+    optional: true,
   },
   currentStockLevel: {
-    type: Number
+    type: Number,
   },
   totalStockLevel: {
     type: Number,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

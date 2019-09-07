@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { flowRight } from "lodash";
-import { toSafeInteger } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight } from 'lodash';
+import { toSafeInteger } from 'lodash';
 
-import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithDynamicBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
-import List from "./list/list";
+import List from './list/list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -27,25 +27,23 @@ class ListContainer extends Component {
     const { queryParams, history, location } = this.props;
 
     let nameVal;
-    if (newParams.hasOwnProperty("name")) nameVal = name || "";
-    else nameVal = queryParams.name || "";
+    if (newParams.hasOwnProperty('name')) nameVal = name || '';
+    else nameVal = queryParams.name || '';
 
     let categoryIdVal;
-    if (newParams.hasOwnProperty("categoryId"))
-      categoryIdVal = categoryId || "";
-    else categoryIdVal = queryParams.categoryId || "";
+    if (newParams.hasOwnProperty('categoryId'))
+      categoryIdVal = categoryId || '';
+    else categoryIdVal = queryParams.categoryId || '';
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
+    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 10;
-    else pageSizeVal = queryParams.pageSize || 10;
+    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
+    else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${
-      location.pathname
-    }?name=${nameVal}&categoryId=${categoryIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?name=${nameVal}&categoryId=${categoryIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -66,7 +64,7 @@ class ListContainer extends Component {
     } = this.props;
 
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
-    const numPageSize = pageSize ? toSafeInteger(pageSize) : 10;
+    const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
     return (
       <List
@@ -79,6 +77,7 @@ class ListContainer extends Component {
         handleItemSelected={this.handleItemSelected}
         showNewButton
         showActions
+        showSelectionColumn
         handleNewClicked={this.handleNewClicked}
       />
     );

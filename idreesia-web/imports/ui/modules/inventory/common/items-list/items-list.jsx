@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { Icon, Table, Tooltip, message } from "antd";
-import { filter, find } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { Icon, Table, Tooltip, message } from 'antd';
+import { filter, find } from 'lodash';
 
-import { default as ItemForm } from "./item-form";
+import { default as ItemForm } from './item-form';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -47,19 +47,20 @@ class ItemsList extends Component {
   }
 
   handleAddItem = () => {
-    const { refForm, outflowLabel } = this.props;
+    const { refForm } = this.props;
     const { referenceStockItems } = this.state;
     const fieldValues = refForm.getFieldsValue();
     const { stockItem, quantity, price, status } = fieldValues;
     if (!stockItem || !quantity || !status) {
       message.info(
-        "You need to select a stock item, and specify the quantity.",
+        'You need to select a stock item, and specify the quantity.',
         5
       );
       return;
     }
 
-    const isInflow = status === "inflow";
+    const isInflow = status === 'inflow';
+    /*
     if (!isInflow && stockItem.currentStockLevel < quantity) {
       message.error(
         `You current stock level is ${
@@ -69,6 +70,7 @@ class ItemsList extends Component {
       );
       return;
     }
+    */
 
     // Save this stock item in the state so that we can use it to display the label
     referenceStockItems.push(stockItem);
@@ -98,7 +100,7 @@ class ItemsList extends Component {
       onChange(stockItems);
     }
 
-    refForm.resetFields(["stockItem", "quantity", "price", "status"]);
+    refForm.resetFields(['stockItem', 'quantity', 'price', 'status']);
   };
 
   getStockItemName(stockItemId) {
@@ -115,15 +117,15 @@ class ItemsList extends Component {
     const { inflowLabel, outflowLabel, showPrice, readOnly } = this.props;
     const columns = [
       {
-        title: "Item Name",
-        dataIndex: "stockItemId",
-        key: "stockItemId",
+        title: 'Item Name',
+        dataIndex: 'stockItemId',
+        key: 'stockItemId',
         render: text => this.getStockItemName(text),
       },
       {
-        title: "Quantity",
-        dataIndex: "quantity",
-        key: "quantity",
+        title: 'Quantity',
+        dataIndex: 'quantity',
+        key: 'quantity',
         render: (text, record) => {
           if (record.isInflow) {
             return `${text} ${inflowLabel}`;
@@ -135,15 +137,15 @@ class ItemsList extends Component {
 
     if (showPrice) {
       columns.push({
-        title: "Price",
-        dataIndex: "price",
-        key: "price",
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
       });
     }
 
     if (!readOnly) {
       columns.push({
-        key: "actions",
+        key: 'actions',
         render: (text, record) => (
           <Tooltip title="Delete">
             <Icon
@@ -208,7 +210,7 @@ class ItemsList extends Component {
     return (
       <Table
         rowKey={item =>
-          `${item.stockItemId}_${item.isInflow ? "inflow" : "outflow"}`
+          `${item.stockItemId}_${item.isInflow ? 'inflow' : 'outflow'}`
         }
         columns={this.getColumns()}
         bordered

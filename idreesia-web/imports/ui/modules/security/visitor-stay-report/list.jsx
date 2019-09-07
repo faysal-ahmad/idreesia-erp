@@ -1,43 +1,43 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { Avatar, Button, Pagination, Icon, Modal, Table } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import moment from "moment";
-import { find, flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Avatar, Button, Pagination, Icon, Modal, Table } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
+import { find, flowRight } from 'lodash';
 
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
 
-import ListFilter from "./list-filter";
-import ViewForm from "../visitor-stays/view-form";
+import ListFilter from './list-filter';
+import ViewForm from '../visitor-stays/view-form';
 
 const StatusStyle = {
   fontSize: 20,
 };
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "right",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'right',
+  width: '100%',
 };
 
 const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-  color: "#1890FF",
-  cursor: "pointer",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
+  color: '#1890FF',
+  cursor: 'pointer',
 };
 
 const StayDetailDivStyle = {
-  width: "100%",
-  color: "#1890FF",
-  cursor: "pointer",
+  width: '100%',
+  color: '#1890FF',
+  cursor: 'pointer',
 };
 
 class List extends Component {
@@ -62,8 +62,8 @@ class List extends Component {
   };
 
   statusColumn = {
-    title: "",
-    key: "status",
+    title: '',
+    key: 'status',
     render: (text, record) => {
       const { refVisitor } = record;
       if (refVisitor.criminalRecord) {
@@ -91,9 +91,9 @@ class List extends Component {
   };
 
   nameColumn = {
-    title: "Name",
-    dataIndex: "refVisitor.name",
-    key: "refVisitor.name",
+    title: 'Name',
+    dataIndex: 'refVisitor.name',
+    key: 'refVisitor.name',
     render: (text, record) => {
       const { refVisitor } = record;
       const onClickHandler = () => {
@@ -123,8 +123,8 @@ class List extends Component {
   };
 
   cityCountryColumn = {
-    title: "City / Country",
-    key: "cityCountry",
+    title: 'City / Country',
+    key: 'cityCountry',
     render: (text, record) => {
       const { refVisitor } = record;
       if (refVisitor.city) {
@@ -135,8 +135,8 @@ class List extends Component {
   };
 
   stayDetailsColumn = {
-    title: "Stay Details",
-    key: "stayDetails",
+    title: 'Stay Details',
+    key: 'stayDetails',
     render: (text, record) => {
       const fromDate = moment(Number(record.fromDate));
       const toDate = moment(Number(record.toDate));
@@ -144,11 +144,11 @@ class List extends Component {
 
       let detail;
       if (days === 1) {
-        detail = `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
+        detail = `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
       } else {
         detail = `${days} days - [${fromDate.format(
-          "DD MMM, YYYY"
-        )} - ${toDate.format("DD MMM, YYYY")}]`;
+          'DD MMM, YYYY'
+        )} - ${toDate.format('DD MMM, YYYY')}]`;
       }
 
       return (
@@ -165,9 +165,9 @@ class List extends Component {
   };
 
   stayReasonColumn = {
-    title: "Stay Reason",
-    key: "stayReason",
-    dataIndex: "stayReason",
+    title: 'Stay Reason',
+    key: 'stayReason',
+    dataIndex: 'stayReason',
     render: text => {
       if (!text) return null;
       const reason = find(StayReasons, ({ _id }) => _id === text);
@@ -176,9 +176,9 @@ class List extends Component {
   };
 
   dutyShiftNameColumn = {
-    title: "Duty / Shift",
-    key: "dutyShiftName",
-    dataIndex: "dutyShiftName",
+    title: 'Duty / Shift',
+    key: 'dutyShiftName',
+    dataIndex: 'dutyShiftName',
   };
 
   getColumns = () => [

@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { Icon, Menu } from "antd";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Icon, Menu } from 'antd';
 
-import { GlobalActionsCreator } from "/imports/ui/action-creators";
-import SubModuleNames from "./submodule-names";
-import { default as paths } from "./submodule-paths";
+import { GlobalActionsCreator } from '/imports/ui/action-creators';
+import SubModuleNames from './submodule-names';
+import { default as paths } from './submodule-paths';
 
 class SecuritySidebar extends Component {
   static propTypes = {
@@ -16,25 +16,23 @@ class SecuritySidebar extends Component {
 
   handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
-    debugger;
-
     switch (key) {
-      case "karkun-card-verification":
+      case 'karkun-card-verification':
         setActiveSubModuleName(SubModuleNames.karkunCardVerification);
         history.push(paths.karkunCardVerificationPath);
         break;
 
-      case "visitor-registration":
+      case 'visitor-registration':
         setActiveSubModuleName(SubModuleNames.visitorRegistration);
         history.push(paths.visitorRegistrationPath);
         break;
 
-      case "visitor-card-verification":
+      case 'visitor-card-verification':
         setActiveSubModuleName(SubModuleNames.visitorCardVerification);
         history.push(paths.visitorCardVerificationPath);
         break;
 
-      case "visitor-stay-report":
+      case 'visitor-stay-report':
         setActiveSubModuleName(SubModuleNames.visitorStayReport);
         history.push(paths.visitorStayReportPath);
         break;
@@ -48,8 +46,8 @@ class SecuritySidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={["home"]}
-        style={{ height: "100%", borderRight: 0 }}
+        defaultSelectedKeys={['home']}
+        style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
         <Menu.SubMenu key="karkuns" title={<span>Karkuns</span>}>
@@ -91,7 +89,8 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const SecuritySidebarContainer = connect(null, mapDispatchToProps)(
-  SecuritySidebar
-);
+const SecuritySidebarContainer = connect(
+  null,
+  mapDispatchToProps
+)(SecuritySidebar);
 export default SecuritySidebarContainer;

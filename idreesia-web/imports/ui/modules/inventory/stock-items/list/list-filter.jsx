@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Collapse, Form, Row, Button } from "antd";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
+import { flowRight } from 'lodash';
 
 import {
   InputTextField,
   SelectField,
-} from "/imports/ui/modules/helpers/fields";
-import { WithItemCategoriesByPhysicalStore } from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/helpers/fields';
+import { WithItemCategoriesByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
 
 const ContainerStyle = {
-  width: "500px",
+  width: '500px',
 };
 
 const formItemLayout = {
@@ -30,6 +30,7 @@ class ListFilter extends Component {
     physicalStoreId: PropTypes.string,
     itemCategoriesByPhysicalStoreId: PropTypes.array,
     setPageParams: PropTypes.func,
+    refreshData: PropTypes.func,
   };
 
   handleReset = () => {
@@ -55,13 +56,29 @@ class ListFilter extends Component {
     });
   };
 
+  refreshButton = () => {
+    const { refreshData } = this.props;
+
+    return (
+      <Tooltip title="Reload Data">
+        <Icon
+          type="sync"
+          onClick={event => {
+            event.stopPropagation();
+            if (refreshData) refreshData();
+          }}
+        />
+      </Tooltip>
+    );
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const { categoryId, name, itemCategoriesByPhysicalStoreId } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1">
+        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal">
             <SelectField
               data={itemCategoriesByPhysicalStoreId}
@@ -100,6 +117,6 @@ class ListFilter extends Component {
 }
 
 export default flowRight(
-  Form.create({ name: "itemTypeListFilter" }),
+  Form.create({ name: 'itemTypeListFilter' }),
   WithItemCategoriesByPhysicalStore()
 )(ListFilter);

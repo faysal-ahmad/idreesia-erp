@@ -23,6 +23,7 @@ const ToolbarStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
+  alignItems: 'center',
   width: '100%',
 };
 
@@ -67,6 +68,7 @@ class List extends Component {
     recalculateStockLevels: PropTypes.func,
 
     loading: PropTypes.bool,
+    refetchListQuery: PropTypes.func,
     pagedStockItems: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
@@ -296,6 +298,7 @@ class List extends Component {
       setPageParams,
       showNewButton,
       handleNewClicked,
+      refetchListQuery,
     } = this.props;
 
     const menu = (
@@ -327,6 +330,7 @@ class List extends Component {
           physicalStoreId={physicalStoreId}
           categoryId={categoryId}
           setPageParams={setPageParams}
+          refreshData={refetchListQuery}
         />
       </div>
     );
@@ -435,7 +439,7 @@ const formMutationRecalculate = gql`
 
 export default flowRight(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, categoryId, name, pageIndex, pageSize }) => ({
       variables: {
         physicalStoreId,

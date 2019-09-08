@@ -20,5 +20,6 @@ aldeed:collection2-core
 accounts-password@1.5.1
 swydo:graphql@0.4.0
 apollo
+react-meteor-data
 
 idreesia-common

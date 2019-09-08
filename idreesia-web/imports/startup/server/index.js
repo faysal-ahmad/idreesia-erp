@@ -1,10 +1,10 @@
-import "./setup-rest-endpoints";
-import "./migrations";
+import './setup-rest-endpoints';
+import './migrations';
 
-import { ApolloServer } from "apollo-server-express";
-import { WebApp } from "meteor/webapp";
-import { getUser } from "meteor/apollo";
-import { typeDefs, resolvers } from "meteor/idreesia-common/api";
+import { ApolloServer } from 'apollo-server-express';
+import { WebApp } from 'meteor/webapp';
+import { getUser } from 'meteor/apollo';
+import { typeDefs, resolvers } from 'meteor/idreesia-common/api';
 
 const server = new ApolloServer({
   typeDefs,
@@ -16,11 +16,11 @@ const server = new ApolloServer({
 
 server.applyMiddleware({
   app: WebApp.connectHandlers,
-  path: "/graphql",
+  path: '/graphql',
 });
 
-WebApp.connectHandlers.use("/graphql", (req, res) => {
-  if (req.method === "GET") {
+WebApp.connectHandlers.use('/graphql', (req, res) => {
+  if (req.method === 'GET') {
     res.end();
   }
 });

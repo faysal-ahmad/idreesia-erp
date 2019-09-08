@@ -1,17 +1,17 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
-import { createStore, applyMiddleware } from "redux";
-import thunkMiddleware from "redux-thunk";
-import { Provider } from "react-redux";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { createContainer } from 'meteor/react-meteor-data';
+import { Switch, Route } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { Provider } from 'react-redux';
 
-import combinedReducer from "./reducers/combined-reducer";
-import { LoggedInRoute, LoggedOutRoute } from "./main-layout";
+import combinedReducer from './reducers/combined-reducer';
+import { LoggedInRoute, LoggedOutRoute } from './main-layout';
 
 const store = createStore(combinedReducer, applyMiddleware(thunkMiddleware));
 
-const App = () => {
-  const userId = Meteor.userId();
-
+const App = ({ userId }) => {
   if (userId) {
     return (
       <Provider store={store}>
@@ -31,4 +31,13 @@ const App = () => {
   );
 };
 
-export default App;
+App.propTypes = {
+  userId: PropTypes.string,
+};
+
+export default createContainer(
+  () => ({
+    userId: Meteor.userId(),
+  }),
+  App
+);

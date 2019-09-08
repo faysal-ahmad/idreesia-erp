@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form } from "antd";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Form } from 'antd';
+import moment from 'moment';
 
-import Input from "./input";
+import Input from './input';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -30,7 +30,7 @@ export default class Field extends Component {
   };
 
   static defaultProps = {
-    initialValue: moment(),
+    initialValue: moment().startOf('month'),
     fieldLayout: formItemLayout,
   };
 

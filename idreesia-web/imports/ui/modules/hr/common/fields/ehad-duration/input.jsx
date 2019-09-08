@@ -10,6 +10,12 @@ export default class CustomInput extends Component {
     onChange: PropTypes.func,
   };
 
+  constructor(props) {
+    super(props);
+    this.monthSelect = React.createRef();
+    this.yearSelect = React.createRef();
+  }
+
   getYearOptions = () => {
     const yearOptions = [];
     for (let i = 0; i <= 40; i++) {
@@ -34,34 +40,38 @@ export default class CustomInput extends Component {
     return monthOptions;
   };
 
-  handleYearChange = year => {
-    const { value, onChange } = this.props;
-    const currentDate = moment();
-    const newValue = value.clone();
-    newValue.year(currentDate.year() - year);
+  handleYearChange = years => {
+    const { onChange } = this.props;
+    const months = this.monthSelect.current.props.value;
+    const totalMonths = years * 12 + months;
+    const newValue = moment().startOf('month');
+    newValue.subtract(totalMonths, 'months');
     onChange(newValue);
   };
 
-  handleMonthChange = month => {
-    debugger;
-    const { value, onChange } = this.props;
-    const currentDate = moment();
-    const newValue = value.clone();
-    newValue.month(currentDate.month() - month);
+  handleMonthChange = months => {
+    const { onChange } = this.props;
+    const years = this.yearSelect.current.props.value;
+    const totalMonths = years * 12 + months;
+    const newValue = moment().startOf('month');
+    newValue.subtract(totalMonths, 'months');
     onChange(newValue);
   };
 
   render() {
     const { value } = this.props;
-    const currentDate = moment();
-    const yearValue = currentDate.year() - value.year();
-    const monthValue = currentDate.month() - value.month();
+    const currentDate = moment().startOf('month');
+    const diffInMonths = currentDate.diff(value, 'months');
+    const yearValue =
+      diffInMonths < 12 ? 0 : (diffInMonths - (diffInMonths % 12)) / 12;
+    const monthValue = diffInMonths < 12 ? diffInMonths : diffInMonths % 12;
 
     return (
       <Input.Group>
         <Row type="flex" align="middle" gutter={10}>
           <Col span={5}>
             <Select
+              ref={this.yearSelect}
               style={{ width: '100%' }}
               onChange={this.handleYearChange}
               value={yearValue}
@@ -72,6 +82,7 @@ export default class CustomInput extends Component {
           <Col>years</Col>
           <Col span={5}>
             <Select
+              ref={this.monthSelect}
               style={{ width: '100%' }}
               onChange={this.handleMonthChange}
               value={monthValue}

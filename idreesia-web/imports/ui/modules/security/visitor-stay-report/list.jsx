@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Avatar, Button, Pagination, Icon, Modal, Table } from 'antd';
+import { Avatar, Button, Pagination, Icon, Modal, Table, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
@@ -10,6 +10,7 @@ import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
 
 import ListFilter from './list-filter';
+import FixSpelling from './fix-spelling';
 import ViewForm from '../visitor-stays/view-form';
 
 const StatusStyle = {
@@ -34,6 +35,12 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
+const CityDivStyle = {
+  width: '100%',
+  color: '#1890FF',
+  cursor: 'pointer',
+};
+
 const StayDetailDivStyle = {
   width: '100%',
   color: '#1890FF',
@@ -48,6 +55,7 @@ class List extends Component {
     queryParams: PropTypes.object,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
+    fixCitySpelling: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedVisitorStays: PropTypes.shape({
@@ -59,6 +67,8 @@ class List extends Component {
   state = {
     showViewDialog: false,
     visitorStayId: null,
+    showFixSpellingDialog: false,
+    existingSpelling: null,
   };
 
   statusColumn = {
@@ -128,7 +138,16 @@ class List extends Component {
     render: (text, record) => {
       const { refVisitor } = record;
       if (refVisitor.city) {
-        return `${refVisitor.city}, ${refVisitor.country}`;
+        return (
+          <div
+            style={CityDivStyle}
+            onClick={() => {
+              this.handleFixSpellingShow(refVisitor.city);
+            }}
+          >
+            {`${refVisitor.city}, ${refVisitor.country}`}
+          </div>
+        );
       }
       return refVisitor.country;
     },
@@ -220,6 +239,39 @@ class List extends Component {
     });
   };
 
+  handleFixSpellingShow = existingSpelling => {
+    this.setState({
+      existingSpelling,
+      showFixSpellingDialog: true,
+    });
+  };
+
+  handleFixSpellingSave = (existingSpelling, newSpelling) => {
+    const { fixCitySpelling } = this.props;
+    this.setState({
+      existingSpelling: null,
+      showFixSpellingDialog: false,
+    });
+
+    if (existingSpelling !== newSpelling) {
+      fixCitySpelling({
+        variables: {
+          existingSpelling,
+          newSpelling,
+        },
+      }).catch(error => {
+        message.error(error.message, 5);
+      });
+    }
+  };
+
+  handleFixSpellingClose = () => {
+    this.setState({
+      existingSpelling: null,
+      showFixSpellingDialog: false,
+    });
+  };
+
   getTableHeader = () => {
     const { queryParams, setPageParams } = this.props;
 
@@ -234,7 +286,12 @@ class List extends Component {
     const { loading } = this.props;
     if (loading) return null;
 
-    const { visitorStayId, showViewDialog } = this.state;
+    const {
+      visitorStayId,
+      showViewDialog,
+      existingSpelling,
+      showFixSpellingDialog,
+    } = this.state;
     const {
       pageIndex,
       pageSize,
@@ -247,6 +304,15 @@ class List extends Component {
     const viewForm =
       visitorStayId && showViewDialog ? (
         <ViewForm visitorStayId={visitorStayId} />
+      ) : null;
+
+    const fixSpellingForm =
+      existingSpelling && showFixSpellingDialog ? (
+        <FixSpelling
+          existingSpelling={existingSpelling}
+          onSave={this.handleFixSpellingSave}
+          onCancel={this.handleFixSpellingClose}
+        />
       ) : null;
 
     return (
@@ -290,6 +356,15 @@ class List extends Component {
         >
           <div>{viewForm}</div>
         </Modal>
+        <Modal
+          title="Fix Spelling"
+          visible={showFixSpellingDialog}
+          onCancel={this.handleFixSpellingClose}
+          width={600}
+          footer={null}
+        >
+          <div>{fixSpellingForm}</div>
+        </Modal>
       </Fragment>
     );
   }
@@ -324,6 +399,15 @@ const listQuery = gql`
   }
 `;
 
+const formMutation = gql`
+  mutation fixCitySpelling($existingSpelling: String!, $newSpelling: String!) {
+    fixCitySpelling(
+      existingSpelling: $existingSpelling
+      newSpelling: $newSpelling
+    )
+  }
+`;
+
 export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
@@ -332,5 +416,11 @@ export default flowRight(
         queryString,
       },
     }),
+  }),
+  graphql(formMutation, {
+    name: 'fixCitySpelling',
+    options: {
+      refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
+    },
   })
 )(List);

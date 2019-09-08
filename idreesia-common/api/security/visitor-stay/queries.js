@@ -3,7 +3,10 @@ import moment from 'moment';
 import { get } from 'lodash';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { VisitorStays } from 'meteor/idreesia-common/collections/security';
+import {
+  Visitors,
+  VisitorStays,
+} from 'meteor/idreesia-common/collections/security';
 
 export function getVisitorStays(queryString) {
   const params = parse(queryString);
@@ -13,6 +16,7 @@ export function getVisitorStays(queryString) {
     visitorId,
     startDate,
     endDate,
+    city,
     pageIndex = '0',
     pageSize = '20',
   } = params;
@@ -44,6 +48,23 @@ export function getVisitorStays(queryString) {
             .endOf('day')
             .toDate(),
         },
+      },
+    });
+  }
+
+  if (city) {
+    pipeline.push({
+      $lookup: {
+        from: Visitors._name,
+        localField: 'visitorId',
+        foreignField: '_id',
+        as: 'visitor',
+      },
+    });
+
+    pipeline.push({
+      $match: {
+        'visitor.city': { $eq: city },
       },
     });
   }

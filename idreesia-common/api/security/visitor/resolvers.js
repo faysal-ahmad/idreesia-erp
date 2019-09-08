@@ -253,5 +253,34 @@ export default {
 
       return Visitors.findOne(_id);
     },
+
+    fixCitySpelling(obj, { existingSpelling, newSpelling }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      const date = new Date();
+      const count = Visitors.update(
+        {
+          city: { $eq: existingSpelling },
+        },
+        {
+          $set: {
+            city: newSpelling,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
+
+      return count;
+    },
   },
 };

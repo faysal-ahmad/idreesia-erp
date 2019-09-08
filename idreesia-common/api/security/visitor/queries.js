@@ -1,7 +1,7 @@
-import { parse } from "query-string";
-import { get } from "lodash";
+import { parse } from 'query-string';
+import { get } from 'lodash';
 
-import { Visitors } from "meteor/idreesia-common/collections/security";
+import { Visitors } from 'meteor/idreesia-common/collections/security';
 
 export function getVisitors(queryString) {
   const params = parse(queryString);
@@ -11,8 +11,8 @@ export function getVisitors(queryString) {
     name,
     cnicNumber,
     phoneNumber,
-    pageIndex = "0",
-    pageSize = "10",
+    pageIndex = '0',
+    pageSize = '10',
   } = params;
 
   if (name) {
@@ -38,7 +38,7 @@ export function getVisitors(queryString) {
   }
 
   const countingPipeline = pipeline.concat({
-    $count: "total",
+    $count: 'total',
   });
 
   const nPageIndex = parseInt(pageIndex, 10);
@@ -54,6 +54,6 @@ export function getVisitors(queryString) {
 
   return Promise.all([visitors, totalResults]).then(results => ({
     data: results[0],
-    totalResults: get(results[1], ["0", "total"], 0),
+    totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

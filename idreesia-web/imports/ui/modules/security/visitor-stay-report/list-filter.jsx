@@ -1,13 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Collapse, Form, Row, Button } from "antd";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Collapse, Form, Row, Button } from 'antd';
+import moment from 'moment';
+import { flowRight } from 'lodash';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { DateField } from "/imports/ui/modules/helpers/fields";
+import { Formats } from 'meteor/idreesia-common/constants';
+import {
+  AutoCompleteField,
+  DateField,
+} from '/imports/ui/modules/helpers/fields';
+
+import { WithDistinctCities } from 'meteor/idreesia-common/composers/security';
 
 const ContainerStyle = {
-  width: "500px",
+  width: '500px',
 };
 
 const formItemLayout = {
@@ -24,17 +30,21 @@ class ListFilter extends Component {
     form: PropTypes.object,
     setPageParams: PropTypes.func,
     queryParams: PropTypes.object,
+
+    distinctCitiesLoading: PropTypes.bool,
+    distinctCities: PropTypes.array,
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { startDate, endDate }) => {
+    form.validateFields((err, { startDate, endDate, city }) => {
       if (err) return;
       setPageParams({
         startDate,
         endDate,
+        city,
         pageIndex: 0,
       });
     });
@@ -45,6 +55,7 @@ class ListFilter extends Component {
     setPageParams({
       startDate: null,
       endDate: null,
+      city: null,
       pageIndex: 0,
     });
   };
@@ -52,7 +63,8 @@ class ListFilter extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
-      queryParams: { startDate, endDate },
+      distinctCities,
+      queryParams: { startDate, endDate, city },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -78,6 +90,17 @@ class ListFilter extends Component {
               initialValue={mEndDate.isValid() ? mEndDate : null}
               getFieldDecorator={getFieldDecorator}
             />
+
+            <AutoCompleteField
+              fieldName="city"
+              fieldLabel="City"
+              fieldLayout={formItemLayout}
+              dataSource={distinctCities}
+              initialValue={city}
+              required={false}
+              getFieldDecorator={getFieldDecorator}
+            />
+
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleReset}>
@@ -96,4 +119,7 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create()(ListFilter);
+export default flowRight(
+  Form.create(),
+  WithDistinctCities()
+)(ListFilter);

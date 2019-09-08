@@ -12,7 +12,7 @@ export function getVisitors(queryString) {
     cnicNumber,
     phoneNumber,
     pageIndex = '0',
-    pageSize = '10',
+    pageSize = '20',
   } = params;
 
   if (name) {

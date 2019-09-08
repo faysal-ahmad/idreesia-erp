@@ -15,7 +15,7 @@ export default function getAmaanatLogs(queryString) {
     startDate,
     endDate,
     pageIndex = "0",
-    pageSize = "10",
+    pageSize = "20",
   } = params;
 
   if (fromCity) {

@@ -89,7 +89,7 @@ export default class PagedDataList extends Component {
     } = this.props;
 
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
-    const numPageSize = pageSize ? toSafeInteger(pageSize) : 10;
+    const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
     return (
       <Table

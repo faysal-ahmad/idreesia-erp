@@ -23,7 +23,7 @@ class ListContainer extends Component {
     jobType: null,
     status: null,
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
   };
 
   jobTypePathsMap = {

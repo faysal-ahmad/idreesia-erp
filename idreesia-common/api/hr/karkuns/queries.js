@@ -1,13 +1,13 @@
-import { parse } from "query-string";
-import { get, map } from "lodash";
+import { parse } from 'query-string';
+import { get, map } from 'lodash';
 
-import { Karkuns, KarkunDuties } from "meteor/idreesia-common/collections/hr";
+import { Karkuns, KarkunDuties } from 'meteor/idreesia-common/collections/hr';
 import {
   IssuanceForms,
   PurchaseForms,
-  StockAdjustments
-} from "meteor/idreesia-common/collections/inventory";
-import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
+  StockAdjustments,
+} from 'meteor/idreesia-common/collections/inventory';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
 function getKarkunsByFilter(params) {
   const pipeline = [];
@@ -18,18 +18,18 @@ function getKarkunsByFilter(params) {
     phoneNumber,
     bloodGroup,
     dutyId,
-    pageIndex = "0",
-    pageSize = "10"
+    pageIndex = '0',
+    pageSize = '20',
   } = params;
 
   if (name) {
     if (name.length === 1) {
       pipeline.push({
-        $match: { firstName: { $regex: `^${name}` } }
+        $match: { firstName: { $regex: `^${name}` } },
       });
     } else {
       pipeline.push({
-        $match: { $text: { $search: name } }
+        $match: { $text: { $search: name } },
       });
     }
   }
@@ -37,49 +37,49 @@ function getKarkunsByFilter(params) {
   if (cnicNumber) {
     pipeline.push({
       $match: {
-        cnicNumber: { $eq: cnicNumber }
-      }
+        cnicNumber: { $eq: cnicNumber },
+      },
     });
   }
 
   if (phoneNumber) {
     pipeline.push({
       $match: {
-        $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }]
-      }
+        $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
+      },
     });
   }
 
   if (bloodGroup) {
     pipeline.push({
       $match: {
-        bloodGroup: { $eq: bloodGroup }
-      }
+        bloodGroup: { $eq: bloodGroup },
+      },
     });
   }
 
   if (dutyId) {
     pipeline.push({
       $lookup: {
-        from: "hr-karkun-duties",
-        localField: "_id",
-        foreignField: "karkunId",
-        as: "duties"
-      }
+        from: 'hr-karkun-duties',
+        localField: '_id',
+        foreignField: 'karkunId',
+        as: 'duties',
+      },
     });
     pipeline.push({
       $match: {
         duties: {
           $elemMatch: {
-            dutyId: { $eq: dutyId }
-          }
-        }
-      }
+            dutyId: { $eq: dutyId },
+          },
+        },
+      },
     });
   }
 
   const countingPipeline = pipeline.concat({
-    $count: "total"
+    $count: 'total',
   });
 
   const nPageIndex = parseInt(pageIndex, 10);
@@ -87,7 +87,7 @@ function getKarkunsByFilter(params) {
   const resultsPipeline = pipeline.concat([
     { $sort: { firstName: 1 } },
     { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize }
+    { $limit: nPageSize },
   ]);
 
   const karkuns = Karkuns.aggregate(resultsPipeline).toArray();
@@ -95,12 +95,12 @@ function getKarkunsByFilter(params) {
 
   return Promise.all([karkuns, totalResults]).then(results => ({
     karkuns: results[0],
-    totalResults: get(results[1], ["0", "total"], 0)
+    totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }
 
 function getKarkunsByPredefinedFilter(params) {
-  const { predefinedFilterName, pageIndex = "0", pageSize = "10" } = params;
+  const { predefinedFilterName, pageIndex = '0', pageSize = '20' } = params;
 
   let karkunIds = [];
   let distincFunction;
@@ -111,7 +111,7 @@ function getKarkunsByPredefinedFilter(params) {
         PurchaseForms.rawCollection().distinct,
         PurchaseForms.rawCollection()
       );
-      karkunIds = distincFunction("receivedBy");
+      karkunIds = distincFunction('receivedBy');
       break;
 
     case PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO:
@@ -119,7 +119,7 @@ function getKarkunsByPredefinedFilter(params) {
         PurchaseForms.rawCollection().distinct,
         PurchaseForms.rawCollection()
       );
-      karkunIds = distincFunction("purchasedBy");
+      karkunIds = distincFunction('purchasedBy');
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY:
@@ -127,7 +127,7 @@ function getKarkunsByPredefinedFilter(params) {
         IssuanceForms.rawCollection().distinct,
         IssuanceForms.rawCollection()
       );
-      karkunIds = distincFunction("issuedBy");
+      karkunIds = distincFunction('issuedBy');
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY:
@@ -135,7 +135,7 @@ function getKarkunsByPredefinedFilter(params) {
         IssuanceForms.rawCollection().distinct,
         IssuanceForms.rawCollection()
       );
-      karkunIds = distincFunction("issuedTo");
+      karkunIds = distincFunction('issuedTo');
       break;
 
     case PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY:
@@ -143,7 +143,7 @@ function getKarkunsByPredefinedFilter(params) {
         StockAdjustments.rawCollection().distinct,
         StockAdjustments.rawCollection()
       );
-      karkunIds = distincFunction("adjustedBy");
+      karkunIds = distincFunction('adjustedBy');
       break;
 
     default:
@@ -154,13 +154,13 @@ function getKarkunsByPredefinedFilter(params) {
   const pipeline = [
     {
       $match: {
-        _id: { $in: karkunIds }
-      }
-    }
+        _id: { $in: karkunIds },
+      },
+    },
   ];
 
   const countingPipeline = pipeline.concat({
-    $count: "total"
+    $count: 'total',
   });
 
   const nPageIndex = parseInt(pageIndex, 10);
@@ -168,7 +168,7 @@ function getKarkunsByPredefinedFilter(params) {
   const resultsPipeline = pipeline.concat([
     { $sort: { firstName: 1 } },
     { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize }
+    { $limit: nPageSize },
   ]);
 
   const karkuns = Karkuns.aggregate(resultsPipeline).toArray();
@@ -176,7 +176,7 @@ function getKarkunsByPredefinedFilter(params) {
 
   return Promise.all([karkuns, totalResults]).then(results => ({
     karkuns: results[0],
-    totalResults: get(results[1], ["0", "total"], 0)
+    totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }
 
@@ -184,20 +184,20 @@ export function getKarkunsByDutyId(dutyId) {
   const pipeline = [
     {
       $match: {
-        dutyId: { $eq: dutyId }
-      }
+        dutyId: { $eq: dutyId },
+      },
     },
-    { $group: { _id: "$karkunId" } },
+    { $group: { _id: '$karkunId' } },
     {
       $lookup: {
-        from: "hr-karkuns",
-        localField: "_id",
-        foreignField: "_id",
-        as: "karkun"
-      }
+        from: 'hr-karkuns',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'karkun',
+      },
     },
-    { $unwind: "$karkun" },
-    { $sort: { "karkun.firstName": 1 } }
+    { $unwind: '$karkun' },
+    { $sort: { 'karkun.firstName': 1 } },
   ];
 
   return KarkunDuties.aggregate(pipeline)

@@ -76,8 +76,8 @@ class ListContainer extends Component {
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 10;
-    else pageSizeVal = queryParams.pageSize || 10;
+    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 20;
+    else pageSizeVal = queryParams.pageSize || 20;
 
     const path = `${
       location.pathname

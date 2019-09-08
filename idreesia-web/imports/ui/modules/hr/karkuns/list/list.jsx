@@ -243,7 +243,7 @@ class List extends Component {
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-    const numPageSize = pageSize || 10;
+    const numPageSize = pageSize || 20;
 
     return (
       <Table

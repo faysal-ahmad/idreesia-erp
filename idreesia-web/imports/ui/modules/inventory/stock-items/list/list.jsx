@@ -201,11 +201,11 @@ class List extends Component {
   };
 
   handleDeleteClicked = stockItem => {
-    const { removeStockItem } = this.props;
+    const { physicalStoreId, removeStockItem } = this.props;
     removeStockItem({
       variables: {
         _id: stockItem._id,
-        physicalStoreId: stockItem.physicalStoreId,
+        physicalStoreId,
       },
     })
       .then(() => {

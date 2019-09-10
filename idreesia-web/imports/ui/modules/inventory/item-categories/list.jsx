@@ -96,11 +96,11 @@ class List extends Component {
   };
 
   handleDeleteClicked = itemCategory => {
-    const { removeItemCategory } = this.props;
+    const { physicalStoreId, removeItemCategory } = this.props;
     removeItemCategory({
       variables: {
         _id: itemCategory._id,
-        physicalStoreId: itemCategory.physicalStoreId,
+        physicalStoreId,
       },
     })
       .then(() => {

@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Icon,
@@ -8,40 +8,40 @@ import {
   Table,
   Tooltip,
   message,
-} from "antd";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight, toSafeInteger } from "lodash";
+} from 'antd';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight, toSafeInteger } from 'lodash';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { WithDynamicBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
-import ListFilter from "./list-filter";
+import ListFilter from './list-filter';
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -56,6 +56,7 @@ class List extends Component {
     physicalStore: PropTypes.object,
 
     loading: PropTypes.bool,
+    refetchListQuery: PropTypes.func,
     pagedPurchaseForms: PropTypes.shape({
       totalResults: PropTypes.number,
       purchaseForms: PropTypes.array,
@@ -66,33 +67,33 @@ class List extends Component {
 
   columns = [
     {
-      title: "Purchase Date",
-      dataIndex: "purchaseDate",
-      key: "purchaseDate",
+      title: 'Purchase Date',
+      dataIndex: 'purchaseDate',
+      key: 'purchaseDate',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD MMM, YYYY");
+        return date.format('DD MMM, YYYY');
       },
     },
     {
-      title: "Purchased By",
-      dataIndex: "refPurchasedBy.name",
-      key: "refPurchasedByName",
+      title: 'Purchased By',
+      dataIndex: 'refPurchasedBy.name',
+      key: 'refPurchasedByName',
     },
     {
-      title: "Vendor",
-      dataIndex: "refVendor.name",
-      key: "refVendorName",
+      title: 'Vendor',
+      dataIndex: 'refVendor.name',
+      key: 'refVendorName',
     },
     {
-      title: "Items",
-      dataIndex: "items",
-      key: "items",
+      title: 'Items',
+      dataIndex: 'items',
+      key: 'items',
       render: items => {
         const formattedItems = items.map(item => (
           <li key={`${item.stockItemId}${item.isInflow}`}>
             {`${item.stockItemName} [${item.quantity} ${
-              item.isInflow ? "Purchased" : "Returned"
+              item.isInflow ? 'Purchased' : 'Returned'
             }]`}
           </li>
         ));
@@ -100,8 +101,8 @@ class List extends Component {
       },
     },
     {
-      title: "Actions",
-      key: "action",
+      title: 'Actions',
+      key: 'action',
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
@@ -168,41 +169,39 @@ class List extends Component {
 
     let showApprovedVal;
     let showUnapprovedVal;
-    if (newParams.hasOwnProperty("approvalStatus")) {
+    if (newParams.hasOwnProperty('approvalStatus')) {
       showApprovedVal =
-        approvalStatus.indexOf("approved") !== -1 ? "true" : "false";
+        approvalStatus.indexOf('approved') !== -1 ? 'true' : 'false';
       showUnapprovedVal =
-        approvalStatus.indexOf("unapproved") !== -1 ? "true" : "false";
+        approvalStatus.indexOf('unapproved') !== -1 ? 'true' : 'false';
     } else {
-      showApprovedVal = queryParams.showApproved || "true";
-      showUnapprovedVal = queryParams.showUnapproved || "true";
+      showApprovedVal = queryParams.showApproved || 'true';
+      showUnapprovedVal = queryParams.showUnapproved || 'true';
     }
 
     let startDateVal;
-    if (newParams.hasOwnProperty("startDate"))
-      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : "";
-    else startDateVal = queryParams.startDateVal || "";
+    if (newParams.hasOwnProperty('startDate'))
+      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
+    else startDateVal = queryParams.startDateVal || '';
 
     let endDateVal;
-    if (newParams.hasOwnProperty("endDate"))
-      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : "";
-    else endDateVal = queryParams.endDateVal || "";
+    if (newParams.hasOwnProperty('endDate'))
+      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
+    else endDateVal = queryParams.endDateVal || '';
 
     let vendorIdVal;
-    if (newParams.hasOwnProperty("vendorId")) vendorIdVal = vendorId || "";
-    else vendorIdVal = queryParams.vendorId || "";
+    if (newParams.hasOwnProperty('vendorId')) vendorIdVal = vendorId || '';
+    else vendorIdVal = queryParams.vendorId || '';
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
+    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 20;
+    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${
-      location.pathname
-    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&vendorId=${vendorIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&vendorId=${vendorIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -227,7 +226,7 @@ class List extends Component {
       variables: { _id: purchaseForm._id },
     })
       .then(() => {
-        message.success("Purchase form has been deleted.", 5);
+        message.success('Purchase form has been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -240,7 +239,7 @@ class List extends Component {
       variables: { _id: purchaseForm._id },
     })
       .then(() => {
-        message.success("Purchase form has been approved.", 5);
+        message.success('Purchase form has been approved.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -262,7 +261,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { physicalStoreId, queryParams } = this.props;
+    const { physicalStoreId, queryParams, refetchListQuery } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -277,6 +276,7 @@ class List extends Component {
           physicalStoreId={physicalStoreId}
           refreshPage={this.refreshPage}
           queryParams={queryParams}
+          refreshData={refetchListQuery}
         />
       </div>
     );
@@ -390,28 +390,28 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formMutationRemove, {
-    name: "removePurchaseForm",
+    name: 'removePurchaseForm',
     options: {
       refetchQueries: [
-        "pagedPurchaseForms",
-        "purchaseFormsByStockItem",
-        "pagedStockItems",
-        "vendorsByPhysicalStoreId",
+        'pagedPurchaseForms',
+        'purchaseFormsByStockItem',
+        'pagedStockItems',
+        'vendorsByPhysicalStoreId',
       ],
     },
   }),
   graphql(formMutationApprove, {
-    name: "approvePurchaseForm",
+    name: 'approvePurchaseForm',
     options: {
       refetchQueries: [
-        "pagedPurchaseForms",
-        "purchaseFormsByStockItem",
-        "pagedStockItems",
+        'pagedPurchaseForms',
+        'purchaseFormsByStockItem',
+        'pagedStockItems',
       ],
     },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },
     }),

@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Icon,
@@ -8,41 +8,41 @@ import {
   Table,
   Tooltip,
   message,
-} from "antd";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight, toSafeInteger } from "lodash";
+} from 'antd';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight, toSafeInteger } from 'lodash';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { WithDynamicBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { WithDynamicBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
-import { getNameWithImageRenderer } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/inventory/common/composers';
+import { getNameWithImageRenderer } from '/imports/ui/modules/helpers/controls';
 
-import ListFilter from "./list-filter";
+import ListFilter from './list-filter';
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -57,6 +57,7 @@ class List extends Component {
     physicalStore: PropTypes.object,
 
     loading: PropTypes.bool,
+    refetchListQuery: PropTypes.func,
     pagedStockAdjustments: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
@@ -67,9 +68,9 @@ class List extends Component {
 
   columns = [
     {
-      title: "Stock Item",
-      dataIndex: "refStockItem",
-      key: "stockItem",
+      title: 'Stock Item',
+      dataIndex: 'refStockItem',
+      key: 'stockItem',
       render: (text, record) => {
         const {
           _id,
@@ -85,14 +86,14 @@ class List extends Component {
           imageId,
           formattedName,
           path,
-          "picture"
+          'picture'
         );
       },
     },
     {
-      title: "Adjustment",
-      dataIndex: "quantity",
-      key: "quantity",
+      title: 'Adjustment',
+      dataIndex: 'quantity',
+      key: 'quantity',
       render: (text, record) => {
         if (record.isInflow) {
           return `Increased by ${text}`;
@@ -101,22 +102,22 @@ class List extends Component {
       },
     },
     {
-      title: "Adjustment Date",
-      dataIndex: "adjustmentDate",
-      key: "adjustmentDate",
+      title: 'Adjustment Date',
+      dataIndex: 'adjustmentDate',
+      key: 'adjustmentDate',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD MMM, YYYY");
+        return date.format('DD MMM, YYYY');
       },
     },
     {
-      title: "Adjusted By",
-      dataIndex: "refAdjustedBy.name",
-      key: "adjustedBy",
+      title: 'Adjusted By',
+      dataIndex: 'refAdjustedBy.name',
+      key: 'adjustedBy',
     },
     {
-      title: "Actions",
-      key: "action",
+      title: 'Actions',
+      key: 'action',
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
@@ -182,37 +183,35 @@ class List extends Component {
 
     let showApprovedVal;
     let showUnapprovedVal;
-    if (newParams.hasOwnProperty("approvalStatus")) {
+    if (newParams.hasOwnProperty('approvalStatus')) {
       showApprovedVal =
-        approvalStatus.indexOf("approved") !== -1 ? "true" : "false";
+        approvalStatus.indexOf('approved') !== -1 ? 'true' : 'false';
       showUnapprovedVal =
-        approvalStatus.indexOf("unapproved") !== -1 ? "true" : "false";
+        approvalStatus.indexOf('unapproved') !== -1 ? 'true' : 'false';
     } else {
-      showApprovedVal = queryParams.showApproved || "true";
-      showUnapprovedVal = queryParams.showUnapproved || "true";
+      showApprovedVal = queryParams.showApproved || 'true';
+      showUnapprovedVal = queryParams.showUnapproved || 'true';
     }
 
     let startDateVal;
-    if (newParams.hasOwnProperty("startDate"))
-      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : "";
-    else startDateVal = queryParams.startDateVal || "";
+    if (newParams.hasOwnProperty('startDate'))
+      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
+    else startDateVal = queryParams.startDateVal || '';
 
     let endDateVal;
-    if (newParams.hasOwnProperty("endDate"))
-      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : "";
-    else endDateVal = queryParams.endDateVal || "";
+    if (newParams.hasOwnProperty('endDate'))
+      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
+    else endDateVal = queryParams.endDateVal || '';
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty("pageIndex")) pageIndexVal = pageIndex || 0;
+    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty("pageSize")) pageSizeVal = pageSize || 20;
+    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${
-      location.pathname
-    }?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -241,7 +240,7 @@ class List extends Component {
       variables: { _id: stockAdjustment._id },
     })
       .then(() => {
-        message.success("Stock adjustment has been deleted.", 5);
+        message.success('Stock adjustment has been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -254,7 +253,7 @@ class List extends Component {
       variables: { _id: stockAdjustment._id },
     })
       .then(() => {
-        message.success("Stock adjustment has been approved.", 5);
+        message.success('Stock adjustment has been approved.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -276,7 +275,7 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const { queryParams } = this.props;
+    const { queryParams, refetchListQuery } = this.props;
 
     return (
       <div style={ToolbarStyle}>
@@ -287,7 +286,11 @@ class List extends Component {
         >
           New Stock Adjustment
         </Button>
-        <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />
+        <ListFilter
+          refreshPage={this.refreshPage}
+          queryParams={queryParams}
+          refreshData={refetchListQuery}
+        />
       </div>
     );
   };
@@ -392,27 +395,27 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formMutationRemove, {
-    name: "removeStockAdjustment",
+    name: 'removeStockAdjustment',
     options: {
       refetchQueries: [
-        "pagedStockAdjustments",
-        "stockAdjustmentsByStockItem",
-        "pagedStockItems",
+        'pagedStockAdjustments',
+        'stockAdjustmentsByStockItem',
+        'pagedStockItems',
       ],
     },
   }),
   graphql(formMutationApprove, {
-    name: "approveStockAdjustment",
+    name: 'approveStockAdjustment',
     options: {
       refetchQueries: [
-        "pagedStockAdjustments",
-        "stockAdjustmentsByStockItem",
-        "pagedStockItems",
+        'pagedStockAdjustments',
+        'stockAdjustmentsByStockItem',
+        'pagedStockItems',
       ],
     },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },
     }),

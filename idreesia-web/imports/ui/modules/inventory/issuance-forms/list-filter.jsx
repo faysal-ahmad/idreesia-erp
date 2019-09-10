@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Collapse, Form, Row, Button } from "antd";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
+import moment from 'moment';
 
-import { Formats } from "meteor/idreesia-common/constants";
+import { Formats } from 'meteor/idreesia-common/constants';
 import {
   TreeSelectField,
   CheckboxField,
   DateField,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
-  width: "500px",
+  width: '500px',
 };
 
 const formItemLayout = {
@@ -30,6 +30,7 @@ class ListFilter extends Component {
     allLocations: PropTypes.array,
     refreshPage: PropTypes.func,
     queryParams: PropTypes.object,
+    refreshData: PropTypes.func,
   };
 
   handleSubmit = e => {
@@ -53,12 +54,28 @@ class ListFilter extends Component {
   handleReset = () => {
     const { refreshPage } = this.props;
     refreshPage({
-      approvalStatus: ["approved", "unapproved"],
-      locationId: "",
+      approvalStatus: ['approved', 'unapproved'],
+      locationId: '',
       startDate: null,
       endDate: null,
       pageIndex: 0,
     });
+  };
+
+  refreshButton = () => {
+    const { refreshData } = this.props;
+
+    return (
+      <Tooltip title="Reload Data">
+        <Icon
+          type="sync"
+          onClick={event => {
+            event.stopPropagation();
+            if (refreshData) refreshData();
+          }}
+        />
+      </Tooltip>
+    );
   };
 
   render() {
@@ -77,20 +94,20 @@ class ListFilter extends Component {
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
     const mEndDate = moment(endDate, Formats.DATE_FORMAT);
     const status = [];
-    if (!showApproved || showApproved === "true") status.push("approved");
-    if (!showUnapproved || showUnapproved === "true") status.push("unapproved");
+    if (!showApproved || showApproved === 'true') status.push('approved');
+    if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');
 
     return (
       <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1">
+        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
             <CheckboxField
               fieldName="approvalStatus"
               fieldLabel="Status"
               fieldLayout={formItemLayout}
               options={[
-                { label: "Approved", value: "approved" },
-                { label: "Unapproved", value: "unapproved" },
+                { label: 'Approved', value: 'approved' },
+                { label: 'Unapproved', value: 'unapproved' },
               ]}
               initialValue={status}
               getFieldDecorator={getFieldDecorator}

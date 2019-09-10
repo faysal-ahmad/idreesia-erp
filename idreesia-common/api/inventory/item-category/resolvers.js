@@ -96,5 +96,32 @@ export default {
 
       return ItemCategories.findOne(id);
     },
+
+    removeItemCategory(obj, { _id, physicalStoreId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Inventory Setup Data in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
+        );
+      }
+
+      // Check that there are no stock items against this item category.
+      const stockItemCount = StockItems.find({
+        categoryId: { $eq: _id },
+      }).count();
+
+      if (stockItemCount === 0) {
+        return ItemCategories.remove(_id);
+      }
+
+      return 0;
+    },
   },
 };

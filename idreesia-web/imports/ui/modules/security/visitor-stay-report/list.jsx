@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 import moment from 'moment';
 import { find, flowRight } from 'lodash';
 
+import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
@@ -109,7 +110,7 @@ class List extends Component {
     return {
       title: () => (
         <SortableColumnHeader
-          headerKey="name"
+          headerKey={SORT_BY.NAME}
           title="Name"
           sortBy={sortBy}
           sortOrder={sortOrder}
@@ -147,25 +148,37 @@ class List extends Component {
     };
   };
 
-  cityCountryColumn = {
-    title: 'City / Country',
-    key: 'cityCountry',
-    render: (text, record) => {
-      const { refVisitor } = record;
-      if (refVisitor.city) {
-        return (
-          <div
-            style={CityDivStyle}
-            onClick={() => {
-              this.handleFixSpellingShow(refVisitor.city);
-            }}
-          >
-            {`${refVisitor.city}, ${refVisitor.country}`}
-          </div>
-        );
-      }
-      return refVisitor.country;
-    },
+  getCityCountryColumn = () => {
+    const { sortBy, sortOrder } = this.props;
+
+    return {
+      title: () => (
+        <SortableColumnHeader
+          headerKey={SORT_BY.CITY}
+          title="City / Country"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          handleSortChange={this.handleSortChange}
+        />
+      ),
+      key: 'cityCountry',
+      render: (text, record) => {
+        const { refVisitor } = record;
+        if (refVisitor.city) {
+          return (
+            <div
+              style={CityDivStyle}
+              onClick={() => {
+                this.handleFixSpellingShow(refVisitor.city);
+              }}
+            >
+              {`${refVisitor.city}, ${refVisitor.country}`}
+            </div>
+          );
+        }
+        return refVisitor.country;
+      },
+    };
   };
 
   getStayDetailsColumn = () => {
@@ -174,7 +187,7 @@ class List extends Component {
     return {
       title: () => (
         <SortableColumnHeader
-          headerKey="stayDate"
+          headerKey={SORT_BY.STAY_DATE}
           title="Stay Details"
           sortBy={sortBy}
           sortOrder={sortOrder}
@@ -230,7 +243,7 @@ class List extends Component {
   getColumns = () => [
     this.statusColumn,
     this.getNameColumn(),
-    this.cityCountryColumn,
+    this.getCityCountryColumn(),
     this.getStayDetailsColumn(),
     this.stayReasonColumn,
     this.dutyShiftNameColumn,

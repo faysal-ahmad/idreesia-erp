@@ -7,10 +7,20 @@ import {
   Visitors,
   VisitorStays,
 } from 'meteor/idreesia-common/collections/security';
+import {
+  DEFAULT_PAGE_INDEX,
+  DEFAULT_PAGE_SIZE,
+} from 'meteor/idreesia-common/constants/list-options';
+import {
+  DEFAULT_SORT_ORDER,
+  DEFAULT_SORT_BY,
+  SORT_BY,
+} from 'meteor/idreesia-common/constants/security/list-options';
 
 const sortByColumnMapping = {
-  name: 'visitor.name',
-  stayDate: 'fromDate',
+  [SORT_BY.NAME]: 'visitor.name',
+  [SORT_BY.CITY]: 'visitor.city',
+  [SORT_BY.STAY_DATE]: 'fromDate',
 };
 
 const sortOrderMapping = {
@@ -27,10 +37,10 @@ export function getVisitorStays(queryString) {
     startDate,
     endDate,
     city,
-    sortBy = 'stayDate',
-    sortOrder = 'desc',
-    pageIndex = '0',
-    pageSize = '20',
+    sortBy = DEFAULT_SORT_BY,
+    sortOrder = DEFAULT_SORT_ORDER,
+    pageIndex = DEFAULT_PAGE_INDEX,
+    pageSize = DEFAULT_PAGE_SIZE,
   } = params;
 
   if (!sortOrderMapping[sortOrder])

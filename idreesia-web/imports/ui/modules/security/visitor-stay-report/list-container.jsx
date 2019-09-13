@@ -17,7 +17,15 @@ class ListContainer extends Component {
   };
 
   setPageParams = newParams => {
-    const { startDate, endDate, city, pageIndex, pageSize } = newParams;
+    const {
+      startDate,
+      endDate,
+      city,
+      sortBy,
+      sortOrder,
+      pageIndex,
+      pageSize,
+    } = newParams;
     const { queryParams, history } = this.props;
 
     let startDateVal;
@@ -34,6 +42,15 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('city')) cityVal = city || '';
     else cityVal = queryParams.city || '';
 
+    let sortByVal;
+    if (newParams.hasOwnProperty('sortBy')) sortByVal = sortBy || 'stayDate';
+    else sortByVal = queryParams.sortByVal || 'stayDate';
+
+    let sortOrderVal;
+    if (newParams.hasOwnProperty('sortOrder'))
+      sortOrderVal = sortOrder || 'desc';
+    else sortOrderVal = queryParams.sortOrderVal || 'desc';
+
     let pageIndexVal;
     if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
@@ -42,7 +59,7 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&city=${cityVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&city=${cityVal}&sortBy=${sortByVal}&sortOrder=${sortOrderVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -53,7 +70,7 @@ class ListContainer extends Component {
 
   render() {
     const { queryString, queryParams } = this.props;
-    const { pageIndex, pageSize } = queryParams;
+    const { sortBy, sortOrder, pageIndex, pageSize } = queryParams;
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
     const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -61,6 +78,8 @@ class ListContainer extends Component {
       <List
         queryString={queryString}
         queryParams={queryParams || {}}
+        sortBy={sortBy || 'stayDate'}
+        sortOrder={sortOrder || 'desc'}
         pageIndex={numPageIndex}
         pageSize={numPageSize}
         setPageParams={this.setPageParams}

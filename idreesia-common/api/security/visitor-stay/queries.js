@@ -8,6 +8,16 @@ import {
   VisitorStays,
 } from 'meteor/idreesia-common/collections/security';
 
+const sortByColumnMapping = {
+  name: 'visitor.name',
+  stayDate: 'fromDate',
+};
+
+const sortOrderMapping = {
+  asc: 1,
+  desc: -1,
+};
+
 export function getVisitorStays(queryString) {
   const params = parse(queryString);
   const pipeline = [];
@@ -17,9 +27,16 @@ export function getVisitorStays(queryString) {
     startDate,
     endDate,
     city,
+    sortBy = 'stayDate',
+    sortOrder = 'desc',
     pageIndex = '0',
     pageSize = '20',
   } = params;
+
+  if (!sortOrderMapping[sortOrder])
+    throw new Error('Invalid value passed for sortOrder');
+  if (!sortByColumnMapping[sortBy])
+    throw new Error('Invalid column name passed for sortBy');
 
   if (visitorId) {
     pipeline.push({
@@ -52,16 +69,16 @@ export function getVisitorStays(queryString) {
     });
   }
 
-  if (city) {
-    pipeline.push({
-      $lookup: {
-        from: Visitors._name,
-        localField: 'visitorId',
-        foreignField: '_id',
-        as: 'visitor',
-      },
-    });
+  pipeline.push({
+    $lookup: {
+      from: Visitors._name,
+      localField: 'visitorId',
+      foreignField: '_id',
+      as: 'visitor',
+    },
+  });
 
+  if (city) {
     pipeline.push({
       $match: {
         'visitor.city': { $eq: city },
@@ -75,8 +92,10 @@ export function getVisitorStays(queryString) {
 
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
+
+  const sortByColumnName = sortByColumnMapping[sortBy];
   const resultsPipeline = pipeline.concat([
-    { $sort: { fromDate: -1 } },
+    { $sort: { [sortByColumnName]: sortOrderMapping[sortOrder] } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

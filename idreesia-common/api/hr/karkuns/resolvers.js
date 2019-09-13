@@ -1,19 +1,19 @@
-import { compact, values } from "lodash";
+import { compact, values } from 'lodash';
 import {
   Jobs,
   Duties,
   Karkuns,
-  KarkunDuties
-} from "meteor/idreesia-common/collections/hr";
-import { Attachments } from "meteor/idreesia-common/collections/common";
-import { hasOnePermission } from "meteor/idreesia-common/api/security";
-import { Permissions as PermissionConstants } from "meteor/idreesia-common/constants";
+  KarkunDuties,
+} from 'meteor/idreesia-common/collections/hr';
+import { Attachments } from 'meteor/idreesia-common/collections/common';
+import { hasOnePermission } from 'meteor/idreesia-common/api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getKarkuns, getKarkunsByDutyId } from "./queries";
+import { getKarkuns, getKarkunsByDutyId } from './queries';
 
 export default {
   KarkunType: {
-    name: karkunType => `${karkunType.firstName} ${karkunType.lastName || ""}`,
+    name: karkunType => `${karkunType.firstName} ${karkunType.lastName || ''}`,
     user: karkunType => {
       if (!karkunType.userId) return null;
       return Meteor.users.findOne(karkunType.userId);
@@ -24,17 +24,17 @@ export default {
     },
     duties: karkunType => {
       const karkunDuties = KarkunDuties.find({
-        karkunId: { $eq: karkunType._id }
+        karkunId: { $eq: karkunType._id },
       }).fetch();
 
       if (karkunDuties.length > 0) {
         const dutyIds = karkunDuties.map(karkunDuty => karkunDuty.dutyId);
         const duties = Duties.find({
-          _id: { $in: dutyIds }
+          _id: { $in: dutyIds },
         }).fetch();
 
         const dutyNames = duties.map(duty => duty.name);
-        return dutyNames.join(", ");
+        return dutyNames.join(', ');
       }
       return null;
     },
@@ -45,13 +45,13 @@ export default {
       }
 
       return [];
-    }
+    },
   },
 
   Query: {
     userById(obj, { _id }) {
       const user = Meteor.users.findOne(_id);
-      if (user.username !== "erp-admin") return user;
+      if (user.username !== 'erp-admin') return user;
 
       const adminUser = Object.assign({}, user);
       adminUser.permissions = values(PermissionConstants);
@@ -66,7 +66,7 @@ export default {
       }
 
       return Karkuns.find({
-        userId: { $ne: null }
+        userId: { $ne: null },
       }).fetch();
     },
 
@@ -84,7 +84,7 @@ export default {
 
     karkunByUserId(obj, { userId }) {
       return Karkuns.findOne({
-        userId: { $eq: userId }
+        userId: { $eq: userId },
       });
     },
 
@@ -95,23 +95,23 @@ export default {
       const idsToSearch = compact(ids);
       idsToSearch.forEach(id => {
         const karkun = Karkuns.findOne({
-          userId: { $eq: id }
+          userId: { $eq: id },
         });
 
         if (karkun) {
           names.push(`${karkun.firstName} ${karkun.lastName}`);
         } else {
           const user = Meteor.users.findOne(id);
-          if (user.username === "erp-admin") {
-            names.push("ERP Admin");
+          if (user.username === 'erp-admin') {
+            names.push('ERP Admin');
           } else {
-            names.push("Unknown User");
+            names.push('Unknown User');
           }
         }
       });
 
       return names;
-    }
+    },
   },
 
   Mutation: {
@@ -128,7 +128,7 @@ export default {
         address,
         city,
         country,
-        bloodGroup
+        bloodGroup,
       },
       { user }
     ) {
@@ -136,19 +136,17 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
       if (cnicNumber) {
         const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber }
+          cnicNumber: { $eq: cnicNumber },
         });
         if (existingKarkun) {
           throw new Error(
-            `This CNIC number is already set for ${existingKarkun.firstName} ${
-              existingKarkun.lastName
-            }.`
+            `This CNIC number is already set for ${existingKarkun.firstName} ${existingKarkun.lastName}.`
           );
         }
       }
@@ -169,7 +167,7 @@ export default {
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
-        updatedBy: user._id
+        updatedBy: user._id,
       });
 
       return Karkuns.findOne(karkunId);
@@ -189,7 +187,7 @@ export default {
         address,
         city,
         country,
-        bloodGroup
+        bloodGroup,
       },
       { user }
     ) {
@@ -197,19 +195,17 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
       if (cnicNumber) {
         const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber }
+          cnicNumber: { $eq: cnicNumber },
         });
         if (existingKarkun && existingKarkun._id !== _id) {
           throw new Error(
-            `This CNIC number is already set for ${existingKarkun.firstName} ${
-              existingKarkun.lastName
-            }.`
+            `This CNIC number is already set for ${existingKarkun.firstName} ${existingKarkun.lastName}.`
           );
         }
       }
@@ -229,8 +225,8 @@ export default {
           country,
           bloodGroup,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Karkuns.findOne(_id);
@@ -241,7 +237,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
@@ -257,7 +253,7 @@ export default {
         jobId,
         employmentStartDate,
         employmentEndDate,
-        currentSalary
+        currentSalary,
       },
       { user }
     ) {
@@ -265,7 +261,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
@@ -278,8 +274,8 @@ export default {
           employmentEndDate,
           currentSalary,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Karkuns.findOne(_id);
@@ -290,7 +286,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
@@ -299,8 +295,8 @@ export default {
         $set: {
           imageId,
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Karkuns.findOne(_id);
@@ -311,19 +307,19 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
       const date = new Date();
       Karkuns.update(_id, {
         $addToSet: {
-          attachmentIds: attachmentId
+          attachmentIds: attachmentId,
         },
         $set: {
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       return Karkuns.findOne(_id);
@@ -334,19 +330,19 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
-          "You do not have permission to manage Karkuns in the System."
+          'You do not have permission to manage Karkuns in the System.'
         );
       }
 
       const date = new Date();
       Karkuns.update(_id, {
         $pull: {
-          attachmentIds: attachmentId
+          attachmentIds: attachmentId,
         },
         $set: {
           updatedAt: date,
-          updatedBy: user._id
-        }
+          updatedBy: user._id,
+        },
       });
 
       Attachments.remove(attachmentId);
@@ -358,7 +354,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
-          "You do not have permission to manage Accounts in the System."
+          'You do not have permission to manage Accounts in the System.'
         );
       }
 
@@ -374,15 +370,15 @@ export default {
 
       const newUserId = Accounts.createUser({
         username: userName,
-        password
+        password,
       });
 
       const time = Date.now();
       Karkuns.update(karkunId, {
         $set: {
           userId: newUserId,
-          updatedAt: time
-        }
+          updatedAt: time,
+        },
       });
 
       return Karkuns.findOne(karkunId);
@@ -393,7 +389,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
-          "You do not have permission to manage Accounts in the System."
+          'You do not have permission to manage Accounts in the System.'
         );
       }
 
@@ -401,8 +397,8 @@ export default {
       Karkuns.update(karkunId, {
         $set: {
           userId: null,
-          updatedAt: time
-        }
+          updatedAt: time,
+        },
       });
 
       return Meteor.users.remove(karkunUserId);
@@ -413,7 +409,7 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
-          "You do not have permission to manage Accounts in the System."
+          'You do not have permission to manage Accounts in the System.'
         );
       }
 
@@ -426,12 +422,12 @@ export default {
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
         throw new Error(
-          "You do not have permission to manage Accounts in the System."
+          'You do not have permission to manage Accounts in the System.'
         );
       }
 
       Meteor.users.update(karkunUserId, { $set: { instances } });
       return Karkuns.findOne(karkunId);
-    }
-  }
+    },
+  },
 };

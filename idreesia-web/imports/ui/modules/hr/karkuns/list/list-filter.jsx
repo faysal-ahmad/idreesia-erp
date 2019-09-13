@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Collapse, Form, Row, Button } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { filter, flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { filter, flowRight } from 'lodash';
 
 import {
   InputCnicField,
   InputTextField,
   CascaderField,
   SelectField,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
-  width: "500px",
+  width: '500px',
 };
 
 const formItemLayout = {
@@ -37,10 +37,11 @@ class ListFilter extends Component {
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     setPageParams: PropTypes.func,
+    refreshData: PropTypes.func,
   };
 
   static defaultProps = {
-    cnicNumber: "",
+    cnicNumber: '',
     filterCriteria: {},
   };
 
@@ -72,6 +73,22 @@ class ListFilter extends Component {
           shiftId: dutyIdShiftId[1],
         });
       }
+    );
+  };
+
+  refreshButton = () => {
+    const { refreshData } = this.props;
+
+    return (
+      <Tooltip title="Reload Data">
+        <Icon
+          type="sync"
+          onClick={event => {
+            event.stopPropagation();
+            if (refreshData) refreshData();
+          }}
+        />
+      </Tooltip>
     );
   };
 
@@ -115,7 +132,7 @@ class ListFilter extends Component {
 
     return (
       <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1">
+        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal">
             <InputTextField
               fieldName="name"
@@ -147,14 +164,14 @@ class ListFilter extends Component {
               fieldLabel="Blood Group"
               required={false}
               data={[
-                { label: "A-", value: "A-" },
-                { label: "A+", value: "A+" },
-                { label: "B-", value: "B-" },
-                { label: "B+", value: "B+" },
-                { label: "AB-", value: "AB-" },
-                { label: "AB+", value: "AB+" },
-                { label: "O-", value: "O-" },
-                { label: "O+", value: "O+" },
+                { label: 'A-', value: 'A-' },
+                { label: 'A+', value: 'A+' },
+                { label: 'B-', value: 'B-' },
+                { label: 'B+', value: 'B+' },
+                { label: 'AB-', value: 'AB-' },
+                { label: 'AB+', value: 'AB+' },
+                { label: 'O-', value: 'O-' },
+                { label: 'O+', value: 'O+' },
               ]}
               getDataValue={({ value }) => value}
               getDataText={({ label }) => label}
@@ -209,7 +226,7 @@ const allDutyShiftsListQuery = gql`
 `;
 
 export default flowRight(
-  Form.create({ name: "karkunsListFilter" }),
+  Form.create({ name: 'karkunsListFilter' }),
   graphql(allDutiesListQuery, {
     props: ({ data }) => ({ ...data }),
   }),

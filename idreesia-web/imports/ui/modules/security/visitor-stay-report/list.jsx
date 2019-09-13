@@ -7,6 +7,7 @@ import moment from 'moment';
 import { find, flowRight } from 'lodash';
 
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
 
 import ListFilter from './list-filter';
@@ -21,7 +22,7 @@ const ToolbarStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
-  alignItems: 'right',
+  alignItems: 'top',
   width: '100%',
 };
 
@@ -51,6 +52,8 @@ class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
+    sortBy: PropTypes.string,
+    sortOrder: PropTypes.string,
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
     setPageParams: PropTypes.func,
@@ -100,36 +103,48 @@ class List extends Component {
     },
   };
 
-  nameColumn = {
-    title: 'Name',
-    dataIndex: 'refVisitor.name',
-    key: 'refVisitor.name',
-    render: (text, record) => {
-      const { refVisitor } = record;
-      const onClickHandler = () => {
-        const { handleItemSelected } = this.props;
-        handleItemSelected(refVisitor);
-      };
+  getNameColumn = () => {
+    const { sortBy, sortOrder } = this.props;
 
-      if (refVisitor.imageId) {
-        const url = getDownloadUrl(refVisitor.imageId);
+    return {
+      title: () => (
+        <SortableColumnHeader
+          headerKey="name"
+          title="Name"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          handleSortChange={this.handleSortChange}
+        />
+      ),
+      dataIndex: 'refVisitor.name',
+      key: 'refVisitor.name',
+      render: (text, record) => {
+        const { refVisitor } = record;
+        const onClickHandler = () => {
+          const { handleItemSelected } = this.props;
+          handleItemSelected(refVisitor);
+        };
+
+        if (refVisitor.imageId) {
+          const url = getDownloadUrl(refVisitor.imageId);
+          return (
+            <div style={NameDivStyle} onClick={onClickHandler}>
+              <Avatar shape="square" size="large" src={url} />
+              &nbsp;&nbsp;
+              {text}
+            </div>
+          );
+        }
+
         return (
           <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" src={url} />
+            <Avatar shape="square" size="large" icon="picture" />
             &nbsp;&nbsp;
             {text}
           </div>
         );
-      }
-
-      return (
-        <div style={NameDivStyle} onClick={onClickHandler}>
-          <Avatar shape="square" size="large" icon="picture" />
-          &nbsp;&nbsp;
-          {text}
-        </div>
-      );
-    },
+      },
+    };
   };
 
   cityCountryColumn = {
@@ -153,34 +168,46 @@ class List extends Component {
     },
   };
 
-  stayDetailsColumn = {
-    title: 'Stay Details',
-    key: 'stayDetails',
-    render: (text, record) => {
-      const fromDate = moment(Number(record.fromDate));
-      const toDate = moment(Number(record.toDate));
-      const days = record.numOfDays;
+  getStayDetailsColumn = () => {
+    const { sortBy, sortOrder } = this.props;
 
-      let detail;
-      if (days === 1) {
-        detail = `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
-      } else {
-        detail = `${days} days - [${fromDate.format(
-          'DD MMM, YYYY'
-        )} - ${toDate.format('DD MMM, YYYY')}]`;
-      }
+    return {
+      title: () => (
+        <SortableColumnHeader
+          headerKey="stayDate"
+          title="Stay Details"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          handleSortChange={this.handleSortChange}
+        />
+      ),
+      key: 'stayDetails',
+      render: (text, record) => {
+        const fromDate = moment(Number(record.fromDate));
+        const toDate = moment(Number(record.toDate));
+        const days = record.numOfDays;
 
-      return (
-        <div
-          style={StayDetailDivStyle}
-          onClick={() => {
-            this.handleStayDetailClicked(record._id);
-          }}
-        >
-          {detail}
-        </div>
-      );
-    },
+        let detail;
+        if (days === 1) {
+          detail = `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
+        } else {
+          detail = `${days} days - [${fromDate.format(
+            'DD MMM, YYYY'
+          )} - ${toDate.format('DD MMM, YYYY')}]`;
+        }
+
+        return (
+          <div
+            style={StayDetailDivStyle}
+            onClick={() => {
+              this.handleStayDetailClicked(record._id);
+            }}
+          >
+            {detail}
+          </div>
+        );
+      },
+    };
   };
 
   stayReasonColumn = {
@@ -202,12 +229,20 @@ class List extends Component {
 
   getColumns = () => [
     this.statusColumn,
-    this.nameColumn,
+    this.getNameColumn(),
     this.cityCountryColumn,
-    this.stayDetailsColumn,
+    this.getStayDetailsColumn(),
     this.stayReasonColumn,
     this.dutyShiftNameColumn,
   ];
+
+  handleSortChange = (sortBy, sortOrder) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      sortBy,
+      sortOrder,
+    });
+  };
 
   onChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;

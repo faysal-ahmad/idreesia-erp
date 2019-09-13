@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Avatar,
   Button,
@@ -9,34 +9,34 @@ import {
   Table,
   Tooltip,
   message,
-} from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+} from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import ListFilter from "./list-filter";
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import ListFilter from './list-filter';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-  cursor: "pointer",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
+  cursor: 'pointer',
 };
 
 class List extends Component {
@@ -58,6 +58,7 @@ class List extends Component {
 
     deleteKarkun: PropTypes.func,
     loading: PropTypes.bool,
+    refetchListQuery: PropTypes.func,
     pagedKarkuns: PropTypes.shape({
       totalResults: PropTypes.number,
       karkuns: PropTypes.array,
@@ -65,9 +66,9 @@ class List extends Component {
   };
 
   nameColumn = {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
     render: (text, record) => {
       const onClickHandler = () => {
         const { handleItemSelected } = this.props;
@@ -96,32 +97,32 @@ class List extends Component {
   };
 
   cnicColumn = {
-    title: "CNIC Number",
-    dataIndex: "cnicNumber",
-    key: "cnicNumber",
+    title: 'CNIC Number',
+    dataIndex: 'cnicNumber',
+    key: 'cnicNumber',
   };
 
   phoneNumberColumn = {
-    title: "Contact Number",
-    key: "contactNumber",
+    title: 'Contact Number',
+    key: 'contactNumber',
     render: (text, record) => {
       const numbers = [];
       if (record.contactNumber1) numbers.push(record.contactNumber1);
       if (record.contactNumber2) numbers.push(record.contactNumber2);
 
-      if (numbers.length === 0) return "";
-      return numbers.join(", ");
+      if (numbers.length === 0) return '';
+      return numbers.join(', ');
     },
   };
 
   dutiesColumn = {
-    title: "Duties",
-    dataIndex: "duties",
-    key: "duties",
+    title: 'Duties',
+    dataIndex: 'duties',
+    key: 'duties',
   };
 
   actionsColumn = {
-    key: "action",
+    key: 'action',
     render: (text, record) => (
       <Popconfirm
         title="Are you sure you want to delete this karkun?"
@@ -194,6 +195,7 @@ class List extends Component {
       dutyId,
       shiftId,
       setPageParams,
+      refetchListQuery,
       showNewButton,
       handleNewClicked,
       predefinedFilterName,
@@ -219,6 +221,7 @@ class List extends Component {
           dutyId={dutyId}
           shiftId={shiftId}
           setPageParams={setPageParams}
+          refreshData={refetchListQuery}
         />
       );
     }
@@ -299,13 +302,13 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "deleteKarkun",
+    name: 'deleteKarkun',
     options: {
-      refetchQueries: ["pagedKarkuns"],
+      refetchQueries: ['pagedKarkuns'],
     },
   }),
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({
       name,
       cnicNumber,
@@ -316,10 +319,10 @@ export default flowRight(
       pageSize,
     }) => ({
       variables: {
-        queryString: `?name=${name || ""}&cnicNumber=${cnicNumber ||
-          ""}&dutyId=${dutyId || ""}&shiftId=${shiftId ||
-          ""}&predefinedFilterName=${predefinedFilterName ||
-          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+        queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
+          ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
+          ''}&predefinedFilterName=${predefinedFilterName ||
+          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   })

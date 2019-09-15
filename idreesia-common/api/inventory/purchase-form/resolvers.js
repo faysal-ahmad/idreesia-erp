@@ -3,6 +3,7 @@ import {
   PurchaseForms,
   StockItems,
   Vendors,
+  Locations,
 } from 'meteor/idreesia-common/collections/inventory';
 import { Attachments } from 'meteor/idreesia-common/collections/common';
 import {
@@ -22,6 +23,14 @@ export default {
       }
 
       return [];
+    },
+    refLocation: purchaseForm => {
+      if (purchaseForm.locationId) {
+        return Locations.findOne({
+          _id: { $eq: purchaseForm.locationId },
+        });
+      }
+      return null;
     },
     refReceivedBy: purchaseForm =>
       Karkuns.findOne({

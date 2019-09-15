@@ -199,6 +199,7 @@ class EditForm extends Component {
 
           <TreeSelectField
             data={locationsByPhysicalStoreId}
+            showSearch
             fieldName="locationId"
             fieldLabel="For Location"
             placeholder="Select a Location"

@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { TreeSelect, Form } from "antd";
-import { filter } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { TreeSelect, Form } from 'antd';
+import { filter } from 'lodash';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -74,6 +74,13 @@ export default class TreeSelectField extends Component {
     return treeNodes;
   };
 
+  filterTreeNode = (_inputValue, treeNode) => {
+    const title = treeNode.props.title.toLowerCase();
+    const inputValue = _inputValue.toLowerCase();
+    if (title.indexOf(inputValue) !== -1) return true;
+    return false;
+  };
+
   getField = () => {
     const {
       data,
@@ -104,6 +111,7 @@ export default class TreeSelectField extends Component {
         allowClear
         showSearch={showSearch}
         treeDefaultExpandAll
+        filterTreeNode={this.filterTreeNode}
       >
         {treeNodes}
       </TreeSelect>

@@ -1,6 +1,6 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from "../common";
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   externalReferenceId: {
@@ -28,7 +28,7 @@ export default new SimpleSchema({
   },
   unitOfMeasurement: {
     type: String,
-    allowedValues: ["quantity", "ft", "m", "kg", "lbs", "l"],
+    allowedValues: ['quantity', 'ft', 'm', 'kg', 'lbs', 'l'],
   },
   imageId: {
     type: String,

@@ -1,31 +1,31 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from "../common";
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   name: {
-    type: String
+    type: String,
   },
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   contactPerson: {
     type: String,
-    optional: true
+    optional: true,
   },
   contactNumber: {
     type: String,
-    optional: true
+    optional: true,
   },
   address: {
     type: String,
-    optional: true
+    optional: true,
   },
   notes: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

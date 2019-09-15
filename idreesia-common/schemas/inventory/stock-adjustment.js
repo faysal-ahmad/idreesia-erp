@@ -1,6 +1,6 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { approvable, identifiable, timestamps } from "../common";
+import { approvable, identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   physicalStoreId: {
@@ -9,25 +9,25 @@ export default new SimpleSchema({
   },
   stockItemId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   adjustmentDate: {
-    type: Date
+    type: Date,
   },
   adjustedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   quantity: {
-    type: Number
+    type: Number,
   },
   isInflow: {
-    type: Boolean
+    type: Boolean,
   },
   adjustmentReason: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(approvable)
   .extend(identifiable)

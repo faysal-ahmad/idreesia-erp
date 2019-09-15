@@ -3,6 +3,7 @@ type PurchaseForm {
   purchaseDate: String
   receivedBy: String
   purchasedBy: String
+  locationId: String
   physicalStoreId: String
   vendorId: String
   items: [ItemWithQuantityAndPrice]
@@ -10,6 +11,7 @@ type PurchaseForm {
   attachmentIds: [String]
 
   attachments: [Attachment]
+  refLocation: Location
   refReceivedBy: KarkunType
   refPurchasedBy: KarkunType
   refCreatedBy: KarkunType
@@ -48,6 +50,7 @@ extend type Mutation {
     receivedBy: String!
     purchasedBy: String!
     physicalStoreId: String!
+    locationId: String
     vendorId: String
     items: [ItemWithQuantityAndPriceInput]
     notes: String
@@ -59,6 +62,7 @@ extend type Mutation {
     receivedBy: String!
     purchasedBy: String!
     physicalStoreId: String!
+    locationId: String
     vendorId: String
     items: [ItemWithQuantityAndPriceInput]
     notes: String

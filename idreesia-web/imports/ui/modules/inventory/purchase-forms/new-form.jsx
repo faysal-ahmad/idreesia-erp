@@ -1,29 +1,31 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Divider, Form, message } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Divider, Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { ItemsList } from "../common/items-list";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { ItemsList } from '../common/items-list';
+import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithVendorsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+  WithLocationsByPhysicalStore,
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   DateField,
   SelectField,
   FormButtonsSaveCancel,
   InputTextAreaField,
-} from "/imports/ui/modules/helpers/fields";
+  TreeSelectField,
+} from '/imports/ui/modules/helpers/fields';
 
-import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
+import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
 const FormStyle = {
-  width: "800px",
+  width: '800px',
 };
 
 const formItemExtendedLayout = {
@@ -41,6 +43,8 @@ class NewForm extends Component {
 
     vendorsLoading: PropTypes.bool,
     vendorsByPhysicalStoreId: PropTypes.array,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
     createPurchaseForm: PropTypes.func,
   };
 
@@ -55,13 +59,22 @@ class NewForm extends Component {
     form.validateFields(
       (
         err,
-        { purchaseDate, vendorId, receivedBy, purchasedBy, items, notes }
+        {
+          purchaseDate,
+          locationId,
+          vendorId,
+          receivedBy,
+          purchasedBy,
+          items,
+          notes,
+        }
       ) => {
         if (err) return;
 
         createPurchaseForm({
           variables: {
             purchaseDate,
+            locationId,
             vendorId,
             receivedBy: receivedBy._id,
             purchasedBy: purchasedBy._id,
@@ -87,10 +100,10 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: "Please add some items.",
+        message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator("items", { rules })(
+    return getFieldDecorator('items', { rules })(
       <ItemsList
         refForm={form}
         defaultLabel="Purchased"
@@ -103,8 +116,13 @@ class NewForm extends Component {
   }
 
   render() {
-    const { vendorsLoading, vendorsByPhysicalStoreId } = this.props;
-    if (vendorsLoading) return null;
+    const {
+      vendorsLoading,
+      locationsLoading,
+      locationsByPhysicalStoreId,
+      vendorsByPhysicalStoreId,
+    } = this.props;
+    if (locationsLoading || vendorsLoading) return null;
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -114,14 +132,6 @@ class NewForm extends Component {
           fieldLabel="Purchase Date"
           required
           requiredMessage="Please input a purchase date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <SelectField
-          data={vendorsByPhysicalStoreId}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="vendorId"
-          fieldLabel="Vendor"
           getFieldDecorator={getFieldDecorator}
         />
         <KarkunField
@@ -145,6 +155,23 @@ class NewForm extends Component {
           predefinedFilterName={
             PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
           }
+        />
+
+        <SelectField
+          data={vendorsByPhysicalStoreId}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="vendorId"
+          fieldLabel="Vendor"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <TreeSelectField
+          data={locationsByPhysicalStoreId}
+          fieldName="locationId"
+          fieldLabel="For Location"
+          placeholder="Select a Location"
+          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -171,6 +198,7 @@ const formMutation = gql`
     $receivedBy: String!
     $purchasedBy: String!
     $physicalStoreId: String!
+    $locationId: String
     $vendorId: String
     $items: [ItemWithQuantityAndPriceInput]
     $notes: String
@@ -180,6 +208,7 @@ const formMutation = gql`
       receivedBy: $receivedBy
       purchasedBy: $purchasedBy
       physicalStoreId: $physicalStoreId
+      locationId: $locationId
       vendorId: $vendorId
       items: $items
       notes: $notes
@@ -187,6 +216,7 @@ const formMutation = gql`
       _id
       purchaseDate
       physicalStoreId
+      locationId
       vendorId
       items {
         stockItemId
@@ -212,14 +242,15 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithVendorsByPhysicalStore(),
+  WithLocationsByPhysicalStore(),
   graphql(formMutation, {
-    name: "createPurchaseForm",
+    name: 'createPurchaseForm',
     options: {
       refetchQueries: [
-        "pagedPurchaseForms",
-        "purchaseFormsByStockItem",
-        "pagedStockItems",
-        "vendorsByPhysicalStoreId",
+        'pagedPurchaseForms',
+        'purchaseFormsByStockItem',
+        'pagedStockItems',
+        'vendorsByPhysicalStoreId',
       ],
     },
   }),

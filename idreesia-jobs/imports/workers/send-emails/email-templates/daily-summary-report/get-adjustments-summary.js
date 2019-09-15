@@ -1,24 +1,21 @@
-import moment from "moment";
+import moment from 'moment';
 
 import {
   PurchaseForms,
   StockItems,
-} from "meteor/idreesia-common/collections/inventory";
+} from 'meteor/idreesia-common/collections/inventory';
 
-export default function getAdjustmentsSummary(physicalStoreId) {
-  const purchaseForms = PurchaseForms.getUpdatedForDate(
-    physicalStoreId,
-    new Date()
-  );
+export default function getAdjustmentsSummary(physicalStoreId, date) {
+  const purchaseForms = PurchaseForms.getUpdatedForDate(physicalStoreId, date);
   const purchaseFormRows = purchaseForms.map(purchaseForm => {
     const formattedDate = moment(purchaseForm.purchaseDate).format(
-      "DD-MM-YYYY"
+      'DD-MM-YYYY'
     );
     const items = purchaseForm.items.map(
       ({ stockItemId, quantity, isInflow }) => {
         const stockItem = StockItems.findOne(stockItemId);
         return `<li>${stockItem.formattedName} [${quantity} ${
-          isInflow ? "Purchased" : "Returned"
+          isInflow ? 'Purchased' : 'Returned'
         }]</li>`;
       }
     );
@@ -29,7 +26,7 @@ export default function getAdjustmentsSummary(physicalStoreId) {
         <td style="border:2px solid #ecedee; padding:0 15px;">
           <mj-raw>
             <ul>
-              ${items.join("")}
+              ${items.join('')}
             </ul>
           </mj-raw>
         </td>
@@ -48,7 +45,7 @@ export default function getAdjustmentsSummary(physicalStoreId) {
             <th style="border:2px solid #ecedee; padding:0 15px;">Purchase Date</th>
             <th style="border:2px solid #ecedee; padding:0 15px;">Item Details</th>
           </tr>
-          ${purchaseFormRows.join("")}
+          ${purchaseFormRows.join('')}
         </mj-table>
       </mj-column>
     </mj-section>

@@ -10,7 +10,7 @@ Meteor.startup(() =>
 
     const sendEmailsJob = new SendEmailsJob();
     sendEmailsJob
-      .repeat({ schedule: Jobs.later.parse.text('at 4:00 pm') })
+      .repeat({ schedule: Jobs.later.parse.text('at 4:00 am') })
       .save({ cancelRepeats: true });
   })
 );

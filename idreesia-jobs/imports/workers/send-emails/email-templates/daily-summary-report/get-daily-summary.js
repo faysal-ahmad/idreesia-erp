@@ -1,14 +1,23 @@
-import getIssuanceFormsSummary from "./get-issuance-forms-summary";
-import getPurchaseFormsSummary from "./get-purchase-forms-summary";
+import moment from 'moment';
+
+import getIssuanceFormsSummary from './get-issuance-forms-summary';
+import getPurchaseFormsSummary from './get-purchase-forms-summary';
 
 function getAdjustmentsSummary() {
   return ``;
 }
 
 export default function getDailySummary(physicalStoreId) {
-  const issuanceFormsSummary = getIssuanceFormsSummary(physicalStoreId);
-  const purchaseFormsSummary = getPurchaseFormsSummary(physicalStoreId);
-  const adjustmentsSummary = getAdjustmentsSummary(physicalStoreId);
+  const m = moment().subtract(1, 'day');
+  const issuanceFormsSummary = getIssuanceFormsSummary(
+    physicalStoreId,
+    m.toDate()
+  );
+  const purchaseFormsSummary = getPurchaseFormsSummary(
+    physicalStoreId,
+    m.toDate()
+  );
+  const adjustmentsSummary = getAdjustmentsSummary(physicalStoreId, m.toDate());
 
   return `
     <mjml>

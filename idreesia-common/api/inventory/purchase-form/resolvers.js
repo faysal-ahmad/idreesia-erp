@@ -12,7 +12,10 @@ import {
 } from 'meteor/idreesia-common/api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import getPurchaseForms, { getPurchaseFormsByStockItemId } from './queries';
+import getPurchaseForms, {
+  getPurchaseFormsByStockItemId,
+  getPurchaseFormsByMonth,
+} from './queries';
 
 export default {
   PurchaseForm: {
@@ -75,6 +78,21 @@ export default {
       }
 
       return getPurchaseFormsByStockItemId(physicalStoreId, stockItemId);
+    },
+
+    purchaseFormsByMonth(obj, { physicalStoreId, month }, { user }) {
+      if (
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.IN_VIEW_PURCHASE_FORMS,
+          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
+          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
+        ])
+      ) {
+        return [];
+      }
+
+      return getPurchaseFormsByMonth(physicalStoreId, month);
     },
 
     pagedPurchaseForms(obj, { physicalStoreId, queryString }, { user }) {

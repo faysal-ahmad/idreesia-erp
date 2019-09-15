@@ -25,6 +25,31 @@ export function getPurchaseFormsByStockItemId(physicalStoreId, stockItemId) {
   return PurchaseForms.aggregate(pipeline).toArray();
 }
 
+export function getPurchaseFormsByMonth(physicalStoreId, monthString) {
+  const month = moment(monthString, Formats.DATE_FORMAT);
+
+  const pipeline = [
+    {
+      $match: {
+        physicalStoreId: { $eq: physicalStoreId },
+      },
+    },
+    {
+      $match: {
+        purchaseDate: {
+          $gte: month.startOf('month').toDate(),
+          $lte: month.endOf('month').toDate(),
+        },
+      },
+    },
+    {
+      $sort: { purchaseDate: -1 },
+    },
+  ];
+
+  return PurchaseForms.aggregate(pipeline).toArray();
+}
+
 export default function getPurchaseForms(queryString, physicalStoreId) {
   const params = parse(queryString);
   const pipeline = [

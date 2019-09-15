@@ -37,6 +37,10 @@ extend type Query {
     physicalStoreId: String!
     stockItemId: String!
   ): [PurchaseForm]
+  purchaseFormsByMonth(
+    physicalStoreId: String!
+    month: String!
+  ): [PurchaseForm]
   pagedPurchaseForms(
     physicalStoreId: String!
     queryString: String

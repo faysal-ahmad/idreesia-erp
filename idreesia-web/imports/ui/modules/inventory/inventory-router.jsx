@@ -1,44 +1,47 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
-import { default as paths } from "./submodule-paths";
+import { default as paths } from './submodule-paths';
+import { PurchasingReport } from './purchasing-report';
 import {
   StockItemsNewForm,
   StockItemsEditForm,
   StockItemsList,
-} from "./stock-items";
-import { VendorsNewForm, VendorsEditForm, VendorsList } from "./vendors";
+} from './stock-items';
+import { VendorsNewForm, VendorsEditForm, VendorsList } from './vendors';
 import {
   ItemCategoriesNewForm,
   ItemCategoriesEditForm,
   ItemCategoriesList,
-} from "./item-categories";
+} from './item-categories';
 import {
   LocationsNewForm,
   LocationsEditForm,
   LocationsList,
-} from "./locations";
+} from './locations';
 import {
   IssuanceFormsNewForm,
   IssuanceFormsEditForm,
   IssuanceFormsViewForm,
   IssuanceFormsList,
-} from "./issuance-forms";
+} from './issuance-forms';
 import {
   PurchaseFormsNewForm,
   PurchaseFormsEditForm,
   PurchaseFormsViewForm,
   PurchaseFormsList,
-} from "./purchase-forms";
+} from './purchase-forms';
 import {
   StockAdjustmentsNewForm,
   StockAdjustmentsEditForm,
   StockAdjustmentsViewForm,
   StockAdjustmentsList,
-} from "./stock-adjustments";
+} from './stock-adjustments';
 
 const InventoryRouter = () => (
   <Switch>
+    <Route path={paths.purchasingReportPath()} component={PurchasingReport} />
+
     <Route
       path={paths.itemCategoriesNewFormPath()}
       component={ItemCategoriesNewForm}

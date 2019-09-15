@@ -1,17 +1,17 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Button, Form, Row } from "antd";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Button, Form, Row } from 'antd';
 import {
   InputNumberField,
   SelectField,
-} from "/imports/ui/modules/helpers/fields";
-import { StockItemField } from "/imports/ui/modules/inventory/stock-items/field";
+} from '/imports/ui/modules/helpers/fields';
+import { StockItemField } from '/imports/ui/modules/inventory/stock-items/field';
 
 const RowStyle = {
-  height: "40px",
+  height: '40px',
 };
 const ButtonContainerStyle = {
-  paddingLeft: "20px",
+  paddingLeft: '20px',
 };
 
 const ItemForm = ({
@@ -49,13 +49,14 @@ const ItemForm = ({
     ) : null}
     <SelectField
       allowClear={false}
+      dropdownMatchSelectWidth={false}
       data={[
-        { label: inflowLabel, value: "inflow" },
-        { label: outflowLabel, value: "outflow" },
+        { label: inflowLabel, value: 'inflow' },
+        { label: outflowLabel, value: 'outflow' },
       ]}
       getDataValue={({ value }) => value}
       getDataText={({ label }) => label}
-      initialValue={defaultLabel === inflowLabel ? "inflow" : "outflow"}
+      initialValue={defaultLabel === inflowLabel ? 'inflow' : 'outflow'}
       fieldLayout={null}
       fieldName="status"
       getFieldDecorator={getFieldDecorator}

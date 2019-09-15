@@ -1,10 +1,19 @@
 import { parse } from 'query-string';
-import { StockItems } from 'meteor/idreesia-common/collections/inventory';
 import { get } from 'lodash';
+import moment from 'moment';
+
+import { StockItems } from 'meteor/idreesia-common/collections/inventory';
 
 export default function getPagedStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
-  const { categoryId, name, pageIndex = '0', pageSize = '20' } = params;
+  const {
+    categoryId,
+    name,
+    stockLevel,
+    verifyDuration,
+    pageIndex = '0',
+    pageSize = '20',
+  } = params;
   const pipeline = [];
 
   if (name) {
@@ -29,6 +38,57 @@ export default function getPagedStockItems(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         categoryId: { $eq: categoryId },
+      },
+    });
+  }
+
+  if (verifyDuration === 'less-than-3-months-ago') {
+    const m3 = moment()
+      .subtract(3, 'months')
+      .toDate();
+    pipeline.push({
+      $match: {
+        $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
+      },
+    });
+  } else if (verifyDuration === 'between-3-to-6-months-ago') {
+    const m3 = moment()
+      .subtract(3, 'months')
+      .toDate();
+    const m6 = moment()
+      .subtract(6, 'months')
+      .toDate();
+    pipeline.push({
+      $match: {
+        $and: [
+          { verifiedOn: { $ne: null } },
+          { verifiedOn: { $gt: m6 } },
+          { verifiedOn: { $lt: m3 } },
+        ],
+      },
+    });
+  } else if (verifyDuration === 'more-than-6-months-ago') {
+    const m6 = moment()
+      .subtract(6, 'months')
+      .toDate();
+    pipeline.push({
+      $match: {
+        $or: [{ verifiedOn: { $eq: null } }, { verifiedOn: { $lt: m6 } }],
+      },
+    });
+  }
+
+  if (stockLevel === 'negative-stock-level') {
+    pipeline.push({
+      $match: {
+        currentStockLevel: { $lt: 0 },
+      },
+    });
+  } else if (stockLevel === 'less-than-min-stock-level') {
+    pipeline.push({
+      $match: {
+        minStockLevel: { $ne: null },
+        $expr: { $gt: ['$minStockLevel', '$currentStockLevel'] },
       },
     });
   }

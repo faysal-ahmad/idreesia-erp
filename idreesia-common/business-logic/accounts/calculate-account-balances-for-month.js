@@ -1,10 +1,10 @@
-import { filter, forEach, map } from "lodash";
+import { filter, forEach, map } from 'lodash';
 
 import {
   AccountMonthlyBalances,
-  VoucherDetails
-} from "meteor/idreesia-common/collections/accounts";
-import { Formats } from "meteor/idreesia-common/constants";
+  VoucherDetails,
+} from 'meteor/idreesia-common/collections/accounts';
+import { Formats } from 'meteor/idreesia-common/constants';
 
 /**
  * This method is used to calculate balances for the non-leaf nodes in the
@@ -19,9 +19,7 @@ function accumulateAccountBalancesForNode(
 ) {
   const { companyId } = accountHead;
   // Does this account head has child account heads. If so then recursively calculate values for them.
-  const childAccountHeads = filter(allAccountHeads, ah => {
-    return ah.parent === accountHead.number;
-  });
+  const childAccountHeads = filter(allAccountHeads, ah => ah.parent === accountHead.number);
 
   if (childAccountHeads.length === 0) {
     // This is a leaf node. Calculate the values for this from the vouchers.
@@ -48,21 +46,21 @@ function accumulateAccountBalancesForNode(
     accountHeadId: accountHead._id,
     monthString: month
       .clone()
-      .subtract(1, "months")
-      .format(Formats.DATE_FORMAT)
+      .subtract(1, 'months')
+      .format(Formats.DATE_FORMAT),
   });
 
   const currentMonthlyBalance = AccountMonthlyBalances.findOne({
     companyId,
     accountHeadId: accountHead._id,
-    monthString: month.format(Formats.DATE_FORMAT)
+    monthString: month.format(Formats.DATE_FORMAT),
   });
 
   const childAccountHeadIds = map(childAccountHeads, ({ _id }) => _id);
   const childMonthlyBalances = AccountMonthlyBalances.find({
     companyId,
     accountHeadId: { $in: childAccountHeadIds },
-    monthString: month.format(Formats.DATE_FORMAT)
+    monthString: month.format(Formats.DATE_FORMAT),
   }).fetch();
 
   const monthlyBalance = {
@@ -72,7 +70,7 @@ function accumulateAccountBalancesForNode(
     credits: 0,
     debits: 0,
     prevBalance: prevMonthlyBalance ? prevMonthlyBalance.balance : 0,
-    balance: prevMonthlyBalance ? prevMonthlyBalance.balance : 0
+    balance: prevMonthlyBalance ? prevMonthlyBalance.balance : 0,
   };
 
   childMonthlyBalances.forEach(childMonthlyBalance => {
@@ -83,7 +81,7 @@ function accumulateAccountBalancesForNode(
   monthlyBalance.balance += monthlyBalance.credits - monthlyBalance.debits;
   if (currentMonthlyBalance) {
     AccountMonthlyBalances.update(currentMonthlyBalance._id, {
-      $set: monthlyBalance
+      $set: monthlyBalance,
     });
   } else {
     AccountMonthlyBalances.insert(monthlyBalance);
@@ -106,14 +104,14 @@ function calculateAccountBalancesForLeafNode(
     accountHeadId: accountHead._id,
     monthString: month
       .clone()
-      .subtract(1, "months")
-      .format(Formats.DATE_FORMAT)
+      .subtract(1, 'months')
+      .format(Formats.DATE_FORMAT),
   });
 
   const currentMonthlyBalance = AccountMonthlyBalances.findOne({
     companyId,
     accountHeadId: accountHead._id,
-    monthString: month.format(Formats.DATE_FORMAT)
+    monthString: month.format(Formats.DATE_FORMAT),
   });
 
   const monthlyBalance = {
@@ -125,7 +123,7 @@ function calculateAccountBalancesForLeafNode(
     prevBalance: prevMonthlyBalance ? prevMonthlyBalance.balance : 0,
     balance: prevMonthlyBalance
       ? prevMonthlyBalance.balance
-      : accountHead.startingBalance || 0
+      : accountHead.startingBalance || 0,
   };
 
   voucherDetails.forEach(({ accountHeadId, amount, isCredit }) => {
@@ -142,7 +140,7 @@ function calculateAccountBalancesForLeafNode(
 
   if (currentMonthlyBalance) {
     AccountMonthlyBalances.update(currentMonthlyBalance._id, {
-      $set: monthlyBalance
+      $set: monthlyBalance,
     });
   } else {
     AccountMonthlyBalances.insert(monthlyBalance);
@@ -163,7 +161,7 @@ export default function calculateAccountBalancesForMonth(
   // Get all the root nodes and call method to perform calculation on them.
   const rootAccountHeads = filter(
     allAccountHeads,
-    accountHead => accountHead.parent === "0"
+    accountHead => accountHead.parent === '0'
   );
 
   forEach(rootAccountHeads, accountHead => {

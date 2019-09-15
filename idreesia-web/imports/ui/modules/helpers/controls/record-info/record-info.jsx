@@ -1,15 +1,15 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { List, Typography } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import moment from "moment";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { List, Typography } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
+import moment from 'moment';
 
-import { Formats } from "meteor/idreesia-common/constants";
+import { Formats } from 'meteor/idreesia-common/constants';
 
 const ListStyle = {
-  backgroundColor: "#F0F2F5",
+  backgroundColor: '#F0F2F5',
 };
 
 const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
@@ -39,17 +39,17 @@ const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
 
   return (
     <List size="small" bordered style={ListStyle}>
-      <List.Item>
-        <Typography.Text type="secondary">
-          {`Created by ${karkunNames[0]} on ${strCreatedAt}`}
-        </Typography.Text>
-      </List.Item>
+      {approvalNode}
       <List.Item>
         <Typography.Text type="secondary">
           {`Updated by ${karkunNames[1]} on ${strUpdatedAt}`}
         </Typography.Text>
       </List.Item>
-      {approvalNode}
+      <List.Item>
+        <Typography.Text type="secondary">
+          {`Created by ${karkunNames[0]} on ${strCreatedAt}`}
+        </Typography.Text>
+      </List.Item>
     </List>
   );
 };

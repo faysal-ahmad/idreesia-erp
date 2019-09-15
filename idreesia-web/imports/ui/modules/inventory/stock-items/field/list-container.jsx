@@ -14,6 +14,8 @@ export default class ListContainer extends Component {
     pageSize: 20,
     categoryId: null,
     name: null,
+    verifyDuration: null,
+    stockLevel: null,
   };
 
   setPageParams = pageParams => {
@@ -22,7 +24,14 @@ export default class ListContainer extends Component {
 
   render() {
     const { physicalStoreId, setSelectedValue } = this.props;
-    const { pageIndex, pageSize, categoryId, name } = this.state;
+    const {
+      pageIndex,
+      pageSize,
+      categoryId,
+      name,
+      verifyDuration,
+      stockLevel,
+    } = this.state;
 
     return (
       <List
@@ -31,6 +40,8 @@ export default class ListContainer extends Component {
         physicalStoreId={physicalStoreId}
         categoryId={categoryId}
         name={name}
+        verifyDuration={verifyDuration}
+        stockLevel={stockLevel}
         setPageParams={this.setPageParams}
         handleItemSelected={setSelectedValue}
       />

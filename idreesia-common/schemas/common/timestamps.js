@@ -1,22 +1,22 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
 export default new SimpleSchema({
   createdAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
   createdBy: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
-    optional: true
+    optional: true,
   },
   updatedAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
   updatedBy: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
-    optional: true
-  }
+    optional: true,
+  },
 });

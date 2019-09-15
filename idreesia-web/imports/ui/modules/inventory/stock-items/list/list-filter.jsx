@@ -27,6 +27,8 @@ class ListFilter extends Component {
     form: PropTypes.object,
     name: PropTypes.string,
     categoryId: PropTypes.string,
+    verifyDuration: PropTypes.string,
+    stockLevel: PropTypes.string,
     physicalStoreId: PropTypes.string,
     itemCategoriesByPhysicalStoreId: PropTypes.array,
     setPageParams: PropTypes.func,
@@ -40,20 +42,26 @@ class ListFilter extends Component {
       pageIndex: 0,
       categoryId: null,
       name: null,
+      verifyDuration: null,
+      stockLevel: null,
     });
   };
 
   handleSubmit = () => {
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { categoryId, name }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        categoryId,
-        name,
-      });
-    });
+    form.validateFields(
+      (err, { categoryId, name, verifyDuration, stockLevel }) => {
+        if (err) return;
+        setPageParams({
+          pageIndex: 0,
+          categoryId,
+          name,
+          verifyDuration,
+          stockLevel,
+        });
+      }
+    );
   };
 
   refreshButton = () => {
@@ -74,7 +82,13 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { categoryId, name, itemCategoriesByPhysicalStoreId } = this.props;
+    const {
+      categoryId,
+      name,
+      stockLevel,
+      verifyDuration,
+      itemCategoriesByPhysicalStoreId,
+    } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -96,6 +110,50 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={name}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <SelectField
+              fieldName="stockLevel"
+              fieldLabel="Stock Level"
+              required={false}
+              data={[
+                {
+                  label: 'Negative Stock Level',
+                  value: 'negative-stock-level',
+                },
+                {
+                  label: 'Less than Min Stock Level',
+                  value: 'less-than-min-stock-level',
+                },
+              ]}
+              getDataValue={({ value }) => value}
+              getDataText={({ label }) => label}
+              fieldLayout={formItemLayout}
+              initialValue={stockLevel}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <SelectField
+              fieldName="verifyDuration"
+              fieldLabel="Stock Verified"
+              required={false}
+              data={[
+                {
+                  label: 'Less than 3 months ago',
+                  value: 'less-than-3-months-ago',
+                },
+                {
+                  label: 'Between 3 to 6 months ago',
+                  value: 'between-3-to-6-months-ago',
+                },
+                {
+                  label: 'More than 6 months ago',
+                  value: 'more-than-6-months-ago',
+                },
+              ]}
+              getDataValue={({ value }) => value}
+              getDataText={({ label }) => label}
+              fieldLayout={formItemLayout}
+              initialValue={verifyDuration}
               getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>

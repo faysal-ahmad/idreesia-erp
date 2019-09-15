@@ -11,6 +11,7 @@ type StockItem {
   minStockLevel: Float
   currentStockLevel: Float
   totalStockLevel: Float
+  verifiedOn: String
 
   formattedName: String
   categoryName: String
@@ -58,6 +59,7 @@ extend type Mutation {
     minStockLevel: Float
   ): StockItem
 
+  verifyStockItemLevel(_id: String!, physicalStoreId: String!): StockItem
   removeStockItem(_id: String!, physicalStoreId: String!): Int
   setStockItemImage(_id: String!, imageId: String!): StockItem
   mergeStockItems(ids: [String]!, physicalStoreId: String!): StockItem

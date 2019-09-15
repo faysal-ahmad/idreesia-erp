@@ -1,20 +1,20 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { Form, message } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
 import {
   InputTextField,
   InputNumberField,
   SelectField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { WithItemCategoriesByPhysicalStore } from "/imports/ui/modules/inventory/common/composers";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { WithItemCategoriesByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
-import allUnitOfMeasurements from "../all-unit-of-measurements";
+import allUnitOfMeasurements from '../all-unit-of-measurements';
 
 class EditForm extends Component {
   static propTypes = {
@@ -196,9 +196,9 @@ export default flowRight(
     options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),
   }),
   graphql(formMutation, {
-    name: "updateStockItem",
+    name: 'updateStockItem',
     options: {
-      refetchQueries: ["pagedStockItems"],
+      refetchQueries: ['pagedStockItems'],
     },
   })
 )(EditForm);

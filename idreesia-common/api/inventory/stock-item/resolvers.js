@@ -189,6 +189,33 @@ export default {
       return StockItems.findOne(_id);
     },
 
+    verifyStockItemLevel(obj, { _id, physicalStoreId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Stock Items in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+        throw new Error(
+          'You do not have permission to manage Stock Items in this Physical Store.'
+        );
+      }
+
+      const date = new Date();
+      StockItems.update(_id, {
+        $set: {
+          verifiedOn: date,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return StockItems.findOne(_id);
+    },
+
     removeStockItem(obj, { _id, physicalStoreId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])

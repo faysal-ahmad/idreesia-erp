@@ -12,10 +12,12 @@ import {
   Popconfirm,
   message,
 } from 'antd';
+import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { Formats } from 'meteor/idreesia-common/constants';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import ListFilter from './list-filter';
 
@@ -50,6 +52,31 @@ const IconStyle = {
   fontSize: 20,
 };
 
+const MinStockLevelStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+};
+
+const StockLevelVerificationOk = {
+  display: 'flex',
+  justifyContent: 'center',
+  cursor: 'pointer',
+};
+
+const StockLevelVerificationWarning = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: 'orange',
+  cursor: 'pointer',
+};
+
+const StockLevelVerificationError = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: 'red',
+  cursor: 'pointer',
+};
+
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -57,6 +84,8 @@ class List extends Component {
     physicalStoreId: PropTypes.string,
     name: PropTypes.string,
     categoryId: PropTypes.string,
+    verifyDuration: PropTypes.string,
+    stockLevel: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
@@ -66,6 +95,7 @@ class List extends Component {
     removeStockItem: PropTypes.func,
     mergeStockItems: PropTypes.func,
     recalculateStockLevels: PropTypes.func,
+    verifyStockItemLevel: PropTypes.func,
 
     loading: PropTypes.bool,
     refetchListQuery: PropTypes.func,
@@ -132,10 +162,12 @@ class List extends Component {
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
         render: (text, record) => {
-          if (!text) return '';
-          if (record.unitOfMeasurement !== 'quantity')
-            return `${text} ${record.unitOfMeasurement}`;
-          return text;
+          let stockLevel = text || '';
+          if (record.unitOfMeasurement !== 'quantity') {
+            stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
+          }
+          
+          return <div style={MinStockLevelStyle}>{stockLevel}</div>;
         },
       },
       {
@@ -143,10 +175,39 @@ class List extends Component {
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
         render: (text, record) => {
-          const stockLevel = text || 0;
+          let stockLevel = text || 0;
           if (record.unitOfMeasurement !== 'quantity')
-            return `${stockLevel} ${record.unitOfMeasurement}`;
-          return stockLevel;
+            stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
+
+          let style = StockLevelVerificationError;
+          let tooltip = `Stock level has never been verified.`;
+
+          if (record.verifiedOn) {
+            const now = moment();
+            const lastVerified = moment(Number(record.verifiedOn));
+            const duration = moment.duration(now.diff(lastVerified)).months();
+            tooltip = `Stock level verified on ${lastVerified.format(
+              Formats.DATE_FORMAT
+            )}`;
+            if (duration < 3) {
+              style = StockLevelVerificationOk;
+            } else if (duration < 6) {
+              style = StockLevelVerificationWarning;
+            }
+          }
+
+          return (
+            <Tooltip title={tooltip}>
+              <div
+                style={style}
+                onClick={() => {
+                  this.handleStockLevelClicked(record);
+                }}
+              >
+                {stockLevel}
+              </div>
+            </Tooltip>
+          );
         },
       },
     ];
@@ -254,6 +315,33 @@ class List extends Component {
       });
   };
 
+  handleStockLevelClicked = record => {
+    const { physicalStoreId, verifyStockItemLevel } = this.props;
+    Modal.confirm({
+      title: 'Stock Level Verification',
+      content: `Have you verified that the current stock level of "${
+        record.name
+      }" is ${record.currentStockLevel || 0}?`,
+      onOk() {
+        verifyStockItemLevel({
+          variables: {
+            _id: record._id,
+            physicalStoreId,
+          },
+        })
+          .then(() => {
+            message.success(
+              `Verification date for stock level of "${record.name}" was set.`,
+              5
+            );
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      },
+    });
+  };
+
   onChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
@@ -294,6 +382,8 @@ class List extends Component {
     const {
       name,
       categoryId,
+      verifyDuration,
+      stockLevel,
       physicalStoreId,
       setPageParams,
       showNewButton,
@@ -329,6 +419,8 @@ class List extends Component {
           name={name}
           physicalStoreId={physicalStoreId}
           categoryId={categoryId}
+          verifyDuration={verifyDuration}
+          stockLevel={stockLevel}
           setPageParams={setPageParams}
           refreshData={refetchListQuery}
         />
@@ -399,10 +491,20 @@ const listQuery = gql`
         minStockLevel
         currentStockLevel
         totalStockLevel
+        verifiedOn
         purchaseFormsCount
         issuanceFormsCount
         stockAdjustmentsCount
       }
+    }
+  }
+`;
+
+const formMutationVerify = gql`
+  mutation verifyStockItemLevel($_id: String!, $physicalStoreId: String!) {
+    verifyStockItemLevel(_id: $_id, physicalStoreId: $physicalStoreId) {
+      _id
+      verifiedOn
     }
   }
 `;
@@ -440,13 +542,28 @@ const formMutationRecalculate = gql`
 export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
-    options: ({ physicalStoreId, categoryId, name, pageIndex, pageSize }) => ({
+    options: ({
+      physicalStoreId,
+      categoryId,
+      name,
+      verifyDuration,
+      stockLevel,
+      pageIndex,
+      pageSize,
+    }) => ({
       variables: {
         physicalStoreId,
         queryString: `?categoryId=${categoryId || ''}&name=${name ||
+          ''}&verifyDuration=${verifyDuration || ''}&stockLevel=${stockLevel ||
           ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
+  }),
+  graphql(formMutationVerify, {
+    name: 'verifyStockItemLevel',
+    options: {
+      refetchQueries: ['pagedStockItems'],
+    },
   }),
   graphql(formMutationRemove, {
     name: 'removeStockItem',

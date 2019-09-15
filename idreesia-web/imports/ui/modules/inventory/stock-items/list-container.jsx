@@ -23,7 +23,14 @@ class ListContainer extends Component {
   };
 
   setPageParams = newParams => {
-    const { name, categoryId, pageIndex, pageSize } = newParams;
+    const {
+      name,
+      categoryId,
+      verifyDuration,
+      stockLevel,
+      pageIndex,
+      pageSize,
+    } = newParams;
     const { queryParams, history, location } = this.props;
 
     let nameVal;
@@ -35,6 +42,16 @@ class ListContainer extends Component {
       categoryIdVal = categoryId || '';
     else categoryIdVal = queryParams.categoryId || '';
 
+    let verifyDurationVal;
+    if (newParams.hasOwnProperty('verifyDuration'))
+      verifyDurationVal = verifyDuration || '';
+    else verifyDurationVal = queryParams.verifyDuration || '';
+
+    let stockLevelVal;
+    if (newParams.hasOwnProperty('stockLevel'))
+      stockLevelVal = stockLevel || '';
+    else stockLevelVal = queryParams.stockLevel || '';
+
     let pageIndexVal;
     if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
@@ -43,7 +60,7 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${location.pathname}?name=${nameVal}&categoryId=${categoryIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?name=${nameVal}&categoryId=${categoryIdVal}&verifyDuration=${verifyDurationVal}&stockLevel=${stockLevelVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -60,7 +77,14 @@ class ListContainer extends Component {
   render() {
     const { physicalStoreId } = this.props;
     const {
-      queryParams: { categoryId, name, pageIndex, pageSize },
+      queryParams: {
+        categoryId,
+        name,
+        verifyDuration,
+        stockLevel,
+        pageIndex,
+        pageSize,
+      },
     } = this.props;
 
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
@@ -72,6 +96,8 @@ class ListContainer extends Component {
         pageSize={numPageSize}
         name={name}
         categoryId={categoryId}
+        verifyDuration={verifyDuration}
+        stockLevel={stockLevel}
         physicalStoreId={physicalStoreId}
         setPageParams={this.setPageParams}
         handleItemSelected={this.handleItemSelected}

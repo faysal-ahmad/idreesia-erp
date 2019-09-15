@@ -44,6 +44,10 @@ export default new SimpleSchema({
     type: Number,
     optional: true,
   },
+  verifiedOn: {
+    type: Date,
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

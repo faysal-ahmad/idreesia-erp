@@ -13,6 +13,7 @@ import './9-create-hr-indexes';
 import './10-create-security-indexes';
 import './11-split-account-voucher-number';
 import './12-create-guest-user';
+import './13-create-hr-indexes';
 
 Migrations.config({
   log: true,

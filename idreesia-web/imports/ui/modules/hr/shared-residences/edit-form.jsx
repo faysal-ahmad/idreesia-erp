@@ -132,7 +132,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'updateSharedResidence',
     options: {
-      refetchQueries: ['allSharedResidences'],
+      refetchQueries: ['pagedSharedResidences'],
     },
   }),
   graphql(formQuery, {

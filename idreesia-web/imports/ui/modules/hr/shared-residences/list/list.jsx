@@ -1,25 +1,44 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Button, Icon, Table, Tooltip, message } from 'antd';
+import { Button, Icon, Pagination, Table, Tooltip, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
-import { WithBreadcrumbs } from '/imports/ui/composers';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import ListFilter from './list-filter';
 
 const IconStyle = {
   cursor: 'pointer',
   fontSize: 20,
 };
 
+const ToolbarStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+};
+
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allSharedResidences: PropTypes.array,
+
+    address: PropTypes.string,
+    karkunName: PropTypes.string,
+    pageIndex: PropTypes.number,
+    pageSize: PropTypes.number,
+    setPageParams: PropTypes.func,
+    loading: PropTypes.bool,
+    refetchListQuery: PropTypes.func,
+    pagedSharedResidences: PropTypes.shape({
+      totalResults: PropTypes.number,
+      data: PropTypes.array,
+    }),
     removeSharedResidence: PropTypes.func,
   };
 
@@ -90,24 +109,65 @@ class List extends Component {
     });
   };
 
+  getTableHeader = () => {
+    const { address, karkunName, refetchListQuery, setPageParams } = this.props;
+
+    return (
+      <div style={ToolbarStyle}>
+        <Button
+          type="primary"
+          icon="plus-circle-o"
+          onClick={this.handleNewClicked}
+        >
+          New Shared Residence
+        </Button>
+        <ListFilter
+          name={name}
+          address={address}
+          karkunName={karkunName}
+          setPageParams={setPageParams}
+          refreshData={refetchListQuery}
+        />
+      </div>
+    );
+  };
+
   render() {
-    const { allSharedResidences } = this.props;
+    const { loading } = this.props;
+    if (loading) return null;
+
+    const {
+      pageIndex,
+      pageSize,
+      pagedSharedResidences: { totalResults, data },
+    } = this.props;
+
+    const numPageIndex = pageIndex ? pageIndex + 1 : 1;
+    const numPageSize = pageSize || 20;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allSharedResidences}
+        dataSource={data}
         columns={this.columns}
-        pagination={{ defaultPageSize: 20 }}
         bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon="plus-circle-o"
-            onClick={this.handleNewClicked}
-          >
-            New Shared Residence
-          </Button>
+        size="small"
+        pagination={false}
+        title={this.getTableHeader}
+        footer={() => (
+          <Pagination
+            defaultCurrent={1}
+            defaultPageSize={20}
+            current={numPageIndex}
+            pageSize={numPageSize}
+            showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            onChange={this.onChange}
+            onShowSizeChange={this.onShowSizeChange}
+            total={totalResults}
+          />
         )}
       />
     );
@@ -115,20 +175,23 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allSharedResidences {
-    allSharedResidences {
-      _id
-      address
-      residentCount
-      owner {
+  query pagedSharedResidences($queryString: String) {
+    pagedSharedResidences(queryString: $queryString) {
+      totalResults
+      data {
         _id
-        name
-        imageId
-      }
-      residents {
-        _id
-        name
-        imageId
+        address
+        residentCount
+        owner {
+          _id
+          name
+          imageId
+        }
+        residents {
+          _id
+          name
+          imageId
+        }
       }
     }
   }
@@ -142,13 +205,17 @@ const removeSharedResidenceMutation = gql`
 
 export default flowRight(
   graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
+    options: ({ queryString }) => ({
+      variables: {
+        queryString,
+      },
+    }),
   }),
   graphql(removeSharedResidenceMutation, {
     name: 'removeSharedResidence',
     options: {
-      refetchQueries: ['allSharedResidences'],
+      refetchQueries: ['pagedSharedResidences'],
     },
-  }),
-  WithBreadcrumbs(['Security', 'Shared Residences', 'List'])
+  })
 )(List);

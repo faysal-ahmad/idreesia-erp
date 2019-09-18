@@ -13,8 +13,7 @@ Migrations.add({
     karkuns.createIndex({ cnicNumber: 1 }, { background: true });
     karkuns.createIndex({ contactNumber1: 1 }, { background: true });
     karkuns.createIndex({ contactNumber2: 1 }, { background: true });
-    karkuns.createIndex({ city: 1 }, { background: true });
-    karkuns.createIndex({ bllodGroup: 1 }, { background: true });
+    karkuns.createIndex({ bloodGroup: 1 }, { background: true });
     karkuns.createIndex({ sharedResidenceId: 1 }, { background: true });
     karkuns.createIndex({ isEmployee: 1 }, { background: true });
     karkuns.createIndex({ jobId: 1 }, { background: true });

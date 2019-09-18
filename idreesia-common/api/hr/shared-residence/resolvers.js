@@ -5,6 +5,8 @@ import {
 import { hasOnePermission } from 'meteor/idreesia-common/api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
+import { getSharedResidences } from './queries';
+
 export default {
   SharedResidenceType: {
     residentCount: sharedResidenceType =>
@@ -24,17 +26,20 @@ export default {
   },
 
   Query: {
-    allSharedResidences(obj, {}, { user }) {
+    pagedSharedResidences(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_SHARED_RESIDENCES,
           PermissionConstants.HR_MANAGE_SHARED_RESIDENCES,
         ])
       ) {
-        return [];
+        return {
+          totalResults: 0,
+          data: [],
+        };
       }
 
-      return SharedResidences.find({}, { sort: { address: 1 } }).fetch();
+      return getSharedResidences(queryString);
     },
     sharedResidenceById(obj, { _id }, { user }) {
       if (

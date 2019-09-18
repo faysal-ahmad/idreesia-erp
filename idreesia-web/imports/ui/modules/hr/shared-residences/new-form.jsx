@@ -85,7 +85,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'createSharedResidence',
     options: {
-      refetchQueries: ['allSharedResidences'],
+      refetchQueries: ['pagedSharedResidences'],
     },
   }),
   WithBreadcrumbs(['Security', 'Shared Residences', 'New'])

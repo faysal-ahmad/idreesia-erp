@@ -1,87 +1,102 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from "../common";
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   // Points to login account if one exists for this karkun
   userId: {
     type: String,
-    optional: true
+    optional: true,
   },
   firstName: {
-    type: String
+    type: String,
   },
   lastName: {
     type: String,
-    optional: true
+    optional: true,
   },
   ehadDate: {
     type: Date,
-    optional: true
+    optional: true,
   },
   cnicNumber: {
     type: String,
-    optional: true
+    optional: true,
   },
   address: {
     type: String,
-    optional: true
+    optional: true,
   },
   city: {
     type: String,
-    optional: true
+    optional: true,
   },
   country: {
     type: String,
-    optional: true
+    optional: true,
+  },
+  sharedResidenceId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true,
   },
   contactNumber1: {
     type: String,
-    optional: true
+    optional: true,
   },
   contactNumber2: {
     type: String,
-    optional: true
+    optional: true,
   },
   emailAddress: {
     type: String,
-    optional: true
+    optional: true,
   },
   bloodGroup: {
     type: String,
-    optional: true
+    optional: true,
+  },
+  educationalQualification: {
+    type: String,
+    optional: true,
+  },
+  meansOfEarning: {
+    type: String,
+    optional: true,
   },
   imageId: {
     type: String,
-    optional: true
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true,
   },
   attachmentIds: {
     type: Array,
-    optional: true
+    optional: true,
   },
-  "attachmentIds.$": {
-    type: String
+  'attachmentIds.$': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
   },
   isEmployee: {
     type: Boolean,
-    optional: true
+    optional: true,
   },
   jobId: {
     type: String,
-    optional: true
+    optional: true,
   },
   employmentStartDate: {
     type: Date,
-    optional: true
+    optional: true,
   },
   employmentEndDate: {
     type: Date,
-    optional: true
+    optional: true,
   },
   currentSalary: {
     type: Number,
-    optional: true
-  }
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

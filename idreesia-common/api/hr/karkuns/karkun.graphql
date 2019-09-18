@@ -19,6 +19,9 @@ type KarkunType {
   city: String
   country: String
   bloodGroup: String
+  sharedResidenceId: String
+  educationalQualification: String
+  meansOfEarning: String
   imageId: String
   userId: String
   attachmentIds: [String]

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Avatar,
   Button,
   Icon,
   Pagination,
@@ -14,7 +13,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
 
 const IconStyle = {
@@ -28,15 +27,6 @@ const ToolbarStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-};
-
-const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-  cursor: 'pointer',
 };
 
 class List extends Component {
@@ -69,31 +59,12 @@ class List extends Component {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => {
-      const onClickHandler = () => {
-        const { handleItemSelected } = this.props;
-        handleItemSelected(record);
-      };
-
-      if (record.imageId) {
-        const url = getDownloadUrl(record.imageId);
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" src={url} />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      }
-
-      return (
-        <div style={NameDivStyle} onClick={onClickHandler}>
-          <Avatar shape="square" size="large" icon="picture" />
-          &nbsp;&nbsp;
-          {text}
-        </div>
-      );
-    },
+    render: (text, record) => (
+      <KarkunName
+        karkun={record}
+        onKarkunNameClicked={this.props.handleItemSelected}
+      />
+    ),
   };
 
   cnicColumn = {

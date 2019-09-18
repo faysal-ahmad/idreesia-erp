@@ -1,42 +1,42 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable } from "../common";
+import { identifiable } from '../common';
 
 export default new SimpleSchema({
   karkunId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   dutyId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
   },
   shiftId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
-    optional: true
+    optional: true,
   },
   month: {
     type: String,
-    optional: true
+    optional: true,
   },
   totalCount: {
     type: Number,
-    optional: true
+    optional: true,
   },
   absentCount: {
     type: Number,
-    optional: true
+    optional: true,
   },
   presentCount: {
     type: Number,
-    optional: true
+    optional: true,
   },
   percentage: {
     type: Number,
-    optional: true
+    optional: true,
   },
   meetingCardBarcodeId: {
-    type: String
-  }
+    type: String,
+  },
 }).extend(identifiable);

@@ -1,0 +1,25 @@
+type SharedResidenceType {
+  _id: String
+  address: String
+  ownerKarkunId: String
+
+  residentCount: Int
+  owner: KarkunType
+  residents: [KarkunType]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allSharedResidences: [SharedResidenceType]
+  sharedResidenceById(_id: String!): SharedResidenceType
+}
+
+extend type Mutation {
+  createSharedResidence(address: String!, ownerKarkunId: String): SharedResidenceType
+  updateSharedResidence(_id: String!, address: String!, ownerKarkunId: String): SharedResidenceType
+  removeSharedResidence(_id: String!): Int
+}

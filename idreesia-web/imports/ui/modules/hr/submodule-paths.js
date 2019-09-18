@@ -1,4 +1,4 @@
-import { ModulePaths } from "meteor/idreesia-common/constants";
+import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
@@ -6,21 +6,19 @@ export default class SubModulePaths {
   // *************************************************************************************
   static jobsPath = `${ModulePaths.hr}/jobs`;
   static jobsNewFormPath = `${SubModulePaths.jobsPath}/new`;
-  static jobsEditFormPath(jobId = ":jobId") {
+  static jobsEditFormPath(jobId = ':jobId') {
     return `${SubModulePaths.jobsPath}/${jobId}`;
   }
 
   static dutiesPath = `${ModulePaths.hr}/duties`;
   static dutiesNewFormPath = `${SubModulePaths.dutiesPath}/new`;
-  static dutiesEditFormPath(dutyId = ":dutyId") {
+  static dutiesEditFormPath(dutyId = ':dutyId') {
     return `${SubModulePaths.dutiesPath}/${dutyId}`;
   }
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
   static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
-  static dutyLocationsEditFormPath = `${
-    SubModulePaths.dutyLocationsPath
-  }/:dutyLocationId`;
+  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
 
   static dutyShiftsPath = `${ModulePaths.hr}/duty-shifts`;
   static dutyShiftsNewFormPath = `${SubModulePaths.dutyShiftsPath}/new`;
@@ -31,16 +29,21 @@ export default class SubModulePaths {
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
 
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
-  static attendanceSheetsNewFormPath = `${
-    SubModulePaths.attendanceSheetsPath
-  }/new`;
-  static attendanceSheetsEditFormPath(attendanceId = ":attendanceId") {
+  static attendanceSheetsNewFormPath = `${SubModulePaths.attendanceSheetsPath}/new`;
+  static attendanceSheetsEditFormPath(attendanceId = ':attendanceId') {
     return `${SubModulePaths.attendanceSheetsPath}/${attendanceId}`;
   }
-  static attendanceSheetsUploadFormPath = `${
-    SubModulePaths.attendanceSheetsPath
-  }/upload`;
-  static attendanceSheetsMeetingCardsPath = `${
-    SubModulePaths.attendanceSheetsPath
-  }/meeting-cards`;
+  static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
+  static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
+
+  // ******************************************************************************
+  // Shared Residences
+  // ******************************************************************************
+  static sharedResidencesPath = `${ModulePaths.hr}/shared-residences`;
+  static sharedResidencesNewFormPath = `${SubModulePaths.sharedResidencesPath}/new`;
+  static sharedResidencesEditFormPath(
+    sharedResidenceId = ':sharedResidenceId'
+  ) {
+    return `${SubModulePaths.sharedResidencesPath}/${sharedResidenceId}`;
+  }
 }

@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { Menu, Icon } from "antd";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Menu, Icon } from 'antd';
 
-import { GlobalActionsCreator } from "/imports/ui/action-creators";
-import SubModuleNames from "./submodule-names";
-import { default as paths } from "./submodule-paths";
+import { GlobalActionsCreator } from '/imports/ui/action-creators';
+import SubModuleNames from './submodule-names';
+import { default as paths } from './submodule-paths';
 
 const { SubMenu } = Menu;
 
@@ -20,37 +20,42 @@ class HRSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case "jobs":
+      case 'jobs':
         setActiveSubModuleName(SubModuleNames.jobs);
         history.push(paths.jobsPath);
         break;
 
-      case "duties":
+      case 'duties':
         setActiveSubModuleName(SubModuleNames.duties);
         history.push(paths.dutiesPath);
         break;
 
-      case "attendance-sheets":
+      case 'attendance-sheets':
         setActiveSubModuleName(SubModuleNames.attendanceSheets);
         history.push(paths.attendanceSheetsPath);
         break;
 
-      case "duty-shifts":
+      case 'duty-shifts':
         setActiveSubModuleName(SubModuleNames.dutyShifts);
         history.push(paths.dutyShiftsPath);
         break;
 
-      case "duty-locations":
+      case 'duty-locations':
         setActiveSubModuleName(SubModuleNames.dutyLocations);
         history.push(paths.dutyLocationsPath);
         break;
 
-      case "karkuns":
+      case 'karkuns':
         setActiveSubModuleName(SubModuleNames.karkuns);
         history.push(paths.karkunsPath);
         break;
 
-      case "karkuns-search":
+      case 'shared-residencs':
+        setActiveSubModuleName(SubModuleNames.sharedResidences);
+        history.push(paths.sharedResidencesPath);
+        break;
+
+      case 'karkuns-search':
         setActiveSubModuleName(SubModuleNames.karkuns);
         history.push(paths.karkunsSearchPath);
         break;
@@ -64,17 +69,19 @@ class HRSidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={["home"]}
-        style={{ height: "100%", borderRight: 0 }}
+        defaultSelectedKeys={['home']}
+        style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">Karkuns</Menu.Item>
+        <Menu.Item key="shared-residencs">Shared Residences</Menu.Item>
         <Menu.Item key="attendance-sheets">Attendance Sheets</Menu.Item>
         <SubMenu
           key="setup"
           title={
             <span>
-              <Icon type="laptop" />Setup
+              <Icon type="laptop" />
+              Setup
             </span>
           }
         >
@@ -94,5 +101,8 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const HRSidebarContainer = connect(null, mapDispatchToProps)(HRSidebar);
+const HRSidebarContainer = connect(
+  null,
+  mapDispatchToProps
+)(HRSidebar);
 export default HRSidebarContainer;

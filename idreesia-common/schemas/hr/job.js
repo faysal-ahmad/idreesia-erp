@@ -1,6 +1,6 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from "../common";
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   name: {
@@ -8,7 +8,7 @@ export default new SimpleSchema({
   },
   description: {
     type: String,
-    optional: true
+    optional: true,
   },
 })
   .extend(identifiable)

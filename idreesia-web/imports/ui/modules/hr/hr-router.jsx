@@ -1,27 +1,32 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
-import { default as paths } from "./submodule-paths";
-import { JobsNewForm, JobsEditForm, JobsList } from "./jobs";
-import { DutiesNewForm, DutiesEditForm, DutiesList } from "./duties";
+import { default as paths } from './submodule-paths';
+import { JobsNewForm, JobsEditForm, JobsList } from './jobs';
+import { DutiesNewForm, DutiesEditForm, DutiesList } from './duties';
 import {
   DutyShiftsNewForm,
   DutyShiftsEditForm,
   DutyShiftsList,
-} from "./duty-shifts";
+} from './duty-shifts';
 import {
   DutyLocationsNewForm,
   DutyLocationsEditForm,
   DutyLocationsList,
-} from "./duty-locations";
-import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from "./karkuns";
+} from './duty-locations';
+import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from './karkuns';
 import {
   AttendanceSheetsNewForm,
   AttendanceSheetsEditForm,
   AttendanceSheetsUploadForm,
   AttendanceSheetsList,
   AttendanceSheetsMeetingCards,
-} from "./attendance-sheets";
+} from './attendance-sheets';
+import {
+  SharedResidencesNewForm,
+  SharedResidencesEditForm,
+  SharedResidencesList,
+} from './shared-residences';
 
 const HRRouter = () => (
   <Switch>
@@ -68,6 +73,16 @@ const HRRouter = () => (
       component={AttendanceSheetsEditForm}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
+
+    <Route
+      path={paths.sharedResidencesNewFormPath}
+      component={SharedResidencesNewForm}
+    />
+    <Route
+      path={paths.sharedResidencesEditFormPath()}
+      component={SharedResidencesEditForm}
+    />
+    <Route path={paths.sharedResidencesPath} component={SharedResidencesList} />
   </Switch>
 );
 

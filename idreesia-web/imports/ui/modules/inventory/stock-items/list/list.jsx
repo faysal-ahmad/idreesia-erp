@@ -163,7 +163,7 @@ class List extends Component {
         key: 'minStockLevel',
         render: (text, record) => {
           let stockLevel = text || '';
-          if (record.unitOfMeasurement !== 'quantity') {
+          if (text && record.unitOfMeasurement !== 'quantity') {
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
           }
           

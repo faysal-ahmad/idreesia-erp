@@ -85,6 +85,7 @@ class ItemsList extends Component {
     if (!existingItem) {
       stockItems.push({
         stockItemId: stockItem._id,
+
         quantity,
         isInflow,
         price,
@@ -113,6 +114,16 @@ class ItemsList extends Component {
     return null;
   }
 
+  getStockItemUom(stockItemId) {
+    const { stockItemsById } = this.props;
+    const { referenceStockItems } = this.state;
+
+    const allStockItems = referenceStockItems.concat(stockItemsById);
+    const stockItem = find(allStockItems, { _id: stockItemId });
+    if (stockItem) return stockItem.unitOfMeasurement;
+    return null;
+  }
+
   getColumns = () => {
     const { inflowLabel, outflowLabel, showPrice, readOnly } = this.props;
     const columns = [
@@ -127,10 +138,16 @@ class ItemsList extends Component {
         dataIndex: 'quantity',
         key: 'quantity',
         render: (text, record) => {
-          if (record.isInflow) {
-            return `${text} ${inflowLabel}`;
+          const uom = this.getStockItemUom(record.stockItemId);
+          let quantity = text || '';
+          if (text && uom && uom !== 'quantity') {
+            quantity = `${quantity} ${uom}`;
           }
-          return `${text} ${outflowLabel}`;
+
+          if (record.isInflow) {
+            return `${quantity} ${inflowLabel}`;
+          }
+          return `${quantity} ${outflowLabel}`;
         },
       },
     ];
@@ -228,6 +245,7 @@ const stockItemsByIdQuery = gql`
       _id
       name
       formattedName
+      unitOfMeasurement
     }
   }
 `;

@@ -81,22 +81,30 @@ class List extends Component {
       key: 'refPurchasedByName',
     },
     {
-      title: 'Vendor',
-      dataIndex: 'refVendor.name',
-      key: 'refVendorName',
+      title: 'For Location',
+      dataIndex: 'refLocation.name',
+      key: 'refLocationName',
     },
     {
       title: 'Items',
       dataIndex: 'items',
       key: 'items',
       render: items => {
-        const formattedItems = items.map(item => (
-          <li key={`${item.stockItemId}${item.isInflow}`}>
-            {`${item.stockItemName} [${item.quantity} ${
-              item.isInflow ? 'Purchased' : 'Returned'
-            }]`}
-          </li>
-        ));
+        const formattedItems = items.map(item => {
+          const key = `${item.stockItemId}${item.isInflow}`;
+          let quantity = item.quantity;
+          if (item.unitOfMeasurement !== 'quantity') {
+            quantity = `${quantity} ${item.unitOfMeasurement}`;
+          }
+
+          return (
+            <li key={key}>
+              {`${item.stockItemName} [${quantity} ${
+                item.isInflow ? 'Purchased' : 'Returned'
+              }]`}
+            </li>
+          );
+        });
         return <ul>{formattedItems}</ul>;
       },
     },
@@ -343,6 +351,7 @@ const formMutationApprove = gql`
         quantity
         isInflow
         stockItemName
+        unitOfMeasurement
       }
     }
   }
@@ -367,6 +376,7 @@ const listQuery = gql`
           quantity
           isInflow
           stockItemName
+          unitOfMeasurement
         }
         refReceivedBy {
           _id
@@ -376,7 +386,7 @@ const listQuery = gql`
           _id
           name
         }
-        refVendor {
+        refLocation {
           _id
           name
         }

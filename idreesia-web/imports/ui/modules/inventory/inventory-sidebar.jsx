@@ -67,6 +67,12 @@ class InventorySidebar extends Component {
             </span>
           }
         >
+          <Menu.Item
+            parent-key={physicalStore._id}
+            key={`stock-items-${physicalStore._id}`}
+          >
+            Stock Items
+          </Menu.Item>
           <Menu.SubMenu
             key={`forms-${physicalStore._id}`}
             title={
@@ -76,12 +82,6 @@ class InventorySidebar extends Component {
               </span>
             }
           >
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`stock-items-${physicalStore._id}`}
-            >
-              Stock Items
-            </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`issuance-forms-${physicalStore._id}`}

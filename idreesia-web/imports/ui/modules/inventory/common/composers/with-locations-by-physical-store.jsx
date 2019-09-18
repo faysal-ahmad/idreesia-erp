@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 export default () => WrappedComponent => {
   const WithLocationsByPhysicalStore = props => <WrappedComponent {...props} />;
@@ -20,6 +20,7 @@ export default () => WrappedComponent => {
         physicalStoreId
         parentId
         description
+        isInUse
         refParent {
           _id
           name

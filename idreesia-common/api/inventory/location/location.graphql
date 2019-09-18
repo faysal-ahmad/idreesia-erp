@@ -6,6 +6,7 @@ type Location {
   description: String
 
   refParent: Location
+  isInUse: Boolean
 
   createdAt: String
   createdBy: String
@@ -31,4 +32,5 @@ extend type Mutation {
     parentId: String
     description: String
   ): Location
+  removeLocation(_id: String!): Int
 }

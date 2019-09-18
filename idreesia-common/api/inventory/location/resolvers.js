@@ -1,4 +1,8 @@
-import { Locations } from 'meteor/idreesia-common/collections/inventory';
+import {
+  PurchaseForms,
+  IssuanceForms,
+  Locations,
+} from 'meteor/idreesia-common/collections/inventory';
 import {
   hasOnePermission,
   hasInstanceAccess,
@@ -12,6 +16,22 @@ export default {
         return Locations.findOne(location.parentId);
       }
       return null;
+    },
+    isInUse: location => {
+      // If this has any child locations then it is in use
+      const childCount = Locations.find({ parentId: location._id }).count();
+      if (childCount > 0) return true;
+      // Check if it is being used in any purchase/issuance forms
+      const purchaseFormCount = PurchaseForms.find({
+        locationId: location._id,
+      }).count();
+      if (purchaseFormCount > 0) return true;
+      const issuanceFormCount = IssuanceForms.find({
+        locationId: location._id,
+      }).count();
+      if (issuanceFormCount > 0) return true;
+
+      return false;
     },
   },
   Query: {
@@ -100,6 +120,28 @@ export default {
       });
 
       return Locations.findOne(_id);
+    },
+
+    removeLocation(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Inventory Setup Data in the System.'
+        );
+      }
+
+      const existingLocation = Locations.findOne(_id);
+      if (
+        !existingLocation ||
+        hasInstanceAccess(user._id, existingLocation.physicalStoreId) === false
+      ) {
+        throw new Error(
+          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
+        );
+      }
+
+      return Locations.remove(_id);
     },
   },
 };

@@ -72,6 +72,9 @@ extend type Mutation {
     city: String
     country: String
     bloodGroup: String
+    sharedResidenceId: String
+    educationalQualification: String
+    meansOfEarning: String
   ): KarkunType
 
   updateKarkun(
@@ -87,6 +90,9 @@ extend type Mutation {
     city: String
     country: String
     bloodGroup: String
+    sharedResidenceId: String
+    educationalQualification: String
+    meansOfEarning: String
   ): KarkunType
 
   deleteKarkun(_id: String!): Int

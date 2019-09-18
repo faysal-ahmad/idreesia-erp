@@ -66,7 +66,7 @@ class List extends Component {
       render: (text, record) => {
         const residents = record.residents || [];
         const residentsNodes = residents.map(resident => (
-          <KarkunName karkun={resident} />
+          <KarkunName key={resident._id} karkun={resident} />
         ));
         return <ul>{residentsNodes}</ul>;
       },

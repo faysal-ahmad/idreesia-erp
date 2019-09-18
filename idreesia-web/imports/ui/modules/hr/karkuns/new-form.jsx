@@ -1,12 +1,13 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, message } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from '/imports/ui/composers';
+import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputCnicField,
   InputMobileField,
@@ -14,8 +15,8 @@ import {
   SelectField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
+} from '/imports/ui/modules/helpers/fields';
+import { EhadDurationField } from '/imports/ui/modules/hr/common/fields';
 
 class NewForm extends Component {
   static propTypes = {
@@ -23,6 +24,8 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     createKarkun: PropTypes.func,
+    allSharedResidencesLoading: PropTypes.bool,
+    allSharedResidences: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -48,6 +51,9 @@ class NewForm extends Component {
           city,
           country,
           bloodGroup,
+          sharedResidenceId,
+          educationalQualification,
+          meansOfEarning,
         }
       ) => {
         if (err) return;
@@ -65,6 +71,9 @@ class NewForm extends Component {
             city,
             country,
             bloodGroup,
+            sharedResidenceId,
+            educationalQualification,
+            meansOfEarning,
           },
         })
           .then(({ data: { createKarkun: newKarkun } }) => {
@@ -78,7 +87,12 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const {
+      allSharedResidences,
+      allSharedResidencesLoading,
+      form: { getFieldDecorator },
+    } = this.props;
+    if (allSharedResidencesLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -129,14 +143,14 @@ class NewForm extends Component {
           fieldLabel="Blood Group"
           required={false}
           data={[
-            { label: "A-", value: "A-" },
-            { label: "A+", value: "A+" },
-            { label: "B-", value: "B-" },
-            { label: "B+", value: "B+" },
-            { label: "AB-", value: "AB-" },
-            { label: "AB+", value: "AB+" },
-            { label: "O-", value: "O-" },
-            { label: "O+", value: "O+" },
+            { label: 'A-', value: 'A-' },
+            { label: 'A+', value: 'A+' },
+            { label: 'B-', value: 'B-' },
+            { label: 'B+', value: 'B+' },
+            { label: 'AB-', value: 'AB-' },
+            { label: 'AB+', value: 'AB+' },
+            { label: 'O-', value: 'O-' },
+            { label: 'O+', value: 'O+' },
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
@@ -150,6 +164,16 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <SelectField
+          fieldName="sharedResidenceId"
+          fieldLabel="Shared Residence"
+          required={false}
+          data={allSharedResidences}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ address }) => address}
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <InputTextAreaField
           fieldName="address"
           fieldLabel="Address"
@@ -157,17 +181,29 @@ class NewForm extends Component {
           requiredMessage="Please input the address for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
-
         <InputTextField
           fieldName="city"
           fieldLabel="City"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
-
         <InputTextField
           fieldName="country"
           fieldLabel="Country"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="educationalQualification"
+          fieldLabel="Education"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="meansOfEarning"
+          fieldLabel="Means of Earning"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -190,6 +226,9 @@ const formMutation = gql`
     $city: String
     $country: String
     $bloodGroup: String
+    $sharedResidenceId: String
+    $educationalQualification: String
+    $meansOfEarning: String
   ) {
     createKarkun(
       firstName: $firstName
@@ -203,6 +242,9 @@ const formMutation = gql`
       city: $city
       country: $country
       bloodGroup: $bloodGroup
+      sharedResidenceId: $sharedResidenceId
+      educationalQualification: $educationalQualification
+      meansOfEarning: $meansOfEarning
     ) {
       _id
       firstName
@@ -216,6 +258,9 @@ const formMutation = gql`
       city
       country
       bloodGroup
+      sharedResidenceId
+      educationalQualification
+      meansOfEarning
     }
   }
 `;
@@ -223,10 +268,11 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createKarkun",
+    name: 'createKarkun',
     options: {
-      refetchQueries: ["pagedKarkuns"],
+      refetchQueries: ['pagedKarkuns'],
     },
   }),
-  WithBreadcrumbs(["HR", "Karkuns", "New"])
+  WithAllSharedResidences(),
+  WithBreadcrumbs(['HR', 'Karkuns', 'New'])
 )(NewForm);

@@ -19,6 +19,7 @@ type PagedSharedResidenceType {
 }
 
 extend type Query {
+  allSharedResidences: [SharedResidenceType]
   pagedSharedResidences(queryString: String): PagedSharedResidenceType
   sharedResidenceById(_id: String!): SharedResidenceType
 }

@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { Form, message } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import moment from "moment";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
+import moment from 'moment';
 
 import {
   InputCnicField,
@@ -13,9 +13,10 @@ import {
   SelectField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
+import { EhadDurationField } from '/imports/ui/modules/hr/common/fields';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -24,9 +25,11 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    loading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
+    allSharedResidencesLoading: PropTypes.bool,
+    allSharedResidences: PropTypes.array,
     updateKarkun: PropTypes.func,
   };
 
@@ -53,6 +56,9 @@ class GeneralInfo extends Component {
           city,
           country,
           bloodGroup,
+          sharedResidenceId,
+          educationalQualification,
+          meansOfEarning,
         }
       ) => {
         if (err) return;
@@ -71,6 +77,9 @@ class GeneralInfo extends Component {
             city,
             country,
             bloodGroup,
+            sharedResidenceId,
+            educationalQualification,
+            meansOfEarning,
           },
         })
           .then(() => {
@@ -84,9 +93,14 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { loading, karkunById } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    if (loading) return null;
+    const {
+      formDataLoading,
+      karkunById,
+      allSharedResidencesLoading,
+      allSharedResidences,
+      form: { getFieldDecorator },
+    } = this.props;
+    if (formDataLoading || allSharedResidencesLoading) return null;
 
     return (
       <Fragment>
@@ -123,14 +137,14 @@ class GeneralInfo extends Component {
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={karkunById.cnicNumber || ""}
+            initialValue={karkunById.cnicNumber || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={karkunById.contactNumber1 || ""}
+            initialValue={karkunById.contactNumber1 || ''}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -148,14 +162,14 @@ class GeneralInfo extends Component {
             fieldLabel="Blood Group"
             required={false}
             data={[
-              { label: "A-", value: "A-" },
-              { label: "A+", value: "A+" },
-              { label: "B-", value: "B-" },
-              { label: "B+", value: "B+" },
-              { label: "AB-", value: "AB-" },
-              { label: "AB+", value: "AB+" },
-              { label: "O-", value: "O-" },
-              { label: "O+", value: "O+" },
+              { label: 'A-', value: 'A-' },
+              { label: 'A+', value: 'A+' },
+              { label: 'B-', value: 'B-' },
+              { label: 'B+', value: 'B+' },
+              { label: 'AB-', value: 'AB-' },
+              { label: 'AB+', value: 'AB+' },
+              { label: 'O-', value: 'O-' },
+              { label: 'O+', value: 'O+' },
             ]}
             getDataValue={({ value }) => value}
             getDataText={({ label }) => label}
@@ -168,6 +182,17 @@ class GeneralInfo extends Component {
             fieldLabel="Email"
             initialValue={karkunById.emailAddress}
             required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <SelectField
+            fieldName="sharedResidenceId"
+            fieldLabel="Shared Residence"
+            required={false}
+            initialValue={karkunById.sharedResidenceId}
+            data={allSharedResidences}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ address }) => address}
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -217,6 +242,10 @@ const formQuery = gql`
       address
       city
       country
+      bloodGroup
+      sharedResidenceId
+      educationalQualification
+      meansOfEarning
       createdAt
       createdBy
       updatedAt
@@ -239,6 +268,9 @@ const formMutation = gql`
     $city: String
     $country: String
     $bloodGroup: String
+    $sharedResidenceId: String
+    $educationalQualification: String
+    $meansOfEarning: String
   ) {
     updateKarkun(
       _id: $_id
@@ -253,6 +285,9 @@ const formMutation = gql`
       city: $city
       country: $country
       bloodGroup: $bloodGroup
+      sharedResidenceId: $sharedResidenceId
+      educationalQualification: $educationalQualification
+      meansOfEarning: $meansOfEarning
     ) {
       _id
       firstName
@@ -266,6 +301,9 @@ const formMutation = gql`
       city
       country
       bloodGroup
+      sharedResidenceId
+      educationalQualification
+      meansOfEarning
       createdAt
       createdBy
       updatedAt
@@ -277,16 +315,17 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateKarkun",
+    name: 'updateKarkun',
     options: {
-      refetchQueries: ["pagedKarkuns"],
+      refetchQueries: ['pagedKarkuns'],
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
     },
-  })
+  }),
+  WithAllSharedResidences()
 )(GeneralInfo);

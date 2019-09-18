@@ -26,6 +26,9 @@ export default {
   },
 
   Query: {
+    allSharedResidences() {
+      return SharedResidences.find({}).fetch();
+    },
     pagedSharedResidences(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [

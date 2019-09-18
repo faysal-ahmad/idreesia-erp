@@ -129,6 +129,9 @@ export default {
         city,
         country,
         bloodGroup,
+        sharedResidenceId,
+        educationalQualification,
+        meansOfEarning,
       },
       { user }
     ) {
@@ -164,6 +167,9 @@ export default {
         city,
         country,
         bloodGroup,
+        sharedResidenceId,
+        educationalQualification,
+        meansOfEarning,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -188,6 +194,9 @@ export default {
         city,
         country,
         bloodGroup,
+        sharedResidenceId,
+        educationalQualification,
+        meansOfEarning,
       },
       { user }
     ) {
@@ -224,6 +233,9 @@ export default {
           city,
           country,
           bloodGroup,
+          sharedResidenceId,
+          educationalQualification,
+          meansOfEarning,
           updatedAt: date,
           updatedBy: user._id,
         },

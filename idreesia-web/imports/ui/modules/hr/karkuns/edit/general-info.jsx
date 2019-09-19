@@ -74,8 +74,8 @@ class GeneralInfo extends Component {
             emailAddress,
             currentAddress,
             permanentAddress,
-            bloodGroup,
-            sharedResidenceId,
+            bloodGroup: bloodGroup || null,
+            sharedResidenceId: sharedResidenceId || null,
             educationalQualification,
             meansOfEarning,
             ehadDate,
@@ -330,7 +330,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'updateKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns'],
+      refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
     },
   }),
   graphql(formQuery, {

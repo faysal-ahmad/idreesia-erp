@@ -269,7 +269,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'createKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns'],
+      refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
     },
   }),
   WithAllSharedResidences(),

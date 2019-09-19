@@ -271,7 +271,7 @@ const formMutation = gql`
   mutation updateKarkun(
     $_id: String!
     $name: String!
-    $parentName: String!
+    $parentName: String
     $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String

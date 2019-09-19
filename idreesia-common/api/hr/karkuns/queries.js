@@ -85,7 +85,7 @@ function getKarkunsByFilter(params) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { firstName: 1 } },
+    { $sort: { name: 1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
@@ -166,7 +166,7 @@ function getKarkunsByPredefinedFilter(params) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { firstName: 1 } },
+    { $sort: { name: 1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
@@ -197,7 +197,7 @@ export function getKarkunsByDutyId(dutyId) {
       },
     },
     { $unwind: '$karkun' },
-    { $sort: { 'karkun.firstName': 1 } },
+    { $sort: { 'karkun.name': 1 } },
   ];
 
   return KarkunDuties.aggregate(pipeline)

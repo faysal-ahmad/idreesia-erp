@@ -98,7 +98,7 @@ export default {
         });
 
         if (karkun) {
-          names.push(`${karkun.firstName} ${karkun.lastName}`);
+          names.push(karkun.name);
         } else {
           const user = Meteor.users.findOne(id);
           if (user.username === 'erp-admin') {
@@ -148,7 +148,7 @@ export default {
         });
         if (existingKarkun) {
           throw new Error(
-            `This CNIC number is already set for ${existingKarkun.firstName} ${existingKarkun.lastName}.`
+            `This CNIC number is already set for ${existingKarkun.name}.`
           );
         }
       }
@@ -213,7 +213,7 @@ export default {
         });
         if (existingKarkun && existingKarkun._id !== _id) {
           throw new Error(
-            `This CNIC number is already set for ${existingKarkun.firstName} ${existingKarkun.lastName}.`
+            `This CNIC number is already set for ${existingKarkun.name}.`
           );
         }
       }

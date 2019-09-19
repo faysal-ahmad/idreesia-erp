@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, message } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -33,16 +33,15 @@ class GeneralInfo extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, karkunById, updateKarkun } = this.props;
-    form.validateFields((err, { firstName, lastName, cnicNumber, address }) => {
+    form.validateFields((err, { name, cnicNumber, currentAddress }) => {
       if (err) return;
 
       updateKarkun({
         variables: {
           _id: karkunById._id,
-          firstName,
-          lastName,
+          name,
           cnicNumber,
-          address,
+          currentAddress,
         },
       })
         .then(() => {
@@ -62,20 +61,11 @@ class GeneralInfo extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
-          fieldName="firstName"
-          fieldLabel="First Name"
-          initialValue={karkunById.firstName}
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={karkunById.name}
           required
-          requiredMessage="Please input the first name for the karkun."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="lastName"
-          fieldLabel="Last Name"
-          initialValue={karkunById.lastName}
-          required
-          requiredMessage="Please input the last name for the karkun."
+          requiredMessage="Please input the name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -105,11 +95,10 @@ class GeneralInfo extends Component {
         />
 
         <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          initialValue={karkunById.address}
+          fieldName="currentAddress"
+          fieldLabel="Current Address"
+          initialValue={karkunById.currentAddress}
           required={false}
-          requiredMessage="Please input the address for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -123,10 +112,9 @@ const formQuery = gql`
   query karkunById($_id: String!) {
     karkunById(_id: $_id) {
       _id
-      firstName
-      lastName
+      name
       cnicNumber
-      address
+      currentAddress
     }
   }
 `;
@@ -134,23 +122,20 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateKarkun(
     $_id: String!
-    $firstName: String!
-    $lastName: String!
+    $name: String!
     $cnicNumber: String!
-    $address: String
+    $currentAddress: String
   ) {
     updateKarkun(
       _id: $_id
-      firstName: $firstName
-      lastName: $lastName
+      name: $name
       cnicNumber: $cnicNumber
-      address: $address
+      currentAddress: $currentAddress
     ) {
       _id
-      firstName
-      lastName
+      name
       cnicNumber
-      address
+      currentAddress
     }
   }
 `;
@@ -158,9 +143,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateKarkun",
+    name: 'updateKarkun',
     options: {
-      refetchQueries: ["pagedKarkuns"],
+      refetchQueries: ['pagedKarkuns'],
     },
   }),
   graphql(formQuery, {

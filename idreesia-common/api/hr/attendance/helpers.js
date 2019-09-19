@@ -1,19 +1,19 @@
-import { Random } from "meteor/random";
-import csv from "csvtojson";
-import moment from "moment";
-import { toInteger, round } from "lodash";
+import { Random } from 'meteor/random';
+import csv from 'csvtojson';
+import moment from 'moment';
+import { toInteger, round } from 'lodash';
 
-import { Attendances, Karkuns } from "meteor/idreesia-common/collections/hr";
-import { Formats } from "meteor/idreesia-common/constants";
+import { Attendances, Karkuns } from 'meteor/idreesia-common/collections/hr';
+import { Formats } from 'meteor/idreesia-common/constants';
 
-const ID_COLUMN = "System ID";
-const CNIC_COLUMN = "CNIC";
-const NAME_COLUMN = "Name";
-const PHONE_COLUMN = "Phone No.";
-const BLOOD_GROUP_COLUMN = "Blood Group";
-const PRESENT_COLUMN = "P";
-const ABSENT_COLUMN = "A";
-const TOTAL_COLUMN = "Day";
+const ID_COLUMN = 'System ID';
+const CNIC_COLUMN = 'CNIC';
+const NAME_COLUMN = 'Name';
+const PHONE_COLUMN = 'Phone No.';
+const BLOOD_GROUP_COLUMN = 'Blood Group';
+const PRESENT_COLUMN = 'P';
+const ABSENT_COLUMN = 'A';
+const TOTAL_COLUMN = 'Day';
 
 function createKarkun(
   karkunCnic,
@@ -23,12 +23,11 @@ function createKarkun(
   date,
   user
 ) {
-  const names = karkunName.split(" ");
+  const names = karkunName.split(' ');
   if (names.length < 1) return null;
 
   const karkunId = Karkuns.insert({
-    firstName: names[0].trim(),
-    lastName: names[1] ? names[1].trim() : "",
+    name: karkunName.trim(),
     cnicNumber: karkunCnic,
     contactNumber1: phoneNumber,
     bloodGroup,
@@ -81,8 +80,8 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user) {
     if (!karkun) return;
 
     const formattedMonth = moment(month, Formats.DATE_FORMAT)
-      .startOf("month")
-      .format("MM-YYYY");
+      .startOf('month')
+      .format('MM-YYYY');
 
     // If there is already an attendance present for this karkun/month/duty/shift combination
     // then update that, otherwise insert a new one.
@@ -102,7 +101,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user) {
         totalCount: numTotalCount,
         absentCount: numAbsentCount,
         presentCount: numPresentCount,
-        percentage: round(numPresentCount / numTotalCount * 100),
+        percentage: round((numPresentCount / numTotalCount) * 100),
         meetingCardBarcodeId: Random.id(8),
       });
     } else {
@@ -116,7 +115,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user) {
           totalCount: numTotalCount,
           absentCount: numAbsentCount,
           presentCount: numPresentCount,
-          percentage: round(numPresentCount / numTotalCount * 100),
+          percentage: round((numPresentCount / numTotalCount) * 100),
           meetingCardBarcodeId,
         },
       });
@@ -135,9 +134,9 @@ export function processAttendanceSheet(
   date,
   user
 ) {
-  const lines = csvData.split("\n");
+  const lines = csvData.split('\n');
   lines.splice(0, 1);
-  const updatedCsvData = lines.join("\n");
+  const updatedCsvData = lines.join('\n');
 
   return csv()
     .fromString(updatedCsvData)

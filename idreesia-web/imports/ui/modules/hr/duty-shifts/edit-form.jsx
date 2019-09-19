@@ -1,21 +1,21 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { Form, message } from "antd";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from '/imports/ui/composers';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   TimeField,
   SelectField,
   InputTextField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { WithAllDuties } from '/imports/ui/modules/hr/common/composers';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 class EditForm extends Component {
   static propTypes = {
@@ -86,6 +86,7 @@ class EditForm extends Component {
             data={allDuties}
             getDataValue={({ _id }) => _id}
             getDataText={({ name }) => name}
+            initialValue={dutyShiftById.dutyId}
             fieldName="dutyId"
             fieldLabel="Duty Name"
             required
@@ -164,9 +165,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateDutyShift",
+    name: 'updateDutyShift',
     options: {
-      refetchQueries: ["allDutyShifts"],
+      refetchQueries: ['allDutyShifts'],
     },
   }),
   graphql(formQuery, {
@@ -177,5 +178,5 @@ export default flowRight(
     },
   }),
   WithAllDuties(),
-  WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "Edit"])
+  WithBreadcrumbs(['HR', 'Setup', 'Duty Shifts', 'Edit'])
 )(EditForm);

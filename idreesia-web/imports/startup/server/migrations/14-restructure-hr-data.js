@@ -16,7 +16,7 @@ Migrations.add({
     karkuns.forEach(karkun => {
       Karkuns.update(karkun._id, {
         $set: {
-          name: `${karkun.firstName} ${karkun.lastName}`,
+          name: `${karkun.firstName || ''} ${karkun.lastName || ''}`,
           permanentAddress: karkun.address,
         },
         $unset: {

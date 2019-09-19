@@ -253,8 +253,6 @@ const listQuery = gql`
       karkuns {
         _id
         name
-        firstName
-        lastName
         cnicNumber
         contactNumber1
         contactNumber2

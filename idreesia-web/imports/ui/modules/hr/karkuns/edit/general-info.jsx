@@ -213,9 +213,17 @@ class GeneralInfo extends Component {
           />
 
           <InputTextField
-            fieldName="country"
-            fieldLabel="Country"
-            initialValue={karkunById.country}
+            fieldName="educationalQualification"
+            fieldLabel="Education"
+            initialValue={karkunById.educationalQualification}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <InputTextAreaField
+            fieldName="meansOfEarning"
+            fieldLabel="Means of Earning"
+            initialValue={karkunById.meansOfEarning}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />

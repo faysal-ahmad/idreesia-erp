@@ -1,37 +1,32 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Form } from "antd";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Form } from 'antd';
 
-import { SelectField, WeekDaysField } from "/imports/ui/modules/helpers/fields";
-
-import allDutyRoles from "../../all-duty_roles";
+import {
+  CascaderField,
+  SelectField,
+  WeekDaysField,
+} from '/imports/ui/modules/helpers/fields';
+import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
+import allDutyRoles from '../../all-duty_roles';
 
 const DutyForm = props => {
   const { getFieldDecorator } = props.form;
   const { defaultValues, allDuties, allDutyShifts, allDutyLocations } = props;
+  const dutyShiftCascaderData = getDutyShiftCascaderData(
+    allDuties,
+    allDutyShifts
+  );
 
   return (
     <Form layout="horizontal">
-      <SelectField
-        data={allDuties}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
-        fieldName="dutyId"
-        fieldLabel="Duty Name"
+      <CascaderField
+        data={dutyShiftCascaderData}
+        fieldName="dutyIdShiftId"
+        fieldLabel="Duty/Shift"
+        initialValue={[defaultValues.dutyId, defaultValues.shiftId]}
         required
-        requiredMessage="Please select a duty from the list."
-        initialValue={defaultValues.dutyId}
-        getFieldDecorator={getFieldDecorator}
-      />
-
-      <SelectField
-        data={allDutyShifts}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
-        fieldName="shiftId"
-        fieldLabel="Shift Name"
-        required={false}
-        initialValue={defaultValues.shiftId}
+        requiredMessage="Please select a duty/shift from the list."
         getFieldDecorator={getFieldDecorator}
       />
 

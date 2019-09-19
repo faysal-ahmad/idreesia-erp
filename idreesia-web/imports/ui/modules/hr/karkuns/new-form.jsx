@@ -187,12 +187,6 @@ class NewForm extends Component {
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
-          fieldName="country"
-          fieldLabel="Country"
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
 
         <InputTextField
           fieldName="educationalQualification"
@@ -201,7 +195,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
+        <InputTextAreaField
           fieldName="meansOfEarning"
           fieldLabel="Means of Earning"
           required={false}

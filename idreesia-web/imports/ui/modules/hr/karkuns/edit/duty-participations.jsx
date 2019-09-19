@@ -1,6 +1,6 @@
 /* eslint "no-script-url": "off" */
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Divider,
@@ -10,20 +10,20 @@ import {
   Modal,
   Popconfirm,
   message,
-} from "antd";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+} from 'antd';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
 import {
   WithAllDuties,
   WithAllDutyShifts,
   WithAllDutyLocations,
-} from "/imports/ui/modules/hr/common/composers";
-import DutyForm from "./duty-form";
+} from '/imports/ui/modules/hr/common/composers';
+import DutyForm from './duty-form';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -54,9 +54,9 @@ class DutyParticipation extends Component {
 
   columns = [
     {
-      title: "Duty Name",
-      dataIndex: "dutyName",
-      key: "dutyName",
+      title: 'Duty Name',
+      dataIndex: 'dutyName',
+      key: 'dutyName',
       render: (text, record) => {
         if (record.role) {
           return `${text} (${record.role})`;
@@ -65,23 +65,23 @@ class DutyParticipation extends Component {
       },
     },
     {
-      title: "Location Name",
-      dataIndex: "locationName",
-      key: "locationName",
+      title: 'Location Name',
+      dataIndex: 'locationName',
+      key: 'locationName',
     },
     {
-      title: "Shift Name",
-      dataIndex: "shiftName",
-      key: "shiftName",
+      title: 'Shift Name',
+      dataIndex: 'shiftName',
+      key: 'shiftName',
     },
     {
-      title: "Days of Week",
-      dataIndex: "daysOfWeek",
-      key: "daysOfWeek",
+      title: 'Days of Week',
+      dataIndex: 'daysOfWeek',
+      key: 'daysOfWeek',
       render: textArray => (textArray ? textArray.join() : null),
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => (
         <span>
           <Tooltip title="Edit">
@@ -140,46 +140,52 @@ class DutyParticipation extends Component {
 
   handleNewDutyFormSaved = () => {
     const { karkunId, createKarkunDuty } = this.props;
-    this.newDutyForm.validateFields(null, (errors, values) => {
-      if (!errors) {
-        this.setState({ showNewForm: false });
-        createKarkunDuty({
-          variables: {
-            karkunId,
-            dutyId: values.dutyId,
-            shiftId: values.shiftId,
-            locationId: values.locationId,
-            role: values.role,
-            daysOfWeek: values.weekDays,
-          },
-        }).catch(error => {
-          message.error(error.message, 5);
-        });
+    this.newDutyForm.validateFields(
+      null,
+      (errors, { dutyIdShiftId, locationId, role, weekDays }) => {
+        if (!errors) {
+          this.setState({ showNewForm: false });
+          createKarkunDuty({
+            variables: {
+              karkunId,
+              dutyId: dutyIdShiftId[0],
+              shiftId: dutyIdShiftId[1],
+              locationId,
+              role,
+              daysOfWeek: weekDays,
+            },
+          }).catch(error => {
+            message.error(error.message, 5);
+          });
+        }
       }
-    });
+    );
   };
 
   handleEditDutyFormSaved = () => {
     const { _id } = this.state.defaultValues;
     const { karkunId, updateKarkunDuty } = this.props;
-    this.editDutyForm.validateFields(null, (errors, values) => {
-      if (!errors) {
-        this.setState({ showEditForm: false });
-        updateKarkunDuty({
-          variables: {
-            _id,
-            karkunId,
-            dutyId: values.dutyId,
-            shiftId: values.shiftId,
-            locationId: values.locationId,
-            role: values.role,
-            daysOfWeek: values.weekDays,
-          },
-        }).catch(error => {
-          message.error(error.message, 5);
-        });
+    this.editDutyForm.validateFields(
+      null,
+      (errors, { dutyIdShiftId, locationId, role, weekDays }) => {
+        if (!errors) {
+          this.setState({ showEditForm: false });
+          updateKarkunDuty({
+            variables: {
+              _id,
+              karkunId,
+              dutyId: dutyIdShiftId[0],
+              shiftId: dutyIdShiftId[1],
+              locationId,
+              role,
+              daysOfWeek: weekDays,
+            },
+          }).catch(error => {
+            message.error(error.message, 5);
+          });
+        }
       }
-    });
+    );
   };
 
   render() {
@@ -346,21 +352,21 @@ export default flowRight(
     },
   }),
   graphql(createKarkunDutyMutation, {
-    name: "createKarkunDuty",
+    name: 'createKarkunDuty',
     options: {
-      refetchQueries: ["karkunDutiesByKarkunId"],
+      refetchQueries: ['karkunDutiesByKarkunId'],
     },
   }),
   graphql(updateKarkunDutyMutation, {
-    name: "updateKarkunDuty",
+    name: 'updateKarkunDuty',
     options: {
-      refetchQueries: ["karkunDutiesByKarkunId"],
+      refetchQueries: ['karkunDutiesByKarkunId'],
     },
   }),
   graphql(removeKarkunDutyMutation, {
-    name: "removeKarkunDuty",
+    name: 'removeKarkunDuty',
     options: {
-      refetchQueries: ["pagedKarkuns", "karkunDutiesByKarkunId", "allDuties"],
+      refetchQueries: ['pagedKarkuns', 'karkunDutiesByKarkunId', 'allDuties'],
     },
   }),
   WithAllDuties(),

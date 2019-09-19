@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { filter, flowRight } from 'lodash';
+import { flowRight } from 'lodash';
 
 import {
   InputCnicField,
@@ -11,6 +11,7 @@ import {
   CascaderField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
+import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 const ContainerStyle = {
   width: '500px',
@@ -92,28 +93,6 @@ class ListFilter extends Component {
     );
   };
 
-  getDutyShiftCascaderData() {
-    const { allDuties, allDutyShifts } = this.props;
-    const data = allDuties.map(duty => {
-      const dutyShifts = filter(
-        allDutyShifts,
-        dutyShift => dutyShift.dutyId === duty._id
-      );
-      const dataItem = {
-        value: duty._id,
-        label: duty.name,
-        children: dutyShifts.map(dutyShift => ({
-          value: dutyShift._id,
-          label: dutyShift.name,
-        })),
-      };
-
-      return dataItem;
-    });
-
-    return data;
-  }
-
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
@@ -128,7 +107,10 @@ class ListFilter extends Component {
     } = this.props;
     if (!allDuties || !allDutyShifts) return null;
 
-    const dutyShiftCascaderData = this.getDutyShiftCascaderData();
+    const dutyShiftCascaderData = getDutyShiftCascaderData(
+      allDuties,
+      allDutyShifts
+    );
 
     return (
       <Collapse style={ContainerStyle}>

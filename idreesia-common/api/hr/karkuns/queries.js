@@ -18,6 +18,7 @@ function getKarkunsByFilter(params) {
     phoneNumber,
     bloodGroup,
     dutyId,
+    shiftId,
     pageIndex = '0',
     pageSize = '20',
   } = params;
@@ -76,6 +77,18 @@ function getKarkunsByFilter(params) {
         },
       },
     });
+
+    if (shiftId) {
+      pipeline.push({
+        $match: {
+          duties: {
+            $elemMatch: {
+              shiftId: { $eq: shiftId },
+            },
+          },
+        },
+      });
+    }
   }
 
   const countingPipeline = pipeline.concat({

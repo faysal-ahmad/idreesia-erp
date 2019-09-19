@@ -13,7 +13,6 @@ import { getKarkuns, getKarkunsByDutyId } from './queries';
 
 export default {
   KarkunType: {
-    name: karkunType => `${karkunType.firstName} ${karkunType.lastName || ''}`,
     user: karkunType => {
       if (!karkunType.userId) return null;
       return Meteor.users.findOne(karkunType.userId);
@@ -118,20 +117,20 @@ export default {
     createKarkun(
       obj,
       {
-        firstName,
-        lastName,
-        ehadDate,
+        name,
+        parentName,
         cnicNumber,
         contactNumber1,
         contactNumber2,
         emailAddress,
-        address,
-        city,
-        country,
+        currentAddress,
+        permanentAddress,
         bloodGroup,
         sharedResidenceId,
         educationalQualification,
         meansOfEarning,
+        ehadDate,
+        referenceName,
       },
       { user }
     ) {
@@ -156,20 +155,20 @@ export default {
 
       const date = new Date();
       const karkunId = Karkuns.insert({
-        firstName,
-        lastName,
-        ehadDate,
+        name,
+        parentName,
         cnicNumber,
         contactNumber1,
         contactNumber2,
         emailAddress,
-        address,
-        city,
-        country,
+        currentAddress,
+        permanentAddress,
         bloodGroup,
         sharedResidenceId,
         educationalQualification,
         meansOfEarning,
+        ehadDate,
+        referenceName,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -183,20 +182,20 @@ export default {
       obj,
       {
         _id,
-        firstName,
-        lastName,
-        ehadDate,
+        name,
+        parentName,
         cnicNumber,
         contactNumber1,
         contactNumber2,
         emailAddress,
-        address,
-        city,
-        country,
+        currentAddress,
+        permanentAddress,
         bloodGroup,
         sharedResidenceId,
         educationalQualification,
         meansOfEarning,
+        ehadDate,
+        referenceName,
       },
       { user }
     ) {
@@ -222,20 +221,20 @@ export default {
       const date = new Date();
       Karkuns.update(_id, {
         $set: {
-          firstName,
-          lastName,
-          ehadDate,
+          name,
+          parentName,
           cnicNumber,
           contactNumber1,
           contactNumber2,
           emailAddress,
-          address,
-          city,
-          country,
+          currentAddress,
+          permanentAddress,
           bloodGroup,
           sharedResidenceId,
           educationalQualification,
           meansOfEarning,
+          ehadDate,
+          referenceName,
           updatedAt: date,
           updatedBy: user._id,
         },

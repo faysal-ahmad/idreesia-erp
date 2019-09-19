@@ -40,40 +40,40 @@ class NewForm extends Component {
       (
         err,
         {
-          firstName,
-          lastName,
-          ehadDate,
+          name,
+          parentName,
           cnicNumber,
           contactNumber1,
           contactNumber2,
           emailAddress,
-          address,
-          city,
-          country,
+          currentAddress,
+          permanentAddress,
           bloodGroup,
           sharedResidenceId,
           educationalQualification,
           meansOfEarning,
+          ehadDate,
+          referenceName,
         }
       ) => {
         if (err) return;
 
         createKarkun({
           variables: {
-            firstName,
-            lastName,
-            ehadDate,
+            name,
+            parentName,
             cnicNumber,
             contactNumber1,
             contactNumber2,
             emailAddress,
-            address,
-            city,
-            country,
+            currentAddress,
+            permanentAddress,
             bloodGroup,
             sharedResidenceId,
             educationalQualification,
             meansOfEarning,
+            ehadDate,
+            referenceName,
           },
         })
           .then(({ data: { createKarkun: newKarkun } }) => {
@@ -97,24 +97,30 @@ class NewForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
-          fieldName="firstName"
-          fieldLabel="First Name"
+          fieldName="name"
+          fieldLabel="Name"
           required
-          requiredMessage="Please input the first name for the karkun."
+          requiredMessage="Please input the name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="lastName"
-          fieldLabel="Last Name"
+          fieldName="parentName"
+          fieldLabel="S/O"
           required
-          requiredMessage="Please input the last name for the karkun."
+          requiredMessage="Please input the parent name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
         <EhadDurationField
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="referenceName"
+          fieldLabel="R/O"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -175,15 +181,14 @@ class NewForm extends Component {
         />
 
         <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
+          fieldName="currentAddress"
+          fieldLabel="Current Address"
           required={false}
-          requiredMessage="Please input the address for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextField
-          fieldName="city"
-          fieldLabel="City"
+        <InputTextAreaField
+          fieldName="permanentAddress"
+          fieldLabel="Permanent Address"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -209,52 +214,52 @@ class NewForm extends Component {
 
 const formMutation = gql`
   mutation createKarkun(
-    $firstName: String!
-    $lastName: String!
-    $ehadDate: String
+    $name: String!
+    $parentName: String!
     $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
     $emailAddress: String
-    $address: String
-    $city: String
-    $country: String
+    $currentAddress: String
+    $permanentAddress: String
     $bloodGroup: String
     $sharedResidenceId: String
     $educationalQualification: String
     $meansOfEarning: String
+    $ehadDate: String
+    $referenceName: String
   ) {
     createKarkun(
-      firstName: $firstName
-      lastName: $lastName
-      ehadDate: $ehadDate
+      name: $name
+      parentName: $parentName
       cnicNumber: $cnicNumber
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
       emailAddress: $emailAddress
-      address: $address
-      city: $city
-      country: $country
+      currentAddress: $currentAddress
+      permanentAddress: $permanentAddress
       bloodGroup: $bloodGroup
       sharedResidenceId: $sharedResidenceId
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
+      ehadDate: $ehadDate
+      referenceName: $referenceName
     ) {
       _id
-      firstName
-      lastName
-      ehadDate
+      name
+      parentName
       cnicNumber
       contactNumber1
       contactNumber2
       emailAddress
-      address
-      city
-      country
+      currentAddress
+      permanentAddress
       bloodGroup
       sharedResidenceId
       educationalQualification
       meansOfEarning
+      ehadDate
+      referenceName
     }
   }
 `;

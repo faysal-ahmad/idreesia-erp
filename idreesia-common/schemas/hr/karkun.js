@@ -8,30 +8,22 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  firstName: {
+  name: {
     type: String,
   },
-  lastName: {
+  parentName: {
     type: String,
-    optional: true,
-  },
-  ehadDate: {
-    type: Date,
     optional: true,
   },
   cnicNumber: {
     type: String,
     optional: true,
   },
-  address: {
+  currentAddress: {
     type: String,
     optional: true,
   },
-  city: {
-    type: String,
-    optional: true,
-  },
-  country: {
+  permanentAddress: {
     type: String,
     optional: true,
   },
@@ -61,6 +53,14 @@ export default new SimpleSchema({
     optional: true,
   },
   meansOfEarning: {
+    type: String,
+    optional: true,
+  },
+  ehadDate: {
+    type: Date,
+    optional: true,
+  },
+  referenceName: {
     type: String,
     optional: true,
   },

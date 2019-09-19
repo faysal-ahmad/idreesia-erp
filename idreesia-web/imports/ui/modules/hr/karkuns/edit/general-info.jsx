@@ -45,20 +45,20 @@ class GeneralInfo extends Component {
       (
         err,
         {
-          firstName,
-          lastName,
-          ehadDate,
+          name,
+          parentName,
           cnicNumber,
           contactNumber1,
           contactNumber2,
           emailAddress,
-          address,
-          city,
-          country,
+          currentAddress,
+          permanentAddress,
           bloodGroup,
           sharedResidenceId,
           educationalQualification,
           meansOfEarning,
+          ehadDate,
+          referenceName,
         }
       ) => {
         if (err) return;
@@ -66,20 +66,20 @@ class GeneralInfo extends Component {
         updateKarkun({
           variables: {
             _id: karkunById._id,
-            firstName,
-            lastName,
-            ehadDate,
+            name,
+            parentName,
             cnicNumber,
             contactNumber1,
             contactNumber2,
             emailAddress,
-            address,
-            city,
-            country,
+            currentAddress,
+            permanentAddress,
             bloodGroup,
             sharedResidenceId,
             educationalQualification,
             meansOfEarning,
+            ehadDate,
+            referenceName,
           },
         })
           .then(() => {
@@ -106,20 +106,18 @@ class GeneralInfo extends Component {
       <Fragment>
         <Form layout="horizontal" onSubmit={this.handleSubmit}>
           <InputTextField
-            fieldName="firstName"
-            fieldLabel="First Name"
-            initialValue={karkunById.firstName}
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={karkunById.name}
             required
-            requiredMessage="Please input the first name for the karkun."
+            requiredMessage="Please input the name for the karkun."
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
-            fieldName="lastName"
-            fieldLabel="Last Name"
-            initialValue={karkunById.lastName}
-            required
-            requiredMessage="Please input the last name for the karkun."
+            fieldName="parentName"
+            fieldLabel="S/O"
+            initialValue={karkunById.parentName}
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -131,6 +129,13 @@ class GeneralInfo extends Component {
                 ? moment(Number(karkunById.ehadDate))
                 : moment()
             }
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <InputTextField
+            fieldName="referenceName"
+            fieldLabel="R/O"
+            initialValue={karkunById.referenceName}
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -197,17 +202,17 @@ class GeneralInfo extends Component {
           />
 
           <InputTextAreaField
-            fieldName="address"
-            fieldLabel="Address"
-            initialValue={karkunById.address}
+            fieldName="currentAddress"
+            fieldLabel="Current Address"
+            initialValue={karkunById.currentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
 
-          <InputTextField
-            fieldName="city"
-            fieldLabel="City"
-            initialValue={karkunById.city}
+          <InputTextAreaField
+            fieldName="permanentAddress"
+            fieldLabel="Permanent Address"
+            initialValue={karkunById.permanentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -240,20 +245,20 @@ const formQuery = gql`
   query karkunById($_id: String!) {
     karkunById(_id: $_id) {
       _id
-      firstName
-      lastName
-      ehadDate
+      name
+      parentName
       cnicNumber
       contactNumber1
       contactNumber2
       emailAddress
-      address
-      city
-      country
+      currentAddress
+      permanentAddress
       bloodGroup
       sharedResidenceId
       educationalQualification
       meansOfEarning
+      ehadDate
+      referenceName
       createdAt
       createdBy
       updatedAt
@@ -265,53 +270,53 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateKarkun(
     $_id: String!
-    $firstName: String!
-    $lastName: String!
-    $ehadDate: String
+    $name: String!
+    $parentName: String!
     $cnicNumber: String
     $contactNumber1: String
     $contactNumber2: String
     $emailAddress: String
-    $address: String
-    $city: String
-    $country: String
+    $currentAddress: String
+    $permanentAddress: String
     $bloodGroup: String
     $sharedResidenceId: String
     $educationalQualification: String
     $meansOfEarning: String
+    $ehadDate: String
+    $referenceName: String
   ) {
     updateKarkun(
       _id: $_id
-      firstName: $firstName
-      lastName: $lastName
-      ehadDate: $ehadDate
+      name: $name
+      parentName: $parentName
       cnicNumber: $cnicNumber
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
       emailAddress: $emailAddress
-      address: $address
-      city: $city
-      country: $country
+      currentAddress: $currentAddress
+      permanentAddress: $permanentAddress
       bloodGroup: $bloodGroup
       sharedResidenceId: $sharedResidenceId
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
+      ehadDate: $ehadDate
+      referenceName: $referenceName
     ) {
       _id
-      firstName
-      lastName
-      ehadDate
+      name
+      parentName
       cnicNumber
       contactNumber1
       contactNumber2
       emailAddress
-      address
-      city
-      country
+      currentAddress
+      permanentAddress
       bloodGroup
       sharedResidenceId
       educationalQualification
       meansOfEarning
+      ehadDate
+      referenceName
       createdAt
       createdBy
       updatedAt

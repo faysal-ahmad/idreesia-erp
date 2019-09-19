@@ -8,20 +8,19 @@ type UserType {
 type KarkunType {
   _id: String
   name: String
-  firstName: String
-  lastName: String
-  ehadDate: String
+  parentName: String
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
   emailAddress: String
-  address: String
-  city: String
-  country: String
+  currentAddress: String
+  permanentAddress: String
   bloodGroup: String
   sharedResidenceId: String
   educationalQualification: String
   meansOfEarning: String
+  ehadDate: String
+  referenceName: String
   imageId: String
   userId: String
   attachmentIds: [String]
@@ -61,38 +60,38 @@ extend type Query {
 
 extend type Mutation {
   createKarkun(
-    firstName: String!
-    lastName: String!
-    ehadDate: String
+    name: String!
+    parentName: String
     cnicNumber: String
     contactNumber1: String
     contactNumber2: String
     emailAddress: String
-    address: String
-    city: String
-    country: String
+    currentAddress: String
+    permanentAddress: String
     bloodGroup: String
     sharedResidenceId: String
     educationalQualification: String
     meansOfEarning: String
+    ehadDate: String
+    referenceName: String
   ): KarkunType
 
   updateKarkun(
     _id: String!
-    firstName: String!
-    lastName: String!
-    ehadDate: String
+    name: String!
+    parentName: String
     cnicNumber: String
     contactNumber1: String
     contactNumber2: String
     emailAddress: String
-    address: String
-    city: String
-    country: String
+    currentAddress: String
+    permanentAddress: String
     bloodGroup: String
     sharedResidenceId: String
     educationalQualification: String
     meansOfEarning: String
+    ehadDate: String
+    referenceName: String
   ): KarkunType
 
   deleteKarkun(_id: String!): Int

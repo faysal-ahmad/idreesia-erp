@@ -25,7 +25,7 @@ function getKarkunsByFilter(params) {
   if (name) {
     if (name.length === 1) {
       pipeline.push({
-        $match: { firstName: { $regex: `^${name}` } },
+        $match: { name: { $regex: `^${name}` } },
       });
     } else {
       pipeline.push({

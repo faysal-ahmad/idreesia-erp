@@ -1,15 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Collapse, Form, Row, Button } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Collapse, Form, Row, Button } from 'antd';
 
 import {
   InputCnicField,
   InputMobileField,
   InputTextField,
-} from "/imports/ui/modules/helpers/fields";
+  SelectField,
+} from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
-  width: "500px",
+  width: '500px',
 };
 
 const formItemLayout = {
@@ -27,12 +28,14 @@ class ListFilter extends Component {
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
+    additionalInfo: PropTypes.string,
     setPageParams: PropTypes.func,
   };
 
   static defaultProps = {
-    cnicNumber: "",
-    phoneNumber: "",
+    cnicNumber: '',
+    phoneNumber: '',
+    additionalInfo: null,
     filterCriteria: {},
   };
 
@@ -41,29 +44,33 @@ class ListFilter extends Component {
     form.resetFields();
     setPageParams({
       pageIndex: 0,
-      name: "",
-      cnicNumber: "",
-      phoneNumber: "",
+      name: '',
+      cnicNumber: '',
+      phoneNumber: '',
+      additionalInfo: null,
     });
   };
 
   handleSubmit = () => {
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { name, cnicNumber, phoneNumber }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        name,
-        cnicNumber,
-        phoneNumber,
-      });
-    });
+    form.validateFields(
+      (err, { name, cnicNumber, phoneNumber, additionalInfo }) => {
+        if (err) return;
+        setPageParams({
+          pageIndex: 0,
+          name,
+          cnicNumber,
+          phoneNumber,
+          additionalInfo,
+        });
+      }
+    );
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { name, cnicNumber, phoneNumber } = this.props;
+    const { name, cnicNumber, phoneNumber, additionalInfo } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -94,6 +101,30 @@ class ListFilter extends Component {
               initialValue={phoneNumber}
               getFieldDecorator={getFieldDecorator}
             />
+            <SelectField
+              fieldName="additionalInfo"
+              fieldLabel="Additional Info"
+              required={false}
+              data={[
+                {
+                  label: 'Has Associated Notes',
+                  value: 'has-notes',
+                },
+                {
+                  label: 'Has Crimial Record',
+                  value: 'has-criminal-record',
+                },
+                {
+                  label: 'Has Notes or Crimial Record',
+                  value: 'has-notes-or-criminal-record',
+                },
+              ]}
+              getDataValue={({ value }) => value}
+              getDataText={({ label }) => label}
+              initialValue={additionalInfo}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleReset}>
@@ -112,4 +143,4 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create({ name: "visitorsListFilter" })(ListFilter);
+export default Form.create({ name: 'visitorsListFilter' })(ListFilter);

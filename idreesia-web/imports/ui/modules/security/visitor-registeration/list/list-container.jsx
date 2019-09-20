@@ -1,12 +1,12 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { Drawer } from "antd";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Drawer } from 'antd';
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
+import { WithBreadcrumbs } from '/imports/ui/composers';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import List from "./list";
-import { VisitorStaysList } from "/imports/ui/modules/security/visitor-stays";
+import List from './list';
+import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -19,9 +19,10 @@ class ListContainer extends Component {
   state = {
     pageIndex: 0,
     pageSize: 20,
-    name: "",
-    cnicNumber: "",
-    phoneNumber: "",
+    name: '',
+    cnicNumber: '',
+    phoneNumber: '',
+    additionalInfo: '',
     showStayList: false,
     visitorIdForStayList: null,
   };
@@ -60,7 +61,14 @@ class ListContainer extends Component {
 
   render() {
     const { showStayList, visitorIdForStayList } = this.state;
-    const { pageIndex, pageSize, name, cnicNumber, phoneNumber } = this.state;
+    const {
+      pageIndex,
+      pageSize,
+      name,
+      cnicNumber,
+      phoneNumber,
+      additionalInfo,
+    } = this.state;
 
     return (
       <Fragment>
@@ -70,6 +78,7 @@ class ListContainer extends Component {
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
+          additionalInfo={additionalInfo}
           setPageParams={this.setPageParams}
           handleItemSelected={this.handleItemSelected}
           handleShowStayList={this.handleShowStayList}
@@ -83,9 +92,9 @@ class ListContainer extends Component {
           onClose={this.handleStayListClose}
           visible={showStayList}
           style={{
-            overflow: "auto",
-            height: "calc(100% - 108px)",
-            paddingBottom: "108px",
+            overflow: 'auto',
+            height: 'calc(100% - 108px)',
+            paddingBottom: '108px',
           }}
         >
           <VisitorStaysList showNewButton visitorId={visitorIdForStayList} />
@@ -95,6 +104,6 @@ class ListContainer extends Component {
   }
 }
 
-export default WithBreadcrumbs(["Security", "Visitor Registration", "List"])(
+export default WithBreadcrumbs(['Security', 'Visitor Registration', 'List'])(
   ListContainer
 );

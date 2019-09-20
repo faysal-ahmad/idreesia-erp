@@ -37,6 +37,7 @@ export function getVisitorStays(queryString) {
     startDate,
     endDate,
     city,
+    additionalInfo,
     sortBy = DEFAULT_SORT_BY,
     sortOrder = DEFAULT_SORT_ORDER,
     pageIndex = DEFAULT_PAGE_INDEX,
@@ -94,6 +95,31 @@ export function getVisitorStays(queryString) {
         'visitor.city': { $eq: city },
       },
     });
+  }
+
+  if (additionalInfo) {
+    if (additionalInfo === 'has-notes') {
+      pipeline.push({
+        $match: {
+          'visitor.otherNotes': { $exists: true, $nin: ['', null] },
+        },
+      });
+    } else if (additionalInfo === 'has-criminal-record') {
+      pipeline.push({
+        $match: {
+          'visitor.criminalRecord': { $exists: true, $nin: ['', null] },
+        },
+      });
+    } else if (additionalInfo === 'has-notes-or-criminal-record') {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'visitor.otherNotes': { $exists: true, $nin: ['', null] } },
+            { 'visitor.criminalRecord': { $exists: true, $nin: ['', null] } },
+          ],
+        },
+      });
+    }
   }
 
   const countingPipeline = pipeline.concat({

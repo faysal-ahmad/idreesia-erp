@@ -8,6 +8,7 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import {
   AutoCompleteField,
   DateField,
+  SelectField,
 } from '/imports/ui/modules/helpers/fields';
 
 import { WithDistinctCities } from 'meteor/idreesia-common/composers/security';
@@ -39,12 +40,13 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { startDate, endDate, city }) => {
+    form.validateFields((err, { startDate, endDate, city, additionalInfo }) => {
       if (err) return;
       setPageParams({
         startDate,
         endDate,
         city,
+        additionalInfo,
         pageIndex: 0,
       });
     });
@@ -56,6 +58,7 @@ class ListFilter extends Component {
       startDate: null,
       endDate: null,
       city: null,
+      additionalInfo: null,
       pageIndex: 0,
     });
   };
@@ -64,7 +67,7 @@ class ListFilter extends Component {
     const { getFieldDecorator } = this.props.form;
     const {
       distinctCities,
-      queryParams: { startDate, endDate, city },
+      queryParams: { startDate, endDate, city, additionalInfo },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -90,7 +93,6 @@ class ListFilter extends Component {
               initialValue={mEndDate.isValid() ? mEndDate : null}
               getFieldDecorator={getFieldDecorator}
             />
-
             <AutoCompleteField
               fieldName="city"
               fieldLabel="City"
@@ -98,6 +100,30 @@ class ListFilter extends Component {
               dataSource={distinctCities}
               initialValue={city}
               required={false}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <SelectField
+              fieldName="additionalInfo"
+              fieldLabel="Additional Info"
+              required={false}
+              data={[
+                {
+                  label: 'Has Associated Notes',
+                  value: 'has-notes',
+                },
+                {
+                  label: 'Has Crimial Record',
+                  value: 'has-criminal-record',
+                },
+                {
+                  label: 'Has Notes or Crimial Record',
+                  value: 'has-notes-or-criminal-record',
+                },
+              ]}
+              getDataValue={({ value }) => value}
+              getDataText={({ label }) => label}
+              initialValue={additionalInfo}
+              fieldLayout={formItemLayout}
               getFieldDecorator={getFieldDecorator}
             />
 

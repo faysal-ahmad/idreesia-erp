@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Avatar,
   Button,
@@ -9,53 +9,53 @@ import {
   Table,
   Tooltip,
   message,
-} from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+} from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import ListFilter from "./list-filter";
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import ListFilter from './list-filter';
 
 const StatusStyle = {
   fontSize: 20,
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const ButtonGroupStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  alignItems: "center",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  alignItems: 'center',
 };
 
 const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-  color: "#1890FF",
-  cursor: "pointer",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
+  color: '#1890FF',
+  cursor: 'pointer',
 };
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-around",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  width: '100%',
 };
 
 class List extends Component {
@@ -65,6 +65,7 @@ class List extends Component {
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
+    additionalInfo: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     handleShowStayList: PropTypes.func,
@@ -81,8 +82,8 @@ class List extends Component {
   };
 
   statusColumn = {
-    title: "",
-    key: "status",
+    title: '',
+    key: 'status',
     render: (text, record) => {
       if (record.criminalRecord) {
         return (
@@ -109,9 +110,9 @@ class List extends Component {
   };
 
   nameColumn = {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
     render: (text, record) => {
       const onClickHandler = () => {
         const { handleItemSelected } = this.props;
@@ -140,27 +141,27 @@ class List extends Component {
   };
 
   cnicColumn = {
-    title: "CNIC Number",
-    dataIndex: "cnicNumber",
-    key: "cnicNumber",
+    title: 'CNIC Number',
+    dataIndex: 'cnicNumber',
+    key: 'cnicNumber',
   };
 
   phoneNumberColumn = {
-    title: "Phone Number",
-    key: "phoneNumber",
+    title: 'Phone Number',
+    key: 'phoneNumber',
     render: (text, record) => {
       const numbers = [];
       if (record.contactNumber1) numbers.push(record.contactNumber1);
       if (record.contactNumber2) numbers.push(record.contactNumber2);
 
-      if (numbers.length === 0) return "";
-      return numbers.join(", ");
+      if (numbers.length === 0) return '';
+      return numbers.join(', ');
     },
   };
 
   cityCountryColumn = {
-    title: "City / Country",
-    key: "cityCountry",
+    title: 'City / Country',
+    key: 'cityCountry',
     render: (text, record) => {
       if (record.city) {
         return `${record.city}, ${record.country}`;
@@ -170,7 +171,7 @@ class List extends Component {
   };
 
   actionsColumn = {
-    key: "action",
+    key: 'action',
     render: (text, record) => (
       <div style={ActionsStyle}>
         <Tooltip title="Stay History">
@@ -249,6 +250,7 @@ class List extends Component {
       name,
       cnicNumber,
       phoneNumber,
+      additionalInfo,
       setPageParams,
       showNewButton,
       handleNewClicked,
@@ -277,6 +279,7 @@ class List extends Component {
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
+          additionalInfo={additionalInfo}
           setPageParams={setPageParams}
         />
       </div>
@@ -351,18 +354,26 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "deleteVisitor",
+    name: 'deleteVisitor',
     options: {
-      refetchQueries: ["pagedVisitors"],
+      refetchQueries: ['pagedVisitors'],
     },
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ name, cnicNumber, phoneNumber, pageIndex, pageSize }) => ({
+    options: ({
+      name,
+      cnicNumber,
+      phoneNumber,
+      additionalInfo,
+      pageIndex,
+      pageSize,
+    }) => ({
       variables: {
-        queryString: `?name=${name || ""}&cnicNumber=${cnicNumber ||
-          ""}&phoneNumber=${phoneNumber ||
-          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+        queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
+          ''}&phoneNumber=${phoneNumber ||
+          ''}&additionalInfo=${additionalInfo ||
+          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   })

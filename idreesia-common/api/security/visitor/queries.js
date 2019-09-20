@@ -11,6 +11,7 @@ export function getVisitors(queryString) {
     name,
     cnicNumber,
     phoneNumber,
+    additionalInfo,
     pageIndex = '0',
     pageSize = '20',
   } = params;
@@ -35,6 +36,31 @@ export function getVisitors(queryString) {
         $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
       },
     });
+  }
+
+  if (additionalInfo) {
+    if (additionalInfo === 'has-notes') {
+      pipeline.push({
+        $match: {
+          otherNotes: { $exists: true, $nin: ['', null] },
+        },
+      });
+    } else if (additionalInfo === 'has-criminal-record') {
+      pipeline.push({
+        $match: {
+          criminalRecord: { $exists: true, $nin: ['', null] },
+        },
+      });
+    } else if (additionalInfo === 'has-notes-or-criminal-record') {
+      pipeline.push({
+        $match: {
+          $or: [
+            { otherNotes: { $exists: true, $nin: ['', null] } },
+            { criminalRecord: { $exists: true, $nin: ['', null] } },
+          ],
+        },
+      });
+    }
   }
 
   const countingPipeline = pipeline.concat({

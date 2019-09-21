@@ -19,9 +19,30 @@ function getKarkunsByFilter(params) {
     bloodGroup,
     dutyId,
     shiftId,
+    showVolunteers,
+    showEmployees,
     pageIndex = '0',
     pageSize = '20',
   } = params;
+
+  if (showVolunteers === 'false' && showEmployees === 'false') {
+    return {
+      karkuns: [],
+      totalResults: 0,
+    };
+  } else if (showVolunteers === 'true' && showEmployees === 'false') {
+    pipeline.push({
+      $match: {
+        isEmployee: { $ne: true },
+      },
+    });
+  } else if (showVolunteers === 'false' && showEmployees === 'true') {
+    pipeline.push({
+      $match: {
+        isEmployee: { $eq: true },
+      },
+    });
+  }
 
   if (name) {
     if (name.length === 1) {

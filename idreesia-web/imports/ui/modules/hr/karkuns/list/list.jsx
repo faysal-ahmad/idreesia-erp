@@ -39,6 +39,8 @@ class List extends Component {
     bloodGroup: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
+    showVolunteers: PropTypes.string,
+    showEmployees: PropTypes.string,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
@@ -165,6 +167,8 @@ class List extends Component {
       bloodGroup,
       dutyId,
       shiftId,
+      showVolunteers,
+      showEmployees,
       setPageParams,
       refetchListQuery,
       showNewButton,
@@ -191,6 +195,8 @@ class List extends Component {
           bloodGroup={bloodGroup}
           dutyId={dutyId}
           shiftId={shiftId}
+          showVolunteers={showVolunteers}
+          showEmployees={showEmployees}
           setPageParams={setPageParams}
           refreshData={refetchListQuery}
         />
@@ -283,6 +289,8 @@ export default flowRight(
       cnicNumber,
       dutyId,
       shiftId,
+      showVolunteers,
+      showEmployees,
       predefinedFilterName,
       pageIndex,
       pageSize,
@@ -290,7 +298,9 @@ export default flowRight(
       variables: {
         queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
           ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
-          ''}&predefinedFilterName=${predefinedFilterName ||
+          ''}&showVolunteers=${showVolunteers ||
+          'true'}&showEmployees=${showEmployees ||
+          'true'}&predefinedFilterName=${predefinedFilterName ||
           ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),

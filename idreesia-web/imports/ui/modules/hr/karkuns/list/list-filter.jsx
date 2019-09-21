@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
 import {
+  CheckboxField,
   InputCnicField,
   InputTextField,
   CascaderField,
@@ -37,6 +38,8 @@ class ListFilter extends Component {
     bloodGroup: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
+    showVolunteers: PropTypes.string,
+    showEmployees: PropTypes.string,
     setPageParams: PropTypes.func,
     refreshData: PropTypes.func,
   };
@@ -55,6 +58,7 @@ class ListFilter extends Component {
       cnicNumber: null,
       dutyId: null,
       shiftId: null,
+      karkunType: ['volunteers', 'employees'],
     });
   };
 
@@ -62,7 +66,10 @@ class ListFilter extends Component {
     const { form, setPageParams } = this.props;
 
     form.validateFields(
-      (err, { name, cnicNumber, phoneNumber, bloodGroup, dutyIdShiftId }) => {
+      (
+        err,
+        { name, cnicNumber, phoneNumber, bloodGroup, dutyIdShiftId, karkunType }
+      ) => {
         if (err) return;
         setPageParams({
           pageIndex: 0,
@@ -72,6 +79,7 @@ class ListFilter extends Component {
           bloodGroup,
           dutyId: dutyIdShiftId[0],
           shiftId: dutyIdShiftId[1],
+          karkunType,
         });
       }
     );
@@ -96,6 +104,8 @@ class ListFilter extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
+      showVolunteers,
+      showEmployees,
       name,
       cnicNumber,
       phoneNumber,
@@ -112,10 +122,27 @@ class ListFilter extends Component {
       allDutyShifts
     );
 
+    const karkunTypes = [];
+    if (!showVolunteers || showVolunteers === 'true')
+      karkunTypes.push('volunteers');
+    if (!showEmployees || showEmployees === 'true')
+      karkunTypes.push('employees');
+
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal">
+            <CheckboxField
+              fieldName="karkunType"
+              fieldLabel="Karkun Type"
+              fieldLayout={formItemLayout}
+              options={[
+                { label: 'Volunteers', value: 'volunteers' },
+                { label: 'Employees', value: 'employees' },
+              ]}
+              initialValue={karkunTypes}
+              getFieldDecorator={getFieldDecorator}
+            />
             <InputTextField
               fieldName="name"
               fieldLabel="Name"

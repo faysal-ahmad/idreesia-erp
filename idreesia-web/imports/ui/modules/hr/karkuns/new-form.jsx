@@ -107,8 +107,6 @@ class NewForm extends Component {
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
-          required
-          requiredMessage="Please input the parent name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 

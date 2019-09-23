@@ -59,7 +59,7 @@ export default {
   },
 
   Mutation: {
-    createSharedResidence(obj, { address, ownerKarkunId }, { user }) {
+    createSharedResidence(obj, { name, address, ownerKarkunId }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_SHARED_RESIDENCES,
@@ -72,6 +72,7 @@ export default {
 
       const date = new Date();
       const dutyId = SharedResidences.insert({
+        name,
         address,
         ownerKarkunId,
         createdAt: date,
@@ -83,7 +84,11 @@ export default {
       return SharedResidences.findOne(dutyId);
     },
 
-    updateSharedResidence(obj, { _id, address, ownerKarkunId }, { user }) {
+    updateSharedResidence(
+      obj,
+      { _id, name, address, ownerKarkunId },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_SHARED_RESIDENCES,
@@ -97,6 +102,7 @@ export default {
       const date = new Date();
       SharedResidences.update(_id, {
         $set: {
+          name,
           address,
           ownerKarkunId,
           updatedAt: date,

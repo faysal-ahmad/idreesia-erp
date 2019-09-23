@@ -44,6 +44,16 @@ class List extends Component {
 
   columns = [
     {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, record) => (
+        <Link to={`${paths.sharedResidencesEditFormPath(record._id)}`}>
+          {text}
+        </Link>
+      ),
+    },
+    {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
@@ -180,6 +190,7 @@ const listQuery = gql`
       totalResults
       data {
         _id
+        name
         address
         residentCount
         owner {

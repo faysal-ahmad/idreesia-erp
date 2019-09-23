@@ -38,12 +38,13 @@ class EditForm extends Component {
       sharedResidenceById,
       updateSharedResidence,
     } = this.props;
-    form.validateFields((err, { address, ownerKarkun }) => {
+    form.validateFields((err, { name, address, ownerKarkun }) => {
       if (err) return;
 
       updateSharedResidence({
         variables: {
-          id: sharedResidenceById._id,
+          _id: sharedResidenceById._id,
+          name,
           address,
           ownerKarkunId: ownerKarkun ? ownerKarkun._id : null,
         },
@@ -66,10 +67,16 @@ class EditForm extends Component {
       <Fragment>
         <Form layout="horizontal" onSubmit={this.handleSubmit}>
           <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            required
+            requiredMessage="Please input name for the residence."
+            initialValue={sharedResidenceById.name}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
             fieldName="address"
             fieldLabel="Address"
-            required
-            requiredMessage="Please input address for the residence."
             initialValue={sharedResidenceById.address}
             getFieldDecorator={getFieldDecorator}
           />
@@ -92,6 +99,7 @@ const formQuery = gql`
   query sharedResidenceById($_id: String!) {
     sharedResidenceById(_id: $_id) {
       _id
+      name
       address
       owner {
         _id
@@ -108,15 +116,18 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateSharedResidence(
     $_id: String!
-    $address: String!
+    $name: String!
+    $address: String
     $ownerKarkunId: String
   ) {
     updateSharedResidence(
       _id: $_id
+      name: $name
       address: $address
       ownerKarkunId: $ownerKarkunId
     ) {
       _id
+      name
       address
       ownerKarkunId
       createdAt

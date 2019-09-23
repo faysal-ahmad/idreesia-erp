@@ -28,11 +28,12 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createSharedResidence, history } = this.props;
-    form.validateFields((err, { address, ownerKarkun }) => {
+    form.validateFields((err, { name, address, ownerKarkun }) => {
       if (err) return;
 
       createSharedResidence({
         variables: {
+          name,
           address,
           ownerKarkunId: ownerKarkun ? ownerKarkun._id : null,
         },
@@ -52,10 +53,15 @@ class NewForm extends Component {
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          required
+          requiredMessage="Please input name for the residence."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
           fieldName="address"
           fieldLabel="Address"
-          required
-          requiredMessage="Please input address for the residence."
           getFieldDecorator={getFieldDecorator}
         />
         <KarkunField
@@ -71,9 +77,18 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createSharedResidence($address: String!, $ownerKarkunId: String) {
-    createSharedResidence(address: $address, ownerKarkunId: $ownerKarkunId) {
+  mutation createSharedResidence(
+    $name: String!
+    $address: String
+    $ownerKarkunId: String
+  ) {
+    createSharedResidence(
+      name: $name
+      address: $address
+      ownerKarkunId: $ownerKarkunId
+    ) {
       _id
+      name
       address
       ownerKarkunId
     }

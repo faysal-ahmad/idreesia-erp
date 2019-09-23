@@ -1,5 +1,6 @@
 type SharedResidenceType {
   _id: String
+  name: String
   address: String
   ownerKarkunId: String
 
@@ -25,7 +26,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createSharedResidence(address: String!, ownerKarkunId: String): SharedResidenceType
-  updateSharedResidence(_id: String!, address: String!, ownerKarkunId: String): SharedResidenceType
+  createSharedResidence(name: String!, address: String, ownerKarkunId: String): SharedResidenceType
+  updateSharedResidence(_id: String!, name: String!, address: String, ownerKarkunId: String): SharedResidenceType
   removeSharedResidence(_id: String!): Int
 }

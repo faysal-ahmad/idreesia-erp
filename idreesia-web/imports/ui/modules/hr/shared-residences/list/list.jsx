@@ -57,11 +57,6 @@ class List extends Component {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
-      render: (text, record) => (
-        <Link to={`${paths.sharedResidencesEditFormPath(record._id)}`}>
-          {text}
-        </Link>
-      ),
     },
     {
       title: 'Owner',

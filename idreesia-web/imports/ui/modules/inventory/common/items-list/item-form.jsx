@@ -35,7 +35,8 @@ const ItemForm = ({
       fieldName="quantity"
       placeholder="Quantity"
       fieldLayout={null}
-      minValue={1}
+      minValue={0}
+      precision={2}
       getFieldDecorator={getFieldDecorator}
     />
     {showPrice ? (
@@ -43,7 +44,8 @@ const ItemForm = ({
         fieldName="price"
         placeholder="Price"
         fieldLayout={null}
-        minValue={1}
+        minValue={0}
+        precision={2}
         getFieldDecorator={getFieldDecorator}
       />
     ) : null}

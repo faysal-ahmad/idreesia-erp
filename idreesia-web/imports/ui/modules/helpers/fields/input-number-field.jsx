@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { InputNumber, Form } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { InputNumber, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -25,6 +25,7 @@ export default class InputNumberField extends Component {
     initialValue: PropTypes.number,
     minValue: PropTypes.number,
     maxValue: PropTypes.number,
+    precision: PropTypes.number,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
@@ -46,12 +47,14 @@ export default class InputNumberField extends Component {
       initialValue,
       minValue,
       maxValue,
+      precision,
       disabled,
     } = this.props;
 
     const additionalProps = {};
     if (minValue || minValue === 0) additionalProps.min = minValue;
     if (maxValue) additionalProps.max = maxValue;
+    if (precision) additionalProps.precision = precision;
 
     if (!disabled) {
       const rules = [

@@ -81,10 +81,11 @@ class EditForm extends Component {
         if (err) return;
 
         const updatedItems = items.map(
-          ({ stockItemId, quantity, isInflow }) => ({
+          ({ stockItemId, quantity, isInflow, price }) => ({
             stockItemId,
             quantity,
             isInflow,
+            price,
           })
         );
         updatePurchaseForm({

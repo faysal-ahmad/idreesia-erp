@@ -85,7 +85,6 @@ class ItemsList extends Component {
     if (!existingItem) {
       stockItems.push({
         stockItemId: stockItem._id,
-
         quantity,
         isInflow,
         price,

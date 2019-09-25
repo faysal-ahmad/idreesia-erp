@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, DatePicker, Spin, Table } from 'antd';
-import { flowRight } from 'lodash';
+import { flowRight, reverse, sortBy } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+
+import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
 const ToolbarStyle = {
   display: 'flex',
@@ -19,6 +21,7 @@ class Report extends Component {
 
     month: PropTypes.object,
     monthString: PropTypes.string,
+    physicalStoreId: PropTypes.string,
     setPageParams: PropTypes.func,
     loading: PropTypes.bool,
     purchaseFormsByMonth: PropTypes.array,
@@ -29,6 +32,16 @@ class Report extends Component {
       title: 'Item Name',
       dataIndex: 'stockItemName',
       key: 'stockItemName',
+      render: (text, record) => {
+        const { physicalStoreId } = this.props;
+        const stockItem = {
+          _id: record.stockItemId,
+          physicalStoreId,
+          name: record.stockItemName,
+          imageId: record.stockItemImageId,
+        };
+        return <StockItemName stockItem={stockItem} />;
+      },
     },
     {
       title: 'Category',
@@ -39,9 +52,17 @@ class Report extends Component {
       title: 'Purchased',
       dataIndex: 'quantity',
       key: 'quantity',
+      render: (text, record) => {
+        let quantity = text;
+        if (record.unitOfMeasurement !== 'quantity') {
+          quantity = `${quantity} ${record.unitOfMeasurement}`;
+        }
+
+        return quantity;
+      },
     },
     {
-      title: 'Total Cost',
+      title: 'Total Cost (Rs)',
       dataIndex: 'cost',
       key: 'cost',
     },
@@ -111,7 +132,9 @@ class Report extends Component {
           summaryItem = {
             stockItemId: item.stockItemId,
             stockItemName: item.stockItemName,
+            stockItemImageId: item.stockItemImageId,
             categoryName: item.categoryName,
+            unitOfMeasurement: item.unitOfMeasurement,
             quantity: 0,
             cost: 0,
           };
@@ -130,7 +153,7 @@ class Report extends Component {
       });
     });
 
-    return purchaseSummary;
+    return reverse(sortBy(purchaseSummary, 'cost'));
   };
 
   render() {
@@ -164,7 +187,9 @@ const listQuery = gql`
         isInflow
         price
         stockItemName
+        stockItemImageId
         categoryName
+        unitOfMeasurement
       }
     }
   }

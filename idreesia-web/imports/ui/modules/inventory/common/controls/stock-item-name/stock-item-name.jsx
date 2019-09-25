@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Avatar, Modal } from 'antd';
 
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 const NameDivStyle = {
@@ -16,26 +16,33 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const KarkunName = ({ karkun, onKarkunNameClicked }) => {
+const StockItemName = ({ stockItem, onStockItemNameClicked }) => {
   const [showDialog, setShowDialog] = useState(false);
-  if (!karkun) return null;
+  if (!stockItem) return null;
 
-  const nameNode = onKarkunNameClicked ? (
+  const nameNode = onStockItemNameClicked ? (
     <div
       onClick={() => {
-        onKarkunNameClicked(karkun);
+        onStockItemNameClicked(stockItem);
       }}
     >
-      {karkun.name}
+      {stockItem.name}
     </div>
   ) : (
-    <Link to={`${paths.karkunsPath}/${karkun._id}`}>{karkun.name}</Link>
+    <Link
+      to={paths.stockItemsEditFormPath(
+        stockItem.physicalStoreId,
+        stockItem._id
+      )}
+    >
+      {stockItem.name}
+    </Link>
   );
 
   let imageUrl;
-  let avatarNode = <Avatar shape="square" size="large" icon="user" />;
-  if (karkun.imageId) {
-    imageUrl = getDownloadUrl(karkun.imageId);
+  let avatarNode = <Avatar shape="square" size="large" icon="picture" />;
+  if (stockItem.imageId) {
+    imageUrl = getDownloadUrl(stockItem.imageId);
     avatarNode = (
       <Avatar
         shape="square"
@@ -56,7 +63,7 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
         {nameNode}
       </div>
       <Modal
-        title={karkun.name}
+        title={stockItem.name}
         visible={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
@@ -67,9 +74,14 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
   );
 };
 
-KarkunName.propTypes = {
-  karkun: PropTypes.object,
-  onKarkunNameClicked: PropTypes.func,
+StockItemName.propTypes = {
+  stockItem: PropTypes.shape({
+    _id: PropTypes.string,
+    physicalStoreId: PropTypes.string,
+    name: PropTypes.string,
+    imageId: PropTypes.string,
+  }),
+  onStockItemNameClicked: PropTypes.func,
 };
 
-export default KarkunName;
+export default StockItemName;

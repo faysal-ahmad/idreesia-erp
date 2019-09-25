@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Avatar,
   Dropdown,
   Icon,
   Menu,
@@ -18,7 +17,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
 
 const ToolbarStyle = {
@@ -27,16 +26,6 @@ const ToolbarStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-};
-
-const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-  cursor: 'pointer',
-  color: '#1890ff',
 };
 
 const ActionsStyle = {
@@ -116,31 +105,12 @@ class List extends Component {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: (text, record) => {
-          const onClickHandler = () => {
-            const { handleItemSelected } = this.props;
-            handleItemSelected(record);
-          };
-
-          if (record.imageId) {
-            const url = getDownloadUrl(record.imageId);
-            return (
-              <div style={NameDivStyle} onClick={onClickHandler}>
-                <Avatar shape="square" size="large" src={url} />
-                &nbsp;&nbsp;
-                {text}
-              </div>
-            );
-          }
-
-          return (
-            <div style={NameDivStyle} onClick={onClickHandler}>
-              <Avatar shape="square" size="large" icon="picture" />
-              &nbsp;&nbsp;
-              {text}
-            </div>
-          );
-        },
+        render: (text, record) => (
+          <StockItemName
+            stockItem={record}
+            onStockItemNameClicked={this.props.handleItemSelected}
+          />
+        ),
       },
       {
         title: 'Company',
@@ -166,7 +136,7 @@ class List extends Component {
           if (text && record.unitOfMeasurement !== 'quantity') {
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
           }
-          
+
           return <div style={MinStockLevelStyle}>{stockLevel}</div>;
         },
       },

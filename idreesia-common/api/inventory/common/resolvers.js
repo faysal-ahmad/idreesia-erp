@@ -9,6 +9,10 @@ export default {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.formattedName;
     },
+    stockItemImageId: item => {
+      const stockItem = StockItems.findOne(item.stockItemId);
+      return stockItem.imageId;
+    },
     categoryName: item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       const itemCategory = ItemCategories.findOne(stockItem.categoryId);
@@ -24,6 +28,10 @@ export default {
     stockItemName: item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.formattedName;
+    },
+    stockItemImageId: item => {
+      const stockItem = StockItems.findOne(item.stockItemId);
+      return stockItem.imageId;
     },
     categoryName: item => {
       const stockItem = StockItems.findOne(item.stockItemId);

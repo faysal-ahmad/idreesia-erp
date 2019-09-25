@@ -35,6 +35,9 @@ class InventorySidebar extends Component {
     } else if (key.startsWith('stock-adjustments')) {
       setActiveSubModuleName(SubModuleNames.stockAdjustments);
       history.push(paths.stockAdjustmentsPath(physicalStoreId));
+    } else if (key.startsWith('issuance-report')) {
+      setActiveSubModuleName(SubModuleNames.issuanceReport);
+      history.push(paths.issuanceReportPath(physicalStoreId));
     } else if (key.startsWith('purchasing-report')) {
       setActiveSubModuleName(SubModuleNames.purchasingReport);
       history.push(paths.purchasingReportPath(physicalStoreId));
@@ -110,6 +113,12 @@ class InventorySidebar extends Component {
               </span>
             }
           >
+            <Menu.Item
+              parent-key={physicalStore._id}
+              key={`issuance-report-${physicalStore._id}`}
+            >
+              Issuance Report
+            </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`purchasing-report-${physicalStore._id}`}

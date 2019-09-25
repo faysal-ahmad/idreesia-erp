@@ -10,7 +10,10 @@ import {
 } from 'meteor/idreesia-common/api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import getIssuanceForms, { getIssuanceFormsByStockItemId } from './queries';
+import getIssuanceForms, {
+  getIssuanceFormsByMonth,
+  getIssuanceFormsByStockItemId,
+} from './queries';
 
 export default {
   IssuanceForm: {
@@ -61,6 +64,21 @@ export default {
       }
 
       return getIssuanceFormsByStockItemId(physicalStoreId, stockItemId);
+    },
+
+    issuanceFormsByMonth(obj, { physicalStoreId, month }, { user }) {
+      if (
+        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
+          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        return [];
+      }
+
+      return getIssuanceFormsByMonth(physicalStoreId, month);
     },
 
     pagedIssuanceForms(obj, { physicalStoreId, queryString }, { user }) {

@@ -4,6 +4,9 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Reports Routes
   // *************************************************************************************
+  static issuanceReportPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.inventory}/${physicalStoreId}/issuance-report`;
+  }
   static purchasingReportPath(physicalStoreId = ':physicalStoreId') {
     return `${ModulePaths.inventory}/${physicalStoreId}/purchasing-report`;
   }

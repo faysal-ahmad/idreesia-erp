@@ -1,32 +1,32 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { Divider, Form, message } from "antd";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Divider, Form, message } from 'antd';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { ItemsList } from "../common/items-list";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { ItemsList } from '../common/items-list';
+import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   DateField,
   InputTextField,
   FormButtonsSaveCancel,
   InputTextAreaField,
   TreeSelectField,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
-import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
+import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 const FormStyle = {
-  width: "800px",
+  width: '800px',
 };
 
 const formItemExtendedLayout = {
@@ -115,10 +115,10 @@ class EditForm extends Component {
     const rules = [
       {
         required: true,
-        message: "Please add some items.",
+        message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator("items", {
+    return getFieldDecorator('items', {
       rules,
       initialValue: issuanceFormById.items,
     })(
@@ -309,12 +309,13 @@ export default flowRight(
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
-    name: "updateIssuanceForm",
+    name: 'updateIssuanceForm',
     options: {
       refetchQueries: [
-        "pagedIssuanceForms",
-        "issuanceFormsByStockItem",
-        "pagedStockItems",
+        'pagedIssuanceForms',
+        'issuanceFormsByStockItem',
+        'pagedStockItems',
+        'issuanceFormsByMonth',
       ],
     },
   }),

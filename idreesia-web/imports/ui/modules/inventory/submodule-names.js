@@ -5,6 +5,7 @@ const SubModuleNames = {
   stockAdjustments: 'Stock Adjustments',
 
   purchasingReport: 'Purchasing Report',
+  issuanceReport: 'Issuance Report',
 
   vendors: 'Vendors',
   itemCategories: 'Item Categories',

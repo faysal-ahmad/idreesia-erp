@@ -1,30 +1,30 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Divider, Form, message } from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Divider, Form, message } from 'antd';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { ItemsList } from "../common/items-list";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { ItemsList } from '../common/items-list';
+import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   DateField,
   FormButtonsSaveCancel,
   InputTextField,
   InputTextAreaField,
   TreeSelectField,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
+import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
 const FormStyle = {
-  width: "800px",
+  width: '800px',
 };
 
 const formItemExtendedLayout = {
@@ -97,10 +97,10 @@ class NewForm extends Component {
     const rules = [
       {
         required: true,
-        message: "Please add some items.",
+        message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator("items", { rules })(
+    return getFieldDecorator('items', { rules })(
       <ItemsList
         refForm={form}
         defaultLabel="Issued"
@@ -223,12 +223,13 @@ export default flowRight(
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
-    name: "createIssuanceForm",
+    name: 'createIssuanceForm',
     options: {
       refetchQueries: [
-        "pagedIssuanceForms",
-        "issuanceFormsByStockItem",
-        "pagedStockItems",
+        'pagedIssuanceForms',
+        'issuanceFormsByStockItem',
+        'pagedStockItems',
+        'issuanceFormsByMonth',
       ],
     },
   }),

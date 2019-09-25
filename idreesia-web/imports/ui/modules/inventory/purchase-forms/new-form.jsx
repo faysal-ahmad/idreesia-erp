@@ -252,6 +252,7 @@ export default flowRight(
         'purchaseFormsByStockItem',
         'pagedStockItems',
         'vendorsByPhysicalStoreId',
+        'purchaseFormsByMonth',
       ],
     },
   }),

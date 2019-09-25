@@ -1,7 +1,7 @@
 import { parse } from 'query-string';
-import { get, map } from 'lodash';
+import { get } from 'lodash';
 
-import { Karkuns, KarkunDuties } from 'meteor/idreesia-common/collections/hr';
+import { Karkuns } from 'meteor/idreesia-common/collections/hr';
 import {
   IssuanceForms,
   PurchaseForms,
@@ -212,31 +212,6 @@ function getKarkunsByPredefinedFilter(params) {
     karkuns: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
-}
-
-export function getKarkunsByDutyId(dutyId) {
-  const pipeline = [
-    {
-      $match: {
-        dutyId: { $eq: dutyId },
-      },
-    },
-    { $group: { _id: '$karkunId' } },
-    {
-      $lookup: {
-        from: 'hr-karkuns',
-        localField: '_id',
-        foreignField: '_id',
-        as: 'karkun',
-      },
-    },
-    { $unwind: '$karkun' },
-    { $sort: { 'karkun.name': 1 } },
-  ];
-
-  return KarkunDuties.aggregate(pipeline)
-    .toArray()
-    .then(results => map(results, ({ karkun }) => karkun));
 }
 
 export function getKarkuns(queryString) {

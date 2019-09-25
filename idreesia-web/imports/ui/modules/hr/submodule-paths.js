@@ -28,6 +28,9 @@ export default class SubModulePaths {
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
 
+  // ******************************************************************************
+  // Attendance Sheets
+  // ******************************************************************************
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
   static attendanceSheetsNewFormPath = `${SubModulePaths.attendanceSheetsPath}/new`;
   static attendanceSheetsEditFormPath(attendanceId = ':attendanceId') {

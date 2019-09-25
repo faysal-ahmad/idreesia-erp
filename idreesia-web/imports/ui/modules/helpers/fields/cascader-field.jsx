@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Cascader, Form } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Cascader, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -62,6 +62,7 @@ export default class CascaderField extends Component {
         <Cascader
           options={data}
           placeholder={placeholder}
+          expandTrigger="hover"
           changeOnSelect={changeOnSelect}
         />
       );

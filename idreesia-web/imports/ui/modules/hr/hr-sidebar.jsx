@@ -74,8 +74,8 @@ class HRSidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">Karkuns</Menu.Item>
-        <Menu.Item key="shared-residencs">Shared Residences</Menu.Item>
         <Menu.Item key="attendance-sheets">Attendance Sheets</Menu.Item>
+        <Menu.Item key="shared-residencs">Shared Residences</Menu.Item>
         <SubMenu
           key="setup"
           title={

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Icon,
   Pagination,
   Popconfirm,
+  Row,
   Table,
   Tooltip,
   message,
@@ -13,6 +15,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
 
@@ -92,6 +95,45 @@ class List extends Component {
     title: 'Duties',
     dataIndex: 'duties',
     key: 'duties',
+    render: (duties, record) => {
+      let jobName = [];
+      let dutyNames = [];
+
+      if (record.job) {
+        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=3`;
+        jobName = [<Link to={jobTabLink}>{record.job.name}</Link>];
+      }
+
+      if (duties.length > 0) {
+        const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=4`;
+        dutyNames = duties.map(duty => {
+          let dutyName = duty.dutyName;
+          if (duty.shiftName) {
+            dutyName = `${duty.dutyName} - ${duty.shiftName}`;
+          }
+
+          if (duty.role === 'CO') {
+            dutyName = `(CO) - ${dutyName}`;
+          }
+
+          return <Link to={dutyTabLink}>{dutyName}</Link>;
+        });
+      }
+
+      const links = jobName.concat(dutyNames);
+      if (links.length === 0) {
+        return null;
+      } else if (links.length === 1) {
+        return links[0];
+      }
+      return (
+        <>
+          {links.map((link, index) => (
+            <Row key={index}>{link}</Row>
+          ))}
+        </>
+      );
+    },
   };
 
   actionsColumn = {
@@ -263,7 +305,18 @@ const listQuery = gql`
         contactNumber1
         contactNumber2
         imageId
-        duties
+        job {
+          _id
+          name
+        }
+        duties {
+          _id
+          dutyId
+          shiftId
+          dutyName
+          shiftName
+          role
+        }
       }
     }
   }

@@ -31,6 +31,18 @@ const DutyForm = props => {
       />
 
       <SelectField
+        data={allDutyRoles}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="role"
+        fieldLabel="Role"
+        allowClear={false}
+        required
+        initialValue={defaultValues.role || 'Member'}
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <SelectField
         data={allDutyLocations}
         getDataValue={({ _id }) => _id}
         getDataText={({ name }) => name}
@@ -38,17 +50,6 @@ const DutyForm = props => {
         fieldLabel="Location Name"
         required={false}
         initialValue={defaultValues.locationId}
-        getFieldDecorator={getFieldDecorator}
-      />
-
-      <SelectField
-        data={allDutyRoles}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
-        fieldName="role"
-        fieldLabel="Role"
-        required={false}
-        initialValue={defaultValues.role}
         getFieldDecorator={getFieldDecorator}
       />
 

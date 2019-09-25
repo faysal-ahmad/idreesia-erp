@@ -12,6 +12,7 @@ const NameDivStyle = {
   justifyContent: 'flex-start',
   alignItems: 'center',
   width: '100%',
+  color: '#1890ff',
   cursor: 'pointer',
 };
 

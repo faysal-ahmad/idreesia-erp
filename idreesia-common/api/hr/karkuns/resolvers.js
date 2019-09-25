@@ -1,7 +1,6 @@
 import { compact, values } from 'lodash';
 import {
   Jobs,
-  Duties,
   Karkuns,
   KarkunDuties,
 } from 'meteor/idreesia-common/collections/hr';
@@ -9,7 +8,7 @@ import { Attachments } from 'meteor/idreesia-common/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getKarkuns, getKarkunsByDutyId } from './queries';
+import { getKarkuns } from './queries';
 
 export default {
   KarkunType: {
@@ -21,22 +20,10 @@ export default {
       if (!karkunType.jobId) return null;
       return Jobs.findOne(karkunType.jobId);
     },
-    duties: karkunType => {
-      const karkunDuties = KarkunDuties.find({
+    duties: karkunType =>
+      KarkunDuties.find({
         karkunId: { $eq: karkunType._id },
-      }).fetch();
-
-      if (karkunDuties.length > 0) {
-        const dutyIds = karkunDuties.map(karkunDuty => karkunDuty.dutyId);
-        const duties = Duties.find({
-          _id: { $in: dutyIds },
-        }).fetch();
-
-        const dutyNames = duties.map(duty => duty.name);
-        return dutyNames.join(', ');
-      }
-      return null;
-    },
+      }).fetch(),
     attachments: karkunType => {
       const { attachmentIds } = karkunType;
       if (attachmentIds && attachmentIds.length > 0) {
@@ -75,10 +62,6 @@ export default {
 
     karkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
-    },
-
-    karkunsByDutyId(obj, { dutyId }) {
-      return getKarkunsByDutyId(dutyId);
     },
 
     karkunByUserId(obj, { userId }) {

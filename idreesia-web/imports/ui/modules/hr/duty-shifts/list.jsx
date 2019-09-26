@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { Button, Icon, Table, Tooltip, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
+import { Button, Icon, Table, Tooltip, message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
 

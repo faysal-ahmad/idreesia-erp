@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight, toSafeInteger } from 'lodash';
+
 import {
   Button,
   Icon,
@@ -8,12 +13,7 @@ import {
   Table,
   Tooltip,
   message,
-} from 'antd';
-import moment from 'moment';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { flowRight, toSafeInteger } from 'lodash';
-
+} from '/imports/ui/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { WithDynamicBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';

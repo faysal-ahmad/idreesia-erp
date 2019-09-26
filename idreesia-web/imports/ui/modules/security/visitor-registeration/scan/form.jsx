@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, Divider, Row, Col, message } from "antd";
 
+import { Button, Divider, Row, Col, message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import { ScanCnicQRCode } from "/imports/ui/modules/helpers/controls";

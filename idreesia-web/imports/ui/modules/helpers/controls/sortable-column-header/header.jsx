@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+
+import { Icon } from '/imports/ui/controls';
 
 const HeaderStyle = {
   display: 'flex',

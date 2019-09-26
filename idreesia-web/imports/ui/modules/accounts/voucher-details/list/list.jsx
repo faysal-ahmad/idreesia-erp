@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Pagination, Table } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 
 import { Formats } from "meteor/idreesia-common/constants";
+import { Pagination, Table } from "/imports/ui/controls";
 
 class List extends Component {
   static propTypes = {

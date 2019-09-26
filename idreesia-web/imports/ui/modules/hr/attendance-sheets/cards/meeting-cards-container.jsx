@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import { Button, Divider } from "antd";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 import ReactToPrint from "react-to-print";
 
+import { Button, Divider } from "/imports/ui/controls";
 import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
 import MeetingCards from "./meeting-cards";
 

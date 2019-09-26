@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Pagination, Table } from "antd";
 import { toSafeInteger } from "lodash";
+
+import { Button, Pagination, Table } from "/imports/ui/controls";
 
 const ToolbarStyle = {
   display: "flex",

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
 
+import { Button, Collapse, Form, Icon, Row, Tooltip } from '/imports/ui/controls';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {

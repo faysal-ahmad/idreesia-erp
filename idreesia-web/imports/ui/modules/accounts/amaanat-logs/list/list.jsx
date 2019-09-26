@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Pagination, Table, Tooltip, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 import numeral from "numeral";
 
+import { Button, Icon, Pagination, Table, Tooltip, message } from "/imports/ui/controls";
 import ListFilter from "./list-filter";
 
 const ToolbarStyle = {

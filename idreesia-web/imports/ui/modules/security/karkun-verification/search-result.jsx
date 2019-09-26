@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Row, Col, Spin, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 import moment from "moment";
 
+import { Row, Col, Spin, message } from "/imports/ui/controls";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 
 const LabelStyle = {

@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { capitalize } from "lodash";
-import { Button, Icon, Pagination, Select, Table, Tooltip } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
 import { JobTypes } from "meteor/idreesia-common/constants";
-
+import { Button, Icon, Pagination, Select, Table, Tooltip } from "/imports/ui/controls";
 import ListFilter from "./list-filter";
 
 const ToolbarStyle = {

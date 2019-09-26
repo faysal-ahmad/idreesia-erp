@@ -1,31 +1,37 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Icon, Popconfirm, Table, Tooltip, message } from "antd";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
-import { VoucherType } from 'meteor/idreesia-common/constants/accounts'
-import VoucherDetailNewForm from "./voucher-detail-new-form";
-import VoucherDetailEditForm from "./voucher-detail-edit-form";
-import { WithAccountHeadsByCompany } from "/imports/ui/modules/accounts/common/composers";
+import { VoucherType } from 'meteor/idreesia-common/constants/accounts';
+import {
+  Icon,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
+import VoucherDetailNewForm from './voucher-detail-new-form';
+import VoucherDetailEditForm from './voucher-detail-edit-form';
+import { WithAccountHeadsByCompany } from '/imports/ui/modules/accounts/common/composers';
 
 const ClickableLinkStyle = {
-  cursor: "pointer",
-  color: "#1890ff",
+  cursor: 'pointer',
+  color: '#1890ff',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
 const BackgroundColors = {
-  [VoucherType.BANK_PAYMENT_VOUCHER]: "#E6F4E3",
-  [VoucherType.BANK_RECEIPT_VOUCHER]: "#FFFACD",
-  [VoucherType.CASH_PAYMENT_VOUCHER]: "#FFFACD",
-  [VoucherType.CASH_RECEIPT_VOUCHER]: "#E6F4E3",
-}
+  [VoucherType.BANK_PAYMENT_VOUCHER]: '#E6F4E3',
+  [VoucherType.BANK_RECEIPT_VOUCHER]: '#FFFACD',
+  [VoucherType.CASH_PAYMENT_VOUCHER]: '#FFFACD',
+  [VoucherType.CASH_RECEIPT_VOUCHER]: '#E6F4E3',
+};
 
 class VoucherDetails extends Component {
   static propTypes = {
@@ -46,8 +52,8 @@ class VoucherDetails extends Component {
 
   columns = [
     {
-      title: "Account Head",
-      key: "accountHead",
+      title: 'Account Head',
+      key: 'accountHead',
       render: (text, record) => {
         const { refAccountHead } = record;
         return (
@@ -63,29 +69,29 @@ class VoucherDetails extends Component {
       },
     },
     {
-      title: "Description",
-      key: "description",
-      dataIndex: "description",
+      title: 'Description',
+      key: 'description',
+      dataIndex: 'description',
     },
     {
-      title: "Credit",
-      key: "credit",
+      title: 'Credit',
+      key: 'credit',
       render: (text, record) => {
         const { amount, isCredit } = record;
-        return isCredit ? amount : "";
+        return isCredit ? amount : '';
       },
     },
     {
-      title: "Debit",
-      key: "debit",
+      title: 'Debit',
+      key: 'debit',
       render: (text, record) => {
         const { amount, isCredit } = record;
-        return isCredit ? "" : amount;
+        return isCredit ? '' : amount;
       },
     },
     {
-      title: "Actions",
-      key: "actions",
+      title: 'Actions',
+      key: 'actions',
       render: (text, record) => (
         <Popconfirm
           title="Are you sure you want to delete this item?"
@@ -214,16 +220,14 @@ const listMutation = gql`
 
 export default flowRight(
   graphql(listMutation, {
-    name: "removeVoucherDetail",
+    name: 'removeVoucherDetail',
     options: {
-      refetchQueries: ["voucherDetailsByVoucherId", "pagedVoucherDetails"],
+      refetchQueries: ['voucherDetailsByVoucherId', 'pagedVoucherDetails'],
     },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ companyId, voucherId }) => {
-      return { variables: { _id: voucherId, companyId } };
-    },
+    options: ({ companyId, voucherId }) => ({ variables: { _id: voucherId, companyId } }),
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ listDataLoading: data.loading, ...data }),

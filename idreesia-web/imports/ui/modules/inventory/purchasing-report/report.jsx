@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, DatePicker, Spin, Table } from 'antd';
 import { flowRight, reverse, sortBy } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
+import { Button, DatePicker, Spin, Table } from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
 const ToolbarStyle = {

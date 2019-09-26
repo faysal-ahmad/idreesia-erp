@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { Button, Icon, Table, Tooltip, Pagination } from "antd";
 import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 import moment from "moment";
-import { Formats } from "meteor/idreesia-common/constants";
 
+import { Formats } from "meteor/idreesia-common/constants";
+import { Button, Icon, Table, Tooltip, Pagination } from "/imports/ui/controls";
 import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
 import ListFilter from "./list-filter";
 

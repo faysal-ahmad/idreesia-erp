@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
 import { flowRight } from "lodash";
 
 import { JobTypes } from "meteor/idreesia-common/constants";
+import { Form, message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { WithCompanies } from "/imports/ui/modules/accounts/common/composers";
 import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Divider, Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { Divider, Form, message } from '/imports/ui/controls';
 import { ItemsList } from '../common/items-list';
 import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
 import {

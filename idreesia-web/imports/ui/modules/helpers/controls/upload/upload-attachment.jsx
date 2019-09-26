@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Upload, message } from "antd";
+
+import { Button, Icon, Upload, message } from "/imports/ui/controls";
 
 const UploadAttachment = ({
   onUploadFinish,

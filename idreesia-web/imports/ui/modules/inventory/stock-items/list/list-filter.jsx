@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
 import { flowRight } from 'lodash';
 
+import { Button, Collapse, Form, Icon, Row, Tooltip } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,

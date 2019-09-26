@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Webcam from "react-webcam";
-import { Button, Select } from "antd";
+
+import { Button, Select } from "/imports/ui/controls";
 
 export default class TakePictureForm extends Component {
   static propTypes = {

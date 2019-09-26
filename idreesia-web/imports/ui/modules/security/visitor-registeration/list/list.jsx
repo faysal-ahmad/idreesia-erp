@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
+
 import {
   Avatar,
   Button,
@@ -9,11 +13,7 @@ import {
   Table,
   Tooltip,
   message,
-} from 'antd';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
-
+} from '/imports/ui/controls';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import ListFilter from './list-filter';
 

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, DatePicker, Drawer, Spin, Table } from "antd";
 import { filter, flowRight, keyBy } from "lodash";
 import numeral from "numeral";
 
+import { Button, DatePicker, Drawer, Spin, Table } from "/imports/ui/controls";
 import {
   WithAccountHeadsByCompany,
   WithAccountMonthlyBalancesByCompany,

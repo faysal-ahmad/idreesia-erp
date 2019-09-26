@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Upload } from "antd";
+
+import { Button, Icon, Upload } from "/imports/ui/controls";
 
 export default class InputFile extends Component {
   static propTypes = {

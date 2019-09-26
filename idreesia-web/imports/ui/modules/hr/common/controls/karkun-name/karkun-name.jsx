@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Avatar, Modal } from 'antd';
 
+import { Avatar, Modal } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 

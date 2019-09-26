@@ -1,11 +1,11 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Row, Tree, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { filter, flowRight } from 'lodash';
 
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { Button, Row, Tree, message } from '/imports/ui/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const permissionsData = [

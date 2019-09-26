@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import { filter, flowRight } from "lodash";
+
 import {
   Avatar,
   Button,
@@ -10,11 +14,7 @@ import {
   Menu,
   Table,
   Tooltip,
-} from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { filter, flowRight } from "lodash";
-
+} from "/imports/ui/controls";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import { Formats } from "meteor/idreesia-common/constants";
 

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Divider, Row } from "antd";
 
+import { Divider, Row } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { ScanBarcode } from "/imports/ui/modules/helpers/controls";
 import SearchResult from "./search-result";

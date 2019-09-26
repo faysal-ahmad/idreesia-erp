@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Layout, Menu } from "antd";
 import { keys, forEach } from "lodash";
 
 import { ModuleNames, ModulePaths } from "meteor/idreesia-common/constants";
+import { Layout, Menu } from "/imports/ui/controls";
 import { GlobalActionsCreator } from "../action-creators";
 import UserMenu from "./user-menu";
 

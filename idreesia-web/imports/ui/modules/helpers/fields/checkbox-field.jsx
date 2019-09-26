@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Checkbox, Form } from 'antd';
+import { Checkbox, Form } from '/imports/ui/controls';
 
 const formItemLayout = {
   labelCol: { span: 6 },

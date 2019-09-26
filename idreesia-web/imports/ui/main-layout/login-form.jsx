@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, message } from 'antd';
+
+import { Form, Icon, Input, Button, message } from '/imports/ui/controls';
 
 const loginFormButtonStyle = {
   width: '100%',

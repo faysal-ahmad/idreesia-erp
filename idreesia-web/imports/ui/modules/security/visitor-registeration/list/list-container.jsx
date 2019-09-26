@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Drawer } from 'antd';
 
+import { Drawer } from '/imports/ui/controls';
 import { WithBreadcrumbs } from '/imports/ui/composers';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 

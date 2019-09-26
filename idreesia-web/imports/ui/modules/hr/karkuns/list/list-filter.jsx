@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { Button, Collapse, Form, Icon, Row, Tooltip } from '/imports/ui/controls';
 import {
   CheckboxField,
   InputCnicField,

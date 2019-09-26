@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
+
+import { Formats } from 'meteor/idreesia-common/constants';
 import {
   Dropdown,
   Icon,
@@ -10,13 +16,7 @@ import {
   Pagination,
   Popconfirm,
   message,
-} from 'antd';
-import moment from 'moment';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
-
-import { Formats } from 'meteor/idreesia-common/constants';
+} from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
 

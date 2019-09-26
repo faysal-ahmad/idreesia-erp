@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
 import { flowRight } from "lodash";
 
+import { Form, message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { JobTypes } from "meteor/idreesia-common/constants";
 import { Formats } from "meteor/idreesia-common/constants";

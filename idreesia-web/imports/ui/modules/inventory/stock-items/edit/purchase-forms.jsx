@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Icon, Table, Tooltip } from 'antd';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { Icon, Table, Tooltip } from '/imports/ui/controls';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 const ActionsStyle = {

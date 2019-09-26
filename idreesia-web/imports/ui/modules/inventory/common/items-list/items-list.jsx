@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { Icon, Table, Tooltip, message } from 'antd';
 import { filter, find } from 'lodash';
 
+import { Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { default as ItemForm } from './item-form';
 
 const IconStyle = {

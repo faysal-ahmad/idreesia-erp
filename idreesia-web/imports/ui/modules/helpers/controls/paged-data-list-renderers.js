@@ -1,7 +1,7 @@
 import React from "react";
-import { Avatar } from "antd";
 import { Link } from "react-router-dom";
 
+import { Avatar } from "/imports/ui/controls";
 import getDownloadUrl from "../misc/get-download-url";
 
 const NameDivStyle = {

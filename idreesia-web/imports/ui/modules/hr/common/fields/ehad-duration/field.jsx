@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form } from 'antd';
 import moment from 'moment';
 
+import { Form } from '/imports/ui/controls';
 import Input from './input';
 
 const formItemLayout = {

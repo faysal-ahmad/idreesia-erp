@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Divider, Form } from "antd";
 import moment from "moment";
 import { flowRight, noop } from "lodash";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
+import { Divider, Form } from "/imports/ui/controls";
 import { ItemsList } from "../common/items-list";
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {

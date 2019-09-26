@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Modal, message } from "antd";
 import moment from "moment";
 
+import { Button, Icon, Modal, message } from "/imports/ui/controls";
 import { getUploadUrl } from "/imports/ui/modules/helpers/misc";
 import TakePictureForm from "./take-picture-form";
 

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Form, Icon, Input } from "antd";
+
+import { Form, Icon, Input } from "/imports/ui/controls";
 
 class ChangePasswordForm extends Component {
   static propTypes = {

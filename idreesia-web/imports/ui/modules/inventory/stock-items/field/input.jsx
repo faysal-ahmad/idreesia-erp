@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Drawer, Icon, Input } from "antd";
 
+import { Drawer, Icon, Input } from "/imports/ui/controls";
 import ListContainer from "./list-container";
 
 export default class CustomInput extends Component {

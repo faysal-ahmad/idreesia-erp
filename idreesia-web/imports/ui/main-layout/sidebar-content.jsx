@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Layout } from 'antd';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { Layout } from '/imports/ui/controls';
 import { AdminSidebar } from '../modules/admin';
 import { InventorySidebar } from '../modules/inventory';
 import { HRSidebar } from '../modules/hr';

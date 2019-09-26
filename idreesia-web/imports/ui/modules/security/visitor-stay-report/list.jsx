@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Avatar, Button, Pagination, Icon, Modal, Table, message } from 'antd';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 import { find, flowRight } from 'lodash';
 
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
+import { Avatar, Button, Pagination, Icon, Modal, Table, message } from '/imports/ui/controls';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';

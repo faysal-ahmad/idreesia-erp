@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { Row, Col, Icon, Spin } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
+import { Row, Col, Icon, Spin } from "/imports/ui/controls";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import StayCard from "../card/stay-card";

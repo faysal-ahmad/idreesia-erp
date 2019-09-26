@@ -4,8 +4,8 @@ import moment from "moment";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
-import { message } from "antd";
 
+import { message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import {
   WithAllDuties,

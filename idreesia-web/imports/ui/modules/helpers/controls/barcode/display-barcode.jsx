@@ -1,8 +1,9 @@
 import { Random } from "meteor/random";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Col, Row } from "antd";
 import Barcode from "react-barcode";
+
+import { Button, Col, Row } from "/imports/ui/controls";
 
 export default class DisplayBarcode extends Component {
   static propTypes = {

@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { List } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import moment from "moment";
 import { find, flowRight } from "lodash";
 
+import { List } from "/imports/ui/controls";
 import StayReasons from "../common/constants/stay-reasons";
 
 const ViewForm = ({ formDataLoading, visitorStayById }) => {

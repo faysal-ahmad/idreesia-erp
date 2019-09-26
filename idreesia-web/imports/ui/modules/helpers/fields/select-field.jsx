@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Select, Form } from 'antd';
+
+import { Select, Form } from '/imports/ui/controls';
 
 const formItemLayout = {
   labelCol: { span: 6 },

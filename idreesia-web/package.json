@@ -2,9 +2,9 @@
   "name": "idreesia-web",
   "private": true,
   "scripts": {
-    "start": "MONGO_URL=mongodb://localhost:27017/idreesia-erp METEOR_PACKAGE_DIRS=../ meteor run --settings ./private/env/settings.json",
+    "start": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor run --settings ./private/env/settings.json",
     "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build/idreesia-web",
-    "visualize": "meteor --production --extra-packages bundle-visualizer"
+    "visualize": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor --production --extra-packages bundle-visualizer --settings ./private/env/settings.json"
   },
   "dependencies": {
     "antd": "^3.23.2",
@@ -17,7 +17,6 @@
     "express": "^4.17.1",
     "graphql": "^14.4.2",
     "immutable": "~3.7.4",
-    "jquery": "^3.2.1",
     "lodash": "^4.17.15",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",
@@ -40,5 +39,8 @@
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
     "simpl-schema": "^1.5.5"
+  },
+  "devDependencies": {
+    "babel-plugin-import": "^1.12.2"
   }
 }

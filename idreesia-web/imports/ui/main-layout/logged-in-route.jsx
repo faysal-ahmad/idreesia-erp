@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Layout, Breadcrumb } from "antd";
 import { flowRight } from "lodash";
 
+import { Layout, Breadcrumb } from "/imports/ui/controls";
 import { withLoggedInUser } from "meteor/idreesia-common/composers/common";
 import HeaderContent from "./header-content";
 import SidebarContent from "./sidebar-content";

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Col, Input, Row } from "antd";
 import { debounce } from "lodash";
+
+import { Col, Input, Row } from "/imports/ui/controls";
 
 export default class ScanCnicBarcode extends Component {
   static propTypes = {

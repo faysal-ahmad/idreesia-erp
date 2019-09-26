@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import { message } from "antd";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
+import { message } from "/imports/ui/controls";
 import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
 
 class AttachmentsList extends Component {

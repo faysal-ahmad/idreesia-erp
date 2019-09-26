@@ -1,5 +1,10 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import moment from "moment";
+import { find, flowRight } from "lodash";
+
 import {
   Button,
   Pagination,
@@ -11,12 +16,7 @@ import {
   Row,
   Col,
   message,
-} from "antd";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import moment from "moment";
-import { find, flowRight } from "lodash";
-
+} from "/imports/ui/controls";
 import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 import NewForm from "../new-form";

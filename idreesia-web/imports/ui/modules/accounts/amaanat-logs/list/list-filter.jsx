@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Collapse, Form, Row, Button } from "antd";
 import moment from "moment";
 
 import { Formats } from "meteor/idreesia-common/constants";
+import { Collapse, Form, Row, Button } from "/imports/ui/controls";
 import {
   InputTextField,
   SelectField,

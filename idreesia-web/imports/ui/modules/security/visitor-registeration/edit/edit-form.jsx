@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { get } from "lodash";
-import { Tabs } from "antd";
 
+import { Tabs } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import GeneralInfo from "./general-info";
 import Picture from "./picture";

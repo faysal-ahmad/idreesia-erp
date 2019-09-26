@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Form } from "antd";
+
+import { Form } from "/imports/ui/controls";
 
 import { InputTextField } from "/imports/ui/modules/helpers/fields";
 

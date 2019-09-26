@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
 import moment from "moment";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
+import { Form, message } from "/imports/ui/controls";
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
   WithPhysicalStore,

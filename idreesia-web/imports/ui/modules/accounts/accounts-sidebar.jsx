@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Menu, Icon } from "antd";
 import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 
+import { Menu, Icon } from "/imports/ui/controls";
 import { GlobalActionsCreator } from "/imports/ui/action-creators";
 import SubModuleNames from "./submodule-names";
 import { default as paths } from "./submodule-paths";

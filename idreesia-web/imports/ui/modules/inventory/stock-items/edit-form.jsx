@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { get } from "lodash";
-import { Tabs } from "antd";
 import { flowRight } from "lodash";
 
+import { Tabs } from "/imports/ui/controls";
 import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
 import {
   WithPhysicalStore,

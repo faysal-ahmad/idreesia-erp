@@ -4,8 +4,8 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 import ReactToPrint from "react-to-print";
-import { Button, Icon } from "antd";
 
+import { Button, Icon } from "/imports/ui/controls";
 import StayCard from "./stay-card";
 
 class StayCardContainer extends Component {

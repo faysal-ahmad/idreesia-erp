@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Barcode from "react-barcode";
 import moment from "moment";
-import { Card } from "antd";
 import { find } from "lodash";
 
+import { Card } from "/imports/ui/controls";
 import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 const barcodeOptions = {

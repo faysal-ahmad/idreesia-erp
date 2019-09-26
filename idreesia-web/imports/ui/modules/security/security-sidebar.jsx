@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Icon, Menu } from 'antd';
 
+import { Icon, Menu } from '/imports/ui/controls';
 import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';

@@ -1,6 +1,10 @@
 /* eslint "no-script-url": "off" */
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
+
 import {
   Button,
   Divider,
@@ -10,11 +14,7 @@ import {
   Modal,
   Popconfirm,
   message,
-} from 'antd';
-import gql from 'graphql-tag';
-import { flowRight } from 'lodash';
-import { graphql } from 'react-apollo';
-
+} from '/imports/ui/controls';
 import {
   WithAllDuties,
   WithAllDutyShifts,

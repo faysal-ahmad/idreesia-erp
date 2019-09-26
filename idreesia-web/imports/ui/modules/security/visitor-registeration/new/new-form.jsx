@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Divider, Form, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
@@ -9,6 +8,7 @@ import {
   WithDistinctCities,
   WithDistinctCountries,
 } from "meteor/idreesia-common/composers/security";
+import { Divider, Form, message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import {
   AutoCompleteField,

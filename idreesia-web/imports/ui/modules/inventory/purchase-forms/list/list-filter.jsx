@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Collapse, Form, Icon, Row, Tooltip } from 'antd';
 import moment from 'moment';
 import { flowRight } from 'lodash';
 
+import { Button, Collapse, Form, Icon, Row, Tooltip } from '/imports/ui/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   CheckboxField,

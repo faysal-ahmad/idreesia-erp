@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button, Form, Row } from "antd";
+
+import { Button, Form, Row } from "/imports/ui/controls";
 
 const buttonItemLayout = {
   wrapperCol: { span: 16, offset: 4 },

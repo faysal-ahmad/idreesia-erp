@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, message } from "antd";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { Form, message } from '/imports/ui/controls';
+import { WithBreadcrumbs } from '/imports/ui/composers';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   SwitchField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
@@ -98,10 +98,10 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createCompany",
+    name: 'createCompany',
     options: {
-      refetchQueries: ["allCompanies"],
+      refetchQueries: ['allCompanies'],
     },
   }),
-  WithBreadcrumbs(["Admin", "Setup", "Companies", "New"])
+  WithBreadcrumbs(['Admin', 'Setup', 'Companies', 'New'])
 )(NewForm);

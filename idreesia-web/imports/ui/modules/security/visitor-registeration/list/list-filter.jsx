@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, Form, Row, Button } from 'antd';
 
+import { Collapse, Form, Row, Button } from '/imports/ui/controls';
 import {
   InputCnicField,
   InputMobileField,

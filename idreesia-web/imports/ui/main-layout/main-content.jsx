@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Layout } from "antd";
 
 import { ModuleNames } from "meteor/idreesia-common/constants";
 import { withActiveModule } from "meteor/idreesia-common/composers/common";
+import { Layout } from "/imports/ui/controls";
 import { AdminRouter } from "../modules/admin";
 import { InventoryRouter } from "../modules/inventory";
 import { HRRouter } from "../modules/hr";

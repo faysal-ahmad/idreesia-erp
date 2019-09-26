@@ -1,10 +1,10 @@
 import { Meteor } from "meteor/meteor";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Avatar, Dropdown, Menu, Modal, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
+import { Avatar, Dropdown, Menu, Modal, message } from "/imports/ui/controls";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
 import ChangePasswordForm from "./change-password-form";
 

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { find, flowRight } from "lodash";
-import { Button, Col, Form, Row, message } from "antd";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
+import { Button, Col, Form, Row, message } from "/imports/ui/controls";
 import {
   InputTextField,
   InputNumberField,

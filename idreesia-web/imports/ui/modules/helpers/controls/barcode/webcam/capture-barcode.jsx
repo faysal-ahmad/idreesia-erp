@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, Icon, Modal } from "antd";
 
+import { Button, Icon, Modal } from "/imports/ui/controls";
 import CaptureBarcodeForm from "./capture-barcode-form";
 
 export default class CaptureBarcode extends Component {

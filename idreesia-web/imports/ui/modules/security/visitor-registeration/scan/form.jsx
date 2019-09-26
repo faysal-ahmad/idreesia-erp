@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Button, Divider, Row, Col, message } from "/imports/ui/controls";
 import { WithBreadcrumbs } from "/imports/ui/composers";
 import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
-import { ScanCnicQRCode } from "/imports/ui/modules/helpers/controls";
+import { ScanCnic } from "/imports/ui/modules/helpers/controls";
 import SearchResult from "./search-result";
 
 class Form extends Component {
@@ -45,7 +45,7 @@ class Form extends Component {
       <Fragment>
         <Row type="flex" justify="space-between">
           <Col order={1}>
-            <ScanCnicQRCode onCnicCaptured={this.onCnicCaptured} />
+            <ScanCnic onCnicCaptured={this.onCnicCaptured} />
           </Col>
           <Col order={2}>
             <Button size="large" icon="search" onClick={this.handleSearch}>

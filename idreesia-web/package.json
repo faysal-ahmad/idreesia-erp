@@ -16,7 +16,6 @@
     "csvtojson": "^2.0.10",
     "express": "^4.17.1",
     "graphql": "^14.4.2",
-    "immutable": "~3.7.4",
     "lodash": "^4.17.15",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",
@@ -24,7 +23,6 @@
     "multer": "^1.4.1",
     "numeral": "^2.0.6",
     "prop-types": "^15.7.2",
-    "quagga": "^0.12.1",
     "query-string": "^6.8.2",
     "react": "^16.9.0",
     "react-apollo": "^3.0.1",
@@ -39,8 +37,5 @@
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
     "simpl-schema": "^1.5.5"
-  },
-  "devDependencies": {
-    "babel-plugin-import": "^1.12.2"
   }
 }

@@ -4,7 +4,7 @@ import { debounce } from "lodash";
 
 import { Col, Input, Row } from "/imports/ui/controls";
 
-export default class ScanCnicQRCode extends Component {
+export default class ScanCnic extends Component {
   static propTypes = {
     onCnicCaptured: PropTypes.func,
   };

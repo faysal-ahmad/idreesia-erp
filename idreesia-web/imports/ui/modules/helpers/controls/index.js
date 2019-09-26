@@ -5,11 +5,8 @@ export { default as RecordInfo } from './record-info/record-info';
 
 export { default as InputFile } from './file/input-file';
 
-export { default as ScanCnicBarcode } from './cnic/scan-cnic-barcode';
-export { default as ScanCnicQRCode } from './cnic/scan-cnic-qrcode';
-
-export { default as ScanBarcode } from './barcode/scanner/scan-barcode';
-export { default as CaptureBarcode } from './barcode/webcam/capture-barcode';
+export { default as ScanCnic } from './cnic/scan-cnic';
+export { default as ScanBarcode } from './barcode/scan-barcode';
 export { default as DisplayBarcode } from './barcode/display-barcode';
 
 export { getNameWithImageRenderer } from './paged-data-list-renderers';

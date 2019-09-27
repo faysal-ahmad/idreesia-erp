@@ -1,10 +1,10 @@
-import { Accounts } from "meteor/accounts-base";
-import { Migrations } from "meteor/percolate:migrations";
+import { Accounts } from 'meteor/accounts-base';
+import { Migrations } from 'meteor/percolate:migrations';
 import {
   PhysicalStores,
   ItemTypes,
   StockItems,
-} from "meteor/idreesia-common/collections/inventory";
+} from 'meteor/idreesia-common/server/collections/inventory';
 
 /**
  * This migration takes all the attributes from item types, and updates the stock items
@@ -15,7 +15,7 @@ import {
 Migrations.add({
   version: 5,
   up() {
-    const adminUser = Accounts.findUserByUsername("erp-admin");
+    const adminUser = Accounts.findUserByUsername('erp-admin');
     const date = new Date();
 
     // Rename itemCategoryId to categoryId
@@ -85,7 +85,7 @@ Migrations.add({
       {},
       {
         $unset: {
-          itemTypeId: "",
+          itemTypeId: '',
         },
       }
     );

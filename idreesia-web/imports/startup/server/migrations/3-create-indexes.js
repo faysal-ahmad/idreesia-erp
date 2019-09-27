@@ -1,24 +1,24 @@
-import { Migrations } from "meteor/percolate:migrations";
-import { StockItems } from "meteor/idreesia-common/collections/inventory";
-import { Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Migrations } from 'meteor/percolate:migrations';
+import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
+import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import {
   AccountHeads,
   Vouchers,
   VoucherDetails,
-} from "meteor/idreesia-common/collections/accounts";
+} from 'meteor/idreesia-common/server/collections/accounts';
 
 Migrations.add({
   version: 3,
   up() {
     // Inventory Indexes
     const stockItems = StockItems.rawCollection();
-    stockItems.createIndex({ name: "text", company: "text", details: "text" });
+    stockItems.createIndex({ name: 'text', company: 'text', details: 'text' });
     stockItems.createIndex({ categoryId: 1 }, { background: true });
 
     // HR Indexes
     Karkuns.rawCollection().createIndex({
-      firstName: "text",
-      lastName: "text",
+      firstName: 'text',
+      lastName: 'text',
     });
 
     // Accounts Indexes

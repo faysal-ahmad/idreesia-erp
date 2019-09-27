@@ -1,10 +1,10 @@
-import { WebApp } from "meteor/webapp";
-import express from "express";
-import multer from "multer";
-import bodyParser from "body-parser";
+import { WebApp } from 'meteor/webapp';
+import express from 'express';
+import multer from 'multer';
+import bodyParser from 'body-parser';
 
-import Attachments from "meteor/idreesia-common/collections/common/attachments";
-import Configurations from "meteor/idreesia-common/collections/common/configurations";
+import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
+import Configurations from 'meteor/idreesia-common/server/collections/common/configurations';
 
 Meteor.startup(() => {
   const app = express();
@@ -15,9 +15,9 @@ Meteor.startup(() => {
    * Prints the ngrok redirect url
    */
   app.get(
-    "/redirect",
+    '/redirect',
     Meteor.bindEnvironment((req, res) => {
-      const config = Configurations.findOne({ name: "ngrok_url" });
+      const config = Configurations.findOne({ name: 'ngrok_url' });
       if (config) {
         res.redirect(config.value);
       } else {
@@ -31,16 +31,16 @@ Meteor.startup(() => {
    * Endpoint for file downloads
    */
   app.get(
-    "/download-file",
+    '/download-file',
     bodyParser.urlencoded({ extended: false }),
     Meteor.bindEnvironment((req, res) => {
       const { attachmentId } = req.query;
       if (attachmentId) {
         const attachment = Attachments.findOne(attachmentId);
         if (attachment) {
-          const imgData = Buffer.from(attachment.data, "base64");
+          const imgData = Buffer.from(attachment.data, 'base64');
           res.writeHead(200, {
-            "Content-Type": attachment.mimeType,
+            'Content-Type': attachment.mimeType,
           });
           res.end(imgData);
         } else {
@@ -58,14 +58,14 @@ Meteor.startup(() => {
    * Endpoint for file uploads
    */
   app.post(
-    "/upload-file",
-    upload.single("file"),
+    '/upload-file',
+    upload.single('file'),
     Meteor.bindEnvironment((req, res) => {
       const { file } = req;
       const attachment = {
         name: file.originalname,
         mimeType: file.mimetype,
-        data: file.buffer.toString("base64"),
+        data: file.buffer.toString('base64'),
       };
       const attachmentId = Attachments.insert(attachment);
       res.writeHead(200);
@@ -77,8 +77,8 @@ Meteor.startup(() => {
    * Endpoint for base64 image uploads
    */
   app.post(
-    "/upload-base64-file",
-    bodyParser.json({ limit: "5mb" }),
+    '/upload-base64-file',
+    bodyParser.json({ limit: '5mb' }),
     Meteor.bindEnvironment((req, res) => {
       const { name, mimeType, data } = req.body;
       const attachment = {

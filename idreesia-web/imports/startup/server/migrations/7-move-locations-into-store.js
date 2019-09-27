@@ -1,8 +1,8 @@
-import { Migrations } from "meteor/percolate:migrations";
+import { Migrations } from 'meteor/percolate:migrations';
 import {
   PhysicalStores,
   Locations,
-} from "meteor/idreesia-common/collections/inventory";
+} from 'meteor/idreesia-common/server/collections/inventory';
 
 Migrations.add({
   version: 7,

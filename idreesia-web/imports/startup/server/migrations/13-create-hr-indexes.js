@@ -4,7 +4,7 @@ import {
   Karkuns,
   KarkunDuties,
   SharedResidences,
-} from 'meteor/idreesia-common/collections/hr';
+} from 'meteor/idreesia-common/server/collections/hr';
 
 Migrations.add({
   version: 13,

@@ -1,6 +1,6 @@
-import { Migrations } from "meteor/percolate:migrations";
+import { Migrations } from 'meteor/percolate:migrations';
 
-import { AccountMonthlyBalances } from "meteor/idreesia-common/collections/accounts";
+import { AccountMonthlyBalances } from 'meteor/idreesia-common/server/collections/accounts';
 
 Migrations.add({
   version: 8,

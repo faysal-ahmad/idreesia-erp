@@ -1,6 +1,6 @@
-import { Migrations } from "meteor/percolate:migrations";
+import { Migrations } from 'meteor/percolate:migrations';
 
-import { Karkuns } from "meteor/idreesia-common/collections/hr";
+import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 
 Migrations.add({
   version: 9,

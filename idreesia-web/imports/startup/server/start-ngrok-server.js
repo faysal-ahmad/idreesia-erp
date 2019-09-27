@@ -1,17 +1,17 @@
-import ngrok from "ngrok";
+import ngrok from 'ngrok';
 
-import Configurations from "meteor/idreesia-common/collections/common/configurations";
+import Configurations from 'meteor/idreesia-common/server/collections/common/configurations';
 
 Meteor.startup(async () => {
   if (Meteor.isProduction) {
     try {
       const url = await ngrok.connect({
-        proto: "http",
+        proto: 'http',
         addr: 3000,
         bind_tls: true,
       });
 
-      Configurations.upsert({ name: "ngrok_url" }, { $set: { value: url } });
+      Configurations.upsert({ name: 'ngrok_url' }, { $set: { value: url } });
       // eslint-disable-next-line no-console
       console.log(`Ngrok server started at url ${url}`);
     } catch (error) {

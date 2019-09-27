@@ -1,15 +1,15 @@
-import { Migrations } from "meteor/percolate:migrations";
+import { Migrations } from 'meteor/percolate:migrations';
 
 import {
   Visitors,
   VisitorStays,
-} from "meteor/idreesia-common/collections/security";
+} from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 10,
   up() {
     const visitors = Visitors.rawCollection();
-    visitors.createIndex({ name: "text" });
+    visitors.createIndex({ name: 'text' });
     visitors.createIndex({ cnicNumber: 1 }, { background: true });
     visitors.createIndex({ contactNumber1: 1 }, { background: true });
     visitors.createIndex({ contactNumber2: 1 }, { background: true });

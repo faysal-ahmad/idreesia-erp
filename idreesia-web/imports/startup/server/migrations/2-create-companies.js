@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Migrations } from 'meteor/percolate:migrations';
-import { Companies } from 'meteor/idreesia-common/collections/accounts';
+import { Companies } from 'meteor/idreesia-common/server/collections/accounts';
 
 const config = {
   user: 'erp-server',

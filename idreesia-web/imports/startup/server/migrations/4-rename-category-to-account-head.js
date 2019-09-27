@@ -1,5 +1,5 @@
-import { Migrations } from "meteor/percolate:migrations";
-import { VoucherDetails } from "meteor/idreesia-common/collections/accounts";
+import { Migrations } from 'meteor/percolate:migrations';
+import { VoucherDetails } from 'meteor/idreesia-common/server/collections/accounts';
 
 Migrations.add({
   version: 4,
@@ -11,7 +11,7 @@ Migrations.add({
           accountHeadId: voucherDetail.categoryId,
         },
         $unset: {
-          categoryId: "",
+          categoryId: '',
         },
       });
     });

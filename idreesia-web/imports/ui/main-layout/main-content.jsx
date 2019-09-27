@@ -1,53 +1,47 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { Suspense } from 'react';
+import PropTypes from 'prop-types';
 
-import { ModuleNames } from "meteor/idreesia-common/constants";
-import { withActiveModule } from "meteor/idreesia-common/composers/common";
-import { Layout } from "/imports/ui/controls";
-import { AdminRouter } from "../modules/admin";
-import { InventoryRouter } from "../modules/inventory";
-import { HRRouter } from "../modules/hr";
-import { AccountsRouter } from "../modules/accounts";
-import { SecurityRouter } from "../modules/security";
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { withActiveModule } from 'meteor/idreesia-common/composers/common';
+import { Layout } from './antd-controls';
 
-const { Content } = Layout;
+const routersMap = {
+  [ModuleNames.admin]: React.lazy(() =>
+    import('/imports/ui/modules/admin/admin-router')
+  ),
+  [ModuleNames.inventory]: React.lazy(() =>
+    import('/imports/ui/modules/inventory/inventory-router')
+  ),
+  [ModuleNames.hr]: React.lazy(() =>
+    import('/imports/ui/modules/hr/hr-router')
+  ),
+  [ModuleNames.accounts]: React.lazy(() =>
+    import('/imports/ui/modules/accounts/accounts-router')
+  ),
+  [ModuleNames.security]: React.lazy(() =>
+    import('/imports/ui/modules/security/security-router')
+  ),
+};
 
 const MainContent = props => {
-  let main;
   const { activeModuleName } = props;
+  const Router = routersMap[activeModuleName];
 
-  switch (activeModuleName) {
-    case ModuleNames.admin:
-      main = <AdminRouter />;
-      break;
-
-    case ModuleNames.inventory:
-      main = <InventoryRouter />;
-      break;
-
-    case ModuleNames.hr:
-      main = <HRRouter />;
-      break;
-
-    case ModuleNames.accounts:
-      main = <AccountsRouter />;
-      break;
-
-    case ModuleNames.security:
-      main = <SecurityRouter />;
-      break;
-
-    default:
-      main = <div />;
-      break;
+  let main = <div />;
+  if (Router) {
+    main = (
+      <Suspense fallback={<div />}>
+        <Router />
+      </Suspense>
+    );
   }
 
   return (
-    <Content
-      style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}
+    <Layout.Content
+      style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}
     >
       {main}
-    </Content>
+    </Layout.Content>
   );
 };
 

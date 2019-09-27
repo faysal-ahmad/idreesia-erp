@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
-import { Avatar, Dropdown, Menu, Modal, message } from "/imports/ui/controls";
 import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+import { Avatar, Dropdown, Menu, Modal, message } from "./antd-controls";
 import ChangePasswordForm from "./change-password-form";
 
 const ContainerStyle = {

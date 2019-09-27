@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 import { keys, forEach } from "lodash";
 
 import { ModuleNames, ModulePaths } from "meteor/idreesia-common/constants";
-import { Layout, Menu } from "/imports/ui/controls";
 import { GlobalActionsCreator } from "../action-creators";
+import { Layout, Menu } from "./antd-controls";
 import UserMenu from "./user-menu";
 
 const ContainerStyle = {

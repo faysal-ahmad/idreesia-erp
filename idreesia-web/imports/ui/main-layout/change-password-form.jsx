@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import { Form, Icon, Input } from "/imports/ui/controls";
+import { Form, Input } from './antd-controls';
 
 class ChangePasswordForm extends Component {
   static propTypes = {
@@ -11,36 +11,32 @@ class ChangePasswordForm extends Component {
   };
 
   getOldPasswordField() {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     const rules = [
       {
         required: true,
-        message: "Please input your old password.",
+        message: 'Please input your old password.',
       },
     ];
-    return getFieldDecorator("oldPassword", { rules })(
-      <Input
-        type="password"
-        placeholder="Old Password"
-        prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
-      />
+    return getFieldDecorator('oldPassword', { rules })(
+      <Input type="password" placeholder="Old Password" />
     );
   }
 
   getNewPasswordField() {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     const rules = [
       {
         required: true,
-        message: "Please input your new password.",
+        message: 'Please input your new password.',
       },
     ];
-    return getFieldDecorator("newPassword", { rules })(
-      <Input
-        type="password"
-        placeholder="New Password"
-        prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
-      />
+    return getFieldDecorator('newPassword', { rules })(
+      <Input type="password" placeholder="New Password" />
     );
   }
 

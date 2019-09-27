@@ -1,50 +1,45 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { Layout } from '/imports/ui/controls';
-import { AdminSidebar } from '../modules/admin';
-import { InventorySidebar } from '../modules/inventory';
-import { HRSidebar } from '../modules/hr';
-import { AccountsSidebar } from '../modules/accounts';
-import { SecuritySidebar } from '../modules/security';
+import { Layout } from './antd-controls';
 
-const { Sider } = Layout;
+const sidebarsMap = {
+  [ModuleNames.admin]: React.lazy(() =>
+    import('/imports/ui/modules/admin/admin-sidebar')
+  ),
+  [ModuleNames.inventory]: React.lazy(() =>
+    import('/imports/ui/modules/inventory/inventory-sidebar')
+  ),
+  [ModuleNames.hr]: React.lazy(() =>
+    import('/imports/ui/modules/hr/hr-sidebar')
+  ),
+  [ModuleNames.accounts]: React.lazy(() =>
+    import('/imports/ui/modules/accounts/accounts-sidebar')
+  ),
+  [ModuleNames.security]: React.lazy(() =>
+    import('/imports/ui/modules/security/security-sidebar')
+  ),
+};
 
 const SidebarContent = props => {
-  let sidebar;
-  const { history, activeModuleName } = props;
+  const { activeModuleName, history } = props;
+  const ModuleSidebar = sidebarsMap[activeModuleName];
 
-  switch (activeModuleName) {
-    case ModuleNames.admin:
-      sidebar = <AdminSidebar history={history} />;
-      break;
-
-    case ModuleNames.inventory:
-      sidebar = <InventorySidebar history={history} />;
-      break;
-
-    case ModuleNames.hr:
-      sidebar = <HRSidebar history={history} />;
-      break;
-
-    case ModuleNames.accounts:
-      sidebar = <AccountsSidebar history={history} />;
-      break;
-
-    case ModuleNames.security:
-      sidebar = <SecuritySidebar history={history} />;
-      break;
-
-    default:
-      break;
+  let sidebar = <div />;
+  if (ModuleSidebar) {
+    sidebar = (
+      <Suspense fallback={<div />}>
+        <ModuleSidebar history={history} />
+      </Suspense>
+    );
   }
 
   return (
-    <Sider width={220} style={{ background: '#fff' }}>
+    <Layout.Sider width={220} style={{ background: '#fff' }}>
       {sidebar}
-    </Sider>
+    </Layout.Sider>
   );
 };
 

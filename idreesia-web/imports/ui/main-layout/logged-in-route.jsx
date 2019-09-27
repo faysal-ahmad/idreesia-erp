@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { flowRight } from "lodash";
 
-import { Layout, Breadcrumb } from "/imports/ui/controls";
 import { withLoggedInUser } from "meteor/idreesia-common/composers/common";
+import { Layout, Breadcrumb } from "./antd-controls";
 import HeaderContent from "./header-content";
 import SidebarContent from "./sidebar-content";
 import MainContent from "./main-content";

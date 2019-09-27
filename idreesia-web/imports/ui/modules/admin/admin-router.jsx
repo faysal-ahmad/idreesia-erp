@@ -1,28 +1,28 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
-import { default as paths } from "./submodule-paths";
+import { default as paths } from './submodule-paths';
 import {
   AdminJobsList,
   AdminJobsNewAccountsImport,
   AdminJobsNewVouchersImport,
   AdminJobsNewAccountsCalculation,
-} from "./admin-jobs";
+} from './admin-jobs';
 import {
   AccountsNewForm,
   AccountsEditForm,
   AccountsList,
-} from "./security-accounts";
+} from './security-accounts';
 import {
   PhysicalStoresNewForm,
   PhysicalStoresEditForm,
   PhysicalStoresList,
-} from "./physical-stores";
+} from './physical-stores';
 import {
   CompaniesNewForm,
   CompaniesEditForm,
   CompaniesList,
-} from "./companies";
+} from './companies';
 
 const AdminRouter = () => (
   <Switch>

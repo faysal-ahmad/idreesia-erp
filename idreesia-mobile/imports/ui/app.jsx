@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createContainer } from 'meteor/react-meteor-data';
 import { Switch, Route } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import combinedReducer from './reducers/combined-reducer';
 import { LoggedInRoute, LoggedOutRoute } from './main-layout';
@@ -35,9 +35,6 @@ App.propTypes = {
   userId: PropTypes.string,
 };
 
-export default createContainer(
-  () => ({
-    userId: Meteor.userId(),
-  }),
-  App
-);
+export default withTracker(() => ({
+  userId: Meteor.userId(),
+}))(App);

@@ -26,6 +26,9 @@ class InventorySidebar extends Component {
     if (key.startsWith('stock-items')) {
       setActiveSubModuleName(SubModuleNames.stockItems);
       history.push(paths.stockItemsPath(physicalStoreId));
+    } else if (key.startsWith('status-dashboard')) {
+      setActiveSubModuleName(SubModuleNames.statusDashboard);
+      history.push(paths.statusDashboardPath(physicalStoreId));
     } else if (key.startsWith('issuance-forms')) {
       setActiveSubModuleName(SubModuleNames.issuanceForms);
       history.push(paths.issuanceFormsPath(physicalStoreId));
@@ -74,7 +77,19 @@ class InventorySidebar extends Component {
             parent-key={physicalStore._id}
             key={`stock-items-${physicalStore._id}`}
           >
-            Stock Items
+            <span>
+              <Icon type="reconciliation" />
+              Stock Items
+            </span>
+          </Menu.Item>
+          <Menu.Item
+            parent-key={physicalStore._id}
+            key={`status-dashboard-${physicalStore._id}`}
+          >
+            <span>
+              <Icon type="pie-chart" />
+              Status Dashboard
+            </span>
           </Menu.Item>
           <Menu.SubMenu
             key={`forms-${physicalStore._id}`}

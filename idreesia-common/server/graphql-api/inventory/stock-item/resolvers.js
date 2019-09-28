@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   PhysicalStores,
   ItemCategories,
@@ -89,6 +90,74 @@ export default {
         _id: { $in: _ids },
         physicalStoreId: { $eq: physicalStoreId },
       }).fetch();
+    },
+
+    statistics(obj, { physicalStoreId }, { user }) {
+      if (hasInstanceAccess(user._id, physicalStoreId) === false) return null;
+
+      const itemsWithImages = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        imageId: { $ne: null },
+      }).count();
+
+      const itemsWithoutImages = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        $or: [{ imageId: { $exists: false } }, { imageId: { $eq: null } }],
+      }).count();
+
+      const itemsWithPositiveStockLevel = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        currentStockLevel: { $gt: 0 },
+      }).count();
+
+      const itemsWithLessThanMinStockLevel = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        minStockLevel: { $ne: null },
+        $expr: { $gt: ['$minStockLevel', '$currentStockLevel'] },
+      }).count();
+
+      const itemsWithNegativeStockLevel = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        currentStockLevel: { $lt: 0 },
+      }).count();
+
+      const m3 = moment()
+        .subtract(3, 'months')
+        .toDate();
+      const m6 = moment()
+        .subtract(6, 'months')
+        .toDate();
+
+      const itemsVerifiedLessThanThreeMonthsAgo = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
+      }).count();
+
+      const itemsVerifiedThreeToSixMonthsAgo = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        $and: [
+          { verifiedOn: { $ne: null } },
+          { verifiedOn: { $gt: m6 } },
+          { verifiedOn: { $lt: m3 } },
+        ],
+      }).count();
+
+      const itemsVerifiedMoreThanSixMonthsAgo = StockItems.find({
+        physicalStoreId: { $eq: physicalStoreId },
+        $or: [{ verifiedOn: { $eq: null } }, { verifiedOn: { $lt: m6 } }],
+      }).count();
+
+      return {
+        physicalStoreId,
+        itemsWithImages,
+        itemsWithoutImages,
+        itemsWithPositiveStockLevel,
+        itemsWithLessThanMinStockLevel,
+        itemsWithNegativeStockLevel,
+        itemsVerifiedLessThanThreeMonthsAgo,
+        itemsVerifiedThreeToSixMonthsAgo,
+        itemsVerifiedMoreThanSixMonthsAgo,
+      };
     },
   },
 

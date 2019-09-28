@@ -31,10 +31,24 @@ type PagedStockItem {
   data: [StockItem]
 }
 
+type InventoryStatistics {
+  physicalStoreId: String
+  itemsWithImages: Int
+  itemsWithoutImages: Int
+  itemsWithPositiveStockLevel: Int
+  itemsWithLessThanMinStockLevel: Int
+  itemsWithNegativeStockLevel: Int
+  itemsVerifiedLessThanThreeMonthsAgo: Int
+  itemsVerifiedThreeToSixMonthsAgo: Int
+  itemsVerifiedMoreThanSixMonthsAgo: Int
+}
+
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
   stockItemById(_id: String!): StockItem
   stockItemsById(physicalStoreId: String!, _ids: [String]!): [StockItem]
+
+  statistics(physicalStoreId: String!): InventoryStatistics
 }
 
 extend type Mutation {

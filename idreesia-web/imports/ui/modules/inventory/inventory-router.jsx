@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import { default as paths } from './submodule-paths';
 import { IssuanceReport } from './issuance-report';
 import { PurchasingReport } from './purchasing-report';
+import { StatusDashboard } from './status-dashboard';
 import {
   StockItemsNewForm,
   StockItemsEditForm,
@@ -43,6 +44,7 @@ const InventoryRouter = () => (
   <Switch>
     <Route path={paths.issuanceReportPath()} component={IssuanceReport} />
     <Route path={paths.purchasingReportPath()} component={PurchasingReport} />
+    <Route path={paths.statusDashboardPath()} component={StatusDashboard} />
 
     <Route
       path={paths.itemCategoriesNewFormPath()}

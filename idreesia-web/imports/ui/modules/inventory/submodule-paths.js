@@ -2,6 +2,13 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
+  // Status Dashboard Route
+  // *************************************************************************************
+  static statusDashboardPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.inventory}/${physicalStoreId}/status-dashboard`;
+  }
+
+  // *************************************************************************************
   // Reports Routes
   // *************************************************************************************
   static issuanceReportPath(physicalStoreId = ':physicalStoreId') {

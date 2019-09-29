@@ -8,6 +8,7 @@ import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common'
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
+  WithLocationsByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
 
 import Report from './report';
@@ -20,6 +21,8 @@ class ReportContainer extends Component {
     physicalStoreId: PropTypes.string,
     physicalStoreLoading: PropTypes.bool,
     physicalStore: PropTypes.object,
+    locationsLoading: PropTypes.bool,
+    locationsByPhysicalStoreId: PropTypes.array,
   };
 
   state = {
@@ -32,8 +35,14 @@ class ReportContainer extends Component {
 
   render() {
     const { month } = this.state;
-    const { physicalStoreId, physicalStoreLoading, physicalStore } = this.props;
-    if (physicalStoreLoading) return null;
+    const {
+      physicalStoreId,
+      physicalStoreLoading,
+      physicalStore,
+      locationsLoading,
+      locationsByPhysicalStoreId,
+    } = this.props;
+    if (physicalStoreLoading || locationsLoading) return null;
 
     const monthString = month.startOf('month').format(Formats.DATE_FORMAT);
     return (
@@ -42,6 +51,7 @@ class ReportContainer extends Component {
         monthString={monthString}
         physicalStoreId={physicalStoreId}
         physicalStore={physicalStore}
+        locations={locationsByPhysicalStoreId}
         setPageParams={this.setPageParams}
       />
     );
@@ -51,6 +61,7 @@ class ReportContainer extends Component {
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
+  WithLocationsByPhysicalStore(),
   WithDynamicBreadcrumbs(({ physicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Reports, Issuance Report`;

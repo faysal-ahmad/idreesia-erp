@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { flowRight, reverse, sortBy } from 'lodash';
+import { flowRight, keyBy, keys, reverse, sortBy } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -24,6 +24,7 @@ class Report extends Component {
     physicalStoreId: PropTypes.string,
     setPageParams: PropTypes.func,
     loading: PropTypes.bool,
+    locations: PropTypes.array,
     purchaseFormsByMonth: PropTypes.array,
   };
 
@@ -59,6 +60,26 @@ class Report extends Component {
         }
 
         return quantity;
+      },
+    },
+    {
+      title: 'Purchased (By Location)',
+      dataIndex: 'byLocation',
+      key: 'byLocation',
+      render: (byLocation, record) => {
+        const locationIds = keys(byLocation);
+        const locationNodes = [];
+        locationIds.forEach(locationId => {
+          const locationObj = byLocation[locationId];
+          let nodeText = `${locationObj.locationName} - ${locationObj.quantity}`;
+          if (record.unitOfMeasurement !== 'quantity') {
+            nodeText = `${nodeText} ${record.unitOfMeasurement}`;
+          }
+
+          locationNodes.push(<li key={locationId}>{nodeText}</li>);
+        });
+
+        return <ul>{locationNodes}</ul>;
       },
     },
     {
@@ -120,12 +141,15 @@ class Report extends Component {
   };
 
   getPurchaseSummary = () => {
+    const { locations } = this.props;
+    const locationsMap = keyBy(locations, '_id');
     const purchaseSummary = [];
     const purchaseSummaryMap = {};
 
+    debugger;
     const { purchaseFormsByMonth } = this.props;
     purchaseFormsByMonth.forEach(purchaseForm => {
-      const { items } = purchaseForm;
+      const { locationId, items } = purchaseForm;
       items.forEach(item => {
         let summaryItem = purchaseSummaryMap[item.stockItemId];
         if (!summaryItem) {
@@ -135,6 +159,9 @@ class Report extends Component {
             stockItemImageId: item.stockItemImageId,
             categoryName: item.categoryName,
             unitOfMeasurement: item.unitOfMeasurement,
+            byLocation: {},
+            inflow: 0,
+            outflow: 0,
             quantity: 0,
             cost: 0,
           };
@@ -144,11 +171,37 @@ class Report extends Component {
         }
 
         if (item.isInflow) {
+          summaryItem.inflow += item.quantity;
           summaryItem.quantity += item.quantity;
           summaryItem.cost += item.price;
+
+          if (locationId && locationsMap[locationId]) {
+            if (!summaryItem.byLocation[locationId]) {
+              summaryItem.byLocation[locationId] = {
+                locationId,
+                locationName: locationsMap[locationId].name,
+                quantity: item.quantity,
+              };
+            } else {
+              summaryItem.byLocation[locationId].quantity += item.quantity;
+            }
+          }
         } else {
+          summaryItem.outflow += item.quantity;
           summaryItem.quantity -= item.quantity;
           summaryItem.cost -= item.price;
+
+          if (locationId && locationsMap[locationId]) {
+            if (!summaryItem.byLocation[locationId]) {
+              summaryItem.byLocation[locationId] = {
+                locationId,
+                locationName: locationsMap[locationId].name,
+                quantity: -item.quantity,
+              };
+            } else {
+              summaryItem.byLocation[locationId].quantity -= item.quantity;
+            }
+          }
         }
       });
     });
@@ -181,6 +234,7 @@ const listQuery = gql`
     purchaseFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
       _id
       purchaseDate
+      locationId
       items {
         stockItemId
         quantity

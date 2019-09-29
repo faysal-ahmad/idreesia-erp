@@ -24,7 +24,11 @@ const Dashboard = props => {
           <Badge
             showZero
             overflowCount={9999}
-            style={{ backgroundColor: '#fff', color: '#000' }}
+            style={{
+              backgroundColor: '#fff',
+              color: '#000',
+              fontWeight: 'bold',
+            }}
             count={statistics.itemsWithImages + statistics.itemsWithoutImages}
           />
         </Descriptions.Item>

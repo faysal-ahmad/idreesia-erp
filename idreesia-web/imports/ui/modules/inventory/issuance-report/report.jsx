@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { flowRight, reverse, sortBy } from 'lodash';
+import { flowRight, keyBy, keys, reverse, sortBy } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -24,6 +24,7 @@ class Report extends Component {
     physicalStoreId: PropTypes.string,
     setPageParams: PropTypes.func,
     loading: PropTypes.bool,
+    locations: PropTypes.array,
     issuanceFormsByMonth: PropTypes.array,
   };
 
@@ -59,6 +60,26 @@ class Report extends Component {
         }
 
         return quantity;
+      },
+    },
+    {
+      title: 'Issued (By Location)',
+      dataIndex: 'byLocation',
+      key: 'byLocation',
+      render: (byLocation, record) => {
+        const locationIds = keys(byLocation);
+        const locationNodes = [];
+        locationIds.forEach(locationId => {
+          const locationObj = byLocation[locationId];
+          let nodeText = `${locationObj.locationName} - ${locationObj.quantity}`;
+          if (record.unitOfMeasurement !== 'quantity') {
+            nodeText = `${nodeText} ${record.unitOfMeasurement}`;
+          }
+
+          locationNodes.push(<li key={locationId}>{nodeText}</li>);
+        });
+
+        return <ul>{locationNodes}</ul>;
       },
     },
   ];
@@ -115,13 +136,15 @@ class Report extends Component {
   };
 
   getIssuanceSummary = () => {
+    const { locations } = this.props;
+    const locationsMap = keyBy(locations, '_id');
     const issuanceSummary = [];
     const issuanceSummaryMap = {};
 
     const { issuanceFormsByMonth } = this.props;
     if (!issuanceFormsByMonth) return null;
     issuanceFormsByMonth.forEach(issuanceForm => {
-      const { items } = issuanceForm;
+      const { locationId, items } = issuanceForm;
       items.forEach(item => {
         let summaryItem = issuanceSummaryMap[item.stockItemId];
         if (!summaryItem) {
@@ -131,6 +154,7 @@ class Report extends Component {
             stockItemImageId: item.stockItemImageId,
             categoryName: item.categoryName,
             unitOfMeasurement: item.unitOfMeasurement,
+            byLocation: {},
             quantity: 0,
           };
 
@@ -140,8 +164,32 @@ class Report extends Component {
 
         if (item.isInflow) {
           summaryItem.quantity -= item.quantity;
+
+          if (locationId && locationsMap[locationId]) {
+            if (!summaryItem.byLocation[locationId]) {
+              summaryItem.byLocation[locationId] = {
+                locationId,
+                locationName: locationsMap[locationId].name,
+                quantity: -item.quantity,
+              };
+            } else {
+              summaryItem.byLocation[locationId].quantity -= item.quantity;
+            }
+          }
         } else {
           summaryItem.quantity += item.quantity;
+
+          if (locationId && locationsMap[locationId]) {
+            if (!summaryItem.byLocation[locationId]) {
+              summaryItem.byLocation[locationId] = {
+                locationId,
+                locationName: locationsMap[locationId].name,
+                quantity: item.quantity,
+              };
+            } else {
+              summaryItem.byLocation[locationId].quantity += item.quantity;
+            }
+          }
         }
       });
     });
@@ -174,6 +222,7 @@ const listQuery = gql`
     issuanceFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
       _id
       issueDate
+      locationId
       items {
         stockItemId
         quantity

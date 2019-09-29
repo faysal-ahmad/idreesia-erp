@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import { GlobalActionsCreator } from "/imports/ui/action-creators";
+import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
 
 export default getBreadcrumbs => WrappedComponent => {
   class WithDynamicBreadcrumbs extends Component {
@@ -13,7 +13,7 @@ export default getBreadcrumbs => WrappedComponent => {
     componentDidMount() {
       const { setBreadcrumbs } = this.props;
       const breadcrumbs = getBreadcrumbs(this.props)
-        .split(",")
+        .split(',')
         .map(str => str.trim());
       setBreadcrumbs(breadcrumbs);
     }
@@ -23,7 +23,7 @@ export default getBreadcrumbs => WrappedComponent => {
       const prevBreadcrumbs = getBreadcrumbs(prevProps);
       const newBreadcrumbs = getBreadcrumbs(this.props);
       if (prevBreadcrumbs !== newBreadcrumbs) {
-        const breadcrumbs = newBreadcrumbs.split(",").map(str => str.trim());
+        const breadcrumbs = newBreadcrumbs.split(',').map(str => str.trim());
         setBreadcrumbs(breadcrumbs);
       }
     }
@@ -39,5 +39,8 @@ export default getBreadcrumbs => WrappedComponent => {
     },
   });
 
-  return connect(null, mapDispatchToProps)(WithDynamicBreadcrumbs);
+  return connect(
+    null,
+    mapDispatchToProps
+  )(WithDynamicBreadcrumbs);
 };

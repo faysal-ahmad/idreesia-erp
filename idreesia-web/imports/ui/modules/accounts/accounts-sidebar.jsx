@@ -1,38 +1,38 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
-import { Menu, Icon } from "/imports/ui/controls";
-import { GlobalActionsCreator } from "/imports/ui/action-creators";
-import SubModuleNames from "./submodule-names";
-import { default as paths } from "./submodule-paths";
+import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
+import { Menu, Icon } from '/imports/ui/controls';
+import SubModuleNames from './submodule-names';
+import { default as paths } from './submodule-paths';
 
 class AccountsSidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
+    activeModuleName: PropTypes.string,
+    activeSubModuleName: PropTypes.string,
     setActiveSubModuleName: PropTypes.func,
-
     loading: PropTypes.bool,
     allAccessibleCompanies: PropTypes.array,
   };
 
   handleMenuItemSelected = ({ item, key }) => {
     const { history, setActiveSubModuleName } = this.props;
-    const companyId = item.props["parent-key"];
+    const companyId = item.props['parent-key'];
 
-    if (key.startsWith("account-heads")) {
+    if (key.startsWith('account-heads')) {
       setActiveSubModuleName(SubModuleNames.accountHeads);
       history.push(paths.accountHeadsPath(companyId));
-    } else if (key.startsWith("activity-sheet")) {
+    } else if (key.startsWith('activity-sheet')) {
       setActiveSubModuleName(SubModuleNames.activitySheet);
       history.push(paths.activitySheetPath(companyId));
-    } else if (key.startsWith("vouchers")) {
+    } else if (key.startsWith('vouchers')) {
       setActiveSubModuleName(SubModuleNames.vouchers);
       history.push(paths.vouchersPath(companyId));
-    } else if (key === "amaanat-logs") {
+    } else if (key === 'amaanat-logs') {
       setActiveSubModuleName(SubModuleNames.amaanatLogs);
       history.push(paths.amaanatLogsPath);
     }
@@ -85,8 +85,7 @@ class AccountsSidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={["home"]}
-        style={{ height: "100%", borderRight: 0 }}
+        style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
         {subMenus}
@@ -104,16 +103,10 @@ const listQuery = gql`
   }
 `;
 
-const mapDispatchToProps = dispatch => ({
-  setActiveSubModuleName: subModuleName => {
-    dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
-  },
-});
-
 const AdminSidebarContainer = flowRight(
+  WithActiveModule(),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-  }),
-  connect(null, mapDispatchToProps)
+  })
 )(AccountsSidebar);
 export default AdminSidebarContainer;

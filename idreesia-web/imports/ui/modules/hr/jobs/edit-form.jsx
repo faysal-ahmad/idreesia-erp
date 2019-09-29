@@ -1,18 +1,18 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 class EditForm extends Component {
   static propTypes = {
@@ -115,9 +115,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateJob",
+    name: 'updateJob',
     options: {
-      refetchQueries: ["allJobs"],
+      refetchQueries: ['allJobs'],
     },
   }),
   graphql(formQuery, {
@@ -127,5 +127,5 @@ export default flowRight(
       return { variables: { id: jobId } };
     },
   }),
-  WithBreadcrumbs(["HR", "Jobs", "Edit"])
+  WithBreadcrumbs(['HR', 'Jobs', 'Edit'])
 )(EditForm);

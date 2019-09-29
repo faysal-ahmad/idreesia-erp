@@ -5,9 +5,9 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Divider, Form, message } from '/imports/ui/controls';
 import { ItemsList } from '../common/items-list';
-import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,

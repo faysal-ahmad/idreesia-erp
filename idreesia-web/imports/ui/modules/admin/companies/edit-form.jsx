@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   SwitchField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -122,9 +122,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateCompany",
+    name: 'updateCompany',
     options: {
-      refetchQueries: ["allCompanies"],
+      refetchQueries: ['allCompanies'],
     },
   }),
   graphql(formQuery, {
@@ -134,5 +134,5 @@ export default flowRight(
       return { variables: { id: companyId } };
     },
   }),
-  WithBreadcrumbs(["Admin", "Setup", "Companies", "Edit"])
+  WithBreadcrumbs(['Admin', 'Setup', 'Companies', 'Edit'])
 )(EditForm);

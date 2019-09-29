@@ -11,8 +11,11 @@ import {
   DEFAULT_SORT_ORDER,
   DEFAULT_SORT_BY,
 } from 'meteor/idreesia-common/constants/security/list-options';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 
-import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';

@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Icon, Table, Tooltip, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -24,15 +24,15 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => (
         <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>
       ),
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
         if (record.usedCount === 0) {
           return (
@@ -113,10 +113,10 @@ export default flowRight(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyLocationMutation, {
-    name: "removeDutyLocation",
+    name: 'removeDutyLocation',
     options: {
-      refetchQueries: ["allDutyLocations"],
+      refetchQueries: ['allDutyLocations'],
     },
   }),
-  WithBreadcrumbs(["HR", "Setup", "Duty Locations", "List"])
+  WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'List'])
 )(List);

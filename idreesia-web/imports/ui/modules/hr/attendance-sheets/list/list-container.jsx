@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { message } from '/imports/ui/controls';
 import {
   WithAllDuties,
   WithAllDutyShifts,
-} from "/imports/ui/modules/hr/common/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+} from '/imports/ui/modules/hr/common/composers';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-import List from "./list";
+import List from './list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -58,10 +58,8 @@ class ListContainer extends Component {
 
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
-    const barcodeIdsString = barcodeIds.join(",");
-    const path = `${
-      paths.attendanceSheetsMeetingCardsPath
-    }?barcodeIds=${barcodeIdsString}`;
+    const barcodeIdsString = barcodeIds.join(',');
+    const path = `${paths.attendanceSheetsMeetingCardsPath}?barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
@@ -76,7 +74,7 @@ class ListContainer extends Component {
       },
     })
       .then(() => {
-        message.success("Selected attendance records have been deleted.", 5);
+        message.success('Selected attendance records have been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -125,12 +123,12 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "deleteAttendances",
+    name: 'deleteAttendances',
     options: {
-      refetchQueries: ["attendanceByMonth"],
+      refetchQueries: ['attendanceByMonth'],
     },
   }),
   WithAllDuties(),
   WithAllDutyShifts(),
-  WithBreadcrumbs(["HR", "Attendance Sheets", "List"])
+  WithBreadcrumbs(['HR', 'Attendance Sheets', 'List'])
 )(ListContainer);

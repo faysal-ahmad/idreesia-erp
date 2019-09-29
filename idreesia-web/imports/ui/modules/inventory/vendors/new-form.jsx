@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
 class NewForm extends Component {
   static propTypes = {
@@ -130,9 +130,9 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formMutation, {
-    name: "createVendor",
+    name: 'createVendor',
     options: {
-      refetchQueries: ["vendorsByPhysicalStoreId"],
+      refetchQueries: ['vendorsByPhysicalStoreId'],
     },
   }),
   WithDynamicBreadcrumbs(({ physicalStore }) => {

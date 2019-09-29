@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -112,9 +112,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updatePhysicalStore",
+    name: 'updatePhysicalStore',
     options: {
-      refetchQueries: ["allPhysicalStores", "allAccessiblePhysicalStores"],
+      refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
     },
   }),
   graphql(formQuery, {
@@ -124,5 +124,5 @@ export default flowRight(
       return { variables: { id: physicalStoreId } };
     },
   }),
-  WithBreadcrumbs(["Admin", "Setup", "Physical Stores", "Edit"])
+  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])
 )(EditForm);

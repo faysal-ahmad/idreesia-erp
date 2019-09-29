@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputNumberField,
   SelectField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithItemCategoriesByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
-import allUnitOfMeasurements from "./all-unit-of-measurements";
+import allUnitOfMeasurements from './all-unit-of-measurements';
 
 class NewForm extends Component {
   static propTypes = {
@@ -181,14 +181,14 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create({ name: "newStockItemForm" }),
+  Form.create({ name: 'newStockItemForm' }),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithItemCategoriesByPhysicalStore(),
   graphql(formMutation, {
-    name: "createStockItem",
+    name: 'createStockItem',
     options: {
-      refetchQueries: ["pagedStockItems"],
+      refetchQueries: ['pagedStockItems'],
     },
   }),
   WithDynamicBreadcrumbs(({ physicalStore }) => {

@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { JobTypes } from "meteor/idreesia-common/constants";
-import { Formats } from "meteor/idreesia-common/constants";
-import { WithCompanies } from "/imports/ui/modules/accounts/common/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import { Formats } from 'meteor/idreesia-common/constants';
+import { WithCompanies } from '/imports/ui/modules/accounts/common/composers';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   MonthField,
   SelectField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { WithAdminJobsMutation } from "./composers";
+import { WithAdminJobsMutation } from './composers';
 
 class NewForm extends Component {
   static propTypes = {
@@ -87,5 +87,5 @@ export default flowRight(
   Form.create(),
   WithCompanies(),
   WithAdminJobsMutation(),
-  WithBreadcrumbs(["Admin", "Admin Jobs", "New Vouchers Import"])
+  WithBreadcrumbs(['Admin', 'Admin Jobs', 'New Vouchers Import'])
 )(NewForm);

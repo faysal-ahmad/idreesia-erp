@@ -1,19 +1,19 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { flowRight, get } from "lodash";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { flowRight, get } from 'lodash';
 
-import { Tabs } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Tabs } from '/imports/ui/controls';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
-import PurchasDetails from "./purchase-details";
-import AttachmentsList from "./attachments-list";
+import PurchasDetails from './purchase-details';
+import AttachmentsList from './attachments-list';
 
 const EditForm = props => {
-  const formId = get(props, ["match", "params", "formId"], null);
+  const formId = get(props, ['match', 'params', 'formId'], null);
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="Purchase Details" key="1">

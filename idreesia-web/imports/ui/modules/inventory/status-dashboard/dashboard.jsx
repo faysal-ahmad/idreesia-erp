@@ -4,7 +4,12 @@ import { flowRight } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Badge, Descriptions, Spin } from '/imports/ui/controls';
+import {
+  WithPhysicalStore,
+  WithPhysicalStoreId,
+} from '/imports/ui/modules/inventory/common/composers';
 
 const Dashboard = props => {
   const { loading, statistics } = props;
@@ -42,7 +47,7 @@ const Dashboard = props => {
             count={statistics.itemsWithPositiveStockLevel}
           />
         </Descriptions.Item>
-        <Descriptions.Item label="Less then minimum">
+        <Descriptions.Item label="Less than minimum">
           <Badge
             showZero
             overflowCount={9999}
@@ -115,10 +120,18 @@ const query = gql`
 `;
 
 export default flowRight(
+  WithPhysicalStoreId(),
+  WithPhysicalStore(),
   graphql(query, {
     props: ({ data }) => ({ ...data }),
     options: ({ physicalStoreId }) => ({
       variables: { physicalStoreId },
     }),
+  }),
+  WithDynamicBreadcrumbs(({ physicalStore }) => {
+    if (physicalStore) {
+      return `Inventory, ${physicalStore.name}, Status Dashboard`;
+    }
+    return `Inventory, Status Dashboard`;
   })
 )(Dashboard);

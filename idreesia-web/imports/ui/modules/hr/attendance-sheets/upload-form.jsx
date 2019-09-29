@@ -1,25 +1,25 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { Formats } from "meteor/idreesia-common/constants";
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
 import {
   WithAllDuties,
   WithAllDutyShifts,
-} from "/imports/ui/modules/hr/common/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+} from '/imports/ui/modules/hr/common/composers';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   CascaderField,
   InputFileField,
   MonthField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
+import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 class UploadForm extends Component {
   static propTypes = {
@@ -126,9 +126,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "uploadAttendances",
+    name: 'uploadAttendances',
   }),
   WithAllDuties(),
   WithAllDutyShifts(),
-  WithBreadcrumbs(["HR", "Attendance Sheets", "Upload"])
+  WithBreadcrumbs(['HR', 'Attendance Sheets', 'Upload'])
 )(UploadForm);

@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { withActiveModule } from 'meteor/idreesia-common/composers/common';
+import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { Layout } from './antd-controls';
 
 const routersMap = {
@@ -52,5 +52,5 @@ MainContent.propTypes = {
   activeSubModuleName: PropTypes.string,
 };
 
-const MainContentContainer = withActiveModule()(MainContent);
+const MainContentContainer = WithActiveModule()(MainContent);
 export default MainContentContainer;

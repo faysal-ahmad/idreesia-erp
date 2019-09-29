@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { keys, forEach } from "lodash";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { keys, forEach } from 'lodash';
 
-import { ModuleNames, ModulePaths } from "meteor/idreesia-common/constants";
-import { GlobalActionsCreator } from "../action-creators";
-import { Layout, Menu } from "./antd-controls";
-import UserMenu from "./user-menu";
+import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
+import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
+import { Layout, Menu } from './antd-controls';
+import UserMenu from './user-menu';
 
 const ContainerStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const modulePathsMapping = {};
@@ -44,7 +44,7 @@ class HeaderContent extends Component {
     const { location, setActiveModuleName } = this.props;
     const { pathname } = location;
 
-    if (pathname !== "/") {
+    if (pathname !== '/') {
       const moduleNames = keys(modulePathsMapping);
       forEach(moduleNames, moduleName => {
         const modulePath = modulePathsMapping[moduleName];
@@ -100,7 +100,7 @@ class HeaderContent extends Component {
             theme="dark"
             mode="horizontal"
             defaultSelectedKeys={selectedMenuItemKey}
-            style={{ lineHeight: "64px" }}
+            style={{ lineHeight: '64px' }}
             onSelect={this.handleMenuItemSelected}
           >
             {menuItems}
@@ -118,5 +118,8 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const HeaderContentContainer = connect(null, mapDispatchToProps)(HeaderContent);
+const HeaderContentContainer = connect(
+  null,
+  mapDispatchToProps
+)(HeaderContent);
 export default HeaderContentContainer;

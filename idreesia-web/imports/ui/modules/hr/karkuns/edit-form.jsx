@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { get, flowRight } from 'lodash';
 
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 import { Tabs } from '/imports/ui/controls';
-import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import GeneralInfo from './edit/general-info';
 import ProfilePicture from './edit/profile-picture';
 import EmploymentInfo from './edit/employment-info';

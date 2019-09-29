@@ -1,13 +1,16 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import ReactToPrint from "react-to-print";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
+import ReactToPrint from 'react-to-print';
 
-import { Button, Divider } from "/imports/ui/controls";
-import { WithBreadcrumbs, WithQueryParams } from "/imports/ui/composers";
-import MeetingCards from "./meeting-cards";
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
+import { Button, Divider } from '/imports/ui/controls';
+import MeetingCards from './meeting-cards';
 
 class MeetingCardsContainer extends Component {
   static propTypes = {
@@ -85,5 +88,5 @@ export default flowRight(
       variables: { barcodeIds },
     }),
   }),
-  WithBreadcrumbs(["HR", "Attendance Sheets", "Meeting Cards"])
+  WithBreadcrumbs(['HR', 'Attendance Sheets', 'Meeting Cards'])
 )(MeetingCardsContainer);

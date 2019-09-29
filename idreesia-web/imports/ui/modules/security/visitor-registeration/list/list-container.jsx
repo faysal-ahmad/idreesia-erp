@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Drawer } from '/imports/ui/controls';
-import { WithBreadcrumbs } from '/imports/ui/composers';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';

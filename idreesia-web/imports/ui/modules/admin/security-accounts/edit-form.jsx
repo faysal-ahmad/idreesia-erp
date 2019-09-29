@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Tabs } from '/imports/ui/controls';
-import { WithBreadcrumbs } from '/imports/ui/composers';
 import GeneralInfo from './edit/general-info';
 import Permissions from './edit/permissions';
 import InstanceAccess from './edit/instance-access';

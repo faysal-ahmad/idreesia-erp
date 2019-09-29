@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
 import {
   DateField,
@@ -15,7 +15,7 @@ import {
   InputNumberField,
   FormButtonsSaveCancel,
   InputTextAreaField,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -225,9 +225,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateAmaanatLog",
+    name: 'updateAmaanatLog',
     options: {
-      refetchQueries: ["pagedAmaanatLogs"],
+      refetchQueries: ['pagedAmaanatLogs'],
     },
   }),
   graphql(formQuery, {
@@ -237,5 +237,5 @@ export default flowRight(
       return { variables: { _id: logId } };
     },
   }),
-  WithBreadcrumbs(["Accounts", "Amaanat Logs", "Edit"])
+  WithBreadcrumbs(['Accounts', 'Amaanat Logs', 'Edit'])
 )(EditForm);

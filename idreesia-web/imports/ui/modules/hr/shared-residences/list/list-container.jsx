@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import { flowRight } from 'lodash';
 import { toSafeInteger } from 'lodash';
 
-import { WithBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 import List from './list';
 
 class ListContainer extends Component {

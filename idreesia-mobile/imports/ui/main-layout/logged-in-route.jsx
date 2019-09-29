@@ -1,8 +1,11 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight } from 'lodash';
 
-import { withActiveModule, withLoggedInUser } from "meteor/idreesia-common/composers/common";
+import {
+  WithActiveModule,
+  WithLoggedInUser,
+} from 'meteor/idreesia-common/composers/common';
 
 class LoggedInRoute extends Component {
   static propTypes = {
@@ -13,7 +16,7 @@ class LoggedInRoute extends Component {
     userById: PropTypes.object,
   };
 
-  someMethod = () => {}
+  someMethod = () => {};
 
   render() {
     return <div>Hello from logged in route.</div>;
@@ -21,8 +24,8 @@ class LoggedInRoute extends Component {
 }
 
 const LoggedInRouteContainer = flowRight(
-  withLoggedInUser(),
-  withActiveModule()
+  WithLoggedInUser(),
+  WithActiveModule()
 )(LoggedInRoute);
 
 export default LoggedInRouteContainer;

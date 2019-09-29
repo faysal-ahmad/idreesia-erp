@@ -4,7 +4,7 @@ import moment from 'moment';
 import { flowRight } from 'lodash';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,

@@ -1,1 +1,1 @@
-export { default as StatusDashboard } from './dashboard-container';
+export { default as StatusDashboard } from './dashboard';

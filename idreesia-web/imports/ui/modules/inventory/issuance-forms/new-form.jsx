@@ -4,9 +4,10 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import { Divider, Form, message } from '/imports/ui/controls';
 import { ItemsList } from '../common/items-list';
-import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
@@ -21,7 +22,6 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
 const FormStyle = {
   width: '800px',

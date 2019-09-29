@@ -1,29 +1,36 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Icon, Popconfirm, Table, Tooltip, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import {
+  Button,
+  Icon,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithVendorsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -41,9 +48,9 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => (
         <Link
           to={`${paths.vendorsEditFormPath(
@@ -56,23 +63,23 @@ class List extends Component {
       ),
     },
     {
-      title: "Contact Person",
-      dataIndex: "contactPerson",
-      key: "contactPerson",
+      title: 'Contact Person',
+      dataIndex: 'contactPerson',
+      key: 'contactPerson',
     },
     {
-      title: "Contact Number",
-      dataIndex: "contactNumber",
-      key: "contactNumber",
+      title: 'Contact Number',
+      dataIndex: 'contactNumber',
+      key: 'contactNumber',
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
-      title: "Actions",
-      key: "action",
+      title: 'Actions',
+      key: 'action',
       render: (text, record) => {
         const { usageCount } = record;
 
@@ -113,7 +120,7 @@ class List extends Component {
       },
     })
       .then(() => {
-        message.success("Vendor has been deleted.", 5);
+        message.success('Vendor has been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -161,9 +168,9 @@ export default flowRight(
     return `Inventory, Setup, Vendors, List`;
   }),
   graphql(formMutationRemove, {
-    name: "removeVendor",
+    name: 'removeVendor',
     options: {
-      refetchQueries: ["vendorsByPhysicalStoreId"],
+      refetchQueries: ['vendorsByPhysicalStoreId'],
     },
   })
 )(List);

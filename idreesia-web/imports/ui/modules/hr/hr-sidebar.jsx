@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { Menu, Icon } from '/imports/ui/controls';
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -13,6 +12,7 @@ class HRSidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
+    activeSubModuleName: PropTypes.string,
     setActiveSubModuleName: PropTypes.func,
   };
 
@@ -69,7 +69,6 @@ class HRSidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={['home']}
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
@@ -95,14 +94,5 @@ class HRSidebar extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  setActiveSubModuleName: subModuleName => {
-    dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
-  },
-});
-
-const HRSidebarContainer = connect(
-  null,
-  mapDispatchToProps
-)(HRSidebar);
+const HRSidebarContainer = WithActiveModule()(HRSidebar);
 export default HRSidebarContainer;

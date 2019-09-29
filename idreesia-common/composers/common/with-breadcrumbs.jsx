@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
+import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
 
 export default breadcrumbs => WrappedComponent => {
   class WithBreadcrumbs extends Component {
@@ -26,5 +26,8 @@ export default breadcrumbs => WrappedComponent => {
     },
   });
 
-  return connect(null, mapDispatchToProps)(WithBreadcrumbs);
+  return connect(
+    null,
+    mapDispatchToProps
+  )(WithBreadcrumbs);
 };

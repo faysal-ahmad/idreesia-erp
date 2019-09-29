@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Icon, Table, Tooltip, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
-import { WithAllJobs } from "/imports/ui/modules/hr/common/composers";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -26,25 +26,25 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => (
         <Link to={`${paths.jobsEditFormPath(record._id)}`}>{text}</Link>
       ),
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
-      title: "Employees",
-      dataIndex: "usedCount",
-      key: "usedCount",
+      title: 'Employees',
+      dataIndex: 'usedCount',
+      key: 'usedCount',
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
         if (record.usedCount === 0) {
           return (
@@ -115,10 +115,10 @@ const removeJobMutation = gql`
 export default flowRight(
   WithAllJobs(),
   graphql(removeJobMutation, {
-    name: "removeJob",
+    name: 'removeJob',
     options: {
-      refetchQueries: ["allJobs"],
+      refetchQueries: ['allJobs'],
     },
   }),
-  WithBreadcrumbs(["HR", "Jobs", "List"])
+  WithBreadcrumbs(['HR', 'Jobs', 'List'])
 )(List);

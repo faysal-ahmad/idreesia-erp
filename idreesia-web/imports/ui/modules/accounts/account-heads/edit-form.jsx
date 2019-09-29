@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
 import {
   WithCompanyId,
   WithCompany,
   WithAccountHeadId,
   WithAccountHeadById,
-} from "/imports/ui/modules/accounts/common/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+} from '/imports/ui/modules/accounts/common/composers';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   InputTextField,
   InputTextAreaField,
   InputNumberField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -38,14 +38,14 @@ class EditForm extends Component {
   componentDidMount() {
     const { company, setBreadcrumbs } = this.props;
     if (company) {
-      setBreadcrumbs([company.name, "Account Heads", "Edit"]);
+      setBreadcrumbs([company.name, 'Account Heads', 'Edit']);
     }
   }
 
   componentDidUpdate(prevProps) {
     const { company, setBreadcrumbs } = this.props;
     if (prevProps.company !== company) {
-      setBreadcrumbs([company.name, "Account Heads", "Edit"]);
+      setBreadcrumbs([company.name, 'Account Heads', 'Edit']);
     }
   }
 
@@ -86,7 +86,9 @@ class EditForm extends Component {
 
   render() {
     const { accountHeadByIdLoading, accountHeadById } = this.props;
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     if (accountHeadByIdLoading) return null;
 
     return (
@@ -160,10 +162,10 @@ export default flowRight(
   WithAccountHeadId(),
   WithAccountHeadById(),
   graphql(formMutation, {
-    name: "updateAccountHead",
+    name: 'updateAccountHead',
     options: {
-      refetchQueries: ["accountHeadsByCompanyId"],
+      refetchQueries: ['accountHeadsByCompanyId'],
     },
   }),
-  WithBreadcrumbs(["Accounts", "Account Heads", "Edit"])
+  WithBreadcrumbs(['Accounts', 'Account Heads', 'Edit'])
 )(EditForm);

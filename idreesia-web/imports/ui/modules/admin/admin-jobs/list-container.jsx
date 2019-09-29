@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { JobTypes } from "meteor/idreesia-common/constants";
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-import List from "./list/list";
+import List from './list/list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -72,10 +72,10 @@ const removeMutation = gql`
 
 export default flowRight(
   graphql(removeMutation, {
-    name: "removeAdminJob",
+    name: 'removeAdminJob',
     options: {
-      refetchQueries: ["pagedAdminJobs"],
+      refetchQueries: ['pagedAdminJobs'],
     },
   }),
-  WithBreadcrumbs(["Admin", "Admin Jobs", "List"])
+  WithBreadcrumbs(['Admin', 'Admin Jobs', 'List'])
 )(ListContainer);

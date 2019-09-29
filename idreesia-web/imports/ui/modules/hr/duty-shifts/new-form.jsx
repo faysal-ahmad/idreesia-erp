@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   TimeField,
   SelectField,
   InputTextField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { WithAllDuties } from "/imports/ui/modules/hr/common/composers";
+} from '/imports/ui/modules/helpers/fields';
+import { WithAllDuties } from '/imports/ui/modules/hr/common/composers';
 
 class NewForm extends Component {
   static propTypes = {
@@ -118,11 +118,11 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createDutyShift",
+    name: 'createDutyShift',
     options: {
-      refetchQueries: ["allDutyShifts"],
+      refetchQueries: ['allDutyShifts'],
     },
   }),
   WithAllDuties(),
-  WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "New"])
+  WithBreadcrumbs(['HR', 'Setup', 'Duty Shifts', 'New'])
 )(NewForm);

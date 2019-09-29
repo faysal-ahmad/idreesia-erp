@@ -1,11 +1,11 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 
-import { Button, Divider, Row, Col, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
-import { ScanCnic } from "/imports/ui/modules/helpers/controls";
-import SearchResult from "./search-result";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Button, Divider, Row, Col, message } from '/imports/ui/controls';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+import { ScanCnic } from '/imports/ui/modules/helpers/controls';
+import SearchResult from './search-result';
 
 class Form extends Component {
   static propTypes = {
@@ -14,12 +14,12 @@ class Form extends Component {
   };
 
   state = {
-    cnicNumber: "",
+    cnicNumber: '',
   };
 
   onCnicCaptured = cnic => {
     if (!cnic) {
-      message.error("CNIC number was not recognized.", 3);
+      message.error('CNIC number was not recognized.', 3);
     } else {
       this.setState({
         cnicNumber: cnic,
@@ -71,4 +71,4 @@ class Form extends Component {
   }
 }
 
-export default WithBreadcrumbs(["Security", "Visitor Registration"])(Form);
+export default WithBreadcrumbs(['Security', 'Visitor Registration'])(Form);

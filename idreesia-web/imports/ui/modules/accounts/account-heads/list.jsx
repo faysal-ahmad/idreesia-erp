@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { flowRight } from 'lodash';
 
-import { Table } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Table } from '/imports/ui/controls';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   WithCompanyId,
   WithCompany,
   WithAccountHeadsByCompany,
-} from "/imports/ui/modules/accounts/common/composers";
-import { treeify } from "/imports/ui/modules/accounts/common/utilities";
+} from '/imports/ui/modules/accounts/common/composers';
+import { treeify } from '/imports/ui/modules/accounts/common/utilities';
 
 class List extends Component {
   static propTypes = {
@@ -27,9 +27,9 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => {
         let nameText = `[${record.number}] ${record.name}`;
         if (record.hasChildren) {
@@ -44,28 +44,28 @@ class List extends Component {
       },
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
   ];
 
   componentDidMount() {
     const { company, setBreadcrumbs } = this.props;
     if (company) {
-      setBreadcrumbs([company.name, "Account Heads", "List"]);
+      setBreadcrumbs([company.name, 'Account Heads', 'List']);
     }
   }
 
   componentDidUpdate(prevProps) {
     const { company, setBreadcrumbs } = this.props;
     if (prevProps.company !== company) {
-      setBreadcrumbs([company.name, "Account Heads", "List"]);
+      setBreadcrumbs([company.name, 'Account Heads', 'List']);
     }
   }
 
@@ -90,5 +90,5 @@ export default flowRight(
   WithCompanyId(),
   WithCompany(),
   WithAccountHeadsByCompany(),
-  WithBreadcrumbs(["Accounts", "Account Heads", "List"])
+  WithBreadcrumbs(['Accounts', 'Account Heads', 'List'])
 )(List);

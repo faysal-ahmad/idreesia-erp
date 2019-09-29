@@ -1,24 +1,24 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   InputTextField,
   InputTextAreaField,
   TreeSelectField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/inventory/common/composers';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 class EditForm extends Component {
   static propTypes = {
@@ -161,9 +161,9 @@ export default flowRight(
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
-    name: "updateLocation",
+    name: 'updateLocation',
     options: {
-      refetchQueries: ["locationsByPhysicalStoreId"],
+      refetchQueries: ['locationsByPhysicalStoreId'],
     },
   }),
   graphql(formQuery, {

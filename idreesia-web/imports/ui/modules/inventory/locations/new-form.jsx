@@ -1,23 +1,23 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
-import { InventorySubModulePaths as paths } from "/imports/ui/modules/inventory";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   InputTextField,
   InputTextAreaField,
   TreeSelectField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
 class NewForm extends Component {
   static propTypes = {
@@ -116,9 +116,9 @@ export default flowRight(
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
-    name: "createLocation",
+    name: 'createLocation',
     options: {
-      refetchQueries: ["locationsByPhysicalStoreId"],
+      refetchQueries: ['locationsByPhysicalStoreId'],
     },
   }),
   WithDynamicBreadcrumbs(({ physicalStore }) => {

@@ -5,6 +5,11 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight, toSafeInteger } from 'lodash';
 
+import { Formats } from 'meteor/idreesia-common/constants';
+import {
+  WithDynamicBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 import {
   Button,
   Icon,
@@ -14,8 +19,6 @@ import {
   Tooltip,
   message,
 } from '/imports/ui/controls';
-import { Formats } from 'meteor/idreesia-common/constants';
-import { WithDynamicBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,

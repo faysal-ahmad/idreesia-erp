@@ -1,4 +1,4 @@
-import { ActionNames } from '../constants';
+import { ActionNames } from 'meteor/idreesia-common/constants';
 
 export function breadcrumbs(previousValue, action) {
   let newValue;

@@ -4,8 +4,8 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { WithBreadcrumbs } from '/imports/ui/composers';
 import {
   InputTextField,
   FormButtonsSaveCancel,

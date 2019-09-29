@@ -1,23 +1,23 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { get } from "lodash";
-import { flowRight } from "lodash";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { get } from 'lodash';
+import { flowRight } from 'lodash';
 
-import { Tabs } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Tabs } from '/imports/ui/controls';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 
-import GeneralInfo from "./edit/general-info";
-import Picture from "./edit/picture";
-import IssuanceForms from "./edit/issuance-forms";
-import PurchaseForms from "./edit/purchase-forms";
-import Adjustments from "./edit/adjustments";
+import GeneralInfo from './edit/general-info';
+import Picture from './edit/picture';
+import IssuanceForms from './edit/issuance-forms';
+import PurchaseForms from './edit/purchase-forms';
+import Adjustments from './edit/adjustments';
 
 const EditForm = props => {
-  const stockItemId = get(props, ["match", "params", "stockItemId"], null);
+  const stockItemId = get(props, ['match', 'params', 'stockItemId'], null);
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="General Info" key="1">

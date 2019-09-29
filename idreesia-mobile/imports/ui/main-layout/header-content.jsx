@@ -1,13 +1,17 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { flowRight } from 'lodash';
 import { Icon, Menu, NavBar } from 'antd-mobile';
 
-import { withActiveModule } from "meteor/idreesia-common/composers/common";
-import { GlobalActionsCreator } from "/imports/ui/action-creators";
+import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
+import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
-import { SecurityRouter, SecuritySubModuleNames, SecuritySubModulePaths } from '/imports/ui/modules/security';
+import {
+  SecurityRouter,
+  SecuritySubModuleNames,
+  SecuritySubModulePaths,
+} from '/imports/ui/modules/security';
 
 const data = [
   {
@@ -19,14 +23,16 @@ const data = [
         value: 'visitorRegistration',
       },
     ],
-  }, {
+  },
+  {
     label: 'Account',
     value: 'account',
     children: [
       {
         label: 'Login',
         value: 'accountLogin',
-      }],
+      },
+    ],
   },
 ];
 
@@ -38,7 +44,7 @@ class HeaderContent extends Component {
     activeSubModuleName: PropTypes.string,
     setActiveModuleAndSubModuleName: PropTypes.func,
   };
-  
+
   state = {
     show: false,
   };
@@ -57,7 +63,7 @@ class HeaderContent extends Component {
     this.setState({
       show: !show,
     });
-  }
+  };
 
   handleOnChange = value => {
     const moduleName = value[0];
@@ -67,16 +73,16 @@ class HeaderContent extends Component {
     const { history, setActiveModuleAndSubModuleName } = this.props;
     setActiveModuleAndSubModuleName(moduleName, subModuleName);
     history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
-  }
+  };
 
   getSubModuleDisplayName = () => {
     const { activeModuleName, activeSubModuleName } = this.props;
-    if (activeModuleName === "security") {
+    if (activeModuleName === 'security') {
       return SecuritySubModuleNames[activeSubModuleName];
     }
 
-    return "Idreesia ERP";
-  }
+    return 'Idreesia ERP';
+  };
 
   render() {
     const { show } = this.state;
@@ -91,7 +97,7 @@ class HeaderContent extends Component {
         onChange={this.handleOnChange}
         height={document.documentElement.clientHeight * 0.6}
       />
-    )
+    );
 
     return (
       <>
@@ -106,21 +112,31 @@ class HeaderContent extends Component {
             </NavBar>
           </div>
           {show ? menu : null}
-          {show ? <div className="menu-mask" onClick={this.onMaskClick} /> : null}
+          {show ? (
+            <div className="menu-mask" onClick={this.onMaskClick} />
+          ) : null}
         </div>
         {activeModuleRouter}
       </>
     );
-  };
+  }
 }
 
 const mapDispatchToProps = dispatch => ({
   setActiveModuleAndSubModuleName: (moduleName, subModuleName) => {
-    dispatch(GlobalActionsCreator.setActiveModuleAndSubModuleName(moduleName, subModuleName));
+    dispatch(
+      GlobalActionsCreator.setActiveModuleAndSubModuleName(
+        moduleName,
+        subModuleName
+      )
+    );
   },
 });
 
 export default flowRight(
-  withActiveModule(),
-  connect(null, mapDispatchToProps)
+  WithActiveModule(),
+  connect(
+    null,
+    mapDispatchToProps
+  )
 )(HeaderContent);

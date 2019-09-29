@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Icon, Table, Tooltip, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -25,38 +25,38 @@ class List extends Component {
 
   columns = [
     {
-      title: "Shift Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Shift Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => (
         <Link to={`${paths.dutyShiftsPath}/${record._id}`}>{text}</Link>
       ),
     },
     {
-      title: "Duty Name",
-      dataIndex: "duty.name",
-      key: "duty.name",
+      title: 'Duty Name',
+      dataIndex: 'duty.name',
+      key: 'duty.name',
     },
     {
-      title: "Start Time",
-      dataIndex: "startTime",
-      key: "startTime",
+      title: 'Start Time',
+      dataIndex: 'startTime',
+      key: 'startTime',
       render: text => {
         const startTime = moment(text);
-        return startTime.isValid() ? startTime.format("h:mm a") : null;
+        return startTime.isValid() ? startTime.format('h:mm a') : null;
       },
     },
     {
-      title: "End Time",
-      dataIndex: "endTime",
-      key: "endTime",
+      title: 'End Time',
+      dataIndex: 'endTime',
+      key: 'endTime',
       render: text => {
         const endTime = moment(text);
-        return endTime.isValid() ? endTime.format("h:mm a") : null;
+        return endTime.isValid() ? endTime.format('h:mm a') : null;
       },
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
         if (record.usedCount === 0) {
           return (
@@ -143,10 +143,10 @@ export default flowRight(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyShiftMutation, {
-    name: "removeDutyShift",
+    name: 'removeDutyShift',
     options: {
-      refetchQueries: ["allDutyShifts"],
+      refetchQueries: ['allDutyShifts'],
     },
   }),
-  WithBreadcrumbs(["HR", "Setup", "Duty Shifts", "List"])
+  WithBreadcrumbs(['HR', 'Setup', 'Duty Shifts', 'List'])
 )(List);

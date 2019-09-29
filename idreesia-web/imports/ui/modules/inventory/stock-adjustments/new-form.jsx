@@ -1,29 +1,30 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
+
+import { Form, message } from '/imports/ui/controls';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   DateField,
   InputNumberField,
   RadioGroupField,
   FormButtonsSaveCancel,
   InputTextAreaField,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { PredefinedFilterNames } from "meteor/idreesia-common/constants/hr";
-import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { StockItemField } from "/imports/ui/modules/inventory/stock-items/field";
+import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StockItemField } from '/imports/ui/modules/inventory/stock-items/field';
 
 const FormStyle = {
-  width: "800px",
+  width: '800px',
 };
 
 class NewForm extends Component {
@@ -65,7 +66,7 @@ class NewForm extends Component {
       ) => {
         if (err) return;
 
-        const isInflow = adjustment === "inflow";
+        const isInflow = adjustment === 'inflow';
         createStockAdjustment({
           variables: {
             physicalStoreId,
@@ -107,8 +108,8 @@ class NewForm extends Component {
           fieldLabel="Adjustment"
           required
           options={[
-            { label: "Increase by", value: "inflow" },
-            { label: "Decrease by", value: "outflow" },
+            { label: 'Increase by', value: 'inflow' },
+            { label: 'Decrease by', value: 'outflow' },
           ]}
           getFieldDecorator={getFieldDecorator}
         />
@@ -190,12 +191,12 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formMutation, {
-    name: "createStockAdjustment",
+    name: 'createStockAdjustment',
     options: {
       refetchQueries: [
-        "pagedStockAdjustment",
-        "stockAdjustmentByStockItem",
-        "pagedStockItems",
+        'pagedStockAdjustment',
+        'stockAdjustmentByStockItem',
+        'pagedStockItems',
       ],
     },
   }),

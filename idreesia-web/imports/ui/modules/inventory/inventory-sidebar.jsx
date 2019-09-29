@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { Menu, Icon } from '/imports/ui/controls';
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
 class InventorySidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
+    activeModuleName: PropTypes.string,
+    activeSubModuleName: PropTypes.string,
     setActiveSubModuleName: PropTypes.func,
-
     loading: PropTypes.bool,
     allAccessiblePhysicalStores: PropTypes.array,
   };
@@ -176,7 +176,6 @@ class InventorySidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={['home']}
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
@@ -195,19 +194,10 @@ const listQuery = gql`
   }
 `;
 
-const mapDispatchToProps = dispatch => ({
-  setActiveSubModuleName: subModuleName => {
-    dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
-  },
-});
-
 const InventorySidebarContainer = flowRight(
+  WithActiveModule(),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
-  }),
-  connect(
-    null,
-    mapDispatchToProps
-  )
+  })
 )(InventorySidebar);
 export default InventorySidebarContainer;

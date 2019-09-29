@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { flowRight } from 'lodash';
 
-import { withLoggedInUser } from "meteor/idreesia-common/composers/common";
-import { Layout, Breadcrumb } from "./antd-controls";
-import HeaderContent from "./header-content";
-import SidebarContent from "./sidebar-content";
-import MainContent from "./main-content";
+import { WithLoggedInUser } from 'meteor/idreesia-common/composers/common';
+import { Layout, Breadcrumb } from './antd-controls';
+import HeaderContent from './header-content';
+import SidebarContent from './sidebar-content';
+import MainContent from './main-content';
 
 class LoggedInRoute extends Component {
   static propTypes = {
@@ -31,7 +31,7 @@ class LoggedInRoute extends Component {
       });
 
       retVal = (
-        <Breadcrumb style={{ margin: "16px 0" }}>{breadcrumbItems}</Breadcrumb>
+        <Breadcrumb style={{ margin: '16px 0' }}>{breadcrumbItems}</Breadcrumb>
       );
     }
 
@@ -52,7 +52,7 @@ class LoggedInRoute extends Component {
         />
         <Layout>
           <SidebarContent location={location} history={history} />
-          <Layout style={{ padding: "0 24px 24px" }}>
+          <Layout style={{ padding: '0 24px 24px' }}>
             {this.getBreadcrumbs()}
             <MainContent location={location} history={history} />
           </Layout>
@@ -67,7 +67,7 @@ const mapStateToProps = state => ({
 });
 
 const LoggedInRouteContainer = flowRight(
-  withLoggedInUser(),
+  WithLoggedInUser(),
   connect(mapStateToProps)
 )(LoggedInRoute);
 

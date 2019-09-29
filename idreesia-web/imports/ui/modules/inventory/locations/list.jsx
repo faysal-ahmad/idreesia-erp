@@ -5,8 +5,15 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
-import { Button, Icon, Popconfirm, Table, Tooltip, message } from '/imports/ui/controls';
-import { WithDynamicBreadcrumbs } from '/imports/ui/composers';
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import {
+  Button,
+  Icon,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,

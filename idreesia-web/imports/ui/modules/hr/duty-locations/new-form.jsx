@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
@@ -74,10 +74,10 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createDutyLocation",
+    name: 'createDutyLocation',
     options: {
-      refetchQueries: ["allDutyLocations"],
+      refetchQueries: ['allDutyLocations'],
     },
   }),
-  WithBreadcrumbs(["HR", "Setup", "Duty Locations", "New"])
+  WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'New'])
 )(NewForm);

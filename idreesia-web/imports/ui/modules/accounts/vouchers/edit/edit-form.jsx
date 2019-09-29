@@ -1,20 +1,20 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { flowRight, get } from "lodash";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { flowRight, get } from 'lodash';
 
-import { Tabs } from "/imports/ui/controls";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Tabs } from '/imports/ui/controls';
 import {
   WithCompanyId,
   WithCompany,
-} from "/imports/ui/modules/accounts/common/composers";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+} from '/imports/ui/modules/accounts/common/composers';
 
-import VoucherInfo from "./voucher-info";
-import AttachmentsList from "./attachments-list";
-import VoucherDetails from "./voucher-details";
+import VoucherInfo from './voucher-info';
+import AttachmentsList from './attachments-list';
+import VoucherDetails from './voucher-details';
 
 const EditForm = props => {
-  const voucherId = get(props, ["match", "params", "voucherId"], null);
+  const voucherId = get(props, ['match', 'params', 'voucherId'], null);
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="Voucher Info" key="1">

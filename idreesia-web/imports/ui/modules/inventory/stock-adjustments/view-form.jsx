@@ -1,26 +1,26 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight, noop } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight, noop } from 'lodash';
 
-import { Form } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form } from '/imports/ui/controls';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   InputTextField,
   DateField,
   FormButtonsClose,
   InputTextAreaField,
-} from "/imports/ui/modules/helpers/fields";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 const FormStyle = {
-  width: "800px",
+  width: '800px',
 };
 
 class ViewForm extends Component {

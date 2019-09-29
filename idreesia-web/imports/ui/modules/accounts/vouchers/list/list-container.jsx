@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight } from 'lodash';
 
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   WithCompanyId,
   WithCompany,
-} from "/imports/ui/modules/accounts/common/composers";
+} from '/imports/ui/modules/accounts/common/composers';
 
-import List from "./list";
+import List from './list';
 
 class ListContainer extends Component {
   static propTypes = {

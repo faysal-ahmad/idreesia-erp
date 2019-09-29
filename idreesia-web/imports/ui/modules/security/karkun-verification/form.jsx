@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 
-import { Divider, Row } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { ScanBarcode } from "/imports/ui/modules/helpers/controls";
-import SearchResult from "./search-result";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Divider, Row } from '/imports/ui/controls';
+import { ScanBarcode } from '/imports/ui/modules/helpers/controls';
+import SearchResult from './search-result';
 
 class Form extends Component {
   static propTypes = {
@@ -13,7 +13,7 @@ class Form extends Component {
   };
 
   state = {
-    barcode: "",
+    barcode: '',
   };
 
   onBarcodeCaptured = code => {
@@ -39,4 +39,4 @@ class Form extends Component {
   }
 }
 
-export default WithBreadcrumbs(["Security", "Karkun Card Verification"])(Form);
+export default WithBreadcrumbs(['Security', 'Karkun Card Verification'])(Form);

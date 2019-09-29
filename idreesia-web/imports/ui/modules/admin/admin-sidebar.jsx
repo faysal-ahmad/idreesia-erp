@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import { Menu } from "/imports/ui/controls";
-import { GlobalActionsCreator } from "/imports/ui/action-creators";
-import SubModuleNames from "./submodule-names";
-import { default as paths } from "./submodule-paths";
+import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
+import { Menu } from '/imports/ui/controls';
+import SubModuleNames from './submodule-names';
+import { default as paths } from './submodule-paths';
 
 class AdminSidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
+    activeSubModuleName: PropTypes.string,
     setActiveSubModuleName: PropTypes.func,
   };
 
@@ -18,22 +18,22 @@ class AdminSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case "admin-jobs":
+      case 'admin-jobs':
         setActiveSubModuleName(SubModuleNames.adminJobs);
         history.push(paths.adminJobsPath);
         break;
 
-      case "security-accounts":
+      case 'security-accounts':
         setActiveSubModuleName(SubModuleNames.accounts);
         history.push(paths.accountsPath);
         break;
 
-      case "physical-stores":
+      case 'physical-stores':
         setActiveSubModuleName(SubModuleNames.physicalStores);
         history.push(paths.physicalStoresPath);
         break;
 
-      case "companies":
+      case 'companies':
         setActiveSubModuleName(SubModuleNames.companies);
         history.push(paths.companiesPath);
         break;
@@ -47,8 +47,7 @@ class AdminSidebar extends Component {
     return (
       <Menu
         mode="inline"
-        defaultSelectedKeys={["home"]}
-        style={{ height: "100%", borderRight: 0 }}
+        style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
@@ -60,11 +59,5 @@ class AdminSidebar extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  setActiveSubModuleName: subModuleName => {
-    dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
-  },
-});
-
-const AdminSidebarContainer = connect(null, mapDispatchToProps)(AdminSidebar);
+const AdminSidebarContainer = WithActiveModule()(AdminSidebar);
 export default AdminSidebarContainer;

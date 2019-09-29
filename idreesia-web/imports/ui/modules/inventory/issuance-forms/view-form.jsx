@@ -1,27 +1,27 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight, noop } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight, noop } from 'lodash';
 
-import { Divider, Form } from "/imports/ui/controls";
-import { ItemsList } from "../common/items-list";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Divider, Form } from '/imports/ui/controls';
+import { ItemsList } from '../common/items-list';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
-} from "/imports/ui/modules/inventory/common/composers";
+} from '/imports/ui/modules/inventory/common/composers';
 import {
   InputTextField,
   DateField,
   FormButtonsClose,
   InputTextAreaField,
-} from "/imports/ui/modules/helpers/fields";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 const FormStyle = {
-  width: "800px",
+  width: '800px',
 };
 
 const formItemExtendedLayout = {
@@ -53,10 +53,10 @@ class ViewForm extends Component {
     const rules = [
       {
         required: true,
-        message: "Please add some items.",
+        message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator("items", {
+    return getFieldDecorator('items', {
       rules,
       initialValue: issuanceFormById.items,
     })(

@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
 import {
   WithDistinctCities,
   WithDistinctCountries,
-} from "meteor/idreesia-common/composers/security";
-import { Divider, Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
+} from 'meteor/idreesia-common/composers/security';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Divider, Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   InputCnicField,
@@ -18,9 +18,9 @@ import {
   InputTextAreaField,
   SwitchField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
+} from '/imports/ui/modules/helpers/fields';
+import { EhadDurationField } from '/imports/ui/modules/hr/common/fields';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 class NewForm extends Component {
   static propTypes = {
@@ -259,12 +259,12 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createVisitor",
+    name: 'createVisitor',
     options: {
-      refetchQueries: ["pagedVisitors"],
+      refetchQueries: ['pagedVisitors'],
     },
   }),
   WithDistinctCities(),
   WithDistinctCountries(),
-  WithBreadcrumbs(["Security", "Visitor Registration", "New"])
+  WithBreadcrumbs(['Security', 'Visitor Registration', 'New'])
 )(NewForm);

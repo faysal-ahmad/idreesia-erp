@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
+import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 
 class NewForm extends Component {
   static propTypes = {
@@ -104,10 +104,10 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createAccount",
+    name: 'createAccount',
     options: {
-      refetchQueries: ["pagedKarkuns", "allKarkunsWithAccounts"],
+      refetchQueries: ['pagedKarkuns', 'allKarkunsWithAccounts'],
     },
   }),
-  WithBreadcrumbs(["Admin", "Setup", "Account", "New"])
+  WithBreadcrumbs(['Admin', 'Setup', 'Account', 'New'])
 )(NewForm);

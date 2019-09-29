@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight } from 'lodash';
 
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
-import List from "./list/list";
+import List from './list/list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -46,8 +46,8 @@ class ListContainer extends Component {
       endDate,
     } = this.state;
 
-    const queryString = `?fromCity=${fromCity || ""}&hasPortion=${hasPortion ||
-      ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    const queryString = `?fromCity=${fromCity || ''}&hasPortion=${hasPortion ||
+      ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
     return (
       <List
@@ -66,6 +66,6 @@ class ListContainer extends Component {
   }
 }
 
-export default flowRight(WithBreadcrumbs(["Accounts", "Amaanat Logs"]))(
+export default flowRight(WithBreadcrumbs(['Accounts', 'Amaanat Logs']))(
   ListContainer
 );

@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import { flowRight } from 'lodash';
 import { toSafeInteger } from 'lodash';
 
-import { WithDynamicBreadcrumbs, WithQueryParams } from '/imports/ui/composers';
+import {
+  WithDynamicBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,

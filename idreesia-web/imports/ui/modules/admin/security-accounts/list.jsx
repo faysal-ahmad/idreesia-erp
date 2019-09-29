@@ -1,16 +1,23 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Icon, Popconfirm, Table, Tooltip, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import {
+  Button,
+  Icon,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -24,25 +31,25 @@ class List extends Component {
 
   columns = [
     {
-      title: "Karkun name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Karkun name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => (
         <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
       ),
     },
     {
-      title: "CNIC number",
-      dataIndex: "cnicNumber",
-      key: "cnicNumber",
+      title: 'CNIC number',
+      dataIndex: 'cnicNumber',
+      key: 'cnicNumber',
     },
     {
-      title: "User name",
-      dataIndex: "user.username",
-      key: "username",
+      title: 'User name',
+      dataIndex: 'user.username',
+      key: 'username',
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => (
         <Popconfirm
           title="Are you sure you want to delete this account?"
@@ -122,13 +129,13 @@ const listQuery = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "deleteAccount",
+    name: 'deleteAccount',
     options: {
-      refetchQueries: ["allKarkunsWithAccounts"],
+      refetchQueries: ['allKarkunsWithAccounts'],
     },
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(["Admin", "Setup", "Accounts", "List"])
+  WithBreadcrumbs(['Admin', 'Setup', 'Accounts', 'List'])
 )(List);

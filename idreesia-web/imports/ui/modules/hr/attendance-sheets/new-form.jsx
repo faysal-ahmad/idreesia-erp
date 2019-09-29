@@ -1,26 +1,26 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { Form, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   WithAllDuties,
   WithAllDutyShifts,
-} from "/imports/ui/modules/hr/common/composers";
+} from '/imports/ui/modules/hr/common/composers';
 import {
   InputNumberField,
   CascaderField,
   MonthField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { KarkunField } from "/imports/ui/modules/hr/karkuns/field";
-import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
+import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 class NewForm extends Component {
   static propTypes = {
@@ -179,12 +179,12 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createAttendance",
+    name: 'createAttendance',
     options: {
-      refetchQueries: ["attendanceByMonth"],
+      refetchQueries: ['attendanceByMonth'],
     },
   }),
   WithAllDuties(),
   WithAllDutyShifts(),
-  WithBreadcrumbs(["HR", "Attendance Sheets", "New Attendance"])
+  WithBreadcrumbs(['HR', 'Attendance Sheets', 'New Attendance'])
 )(NewForm);

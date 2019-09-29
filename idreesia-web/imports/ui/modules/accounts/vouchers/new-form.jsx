@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
 
-import { VoucherType } from 'meteor/idreesia-common/constants/accounts'
-import { Form, message } from "/imports/ui/controls";
-import { WithDynamicBreadcrumbs } from "/imports/ui/composers";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
+import { VoucherType } from 'meteor/idreesia-common/constants/accounts';
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Form, message } from '/imports/ui/controls';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   WithCompanyId,
   WithCompany,
-} from "/imports/ui/modules/accounts/common/composers";
+} from '/imports/ui/modules/accounts/common/composers';
 
 import {
   DateField,
   SelectField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class NewForm extends Component {
   static propTypes = {
@@ -72,19 +72,19 @@ class NewForm extends Component {
           data={[
             {
               value: VoucherType.BANK_PAYMENT_VOUCHER,
-              text: "Bank Payment Voucher",
+              text: 'Bank Payment Voucher',
             },
             {
               value: VoucherType.BANK_RECEIPT_VOUCHER,
-              text: "Bank Receipt Voucher",
+              text: 'Bank Receipt Voucher',
             },
             {
               value: VoucherType.CASH_PAYMENT_VOUCHER,
-              text: "Cash Payment Voucher",
+              text: 'Cash Payment Voucher',
             },
             {
               value: VoucherType.CASH_RECEIPT_VOUCHER,
-              text: "Cash Receipt Voucher",
+              text: 'Cash Receipt Voucher',
             },
           ]}
           getDataValue={({ value }) => value}
@@ -143,9 +143,9 @@ export default flowRight(
   WithCompanyId(),
   WithCompany(),
   graphql(formMutation, {
-    name: "createVoucher",
+    name: 'createVoucher',
     options: {
-      refetchQueries: ["pagedVouchers"],
+      refetchQueries: ['pagedVouchers'],
     },
   }),
   WithDynamicBreadcrumbs(({ company }) => {

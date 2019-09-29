@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Icon, Table, Tooltip, message } from "/imports/ui/controls";
-import { WithBreadcrumbs } from "/imports/ui/composers";
-import { HRSubModulePaths as paths } from "/imports/ui/modules/hr";
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -24,35 +24,35 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => (
         <Link to={`${paths.dutiesEditFormPath(record._id)}`}>{text}</Link>
       ),
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
-      title: "Shifts",
-      dataIndex: "shifts",
-      key: "shifts",
+      title: 'Shifts',
+      dataIndex: 'shifts',
+      key: 'shifts',
       render: (text, record) => {
         if (!record.shifts || record.shifts.length === 0) return null;
         const shiftNames = record.shifts.map(shift => shift.name);
-        return shiftNames.join(", ");
+        return shiftNames.join(', ');
       },
     },
     {
-      title: "Karkuns",
-      dataIndex: "usedCount",
-      key: "usedCount",
+      title: 'Karkuns',
+      dataIndex: 'usedCount',
+      key: 'usedCount',
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
         if (record.usedCount === 0) {
           return (
@@ -138,10 +138,10 @@ export default flowRight(
     props: ({ data }) => ({ ...data }),
   }),
   graphql(removeDutyMutation, {
-    name: "removeDuty",
+    name: 'removeDuty',
     options: {
-      refetchQueries: ["allDuties"],
+      refetchQueries: ['allDuties'],
     },
   }),
-  WithBreadcrumbs(["HR", "Duties", "List"])
+  WithBreadcrumbs(['HR', 'Duties', 'List'])
 )(List);

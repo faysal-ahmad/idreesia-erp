@@ -6,7 +6,6 @@ module.exports = {
       autorestart: true,
       env: {
         NODE_ENV: 'production',
-        NODE_OPTIONS="--max-old-space-size=4096",
         MONGO_URL: 'mongodb://localhost:27017/idreesia-erp',
         ROOT_URL: 'https://381-erp-server.ngrok.io',
         PORT: 3000,

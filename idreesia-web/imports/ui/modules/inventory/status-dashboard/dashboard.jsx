@@ -19,8 +19,16 @@ const Dashboard = props => {
 
   return (
     <>
-      <Descriptions title="Stock Item Images" bordered>
-        <Descriptions.Item label="Items With Image">
+      <Descriptions title="Stock Items" bordered>
+        <Descriptions.Item label="Items Count">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={{ backgroundColor: '#fff', color: '#000' }}
+            count={statistics.itemsWithImages + statistics.itemsWithoutImages}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="With Images">
           <Badge
             showZero
             overflowCount={9999}
@@ -28,7 +36,7 @@ const Dashboard = props => {
             count={statistics.itemsWithImages}
           />
         </Descriptions.Item>
-        <Descriptions.Item label="Items Without Image">
+        <Descriptions.Item label="Without Images">
           <Badge
             showZero
             overflowCount={9999}

@@ -2276,11 +2276,6 @@ draft-js@^0.10.0, draft-js@~0.10.0:
     immutable "~3.7.4"
     object-assign "^4.1.0"
 
-dynamic-imports@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/dynamic-imports/-/dynamic-imports-0.4.0.tgz#4ee2e874d1fee5bf59fae04db6ae1549a6b86b3e"
-  integrity sha512-TZQJSI2o/65O7jZYYBJdz2+vCCy4xbOmhArmstBRSzX7ToEWjhUOwMMfAmS9MsauMAkVJi9/CD6T9iS1yNODiA==
-
 ecc-jsbn@~0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.1.tgz#0fc73a9ed5f0d53c38193398523ef7e543777505"

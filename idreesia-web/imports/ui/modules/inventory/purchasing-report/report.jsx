@@ -146,7 +146,6 @@ class Report extends Component {
     const purchaseSummary = [];
     const purchaseSummaryMap = {};
 
-    debugger;
     const { purchaseFormsByMonth } = this.props;
     purchaseFormsByMonth.forEach(purchaseForm => {
       const { locationId, items } = purchaseForm;

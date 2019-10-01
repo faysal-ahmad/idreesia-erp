@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Icon, Menu, NavBar } from 'antd-mobile';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
+import { Icon, Menu, NavBar } from '/imports/ui/controls';
 import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
 import {

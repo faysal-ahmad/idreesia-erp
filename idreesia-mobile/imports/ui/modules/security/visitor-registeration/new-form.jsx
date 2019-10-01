@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { createForm, formShape } from 'rc-form';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Flex,
@@ -10,12 +15,7 @@ import {
   Toast,
   WingBlank,
   WhiteSpace,
-} from 'antd-mobile';
-import { createForm, formShape } from 'rc-form';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+} from '/imports/ui/controls';
 
 class NewForm extends Component {
   static propTypes = {

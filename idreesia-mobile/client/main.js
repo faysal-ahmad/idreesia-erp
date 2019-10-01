@@ -7,7 +7,6 @@ import attachFastClick from 'fastclick';
 
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
-import 'antd-mobile/dist/antd-mobile.css';
 
 import App from '../imports/ui/app';
 

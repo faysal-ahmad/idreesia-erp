@@ -1,6 +1,5 @@
-import { filter, forEach, map } from 'lodash';
-
 import { Formats } from 'meteor/idreesia-common/constants';
+import { filter, forEach, map } from 'meteor/idreesia-common/utilities/lodash';
 import { AccountMonthlyBalances } from 'meteor/idreesia-common/server/collections/accounts';
 
 /**

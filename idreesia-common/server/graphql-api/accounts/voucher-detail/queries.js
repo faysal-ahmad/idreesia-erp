@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { get } from 'lodash';
 
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { VoucherDetails } from 'meteor/idreesia-common/server/collections/accounts';
 import { Formats } from 'meteor/idreesia-common/constants';
 

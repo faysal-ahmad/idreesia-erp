@@ -1,5 +1,4 @@
-import { assign } from 'lodash';
-
+import { assign } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { StockItem as StockItemSchema } from 'meteor/idreesia-common/server/schemas/inventory';
 import { StockItem as StockItemModel } from 'meteor/idreesia-common/server/models/inventory';

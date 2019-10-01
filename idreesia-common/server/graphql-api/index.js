@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { merge } from 'meteor/idreesia-common/utilities/lodash';
 
 /**
  * Common Schema and Resolvers

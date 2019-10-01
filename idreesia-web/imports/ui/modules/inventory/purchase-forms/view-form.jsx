@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { flowRight, noop } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
+import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Divider, Form } from '/imports/ui/controls';
 import { ItemsList } from '../common/items-list';

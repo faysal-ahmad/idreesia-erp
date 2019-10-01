@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { noop } from 'lodash';
 
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Form, Row } from '/imports/ui/controls';
 
 const buttonItemLayout = {

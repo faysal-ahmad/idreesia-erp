@@ -1,7 +1,7 @@
 import { parse } from 'query-string';
 import moment from 'moment';
-import { get } from 'lodash';
 
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Visitors,
   VisitorStays,

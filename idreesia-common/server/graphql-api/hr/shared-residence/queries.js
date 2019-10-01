@@ -1,6 +1,6 @@
 import { parse } from 'query-string';
-import { get } from 'lodash';
 
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { SharedResidences } from 'meteor/idreesia-common/server/collections/hr';
 
 export function getSharedResidences(queryString) {

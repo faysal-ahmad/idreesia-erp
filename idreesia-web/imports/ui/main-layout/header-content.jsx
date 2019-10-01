@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { keys, forEach } from 'lodash';
 
+import { keys, forEach } from 'meteor/idreesia-common/utilities/lodash';
 import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
 import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
 import { Layout, Menu } from './antd-controls';

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { flowRight } from 'lodash';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithLoggedInUser } from 'meteor/idreesia-common/composers/common';
 import { Layout, Breadcrumb } from './antd-controls';
 import HeaderContent from './header-content';

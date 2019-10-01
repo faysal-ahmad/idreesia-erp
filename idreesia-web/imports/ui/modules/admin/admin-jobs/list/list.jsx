@@ -1,32 +1,38 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { capitalize } from "lodash";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-import { JobTypes } from "meteor/idreesia-common/constants";
-import { Button, Icon, Pagination, Select, Table, Tooltip } from "/imports/ui/controls";
-import ListFilter from "./list-filter";
+import { capitalize, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { JobTypes } from 'meteor/idreesia-common/constants';
+import {
+  Button,
+  Icon,
+  Pagination,
+  Select,
+  Table,
+  Tooltip,
+} from '/imports/ui/controls';
+import ListFilter from './list-filter';
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  width: '100%',
 };
 
 const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
 };
 
@@ -53,34 +59,34 @@ class List extends Component {
 
   columns = [
     {
-      title: "Job Type",
-      dataIndex: "jobType",
-      key: "jobType",
+      title: 'Job Type',
+      dataIndex: 'jobType',
+      key: 'jobType',
     },
     {
-      title: "Job Details",
-      dataIndex: "jobDetails",
-      key: "jobDetails",
+      title: 'Job Details',
+      dataIndex: 'jobDetails',
+      key: 'jobDetails',
     },
     {
-      title: "Created On",
-      dataIndex: "createdAt",
-      key: "createdAt",
+      title: 'Created On',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD-MM-YY hh:mm a");
+        return date.format('DD-MM-YY hh:mm a');
       },
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
       render: text => capitalize(text),
     },
     {
-      title: "Logs",
-      dataIndex: "logs",
-      key: "logs",
+      title: 'Logs',
+      dataIndex: 'logs',
+      key: 'logs',
       render: logs => {
         let counter = 0;
         const logNodes = logs.map(log => <li key={counter++}>{log}</li>);
@@ -88,9 +94,9 @@ class List extends Component {
       },
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
-        if (record.status === "completed" || record.status === "errored") {
+        if (record.status === 'completed' || record.status === 'errored') {
           return (
             <div style={ActionsStyle}>
               <Tooltip title="Delete">

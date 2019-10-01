@@ -3,9 +3,16 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
 
-import { Button, Icon, Pagination, Table, Tooltip, message } from '/imports/ui/controls';
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  Button,
+  Icon,
+  Pagination,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import ListFilter from './list-filter';

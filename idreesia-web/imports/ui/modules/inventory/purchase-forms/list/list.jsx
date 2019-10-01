@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight, toSafeInteger } from 'lodash';
 
+import {
+  flowRight,
+  toSafeInteger,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   WithDynamicBreadcrumbs,

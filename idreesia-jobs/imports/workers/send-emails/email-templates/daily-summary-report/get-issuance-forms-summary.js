@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { map } from 'lodash';
 
+import { map } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Locations,
   IssuanceForms,

@@ -1,7 +1,7 @@
 import { parse } from 'query-string';
-import { get } from 'lodash';
 import moment from 'moment';
 
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 
 export function getStatistics(physicalStoreId) {

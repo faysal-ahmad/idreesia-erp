@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { filter, find } from 'lodash';
 
+import { filter, find } from 'meteor/idreesia-common/utilities/lodash';
 import { Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { default as ItemForm } from './item-form';
 

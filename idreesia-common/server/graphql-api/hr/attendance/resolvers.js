@@ -1,5 +1,6 @@
 import moment from 'moment';
-import { toInteger, round } from 'lodash';
+
+import { toInteger, round } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attendances,
   Karkuns,

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { VoucherType } from 'meteor/idreesia-common/constants/accounts';
 import {
   Icon,
@@ -227,7 +227,9 @@ export default flowRight(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ companyId, voucherId }) => ({ variables: { _id: voucherId, companyId } }),
+    options: ({ companyId, voucherId }) => ({
+      variables: { _id: voucherId, companyId },
+    }),
   }),
   graphql(listQuery, {
     props: ({ data }) => ({ listDataLoading: data.loading, ...data }),

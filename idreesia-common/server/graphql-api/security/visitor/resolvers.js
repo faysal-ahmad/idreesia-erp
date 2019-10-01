@@ -1,6 +1,6 @@
-import { isNil, compact } from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 
+import { isNil, compact } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';

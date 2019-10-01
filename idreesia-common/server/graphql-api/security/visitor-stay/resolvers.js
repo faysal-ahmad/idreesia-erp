@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { compact } from 'lodash';
 
+import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Duties,
   DutyShifts,

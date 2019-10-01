@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { flowRight } from 'lodash';
-import { toSafeInteger } from 'lodash';
 
+import {
+  flowRight,
+  toSafeInteger,
+} from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithDynamicBreadcrumbs,
   WithQueryParams,

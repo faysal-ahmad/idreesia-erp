@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { flowRight, keyBy, keys, reverse, sortBy } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
+import {
+  flowRight,
+  keyBy,
+  keys,
+  reverse,
+  sortBy,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { Button, DatePicker, Spin, Table } from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 

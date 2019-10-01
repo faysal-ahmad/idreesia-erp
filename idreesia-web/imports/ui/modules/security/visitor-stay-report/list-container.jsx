@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { flowRight, toSafeInteger } from 'lodash';
 
+import {
+  flowRight,
+  toSafeInteger,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   DEFAULT_PAGE_INDEX_INT,

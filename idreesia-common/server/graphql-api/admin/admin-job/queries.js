@@ -1,5 +1,4 @@
-import { get } from 'lodash';
-
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AdminJobs } from 'meteor/idreesia-common/server/collections/admin';
 
 export default function getDataImports(jobType, status, pageIndex, pageSize) {

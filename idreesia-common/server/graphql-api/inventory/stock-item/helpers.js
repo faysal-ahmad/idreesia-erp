@@ -1,4 +1,4 @@
-import { reduce } from 'lodash';
+import { reduce } from 'meteor/idreesia-common/utilities/lodash';
 import {
   StockItems,
   IssuanceForms,

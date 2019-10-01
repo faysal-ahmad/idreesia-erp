@@ -1,6 +1,6 @@
-import { values } from 'lodash';
 import { Job } from 'meteor/vsivsi:job-collection';
 
+import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 import Jobs from '/imports/collections/jobs';
 

@@ -1,5 +1,5 @@
-import { isUndefined } from 'lodash';
 import { JobCollection } from 'meteor/vsivsi:job-collection';
+import { isNil } from 'meteor/idreesia-common/utilities/lodash';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 import {
   CleanupJob,
@@ -31,10 +31,10 @@ class Jobs extends JobCollection {
     const job = new JobModels[type](params);
     const { priority, retry, repeat, delay } = options;
 
-    if (!isUndefined(priority)) job.priority(priority);
-    if (!isUndefined(retry)) job.retry(retry);
-    if (!isUndefined(repeat)) job.repeat(repeat);
-    if (!isUndefined(delay)) job.delay(delay);
+    if (!isNil(priority)) job.priority(priority);
+    if (!isNil(retry)) job.retry(retry);
+    if (!isNil(repeat)) job.repeat(repeat);
+    if (!isNil(delay)) job.delay(delay);
 
     job.save();
 

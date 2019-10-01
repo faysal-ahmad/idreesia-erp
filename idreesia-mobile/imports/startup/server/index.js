@@ -1,7 +1,7 @@
 import { ApolloServer } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { getUser } from 'meteor/apollo';
-import { typeDefs, resolvers } from 'meteor/idreesia-common/api';
+import { typeDefs, resolvers } from 'meteor/idreesia-common/server/graphql-api';
 
 const server = new ApolloServer({
   typeDefs,

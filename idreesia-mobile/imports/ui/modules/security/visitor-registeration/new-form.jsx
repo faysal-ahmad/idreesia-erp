@@ -14,7 +14,8 @@ import {
 import { createForm, formShape } from 'rc-form';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 
 class NewForm extends Component {
   static propTypes = {

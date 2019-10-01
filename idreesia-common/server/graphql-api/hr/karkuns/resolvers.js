@@ -1,4 +1,4 @@
-import { compact, values } from 'lodash';
+import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Jobs,
   Karkuns,

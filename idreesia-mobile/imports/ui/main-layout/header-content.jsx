@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { flowRight } from 'lodash';
 import { Icon, Menu, NavBar } from 'antd-mobile';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { GlobalActionsCreator } from '/imports/ui/action-creators';
 

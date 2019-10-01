@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
+
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 
 export default () => WrappedComponent => {
   const WithPhysicalStoreId = props => {

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { parse } from 'query-string';
-import { get } from 'lodash';
 
+import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { PurchaseForms } from 'meteor/idreesia-common/server/collections/inventory';
 import { Formats } from 'meteor/idreesia-common/constants';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { flowRight } from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Badge, Descriptions, Spin } from '/imports/ui/controls';
 import {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
+import { setActiveSubModuleName as setActiveSubModuleNameAction } from 'meteor/idreesia-common/action-creators';
 
 export default () => WrappedComponent => {
   const WithActiveModule = props => <WrappedComponent {...props} />;
@@ -20,7 +20,7 @@ export default () => WrappedComponent => {
 
   const mapDispatchToProps = dispatch => ({
     setActiveSubModuleName: subModuleName => {
-      dispatch(GlobalActionsCreator.setActiveSubModuleName(subModuleName));
+      dispatch(setActiveSubModuleNameAction(subModuleName));
     },
   });
 

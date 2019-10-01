@@ -1,5 +1,0 @@
-const ActionNames = {
-  GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME: 'GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME',
-};
-
-export default ActionNames;

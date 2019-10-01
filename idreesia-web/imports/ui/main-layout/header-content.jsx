@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { keys, forEach } from 'meteor/idreesia-common/utilities/lodash';
 import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
-import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
+import { setActiveModuleName as setActiveModuleNameAction } from 'meteor/idreesia-common/action-creators';
 import { Layout, Menu } from './antd-controls';
 import UserMenu from './user-menu';
 
@@ -114,7 +114,7 @@ class HeaderContent extends Component {
 
 const mapDispatchToProps = dispatch => ({
   setActiveModuleName: moduleName => {
-    dispatch(GlobalActionsCreator.setActiveModuleName(moduleName));
+    dispatch(setActiveModuleNameAction(moduleName));
   },
 });
 

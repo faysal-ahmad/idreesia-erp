@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { setActiveModuleAndSubModuleName as setActiveModuleAndSubModuleNameAction } from 'meteor/idreesia-common/action-creators';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { Icon, Menu, NavBar } from '/imports/ui/controls';
-import { GlobalActionsCreator } from '/imports/ui/action-creators';
 
 import {
   SecurityRouter,
@@ -124,12 +124,7 @@ class HeaderContent extends Component {
 
 const mapDispatchToProps = dispatch => ({
   setActiveModuleAndSubModuleName: (moduleName, subModuleName) => {
-    dispatch(
-      GlobalActionsCreator.setActiveModuleAndSubModuleName(
-        moduleName,
-        subModuleName
-      )
-    );
+    dispatch(setActiveModuleAndSubModuleNameAction(moduleName, subModuleName));
   },
 });
 

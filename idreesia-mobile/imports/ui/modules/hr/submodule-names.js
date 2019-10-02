@@ -1,5 +1,5 @@
 const SubModuleNames = {
-  attendance: 'Attendance',
+  attendanceSheets: 'Attendance Sheets',
   teamManagement: 'Team Management',
 };
 

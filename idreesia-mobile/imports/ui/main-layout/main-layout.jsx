@@ -58,8 +58,7 @@ const MainLayout = ({ history, location }) => {
         open={showDrawer}
         onOpenChange={toggleDrawer}
       >
-        Some text
-        {AppRouter}
+        <AppRouter />
       </Drawer>
     </div>
   );

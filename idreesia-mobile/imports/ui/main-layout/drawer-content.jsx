@@ -11,7 +11,7 @@ import {
 
 import { setActiveModuleAndSubModuleName } from 'meteor/idreesia-common/action-creators';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { HRSubModuleNames } from '/imports/ui/modules/hr';
+import { HRSubModuleNames, HRSubModulePaths } from '/imports/ui/modules/hr';
 import {
   SecuritySubModuleNames,
   SecuritySubModulePaths,
@@ -39,13 +39,14 @@ const DrawerContent = ({ history, toggleDrawer }) => {
             dispatch(
               setActiveModuleAndSubModuleName(
                 ModuleNames.hr,
-                HRSubModuleNames.attendance
+                HRSubModuleNames.attendanceSheets
               )
             );
+            history.push(HRSubModulePaths.attendanceSheetsPath);
           }}
           thumb={<FontAwesomeIcon icon={faClipboardList} style={IconStyle} />}
         >
-          Attendance
+          Attendance Sheets
         </List.Item>
         <List.Item
           onClick={() => {
@@ -56,6 +57,7 @@ const DrawerContent = ({ history, toggleDrawer }) => {
                 HRSubModuleNames.teamManagement
               )
             );
+            history.push(HRSubModulePaths.teamManagementPath);
           }}
           thumb={<FontAwesomeIcon icon={faUsers} style={IconStyle} />}
         >

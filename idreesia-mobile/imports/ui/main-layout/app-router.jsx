@@ -7,16 +7,21 @@ import {
   VisitorRegistrationNewForm,
 } from '/imports/ui/modules/security/visitor-registeration';
 
+const BlankPage = () => <div />;
 const AppRouter = () => (
   <Switch>
     <Route
+      exact
       path={securityPaths.visitorRegistrationListPath}
       component={VisitorRegistrationList}
     />
     <Route
+      exact
       path={securityPaths.visitorRegistrationNewFormPath}
       component={VisitorRegistrationNewForm}
     />
+
+    <Route component={BlankPage} />
   </Switch>
 );
 

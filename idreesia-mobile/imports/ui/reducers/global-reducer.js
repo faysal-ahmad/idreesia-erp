@@ -1,13 +1,23 @@
 import { ActionNames } from 'meteor/idreesia-common/constants';
 
+export function loggedInUser(previousValue, action) {
+  let newValue;
+  if (!previousValue) newValue = null;
+  else newValue = previousValue;
+
+  if (action.type === ActionNames.SET_LOGGED_IN_USER) {
+    newValue = action.user;
+  }
+
+  return newValue;
+}
+
 export function activeModuleName(previousValue, action) {
   let newValue;
   if (!previousValue) newValue = null;
   else newValue = previousValue;
 
-  if (
-    action.type === ActionNames.GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME
-  ) {
+  if (action.type === ActionNames.SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME) {
     newValue = action.activeModuleName;
   }
 
@@ -19,9 +29,7 @@ export function activeSubModuleName(previousValue, action) {
   if (!previousValue) newValue = null;
   else newValue = previousValue;
 
-  if (
-    action.type === ActionNames.GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME
-  ) {
+  if (action.type === ActionNames.SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME) {
     newValue = action.activeSubModuleName;
   }
 

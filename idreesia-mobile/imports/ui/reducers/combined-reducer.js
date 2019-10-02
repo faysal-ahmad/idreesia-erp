@@ -1,12 +1,14 @@
-import { combineReducers } from "redux";
+import { combineReducers } from 'redux';
 import {
   activeModuleName,
   activeSubModuleName,
-} from "./global-reducer";
+  loggedInUser,
+} from './global-reducer';
 
 const combinedReducer = combineReducers({
   activeModuleName,
   activeSubModuleName,
+  loggedInUser,
 });
 
 export default combinedReducer;

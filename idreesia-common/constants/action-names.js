@@ -1,16 +1,21 @@
 const ActionNames = {
   // ****************************************************************************************
+  // Action Names - Common
+  // ****************************************************************************************
+  SET_LOGGED_IN_USER: 'SET_LOGGED_IN_USER',
+
+  // ****************************************************************************************
   // Action Names - Web
   // ****************************************************************************************
-  GLOBAL_SET_BREADCRUMB: 'GLOBAL_SET_BREADCRUMB',
-  GLOBAL_SET_ACTIVE_MODULE_NAME: 'GLOBAL_SET_ACTIVE_MODULE_NAME',
-  GLOBAL_SET_ACTIVE_SUBMODULE_NAME: 'GLOBAL_SET_ACTIVE_SUBMODULE_NAME',
+  SET_BREADCRUMB: 'SET_BREADCRUMB',
+  SET_ACTIVE_MODULE_NAME: 'SET_ACTIVE_MODULE_NAME',
+  SET_ACTIVE_SUBMODULE_NAME: 'SET_ACTIVE_SUBMODULE_NAME',
 
   // ****************************************************************************************
   // Action Names - Mobile
   // ****************************************************************************************
-  GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME:
-    'GLOBAL_SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME',
+  SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME:
+    'SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME',
 };
 
 export default ActionNames;

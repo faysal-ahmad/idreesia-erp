@@ -1,3 +1,21 @@
 body {
   font-family: sans-serif;
 }
+
+.app-nav-bar {
+  position: relative;
+  background-color: #008ae6;
+  color: #fff;
+}
+
+.app-drawer {
+  position: relative;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-drawer .am-drawer-sidebar {
+  background-color: #fff;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}

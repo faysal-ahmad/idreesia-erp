@@ -8,37 +8,27 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import { setLoggedInUser } from 'meteor/idreesia-common/action-creators';
 import combinedReducer from './reducers/combined-reducer';
-import { LoggedInRoute, LoggedOutRoute } from './main-layout';
+import { MainLayout } from './main-layout';
 
 const store = createStore(combinedReducer, applyMiddleware(thunkMiddleware));
 
-const App = ({ userId }) => {
-  if (userId) {
-    return (
-      <Provider store={store}>
-        <Switch>
-          <Route path="/" component={LoggedInRoute} />
-        </Switch>
-      </Provider>
-    );
-  }
-
-  return (
-    <Provider store={store}>
-      <Switch>
-        <Route path="/" component={LoggedOutRoute} />
-      </Switch>
-    </Provider>
-  );
-};
+const App = () => (
+  <Provider store={store}>
+    <Switch>
+      <Route path="/" component={MainLayout} />
+    </Switch>
+  </Provider>
+);
 
 App.propTypes = {
-  userId: PropTypes.string,
+  user: PropTypes.object,
+  isOnline: PropTypes.bool,
 };
 
 export default withTracker(() => {
   setLoggedInUser(Meteor.user());
   return {
-    userId: Meteor.userId(),
+    user: Meteor.user(),
+    isOnline: Meteor.status().connected,
   };
 })(App);

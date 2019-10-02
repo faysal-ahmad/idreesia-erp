@@ -1,2 +1,1 @@
-export { default as LoggedInRoute } from "./logged-in-route";
-export { default as LoggedOutRoute } from "./logged-out-route";
+export { default as MainLayout } from './main-layout';

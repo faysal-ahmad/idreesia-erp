@@ -1,4 +1,5 @@
 import 'antd-mobile/lib/button/style/css';
+import 'antd-mobile/lib/drawer/style/css';
 import 'antd-mobile/lib/flex/style/css';
 import 'antd-mobile/lib/icon/style/css';
 import 'antd-mobile/lib/input-item/style/css';
@@ -11,6 +12,7 @@ import 'antd-mobile/lib/wing-blank/style/css';
 import 'antd-mobile/lib/white-space/style/css';
 
 export { default as Button } from 'antd-mobile/lib/button';
+export { default as Drawer } from 'antd-mobile/lib/drawer';
 export { default as Flex } from 'antd-mobile/lib/flex';
 export { default as Icon } from 'antd-mobile/lib/icon';
 export { default as InputItem } from 'antd-mobile/lib/input-item';

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { GlobalActionsCreator } from 'meteor/idreesia-common/action-creators';
+import { setBreadcrumbs as setBreadcrumbsAction } from 'meteor/idreesia-common/action-creators';
 
 export default getBreadcrumbs => WrappedComponent => {
   class WithDynamicBreadcrumbs extends Component {
@@ -35,7 +35,7 @@ export default getBreadcrumbs => WrappedComponent => {
 
   const mapDispatchToProps = dispatch => ({
     setBreadcrumbs: bc => {
-      dispatch(GlobalActionsCreator.setBreadcrumbs(bc));
+      dispatch(setBreadcrumbsAction(bc));
     },
   });
 

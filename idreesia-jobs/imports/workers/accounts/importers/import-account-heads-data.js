@@ -1,12 +1,12 @@
 /* eslint "no-param-reassign": "off" */
-import sql from "mssql";
-import { AccountHeads } from "meteor/idreesia-common/collections/accounts";
+import sql from 'mssql';
+import { AccountHeads } from 'meteor/idreesia-common/server/collections/accounts';
 
 export default async function importCategoriesData(company, adminUser) {
   return new Promise((resolve /* , reject */) => {
     const sqlRequest = new sql.Request();
     sqlRequest.stream = true;
-    sqlRequest.query("Select * from Accounts");
+    sqlRequest.query('Select * from Accounts');
 
     let importedAccountHeads = 0;
     const rowsToProcess = [];
@@ -47,12 +47,12 @@ export default async function importCategoriesData(company, adminUser) {
       );
     };
 
-    sqlRequest.on("row", row => {
+    sqlRequest.on('row', row => {
       rowsToProcess.push(row);
     });
 
     sqlRequest.on(
-      "done",
+      'done',
       Meteor.bindEnvironment(() => {
         processRows();
         resolve(importedAccountHeads);

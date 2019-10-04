@@ -3,7 +3,7 @@ import moment from 'moment';
 import {
   PurchaseForms,
   StockItems,
-} from 'meteor/idreesia-common/collections/inventory';
+} from 'meteor/idreesia-common/server/collections/inventory';
 
 export default function getAdjustmentsSummary(physicalStoreId, date) {
   const purchaseForms = PurchaseForms.getUpdatedForDate(physicalStoreId, date);

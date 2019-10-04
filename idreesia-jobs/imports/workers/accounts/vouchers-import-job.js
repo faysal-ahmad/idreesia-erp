@@ -1,5 +1,5 @@
 import { JobTypes } from 'meteor/idreesia-common/constants';
-import { AdminJobs } from 'meteor/idreesia-common/collections/admin';
+import { AdminJobs } from 'meteor/idreesia-common/server/collections/admin';
 
 import Jobs from '/imports/collections/jobs';
 

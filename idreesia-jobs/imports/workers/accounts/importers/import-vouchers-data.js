@@ -8,24 +8,24 @@ VOrder
 */
 
 /* eslint "no-param-reassign": "off" */
-import sql from "mssql";
-import moment from "moment";
-import { toInteger } from "lodash";
-import { Formats } from "meteor/idreesia-common/constants";
-import { Vouchers } from "meteor/idreesia-common/collections/accounts";
+import sql from 'mssql';
+import moment from 'moment';
+import { toInteger } from 'lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
+import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';
 
 function splitVoucherNumber(voucherNo) {
   let voucherType = null;
   let voucherNumber = null;
 
-  if (voucherNo.startsWith("JV")) {
+  if (voucherNo.startsWith('JV')) {
     voucherType = voucherNo.slice(0, 2);
     voucherNumber = voucherNo.slice(3);
   } else if (
-    voucherNo.startsWith("BPV") ||
-    voucherNo.startsWith("BRV") ||
-    voucherNo.startsWith("CPV") ||
-    voucherNo.startsWith("CRV")
+    voucherNo.startsWith('BPV') ||
+    voucherNo.startsWith('BRV') ||
+    voucherNo.startsWith('CPV') ||
+    voucherNo.startsWith('CRV')
   ) {
     voucherType = voucherNo.slice(0, 3);
     voucherNumber = voucherNo.slice(4);
@@ -81,17 +81,17 @@ export default async function importVouchersData(
     };
 
     const startDate = moment(importForMonth, Formats.DATE_FORMAT)
-      .startOf("month")
+      .startOf('month')
       .toDate();
     const endDate = moment(importForMonth, Formats.DATE_FORMAT)
-      .endOf("month")
+      .endOf('month')
       .toDate();
 
     const ps = new sql.PreparedStatement();
-    ps.input("startDate", sql.DateTime);
-    ps.input("endDate", sql.DateTime);
+    ps.input('startDate', sql.DateTime);
+    ps.input('endDate', sql.DateTime);
     ps.prepare(
-      "select * from Voucher where VoucherDate >= @startDate AND VoucherDate <= @endDate"
+      'select * from Voucher where VoucherDate >= @startDate AND VoucherDate <= @endDate'
     )
       .then(() => ps.execute({ startDate, endDate }))
       .then(result => {

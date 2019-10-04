@@ -5,8 +5,8 @@ import {
   Locations,
   IssuanceForms,
   StockItems,
-} from 'meteor/idreesia-common/collections/inventory';
-import { Karkuns } from 'meteor/idreesia-common/collections/hr';
+} from 'meteor/idreesia-common/server/collections/inventory';
+import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 
 export default function getIssuanceFormsSummary(physicalStoreId, date) {
   const issuanceForms = IssuanceForms.getUpdatedForDate(physicalStoreId, date);

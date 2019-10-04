@@ -7,11 +7,11 @@ DrorCr
 AccountNo
 */
 
-import sql from "mssql";
+import sql from 'mssql';
 import {
   Vouchers,
   VoucherDetails,
-} from "meteor/idreesia-common/collections/accounts";
+} from 'meteor/idreesia-common/server/collections/accounts';
 
 export default async function importVoucherDetailsData(
   companyId,
@@ -38,7 +38,7 @@ export default async function importVoucherDetailsData(
               externalReferenceId: VoucherDetailId,
               voucherId: voucher._id,
               amount: Amount,
-              isCredit: DrorCr === "Cr",
+              isCredit: DrorCr === 'Cr',
               accountHeadId: accountHead._id,
               createdAt: date,
               createdBy: adminUser._id,
@@ -53,8 +53,8 @@ export default async function importVoucherDetailsData(
     };
 
     const ps = new sql.PreparedStatement();
-    ps.input("voucherId", sql.Numeric(18, 0));
-    ps.prepare("select * from VoucherDetails where VoucherID = @voucherId")
+    ps.input('voucherId', sql.Numeric(18, 0));
+    ps.prepare('select * from VoucherDetails where VoucherID = @voucherId')
       .then(() =>
         ps.execute({ voucherId: Number(voucher.externalReferenceId) })
       )

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { Formats, JobTypes } from 'meteor/idreesia-common/constants';
-import { AdminJobs } from 'meteor/idreesia-common/collections/admin';
-import { calculateAllAccountBalancesFromMonth } from 'meteor/idreesia-common/business-logic/accounts';
+import { AdminJobs } from 'meteor/idreesia-common/server/collections/admin';
+import { calculateAllAccountBalancesFromMonth } from 'meteor/idreesia-common/server/business-logic/accounts';
 
 import Jobs from '/imports/collections/jobs';
 

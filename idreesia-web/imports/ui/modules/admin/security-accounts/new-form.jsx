@@ -30,22 +30,30 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createAccount, history } = this.props;
-    form.validateFields((err, { karkun, userName, password }) => {
+    form.validateFields((err, { karkun, userName, password, email }) => {
       if (err) return;
 
-      createAccount({
-        variables: {
-          karkunId: karkun._id,
-          userName,
-          password,
-        },
-      })
-        .then(() => {
-          history.push(paths.accountsPath);
+      if ((userName && password) || (email && email.includes('@gmail.com'))) {
+        createAccount({
+          variables: {
+            karkunId: karkun._id,
+            userName,
+            password,
+            email,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
+          .then(() => {
+            history.push(paths.accountsPath);
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      } else {
+        message.error(
+          'Either User name and password, or Google Email is required to create an account.',
+          5
+        );
+      }
     });
   };
 
@@ -65,8 +73,6 @@ class NewForm extends Component {
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"
-          required
-          requiredMessage="Please specify a user name."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -74,8 +80,12 @@ class NewForm extends Component {
           fieldName="password"
           fieldLabel="Password"
           type="password"
-          required
-          requiredMessage="Please specify a password."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="email"
+          fieldLabel="Google Email"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -88,13 +98,15 @@ class NewForm extends Component {
 const formMutation = gql`
   mutation createAccount(
     $karkunId: String!
-    $userName: String!
-    $password: String!
+    $userName: String
+    $password: String
+    $email: String
   ) {
     createAccount(
       karkunId: $karkunId
       userName: $userName
       password: $password
+      email: $email
     ) {
       _id
     }

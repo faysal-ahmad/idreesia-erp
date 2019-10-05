@@ -70,7 +70,6 @@ class EditForm extends Component {
     const { getFieldDecorator } = this.props.form;
     if (formDataLoading || allDutiesLoading) return null;
 
-    debugger;
     return (
       <Fragment>
         <Form layout="horizontal" onSubmit={this.handleSubmit}>

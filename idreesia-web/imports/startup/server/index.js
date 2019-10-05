@@ -1,3 +1,4 @@
+import './configure-services';
 import './setup-rest-endpoints';
 import './migrations';
 

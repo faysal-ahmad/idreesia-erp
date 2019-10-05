@@ -1,4 +1,4 @@
-import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
+import { compact, get, values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Jobs,
   Karkuns,
@@ -14,7 +14,14 @@ export default {
   KarkunType: {
     user: karkunType => {
       if (!karkunType.userId) return null;
-      return Meteor.users.findOne(karkunType.userId);
+      const user = Meteor.users.findOne(karkunType.userId);
+      return {
+        _id: user._id,
+        username: user.username,
+        email: get(user, 'services.google.email', null),
+        permissions: user.permissions,
+        instances: user.instances,
+      };
     },
     job: karkunType => {
       if (!karkunType.jobId) return null;
@@ -343,7 +350,7 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    createAccount(obj, { karkunId, userName, password }, { user }) {
+    createAccount(obj, { karkunId, userName, password, email }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
@@ -352,9 +359,11 @@ export default {
         );
       }
 
-      const existingUser = Accounts.findUserByUsername(userName);
-      if (existingUser) {
-        throw new Error(`User name '${userName}' is already in use.`);
+      if (userName) {
+        const existingUser = Accounts.findUserByUsername(userName);
+        if (existingUser) {
+          throw new Error(`User name '${userName}' is already in use.`);
+        }
       }
 
       const existingkarkun = Karkuns.findOne(karkunId);
@@ -364,6 +373,7 @@ export default {
 
       const newUserId = Accounts.createUser({
         username: userName,
+        email,
         password,
       });
 
@@ -376,6 +386,36 @@ export default {
       });
 
       return Karkuns.findOne(karkunId);
+    },
+
+    updateAccount(obj, { userId, password, email }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Accounts in the System.'
+        );
+      }
+
+      if (password) {
+        Accounts.setPassword(userId, password);
+      }
+
+      if (email) {
+        Meteor.users.update(userId, {
+          $set: {
+            'services.google.email': email,
+          },
+        });
+      } else {
+        Meteor.users.update(userId, {
+          $unset: {
+            'services.google': '',
+          },
+        });
+      }
+
+      return Karkuns.findOne({ userId });
     },
 
     deleteAccount(obj, { karkunId, karkunUserId }, { user }) {

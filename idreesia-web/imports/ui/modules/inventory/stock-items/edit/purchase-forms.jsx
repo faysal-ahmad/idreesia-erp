@@ -111,7 +111,6 @@ class List extends Component {
   render() {
     const { loading, purchaseFormsByStockItem } = this.props;
     if (loading) return null;
-    debugger;
 
     return (
       <Table

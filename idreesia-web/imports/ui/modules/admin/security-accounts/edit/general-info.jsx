@@ -8,7 +8,6 @@ import { Form, message } from '/imports/ui/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
-  InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -22,7 +21,7 @@ class GeneralInfo extends Component {
     loading: PropTypes.bool,
     karkunId: PropTypes.string,
     karkunById: PropTypes.object,
-    updateKarkun: PropTypes.func,
+    updateAccount: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -32,16 +31,20 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, karkunById, updateKarkun } = this.props;
-    form.validateFields((err, { name, cnicNumber, currentAddress }) => {
+    const { form, history, karkunById, updateAccount } = this.props;
+    form.validateFields((err, { password, email }) => {
       if (err) return;
 
-      updateKarkun({
+      if (email && !email.includes('@gmail.com')) {
+        message.error('This is not a valid Google Email.', 5);
+        return;
+      }
+
+      updateAccount({
         variables: {
-          _id: karkunById._id,
-          name,
-          cnicNumber,
-          currentAddress,
+          userId: karkunById.user._id,
+          password,
+          email,
         },
       })
         .then(() => {
@@ -63,42 +66,30 @@ class GeneralInfo extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
+          disabled
           initialValue={karkunById.name}
-          required
-          requiredMessage="Please input the name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="cnicNumber"
-          fieldLabel="CNIC Number"
-          initialValue={karkunById.cnicNumber}
-          required
-          requiredMessage="Please input the CNIC for the karkun."
+          fieldName="userName"
+          fieldLabel="User name"
+          disabled
+          initialValue={karkunById.user.username}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="primaryContactNumber"
-          fieldLabel="Contact No. 1"
-          initialValue={karkunById.primaryContactNumber}
-          required={false}
+          fieldName="password"
+          fieldLabel="Password"
+          type="password"
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
-          fieldName="secondaryContactNumber"
-          fieldLabel="Contact No. 2"
-          initialValue={karkunById.secondaryContactNumber}
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextAreaField
-          fieldName="currentAddress"
-          fieldLabel="Current Address"
-          initialValue={karkunById.currentAddress}
-          required={false}
+          fieldName="email"
+          fieldLabel="Google Email"
+          initialValue={karkunById.user.email}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -113,29 +104,25 @@ const formQuery = gql`
     karkunById(_id: $_id) {
       _id
       name
-      cnicNumber
-      currentAddress
+      user {
+        _id
+        username
+        email
+      }
     }
   }
 `;
 
 const formMutation = gql`
-  mutation updateKarkun(
-    $_id: String!
-    $name: String!
-    $cnicNumber: String!
-    $currentAddress: String
-  ) {
-    updateKarkun(
-      _id: $_id
-      name: $name
-      cnicNumber: $cnicNumber
-      currentAddress: $currentAddress
-    ) {
+  mutation updateAccount($userId: String!, $password: String, $email: String) {
+    updateAccount(userId: $userId, password: $password, email: $email) {
       _id
       name
-      cnicNumber
-      currentAddress
+      user {
+        _id
+        username
+        email
+      }
     }
   }
 `;
@@ -143,9 +130,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateKarkun',
+    name: 'updateAccount',
     options: {
-      refetchQueries: ['pagedKarkuns'],
+      refetchQueries: ['allKarkunsWithAccounts'],
     },
   }),
   graphql(formQuery, {

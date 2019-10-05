@@ -39,14 +39,14 @@ class List extends Component {
       ),
     },
     {
-      title: 'CNIC number',
-      dataIndex: 'cnicNumber',
-      key: 'cnicNumber',
-    },
-    {
       title: 'User name',
       dataIndex: 'user.username',
       key: 'username',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'user.email',
+      key: 'user.email',
     },
     {
       key: 'action',
@@ -118,10 +118,10 @@ const listQuery = gql`
     allKarkunsWithAccounts {
       _id
       name
-      cnicNumber
       user {
         _id
         username
+        email
       }
     }
   }

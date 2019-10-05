@@ -22,3 +22,5 @@ dynamic-import
 apollo
 
 idreesia-common
+accounts-google
+service-configuration

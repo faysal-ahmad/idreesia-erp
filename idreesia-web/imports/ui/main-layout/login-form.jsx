@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Form, Input, message } from './antd-controls';
+import { Button, Form, Icon, Input, message } from './antd-controls';
 
 const loginFormButtonStyle = {
   width: '100%',
@@ -29,6 +29,18 @@ class LoginForm extends Component {
             message.error(error.message, 5);
           }
         });
+      }
+    });
+  };
+
+  handleLoginWithGoogle = () => {
+    const options = {
+      requestPermissions: ['email'],
+    };
+
+    Meteor.loginWithGoogle(options, error => {
+      if (error) {
+        message(error.message, 5);
       }
     });
   };
@@ -75,6 +87,14 @@ class LoginForm extends Component {
         <Form.Item {...itemLayout}>
           <Button type="primary" htmlType="submit" style={loginFormButtonStyle}>
             Log in
+          </Button>
+          <Button
+            type="primary"
+            style={loginFormButtonStyle}
+            onClick={this.handleLoginWithGoogle}
+          >
+            <Icon type="google" style={{ fontSize: 20 }} />
+            Log in with Google
           </Button>
         </Form.Item>
       </Form>

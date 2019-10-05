@@ -11,7 +11,13 @@ module.exports = {
         PORT: 3000,
         METEOR_SETTINGS: {
           private: {
-            jobsAppUrl: 'http://localhost:3002'
+            jobsAppUrl: 'http://localhost:3002',
+            oAuth: {
+              google: {
+                clientId: "961183879263-ef96r606qqhsjvvn2vdak512693d67ca.apps.googleusercontent.com",
+                secret: "VvFEISmArKNrWOXiyYY7mY9y"
+              }
+            }
           }
         }
       }

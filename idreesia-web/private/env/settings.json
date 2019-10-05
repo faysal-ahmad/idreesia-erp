@@ -1,5 +1,11 @@
 {
   "private": {
-    "jobsAppUrl": "http://localhost:3002"
+    "jobsAppUrl": "http://localhost:3002",
+    "oAuth": {
+      "google": {
+        "clientId": "961183879263-lo9to9jggjaq2a3ok74ire4htuvosasl.apps.googleusercontent.com",
+        "secret": "pkIfR-VAGea19YgvMsHsiYyT"
+      }
+    }
   }
 }

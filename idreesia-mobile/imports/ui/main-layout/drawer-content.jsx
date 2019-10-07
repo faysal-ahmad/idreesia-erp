@@ -27,7 +27,9 @@ const IconStyle = {
 const DrawerContent = ({ history, toggleDrawer }) => {
   const dispatch = useDispatch();
   const loggedInUser = useSelector(state => state.loggedInUser);
-  const userProfile = <UserProfile loggedInUser={loggedInUser} />;
+  const userProfile = (
+    <UserProfile history={history} loggedInUser={loggedInUser} />
+  );
 
   return (
     <>

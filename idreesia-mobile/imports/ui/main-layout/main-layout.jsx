@@ -10,23 +10,22 @@ import AppRouter from './app-router';
 import DrawerContent from './drawer-content';
 
 const MainLayout = ({ history, location }) => {
-  const activeModuleName = useSelector(state => state.activeModuleName);
-  const activeSubModuleName = useSelector(state => state.activeSubModuleName);
+  const breadcrumbs = useSelector(state => state.breadcrumbs);
   const [showDrawer, setShowDrawer] = useState(false);
 
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer);
   };
 
-  const getSubModuleDisplayName = () => {
-    if (activeModuleName && activeSubModuleName) {
-      return `${activeModuleName} - ${activeSubModuleName}`;
+  const getTitle = () => {
+    if (breadcrumbs) {
+      return breadcrumbs.join(' - ');
     }
 
     return 'Idreesia ERP';
   };
 
-  const title = getSubModuleDisplayName();
+  const title = getTitle();
 
   return (
     <div>

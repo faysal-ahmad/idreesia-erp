@@ -9,12 +9,19 @@ const ContainerStyle = {
   paddingBottom: '10px',
 };
 
-const UserProfile = ({ loggedInUser }) => {
+const UserProfile = ({ history, loggedInUser }) => {
   if (!loggedInUser) {
     return (
       <div style={ContainerStyle}>
         <WingBlank>
-          <Button type="primary">Login</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              history.push('/login');
+            }}
+          >
+            Login
+          </Button>
         </WingBlank>
       </div>
     );
@@ -24,6 +31,7 @@ const UserProfile = ({ loggedInUser }) => {
 };
 
 UserProfile.propTypes = {
+  history: PropTypes.object,
   loggedInUser: PropTypes.object,
 };
 

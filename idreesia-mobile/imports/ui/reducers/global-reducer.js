@@ -35,3 +35,15 @@ export function activeSubModuleName(previousValue, action) {
 
   return newValue;
 }
+
+export function breadcrumbs(previousValue, action) {
+  let newValue;
+  if (!previousValue) newValue = [];
+  else newValue = previousValue;
+
+  if (action.type === ActionNames.SET_BREADCRUMB) {
+    newValue = action.breadcrumbs;
+  }
+
+  return newValue;
+}

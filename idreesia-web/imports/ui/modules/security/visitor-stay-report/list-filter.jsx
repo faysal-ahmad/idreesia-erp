@@ -7,6 +7,7 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { Collapse, Form, Row, Button } from '/imports/ui/controls';
 import {
   AutoCompleteField,
+  InputTextField,
   DateField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
@@ -40,16 +41,19 @@ class ListFilter extends Component {
     e.preventDefault();
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { startDate, endDate, city, additionalInfo }) => {
-      if (err) return;
-      setPageParams({
-        startDate,
-        endDate,
-        city,
-        additionalInfo,
-        pageIndex: 0,
-      });
-    });
+    form.validateFields(
+      (err, { startDate, endDate, name, city, additionalInfo }) => {
+        if (err) return;
+        setPageParams({
+          startDate,
+          endDate,
+          name,
+          city,
+          additionalInfo,
+          pageIndex: 0,
+        });
+      }
+    );
   };
 
   handleReset = () => {
@@ -57,6 +61,7 @@ class ListFilter extends Component {
     setPageParams({
       startDate: null,
       endDate: null,
+      name: null,
       city: null,
       additionalInfo: null,
       pageIndex: 0,
@@ -67,7 +72,7 @@ class ListFilter extends Component {
     const { getFieldDecorator } = this.props.form;
     const {
       distinctCities,
-      queryParams: { startDate, endDate, city, additionalInfo },
+      queryParams: { startDate, endDate, name, city, additionalInfo },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -91,6 +96,14 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputTextField
+              fieldName="name"
+              fieldLabel="Name"
+              required={false}
+              fieldLayout={formItemLayout}
+              initialValue={name}
               getFieldDecorator={getFieldDecorator}
             />
             <AutoCompleteField

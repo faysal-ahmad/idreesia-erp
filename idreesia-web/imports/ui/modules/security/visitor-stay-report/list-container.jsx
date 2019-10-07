@@ -35,6 +35,7 @@ class ListContainer extends Component {
     const {
       startDate,
       endDate,
+      name,
       city,
       additionalInfo,
       sortBy,
@@ -53,6 +54,10 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('endDate'))
       endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
     else endDateVal = queryParams.endDate || '';
+
+    let nameVal;
+    if (newParams.hasOwnProperty('name')) nameVal = name || '';
+    else nameVal = queryParams.name || '';
 
     let cityVal;
     if (newParams.hasOwnProperty('city')) cityVal = city || '';
@@ -83,7 +88,7 @@ class ListContainer extends Component {
       pageSizeVal = pageSize || DEFAULT_PAGE_SIZE_INT;
     else pageSizeVal = queryParams.pageSize || DEFAULT_PAGE_SIZE_INT;
 
-    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&city=${cityVal}&additionalInfo=${additionalInfoVal}&sortBy=${sortByVal}&sortOrder=${sortOrderVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&name=${nameVal}&city=${cityVal}&additionalInfo=${additionalInfoVal}&sortBy=${sortByVal}&sortOrder=${sortOrderVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 

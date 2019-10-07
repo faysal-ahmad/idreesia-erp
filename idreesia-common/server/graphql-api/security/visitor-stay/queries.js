@@ -28,7 +28,18 @@ const sortOrderMapping = {
   desc: -1,
 };
 
-export function getVisitorStays(queryString) {
+async function getVisitorIdsByNameSearch(name) {
+  const pipeline = [
+    { $match: { $text: { $search: name } } },
+    { $sort: { score: { $meta: 'textScore' } } },
+    { $limit: 50 },
+  ];
+
+  const visitors = await Visitors.aggregate(pipeline).toArray();
+  return visitors.map(({ _id }) => _id);
+}
+
+export async function getVisitorStays(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
@@ -36,6 +47,7 @@ export function getVisitorStays(queryString) {
     visitorId,
     startDate,
     endDate,
+    name,
     city,
     additionalInfo,
     sortBy = DEFAULT_SORT_BY,
@@ -88,6 +100,15 @@ export function getVisitorStays(queryString) {
       as: 'visitor',
     },
   });
+
+  if (name) {
+    const visitorIds = await getVisitorIdsByNameSearch(name);
+    pipeline.push({
+      $match: {
+        'visitor._id': { $in: visitorIds },
+      },
+    });
+  }
 
   if (city) {
     pipeline.push({

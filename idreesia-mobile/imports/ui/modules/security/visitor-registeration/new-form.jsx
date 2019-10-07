@@ -7,55 +7,36 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Button,
-  Flex,
-  InputItem,
+  InputItemField,
+  EhadDurationField,
+  PictureField,
+  FormButtonsSaveCancel,
   List,
-  Picker,
   Toast,
-  WingBlank,
   WhiteSpace,
 } from '/imports/ui/controls';
 
 class NewForm extends Component {
   static propTypes = {
+    history: PropTypes.object,
     form: formShape,
     createVisitor: PropTypes.func,
   };
 
-  state = {
-    imageData: null,
-  };
-
-  getDurationDataOptions = () => {
-    const yearOptions = [];
-    for (let i = 0; i <= 40; i++) {
-      yearOptions.push({
-        label: i === 1 ? `${i} Year` : `${i} Years`,
-        value: i,
-      });
-    }
-
-    const monthOptions = [];
-    for (let i = 0; i <= 11; i++) {
-      monthOptions.push({
-        label: i === 1 ? `${i} Month` : `${i} Months`,
-        value: i,
-      });
-    }
-
-    return [yearOptions, monthOptions];
-  };
-
-  getEhadDateFromDuration(duration) {
+  getEhadDateFromDuration = duration => {
     const currentDate = moment();
     const ehadDate = moment();
     ehadDate.year(currentDate.year() - duration[0]);
     ehadDate.month(currentDate.month() - duration[1]);
     return ehadDate;
-  }
+  };
 
-  handleSubmit = () => {
+  handleCancel = () => {
+    const { history } = this.props;
+    history.goBack();
+  };
+
+  handleSave = () => {
     const { createVisitor, form } = this.props;
     form.validateFields(
       (
@@ -69,6 +50,7 @@ class NewForm extends Component {
           contactNumber1,
           city,
           country,
+          imageData,
         }
       ) => {
         if (error) return;
@@ -77,12 +59,19 @@ class NewForm extends Component {
             name,
             parentName,
             isMinor: false,
-            cnicNumber,
+            cnicNumber: `${cnicNumber.slice(0, 5)}-${cnicNumber.slice(
+              5,
+              12
+            )}-${cnicNumber.slice(12)}`,
             ehadDate: this.getEhadDateFromDuration(ehadDate),
             referenceName,
-            contactNumber1,
+            contactNumber1: `${contactNumber1.slice(
+              0,
+              4
+            )}-${contactNumber1.slice(4)}`,
             city,
             country,
+            imageData,
           },
         })
           .then(() => {
@@ -96,121 +85,78 @@ class NewForm extends Component {
     );
   };
 
-  takePicture = () => {
-    const cameraOptions = {
-      width: 300,
-      quality: 100,
-      allowEdit: false,
-      targetWidth: 300,
-      targetHeight: 300,
-      destinationType: window.navigator.camera.DestinationType.DATA_URL,
-    };
-
-    navigator.camera.getPicture(this.onSuccess, this.onFail, cameraOptions);
-  };
-
-  onSuccess = imageData => {
-    this.setState({ imageData });
-  };
-
-  onFail = () => {
-    Toast.fail('Failed to take picture.', 1);
-  };
-
   render() {
-    const { imageData } = this.state;
     const {
-      form: { getFieldProps, getFieldError },
+      form: { getFieldDecorator, getFieldError },
     } = this.props;
-    const errors = getFieldError('required');
-
-    const image = imageData ? (
-      <Flex justify="center" style={{ width: '100%' }}>
-        <img src={`data:image/jpeg;base64,${imageData}`} />
-      </Flex>
-    ) : null;
 
     return (
       <List>
-        <InputItem
-          {...getFieldProps('name', {
-            rules: [{ required: true }],
-          })}
+        <InputItemField
+          fieldName="name"
           placeholder="Name"
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
+          required
         />
-        <InputItem
-          {...getFieldProps('parentName', {
-            rules: [{ required: true }],
-          })}
+        <InputItemField
+          fieldName="parentName"
           placeholder="Father's Name"
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
+          required
         />
-        <InputItem
-          {...getFieldProps('cnicNumber', {
-            rules: [{ required: true }],
-          })}
+        <InputItemField
+          fieldName="cnicNumber"
           placeholder="CNIC"
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
           type="number"
           maxLength={13}
+          required
         />
-        <InputItem
-          {...getFieldProps('contactNumber1')}
+        <InputItemField
+          fieldName="contactNumber1"
           placeholder="Mobile No."
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
           type="number"
-          maxLength={11}
         />
-        <InputItem
-          {...getFieldProps('city', {
-            rules: [{ required: true }],
-          })}
+        <InputItemField
+          fieldName="city"
           placeholder="City"
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
+          required
         />
-        <InputItem
-          {...getFieldProps('country', {
-            rules: [{ required: true }],
-            initialValue: 'Pakistan',
-          })}
+        <InputItemField
+          fieldName="country"
           placeholder="Country"
+          initialValue="Pakistan"
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
+          required
         />
-        <Picker
-          {...getFieldProps('ehadDate', {
-            rules: [{ required: true }],
-            initialValue: [0, 0],
-          })}
-          data={this.getDurationDataOptions()}
-          cascade={false}
-          okText="OK"
-          dismissText="Cancel"
-        >
-          <List.Item arrow="horizontal">Ehad Duration</List.Item>
-        </Picker>
-        <InputItem
-          {...getFieldProps('referenceName', {
-            rules: [{ required: true }],
-          })}
+        <EhadDurationField
+          fieldName="ehadDate"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputItemField
+          fieldName="referenceName"
           placeholder="Reference Of"
+          getFieldError={getFieldError}
+          getFieldDecorator={getFieldDecorator}
+          required
         />
-        {errors ? errors.join(',') : null}
+        <PictureField
+          fieldName="imageData"
+          getFieldDecorator={getFieldDecorator}
+        />
         <WhiteSpace size="lg" />
-        <Flex direction="row" justify="center">
-          <Button
-            type="primary"
-            style={{ width: '40%' }}
-            onClick={this.takePicture}
-          >
-            Take Picture
-          </Button>
-          <WingBlank />
-          <Button
-            type="primary"
-            style={{ width: '40%' }}
-            onClick={this.handleSubmit}
-          >
-            Submit
-          </Button>
-        </Flex>
-
-        <WhiteSpace size="lg" />
-        {image}
+        <FormButtonsSaveCancel
+          handleSave={this.handleSave}
+          handleCancel={this.handleCancel}
+        />
       </List>
     );
   }
@@ -229,6 +175,7 @@ const formMutation = gql`
     $address: String
     $city: String
     $country: String
+    $imageData: String
   ) {
     createVisitor(
       name: $name
@@ -242,6 +189,7 @@ const formMutation = gql`
       address: $address
       city: $city
       country: $country
+      imageData: $imageData
     ) {
       _id
       name

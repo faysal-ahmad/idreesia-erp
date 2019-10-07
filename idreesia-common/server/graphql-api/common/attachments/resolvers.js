@@ -1,5 +1,7 @@
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
+import { createAttachment } from './utilities';
+
 export default {
   Query: {
     attachmentsById(obj, { ids }) {
@@ -11,22 +13,10 @@ export default {
 
   Mutation: {
     createAttachment(obj, { name, description, mimeType, data }, { user }) {
-      let updateData = data;
-      if (data.startsWith('data:image/jpeg;base64,')) {
-        updateData = data.slice(23);
-      }
-
-      const date = new Date();
-      const attachmentId = Attachments.insert({
-        name,
-        description,
-        mimeType,
-        data: updateData,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
+      const attachmentId = createAttachment(
+        { name, description, mimeType, data },
+        { user }
+      );
 
       return Attachments.findOne(attachmentId);
     },

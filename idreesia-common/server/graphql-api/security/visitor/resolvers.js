@@ -7,6 +7,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 import { getVisitors } from './queries';
 import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
+import { createAttachment } from '../../common/attachments/utilities';
 
 export default {
   Query: {
@@ -93,6 +94,7 @@ export default {
         address,
         city,
         country,
+        imageData,
       },
       { user }
     ) {
@@ -112,6 +114,16 @@ export default {
       if (contactNumber2) checkContactNotInUse(contactNumber2);
       const guestUser = Accounts.findUserByUsername('erp-guest');
 
+      let imageId = null;
+      if (imageData) {
+        imageId = createAttachment(
+          {
+            data: imageData,
+          },
+          { user: user || guestUser }
+        );
+      }
+
       const date = new Date();
       const visitorId = Visitors.insert({
         name,
@@ -126,6 +138,7 @@ export default {
         address,
         city,
         country,
+        imageId,
         verified: !isNil(user),
         createdAt: date,
         createdBy: user ? user._id : guestUser._id,

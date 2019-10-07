@@ -49,6 +49,7 @@ extend type Mutation {
     address: String
     city: String
     country: String
+    imageData: String
   ): VisitorType
 
   updateVisitor(

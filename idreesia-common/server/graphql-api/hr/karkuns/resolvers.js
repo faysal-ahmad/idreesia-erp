@@ -404,13 +404,13 @@ export default {
       if (email) {
         Meteor.users.update(userId, {
           $set: {
-            'services.google.email': email,
+            'emails.0.address': email,
           },
         });
       } else {
         Meteor.users.update(userId, {
           $unset: {
-            'services.google': '',
+            emails: '',
           },
         });
       }

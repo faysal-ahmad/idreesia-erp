@@ -9,6 +9,7 @@ import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 
 import App from '../imports/ui/app';
+import './register-service-worker';
 
 const uri = `${Meteor.absoluteUrl()}/graphql`;
 const client = new ApolloClient({

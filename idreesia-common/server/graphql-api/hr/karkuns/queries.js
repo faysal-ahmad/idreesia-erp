@@ -124,7 +124,6 @@ function getKarkunsByFilter(params) {
     }
   }
 
-  console.log(JSON.stringify(pipeline));
   const countingPipeline = pipeline.concat({
     $count: 'total',
   });
@@ -230,9 +229,6 @@ function getKarkunsByPredefinedFilter(params) {
 export function getKarkuns(queryString) {
   const params = parse(queryString);
   const { predefinedFilterName } = params;
-
-  console.log(queryString);
-  console.log(params);
 
   if (predefinedFilterName) {
     return getKarkunsByPredefinedFilter(params);

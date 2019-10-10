@@ -9,6 +9,17 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
+const bloodGroupValueConversion = {
+  'A-': 'A-',
+  Aplus: 'A+',
+  'B-': 'B-',
+  Bplus: 'B+',
+  'AB-': 'AB-',
+  ABplus: 'AB+',
+  'O-': 'O-',
+  Oplus: 'O+',
+};
+
 function getKarkunsByFilter(params) {
   const pipeline = [];
 
@@ -73,9 +84,10 @@ function getKarkunsByFilter(params) {
   }
 
   if (bloodGroup) {
+    const convertedBloodGroupValue = bloodGroupValueConversion[bloodGroup];
     pipeline.push({
       $match: {
-        bloodGroup: { $eq: bloodGroup },
+        bloodGroup: { $eq: convertedBloodGroupValue },
       },
     });
   }
@@ -112,6 +124,7 @@ function getKarkunsByFilter(params) {
     }
   }
 
+  console.log(JSON.stringify(pipeline));
   const countingPipeline = pipeline.concat({
     $count: 'total',
   });
@@ -217,6 +230,9 @@ function getKarkunsByPredefinedFilter(params) {
 export function getKarkuns(queryString) {
   const params = parse(queryString);
   const { predefinedFilterName } = params;
+
+  console.log(queryString);
+  console.log(params);
 
   if (predefinedFilterName) {
     return getKarkunsByPredefinedFilter(params);

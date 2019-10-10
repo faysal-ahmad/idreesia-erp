@@ -63,6 +63,8 @@ class ListFilter extends Component {
       pageIndex: 0,
       name: null,
       cnicNumber: null,
+      phoneNumber: null,
+      bloodGroup: null,
       dutyId: null,
       shiftId: null,
       karkunType: ['volunteers', 'employees'],
@@ -181,13 +183,13 @@ class ListFilter extends Component {
               required={false}
               data={[
                 { label: 'A-', value: 'A-' },
-                { label: 'A+', value: 'A+' },
+                { label: 'A+', value: 'Aplus' },
                 { label: 'B-', value: 'B-' },
-                { label: 'B+', value: 'B+' },
+                { label: 'B+', value: 'Bplus' },
                 { label: 'AB-', value: 'AB-' },
-                { label: 'AB+', value: 'AB+' },
+                { label: 'AB+', value: 'ABplus' },
                 { label: 'O-', value: 'O-' },
-                { label: 'O+', value: 'O+' },
+                { label: 'O+', value: 'Oplus' },
               ]}
               getDataValue={({ value }) => value}
               getDataText={({ label }) => label}

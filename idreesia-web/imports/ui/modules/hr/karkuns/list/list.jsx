@@ -340,6 +340,8 @@ export default flowRight(
     options: ({
       name,
       cnicNumber,
+      phoneNumber,
+      bloodGroup,
       dutyId,
       shiftId,
       showVolunteers,
@@ -350,6 +352,7 @@ export default flowRight(
     }) => ({
       variables: {
         queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
+          ''}&phoneNumber=${phoneNumber || ''}&bloodGroup=${bloodGroup ||
           ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
           ''}&showVolunteers=${showVolunteers ||
           'true'}&showEmployees=${showEmployees ||

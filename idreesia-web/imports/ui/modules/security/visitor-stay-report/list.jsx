@@ -7,7 +7,6 @@ import moment from 'moment';
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
 import {
-  Avatar,
   Button,
   Pagination,
   Icon,
@@ -15,7 +14,7 @@ import {
   Table,
   message,
 } from '/imports/ui/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
 
@@ -33,16 +32,6 @@ const ToolbarStyle = {
   justifyContent: 'space-between',
   alignItems: 'top',
   width: '100%',
-};
-
-const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-  color: '#1890FF',
-  cursor: 'pointer',
 };
 
 const CityDivStyle = {
@@ -127,6 +116,13 @@ class List extends Component {
       ),
       dataIndex: 'refVisitor.name',
       key: 'refVisitor.name',
+      render: (text, record) => (
+        <VisitorName
+          visitor={record.refVisitor}
+          onVisitorNameClicked={this.props.handleItemSelected}
+        />
+      ),
+      /*
       render: (text, record) => {
         const { refVisitor } = record;
         const onClickHandler = () => {
@@ -152,7 +148,7 @@ class List extends Component {
             {text}
           </div>
         );
-      },
+      }, */
     };
   };
 

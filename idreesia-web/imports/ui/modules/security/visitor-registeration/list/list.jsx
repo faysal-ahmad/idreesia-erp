@@ -5,7 +5,6 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Avatar,
   Button,
   Icon,
   Pagination,
@@ -14,7 +13,7 @@ import {
   Tooltip,
   message,
 } from '/imports/ui/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import ListFilter from './list-filter';
 
 const StatusStyle = {
@@ -38,16 +37,6 @@ const ButtonGroupStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
-};
-
-const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-  color: '#1890FF',
-  cursor: 'pointer',
 };
 
 const ActionsStyle = {
@@ -113,31 +102,12 @@ class List extends Component {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => {
-      const onClickHandler = () => {
-        const { handleItemSelected } = this.props;
-        handleItemSelected(record);
-      };
-
-      if (record.imageId) {
-        const url = getDownloadUrl(record.imageId);
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" src={url} />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      }
-
-      return (
-        <div style={NameDivStyle} onClick={onClickHandler}>
-          <Avatar shape="square" size="large" icon="picture" />
-          &nbsp;&nbsp;
-          {text}
-        </div>
-      );
-    },
+    render: (text, record) => (
+      <VisitorName
+        visitor={record}
+        onVisitorNameClicked={this.props.handleItemSelected}
+      />
+    ),
   };
 
   cnicColumn = {

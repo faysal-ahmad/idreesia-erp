@@ -36,11 +36,15 @@ class MeetingCardsContainer extends Component {
         <ReactToPrint
           content={() => this.componentRef.current}
           trigger={() => (
-            <Button type="primary" icon="printer">
+            <Button size="large" type="primary" icon="printer">
               Print Cards
             </Button>
           )}
         />
+        &nbsp;
+        <Button size="large" type="primary">
+          Back
+        </Button>
         <Divider />
         <MeetingCards
           ref={this.componentRef}

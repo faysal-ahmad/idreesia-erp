@@ -17,6 +17,14 @@ import {
 import { Formats } from 'meteor/idreesia-common/constants';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
+const ActionsStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+};
+
 const ToolbarStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
@@ -100,17 +108,28 @@ export class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
-        const { handleEditAttendance } = this.props;
+        const { handleEditAttendance, handleDeleteAttendance } = this.props;
         return (
-          <Tooltip key="edit" title="Edit">
-            <Icon
-              type="edit"
-              style={IconStyle}
-              onClick={() => {
-                handleEditAttendance(record);
-              }}
-            />
-          </Tooltip>
+          <div style={ActionsStyle}>
+            <Tooltip key="edit" title="Edit">
+              <Icon
+                type="edit"
+                style={IconStyle}
+                onClick={() => {
+                  handleEditAttendance(record);
+                }}
+              />
+            </Tooltip>
+            <Tooltip key="delete" title="Delete">
+              <Icon
+                type="delete"
+                style={IconStyle}
+                onClick={() => {
+                  handleDeleteAttendance([record]);
+                }}
+              />
+            </Tooltip>
+          </div>
         );
       },
     },

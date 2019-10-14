@@ -83,11 +83,11 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleDeleteAttendance = selectedRows => {
-    if (!selectedRows || selectedRows.length === 0) return;
+  handleDeleteAttendance = selectedAttendances => {
+    if (!selectedAttendances || selectedAttendances.length === 0) return;
 
     const { deleteAttendances } = this.props;
-    const ids = selectedRows.map(({ _id }) => _id);
+    const ids = selectedAttendances.map(({ _id }) => _id);
     deleteAttendances({
       variables: {
         ids,

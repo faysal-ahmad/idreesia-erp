@@ -28,7 +28,7 @@ class MeetingCardsContainer extends Component {
   }
 
   render() {
-    const { attendanceLoading, attendanceByBarcodeIds } = this.props;
+    const { attendanceLoading, attendanceByBarcodeIds, history } = this.props;
     if (attendanceLoading) return null;
 
     return (
@@ -42,7 +42,13 @@ class MeetingCardsContainer extends Component {
           )}
         />
         &nbsp;
-        <Button size="large" type="primary">
+        <Button
+          size="large"
+          type="primary"
+          onClick={() => {
+            history.goBack();
+          }}
+        >
           Back
         </Button>
         <Divider />

@@ -13,7 +13,7 @@ import {
   Formats,
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
-
+import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { processAttendanceSheet } from './helpers';
 
 export default {
@@ -172,6 +172,22 @@ export default {
       });
 
       return Attendances.findOne(attendanceId);
+    },
+
+    createAttendances(obj, { month }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+      ) {
+        throw new Error(
+          'You do not have permission to manage attendances in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      return createMonthlyAttendance(formattedMonth);
     },
 
     updateAttendance(

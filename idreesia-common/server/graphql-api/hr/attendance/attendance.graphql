@@ -46,6 +46,10 @@ extend type Mutation {
     absentCount: Int
   ): AttendanceType
 
+  createAttendances(
+    month: String!
+  ): Int
+
   updateAttendance(
     _id: String!
     karkunId: String!

@@ -1,11 +1,10 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { filter, flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { filter, flowRight } from 'lodash';
 
 import {
-  Avatar,
   Button,
   Cascader,
   DatePicker,
@@ -14,40 +13,31 @@ import {
   Menu,
   Table,
   Tooltip,
-} from "/imports/ui/controls";
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import { Formats } from "meteor/idreesia-common/constants";
+} from '/imports/ui/controls';
+import { Formats } from 'meteor/idreesia-common/constants';
+import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 const ToolbarSectionStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "left",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'left',
 };
 
 const CascaderStyle = {
-  width: "300px",
+  width: '300px',
 };
 
 const IconStyle = {
-  cursor: "pointer",
+  cursor: 'pointer',
   fontSize: 20,
-};
-
-const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-  cursor: "pointer",
 };
 
 export class List extends Component {
@@ -63,6 +53,7 @@ export class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     handleNewAttendance: PropTypes.func,
+    handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
     handleViewCards: PropTypes.func,
@@ -75,58 +66,39 @@ export class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "karkun.name",
-      key: "karkun.name",
-      render: (text, record) => {
-        const onClickHandler = () => {
-          const { handleItemSelected } = this.props;
-          handleItemSelected(record);
-        };
-
-        if (record.karkun.imageId) {
-          const url = getDownloadUrl(record.karkun.imageId);
-          return (
-            <div style={NameDivStyle} onClick={onClickHandler}>
-              <Avatar shape="square" size="large" src={url} />
-              &nbsp;&nbsp;
-              {text}
-            </div>
-          );
-        }
-
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" icon="picture" />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      },
+      title: 'Name',
+      dataIndex: 'karkun.name',
+      key: 'karkun.name',
+      render: (text, record) => (
+        <KarkunName
+          karkun={record.karkun}
+          onKarkunNameClicked={this.props.handleItemSelected}
+        />
+      ),
     },
     {
-      title: "Shift Name",
-      dataIndex: "shift.name",
-      key: "shift.name",
+      title: 'Shift Name',
+      dataIndex: 'shift.name',
+      key: 'shift.name',
     },
     {
-      title: "Present",
-      dataIndex: "presentCount",
-      key: "presentCount",
+      title: 'Present',
+      dataIndex: 'presentCount',
+      key: 'presentCount',
     },
     {
-      title: "Absent",
-      dataIndex: "absentCount",
-      key: "absentCount",
+      title: 'Absent',
+      dataIndex: 'absentCount',
+      key: 'absentCount',
     },
     {
-      title: "Percentage",
-      dataIndex: "percentage",
-      key: "percentage",
+      title: 'Percentage',
+      dataIndex: 'percentage',
+      key: 'percentage',
       render: text => `${text}%`,
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
         const { handleEditAttendance } = this.props;
         return (
@@ -162,14 +134,14 @@ export class List extends Component {
   handleMonthGoBack = () => {
     const { selectedMonth, setPageParams } = this.props;
     setPageParams({
-      selectedMonth: selectedMonth.clone().subtract(1, "months"),
+      selectedMonth: selectedMonth.clone().subtract(1, 'months'),
     });
   };
 
   handleMonthGoForward = () => {
     const { selectedMonth, setPageParams } = this.props;
     setPageParams({
-      selectedMonth: selectedMonth.clone().add(1, "months"),
+      selectedMonth: selectedMonth.clone().add(1, 'months'),
     });
   };
 
@@ -227,29 +199,38 @@ export class List extends Component {
         onChange={this.handleDutyShiftSelectionChange}
         defaultValue={[selectedDutyId, selectedShiftId]}
         options={data}
+        expandTrigger="hover"
         changeOnSelect
       />
     );
   };
 
   getActionsMenu = () => {
-    const { handleNewAttendance, handleUploadAttendanceSheet } = this.props;
+    const {
+      handleNewAttendance,
+      handleCreateMissingAttendances,
+      handleUploadAttendanceSheet,
+    } = this.props;
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleNewAttendance}>
           <Icon type="plus-circle" />
-          New Attendance
+          Create Attendance
         </Menu.Item>
-        <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
+        <Menu.Item key="2" onClick={handleCreateMissingAttendances}>
+          <Icon type="plus-circle" />
+          Create Missing Attendances
+        </Menu.Item>
+        <Menu.Item key="3" onClick={handleUploadAttendanceSheet}>
           <Icon type="upload" />
           Upload Attendance
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="3" onClick={this.handleViewCards}>
+        <Menu.Item key="4" onClick={this.handleViewCards}>
           <Icon type="idcard" />
           Print Duty Cards
         </Menu.Item>
-        <Menu.Item key="4" onClick={this.handleDeleteAttendance}>
+        <Menu.Item key="5" onClick={this.handleDeleteAttendance}>
           <Icon type="delete" />
           Delete Attendance
         </Menu.Item>
@@ -315,8 +296,8 @@ export class List extends Component {
 }
 
 const attendanceByMonthQuery = gql`
-  query attendanceByMonth($month: String!, $dutyId: String) {
-    attendanceByMonth(month: $month, dutyId: $dutyId) {
+  query attendanceByMonth($month: String!, $dutyId: String, $shiftId: String) {
+    attendanceByMonth(month: $month, dutyId: $dutyId, shiftId: $shiftId) {
       _id
       karkunId
       month

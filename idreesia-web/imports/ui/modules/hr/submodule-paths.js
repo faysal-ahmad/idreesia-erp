@@ -32,10 +32,6 @@ export default class SubModulePaths {
   // Attendance Sheets
   // ******************************************************************************
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
-  static attendanceSheetsNewFormPath = `${SubModulePaths.attendanceSheetsPath}/new`;
-  static attendanceSheetsEditFormPath(attendanceId = ':attendanceId') {
-    return `${SubModulePaths.attendanceSheetsPath}/${attendanceId}`;
-  }
   static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
   static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
 

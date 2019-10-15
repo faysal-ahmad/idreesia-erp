@@ -3,6 +3,7 @@ type AttendanceType {
   karkunId: String
   dutyId: String
   shiftId: String
+  jobId: String
   month: String
   totalCount: Int
   absentCount: Int
@@ -11,6 +12,7 @@ type AttendanceType {
   meetingCardBarcodeId: String
 
   karkun: KarkunType
+  job: JobType
   duty: DutyType
   shift: DutyShiftType
   location: DutyLocationType
@@ -28,34 +30,20 @@ extend type Query {
   attendanceById(_id: String!): AttendanceType
   attendanceByMonth(
     month: String!
-    dutyId: String
-    shiftId: String
+    categoryId: String
+    subCategoryId: String
   ): [AttendanceType]
   attendanceByBarcodeId(barcodeId: String!): AttendanceType
   attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
 }
 
 extend type Mutation {
-  createAttendance(
-    karkunId: String!
-    dutyId: String!
-    shiftId: String!
-    month: String!
-    totalCount: Int
-    presentCount: Int
-    absentCount: Int
-  ): AttendanceType
-
   createAttendances(
     month: String!
   ): Int
 
   updateAttendance(
     _id: String!
-    karkunId: String!
-    dutyId: String!
-    shiftId: String!
-    month: String!
     totalCount: Int
     presentCount: Int
     absentCount: Int

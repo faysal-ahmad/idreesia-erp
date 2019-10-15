@@ -16,8 +16,6 @@ import {
 } from './duty-locations';
 import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from './karkuns';
 import {
-  AttendanceSheetsNewForm,
-  AttendanceSheetsEditForm,
   AttendanceSheetsUploadForm,
   AttendanceSheetsList,
   AttendanceSheetsMeetingCards,
@@ -57,20 +55,12 @@ const HRRouter = () => (
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
     <Route
-      path={paths.attendanceSheetsNewFormPath}
-      component={AttendanceSheetsNewForm}
-    />
-    <Route
       path={paths.attendanceSheetsUploadFormPath}
       component={AttendanceSheetsUploadForm}
     />
     <Route
       path={paths.attendanceSheetsMeetingCardsPath}
       component={AttendanceSheetsMeetingCards}
-    />
-    <Route
-      path={paths.attendanceSheetsEditFormPath()}
-      component={AttendanceSheetsEditForm}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 

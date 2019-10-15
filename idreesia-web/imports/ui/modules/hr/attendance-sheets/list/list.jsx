@@ -51,8 +51,9 @@ const IconStyle = {
 export class List extends Component {
   static propTypes = {
     selectedMonth: PropTypes.object,
-    selectedDutyId: PropTypes.string,
-    selectedShiftId: PropTypes.string,
+    selectedCategoryId: PropTypes.string,
+    selectedSubCategoryId: PropTypes.string,
+    allJobs: PropTypes.array,
     allDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
 
@@ -60,7 +61,6 @@ export class List extends Component {
     attendanceLoading: PropTypes.bool,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
-    handleNewAttendance: PropTypes.func,
     handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
@@ -85,9 +85,21 @@ export class List extends Component {
       ),
     },
     {
-      title: 'Shift Name',
-      dataIndex: 'shift.name',
+      title: 'Job / Duty / Shift',
       key: 'shift.name',
+      render: (text, record) => {
+        let name;
+        if (record.job) {
+          name = record.job.name;
+        } else {
+          name = record.duty.name;
+          if (record.shift) {
+            name = `${name} - ${record.shift.name}`;
+          }
+        }
+
+        return name;
+      },
     },
     {
       title: 'Present',
@@ -164,11 +176,11 @@ export class List extends Component {
     });
   };
 
-  handleDutyShiftSelectionChange = value => {
+  handleSelectionChange = value => {
     const { setPageParams } = this.props;
     setPageParams({
-      selectedDutyId: value[0],
-      selectedShiftId: value[1],
+      selectedCategoryId: value[0],
+      selectedSubCategoryId: value[1],
     });
   };
 
@@ -190,12 +202,23 @@ export class List extends Component {
 
   getDutyShiftSelector = () => {
     const {
-      selectedDutyId,
-      selectedShiftId,
+      selectedCategoryId,
+      selectedSubCategoryId,
+      allJobs,
       allDuties,
       allDutyShifts,
     } = this.props;
-    const data = allDuties.map(duty => {
+
+    const jobsItem = {
+      label: 'All Jobs',
+      value: 'all_jobs',
+      children: allJobs.map(job => ({
+        value: job._id,
+        label: job.name,
+      })),
+    };
+
+    const dutiesData = allDuties.map(duty => {
       const dutyShifts = filter(
         allDutyShifts,
         dutyShift => dutyShift.dutyId === duty._id
@@ -212,11 +235,12 @@ export class List extends Component {
       return dataItem;
     });
 
+    const data = [jobsItem].concat(dutiesData);
     return (
       <Cascader
         style={CascaderStyle}
-        onChange={this.handleDutyShiftSelectionChange}
-        defaultValue={[selectedDutyId, selectedShiftId]}
+        onChange={this.handleSelectionChange}
+        defaultValue={[selectedCategoryId, selectedSubCategoryId]}
         options={data}
         expandTrigger="hover"
         changeOnSelect
@@ -226,30 +250,25 @@ export class List extends Component {
 
   getActionsMenu = () => {
     const {
-      handleNewAttendance,
       handleCreateMissingAttendances,
       handleUploadAttendanceSheet,
     } = this.props;
     const menu = (
       <Menu>
-        <Menu.Item key="1" onClick={handleNewAttendance}>
-          <Icon type="plus-circle" />
-          Create Attendance
-        </Menu.Item>
-        <Menu.Item key="2" onClick={handleCreateMissingAttendances}>
+        <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
           <Icon type="plus-circle" />
           Create Missing Attendances
         </Menu.Item>
-        <Menu.Item key="3" onClick={handleUploadAttendanceSheet}>
+        <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
           <Icon type="upload" />
           Upload Attendance
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="4" onClick={this.handleViewCards}>
+        <Menu.Item key="3" onClick={this.handleViewCards}>
           <Icon type="idcard" />
           Print Duty Cards
         </Menu.Item>
-        <Menu.Item key="5" onClick={this.handleDeleteAttendance}>
+        <Menu.Item key="4" onClick={this.handleDeleteAttendance}>
           <Icon type="delete" />
           Delete Attendance
         </Menu.Item>
@@ -315,8 +334,16 @@ export class List extends Component {
 }
 
 const attendanceByMonthQuery = gql`
-  query attendanceByMonth($month: String!, $dutyId: String, $shiftId: String) {
-    attendanceByMonth(month: $month, dutyId: $dutyId, shiftId: $shiftId) {
+  query attendanceByMonth(
+    $month: String!
+    $categoryId: String
+    $subCategoryId: String
+  ) {
+    attendanceByMonth(
+      month: $month
+      categoryId: $categoryId
+      subCategoryId: $subCategoryId
+    ) {
       _id
       karkunId
       month
@@ -331,7 +358,15 @@ const attendanceByMonthQuery = gql`
         name
         imageId
       }
+      duty {
+        _id
+        name
+      }
       shift {
+        _id
+        name
+      }
+      job {
         _id
         name
       }
@@ -342,11 +377,15 @@ const attendanceByMonthQuery = gql`
 export default flowRight(
   graphql(attendanceByMonthQuery, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
-    options: ({ selectedMonth, selectedDutyId, selectedShiftId }) => ({
+    options: ({
+      selectedMonth,
+      selectedCategoryId,
+      selectedSubCategoryId,
+    }) => ({
       variables: {
         month: selectedMonth.format(Formats.DATE_FORMAT),
-        dutyId: selectedDutyId,
-        shiftId: selectedShiftId,
+        categoryId: selectedCategoryId,
+        subCategoryId: selectedSubCategoryId,
       },
     }),
   })

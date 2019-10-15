@@ -15,8 +15,9 @@ const FormButtonsSaveCancelExtra = ({
   extraText,
   handleExtra,
   handleCancel,
+  itemLayout,
 }) => (
-  <Form.Item {...buttonItemLayout}>
+  <Form.Item {...itemLayout}>
     <Row type="flex" justify="space-between">
       <Col>
         <Button size="large" type="default" onClick={handleExtra}>
@@ -45,9 +46,11 @@ FormButtonsSaveCancelExtra.propTypes = {
   extraText: PropTypes.string,
   handleExtra: PropTypes.func,
   handleCancel: PropTypes.func,
+  itemLayout: PropTypes.object,
 };
 
 FormButtonsSaveCancelExtra.defaultProps = {
+  itemLayout: buttonItemLayout,
   handleExtra: noop,
   handleCancel: noop,
 };

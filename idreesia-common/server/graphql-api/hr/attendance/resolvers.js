@@ -4,6 +4,7 @@ import { toInteger, round } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attendances,
   Karkuns,
+  Jobs,
   Duties,
   DutyShifts,
   DutyLocations,
@@ -22,10 +23,18 @@ export default {
       Karkuns.findOne({
         _id: { $eq: attendanceType.karkunId },
       }),
-    duty: attendanceType =>
-      Duties.findOne({
+    job: attendanceType => {
+      if (!attendanceType.jobId) return null;
+      return Jobs.findOne({
+        _id: { $eq: attendanceType.jobId },
+      });
+    },
+    duty: attendanceType => {
+      if (!attendanceType.dutyId) return null;
+      return Duties.findOne({
         _id: { $eq: attendanceType.dutyId },
-      }),
+      });
+    },
     shift: attendanceType => {
       if (!attendanceType.shiftId) return null;
       return DutyShifts.findOne({
@@ -54,8 +63,8 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    attendanceByMonth(obj, { month, dutyId, shiftId }, { user }) {
-      if (!dutyId) return [];
+    attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
+      if (!categoryId) return [];
 
       if (
         !hasOnePermission(user._id, [
@@ -70,12 +79,30 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      const query = {
-        month: formattedMonth,
-        dutyId,
-      };
-      if (shiftId) query.shiftId = shiftId;
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need to return attendance of employees with the
+       * selected job.
+       */
+      let query;
+      if (categoryId === 'all_jobs') {
+        query = {
+          month: formattedMonth,
+        };
+        if (subCategoryId) {
+          query.jobId = subCategoryId;
+        } else {
+          query.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        query = {
+          month: formattedMonth,
+          dutyId: categoryId,
+        };
+        if (subCategoryId) query.shiftId = subCategoryId;
+      }
 
+      console.log(query);
       return Attendances.find(query).fetch();
     },
 
@@ -113,67 +140,6 @@ export default {
   },
 
   Mutation: {
-    createAttendance(
-      obj,
-      {
-        karkunId,
-        month,
-        dutyId,
-        shiftId,
-        totalCount,
-        presentCount,
-        absentCount,
-      },
-      { user }
-    ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
-      ) {
-        throw new Error(
-          'You do not have permission to manage attendances in the System.'
-        );
-      }
-
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
-
-      const existingAttendance = Attendances.findOne({
-        karkunId,
-        dutyId,
-        shiftId,
-        month: formattedMonth,
-      });
-
-      if (existingAttendance) {
-        throw new Error(
-          'An existing attendance of this karkun already exists for the same duty/shift/month in the System.'
-        );
-      }
-
-      const date = new Date();
-      const numTotalCount = toInteger(totalCount);
-      const numPresentCount = toInteger(presentCount);
-      const numAbsentCount = toInteger(absentCount);
-
-      const attendanceId = Attendances.insert({
-        karkunId,
-        dutyId,
-        shiftId,
-        month: formattedMonth,
-        totalCount: numTotalCount,
-        presentCount: numPresentCount,
-        absentCount: numAbsentCount,
-        percentage: round((numPresentCount / numTotalCount) * 100),
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
-
-      return Attendances.findOne(attendanceId);
-    },
-
     createAttendances(obj, { month }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
@@ -192,16 +158,7 @@ export default {
 
     updateAttendance(
       obj,
-      {
-        _id,
-        karkunId,
-        month,
-        dutyId,
-        shiftId,
-        totalCount,
-        presentCount,
-        absentCount,
-      },
+      { _id, totalCount, presentCount, absentCount },
       { user }
     ) {
       if (
@@ -212,10 +169,6 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
-
       const date = new Date();
       const numTotalCount = toInteger(totalCount);
       const numPresentCount = toInteger(presentCount);
@@ -223,10 +176,6 @@ export default {
 
       Attendances.update(_id, {
         $set: {
-          karkunId,
-          dutyId,
-          shiftId,
-          month: formattedMonth,
           totalCount: numTotalCount,
           presentCount: numPresentCount,
           absentCount: numAbsentCount,

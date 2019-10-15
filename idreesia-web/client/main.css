@@ -58,42 +58,10 @@ h1 {
   padding-bottom: 1.5rem;
 }
 
-/*
- * Toolbar
- */
-.toolbar {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  width: 100%;
-}
-
-/*
- * Form
- */
 form {
   width: 600px;
 }
 
-.form-container {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  width: 100%;
-  padding-top: 2em;
-}
-
-.form-controls {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-#components-layout-demo-top-side-2 .logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 28px 16px 0;
-  float: left;
+@media print {
+  .pagebreak { page-break-before: always; }
 }

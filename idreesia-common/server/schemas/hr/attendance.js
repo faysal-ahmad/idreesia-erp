@@ -10,8 +10,14 @@ export default new SimpleSchema({
   dutyId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
+    optional: true,
   },
   shiftId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true,
+  },
+  jobId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
     optional: true,

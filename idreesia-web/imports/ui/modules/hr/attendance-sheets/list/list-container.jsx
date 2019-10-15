@@ -10,14 +10,16 @@ import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { message } from '/imports/ui/controls';
+import { Modal, message } from '/imports/ui/controls';
 import {
+  WithAllJobs,
   WithAllDuties,
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List from './list';
+import EditForm from './edit-form';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -25,7 +27,10 @@ class ListContainer extends Component {
     allDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
     allDutyShiftsLoading: PropTypes.bool,
+    allJobs: PropTypes.array,
+    allJobsLoading: PropTypes.bool,
     createAttendances: PropTypes.func,
+    updateAttendance: PropTypes.func,
     deleteAttendances: PropTypes.func,
 
     match: PropTypes.object,
@@ -35,37 +40,74 @@ class ListContainer extends Component {
     queryParams: PropTypes.object,
   };
 
+  state = {
+    showEditForm: false,
+    attendance: null,
+  };
+
   setPageParams = newParams => {
     const { queryParams, history, location } = this.props;
-    const { selectedDutyId, selectedShiftId, selectedMonth } = newParams;
+    const {
+      selectedCategoryId,
+      selectedSubCategoryId,
+      selectedMonth,
+    } = newParams;
 
-    let selectedDutyIdVal;
-    if (newParams.hasOwnProperty('selectedDutyId'))
-      selectedDutyIdVal = selectedDutyId || '';
-    else selectedDutyIdVal = queryParams.selectedDutyId || '';
+    let selectedCategoryIdVal;
+    if (newParams.hasOwnProperty('selectedCategoryId'))
+      selectedCategoryIdVal = selectedCategoryId || '';
+    else selectedCategoryIdVal = queryParams.selectedCategoryId || '';
 
-    let selectedShiftIdVal;
-    if (newParams.hasOwnProperty('selectedShiftId'))
-      selectedShiftIdVal = selectedShiftId || '';
-    else selectedShiftIdVal = queryParams.selectedShiftId || '';
+    let selectedSubCategoryIdVal;
+    if (newParams.hasOwnProperty('selectedSubCategoryId'))
+      selectedSubCategoryIdVal = selectedSubCategoryId || '';
+    else selectedSubCategoryIdVal = queryParams.selectedSubCategoryId || '';
 
     let selectedMonthVal;
     if (newParams.hasOwnProperty('selectedMonth'))
       selectedMonthVal = selectedMonth.format('MM-YYYY');
     else selectedMonthVal = queryParams.selectedMonth || '';
 
-    const path = `${location.pathname}?selectedMonth=${selectedMonthVal}&selectedDutyId=${selectedDutyIdVal}&selectedShiftIdVal=${selectedShiftIdVal}`;
+    const path = `${location.pathname}?selectedMonth=${selectedMonthVal}&selectedCategoryId=${selectedCategoryIdVal}&selectedSubCategoryId=${selectedSubCategoryIdVal}`;
     history.push(path);
   };
 
-  handleNewAttendance = () => {
-    const { history } = this.props;
-    history.push(paths.attendanceSheetsNewFormPath);
+  handleEditAttendance = attendance => {
+    this.setState({
+      showEditForm: true,
+      attendance,
+    });
   };
 
-  handleEditAttendance = attendance => {
-    const { history } = this.props;
-    history.push(paths.attendanceSheetsEditFormPath(attendance._id));
+  handleEditAttendanceCancel = () => {
+    this.setState({
+      showEditForm: false,
+      attendance: null,
+    });
+  };
+
+  handleEditAttendanceSave = ({
+    _id,
+    totalCount,
+    presentCount,
+    absentCount,
+  }) => {
+    const { updateAttendance } = this.props;
+    this.setState({
+      showEditForm: false,
+      attendance: null,
+    });
+
+    updateAttendance({
+      variables: {
+        _id,
+        totalCount,
+        presentCount,
+        absentCount,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
   };
 
   handleUploadAttendanceSheet = () => {
@@ -74,10 +116,18 @@ class ListContainer extends Component {
   };
 
   handleCreateMissingAttendances = () => {
-    const { createAttendances } = this.props;
+    const {
+      createAttendances,
+      queryParams: { selectedMonth },
+    } = this.props;
+
+    const _selectedMonth = selectedMonth
+      ? `01-${selectedMonth}`
+      : moment().format(Formats.DATE_FORMAT);
+
     createAttendances({
       variables: {
-        month: this.state.selectedMonth.format(Formats.DATE_FORMAT),
+        month: _selectedMonth,
       },
     })
       .then(({ data }) => {
@@ -126,15 +176,17 @@ class ListContainer extends Component {
 
   render() {
     const {
+      allJobs,
       allDuties,
       allDutyShifts,
+      allJobsLoading,
       allDutiesLoading,
       allDutyShiftsLoading,
     } = this.props;
-    if (allDutiesLoading || allDutyShiftsLoading) return null;
+    if (allJobsLoading || allDutiesLoading || allDutyShiftsLoading) return null;
 
     const {
-      queryParams: { selectedMonth, selectedDutyId, selectedShiftId },
+      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
     } = this.props;
 
     const _selectedMonth = selectedMonth
@@ -142,21 +194,38 @@ class ListContainer extends Component {
       : moment();
 
     return (
-      <List
-        selectedDutyId={selectedDutyId}
-        selectedShiftId={selectedShiftId}
-        selectedMonth={_selectedMonth}
-        setPageParams={this.setPageParams}
-        handleNewAttendance={this.handleNewAttendance}
-        handleEditAttendance={this.handleEditAttendance}
-        handleCreateMissingAttendances={this.handleCreateMissingAttendances}
-        handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
-        handleViewCards={this.handleViewCards}
-        handleDeleteAttendance={this.handleDeleteAttendance}
-        handleItemSelected={this.handleItemSelected}
-        allDuties={allDuties}
-        allDutyShifts={allDutyShifts}
-      />
+      <>
+        <List
+          selectedCategoryId={selectedCategoryId}
+          selectedSubCategoryId={selectedSubCategoryId}
+          selectedMonth={_selectedMonth}
+          setPageParams={this.setPageParams}
+          handleEditAttendance={this.handleEditAttendance}
+          handleCreateMissingAttendances={this.handleCreateMissingAttendances}
+          handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
+          handleViewCards={this.handleViewCards}
+          handleDeleteAttendance={this.handleDeleteAttendance}
+          handleItemSelected={this.handleItemSelected}
+          allJobs={allJobs}
+          allDuties={allDuties}
+          allDutyShifts={allDutyShifts}
+        />
+        <Modal
+          title="Update Attendance"
+          visible={this.state.showEditForm}
+          onCancel={this.handleEditAttendanceCancel}
+          width={370}
+          footer={null}
+        >
+          {this.state.showEditForm ? (
+            <EditForm
+              attendance={this.state.attendance}
+              handleSave={this.handleEditAttendanceSave}
+              handleCancel={this.handleEditAttendanceCancel}
+            />
+          ) : null}
+        </Modal>
+      </>
     );
   }
 }
@@ -164,6 +233,27 @@ class ListContainer extends Component {
 const createMutation = gql`
   mutation createAttendances($month: String!) {
     createAttendances(month: $month)
+  }
+`;
+
+const updateMutation = gql`
+  mutation updateAttendance(
+    $_id: String!
+    $totalCount: Int
+    $presentCount: Int
+    $absentCount: Int
+  ) {
+    updateAttendance(
+      _id: $_id
+      totalCount: $totalCount
+      presentCount: $presentCount
+      absentCount: $absentCount
+    ) {
+      _id
+      totalCount
+      presentCount
+      absentCount
+    }
   }
 `;
 
@@ -180,6 +270,12 @@ export default flowRight(
       refetchQueries: ['attendanceByMonth'],
     },
   }),
+  graphql(updateMutation, {
+    name: 'updateAttendance',
+    options: {
+      refetchQueries: ['attendanceByMonth'],
+    },
+  }),
   graphql(deleteMutation, {
     name: 'deleteAttendances',
     options: {
@@ -187,6 +283,7 @@ export default flowRight(
     },
   }),
   WithQueryParams(),
+  WithAllJobs(),
   WithAllDuties(),
   WithAllDutyShifts(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'List'])

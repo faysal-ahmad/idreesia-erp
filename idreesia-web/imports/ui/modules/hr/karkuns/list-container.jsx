@@ -21,21 +21,6 @@ class ListContainer extends Component {
     queryParams: PropTypes.object,
   };
 
-  state = {
-    pageIndex: 0,
-    pageSize: 20,
-    name: null,
-    cnicNumber: null,
-    phoneNumber: null,
-    bloodGroup: null,
-    dutyId: null,
-    shiftId: null,
-  };
-
-  setPageParams = pageParams => {
-    this.setState(pageParams);
-  };
-
   setPageParams = newParams => {
     const {
       name,

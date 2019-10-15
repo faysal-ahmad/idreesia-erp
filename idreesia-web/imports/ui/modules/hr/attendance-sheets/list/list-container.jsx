@@ -6,7 +6,10 @@ import { graphql } from 'react-apollo';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 import { message } from '/imports/ui/controls';
 import {
   WithAllDuties,
@@ -28,16 +31,31 @@ class ListContainer extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
+    queryString: PropTypes.string,
+    queryParams: PropTypes.object,
   };
 
-  state = {
-    selectedMonth: moment(),
-    selectedDutyId: null,
-    selectedShiftId: null,
-  };
+  setPageParams = newParams => {
+    const { queryParams, history, location } = this.props;
+    const { selectedDutyId, selectedShiftId, selectedMonth } = newParams;
 
-  setPageParams = pageParams => {
-    this.setState(pageParams);
+    let selectedDutyIdVal;
+    if (newParams.hasOwnProperty('selectedDutyId'))
+      selectedDutyIdVal = selectedDutyId || '';
+    else selectedDutyIdVal = queryParams.selectedDutyId || '';
+
+    let selectedShiftIdVal;
+    if (newParams.hasOwnProperty('selectedShiftId'))
+      selectedShiftIdVal = selectedShiftId || '';
+    else selectedShiftIdVal = queryParams.selectedShiftId || '';
+
+    let selectedMonthVal;
+    if (newParams.hasOwnProperty('selectedMonth'))
+      selectedMonthVal = selectedMonth.format('MM-YYYY');
+    else selectedMonthVal = queryParams.selectedMonth || '';
+
+    const path = `${location.pathname}?selectedMonth=${selectedMonthVal}&selectedDutyId=${selectedDutyIdVal}&selectedShiftIdVal=${selectedShiftIdVal}`;
+    history.push(path);
   };
 
   handleNewAttendance = () => {
@@ -113,14 +131,21 @@ class ListContainer extends Component {
       allDutiesLoading,
       allDutyShiftsLoading,
     } = this.props;
-    const { selectedMonth, selectedDutyId, selectedShiftId } = this.state;
     if (allDutiesLoading || allDutyShiftsLoading) return null;
+
+    const {
+      queryParams: { selectedMonth, selectedDutyId, selectedShiftId },
+    } = this.props;
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
 
     return (
       <List
         selectedDutyId={selectedDutyId}
         selectedShiftId={selectedShiftId}
-        selectedMonth={selectedMonth}
+        selectedMonth={_selectedMonth}
         setPageParams={this.setPageParams}
         handleNewAttendance={this.handleNewAttendance}
         handleEditAttendance={this.handleEditAttendance}
@@ -161,6 +186,7 @@ export default flowRight(
       refetchQueries: ['attendanceByMonth'],
     },
   }),
+  WithQueryParams(),
   WithAllDuties(),
   WithAllDutyShifts(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'List'])

@@ -39,11 +39,11 @@ export default class MeetingCards extends Component {
     return (
       <div key={attendance._id} className="card_karkon">
         <div className="heading_card_k">
-          <img src={headingImageUrl} width="533" height="234" />
+          <img src={headingImageUrl} />
         </div>
         <div className="date_card_k">{month.format('D MMM YYYY')}</div>
         <div className="pic_card_k">
-          <img src={karkunImageUrl} width="601" height="423" />
+          <img src={karkunImageUrl} />
         </div>
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
         <p className="k_location">
@@ -66,6 +66,13 @@ export default class MeetingCards extends Component {
       this.getCardMarkup(attendance)
     );
 
-    return <div style={ContainerStyle}>{cards}</div>;
+    const cardContainers = [];
+    while (cards.length > 0) {
+      const cardsForPage = cards.splice(0, 9);
+      cardContainers.push(<div style={ContainerStyle}>{cardsForPage}</div>);
+      cardContainers.push(<div className="pagebreak" />);
+    }
+
+    return <div>{cardContainers}</div>;
   }
 }

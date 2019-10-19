@@ -4440,12 +4440,12 @@ react-slick@~0.25.2:
     lodash.debounce "^4.0.8"
     resize-observer-polyfill "^1.5.0"
 
-react-to-print@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.1.1.tgz#82dd3251a2b2407ac1ec928cd6f22c3e910f0dce"
-  integrity sha512-gaiFJ+WpdyaNQ4jHXKWDHADBDZ541hAQsg73qO2JLI9FxXyyGAJUu4t+Sa117jo9DTR8H2dhMbRohYBm6p5mlQ==
+react-to-print@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.5.0.tgz#1aabdf18fd9b10b85311e16e8a7a81a441ee2a09"
+  integrity sha512-Fu8TMYoAtdpzyEBujG8EIfyssWgF9JdXbCI2NZbzK0gRpNUATilMK6dwGU7MT+7nQktVGTYAyEPFjs36cg0z0g==
   dependencies:
-    prop-types "^15.6.2"
+    prop-types "^15.7.2"
 
 react-webcam@^1.1.1:
   version "1.1.1"

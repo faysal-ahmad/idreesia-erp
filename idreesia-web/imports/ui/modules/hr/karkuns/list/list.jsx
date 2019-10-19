@@ -40,6 +40,7 @@ class List extends Component {
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
     bloodGroup: PropTypes.string,
+    jobId: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     showVolunteers: PropTypes.string,
@@ -92,7 +93,7 @@ class List extends Component {
   };
 
   dutiesColumn = {
-    title: 'Duties',
+    title: 'Job / Duties',
     dataIndex: 'duties',
     key: 'duties',
     render: (duties, record) => {
@@ -207,6 +208,7 @@ class List extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       showVolunteers,
@@ -235,6 +237,7 @@ class List extends Component {
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
           bloodGroup={bloodGroup}
+          jobId={jobId}
           dutyId={dutyId}
           shiftId={shiftId}
           showVolunteers={showVolunteers}
@@ -342,6 +345,7 @@ export default flowRight(
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       showVolunteers,
@@ -353,7 +357,7 @@ export default flowRight(
       variables: {
         queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
           ''}&phoneNumber=${phoneNumber || ''}&bloodGroup=${bloodGroup ||
-          ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
+          ''}&jobId=${jobId || ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
           ''}&showVolunteers=${showVolunteers ||
           'true'}&showEmployees=${showEmployees ||
           'true'}&predefinedFilterName=${predefinedFilterName ||

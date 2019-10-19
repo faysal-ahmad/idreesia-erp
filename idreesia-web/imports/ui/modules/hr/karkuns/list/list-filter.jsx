@@ -37,12 +37,17 @@ const buttonItemLayout = {
 class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
+    allJobs: PropTypes.array,
     allDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
+    allJobsLoading: PropTypes.bool,
+    allDutiesLoading: PropTypes.bool,
+    allDutyShiftsLoading: PropTypes.bool,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
     bloodGroup: PropTypes.string,
+    jobId: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     showVolunteers: PropTypes.string,
@@ -65,6 +70,7 @@ class ListFilter extends Component {
       cnicNumber: null,
       phoneNumber: null,
       bloodGroup: null,
+      jobId: null,
       dutyId: null,
       shiftId: null,
       karkunType: ['volunteers', 'employees'],
@@ -77,7 +83,15 @@ class ListFilter extends Component {
     form.validateFields(
       (
         err,
-        { name, cnicNumber, phoneNumber, bloodGroup, dutyIdShiftId, karkunType }
+        {
+          name,
+          cnicNumber,
+          phoneNumber,
+          bloodGroup,
+          jobId,
+          dutyIdShiftId,
+          karkunType,
+        }
       ) => {
         if (err) return;
         setPageParams({
@@ -86,6 +100,7 @@ class ListFilter extends Component {
           cnicNumber,
           phoneNumber,
           bloodGroup,
+          jobId,
           dutyId: dutyIdShiftId[0],
           shiftId: dutyIdShiftId[1],
           karkunType,
@@ -119,12 +134,17 @@ class ListFilter extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
+      allJobs,
       allDuties,
       allDutyShifts,
+      allJobsLoading,
+      allDutiesLoading,
+      allDutyShiftsLoading,
     } = this.props;
-    if (!allDuties || !allDutyShifts) return null;
+    if (allJobsLoading || allDutiesLoading || allDutyShiftsLoading) return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
       allDuties,
@@ -197,6 +217,17 @@ class ListFilter extends Component {
               initialValue={bloodGroup}
               getFieldDecorator={getFieldDecorator}
             />
+            <SelectField
+              fieldName="jobId"
+              fieldLabel="Job"
+              required={false}
+              data={allJobs}
+              getDataValue={({ _id }) => _id}
+              getDataText={({ name: _name }) => _name}
+              fieldLayout={formItemLayout}
+              initialValue={jobId}
+              getFieldDecorator={getFieldDecorator}
+            />
             <CascaderField
               data={dutyShiftCascaderData}
               fieldName="dutyIdShiftId"
@@ -224,6 +255,15 @@ class ListFilter extends Component {
   }
 }
 
+const allJobsListQuery = gql`
+  query allJobs {
+    allJobs {
+      _id
+      name
+    }
+  }
+`;
+
 const allDutiesListQuery = gql`
   query allDuties {
     allDuties {
@@ -245,10 +285,13 @@ const allDutyShiftsListQuery = gql`
 
 export default flowRight(
   Form.create({ name: 'karkunsListFilter' }),
+  graphql(allJobsListQuery, {
+    props: ({ data }) => ({ allJobsLoading: data.loading, ...data }),
+  }),
   graphql(allDutiesListQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ allDutiesLoading: data.loading, ...data }),
   }),
   graphql(allDutyShiftsListQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ allDutyShiftsLoading: data.loading, ...data }),
   })
 )(ListFilter);

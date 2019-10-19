@@ -27,6 +27,7 @@ class ListContainer extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       karkunType,
@@ -66,6 +67,10 @@ class ListContainer extends Component {
       bloodGroupVal = bloodGroup || '';
     else bloodGroupVal = queryParams.bloodGroup || '';
 
+    let jobIdVal;
+    if (newParams.hasOwnProperty('jobId')) jobIdVal = jobId || '';
+    else jobIdVal = queryParams.jobId || '';
+
     let dutyIdVal;
     if (newParams.hasOwnProperty('dutyId')) dutyIdVal = dutyId || '';
     else dutyIdVal = queryParams.dutyId || '';
@@ -82,7 +87,7 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&dutyId=${dutyIdVal}&shiftId=${shiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&shiftId=${shiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -105,6 +110,7 @@ class ListContainer extends Component {
         cnicNumber,
         phoneNumber,
         bloodGroup,
+        jobId,
         dutyId,
         shiftId,
         showVolunteers,
@@ -123,6 +129,7 @@ class ListContainer extends Component {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
+        jobId={jobId}
         dutyId={dutyId}
         shiftId={shiftId}
         showVolunteers={showVolunteers || 'true'}

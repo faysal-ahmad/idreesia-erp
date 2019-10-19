@@ -28,6 +28,7 @@ function getKarkunsByFilter(params) {
     cnicNumber,
     phoneNumber,
     bloodGroup,
+    jobId,
     dutyId,
     shiftId,
     showVolunteers,
@@ -88,6 +89,14 @@ function getKarkunsByFilter(params) {
     pipeline.push({
       $match: {
         bloodGroup: { $eq: convertedBloodGroupValue },
+      },
+    });
+  }
+
+  if (jobId) {
+    pipeline.push({
+      $match: {
+        jobId: { $eq: jobId },
       },
     });
   }

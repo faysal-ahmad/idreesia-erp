@@ -7,16 +7,6 @@ export default new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id,
   },
-  dutyId: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id,
-    optional: true,
-  },
-  shiftId: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id,
-    optional: true,
-  },
   jobId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
@@ -26,24 +16,29 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  totalCount: {
+  salary: {
     type: Number,
     optional: true,
   },
-  absentCount: {
+  openingLoan: {
     type: Number,
     optional: true,
   },
-  presentCount: {
+  deduction: {
     type: Number,
     optional: true,
   },
-  percentage: {
+  newLoan: {
     type: Number,
     optional: true,
   },
-  meetingCardBarcodeId: {
-    type: String,
+  closingLoan: {
+    type: Number,
+    optional: true,
+  },
+  netPayment: {
+    type: Number,
+    optional: true,
   },
 })
   .extend(identifiable)

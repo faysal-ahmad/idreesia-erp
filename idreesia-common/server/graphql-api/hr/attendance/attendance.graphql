@@ -57,4 +57,5 @@ extend type Mutation {
   ): Int
 
   deleteAttendances(ids: [String]!): Int
+  deleteAllAttendances(month: String!): Int
 }

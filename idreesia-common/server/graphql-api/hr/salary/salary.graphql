@@ -1,0 +1,47 @@
+type SalaryType {
+  _id: String
+  karkunId: String
+  jobId: String
+  month: String
+  salary: Int
+  openingLoan: Int
+  deduction: Int
+  newLoan: Int
+  closingLoan: Int
+  netPayment: Int
+
+  karkun: KarkunType
+  job: JobType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  salariesByKarkun(
+    karkunId: String
+  ): [SalaryType]
+  salariesByMonth(
+    month: String!
+    jobId: String
+  ): [SalaryType]
+}
+
+extend type Mutation {
+  createSalaries(
+    month: String!
+  ): Int
+
+  updateSalary(
+    _id: String!
+    salary: Int
+    openingLoan: Int
+    deduction: Int
+    newLoan: Int
+  ): SalaryType
+
+  deleteSalaries(ids: [String]!): Int
+  deleteAllSalaries(month: String!): Int
+}

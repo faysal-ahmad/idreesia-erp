@@ -102,7 +102,6 @@ export default {
         if (subCategoryId) query.shiftId = subCategoryId;
       }
 
-      console.log(query);
       return Attendances.find(query).fetch();
     },
 
@@ -153,7 +152,7 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      return createMonthlyAttendance(formattedMonth);
+      return createMonthlyAttendance(formattedMonth, user);
     },
 
     updateAttendance(
@@ -212,6 +211,24 @@ export default {
 
       return Attendances.remove({
         _id: { $in: ids },
+      });
+    },
+
+    deleteAllAttendances(obj, { month }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+      ) {
+        throw new Error(
+          'You do not have permission to manage attendances in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      return Attendances.remove({
+        month: formattedMonth,
       });
     },
   },

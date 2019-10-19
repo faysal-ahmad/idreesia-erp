@@ -36,6 +36,11 @@ export default class SubModulePaths {
   static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
 
   // ******************************************************************************
+  // Salary Sheets
+  // ******************************************************************************
+  static salarySheetsPath = `${ModulePaths.hr}/salary-sheets`;
+
+  // ******************************************************************************
   // Shared Residences
   // ******************************************************************************
   static sharedResidencesPath = `${ModulePaths.hr}/shared-residences`;

@@ -5,4 +5,5 @@ export { default as DutyLocation } from './duty-location';
 export { default as Karkun } from './karkun';
 export { default as KarkunDuty } from './karkun-duty';
 export { default as Attendance } from './attendance';
+export { default as Salary } from './salary';
 export { default as SharedResidence } from './shared-residence';

@@ -35,6 +35,11 @@ class HRSidebar extends Component {
         history.push(paths.attendanceSheetsPath);
         break;
 
+      case 'salary-sheets':
+        setActiveSubModuleName(SubModuleNames.salarySheets);
+        history.push(paths.salarySheetsPath);
+        break;
+
       case 'duty-shifts':
         setActiveSubModuleName(SubModuleNames.dutyShifts);
         history.push(paths.dutyShiftsPath);
@@ -55,11 +60,6 @@ class HRSidebar extends Component {
         history.push(paths.sharedResidencesPath);
         break;
 
-      case 'karkuns-search':
-        setActiveSubModuleName(SubModuleNames.karkuns);
-        history.push(paths.karkunsSearchPath);
-        break;
-
       default:
         break;
     }
@@ -72,9 +72,30 @@ class HRSidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
-        <Menu.Item key="karkuns">Karkuns</Menu.Item>
-        <Menu.Item key="attendance-sheets">Attendance Sheets</Menu.Item>
-        <Menu.Item key="shared-residencs">Shared Residences</Menu.Item>
+        <Menu.Item key="karkuns">
+          <span>
+            <Icon type="team" />
+            Karkuns
+          </span>
+        </Menu.Item>
+        <Menu.Item key="attendance-sheets">
+          <span>
+            <Icon type="solution" />
+            Attendance Sheets
+          </span>
+        </Menu.Item>
+        <Menu.Item key="salary-sheets">
+          <span>
+            <Icon type="dollar" />
+            Salary Sheets
+          </span>
+        </Menu.Item>
+        <Menu.Item key="shared-residencs">
+          <span>
+            <Icon type="home" />
+            Shared Residences
+          </span>
+        </Menu.Item>
         <SubMenu
           key="setup"
           title={

@@ -62,6 +62,7 @@ export class List extends Component {
     handleItemSelected: PropTypes.func,
     handleCreateMissingSalaries: PropTypes.func,
     handleEditSalary: PropTypes.func,
+    handleShowSalaryReceipt: PropTypes.func,
     handleDeleteSelectedSalaries: PropTypes.func,
     handleDeleteAllSalaries: PropTypes.func,
   };
@@ -115,15 +116,28 @@ export class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
-        const { handleEditSalary, handleDeleteSelectedSalaries } = this.props;
+        const {
+          handleEditSalary,
+          handleShowSalaryReceipt,
+          handleDeleteSelectedSalaries,
+        } = this.props;
         return (
           <div style={ActionsStyle}>
-            <Tooltip key="edit" title="Edit">
+            <Tooltip title="Edit">
               <Icon
                 type="edit"
                 style={IconStyle}
                 onClick={() => {
                   handleEditSalary(record);
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="Salary Receipt">
+              <Icon
+                type="red-envelope"
+                style={IconStyle}
+                onClick={() => {
+                  handleShowSalaryReceipt(record, record.karkun, record.job);
                 }}
               />
             </Tooltip>
@@ -325,6 +339,8 @@ const salariesByMonthQuery = gql`
         _id
         name
         imageId
+        cnicNumber
+        contactNumber1
       }
       job {
         _id

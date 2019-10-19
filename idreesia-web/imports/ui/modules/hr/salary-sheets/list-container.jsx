@@ -16,6 +16,7 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List from './list';
 import EditForm from './edit-form';
+import SalaryReceipt from './salary-receipt';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -35,7 +36,10 @@ class ListContainer extends Component {
 
   state = {
     showEditForm: false,
+    showSalaryReceipt: false,
     salary: null,
+    karkun: null,
+    job: null,
   };
 
   setPageParams = newParams => {
@@ -87,6 +91,24 @@ class ListContainer extends Component {
       },
     }).catch(error => {
       message.error(error.message, 5);
+    });
+  };
+
+  handleShowSalaryReceipt = (salary, karkun, job) => {
+    this.setState({
+      showSalaryReceipt: true,
+      salary,
+      karkun,
+      job,
+    });
+  };
+
+  handleSalaryReceiptCancel = () => {
+    this.setState({
+      showSalaryReceipt: false,
+      salary: null,
+      karkun: null,
+      job: null,
     });
   };
 
@@ -150,7 +172,10 @@ class ListContainer extends Component {
       },
     })
       .then(() => {
-        message.success('All salary records for the month have been deleted.', 5);
+        message.success(
+          'All salary records for the month have been deleted.',
+          5
+        );
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -181,6 +206,7 @@ class ListContainer extends Component {
           selectedMonth={_selectedMonth}
           setPageParams={this.setPageParams}
           handleEditSalary={this.handleEditSalary}
+          handleShowSalaryReceipt={this.handleShowSalaryReceipt}
           handleCreateMissingSalaries={this.handleCreateMissingSalaries}
           handleDeleteSelectedSalaries={this.handleDeleteSelectedSalaries}
           handleDeleteAllSalaries={this.handleDeleteAllSalaries}
@@ -199,6 +225,21 @@ class ListContainer extends Component {
               salary={this.state.salary}
               handleSave={this.handleEditSalarySave}
               handleCancel={this.handleEditSalaryCancel}
+            />
+          ) : null}
+        </Modal>
+        <Modal
+          title="Salary Receipt"
+          visible={this.state.showSalaryReceipt}
+          onCancel={this.handleSalaryReceiptCancel}
+          width={600}
+          footer={null}
+        >
+          {this.state.showSalaryReceipt ? (
+            <SalaryReceipt
+              salary={this.state.salary}
+              karkun={this.state.karkun}
+              job={this.state.job}
             />
           ) : null}
         </Modal>

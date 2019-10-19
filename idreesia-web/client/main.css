@@ -63,5 +63,6 @@ form {
 }
 
 @media print {
+  .toppadding { padding-top: 10px;}
   .pagebreak { page-break-before: always; }
 }

@@ -30,7 +30,6 @@ type KarkunType {
   jobId: String
   employmentStartDate: String
   employmentEndDate: String
-  currentSalary: Float
 
   user: UserType
   job: JobType
@@ -102,7 +101,6 @@ extend type Mutation {
     jobId: String
     employmentStartDate: String
     employmentEndDate: String
-    currentSalary: Float
   ): KarkunType
 
   setKarkunProfileImage(_id: String!, imageId: String!): KarkunType

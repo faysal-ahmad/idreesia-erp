@@ -248,14 +248,7 @@ export default {
 
     setKarkunEmploymentInfo(
       obj,
-      {
-        _id,
-        isEmployee,
-        jobId,
-        employmentStartDate,
-        employmentEndDate,
-        currentSalary,
-      },
+      { _id, isEmployee, jobId, employmentStartDate, employmentEndDate },
       { user }
     ) {
       if (
@@ -273,7 +266,6 @@ export default {
           jobId,
           employmentStartDate,
           employmentEndDate,
-          currentSalary,
           updatedAt: date,
           updatedBy: user._id,
         },

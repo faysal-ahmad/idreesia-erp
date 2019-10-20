@@ -15,17 +15,23 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { salary: salaryObj, form, handleSave } = this.props;
-    form.validateFields((err, { salary, openingLoan, deduction, newLoan }) => {
-      if (err) return;
+    form.validateFields(
+      (
+        err,
+        { salary, openingLoan, loanDeduction, newLoan, otherDeduction }
+      ) => {
+        if (err) return;
 
-      handleSave({
-        _id: salaryObj._id,
-        salary,
-        openingLoan,
-        deduction,
-        newLoan,
-      });
-    });
+        handleSave({
+          _id: salaryObj._id,
+          salary,
+          openingLoan,
+          loanDeduction,
+          newLoan,
+          otherDeduction,
+        });
+      }
+    );
   };
 
   render() {
@@ -49,15 +55,21 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
-          fieldName="deduction"
-          fieldLabel="Deduction"
-          initialValue={salary.deduction}
+          fieldName="loanDeduction"
+          fieldLabel="Loan Deduction"
+          initialValue={salary.loanDeduction}
           getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="newLoan"
           fieldLabel="New Loan"
           initialValue={salary.newLoan}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="otherDeduction"
+          fieldLabel="Other Deduction"
+          initialValue={salary.otherDeduction}
           getFieldDecorator={getFieldDecorator}
         />
 

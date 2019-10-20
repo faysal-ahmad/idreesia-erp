@@ -24,7 +24,7 @@ export default new SimpleSchema({
     type: Number,
     optional: true,
   },
-  deduction: {
+  loanDeduction: {
     type: Number,
     optional: true,
   },
@@ -33,6 +33,10 @@ export default new SimpleSchema({
     optional: true,
   },
   closingLoan: {
+    type: Number,
+    optional: true,
+  },
+  otherDeduction: {
     type: Number,
     optional: true,
   },

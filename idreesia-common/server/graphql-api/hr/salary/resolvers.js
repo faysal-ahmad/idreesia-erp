@@ -93,7 +93,7 @@ export default {
 
     updateSalary(
       obj,
-      { _id, salary, openingLoan, deduction, newLoan },
+      { _id, salary, openingLoan, loanDeduction, newLoan, otherDeduction },
       { user }
     ) {
       if (
@@ -109,10 +109,11 @@ export default {
         $set: {
           salary,
           openingLoan,
-          deduction,
+          loanDeduction,
+          otherDeduction,
           newLoan,
-          closingLoan: openingLoan + newLoan - deduction,
-          netPayment: salary + newLoan - deduction,
+          closingLoan: openingLoan + newLoan - loanDeduction,
+          netPayment: salary + newLoan - loanDeduction - otherDeduction,
           updatedAt: date,
           updatedBy: user._id,
         },

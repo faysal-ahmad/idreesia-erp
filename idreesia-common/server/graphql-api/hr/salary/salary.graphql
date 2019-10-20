@@ -5,9 +5,10 @@ type SalaryType {
   month: String
   salary: Int
   openingLoan: Int
-  deduction: Int
+  loanDeduction: Int
   newLoan: Int
   closingLoan: Int
+  otherDeduction: Int
   netPayment: Int
 
   karkun: KarkunType
@@ -38,7 +39,8 @@ extend type Mutation {
     _id: String!
     salary: Int
     openingLoan: Int
-    deduction: Int
+    loanDeduction: Int
+    otherDeduction: Int
     newLoan: Int
   ): SalaryType
 

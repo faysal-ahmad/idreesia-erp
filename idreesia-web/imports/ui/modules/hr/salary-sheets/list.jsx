@@ -94,9 +94,9 @@ export class List extends Component {
       key: 'openingLoan',
     },
     {
-      title: 'Deduction',
-      dataIndex: 'deduction',
-      key: 'deduction',
+      title: 'Loan Deduction',
+      dataIndex: 'loanDeduction',
+      key: 'loanDeduction',
     },
     {
       title: 'New Loan',
@@ -107,6 +107,11 @@ export class List extends Component {
       title: 'Closing Loan',
       dataIndex: 'closingLoan',
       key: 'closingLoan',
+    },
+    {
+      title: 'Other Deduction',
+      dataIndex: 'otherDeduction',
+      key: 'otherDeduction',
     },
     {
       title: 'Net Payment',
@@ -331,9 +336,10 @@ const salariesByMonthQuery = gql`
       jobId
       salary
       openingLoan
-      deduction
+      loanDeduction
       newLoan
       closingLoan
+      otherDeduction
       netPayment
       karkun {
         _id

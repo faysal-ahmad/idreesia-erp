@@ -40,9 +40,10 @@ export function createMonthlySalaries(
           month: formattedCurrentMonth,
           salary: 0,
           openingLoan: 0,
-          deduction: 0,
+          loanDeduction: 0,
           newLoan: 0,
           closingLoan: 0,
+          otherDeduction: 0,
           netPayment: 0,
           createdAt: date,
           createdBy: user._id,
@@ -50,12 +51,12 @@ export function createMonthlySalaries(
       } else {
         const salary = existingPreviousMonthSalary.salary;
         const openingLoan = existingPreviousMonthSalary.closingLoan;
-        const deduction = Math.min(
-          existingPreviousMonthSalary.deduction,
+        const loanDeduction = Math.min(
+          existingPreviousMonthSalary.loanDeduction,
           existingPreviousMonthSalary.closingLoan
         );
-        const closingLoan = openingLoan - deduction;
-        const netPayment = salary - deduction;
+        const closingLoan = openingLoan - loanDeduction;
+        const netPayment = salary - loanDeduction;
 
         Salaries.insert({
           karkunId: _id,
@@ -63,9 +64,10 @@ export function createMonthlySalaries(
           month: formattedCurrentMonth,
           salary,
           openingLoan,
-          deduction,
+          loanDeduction,
           newLoan: 0,
           closingLoan,
+          otherDeduction: 0,
           netPayment,
           createdAt: date,
           createdBy: user._id,

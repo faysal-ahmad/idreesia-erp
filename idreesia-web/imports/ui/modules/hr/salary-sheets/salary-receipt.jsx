@@ -68,7 +68,8 @@ class PrintableSalaryReceipt extends Component {
             <Item label="Month" value={displayMonth} />
             <Item label="Salary" value={salary.salary} />
             <Item label="L/OB" value={salary.openingLoan} />
-            <Item label="Deduction" value={salary.deduction} />
+            <Item label="Loan Deduction" value={salary.loanDeduction} />
+            <Item label="Other Deduction" value={salary.otherDeduction} />
           </Col>
           <Col order={2}>
             <Item label="New Loan" value={salary.newLoan} />

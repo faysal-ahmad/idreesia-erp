@@ -74,7 +74,14 @@ class ListContainer extends Component {
     });
   };
 
-  handleEditSalarySave = ({ _id, salary, openingLoan, deduction, newLoan }) => {
+  handleEditSalarySave = ({
+    _id,
+    salary,
+    openingLoan,
+    loanDeduction,
+    newLoan,
+    otherDeduction,
+  }) => {
     const { updateSalary } = this.props;
     this.setState({
       showEditForm: false,
@@ -86,8 +93,9 @@ class ListContainer extends Component {
         _id,
         salary,
         openingLoan,
-        deduction,
+        loanDeduction,
         newLoan,
+        otherDeduction,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -259,15 +267,17 @@ const updateMutation = gql`
     $_id: String!
     $salary: Int
     $openingLoan: Int
-    $deduction: Int
+    $loanDeduction: Int
     $newLoan: Int
+    $otherDeduction: Int
   ) {
     updateSalary(
       _id: $_id
       salary: $salary
       openingLoan: $openingLoan
-      deduction: $deduction
+      loanDeduction: $loanDeduction
       newLoan: $newLoan
+      otherDeduction: $otherDeduction
     ) {
       _id
       karkunId
@@ -275,9 +285,10 @@ const updateMutation = gql`
       month
       salary
       openingLoan
-      deduction
+      loanDeduction
       newLoan
       closingLoan
+      otherDeduction
       netPayment
     }
   }

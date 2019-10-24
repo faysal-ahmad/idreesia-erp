@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { filter, flowRight } from 'lodash';
+import { filter, flowRight, sortBy } from 'lodash';
 
 import {
   Button,
@@ -350,6 +350,7 @@ export class List extends Component {
 
   render() {
     const { attendanceByMonth } = this.props;
+    const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
 
     return (
       <Table
@@ -358,7 +359,7 @@ export class List extends Component {
         title={this.getTableHeader}
         columns={this.columns}
         rowSelection={this.rowSelection}
-        dataSource={attendanceByMonth}
+        dataSource={sortedAttendanceByMonth}
         pagination={false}
         bordered
       />

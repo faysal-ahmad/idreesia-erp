@@ -20,6 +20,7 @@ class ScanCard extends Component {
   };
 
   onBarcodeCaptured = code => {
+    const { history } = this.props;
     history.push(`${paths.karkunsScanCardPath}?cardId=${code}`);
   };
 
@@ -36,9 +37,7 @@ class ScanCard extends Component {
         <Row>
           <Divider />
         </Row>
-        <Row>
-          <SearchResult barcode={cardId} />
-        </Row>
+        <Row>{cardId ? <SearchResult barcode={cardId} /> : null}</Row>
       </Fragment>
     );
   }

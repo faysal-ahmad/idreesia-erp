@@ -19,7 +19,7 @@ const ContainerStyle = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
-  width: '700px',
+  width: '800px',
   padding: '20px',
 };
 
@@ -71,7 +71,7 @@ export default class MeetingCards extends Component {
     let index = 0;
     const cardContainers = [];
     while (cards.length > 0) {
-      const cardsForPage = cards.splice(0, 9);
+      const cardsForPage = cards.splice(0, 12);
       cardContainers.push(
         <div key={`container_${index}`} style={ContainerStyle}>
           {cardsForPage}

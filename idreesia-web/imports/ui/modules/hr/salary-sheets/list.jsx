@@ -374,6 +374,7 @@ const salariesByMonthQuery = gql`
       newLoan
       closingLoan
       otherDeduction
+      arrears
       netPayment
       karkun {
         _id

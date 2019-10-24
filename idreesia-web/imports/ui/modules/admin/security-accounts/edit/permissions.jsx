@@ -129,6 +129,10 @@ const permissionsData = [
             title: 'Manage Karkuns',
             key: PermissionConstants.HR_MANAGE_KARKUNS,
           },
+          {
+            title: 'Delete Karkuns',
+            key: PermissionConstants.HR_DELETE_KARKUNS,
+          },
         ],
       },
       {

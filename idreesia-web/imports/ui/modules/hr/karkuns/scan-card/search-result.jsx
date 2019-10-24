@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
@@ -7,6 +8,7 @@ import moment from 'moment';
 
 import { Row, Col, Spin, message } from '/imports/ui/controls';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -17,13 +19,19 @@ const DataStyle = {
   fontSize: 26,
 };
 
-const SearchResultRow = ({ label, value }) => (
+const SearchResultRow = ({ label, value, linkTo }) => (
   <Row type="flex" gutter={16}>
     <Col order={1}>
       <span style={LabelStyle}>{label}:</span>
     </Col>
     <Col order={2}>
-      <span style={DataStyle}>{value}</span>
+      {linkTo ? (
+        <Link style={DataStyle} to={linkTo}>
+          {value}
+        </Link>
+      ) : (
+        <span style={DataStyle}>{value}</span>
+      )}
     </Col>
   </Row>
 );
@@ -31,6 +39,7 @@ const SearchResultRow = ({ label, value }) => (
 SearchResultRow.propTypes = {
   label: PropTypes.string,
   value: PropTypes.string,
+  linkTo: PropTypes.string,
 };
 
 const SearchResult = props => {
@@ -60,7 +69,11 @@ const SearchResult = props => {
     <Row type="flex" gutter={16}>
       {imageColumn}
       <Col order={2}>
-        <SearchResultRow label="Name" value={karkun.name} />
+        <SearchResultRow
+          label="Name"
+          value={karkun.name}
+          linkTo={`${paths.karkunsPath}/${karkun._id}`}
+        />
         <SearchResultRow label="CNIC" value={karkun.cnicNumber} />
         <SearchResultRow label="Mobile" value={karkun.contactNumber1} />
         {duty ? <SearchResultRow label="Duty" value={duty.name} /> : null}

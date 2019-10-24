@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Icon,
@@ -49,6 +49,7 @@ class List extends Component {
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
+    handleScanClicked: PropTypes.func,
     showPhoneNumbersColumn: PropTypes.bool,
     predefinedFilterName: PropTypes.string,
 
@@ -59,6 +60,12 @@ class List extends Component {
       totalResults: PropTypes.number,
       karkuns: PropTypes.array,
     }),
+  };
+
+  static defaultProps = {
+    handleItemSelected: noop,
+    handleNewClicked: noop,
+    handleScanClicked: noop,
   };
 
   nameColumn = {
@@ -217,15 +224,32 @@ class List extends Component {
       refetchListQuery,
       showNewButton,
       handleNewClicked,
+      handleScanClicked,
       predefinedFilterName,
     } = this.props;
 
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Karkun
-        </Button>
+        <div>
+          <Button
+            size="large"
+            type="primary"
+            icon="plus-circle-o"
+            onClick={handleNewClicked}
+          >
+            New Karkun
+          </Button>
+          &nbsp;
+          <Button
+            size="large"
+            type="secondary"
+            icon="barcode"
+            onClick={handleScanClicked}
+          >
+            Scan Card
+          </Button>
+        </div>
       );
     }
 

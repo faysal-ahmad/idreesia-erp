@@ -26,6 +26,7 @@ export default class SubModulePaths {
 
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
+  static karkunsScanCardPath = `${SubModulePaths.karkunsPath}/scan-card`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
 
   // ******************************************************************************

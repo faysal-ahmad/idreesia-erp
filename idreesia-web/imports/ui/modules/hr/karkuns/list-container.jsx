@@ -96,6 +96,11 @@ class ListContainer extends Component {
     history.push(paths.karkunsNewFormPath);
   };
 
+  handleScanClicked = () => {
+    const { history } = this.props;
+    history.push(paths.karkunsScanCardPath);
+  };
+
   handleItemSelected = karkun => {
     const { history } = this.props;
     history.push(`${paths.karkunsPath}/${karkun._id}`);
@@ -138,6 +143,7 @@ class ListContainer extends Component {
         handleItemSelected={this.handleItemSelected}
         showNewButton
         handleNewClicked={this.handleNewClicked}
+        handleScanClicked={this.handleScanClicked}
         showPhoneNumbersColumn
       />
     );

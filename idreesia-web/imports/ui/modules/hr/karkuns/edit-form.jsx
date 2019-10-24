@@ -25,14 +25,14 @@ const EditForm = props => {
       <Tabs.TabPane tab="Profile Picture" key="2">
         <ProfilePicture karkunId={karkunId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Employment Info" key="3">
-        <EmploymentInfo karkunId={karkunId} {...props} />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Duty Participation" key="4">
+      <Tabs.TabPane tab="Duty Participation" key="3">
         <DutyParticipation karkunId={karkunId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="File Attachments" key="5">
+      <Tabs.TabPane tab="File Attachments" key="4">
         <AttachmentsList karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Employment Info" key="5">
+        <EmploymentInfo karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

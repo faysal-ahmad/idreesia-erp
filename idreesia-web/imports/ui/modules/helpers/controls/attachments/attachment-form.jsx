@@ -1,9 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { Form } from "/imports/ui/controls";
+import { Form } from '/imports/ui/controls';
 
-import { InputTextField } from "/imports/ui/modules/helpers/fields";
+import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
 const AttachmentForm = props => {
   const { getFieldDecorator } = props.form;
@@ -31,8 +31,6 @@ const AttachmentForm = props => {
 AttachmentForm.propTypes = {
   form: PropTypes.object,
   defaultValues: PropTypes.object,
-  allDuties: PropTypes.array,
-  allDutyLocations: PropTypes.array,
 };
 
 export default Form.create()(AttachmentForm);

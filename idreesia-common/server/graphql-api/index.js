@@ -27,9 +27,6 @@ import VisitorStayResolvers from './security/visitor-stay/resolvers';
 import DutyShiftSchema from './hr/duty-shift/duty-shift.graphql';
 import DutyShiftResolvers from './hr/duty-shift/resolvers';
 
-import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
-import DutyLocationResolvers from './hr/duty-location/resolvers';
-
 import DutySchema from './hr/duty/duty.graphql';
 import DutyResolvers from './hr/duty/resolvers';
 
@@ -110,7 +107,6 @@ const typeDefs = [
   VisitorStaySchema,
 
   DutyShiftSchema,
-  DutyLocationSchema,
   DutySchema,
   JobSchema,
   KarkunSchema,
@@ -145,7 +141,6 @@ const resolvers = merge(
   VisitorStayResolvers,
 
   DutyShiftResolvers,
-  DutyLocationResolvers,
   DutyResolvers,
   JobResolvers,
   KarkunResolvers,

@@ -7,7 +7,6 @@ import {
   Jobs,
   Duties,
   DutyShifts,
-  DutyLocations,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
@@ -39,12 +38,6 @@ export default {
       if (!attendanceType.shiftId) return null;
       return DutyShifts.findOne({
         _id: { $eq: attendanceType.shiftId },
-      });
-    },
-    location: attendanceType => {
-      if (!attendanceType.locationId) return null;
-      return DutyLocations.findOne({
-        _id: { $eq: attendanceType.locationId },
       });
     },
   },

@@ -10,11 +10,6 @@ import {
   DutyShiftsList,
 } from './duty-shifts';
 import {
-  DutyLocationsNewForm,
-  DutyLocationsEditForm,
-  DutyLocationsList,
-} from './duty-locations';
-import {
   KarkunsNewForm,
   KarkunsEditForm,
   KarkunsList,
@@ -45,16 +40,6 @@ const HRRouter = () => (
     <Route path={paths.dutyShiftsNewFormPath} component={DutyShiftsNewForm} />
     <Route path={paths.dutyShiftsEditFormPath} component={DutyShiftsEditForm} />
     <Route path={paths.dutyShiftsPath} component={DutyShiftsList} />
-
-    <Route
-      path={paths.dutyLocationsNewFormPath}
-      component={DutyLocationsNewForm}
-    />
-    <Route
-      path={paths.dutyLocationsEditFormPath}
-      component={DutyLocationsEditForm}
-    />
-    <Route path={paths.dutyLocationsPath} component={DutyLocationsList} />
 
     <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
     <Route path={paths.karkunsScanCardPath} component={KarkunsScanCard} />

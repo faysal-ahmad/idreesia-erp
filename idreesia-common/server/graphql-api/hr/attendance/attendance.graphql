@@ -15,7 +15,6 @@ type AttendanceType {
   job: JobType
   duty: DutyType
   shift: DutyShiftType
-  location: DutyLocationType
 
   createdByName: String
   updatedByName: String

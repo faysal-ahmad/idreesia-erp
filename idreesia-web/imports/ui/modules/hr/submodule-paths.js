@@ -16,10 +16,6 @@ export default class SubModulePaths {
     return `${SubModulePaths.dutiesPath}/${dutyId}`;
   }
 
-  static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
-  static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
-  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
-
   static dutyShiftsPath = `${ModulePaths.hr}/duty-shifts`;
   static dutyShiftsNewFormPath = `${SubModulePaths.dutyShiftsPath}/new`;
   static dutyShiftsEditFormPath = `${SubModulePaths.dutyShiftsPath}/:shiftId`;

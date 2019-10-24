@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { debounce } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
 
-import { Col, Input, Row } from "/imports/ui/controls";
+import { Col, Input, Row } from '/imports/ui/controls';
 
 export default class ScanBarcode extends Component {
   static propTypes = {
@@ -10,25 +10,28 @@ export default class ScanBarcode extends Component {
   };
 
   state = {
-    code: "",
+    code: '',
   };
 
   keyBuffer = [];
 
   componentDidMount = () => {
-    window.addEventListener("keypress", this.handleKeyPress);
+    window.addEventListener('keypress', this.handleKeyPress);
   };
 
   componentWillUnmount = () => {
-    window.removeEventListener("keypress", this.handleKeyPress);
+    window.removeEventListener('keypress', this.handleKeyPress);
   };
 
   sendBarcode = debounce(
     () => {
-      const scannedCode = this.keyBuffer.join("");
+      let scannedCode = this.keyBuffer.join('');
       this.keyBuffer = [];
-      this.setState({ code: scannedCode });
+      if (scannedCode.endsWith('Enter')) {
+        scannedCode = scannedCode.substring(0, scannedCode.length - 5);
+      }
 
+      this.setState({ code: scannedCode });
       const { onBarcodeCaptured } = this.props;
       if (onBarcodeCaptured) {
         onBarcodeCaptured(scannedCode);

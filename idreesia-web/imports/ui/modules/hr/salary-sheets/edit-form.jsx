@@ -18,7 +18,7 @@ class EditForm extends Component {
     form.validateFields(
       (
         err,
-        { salary, openingLoan, loanDeduction, newLoan, otherDeduction }
+        { salary, openingLoan, loanDeduction, newLoan, otherDeduction, arrears }
       ) => {
         if (err) return;
 
@@ -29,6 +29,7 @@ class EditForm extends Component {
           loanDeduction,
           newLoan,
           otherDeduction,
+          arrears,
         });
       }
     );
@@ -70,6 +71,12 @@ class EditForm extends Component {
           fieldName="otherDeduction"
           fieldLabel="Other Deduction"
           initialValue={salary.otherDeduction}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="arrears"
+          fieldLabel="Arrears"
+          initialValue={salary.arrears}
           getFieldDecorator={getFieldDecorator}
         />
 

@@ -75,6 +75,10 @@ const attendanceByBarcodeIdsQuery = gql`
         name
         imageId
       }
+      job {
+        _id
+        name
+      }
       duty {
         _id
         name

@@ -46,8 +46,10 @@ export default class MeetingCards extends Component {
           <img src={karkunImageUrl} />
         </div>
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
-        <p className="k_location">
-          {attendance.duty.name} <br />
+        <p className="duty_shift_job">
+          {attendance.duty ? attendance.duty.name : ''}
+          {attendance.job ? attendance.job.name : ''}
+          <br />
           {attendance.shift ? attendance.shift.name : ''}
         </p>
         <div className="barcode_card_k">
@@ -66,11 +68,19 @@ export default class MeetingCards extends Component {
       this.getCardMarkup(attendance)
     );
 
+    let index = 0;
     const cardContainers = [];
     while (cards.length > 0) {
       const cardsForPage = cards.splice(0, 9);
-      cardContainers.push(<div style={ContainerStyle}>{cardsForPage}</div>);
-      cardContainers.push(<div className="pagebreak" />);
+      cardContainers.push(
+        <div key={`container_${index}`} style={ContainerStyle}>
+          {cardsForPage}
+        </div>
+      );
+      cardContainers.push(
+        <div key={`pagebreak_${index}`} className="pagebreak" />
+      );
+      index++;
     }
 
     return <div>{cardContainers}</div>;

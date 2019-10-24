@@ -17,9 +17,13 @@
   margin: 0;
   padding-top: 4px;
   padding-bottom: 4px;
+  max-width: 166px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.k_location {
+.duty_shift_job {
   margin: auto;
 }
 

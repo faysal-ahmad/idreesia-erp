@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
+import { flowRight, sortBy } from 'lodash';
 
 import {
   Button,
@@ -74,8 +74,7 @@ export class List extends Component {
   columns = [
     {
       title: 'Name',
-      dataIndex: 'karkun.name',
-      key: 'karkun.name',
+      key: 'name',
       render: (text, record) => (
         <KarkunName
           karkun={record.karkun}
@@ -89,29 +88,39 @@ export class List extends Component {
       key: 'salary',
     },
     {
-      title: 'Opening Loan',
-      dataIndex: 'openingLoan',
-      key: 'openingLoan',
-    },
-    {
-      title: 'Loan Deduction',
-      dataIndex: 'loanDeduction',
-      key: 'loanDeduction',
-    },
-    {
-      title: 'New Loan',
-      dataIndex: 'newLoan',
-      key: 'newLoan',
-    },
-    {
-      title: 'Closing Loan',
-      dataIndex: 'closingLoan',
-      key: 'closingLoan',
+      title: 'Loan',
+      children: [
+        {
+          title: 'Opening',
+          dataIndex: 'openingLoan',
+          key: 'openingLoan',
+        },
+        {
+          title: 'Deduction',
+          dataIndex: 'loanDeduction',
+          key: 'loanDeduction',
+        },
+        {
+          title: 'New',
+          dataIndex: 'newLoan',
+          key: 'newLoan',
+        },
+        {
+          title: 'Closing',
+          dataIndex: 'closingLoan',
+          key: 'closingLoan',
+        },
+      ],
     },
     {
       title: 'Other Deduction',
       dataIndex: 'otherDeduction',
       key: 'otherDeduction',
+    },
+    {
+      title: 'Arrears',
+      dataIndex: 'arrears',
+      key: 'arrears',
     },
     {
       title: 'Net Payment',
@@ -200,7 +209,26 @@ export class List extends Component {
     });
   };
 
-  handleDeleteSelectedSelectedSalaries = () => {
+  handleDownloadAsCSV = () => {
+    const { salariesByMonth } = this.props;
+    const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
+
+    const header =
+      'Name, Job, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
+    const rows = sortedSalariesByMonth.map(
+      salary =>
+        `${salary.karkun.name}, ${salary.job.name}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
+    );
+    const csvContent = `${header}${rows.join('\r\n')}`;
+
+    const hiddenElement = document.createElement('a');
+    hiddenElement.href = `data:text/csv;charset=utf-8,${encodeURI(csvContent)}`;
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'salary-sheet.csv';
+    hiddenElement.click();
+  };
+
+  handleDeleteSelectedSalaries = () => {
     const { selectedRows } = this.state;
     if (this.props.handleDeleteSelectedSalaries) {
       Modal.confirm({
@@ -258,11 +286,16 @@ export class List extends Component {
           Create Missing Salaries
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="2" onClick={this.handleDeleteSelectedSalaries}>
+        <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
+          <Icon type="file-excel" />
+          Download as CSV
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={this.handleDeleteSelectedSalaries}>
           <Icon type="delete" />
           Delete Selected Salaries
         </Menu.Item>
-        <Menu.Item key="3" onClick={this.handleDeleteAllSalaries}>
+        <Menu.Item key="4" onClick={this.handleDeleteAllSalaries}>
           <Icon type="delete" />
           Delete All Salaries
         </Menu.Item>
@@ -311,6 +344,7 @@ export class List extends Component {
 
   render() {
     const { salariesByMonth } = this.props;
+    const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
 
     return (
       <Table
@@ -319,7 +353,7 @@ export class List extends Component {
         title={this.getTableHeader}
         columns={this.columns}
         rowSelection={this.rowSelection}
-        dataSource={salariesByMonth}
+        dataSource={sortedSalariesByMonth}
         pagination={false}
         bordered
       />

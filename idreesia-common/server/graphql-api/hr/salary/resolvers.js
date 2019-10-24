@@ -43,8 +43,6 @@ export default {
     },
 
     salariesByMonth(obj, { month, jobId }, { user }) {
-      if (!jobId) return [];
-
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
@@ -58,9 +56,15 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
+      if (jobId) {
+        return Salaries.find({
+          month: formattedMonth,
+          jobId,
+        }).fetch();
+      }
+
       return Salaries.find({
         month: formattedMonth,
-        jobId,
       }).fetch();
     },
   },
@@ -93,7 +97,15 @@ export default {
 
     updateSalary(
       obj,
-      { _id, salary, openingLoan, loanDeduction, newLoan, otherDeduction },
+      {
+        _id,
+        salary,
+        openingLoan,
+        loanDeduction,
+        newLoan,
+        otherDeduction,
+        arrears,
+      },
       { user }
     ) {
       if (
@@ -112,8 +124,10 @@ export default {
           loanDeduction,
           otherDeduction,
           newLoan,
+          arrears,
           closingLoan: openingLoan + newLoan - loanDeduction,
-          netPayment: salary + newLoan - loanDeduction - otherDeduction,
+          netPayment:
+            salary + newLoan + arrears - loanDeduction - otherDeduction,
           updatedAt: date,
           updatedBy: user._id,
         },

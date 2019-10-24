@@ -45,6 +45,7 @@ export function createMonthlySalaries(
           closingLoan: 0,
           otherDeduction: 0,
           netPayment: 0,
+          arrears: 0,
           createdAt: date,
           createdBy: user._id,
         });
@@ -68,6 +69,7 @@ export function createMonthlySalaries(
           newLoan: 0,
           closingLoan,
           otherDeduction: 0,
+          arrears: 0,
           netPayment,
           createdAt: date,
           createdBy: user._id,

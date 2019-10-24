@@ -9,6 +9,7 @@ type SalaryType {
   newLoan: Int
   closingLoan: Int
   otherDeduction: Int
+  arrears: Int
   netPayment: Int
 
   karkun: KarkunType
@@ -42,6 +43,7 @@ extend type Mutation {
     loanDeduction: Int
     otherDeduction: Int
     newLoan: Int
+    arrears: Int
   ): SalaryType
 
   deleteSalaries(ids: [String]!): Int

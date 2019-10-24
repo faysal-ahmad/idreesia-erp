@@ -81,6 +81,7 @@ class ListContainer extends Component {
     loanDeduction,
     newLoan,
     otherDeduction,
+    arrears,
   }) => {
     const { updateSalary } = this.props;
     this.setState({
@@ -96,6 +97,7 @@ class ListContainer extends Component {
         loanDeduction,
         newLoan,
         otherDeduction,
+        arrears,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -270,6 +272,7 @@ const updateMutation = gql`
     $loanDeduction: Int
     $newLoan: Int
     $otherDeduction: Int
+    $arrears: Int
   ) {
     updateSalary(
       _id: $_id
@@ -278,6 +281,7 @@ const updateMutation = gql`
       loanDeduction: $loanDeduction
       newLoan: $newLoan
       otherDeduction: $otherDeduction
+      arrears: $arrears
     ) {
       _id
       karkunId
@@ -289,6 +293,7 @@ const updateMutation = gql`
       newLoan
       closingLoan
       otherDeduction
+      arrears
       netPayment
     }
   }

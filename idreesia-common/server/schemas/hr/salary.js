@@ -40,6 +40,10 @@ export default new SimpleSchema({
     type: Number,
     optional: true,
   },
+  arrears: {
+    type: Number,
+    optional: true,
+  },
   netPayment: {
     type: Number,
     optional: true,

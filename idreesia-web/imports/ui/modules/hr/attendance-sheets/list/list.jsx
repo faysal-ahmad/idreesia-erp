@@ -11,6 +11,8 @@ import {
   Dropdown,
   Icon,
   Menu,
+  Modal,
+  Popconfirm,
   Table,
   Tooltip,
 } from '/imports/ui/controls';
@@ -65,7 +67,8 @@ export class List extends Component {
     handleEditAttendance: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
     handleViewCards: PropTypes.func,
-    handleDeleteAttendance: PropTypes.func,
+    handleDeleteSelectedAttendances: PropTypes.func,
+    handleDeleteAllAttendances: PropTypes.func,
   };
 
   state = {
@@ -120,7 +123,10 @@ export class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
-        const { handleEditAttendance, handleDeleteAttendance } = this.props;
+        const {
+          handleEditAttendance,
+          handleDeleteSelectedAttendances,
+        } = this.props;
         return (
           <div style={ActionsStyle}>
             <Tooltip key="edit" title="Edit">
@@ -132,15 +138,18 @@ export class List extends Component {
                 }}
               />
             </Tooltip>
-            <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
-                style={IconStyle}
-                onClick={() => {
-                  handleDeleteAttendance([record]);
-                }}
-              />
-            </Tooltip>
+            <Popconfirm
+              title="Are you sure you want to delete this attendance record?"
+              onConfirm={() => {
+                handleDeleteSelectedAttendances([record]);
+              }}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Tooltip key="delete" title="Delete">
+                <Icon type="delete" style={IconStyle} />
+              </Tooltip>
+            </Popconfirm>
           </div>
         );
       },
@@ -192,11 +201,30 @@ export class List extends Component {
     }
   };
 
-  handleDeleteAttendance = () => {
-    const { handleDeleteAttendance } = this.props;
+  handleDeleteSelectedAttendances = () => {
     const { selectedRows } = this.state;
-    if (handleDeleteAttendance) {
-      handleDeleteAttendance(selectedRows);
+    if (this.props.handleDeleteSelectedAttendances) {
+      Modal.confirm({
+        title: 'Delete Attendances',
+        content:
+          'Are you sure you want to delete the selected attendance records?',
+        onOk() {
+          this.props.handleDeleteSelectedAttendances(selectedRows);
+        },
+      });
+    }
+  };
+
+  handleDeleteAllAttendances = () => {
+    if (this.props.handleDeleteAllAttendances) {
+      Modal.confirm({
+        title: 'Delete All Attendances',
+        content:
+          'Are you sure you want to delete all attendance records for the month?',
+        onOk() {
+          this.props.handleDeleteAllAttendances();
+        },
+      });
     }
   };
 
@@ -268,9 +296,14 @@ export class List extends Component {
           <Icon type="idcard" />
           Print Duty Cards
         </Menu.Item>
-        <Menu.Item key="4" onClick={this.handleDeleteAttendance}>
+        <Menu.Divider />
+        <Menu.Item key="4" onClick={this.handleDeleteSelectedAttendances}>
           <Icon type="delete" />
-          Delete Attendance
+          Delete Selected Attendances
+        </Menu.Item>
+        <Menu.Item key="5" onClick={this.handleDeleteAllAttendances}>
+          <Icon type="delete" />
+          Delete All Attendances
         </Menu.Item>
       </Menu>
     );

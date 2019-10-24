@@ -34,6 +34,7 @@ const Permissions = {
 
   HR_VIEW_KARKUNS: 'hr-view-karkuns',
   HR_MANAGE_KARKUNS: 'hr-manage-karkuns',
+  HR_DELETE_KARKUNS: 'hr-delete-karkuns',
 
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',

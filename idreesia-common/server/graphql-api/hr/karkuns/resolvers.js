@@ -235,10 +235,10 @@ export default {
 
     deleteKarkun(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_KARKUNS])
       ) {
         throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
+          'You do not have permission to delete Karkuns in the System.'
         );
       }
 

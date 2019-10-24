@@ -32,6 +32,7 @@ class ListContainer extends Component {
     createAttendances: PropTypes.func,
     updateAttendance: PropTypes.func,
     deleteAttendances: PropTypes.func,
+    deleteAllAttendances: PropTypes.func,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -151,7 +152,7 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleDeleteAttendance = selectedAttendances => {
+  handleDeleteSelectedAttendances = selectedAttendances => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
     const { deleteAttendances } = this.props;
@@ -163,6 +164,32 @@ class ListContainer extends Component {
     })
       .then(() => {
         message.success('Selected attendance records have been deleted.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleDeleteAllAttendances = () => {
+    const {
+      deleteAllAttendances,
+      queryParams: { selectedMonth },
+    } = this.props;
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
+
+    deleteAllAttendances({
+      variables: {
+        month: _selectedMonth.format(Formats.DATE_FORMAT),
+      },
+    })
+      .then(() => {
+        message.success(
+          'All attendance records for the month have been deleted.',
+          5
+        );
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -204,7 +231,8 @@ class ListContainer extends Component {
           handleCreateMissingAttendances={this.handleCreateMissingAttendances}
           handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
           handleViewCards={this.handleViewCards}
-          handleDeleteAttendance={this.handleDeleteAttendance}
+          handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
+          handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}
           allJobs={allJobs}
           allDuties={allDuties}
@@ -263,6 +291,12 @@ const deleteMutation = gql`
   }
 `;
 
+const deleteAllMutation = gql`
+  mutation deleteAllAttendance($month: String!) {
+    deleteAllAttendance(month: $month)
+  }
+`;
+
 export default flowRight(
   graphql(createMutation, {
     name: 'createAttendances',
@@ -278,6 +312,12 @@ export default flowRight(
   }),
   graphql(deleteMutation, {
     name: 'deleteAttendances',
+    options: {
+      refetchQueries: ['attendanceByMonth'],
+    },
+  }),
+  graphql(deleteAllMutation, {
+    name: 'deleteAllAttendances',
     options: {
       refetchQueries: ['attendanceByMonth'],
     },

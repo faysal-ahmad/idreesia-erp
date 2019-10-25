@@ -101,6 +101,11 @@ class ListContainer extends Component {
     history.push(paths.karkunsScanCardPath);
   };
 
+  handlePrintClicked = karkun => {
+    const { history } = this.props;
+    history.push(paths.karkunsPrintPath(karkun._id));
+  };
+
   handleItemSelected = karkun => {
     const { history } = this.props;
     history.push(`${paths.karkunsPath}/${karkun._id}`);
@@ -144,6 +149,7 @@ class ListContainer extends Component {
         showNewButton
         handleNewClicked={this.handleNewClicked}
         handleScanClicked={this.handleScanClicked}
+        handlePrintClicked={this.handlePrintClicked}
         showPhoneNumbersColumn
       />
     );

@@ -63,6 +63,7 @@ form {
 }
 
 @media print {
+  .leftpadding { padding-left: 10px;}
   .toppadding { padding-top: 10px;}
   .pagebreak { page-break-before: always; }
 }

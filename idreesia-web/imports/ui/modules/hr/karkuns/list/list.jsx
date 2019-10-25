@@ -50,6 +50,7 @@ class List extends Component {
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
+    handlePrintClicked: PropTypes.func,
     showPhoneNumbersColumn: PropTypes.bool,
     predefinedFilterName: PropTypes.string,
 
@@ -66,6 +67,7 @@ class List extends Component {
     handleItemSelected: noop,
     handleNewClicked: noop,
     handleScanClicked: noop,
+    handlePrintClicked: noop,
   };
 
   nameColumn = {
@@ -147,18 +149,29 @@ class List extends Component {
   actionsColumn = {
     key: 'action',
     render: (text, record) => (
-      <Popconfirm
-        title="Are you sure you want to delete this karkun?"
-        onConfirm={() => {
-          this.handleDeleteClicked(record);
-        }}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Tooltip title="Delete">
-          <Icon type="delete" style={IconStyle} />
+      <>
+        <Tooltip title="Print">
+          <Icon
+            type="printer"
+            style={IconStyle}
+            onClick={() => {
+              this.props.handlePrintClicked(record);
+            }}
+          />
         </Tooltip>
-      </Popconfirm>
+        <Popconfirm
+          title="Are you sure you want to delete this karkun?"
+          onConfirm={() => {
+            this.handleDeleteClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Delete">
+            <Icon type="delete" style={IconStyle} />
+          </Tooltip>
+        </Popconfirm>
+      </>
     ),
   };
 

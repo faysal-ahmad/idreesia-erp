@@ -18,6 +18,7 @@ import {
 import {
   WithAllDuties,
   WithAllDutyShifts,
+  WithAllDutyLocations,
 } from '/imports/ui/modules/hr/common/composers';
 import DutyForm from './duty-form';
 
@@ -36,6 +37,7 @@ class DutyParticipation extends Component {
     karkunDutiesByKarkunId: PropTypes.array,
     allDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
+    allDutyLocations: PropTypes.array,
     createKarkunDuty: PropTypes.func,
     updateKarkunDuty: PropTypes.func,
     removeKarkunDuty: PropTypes.func,
@@ -66,6 +68,11 @@ class DutyParticipation extends Component {
       title: 'Shift Name',
       dataIndex: 'shiftName',
       key: 'shiftName',
+    },
+    {
+      title: 'Location Name',
+      dataIndex: 'locationName',
+      key: 'locationName',
     },
     {
       title: 'Days of Week',
@@ -135,7 +142,7 @@ class DutyParticipation extends Component {
     const { karkunId, createKarkunDuty } = this.props;
     this.newDutyForm.validateFields(
       null,
-      (errors, { dutyIdShiftId, role, weekDays }) => {
+      (errors, { dutyIdShiftId, locationId, role, weekDays }) => {
         if (!errors) {
           this.setState({ showNewForm: false });
           createKarkunDuty({
@@ -143,6 +150,7 @@ class DutyParticipation extends Component {
               karkunId,
               dutyId: dutyIdShiftId[0],
               shiftId: dutyIdShiftId[1],
+              locationId,
               role,
               daysOfWeek: weekDays,
             },
@@ -181,7 +189,12 @@ class DutyParticipation extends Component {
 
   render() {
     const { showNewForm, showEditForm, defaultValues } = this.state;
-    const { karkunDutiesByKarkunId, allDuties, allDutyShifts } = this.props;
+    const {
+      karkunDutiesByKarkunId,
+      allDuties,
+      allDutyShifts,
+      allDutyLocations,
+    } = this.props;
 
     return (
       <Fragment>
@@ -217,6 +230,7 @@ class DutyParticipation extends Component {
             defaultValues={defaultValues}
             allDuties={allDuties}
             allDutyShifts={allDutyShifts}
+            allDutyLocations={allDutyLocations}
           />
         </Modal>
 
@@ -236,6 +250,7 @@ class DutyParticipation extends Component {
             defaultValues={defaultValues}
             allDuties={allDuties}
             allDutyShifts={allDutyShifts}
+            allDutyLocations={allDutyLocations}
           />
         </Modal>
       </Fragment>
@@ -251,6 +266,7 @@ const listQuery = gql`
       dutyName
       shiftId
       shiftName
+      locationName
       role
       daysOfWeek
     }
@@ -262,6 +278,7 @@ const createKarkunDutyMutation = gql`
     $karkunId: String!
     $dutyId: String!
     $shiftId: String
+    $locationId: String
     $role: String
     $daysOfWeek: [String]
   ) {
@@ -269,6 +286,7 @@ const createKarkunDutyMutation = gql`
       karkunId: $karkunId
       dutyId: $dutyId
       shiftId: $shiftId
+      locationId: $locationId
       role: $role
       daysOfWeek: $daysOfWeek
     ) {
@@ -277,6 +295,8 @@ const createKarkunDutyMutation = gql`
       dutyName
       shiftId
       shiftName
+      locationId
+      locationName
       role
       daysOfWeek
     }
@@ -289,6 +309,7 @@ const updateKarkunDutyMutation = gql`
     $karkunId: String!
     $dutyId: String!
     $shiftId: String
+    $locationId: String
     $role: String
     $daysOfWeek: [String]
   ) {
@@ -297,6 +318,7 @@ const updateKarkunDutyMutation = gql`
       karkunId: $karkunId
       dutyId: $dutyId
       shiftId: $shiftId
+      locationId: $locationId
       role: $role
       daysOfWeek: $daysOfWeek
     ) {
@@ -305,6 +327,8 @@ const updateKarkunDutyMutation = gql`
       dutyName
       shiftId
       shiftName
+      locationId
+      locationName
       role
       daysOfWeek
     }
@@ -344,5 +368,6 @@ export default flowRight(
     },
   }),
   WithAllDuties(),
-  WithAllDutyShifts()
+  WithAllDutyShifts(),
+  WithAllDutyLocations()
 )(DutyParticipation);

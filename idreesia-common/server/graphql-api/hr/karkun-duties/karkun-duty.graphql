@@ -3,11 +3,17 @@ type KarkunDutyType {
   karkunId: String
   dutyId: String
   shiftId: String
+  locationId: String
   role: String
   daysOfWeek: [String]
 
+  duty: DutyType
+  shift: DutyShiftType
+  location: DutyLocationType
+  
   dutyName: String
   shiftName: String
+  locationName: String
 
   createdAt: String
   createdBy: String
@@ -25,6 +31,7 @@ extend type Mutation {
     karkunId: String!
     dutyId: String!
     shiftId: String
+    locationId: String
     role: String
     daysOfWeek: [String]
   ): KarkunDutyType
@@ -34,6 +41,7 @@ extend type Mutation {
     karkunId: String!
     dutyId: String!
     shiftId: String
+    locationId: String
     role: String
     daysOfWeek: [String]
   ): KarkunDutyType

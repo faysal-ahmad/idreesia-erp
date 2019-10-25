@@ -20,6 +20,10 @@ export default class SubModulePaths {
   static dutyShiftsNewFormPath = `${SubModulePaths.dutyShiftsPath}/new`;
   static dutyShiftsEditFormPath = `${SubModulePaths.dutyShiftsPath}/:shiftId`;
 
+  static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
+  static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
+  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
+
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsScanCardPath = `${SubModulePaths.karkunsPath}/scan-card`;

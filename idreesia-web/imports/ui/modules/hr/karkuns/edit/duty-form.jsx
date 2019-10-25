@@ -12,7 +12,7 @@ import allDutyRoles from '../../all-duty_roles';
 
 const DutyForm = props => {
   const { getFieldDecorator } = props.form;
-  const { defaultValues, allDuties, allDutyShifts } = props;
+  const { defaultValues, allDuties, allDutyShifts, allDutyLocations } = props;
   const dutyShiftCascaderData = getDutyShiftCascaderData(
     allDuties,
     allDutyShifts
@@ -42,6 +42,17 @@ const DutyForm = props => {
         getFieldDecorator={getFieldDecorator}
       />
 
+      <SelectField
+        data={allDutyLocations}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="locationId"
+        fieldLabel="Location Name"
+        required={false}
+        initialValue={defaultValues.locationId}
+        getFieldDecorator={getFieldDecorator}
+      />
+
       <WeekDaysField
         fieldName="weekDays"
         fieldLabel="Week Days"
@@ -58,6 +69,7 @@ DutyForm.propTypes = {
   defaultValues: PropTypes.object,
   allDuties: PropTypes.array,
   allDutyShifts: PropTypes.array,
+  allDutyLocations: PropTypes.array,
 };
 
 export default Form.create()(DutyForm);

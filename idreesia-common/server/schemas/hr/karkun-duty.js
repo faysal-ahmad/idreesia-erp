@@ -16,6 +16,11 @@ export default new SimpleSchema({
     regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
+  locationId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true,
+  },
   role: {
     type: String,
     optional: true,

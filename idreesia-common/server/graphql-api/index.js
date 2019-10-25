@@ -30,6 +30,9 @@ import DutyShiftResolvers from './hr/duty-shift/resolvers';
 import DutySchema from './hr/duty/duty.graphql';
 import DutyResolvers from './hr/duty/resolvers';
 
+import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
+import DutyLocationResolvers from './hr/duty-location/resolvers';
+
 import JobSchema from './hr/job/job.graphql';
 import JobResolvers from './hr/job/resolvers';
 
@@ -108,6 +111,7 @@ const typeDefs = [
 
   DutyShiftSchema,
   DutySchema,
+  DutyLocationSchema,
   JobSchema,
   KarkunSchema,
   KarkunDutySchema,
@@ -142,6 +146,7 @@ const resolvers = merge(
 
   DutyShiftResolvers,
   DutyResolvers,
+  DutyLocationResolvers,
   JobResolvers,
   KarkunResolvers,
   KarkunDutyResolvers,

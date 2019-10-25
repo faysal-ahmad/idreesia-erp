@@ -1,8 +1,8 @@
 /* eslint "no-param-reassign": "off" */
 import { Accounts } from 'meteor/accounts-base';
 import sql from 'mssql';
-import { keyBy } from 'lodash';
 
+import { keyBy } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Companies,
   AccountHeads,

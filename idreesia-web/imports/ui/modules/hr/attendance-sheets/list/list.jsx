@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { filter, flowRight, sortBy } from 'lodash';
 
 import {
   Button,
@@ -16,6 +15,11 @@ import {
   Table,
   Tooltip,
 } from '/imports/ui/controls';
+import {
+  filter,
+  flowRight,
+  sortBy,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 

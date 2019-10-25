@@ -23,7 +23,7 @@ type SalaryType {
 
 extend type Query {
   salariesByKarkun(
-    karkunId: String
+    karkunId: String!
   ): [SalaryType]
   salariesByMonth(
     month: String!

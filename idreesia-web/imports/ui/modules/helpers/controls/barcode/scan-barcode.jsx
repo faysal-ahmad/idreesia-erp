@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { debounce } from 'lodash';
 
+import { debounce } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Input, Row } from '/imports/ui/controls';
 
 export default class ScanBarcode extends Component {

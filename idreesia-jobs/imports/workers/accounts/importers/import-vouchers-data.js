@@ -10,7 +10,7 @@ VOrder
 /* eslint "no-param-reassign": "off" */
 import sql from 'mssql';
 import moment from 'moment';
-import { toInteger } from 'lodash';
+import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';
 

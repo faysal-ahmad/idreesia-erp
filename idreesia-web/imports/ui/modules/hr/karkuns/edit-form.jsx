@@ -9,9 +9,10 @@ import {
 import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './edit/general-info';
 import ProfilePicture from './edit/profile-picture';
-import EmploymentInfo from './edit/employment-info';
 import DutyParticipation from './edit/duty-participations';
 import AttachmentsList from './edit/attachments-list';
+import EmploymentInfo from './edit/employment-info';
+import SalarySheets from './edit/salary-sheets';
 
 const EditForm = props => {
   const { match, queryParams } = props;
@@ -33,6 +34,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Employment Info" key="5">
         <EmploymentInfo karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Salary Sheets" key="6">
+        <SalarySheets karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

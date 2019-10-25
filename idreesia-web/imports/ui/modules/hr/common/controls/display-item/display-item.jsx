@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Col, Row } from '/imports/ui/controls';
+import { isArray } from 'meteor/idreesia-common/utilities/lodash';
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -12,14 +13,18 @@ const DataStyle = {
   fontSize: 22,
 };
 
-const DisplayItem = ({ label, value, multiline = false }) => (
+const DisplayItem = ({ label, value }) => (
   <Row type="flex" gutter={16}>
     <Col order={1}>
       <span style={LabelStyle}>{label}:</span>
     </Col>
     <Col order={2}>
-      {multiline ? (
-        <p style={DataStyle}>{value}</p>
+      {isArray(value) ? (
+        value.map(val => (
+          <Row>
+            <div style={DataStyle}>{val}</div>
+          </Row>
+        ))
       ) : (
         <div style={DataStyle}>{value}</div>
       )}
@@ -30,7 +35,6 @@ const DisplayItem = ({ label, value, multiline = false }) => (
 DisplayItem.propTypes = {
   label: PropTypes.string,
   value: PropTypes.any,
-  multiline: PropTypes.bool,
 };
 
 export default DisplayItem;

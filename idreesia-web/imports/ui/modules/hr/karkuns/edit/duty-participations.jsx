@@ -167,7 +167,7 @@ class DutyParticipation extends Component {
     const { karkunId, updateKarkunDuty } = this.props;
     this.editDutyForm.validateFields(
       null,
-      (errors, { dutyIdShiftId, role, weekDays }) => {
+      (errors, { dutyIdShiftId, locationId, role, weekDays }) => {
         if (!errors) {
           this.setState({ showEditForm: false });
           updateKarkunDuty({
@@ -176,6 +176,7 @@ class DutyParticipation extends Component {
               karkunId,
               dutyId: dutyIdShiftId[0],
               shiftId: dutyIdShiftId[1],
+              locationId,
               role,
               daysOfWeek: weekDays,
             },

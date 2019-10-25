@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
 import Barcode from 'react-barcode';
+import moment from 'moment';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Divider, Row } from '/imports/ui/controls';
@@ -50,10 +51,35 @@ class PrintView extends Component {
     const { karkunById } = this.props;
     const url = getDownloadUrl(karkunById.imageId);
     return url ? (
-      <Col order={1}>
+      <Col order={2}>
         <img src={url} style={{ width: '200px' }} />
       </Col>
     ) : null;
+  };
+
+  getJobDetails = (job, duties) => {
+    let jobName = [];
+    let dutyNames = [];
+
+    if (job) {
+      jobName = [job.name];
+    }
+
+    if (duties.length > 0) {
+      dutyNames = duties.map(duty => {
+        let dutyName = duty.dutyName;
+        if (duty.shiftName) {
+          dutyName = `${dutyName} - ${duty.shiftName}`;
+        }
+        if (duty.locationName) {
+          dutyName = `${dutyName} - ${duty.locationName}`;
+        }
+
+        return dutyName;
+      });
+    }
+
+    return jobName.concat(dutyNames);
   };
 
   render() {
@@ -61,6 +87,8 @@ class PrintView extends Component {
     if (formDataLoading) return null;
 
     const imageColumn = this.getImageColumn();
+    const jobDetails = this.getJobDetails(karkunById.job, karkunById.duties);
+    const timestamp = moment().format('DD MMM, YYYY');
 
     return (
       <>
@@ -88,10 +116,10 @@ class PrintView extends Component {
           style={{ width: '800px' }}
           ref={this.printViewRef}
         >
-          <Row type="flex" justify="left" gutter={20}>
-            {imageColumn}
+          <Row type="flex" justify="space-between" gutter={20}>
             <Col order={2}>
               <Barcode value={karkunById._id} {...barcodeOptions} />
+              <DisplayItem label="Generated On" value={timestamp} />
               <DisplayItem label="Name" value={karkunById.name} />
               <DisplayItem label="S/O" value={karkunById.parentName} />
               <DisplayItem label="CNIC" value={karkunById.cnicNumber} />
@@ -103,8 +131,9 @@ class PrintView extends Component {
                 value={karkunById.educationalQualification}
               />
             </Col>
+            {imageColumn}
           </Row>
-          <Row type="flex" justify="space-around" gutter={10}>
+          <Row type="flex" justify="start" gutter={20}>
             <Col order={1}>
               <DisplayItem
                 label="Current Address"
@@ -116,6 +145,7 @@ class PrintView extends Component {
               />
             </Col>
           </Row>
+          <DisplayItem label="Job / Duties" value={jobDetails} />
         </div>
       </>
     );
@@ -137,11 +167,16 @@ const formQuery = gql`
       permanentAddress
       bloodGroup
       educationalQualification
-      meansOfEarning
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
+      job {
+        _id
+        name
+      }
+      duties {
+        _id
+        dutyName
+        shiftName
+        locationName
+      }
     }
   }
 `;

@@ -63,7 +63,7 @@ form {
 }
 
 @media print {
-  .leftpadding { padding-left: 10px;}
+  .karkun-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
   .toppadding { padding-top: 10px;}
   .pagebreak { page-break-before: always; }
 }

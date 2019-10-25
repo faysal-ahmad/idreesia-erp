@@ -111,12 +111,8 @@ class PrintView extends Component {
           Back
         </Button>
         <Divider />
-        <div
-          className="toppadding leftpadding"
-          style={{ width: '800px' }}
-          ref={this.printViewRef}
-        >
-          <Row type="flex" justify="space-between" gutter={20}>
+        <div className="karkun-print-view" ref={this.printViewRef}>
+          <Row type="flex" justify="start" gutter={40}>
             <Col order={2}>
               <Barcode value={karkunById._id} {...barcodeOptions} />
               <DisplayItem label="Generated On" value={timestamp} />
@@ -127,8 +123,12 @@ class PrintView extends Component {
               <DisplayItem label="Email" value={karkunById.emailAddress} />
               <DisplayItem label="Blood Group" value={karkunById.bloodGroup} />
               <DisplayItem
-                label="Qualification"
+                label="Education"
                 value={karkunById.educationalQualification}
+              />
+              <DisplayItem
+                label="Means of Earning"
+                value={karkunById.meansOfEarning}
               />
             </Col>
             {imageColumn}
@@ -167,6 +167,7 @@ const formQuery = gql`
       permanentAddress
       bloodGroup
       educationalQualification
+      meansOfEarning
       job {
         _id
         name

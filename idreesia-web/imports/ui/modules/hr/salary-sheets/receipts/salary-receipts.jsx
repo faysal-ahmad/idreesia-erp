@@ -62,7 +62,7 @@ export default class SalaryReceipts extends Component {
     ).format('MMM, YYYY');
 
     return (
-      <div className="salary-receipt-print-view">
+      <div key={salary._id} className="salary-receipt-print-view">
         <Row type="flex" justify="start" gutter={10}>
           {imageColumn}
           <Col order={2}>

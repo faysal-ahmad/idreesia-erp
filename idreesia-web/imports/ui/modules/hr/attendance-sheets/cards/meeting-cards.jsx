@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
 import moment from 'moment';
 
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
-
 const barcodeOptions = {
   width: 1,
   height: 20,
@@ -34,7 +32,9 @@ export default class MeetingCards extends Component {
       .startOf('month');
 
     const headingImageUrl = '/images/heading.png';
-    const karkunImageUrl = getDownloadUrl(attendance.karkun.imageId);
+    const karkunImage = attendance.karkun.image ? (
+      <img src={`data:image/jpeg;base64,${attendance.karkun.image.data}`} />
+    ) : null;
 
     return (
       <div key={attendance._id} className="card_karkon">
@@ -42,9 +42,7 @@ export default class MeetingCards extends Component {
           <img src={headingImageUrl} />
         </div>
         <div className="date_card_k">{month.format('D MMM YYYY')}</div>
-        <div className="pic_card_k">
-          <img src={karkunImageUrl} />
-        </div>
+        <div className="pic_card_k">{karkunImage}</div>
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
         <p className="duty_shift_job">
           {attendance.duty ? attendance.duty.name : ''}

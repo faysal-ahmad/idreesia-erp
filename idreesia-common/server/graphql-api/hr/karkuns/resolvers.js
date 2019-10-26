@@ -23,6 +23,14 @@ export default {
         instances: user.instances,
       };
     },
+    image: karkunType => {
+      const { imageId } = karkunType;
+      if (imageId) {
+        return Attachments.findOne({ _id: { $eq: imageId } });
+      }
+
+      return null;
+    },
     job: karkunType => {
       if (!karkunType.jobId) return null;
       return Jobs.findOne(karkunType.jobId);

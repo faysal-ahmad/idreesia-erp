@@ -35,6 +35,7 @@ type KarkunType {
   job: JobType
   duties: [KarkunDutyType]
   attachments: [Attachment]
+  image: Attachment
 
   createdAt: String
   createdBy: String

@@ -73,7 +73,10 @@ const attendanceByBarcodeIdsQuery = gql`
       karkun {
         _id
         name
-        imageId
+        image {
+          _id
+          data
+        }
       }
       job {
         _id

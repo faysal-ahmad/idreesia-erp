@@ -1,12 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import moment from "moment";
-import { find, flowRight } from "lodash";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
+import { find, flowRight } from 'lodash';
 
-import { List } from "/imports/ui/controls";
-import StayReasons from "../common/constants/stay-reasons";
+import { List } from '/imports/ui/controls';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
 const ViewForm = ({ formDataLoading, visitorStayById }) => {
   if (formDataLoading) return null;
@@ -17,11 +17,11 @@ const ViewForm = ({ formDataLoading, visitorStayById }) => {
 
   let detail;
   if (days === 1) {
-    detail = `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
+    detail = `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
   } else {
     detail = `${days} days - [${fromDate.format(
-      "DD MMM, YYYY"
-    )} - ${toDate.format("DD MMM, YYYY")}]`;
+      'DD MMM, YYYY'
+    )} - ${toDate.format('DD MMM, YYYY')}]`;
   }
 
   let stayReason;

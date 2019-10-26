@@ -5,7 +5,7 @@ import moment from "moment";
 import { find } from "lodash";
 
 import { Card } from "/imports/ui/controls";
-import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
+import { StayReasons } from "meteor/idreesia-common/constants/security";
 
 const barcodeOptions = {
   width: 1,

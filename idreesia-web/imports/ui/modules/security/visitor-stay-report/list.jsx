@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
   Button,
   Pagination,
@@ -16,7 +17,6 @@ import {
 } from '/imports/ui/controls';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
-import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
 
 import ListFilter from './list-filter';
 import FixSpelling from './fix-spelling';
@@ -122,33 +122,6 @@ class List extends Component {
           onVisitorNameClicked={this.props.handleItemSelected}
         />
       ),
-      /*
-      render: (text, record) => {
-        const { refVisitor } = record;
-        const onClickHandler = () => {
-          const { handleItemSelected } = this.props;
-          handleItemSelected(refVisitor);
-        };
-
-        if (refVisitor.imageId) {
-          const url = getDownloadUrl(refVisitor.imageId);
-          return (
-            <div style={NameDivStyle} onClick={onClickHandler}>
-              <Avatar shape="square" size="large" src={url} />
-              &nbsp;&nbsp;
-              {text}
-            </div>
-          );
-        }
-
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" icon="picture" />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      }, */
     };
   };
 
@@ -238,10 +211,10 @@ class List extends Component {
     },
   };
 
-  dutyShiftNameColumn = {
-    title: 'Duty / Shift',
-    key: 'dutyShiftName',
-    dataIndex: 'dutyShiftName',
+  stayAllowedByColumn = {
+    title: 'Allowed By',
+    key: 'stayAllowedBy',
+    dataIndex: 'stayAllowedBy',
   };
 
   getColumns = () => [
@@ -250,7 +223,7 @@ class List extends Component {
     this.getCityCountryColumn(),
     this.getStayDetailsColumn(),
     this.stayReasonColumn,
-    this.dutyShiftNameColumn,
+    this.stayAllowedByColumn,
   ];
 
   handleSortChange = (sortBy, sortOrder) => {
@@ -433,7 +406,7 @@ const listQuery = gql`
         toDate
         numOfDays
         stayReason
-        dutyShiftName
+        stayAllowedBy
         refVisitor {
           _id
           name

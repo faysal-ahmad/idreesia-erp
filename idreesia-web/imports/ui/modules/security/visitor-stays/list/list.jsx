@@ -5,6 +5,7 @@ import { graphql } from "react-apollo";
 import moment from "moment";
 import { find, flowRight } from "lodash";
 
+import { StayReasons } from "meteor/idreesia-common/constants/security";
 import {
   Button,
   Pagination,
@@ -17,7 +18,6 @@ import {
   Col,
   message,
 } from "/imports/ui/controls";
-import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 import NewForm from "../new-form";
 import EditForm from "../edit-form";

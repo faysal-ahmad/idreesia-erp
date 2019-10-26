@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { Collapse, Form, Row, Button } from '/imports/ui/controls';
 import {
   AutoCompleteField,
@@ -42,13 +43,14 @@ class ListFilter extends Component {
     const { form, setPageParams } = this.props;
 
     form.validateFields(
-      (err, { startDate, endDate, name, city, additionalInfo }) => {
+      (err, { startDate, endDate, name, city, stayReason, additionalInfo }) => {
         if (err) return;
         setPageParams({
           startDate,
           endDate,
           name,
           city,
+          stayReason,
           additionalInfo,
           pageIndex: 0,
         });
@@ -72,7 +74,14 @@ class ListFilter extends Component {
     const { getFieldDecorator } = this.props.form;
     const {
       distinctCities,
-      queryParams: { startDate, endDate, name, city, additionalInfo },
+      queryParams: {
+        startDate,
+        endDate,
+        name,
+        city,
+        stayReason,
+        additionalInfo,
+      },
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -113,6 +122,16 @@ class ListFilter extends Component {
               dataSource={distinctCities}
               initialValue={city}
               required={false}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <SelectField
+              data={StayReasons}
+              getDataValue={({ _id }) => _id}
+              getDataText={({ name: _name }) => _name}
+              initialValue={stayReason}
+              fieldName="stayReason"
+              fieldLabel="Stay Reason"
+              fieldLayout={formItemLayout}
               getFieldDecorator={getFieldDecorator}
             />
             <SelectField

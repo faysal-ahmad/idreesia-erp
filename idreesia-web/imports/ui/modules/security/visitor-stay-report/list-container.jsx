@@ -37,6 +37,7 @@ class ListContainer extends Component {
       endDate,
       name,
       city,
+      stayReason,
       additionalInfo,
       sortBy,
       sortOrder,
@@ -63,6 +64,11 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('city')) cityVal = city || '';
     else cityVal = queryParams.city || '';
 
+    let stayReasonVal;
+    if (newParams.hasOwnProperty('stayReason'))
+      stayReasonVal = stayReason || '';
+    else stayReasonVal = queryParams.stayReason || '';
+
     let additionalInfoVal;
     if (newParams.hasOwnProperty('additionalInfo'))
       additionalInfoVal = additionalInfo || '';
@@ -88,7 +94,7 @@ class ListContainer extends Component {
       pageSizeVal = pageSize || DEFAULT_PAGE_SIZE_INT;
     else pageSizeVal = queryParams.pageSize || DEFAULT_PAGE_SIZE_INT;
 
-    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&name=${nameVal}&city=${cityVal}&additionalInfo=${additionalInfoVal}&sortBy=${sortByVal}&sortOrder=${sortOrderVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&name=${nameVal}&city=${cityVal}&stayReason=${stayReasonVal}&additionalInfo=${additionalInfoVal}&sortBy=${sortByVal}&sortOrder=${sortOrderVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 

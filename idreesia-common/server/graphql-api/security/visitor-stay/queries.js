@@ -49,6 +49,7 @@ export async function getVisitorStays(queryString) {
     endDate,
     name,
     city,
+    stayReason,
     additionalInfo,
     sortBy = DEFAULT_SORT_BY,
     sortOrder = DEFAULT_SORT_ORDER,
@@ -114,6 +115,14 @@ export async function getVisitorStays(queryString) {
     pipeline.push({
       $match: {
         'visitor.city': { $eq: city },
+      },
+    });
+  }
+
+  if (stayReason) {
+    pipeline.push({
+      $match: {
+        stayReason: { $eq: stayReason },
       },
     });
   }

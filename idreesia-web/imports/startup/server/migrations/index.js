@@ -15,6 +15,7 @@ import './11-split-account-voucher-number';
 import './12-create-guest-user';
 import './13-create-hr-indexes';
 import './14-restructure-hr-data';
+import './15-create-hr-indexes';
 
 Migrations.config({
   log: true,

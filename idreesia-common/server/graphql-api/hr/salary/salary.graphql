@@ -29,6 +29,7 @@ extend type Query {
     month: String!
     jobId: String
   ): [SalaryType]
+  salariesByIds(ids: String!): [SalaryType]
 }
 
 extend type Mutation {

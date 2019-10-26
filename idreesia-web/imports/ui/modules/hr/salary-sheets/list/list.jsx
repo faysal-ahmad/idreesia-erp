@@ -63,7 +63,7 @@ export class List extends Component {
     handleItemSelected: PropTypes.func,
     handleCreateMissingSalaries: PropTypes.func,
     handleEditSalary: PropTypes.func,
-    handleShowSalaryReceipt: PropTypes.func,
+    handleViewSalaryReceipts: PropTypes.func,
     handleDeleteSelectedSalaries: PropTypes.func,
     handleDeleteAllSalaries: PropTypes.func,
   };
@@ -131,11 +131,7 @@ export class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
-        const {
-          handleEditSalary,
-          handleShowSalaryReceipt,
-          handleDeleteSelectedSalaries,
-        } = this.props;
+        const { handleEditSalary, handleDeleteSelectedSalaries } = this.props;
         return (
           <div style={ActionsStyle}>
             <Tooltip title="Edit">
@@ -144,15 +140,6 @@ export class List extends Component {
                 style={IconStyle}
                 onClick={() => {
                   handleEditSalary(record);
-                }}
-              />
-            </Tooltip>
-            <Tooltip title="Salary Receipt">
-              <Icon
-                type="red-envelope"
-                style={IconStyle}
-                onClick={() => {
-                  handleShowSalaryReceipt(record, record.karkun, record.job);
                 }}
               />
             </Tooltip>
@@ -210,6 +197,14 @@ export class List extends Component {
     });
   };
 
+  handlePrintSalaryReceipts = () => {
+    const { handleViewSalaryReceipts } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewSalaryReceipts) {
+      handleViewSalaryReceipts(selectedRows);
+    }
+  };
+
   handleDownloadAsCSV = () => {
     const { salariesByMonth } = this.props;
     const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
@@ -228,20 +223,21 @@ export class List extends Component {
     FileSaver.saveAs(blob, 'salary-sheet.csv');
   };
 
-  handleDeleteSelectedSalaries = () => {
+  _handleDeleteSelectedSalaries = () => {
     const { selectedRows } = this.state;
-    if (this.props.handleDeleteSelectedSalaries) {
+    const { handleDeleteSelectedSalaries } = this.props;
+    if (handleDeleteSelectedSalaries) {
       Modal.confirm({
         title: 'Delete Salaries',
         content: 'Are you sure you want to delete the selected salary records?',
         onOk() {
-          this.props.handleDeleteSelectedSalaries(selectedRows);
+          handleDeleteSelectedSalaries(selectedRows);
         },
       });
     }
   };
 
-  handleDeleteAllSalaries = () => {
+  _handleDeleteAllSalaries = () => {
     const { handleDeleteAllSalaries } = this.props;
     if (handleDeleteAllSalaries) {
       Modal.confirm({
@@ -290,12 +286,16 @@ export class List extends Component {
           <Icon type="file-excel" />
           Download as CSV
         </Menu.Item>
+        <Menu.Item key="3" onClick={this.handlePrintSalaryReceipts}>
+          <Icon type="printer" />
+          Print Salary Receipts
+        </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="3" onClick={this.handleDeleteSelectedSalaries}>
+        <Menu.Item key="4" onClick={this._handleDeleteSelectedSalaries}>
           <Icon type="delete" />
           Delete Selected Salaries
         </Menu.Item>
-        <Menu.Item key="4" onClick={this.handleDeleteAllSalaries}>
+        <Menu.Item key="5" onClick={this._handleDeleteAllSalaries}>
           <Icon type="delete" />
           Delete All Salaries
         </Menu.Item>

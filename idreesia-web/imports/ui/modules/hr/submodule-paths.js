@@ -42,6 +42,7 @@ export default class SubModulePaths {
   // Salary Sheets
   // ******************************************************************************
   static salarySheetsPath = `${ModulePaths.hr}/salary-sheets`;
+  static salarySheetsSalaryReceiptsPath = `${SubModulePaths.salarySheetsPath}/salary-receipts`;
 
   // ******************************************************************************
   // Shared Residences

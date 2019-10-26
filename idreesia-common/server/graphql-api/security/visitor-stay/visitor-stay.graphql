@@ -56,6 +56,7 @@ extend type Mutation {
     notes: String
   ): VisitorStayType
 
+  fixNameSpelling(existingSpelling: String!, newSpelling: String!): Int
   cancelVisitorStay(_id: String!): VisitorStayType
   deleteVisitorStay(_id: String!): Int
 }

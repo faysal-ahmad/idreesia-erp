@@ -34,7 +34,7 @@ const ToolbarStyle = {
   width: '100%',
 };
 
-const CityDivStyle = {
+const LinkStyle = {
   width: '100%',
   color: '#1890FF',
   cursor: 'pointer',
@@ -44,6 +44,11 @@ const StayDetailDivStyle = {
   width: '100%',
   color: '#1890FF',
   cursor: 'pointer',
+};
+
+const SPELLING_TYPE = {
+  CITY: 'city',
+  NAME: 'name',
 };
 
 class List extends Component {
@@ -57,6 +62,7 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     fixCitySpelling: PropTypes.func,
+    fixNameSpelling: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedVisitorStays: PropTypes.shape({
@@ -69,6 +75,7 @@ class List extends Component {
     showViewDialog: false,
     visitorStayId: null,
     showFixSpellingDialog: false,
+    spellingType: null,
     existingSpelling: null,
   };
 
@@ -144,9 +151,9 @@ class List extends Component {
         if (refVisitor.city) {
           return (
             <div
-              style={CityDivStyle}
+              style={LinkStyle}
               onClick={() => {
-                this.handleFixSpellingShow(refVisitor.city);
+                this.handleFixSpellingShow(SPELLING_TYPE.CITY, refVisitor.city);
               }}
             >
               {`${refVisitor.city}, ${refVisitor.country}`}
@@ -215,6 +222,16 @@ class List extends Component {
     title: 'Allowed By',
     key: 'stayAllowedBy',
     dataIndex: 'stayAllowedBy',
+    render: text => (
+      <div
+        style={LinkStyle}
+        onClick={() => {
+          this.handleFixSpellingShow(SPELLING_TYPE.NAME, text);
+        }}
+      >
+        {text}
+      </div>
+    ),
   };
 
   getColumns = () => [
@@ -264,22 +281,26 @@ class List extends Component {
     });
   };
 
-  handleFixSpellingShow = existingSpelling => {
+  handleFixSpellingShow = (spellingType, existingSpelling) => {
     this.setState({
+      spellingType,
       existingSpelling,
       showFixSpellingDialog: true,
     });
   };
 
-  handleFixSpellingSave = (existingSpelling, newSpelling) => {
-    const { fixCitySpelling } = this.props;
+  handleFixSpellingSave = (spellingType, existingSpelling, newSpelling) => {
+    const { fixCitySpelling, fixNameSpelling } = this.props;
     this.setState({
+      spellingType: null,
       existingSpelling: null,
       showFixSpellingDialog: false,
     });
 
+    const fixSpellingFunction =
+      spellingType === SPELLING_TYPE.CITY ? fixCitySpelling : fixNameSpelling;
     if (existingSpelling !== newSpelling) {
-      fixCitySpelling({
+      fixSpellingFunction({
         variables: {
           existingSpelling,
           newSpelling,
@@ -292,6 +313,7 @@ class List extends Component {
 
   handleFixSpellingClose = () => {
     this.setState({
+      spellingType: null,
       existingSpelling: null,
       showFixSpellingDialog: false,
     });
@@ -314,6 +336,7 @@ class List extends Component {
     const {
       visitorStayId,
       showViewDialog,
+      spellingType,
       existingSpelling,
       showFixSpellingDialog,
     } = this.state;
@@ -332,8 +355,9 @@ class List extends Component {
       ) : null;
 
     const fixSpellingForm =
-      existingSpelling && showFixSpellingDialog ? (
+      spellingType && existingSpelling && showFixSpellingDialog ? (
         <FixSpelling
+          spellingType={spellingType}
           existingSpelling={existingSpelling}
           onSave={this.handleFixSpellingSave}
           onCancel={this.handleFixSpellingClose}
@@ -424,9 +448,18 @@ const listQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const formCitySpellingMutation = gql`
   mutation fixCitySpelling($existingSpelling: String!, $newSpelling: String!) {
     fixCitySpelling(
+      existingSpelling: $existingSpelling
+      newSpelling: $newSpelling
+    )
+  }
+`;
+
+const formNameSpellingMutation = gql`
+  mutation fixNameSpelling($existingSpelling: String!, $newSpelling: String!) {
+    fixNameSpelling(
       existingSpelling: $existingSpelling
       newSpelling: $newSpelling
     )
@@ -442,8 +475,14 @@ export default flowRight(
       },
     }),
   }),
-  graphql(formMutation, {
+  graphql(formCitySpellingMutation, {
     name: 'fixCitySpelling',
+    options: {
+      refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
+    },
+  }),
+  graphql(formNameSpellingMutation, {
+    name: 'fixNameSpelling',
     options: {
       refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
     },

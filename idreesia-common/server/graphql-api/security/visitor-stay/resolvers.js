@@ -184,6 +184,35 @@ export default {
       return VisitorStays.findOne(_id);
     },
 
+    fixNameSpelling(obj, { existingSpelling, newSpelling }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      const date = new Date();
+      const count = VisitorStays.update(
+        {
+          stayAllowedBy: { $eq: existingSpelling },
+        },
+        {
+          $set: {
+            stayAllowedBy: newSpelling,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
+
+      return count;
+    },
+
     cancelVisitorStay(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [

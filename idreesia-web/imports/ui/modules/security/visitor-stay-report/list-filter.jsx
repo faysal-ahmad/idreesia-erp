@@ -65,6 +65,7 @@ class ListFilter extends Component {
       endDate: null,
       name: null,
       city: null,
+      stayReason: null,
       additionalInfo: null,
       pageIndex: 0,
     });

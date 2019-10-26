@@ -110,7 +110,7 @@ class List extends Component {
       let dutyNames = [];
 
       if (record.job) {
-        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=5`;
+        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=6`;
         jobName = [<Link to={jobTabLink}>{record.job.name}</Link>];
       }
 

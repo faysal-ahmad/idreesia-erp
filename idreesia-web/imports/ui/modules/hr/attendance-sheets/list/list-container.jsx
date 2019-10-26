@@ -292,8 +292,8 @@ const deleteMutation = gql`
 `;
 
 const deleteAllMutation = gql`
-  mutation deleteAllAttendance($month: String!) {
-    deleteAllAttendance(month: $month)
+  mutation deleteAllAttendances($month: String!) {
+    deleteAllAttendances(month: $month)
   }
 `;
 

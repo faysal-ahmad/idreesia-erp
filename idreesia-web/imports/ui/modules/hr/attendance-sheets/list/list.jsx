@@ -205,28 +205,30 @@ export class List extends Component {
     }
   };
 
-  handleDeleteSelectedAttendances = () => {
+  _handleDeleteSelectedAttendances = () => {
     const { selectedRows } = this.state;
-    if (this.props.handleDeleteSelectedAttendances) {
+    const { handleDeleteSelectedAttendances } = this.props;
+    if (handleDeleteSelectedAttendances) {
       Modal.confirm({
         title: 'Delete Attendances',
         content:
           'Are you sure you want to delete the selected attendance records?',
         onOk() {
-          this.props.handleDeleteSelectedAttendances(selectedRows);
+          handleDeleteSelectedAttendances(selectedRows);
         },
       });
     }
   };
 
-  handleDeleteAllAttendances = () => {
-    if (this.props.handleDeleteAllAttendances) {
+  _handleDeleteAllAttendances = () => {
+    const { handleDeleteAllAttendances } = this.props;
+    if (handleDeleteAllAttendances) {
       Modal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendance records for the month?',
         onOk() {
-          this.props.handleDeleteAllAttendances();
+          handleDeleteAllAttendances();
         },
       });
     }
@@ -301,11 +303,11 @@ export class List extends Component {
           Print Duty Cards
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="4" onClick={this.handleDeleteSelectedAttendances}>
+        <Menu.Item key="4" onClick={this._handleDeleteSelectedAttendances}>
           <Icon type="delete" />
           Delete Selected Attendances
         </Menu.Item>
-        <Menu.Item key="5" onClick={this.handleDeleteAllAttendances}>
+        <Menu.Item key="5" onClick={this._handleDeleteAllAttendances}>
           <Icon type="delete" />
           Delete All Attendances
         </Menu.Item>

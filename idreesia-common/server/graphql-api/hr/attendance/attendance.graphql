@@ -27,6 +27,9 @@ type AttendanceType {
 
 extend type Query {
   attendanceById(_id: String!): AttendanceType
+  attendanceByKarkun(
+    karkunId: String!
+  ): [AttendanceType]
   attendanceByMonth(
     month: String!
     categoryId: String

@@ -10,6 +10,7 @@ import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './edit/general-info';
 import ProfilePicture from './edit/profile-picture';
 import DutyParticipation from './edit/duty-participations';
+import AttendanceSheets from './edit/attendance-sheets';
 import AttachmentsList from './edit/attachments-list';
 import EmploymentInfo from './edit/employment-info';
 import SalarySheets from './edit/salary-sheets';
@@ -29,13 +30,16 @@ const EditForm = props => {
       <Tabs.TabPane tab="Duty Participation" key="3">
         <DutyParticipation karkunId={karkunId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="File Attachments" key="4">
+      <Tabs.TabPane tab="Attendance Sheets" key="4">
+        <AttendanceSheets karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="File Attachments" key="5">
         <AttachmentsList karkunId={karkunId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Employment Info" key="5">
+      <Tabs.TabPane tab="Employment Info" key="6">
         <EmploymentInfo karkunId={karkunId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Salary Sheets" key="6">
+      <Tabs.TabPane tab="Salary Sheets" key="7">
         <SalarySheets karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>

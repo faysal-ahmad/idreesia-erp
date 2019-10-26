@@ -56,6 +56,21 @@ export default {
       return Attendances.findOne(_id);
     },
 
+    attendanceByKarkun(obj, { karkunId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_ATTENDANCES,
+          PermissionConstants.HR_MANAGE_ATTENDANCES,
+        ])
+      ) {
+        return [];
+      }
+
+      return Attendances.find({
+        karkunId,
+      }).fetch();
+    },
+
     attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
       if (!categoryId) return [];
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import FileSaver from 'file-saver';
 
 import {
   Button,
@@ -221,11 +222,10 @@ export class List extends Component {
     );
     const csvContent = `${header}${rows.join('\r\n')}`;
 
-    const hiddenElement = document.createElement('a');
-    hiddenElement.href = `data:text/csv;charset=utf-8,${encodeURI(csvContent)}`;
-    hiddenElement.target = '_blank';
-    hiddenElement.download = 'salary-sheet.csv';
-    hiddenElement.click();
+    const blob = new Blob([csvContent], {
+      type: 'data:text/csv;charset=utf-8',
+    });
+    FileSaver.saveAs(blob, 'salary-sheet.csv');
   };
 
   handleDeleteSelectedSalaries = () => {

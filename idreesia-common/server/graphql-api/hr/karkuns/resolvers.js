@@ -18,7 +18,7 @@ export default {
       return {
         _id: user._id,
         username: user.username,
-        email: get(user, 'services.google.email', null),
+        email: get(user, 'emails.0.address', null),
         permissions: user.permissions,
         instances: user.instances,
       };
@@ -393,6 +393,7 @@ export default {
         Accounts.setPassword(userId, password);
       }
 
+      console.log(userId, password, email);
       if (email) {
         Meteor.users.update(userId, {
           $set: {

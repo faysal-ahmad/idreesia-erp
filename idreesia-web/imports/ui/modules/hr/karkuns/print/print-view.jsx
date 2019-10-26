@@ -126,15 +126,15 @@ class PrintView extends Component {
                 label="Education"
                 value={karkunById.educationalQualification}
               />
-              <DisplayItem
-                label="Means of Earning"
-                value={karkunById.meansOfEarning}
-              />
             </Col>
             {imageColumn}
           </Row>
           <Row type="flex" justify="start" gutter={20}>
             <Col order={1}>
+              <DisplayItem
+                label="Means of Earning"
+                value={karkunById.meansOfEarning}
+              />
               <DisplayItem
                 label="Current Address"
                 value={karkunById.currentAddress}

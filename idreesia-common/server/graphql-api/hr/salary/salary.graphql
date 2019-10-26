@@ -46,6 +46,6 @@ extend type Mutation {
     arrears: Int
   ): SalaryType
 
-  deleteSalaries(ids: [String]!): Int
+  deleteSalaries(month: String!, ids: [String]!): Int
   deleteAllSalaries(month: String!): Int
 }

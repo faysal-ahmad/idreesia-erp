@@ -38,9 +38,7 @@ const Permissions = {
 
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
-
-  HR_VIEW_ATTENDANCES: 'hr-view-attendances',
-  HR_MANAGE_ATTENDANCES: 'hr-manage-attendances',
+  HR_DELETE_EMPLOYEES: 'hr-delete-employees',
 
   HR_VIEW_SHARED_RESIDENCES: 'hr-view-shared-residences',
   HR_MANAGE_SHARED_RESIDENCES: 'hr-manage-shared-residences',

@@ -155,11 +155,20 @@ class ListContainer extends Component {
   handleDeleteSelectedAttendances = selectedAttendances => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
-    const { deleteAttendances } = this.props;
+    const {
+      deleteAttendances,
+      queryParams: { selectedMonth },
+    } = this.props;
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
+
     const ids = selectedAttendances.map(({ _id }) => _id);
     deleteAttendances({
       variables: {
         ids,
+        month: _selectedMonth.format(Formats.DATE_FORMAT),
       },
     })
       .then(() => {
@@ -286,8 +295,8 @@ const updateMutation = gql`
 `;
 
 const deleteMutation = gql`
-  mutation deleteAttendances($ids: [String]!) {
-    deleteAttendances(ids: $ids)
+  mutation deleteAttendances($month: String!, $ids: [String]!) {
+    deleteAttendances(month: $month, ids: $ids)
   }
 `;
 

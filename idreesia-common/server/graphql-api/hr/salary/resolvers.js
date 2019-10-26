@@ -32,6 +32,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
         ])
       ) {
         return [];
@@ -47,6 +48,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
         ])
       ) {
         return [];
@@ -72,7 +74,10 @@ export default {
   Mutation: {
     createSalaries(obj, { month }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage salaries in the System.'
@@ -109,7 +114,10 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage salaries in the System.'
@@ -136,12 +144,27 @@ export default {
       return Salaries.findOne(_id);
     },
 
-    deleteSalaries(obj, { ids }, { user }) {
+    deleteSalaries(obj, { month, ids }, { user }) {
+      const currentMonth = moment().startOf('month');
+      const passedMonth = moment(month, Formats.DATE_FORMAT);
+
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
+        passedMonth.isBefore(currentMonth) &&
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_EMPLOYEES])
       ) {
         throw new Error(
-          'You do not have permission to manage salaries in the System.'
+          'You do not have permission to remove salaries for past months in the System.'
+        );
+      }
+
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to remove salaries in the System.'
         );
       }
 
@@ -151,11 +174,26 @@ export default {
     },
 
     deleteAllSalaries(obj, { month }, { user }) {
+      const currentMonth = moment().startOf('month');
+      const passedMonth = moment(month, Formats.DATE_FORMAT);
+
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
+        passedMonth.isBefore(currentMonth) &&
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_EMPLOYEES])
       ) {
         throw new Error(
-          'You do not have permission to manage salaries in the System.'
+          'You do not have permission to remove salaries for past months in the System.'
+        );
+      }
+
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to remove salaries in the System.'
         );
       }
 

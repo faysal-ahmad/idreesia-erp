@@ -73,6 +73,8 @@ const salariesByIdsQuery = gql`
       karkun {
         _id
         name
+        cnicNumber
+        contactNumber1
         image {
           _id
           data

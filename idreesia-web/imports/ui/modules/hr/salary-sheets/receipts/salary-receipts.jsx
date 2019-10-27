@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
+import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
 const LabelStyle = {
@@ -92,7 +93,9 @@ export default class SalaryReceipts extends Component {
 
   render() {
     const { salariesByIds } = this.props;
-    const receipts = salariesByIds.map(salary =>
+    const sortedSalariesByMonth = sortBy(salariesByIds, 'karkun.name');
+
+    const receipts = sortedSalariesByMonth.map(salary =>
       this.getSalaryReceipts(salary)
     );
 

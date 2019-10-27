@@ -26,7 +26,7 @@ const SalaryReceiptsContainer = ({
         content={() => salaryReceiptsRef.current}
         trigger={() => (
           <Button size="large" type="primary" icon="printer">
-            Print Cards
+            Print Receipts
           </Button>
         )}
       />

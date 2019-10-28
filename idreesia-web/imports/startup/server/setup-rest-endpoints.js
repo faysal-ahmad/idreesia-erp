@@ -2,13 +2,44 @@ import { WebApp } from 'meteor/webapp';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
+import { kebabCase } from 'lodash';
 
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
+import { createIssuanceFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
+
+const ReportGenerators = {
+  IssuanceForms: createIssuanceFormReport,
+};
 
 Meteor.startup(() => {
   const app = express();
   const storage = multer.memoryStorage();
   const upload = multer({ storage });
+
+  /**
+   * Endpoint for reports generation
+   */
+  app.get(
+    '/generate-report',
+    bodyParser.urlencoded({ extended: false }),
+    Meteor.bindEnvironment((req, res) => {
+      const { reportName, reportArgs } = req.query;
+      const reportGenerator = ReportGenerators[reportName];
+      if (reportGenerator) {
+        const report = reportGenerator(reportArgs);
+        res.writeHead(200, {
+          'Content-Type': 'application/vnd.ms-excel',
+          'Content-Disposition': `attachment; filename=${kebabCase(
+            reportName
+          )}.xlsx`,
+        });
+        res.end(report);
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
+    })
+  );
 
   /**
    * Endpoint for file downloads

@@ -15,9 +15,7 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import {
   Button,
-  Dropdown,
   Icon,
-  Menu,
   Pagination,
   Popconfirm,
   Table,
@@ -264,23 +262,17 @@ class List extends Component {
       });
   };
 
-  handleApproveSelected = () => {};
-  handleDeleteSelected = () => {};
   handleExportSelected = () => {
     const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
 
-    const header =
-      'Issue Date, Issued To, For Location, Items \r\n';
-    const rows = selectedRows.map(
-      salary =>
-        `${salary.karkun.name}, ${salary.job.name}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
-    );
-    const csvContent = `${header}${rows.join('\r\n')}`;
-
-    const blob = new Blob([csvContent], {
-      type: 'data:text/csv;charset=utf-8',
-    });
-    FileSaver.saveAs(blob, 'salary-sheet.csv');
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=IssuanceForms&reportArgs=${reportArgs.join(
+      ','
+    )}`;
+    window.open(url, '_blank');
   };
 
   onChange = (pageIndex, pageSize) => {
@@ -295,33 +287,6 @@ class List extends Component {
       pageIndex: pageIndex - 1,
       pageSize,
     });
-  };
-
-  getActionsMenu = () => {
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={this.handleApproveSelected}>
-          <Icon type="check-square-o" />
-          Approve Selected
-        </Menu.Item>
-        <Menu.Item key="2" onClick={this.handleExportSelected}>
-          <Icon type="upload" />
-          Export Selected as CSV
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Divider />
-        <Menu.Item key="3" onClick={this.handleDeleteSelected}>
-          <Icon type="delete" />
-          Delete Selected
-        </Menu.Item>
-      </Menu>
-    );
-
-    return (
-      <Dropdown overlay={menu}>
-        <Button icon="setting" size="large" />
-      </Dropdown>
-    );
   };
 
   getTableHeader = () => {
@@ -349,7 +314,13 @@ class List extends Component {
             refreshData={refetchListQuery}
           />
           &nbsp;&nbsp;
-          {this.getActionsMenu()}
+          <Tooltip title="Download Selected Data">
+            <Button
+              icon="download"
+              size="large"
+              onClick={this.handleExportSelected}
+            />
+          </Tooltip>
         </div>
       </div>
     );

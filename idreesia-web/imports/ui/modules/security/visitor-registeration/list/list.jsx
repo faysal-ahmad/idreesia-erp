@@ -20,31 +20,10 @@ const StatusStyle = {
   fontSize: 20,
 };
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
 const ButtonGroupStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
-};
-
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  width: '100%',
 };
 
 class List extends Component {
@@ -143,11 +122,11 @@ class List extends Component {
   actionsColumn = {
     key: 'action',
     render: (text, record) => (
-      <div style={ActionsStyle}>
+      <div className="list-actions-column">
         <Tooltip title="Stay History">
           <Icon
             type="history"
-            style={IconStyle}
+            className="list-actions-icon"
             onClick={() => {
               this.handleStayHistoryClicked(record);
             }}
@@ -162,7 +141,7 @@ class List extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" style={IconStyle} />
+            <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       </div>
@@ -237,7 +216,7 @@ class List extends Component {
     }
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <div style={ButtonGroupStyle}>
           {newButton}
           &nbsp;

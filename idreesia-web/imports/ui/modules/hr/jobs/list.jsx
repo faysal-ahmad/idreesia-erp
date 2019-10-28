@@ -10,11 +10,6 @@ import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -51,7 +46,7 @@ class List extends Component {
             <Tooltip key="delete" title="Delete">
               <Icon
                 type="delete"
-                style={IconStyle}
+                className="list-actions-icon"
                 onClick={() => {
                   this.handleDeleteClicked(record);
                 }}

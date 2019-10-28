@@ -19,19 +19,6 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -153,7 +140,7 @@ class List extends Component {
         <Tooltip title="Print">
           <Icon
             type="printer"
-            style={IconStyle}
+            className="list-actions-icon"
             onClick={() => {
               this.props.handlePrintClicked(record);
             }}
@@ -168,7 +155,7 @@ class List extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" style={IconStyle} />
+            <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       </>
@@ -287,7 +274,7 @@ class List extends Component {
 
     if (!newButton && !listFilter) return null;
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         {newButton}
         {listFilter}
       </div>

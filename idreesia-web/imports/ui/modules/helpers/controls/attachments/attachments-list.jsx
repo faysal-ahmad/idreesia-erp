@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { flowRight, noop } from "lodash";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { flowRight, noop } from 'lodash';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import {
   Col,
@@ -14,23 +14,18 @@ import {
   Tooltip,
   Popconfirm,
   message,
-} from "/imports/ui/controls";
+} from '/imports/ui/controls';
 import {
   TakePicture,
   UploadAttachment,
-} from "/imports/ui/modules/helpers/controls";
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+} from '/imports/ui/modules/helpers/controls';
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
-import AttachmentForm from "./attachment-form";
-
-const IconStyle = {
-  cursor: "pointer",
-  fontSize: 20,
-};
+import AttachmentForm from './attachment-form';
 
 const NameStyle = {
-  cursor: "pointer",
-  color: "#1890ff",
+  cursor: 'pointer',
+  color: '#1890ff',
 };
 
 const FileIconStyle = {
@@ -61,25 +56,25 @@ class AttachmentsList extends Component {
   attachmentForm;
 
   mimeTypeIconMap = {
-    "image/jpeg": "file-jpg",
-    "text/html": "file-text",
-    "application/pdf": "file-pdf",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      "file-excel",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      "file-word",
+    'image/jpeg': 'file-jpg',
+    'text/html': 'file-text',
+    'application/pdf': 'file-pdf',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+      'file-excel',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      'file-word',
   };
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => {
         let iconType = record.mimeType
           ? this.mimeTypeIconMap[record.mimeType]
-          : "file-unknown";
-        if (!iconType) iconType = "file";
+          : 'file-unknown';
+        if (!iconType) iconType = 'file';
 
         return (
           <Row
@@ -101,18 +96,18 @@ class AttachmentsList extends Component {
       },
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => (
         <span>
           <Tooltip title="View">
             <Icon
               type="edit"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
               }}
@@ -128,7 +123,7 @@ class AttachmentsList extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" style={IconStyle} />
+              <Icon type="delete" className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </span>
@@ -138,7 +133,7 @@ class AttachmentsList extends Component {
 
   handleNameClicked = record => {
     const url = getDownloadUrl(record._id);
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   };
 
   handleEditClicked = record => {
@@ -245,6 +240,6 @@ const updateAttachmentMutation = gql`
 
 export default flowRight(
   graphql(updateAttachmentMutation, {
-    name: "updateAttachment",
+    name: 'updateAttachment',
   })
 )(AttachmentsList);

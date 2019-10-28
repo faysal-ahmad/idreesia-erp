@@ -12,12 +12,6 @@ import {
 import { treeify } from "/imports/ui/modules/accounts/common/utilities";
 import { VoucherDetailsList } from "../voucher-details";
 
-const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  width: "100%",
-};
 
 const ClickableNumberStyle = {
   cursor: "pointer",
@@ -184,7 +178,7 @@ class List extends Component {
   getTableHeader = () => {
     const { month } = this.props;
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <div>
           <Button
             type="primary"

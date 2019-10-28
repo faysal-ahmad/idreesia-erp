@@ -26,14 +26,6 @@ const StatusStyle = {
   fontSize: 20,
 };
 
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'top',
-  width: '100%',
-};
-
 const LinkStyle = {
   width: '100%',
   color: '#1890FF',
@@ -323,7 +315,7 @@ class List extends Component {
     const { queryParams, setPageParams } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <ListFilter queryParams={queryParams} setPageParams={setPageParams} />
       </div>
     );

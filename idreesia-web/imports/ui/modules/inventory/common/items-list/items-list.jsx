@@ -7,11 +7,6 @@ import { filter, find } from 'meteor/idreesia-common/utilities/lodash';
 import { Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { default as ItemForm } from './item-form';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class ItemsList extends Component {
   static propTypes = {
     readOnly: PropTypes.bool,
@@ -166,7 +161,7 @@ class ItemsList extends Component {
           <Tooltip title="Delete">
             <Icon
               type="delete"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleDeleteClicked(record);
               }}

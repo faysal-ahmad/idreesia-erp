@@ -1,16 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { toSafeInteger } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { toSafeInteger } from 'lodash';
 
-import { Button, Pagination, Table } from "/imports/ui/controls";
-
-const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-};
+import { Button, Pagination, Table } from '/imports/ui/controls';
 
 export default class PagedDataList extends Component {
   static propTypes = {
@@ -45,7 +37,7 @@ export default class PagedDataList extends Component {
       return `${name}=${nameVal}`;
     });
 
-    const path = `${location.pathname}?${paramStrings.join("&")}`;
+    const path = `${location.pathname}?${paramStrings.join('&')}`;
     history.push(path);
   };
 
@@ -72,7 +64,7 @@ export default class PagedDataList extends Component {
     } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
           {newButtonLabel}
         </Button>

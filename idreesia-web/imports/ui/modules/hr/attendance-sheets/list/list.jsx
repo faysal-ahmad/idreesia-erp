@@ -23,35 +23,8 @@ import {
 import { Formats } from 'meteor/idreesia-common/constants';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const ToolbarSectionStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'left',
-};
-
 const CascaderStyle = {
   width: '300px',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
 };
 
 export class List extends Component {
@@ -132,11 +105,11 @@ export class List extends Component {
           handleDeleteSelectedAttendances,
         } = this.props;
         return (
-          <div style={ActionsStyle}>
+          <div className="list-actions-column">
             <Tooltip key="edit" title="Edit">
               <Icon
                 type="edit"
-                style={IconStyle}
+                className="list-actions-icon"
                 onClick={() => {
                   handleEditAttendance(record);
                 }}
@@ -151,7 +124,7 @@ export class List extends Component {
               cancelText="No"
             >
               <Tooltip key="delete" title="Delete">
-                <Icon type="delete" style={IconStyle} />
+                <Icon type="delete" className="list-actions-icon" />
               </Tooltip>
             </Popconfirm>
           </div>
@@ -324,8 +297,8 @@ export class List extends Component {
   getTableHeader = () => {
     const { selectedMonth } = this.props;
     return (
-      <div style={ToolbarStyle}>
-        <div style={ToolbarSectionStyle}>
+      <div className="list-table-header">
+        <div className="list-table-header-section">
           {this.getDutyShiftSelector()}
           &nbsp;&nbsp;
           <Button

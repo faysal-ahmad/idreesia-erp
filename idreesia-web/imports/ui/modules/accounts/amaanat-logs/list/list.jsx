@@ -1,34 +1,20 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
-import numeral from "numeral";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
+import numeral from 'numeral';
 
-import { Button, Icon, Pagination, Table, Tooltip, message } from "/imports/ui/controls";
-import ListFilter from "./list-filter";
-
-const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-};
-
-const ActionsStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-};
-
-const IconStyle = {
-  cursor: "pointer",
-  fontSize: 20,
-};
+import {
+  Button,
+  Icon,
+  Pagination,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
+import ListFilter from './list-filter';
 
 class List extends Component {
   static propTypes = {
@@ -53,62 +39,62 @@ class List extends Component {
 
   columns = [
     {
-      title: "Received Date",
-      dataIndex: "receivedDate",
-      key: "receivedDate",
+      title: 'Received Date',
+      dataIndex: 'receivedDate',
+      key: 'receivedDate',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD MMM, YYYY");
+        return date.format('DD MMM, YYYY');
       },
     },
     {
-      title: "From City",
-      dataIndex: "fromCity",
-      key: "fromCity",
+      title: 'From City',
+      dataIndex: 'fromCity',
+      key: 'fromCity',
     },
     {
-      title: "Total Amount",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
-      render: text => numeral(text).format("0,0"),
+      title: 'Total Amount',
+      dataIndex: 'totalAmount',
+      key: 'totalAmount',
+      render: text => numeral(text).format('0,0'),
     },
     {
-      title: "Breakup",
-      key: "breakup",
+      title: 'Breakup',
+      key: 'breakup',
       render: (text, record) => {
         const formattedItems = [];
         if (record.hadiaPortion) {
           formattedItems.push(
             <li key={`${record._id}_hadia`}>
-              {`Hadia - ${numeral(record.hadiaPortion).format("0,0")}`}
+              {`Hadia - ${numeral(record.hadiaPortion).format('0,0')}`}
             </li>
           );
         }
         if (record.sadqaPortion) {
           formattedItems.push(
             <li key={`${record._id}_sadqa`}>
-              {`Sadqa - ${numeral(record.sadqaPortion).format("0,0")}`}
+              {`Sadqa - ${numeral(record.sadqaPortion).format('0,0')}`}
             </li>
           );
         }
         if (record.zakaatPortion) {
           formattedItems.push(
             <li key={`${record._id}_zakaat`}>
-              {`Zakaat - ${numeral(record.zakaatPortion).format("0,0")}`}
+              {`Zakaat - ${numeral(record.zakaatPortion).format('0,0')}`}
             </li>
           );
         }
         if (record.langarPortion) {
           formattedItems.push(
             <li key={`${record._id}_langar`}>
-              {`Langar - ${numeral(record.langarPortion).format("0,0")}`}
+              {`Langar - ${numeral(record.langarPortion).format('0,0')}`}
             </li>
           );
         }
         if (record.otherPortion) {
           formattedItems.push(
             <li key={`${record._id}_other`}>
-              {`Other - ${numeral(record.otherPortion).format("0,0")}`}
+              {`Other - ${numeral(record.otherPortion).format('0,0')}`}
             </li>
           );
         }
@@ -117,14 +103,14 @@ class List extends Component {
       },
     },
     {
-      title: "Actions",
-      key: "action",
+      title: 'Actions',
+      key: 'action',
       render: (text, record) => (
-        <div style={ActionsStyle}>
+        <div className="list-actions-column">
           <Tooltip title="Edit">
             <Icon
               type="edit"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
               }}
@@ -133,7 +119,7 @@ class List extends Component {
           <Tooltip title="Delete">
             <Icon
               type="delete"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleDeleteClicked(record);
               }}
@@ -160,7 +146,7 @@ class List extends Component {
       variables: { _id: amaanatLog._id },
     })
       .then(() => {
-        message.success("Amaanat Log item has been deleted.", 5);
+        message.success('Amaanat Log item has been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -203,7 +189,7 @@ class List extends Component {
     );
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         {newButton}
         <ListFilter
           fromCity={fromCity}
@@ -285,9 +271,9 @@ const listQuery = gql`
 
 export default flowRight(
   graphql(formMutationRemove, {
-    name: "removeAmaanatLog",
+    name: 'removeAmaanatLog',
     options: {
-      refetchQueries: ["pagedAmaanatLogs"],
+      refetchQueries: ['pagedAmaanatLogs'],
     },
   }),
   graphql(listQuery, {

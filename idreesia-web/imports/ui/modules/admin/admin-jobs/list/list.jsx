@@ -16,26 +16,6 @@ import {
 } from '/imports/ui/controls';
 import ListFilter from './list-filter';
 
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  width: '100%',
-};
-
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -98,11 +78,11 @@ class List extends Component {
       render: (text, record) => {
         if (record.status === 'completed' || record.status === 'errored') {
           return (
-            <div style={ActionsStyle}>
+            <div className="list-actions-column">
               <Tooltip title="Delete">
                 <Icon
                   type="delete"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.props.handleDeleteClicked(record._id);
                   }}
@@ -142,7 +122,7 @@ class List extends Component {
   getTableHeader = () => {
     const { jobType, status, setPageParams } = this.props;
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <div>
           <Select
             defaultValue={this.state.selectedJobType}

@@ -62,6 +62,34 @@ form {
   width: 600px;
 }
 
+.list-table-header {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.list-table-header-section {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: left;
+  align-items: center;
+}
+
+.list-actions-column {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.list-actions-icon {
+  cursor: pointer;
+  font-size: 20px;
+}
+
 @media print {
   .karkun-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
   .salary-receipt-print-view { padding-left: 50px; padding-top: 50px; width: 800px }

@@ -8,18 +8,6 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Icon, Table, Tooltip } from '/imports/ui/controls';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -78,11 +66,11 @@ class List extends Component {
         }
 
         return (
-          <div style={ActionsStyle}>
+          <div className="list-actions-column">
             <Tooltip title={tooltipTitle}>
               <Icon
                 type={iconType}
-                style={IconStyle}
+                className="list-actions-icon"
                 onClick={() => {
                   handler(record);
                 }}

@@ -22,11 +22,6 @@ import {
 } from '/imports/ui/modules/hr/common/composers';
 import DutyForm from './duty-form';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class DutyParticipation extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -87,7 +82,7 @@ class DutyParticipation extends Component {
           <Tooltip title="Edit">
             <Icon
               type="edit"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
               }}
@@ -103,7 +98,7 @@ class DutyParticipation extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" style={IconStyle} />
+              <Icon type="delete" className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </span>

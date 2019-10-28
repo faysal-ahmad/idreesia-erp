@@ -21,11 +21,6 @@ const ClickableLinkStyle = {
   color: '#1890ff',
 };
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 const BackgroundColors = {
   [VoucherType.BANK_PAYMENT_VOUCHER]: '#E6F4E3',
   [VoucherType.BANK_RECEIPT_VOUCHER]: '#FFFACD',
@@ -102,7 +97,7 @@ class VoucherDetails extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" style={IconStyle} />
+            <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       ),

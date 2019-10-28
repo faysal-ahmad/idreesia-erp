@@ -30,27 +30,6 @@ import {
 
 import ListFilter from './list-filter';
 
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -120,11 +99,11 @@ class List extends Component {
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
-            <div style={ActionsStyle}>
+            <div className="list-actions-column">
               <Tooltip title="Approve">
                 <Icon
                   type="check-square-o"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.handleApproveClicked(record);
                   }}
@@ -133,7 +112,7 @@ class List extends Component {
               <Tooltip title="Edit">
                 <Icon
                   type="edit"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.handleEditClicked(record);
                   }}
@@ -148,7 +127,7 @@ class List extends Component {
                 cancelText="No"
               >
                 <Tooltip title="Delete">
-                  <Icon type="delete" style={IconStyle} />
+                  <Icon type="delete" className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
             </div>
@@ -159,7 +138,7 @@ class List extends Component {
           <Tooltip title="View">
             <Icon
               type="file"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleViewClicked(record);
               }}
@@ -278,7 +257,7 @@ class List extends Component {
     const { physicalStoreId, queryParams, refetchListQuery } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <Button
           type="primary"
           icon="plus-circle-o"

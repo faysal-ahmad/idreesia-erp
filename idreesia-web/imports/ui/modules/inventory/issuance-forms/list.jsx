@@ -15,7 +15,9 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import {
   Button,
+  Dropdown,
   Icon,
+  Menu,
   Pagination,
   Popconfirm,
   Table,
@@ -30,27 +32,6 @@ import {
 } from '/imports/ui/modules/inventory/common/composers';
 
 import ListFilter from './list-filter';
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
 
 class List extends Component {
   static propTypes = {
@@ -72,6 +53,10 @@ class List extends Component {
     }),
     removeIssuanceForm: PropTypes.func,
     approveIssuanceForm: PropTypes.func,
+  };
+
+  state = {
+    selectedRows: [],
   };
 
   columns = [
@@ -131,11 +116,11 @@ class List extends Component {
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
-            <div style={ActionsStyle}>
+            <div className="list-actions-column">
               <Tooltip title="Approve">
                 <Icon
                   type="check-square-o"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.handleApproveClicked(record);
                   }}
@@ -144,7 +129,7 @@ class List extends Component {
               <Tooltip title="Edit">
                 <Icon
                   type="edit"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.handleEditClicked(record);
                   }}
@@ -159,7 +144,7 @@ class List extends Component {
                 cancelText="No"
               >
                 <Tooltip title="Delete">
-                  <Icon type="delete" style={IconStyle} />
+                  <Icon type="delete" className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
             </div>
@@ -170,7 +155,7 @@ class List extends Component {
           <Tooltip title="View">
             <Icon
               type="file"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleViewClicked(record);
               }}
@@ -180,6 +165,14 @@ class List extends Component {
       },
     },
   ];
+
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
 
   refreshPage = newParams => {
     const {
@@ -271,6 +264,25 @@ class List extends Component {
       });
   };
 
+  handleApproveSelected = () => {};
+  handleDeleteSelected = () => {};
+  handleExportSelected = () => {
+    const { selectedRows } = this.state;
+
+    const header =
+      'Issue Date, Issued To, For Location, Items \r\n';
+    const rows = selectedRows.map(
+      salary =>
+        `${salary.karkun.name}, ${salary.job.name}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
+    );
+    const csvContent = `${header}${rows.join('\r\n')}`;
+
+    const blob = new Blob([csvContent], {
+      type: 'data:text/csv;charset=utf-8',
+    });
+    FileSaver.saveAs(blob, 'salary-sheet.csv');
+  };
+
   onChange = (pageIndex, pageSize) => {
     this.refreshPage({
       pageIndex: pageIndex - 1,
@@ -285,6 +297,33 @@ class List extends Component {
     });
   };
 
+  getActionsMenu = () => {
+    const menu = (
+      <Menu>
+        <Menu.Item key="1" onClick={this.handleApproveSelected}>
+          <Icon type="check-square-o" />
+          Approve Selected
+        </Menu.Item>
+        <Menu.Item key="2" onClick={this.handleExportSelected}>
+          <Icon type="upload" />
+          Export Selected as CSV
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={this.handleDeleteSelected}>
+          <Icon type="delete" />
+          Delete Selected
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <Button icon="setting" size="large" />
+      </Dropdown>
+    );
+  };
+
   getTableHeader = () => {
     const {
       locationsByPhysicalStoreId,
@@ -293,20 +332,25 @@ class List extends Component {
     } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <Button
+          size="large"
           type="primary"
           icon="plus-circle-o"
           onClick={this.handleNewClicked}
         >
           New Issuance Form
         </Button>
-        <ListFilter
-          allLocations={locationsByPhysicalStoreId}
-          refreshPage={this.refreshPage}
-          queryParams={queryParams}
-          refreshData={refetchListQuery}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            allLocations={locationsByPhysicalStoreId}
+            refreshPage={this.refreshPage}
+            queryParams={queryParams}
+            refreshData={refetchListQuery}
+          />
+          &nbsp;&nbsp;
+          {this.getActionsMenu()}
+        </div>
       </div>
     );
   };
@@ -330,6 +374,7 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         size="small"
         pagination={false}
         footer={() => (

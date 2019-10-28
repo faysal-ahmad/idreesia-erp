@@ -50,6 +50,10 @@ class List extends Component {
     approvePurchaseForm: PropTypes.func,
   };
 
+  state = {
+    selectedRows: [],
+  };
+
   columns = [
     {
       title: 'Purchase Date',
@@ -149,6 +153,14 @@ class List extends Component {
     },
   ];
 
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
+
   refreshPage = newParams => {
     const {
       approvalStatus,
@@ -239,6 +251,19 @@ class List extends Component {
       });
   };
 
+  handleExportSelected = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=PurchaseForms&reportArgs=${reportArgs.join(
+      ','
+    )}`;
+    window.open(url, '_blank');
+  };
+
   onChange = (pageIndex, pageSize) => {
     this.refreshPage({
       pageIndex: pageIndex - 1,
@@ -265,12 +290,22 @@ class List extends Component {
         >
           New Purchase Form
         </Button>
-        <ListFilter
-          physicalStoreId={physicalStoreId}
-          refreshPage={this.refreshPage}
-          queryParams={queryParams}
-          refreshData={refetchListQuery}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            physicalStoreId={physicalStoreId}
+            refreshPage={this.refreshPage}
+            queryParams={queryParams}
+            refreshData={refetchListQuery}
+          />
+          &nbsp;&nbsp;
+          <Tooltip title="Download Selected Data">
+            <Button
+              icon="download"
+              size="large"
+              onClick={this.handleExportSelected}
+            />
+          </Tooltip>
+        </div>
       </div>
     );
   };
@@ -294,6 +329,7 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         size="small"
         pagination={false}
         footer={() => (

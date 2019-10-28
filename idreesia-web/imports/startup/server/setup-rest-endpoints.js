@@ -6,9 +6,11 @@ import { kebabCase } from 'lodash';
 
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
 import { createIssuanceFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
+import { createPurchaseFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
 
 const ReportGenerators = {
   IssuanceForms: createIssuanceFormReport,
+  PurchaseForms: createPurchaseFormReport,
 };
 
 Meteor.startup(() => {

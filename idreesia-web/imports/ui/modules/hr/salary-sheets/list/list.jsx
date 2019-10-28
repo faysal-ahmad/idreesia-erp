@@ -183,10 +183,10 @@ export class List extends Component {
     const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
 
     const header =
-      'Name, Job, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
+      'Name, S/O, CNIC, Phone No., Dept, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
     const rows = sortedSalariesByMonth.map(
       salary =>
-        `${salary.karkun.name}, ${salary.job.name}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
+        `${salary.karkun.name}, ${salary.karkun.parentName}, ${salary.karkun.cnicNumber}, ${salary.karkun.contactNumber1}, ${salary.job.name}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
     );
     const csvContent = `${header}${rows.join('\r\n')}`;
 
@@ -352,6 +352,7 @@ const salariesByMonthQuery = gql`
       karkun {
         _id
         name
+        parentName
         imageId
         cnicNumber
         contactNumber1

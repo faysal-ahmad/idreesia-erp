@@ -1,14 +1,16 @@
-import { compact, get, values } from 'meteor/idreesia-common/utilities/lodash';
+import { compact, get, values } from 'lodash';
 import {
   Jobs,
   Karkuns,
   KarkunDuties,
+  Attendances,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getKarkuns } from './queries';
+import { canDeleteKarkun } from './helpers';
 
 export default {
   KarkunType: {
@@ -250,6 +252,26 @@ export default {
         );
       }
 
+      if (!canDeleteKarkun()) {
+        throw new Error(
+          'This Karkun cannot be deleted as it is being referenced by other data.'
+        );
+      }
+
+      const existingKarkun = Karkuns.findOne(_id);
+      // Remove the image for the karkun
+      if (existingKarkun.imageId) {
+        Attachments.remove(existingKarkun.imageId);
+      }
+      // Remove any file attachments
+      if (existingKarkun.attachmentIds) {
+        Attachments.remove({ _id: { $in: existingKarkun.attachmentIds } });
+      }
+      // Remove all attendance records for the karkun
+      Attendances.remove({ karkunId: { $eq: _id } });
+      // Remove all karkun duties
+      KarkunDuties.remove({ karkunId: { $eq: _id } });
+
       KarkunDuties.remove({ karkunId: _id });
       return Karkuns.remove(_id);
     },
@@ -289,6 +311,13 @@ export default {
         throw new Error(
           'You do not have permission to manage Karkuns in the System.'
         );
+      }
+
+      // If the user already has another image attached, then remove that attachment
+      // since it will now become orphaned.
+      const existingKarkun = Karkuns.findOne(_id);
+      if (existingKarkun.imageId) {
+        Attachments.remove(existingKarkun.imageId);
       }
 
       const date = new Date();
@@ -401,7 +430,6 @@ export default {
         Accounts.setPassword(userId, password);
       }
 
-      console.log(userId, password, email);
       if (email) {
         Meteor.users.update(userId, {
           $set: {

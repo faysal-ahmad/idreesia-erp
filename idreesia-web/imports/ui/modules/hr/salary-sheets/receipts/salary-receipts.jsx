@@ -68,21 +68,22 @@ export default class SalaryReceipts extends Component {
           {imageColumn}
           <Col order={2}>
             <Item label="Name" value={karkun.name} />
-            <Item label="CNIC" value={karkun.cnicNumber} />
-            <Item label="Phone" value={karkun.contactNumber1} />
-            <Item label="Job" value={job.name} />
+            <Item label="CNIC" value={karkun.cnicNumber || ''} />
+            <Item label="Phone" value={karkun.contactNumber1 || ''} />
+            <Item label="Dept." value={job.name} />
             <Item label="Month" value={displayMonth} />
           </Col>
           <Col order={3}>
             <Item label="Salary" value={salary.salary} />
-            <Item label="L/OB" value={salary.openingLoan} />
-            <Item label="Loan Ded." value={salary.loanDeduction} />
-            <Item label="Other Ded." value={salary.otherDeduction} />
-            <Item label="New Loan" value={salary.newLoan} />
+            <Item label="L/OB" value={salary.openingLoan || 0} />
+            <Item label="Loan Ded." value={salary.loanDeduction || 0} />
+            <Item label="Other Ded." value={salary.otherDeduction || 0} />
+            <Item label="New Loan" value={salary.newLoan || 0} />
           </Col>
           <Col order={4}>
-            <Item label="L/CB" value={salary.closingLoan} />
-            <Item label="Net Payment" value={salary.netPayment} />
+            <Item label="L/CB" value={salary.closingLoan || 0} />
+            <Item label="Arrears" value={salary.arrears || 0} />
+            <Item label="Net Payment" value={salary.netPayment || 0} />
             <Item label="Signature" value="" />
           </Col>
         </Row>

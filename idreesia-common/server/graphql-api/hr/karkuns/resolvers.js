@@ -252,28 +252,26 @@ export default {
         );
       }
 
-      if (!canDeleteKarkun()) {
-        throw new Error(
-          'This Karkun cannot be deleted as it is being referenced by other data.'
-        );
+      if (canDeleteKarkun(_id)) {
+        const existingKarkun = Karkuns.findOne(_id);
+        // Remove the image for the karkun
+        if (existingKarkun.imageId) {
+          Attachments.remove(existingKarkun.imageId);
+        }
+        // Remove any file attachments
+        if (existingKarkun.attachmentIds) {
+          Attachments.remove({ _id: { $in: existingKarkun.attachmentIds } });
+        }
+        // Remove all attendance records for the karkun
+        Attendances.remove({ karkunId: { $eq: _id } });
+        // Remove all karkun duties
+        KarkunDuties.remove({ karkunId: { $eq: _id } });
+
+        KarkunDuties.remove({ karkunId: _id });
+        return Karkuns.remove(_id);
       }
 
-      const existingKarkun = Karkuns.findOne(_id);
-      // Remove the image for the karkun
-      if (existingKarkun.imageId) {
-        Attachments.remove(existingKarkun.imageId);
-      }
-      // Remove any file attachments
-      if (existingKarkun.attachmentIds) {
-        Attachments.remove({ _id: { $in: existingKarkun.attachmentIds } });
-      }
-      // Remove all attendance records for the karkun
-      Attendances.remove({ karkunId: { $eq: _id } });
-      // Remove all karkun duties
-      KarkunDuties.remove({ karkunId: { $eq: _id } });
-
-      KarkunDuties.remove({ karkunId: _id });
-      return Karkuns.remove(_id);
+      return 0;
     },
 
     setKarkunEmploymentInfo(

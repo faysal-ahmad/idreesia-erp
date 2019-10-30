@@ -7,32 +7,56 @@ import {
 
 export function canDeleteKarkun(karkunId) {
   const salaryRecordCount = Salaries.find({ karkunId }).count();
-  if (salaryRecordCount > 0) return false;
+  if (salaryRecordCount > 0) {
+    throw new Error(
+      'This Karkun cannot be deleted as it is being referenced by salary data.'
+    );
+  }
 
   const issuedByCount = IssuanceForms.find({
     issuedBy: { $eq: karkunId },
   }).count();
-  if (issuedByCount > 0) return false;
+  if (issuedByCount > 0) {
+    throw new Error(
+      'This Karkun cannot be deleted as it is being referenced by issuance forms.'
+    );
+  }
 
   const issuedToCount = IssuanceForms.find({
     issuedTo: { $eq: karkunId },
   }).count();
-  if (issuedToCount > 0) return false;
+  if (issuedToCount > 0) {
+    throw new Error(
+      'This Karkun cannot be deleted as it is being referenced by issuance forms.'
+    );
+  }
 
   const receivedByCount = PurchaseForms.find({
     receivedBy: { $eq: karkunId },
   }).count();
-  if (receivedByCount > 0) return false;
+  if (receivedByCount > 0) {
+    throw new Error(
+      'This Karkun cannot be deleted as it is being referenced by purchase forms.'
+    );
+  }
 
   const purchasedByCount = PurchaseForms.find({
     purchasedBy: { $eq: karkunId },
   }).count();
-  if (purchasedByCount > 0) return false;
+  if (purchasedByCount > 0) {
+    throw new Error(
+      'This Karkun cannot be deleted as it is being referenced by purchase forms.'
+    );
+  }
 
   const adjustedByCount = StockAdjustments.find({
     adjustedBy: { $eq: karkunId },
   }).count();
-  if (adjustedByCount > 0) return false;
+  if (adjustedByCount > 0) {
+    throw new Error(
+      'This Karkun cannot be deleted as it is being referenced by stock adjustments.'
+    );
+  }
 
   return true;
 }

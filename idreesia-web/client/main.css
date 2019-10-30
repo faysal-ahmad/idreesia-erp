@@ -58,42 +58,40 @@ h1 {
   padding-bottom: 1.5rem;
 }
 
-/*
- * Toolbar
- */
-.toolbar {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  width: 100%;
-}
-
-/*
- * Form
- */
 form {
   width: 600px;
 }
 
-.form-container {
+.list-table-header {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: center;
-  width: 100%;
-  padding-top: 2em;
-}
-
-.form-controls {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
 }
 
-#components-layout-demo-top-side-2 .logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 28px 16px 0;
-  float: left;
+.list-table-header-section {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: left;
+  align-items: center;
+}
+
+.list-actions-column {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.list-actions-icon {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+@media print {
+  .karkun-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
+  .salary-receipt-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
+  .pagebreak { page-break-before: always; }
 }

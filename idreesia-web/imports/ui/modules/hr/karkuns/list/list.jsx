@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Icon,
@@ -19,19 +19,6 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -40,6 +27,7 @@ class List extends Component {
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
     bloodGroup: PropTypes.string,
+    jobId: PropTypes.string,
     dutyId: PropTypes.string,
     shiftId: PropTypes.string,
     showVolunteers: PropTypes.string,
@@ -48,6 +36,8 @@ class List extends Component {
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
+    handleScanClicked: PropTypes.func,
+    handlePrintClicked: PropTypes.func,
     showPhoneNumbersColumn: PropTypes.bool,
     predefinedFilterName: PropTypes.string,
 
@@ -58,6 +48,13 @@ class List extends Component {
       totalResults: PropTypes.number,
       karkuns: PropTypes.array,
     }),
+  };
+
+  static defaultProps = {
+    handleItemSelected: noop,
+    handleNewClicked: noop,
+    handleScanClicked: noop,
+    handlePrintClicked: noop,
   };
 
   nameColumn = {
@@ -92,7 +89,7 @@ class List extends Component {
   };
 
   dutiesColumn = {
-    title: 'Duties',
+    title: 'Job / Duties',
     dataIndex: 'duties',
     key: 'duties',
     render: (duties, record) => {
@@ -100,12 +97,12 @@ class List extends Component {
       let dutyNames = [];
 
       if (record.job) {
-        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=3`;
+        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=6`;
         jobName = [<Link to={jobTabLink}>{record.job.name}</Link>];
       }
 
       if (duties.length > 0) {
-        const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=4`;
+        const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=3`;
         dutyNames = duties.map(duty => {
           let dutyName = duty.dutyName;
           if (duty.shiftName) {
@@ -139,18 +136,29 @@ class List extends Component {
   actionsColumn = {
     key: 'action',
     render: (text, record) => (
-      <Popconfirm
-        title="Are you sure you want to delete this karkun?"
-        onConfirm={() => {
-          this.handleDeleteClicked(record);
-        }}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Tooltip title="Delete">
-          <Icon type="delete" style={IconStyle} />
+      <>
+        <Tooltip title="Print">
+          <Icon
+            type="printer"
+            className="list-actions-icon"
+            onClick={() => {
+              this.props.handlePrintClicked(record);
+            }}
+          />
         </Tooltip>
-      </Popconfirm>
+        <Popconfirm
+          title="Are you sure you want to delete this karkun?"
+          onConfirm={() => {
+            this.handleDeleteClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Delete">
+            <Icon type="delete" className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
+      </>
     ),
   };
 
@@ -207,6 +215,7 @@ class List extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       showVolunteers,
@@ -215,15 +224,32 @@ class List extends Component {
       refetchListQuery,
       showNewButton,
       handleNewClicked,
+      handleScanClicked,
       predefinedFilterName,
     } = this.props;
 
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Karkun
-        </Button>
+        <div>
+          <Button
+            size="large"
+            type="primary"
+            icon="plus-circle-o"
+            onClick={handleNewClicked}
+          >
+            New Karkun
+          </Button>
+          &nbsp;
+          <Button
+            size="large"
+            type="secondary"
+            icon="barcode"
+            onClick={handleScanClicked}
+          >
+            Scan Card
+          </Button>
+        </div>
       );
     }
 
@@ -235,6 +261,7 @@ class List extends Component {
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
           bloodGroup={bloodGroup}
+          jobId={jobId}
           dutyId={dutyId}
           shiftId={shiftId}
           showVolunteers={showVolunteers}
@@ -247,7 +274,7 @@ class List extends Component {
 
     if (!newButton && !listFilter) return null;
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         {newButton}
         {listFilter}
       </div>
@@ -340,6 +367,9 @@ export default flowRight(
     options: ({
       name,
       cnicNumber,
+      phoneNumber,
+      bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       showVolunteers,
@@ -350,7 +380,8 @@ export default flowRight(
     }) => ({
       variables: {
         queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
-          ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
+          ''}&phoneNumber=${phoneNumber || ''}&bloodGroup=${bloodGroup ||
+          ''}&jobId=${jobId || ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
           ''}&showVolunteers=${showVolunteers ||
           'true'}&showEmployees=${showEmployees ||
           'true'}&predefinedFilterName=${predefinedFilterName ||

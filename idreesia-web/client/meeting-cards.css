@@ -15,9 +15,15 @@
   font-size: 16px;
   font-weight: bold;
   margin: 0;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  max-width: 166px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.k_location {
+.duty_shift_job {
   margin: auto;
 }
 
@@ -47,7 +53,6 @@
 .date_card_k {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 6px;
   background-color: black;
   color: #fff;
   padding: 3px 0;
@@ -56,8 +61,7 @@
 .pic_card_k {
   overflow: hidden;
   height: 125px;
-  border-radius: 50%;
-  width: 125px;
+  width: 100%;
   margin: auto;
   border: 1px solid #ccc;
 }

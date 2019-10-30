@@ -21,7 +21,7 @@ Accounts.updateOrCreateUserFromExternalService = function(
   if (serviceName === 'google') {
     const { email } = serviceData;
     const updatedDocs = Meteor.users.update(
-      { 'services.google.email': email },
+      { 'emails.0.address': email },
       {
         $set: {
           'services.google': serviceData,
@@ -29,7 +29,7 @@ Accounts.updateOrCreateUserFromExternalService = function(
       }
     );
 
-    if (updatedDocs === 0) return null;
+    if (updatedDocs === 0) return undefined;
   }
 
   return updateOrCreateUserFromExternalServiceOriginal.apply(this, [

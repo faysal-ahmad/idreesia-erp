@@ -21,19 +21,6 @@ import {
   WithVendorsByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
 
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -85,7 +72,7 @@ class List extends Component {
 
         if (usageCount === 0) {
           return (
-            <div style={ActionsStyle}>
+            <div className="list-actions-column">
               <Popconfirm
                 title="Are you sure you want to delete this vendor?"
                 onConfirm={() => {
@@ -95,7 +82,7 @@ class List extends Component {
                 cancelText="No"
               >
                 <Tooltip title="Delete">
-                  <Icon type="delete" style={IconStyle} />
+                  <Icon type="delete" className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
             </div>

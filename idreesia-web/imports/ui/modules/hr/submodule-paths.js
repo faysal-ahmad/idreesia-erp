@@ -16,28 +16,33 @@ export default class SubModulePaths {
     return `${SubModulePaths.dutiesPath}/${dutyId}`;
   }
 
-  static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
-  static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
-  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
-
   static dutyShiftsPath = `${ModulePaths.hr}/duty-shifts`;
   static dutyShiftsNewFormPath = `${SubModulePaths.dutyShiftsPath}/new`;
   static dutyShiftsEditFormPath = `${SubModulePaths.dutyShiftsPath}/:shiftId`;
 
+  static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
+  static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
+  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
+
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
+  static karkunsScanCardPath = `${SubModulePaths.karkunsPath}/scan-card`;
+  static karkunsPrintPath = (karkunId = ':karkunId') =>
+    `${SubModulePaths.karkunsPath}/print/${karkunId}`;
   static karkunsEditFormPath = `${SubModulePaths.karkunsPath}/:karkunId`;
 
   // ******************************************************************************
   // Attendance Sheets
   // ******************************************************************************
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
-  static attendanceSheetsNewFormPath = `${SubModulePaths.attendanceSheetsPath}/new`;
-  static attendanceSheetsEditFormPath(attendanceId = ':attendanceId') {
-    return `${SubModulePaths.attendanceSheetsPath}/${attendanceId}`;
-  }
   static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
   static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
+
+  // ******************************************************************************
+  // Salary Sheets
+  // ******************************************************************************
+  static salarySheetsPath = `${ModulePaths.hr}/salary-sheets`;
+  static salarySheetsSalaryReceiptsPath = `${SubModulePaths.salarySheetsPath}/salary-receipts`;
 
   // ******************************************************************************
   // Shared Residences

@@ -2,9 +2,16 @@ import { WebApp } from 'meteor/webapp';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
+import { kebabCase } from 'lodash';
 
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
-import Configurations from 'meteor/idreesia-common/server/collections/common/configurations';
+import { createIssuanceFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
+import { createPurchaseFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
+
+const ReportGenerators = {
+  IssuanceForms: createIssuanceFormReport,
+  PurchaseForms: createPurchaseFormReport,
+};
 
 Meteor.startup(() => {
   const app = express();
@@ -12,14 +19,23 @@ Meteor.startup(() => {
   const upload = multer({ storage });
 
   /**
-   * Prints the ngrok redirect url
+   * Endpoint for reports generation
    */
   app.get(
-    '/redirect',
+    '/generate-report',
+    bodyParser.urlencoded({ extended: false }),
     Meteor.bindEnvironment((req, res) => {
-      const config = Configurations.findOne({ name: 'ngrok_url' });
-      if (config) {
-        res.redirect(config.value);
+      const { reportName, reportArgs } = req.query;
+      const reportGenerator = ReportGenerators[reportName];
+      if (reportGenerator) {
+        const report = reportGenerator(reportArgs);
+        res.writeHead(200, {
+          'Content-Type': 'application/vnd.ms-excel',
+          'Content-Disposition': `attachment; filename=${kebabCase(
+            reportName
+          )}.xlsx`,
+        });
+        res.end(report);
       } else {
         res.writeHead(404);
         res.end();

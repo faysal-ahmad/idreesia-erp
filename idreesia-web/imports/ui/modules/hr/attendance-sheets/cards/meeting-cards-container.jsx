@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -12,44 +12,51 @@ import {
 import { Button, Divider } from '/imports/ui/controls';
 import MeetingCards from './meeting-cards';
 
-class MeetingCardsContainer extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const MeetingCardsContainer = ({
+  attendanceLoading,
+  attendanceByBarcodeIds,
+  history,
+}) => {
+  const meetingCardsRef = useRef(null);
+  if (attendanceLoading) return null;
 
-    attendanceLoading: PropTypes.bool,
-    attendanceByBarcodeIds: PropTypes.array,
-  };
+  return (
+    <>
+      <ReactToPrint
+        content={() => meetingCardsRef.current}
+        trigger={() => (
+          <Button size="large" type="primary" icon="printer">
+            Print Cards
+          </Button>
+        )}
+      />
+      &nbsp;
+      <Button
+        size="large"
+        type="primary"
+        onClick={() => {
+          history.goBack();
+        }}
+      >
+        Back
+      </Button>
+      <Divider />
+      <MeetingCards
+        ref={meetingCardsRef}
+        attendanceByBarcodeIds={attendanceByBarcodeIds}
+      />
+    </>
+  );
+};
 
-  constructor(props) {
-    super(props);
-    this.componentRef = React.createRef();
-  }
+MeetingCardsContainer.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
 
-  render() {
-    const { attendanceLoading, attendanceByBarcodeIds } = this.props;
-    if (attendanceLoading) return null;
-
-    return (
-      <Fragment>
-        <ReactToPrint
-          content={() => this.componentRef.current}
-          trigger={() => (
-            <Button type="primary" icon="printer">
-              Print Cards
-            </Button>
-          )}
-        />
-        <Divider />
-        <MeetingCards
-          ref={this.componentRef}
-          attendanceByBarcodeIds={attendanceByBarcodeIds}
-        />
-      </Fragment>
-    );
-  }
-}
+  attendanceLoading: PropTypes.bool,
+  attendanceByBarcodeIds: PropTypes.array,
+};
 
 const attendanceByBarcodeIdsQuery = gql`
   query attendanceByBarcodeIds($barcodeIds: String!) {
@@ -66,7 +73,14 @@ const attendanceByBarcodeIdsQuery = gql`
       karkun {
         _id
         name
-        imageId
+        image {
+          _id
+          data
+        }
+      }
+      job {
+        _id
+        name
       }
       duty {
         _id

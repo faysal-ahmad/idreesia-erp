@@ -22,11 +22,6 @@ import {
 } from '/imports/ui/modules/hr/common/composers';
 import DutyForm from './duty-form';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class DutyParticipation extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -65,14 +60,14 @@ class DutyParticipation extends Component {
       },
     },
     {
-      title: 'Location Name',
-      dataIndex: 'locationName',
-      key: 'locationName',
-    },
-    {
       title: 'Shift Name',
       dataIndex: 'shiftName',
       key: 'shiftName',
+    },
+    {
+      title: 'Location Name',
+      dataIndex: 'locationName',
+      key: 'locationName',
     },
     {
       title: 'Days of Week',
@@ -87,7 +82,7 @@ class DutyParticipation extends Component {
           <Tooltip title="Edit">
             <Icon
               type="edit"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
               }}
@@ -103,7 +98,7 @@ class DutyParticipation extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" style={IconStyle} />
+              <Icon type="delete" className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </span>
@@ -267,7 +262,6 @@ const listQuery = gql`
       dutyName
       shiftId
       shiftName
-      locationId
       locationName
       role
       daysOfWeek
@@ -279,8 +273,8 @@ const createKarkunDutyMutation = gql`
   mutation createKarkunDuty(
     $karkunId: String!
     $dutyId: String!
-    $locationId: String
     $shiftId: String
+    $locationId: String
     $role: String
     $daysOfWeek: [String]
   ) {

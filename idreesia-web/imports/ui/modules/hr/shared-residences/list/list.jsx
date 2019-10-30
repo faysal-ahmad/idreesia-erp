@@ -17,19 +17,6 @@ import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import ListFilter from './list-filter';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -91,7 +78,7 @@ class List extends Component {
             <Tooltip key="delete" title="Delete">
               <Icon
                 type="delete"
-                style={IconStyle}
+                className="list-actions-icon"
                 onClick={() => {
                   this.handleDeleteClicked(record);
                 }}
@@ -125,7 +112,7 @@ class List extends Component {
     const { address, karkunName, refetchListQuery, setPageParams } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <Button
           type="primary"
           icon="plus-circle-o"

@@ -27,11 +27,11 @@ import VisitorStayResolvers from './security/visitor-stay/resolvers';
 import DutyShiftSchema from './hr/duty-shift/duty-shift.graphql';
 import DutyShiftResolvers from './hr/duty-shift/resolvers';
 
-import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
-import DutyLocationResolvers from './hr/duty-location/resolvers';
-
 import DutySchema from './hr/duty/duty.graphql';
 import DutyResolvers from './hr/duty/resolvers';
+
+import DutyLocationSchema from './hr/duty-location/duty-location.graphql';
+import DutyLocationResolvers from './hr/duty-location/resolvers';
 
 import JobSchema from './hr/job/job.graphql';
 import JobResolvers from './hr/job/resolvers';
@@ -44,6 +44,9 @@ import KarkunDutyResolvers from './hr/karkun-duties/resolvers';
 
 import AttendanceSchema from './hr/attendance/attendance.graphql';
 import AttendanceResolvers from './hr/attendance/resolvers';
+
+import SalarySchema from './hr/salary/salary.graphql';
+import SalaryResolvers from './hr/salary/resolvers';
 
 import SharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
 import SharedResidenceResolvers from './hr/shared-residence/resolvers';
@@ -107,12 +110,13 @@ const typeDefs = [
   VisitorStaySchema,
 
   DutyShiftSchema,
-  DutyLocationSchema,
   DutySchema,
+  DutyLocationSchema,
   JobSchema,
   KarkunSchema,
   KarkunDutySchema,
   AttendanceSchema,
+  SalarySchema,
   SharedResidenceSchema,
 
   CommonSchema,
@@ -141,12 +145,13 @@ const resolvers = merge(
   VisitorStayResolvers,
 
   DutyShiftResolvers,
-  DutyLocationResolvers,
   DutyResolvers,
+  DutyLocationResolvers,
   JobResolvers,
   KarkunResolvers,
   KarkunDutyResolvers,
   AttendanceResolvers,
+  SalaryResolvers,
   SharedResidenceResolvers,
 
   CommonResolvers,

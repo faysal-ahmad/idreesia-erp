@@ -10,11 +10,6 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -62,7 +57,7 @@ class List extends Component {
           return (
             <Tooltip title="Delete">
               <Icon
-                style={IconStyle}
+                className="list-actions-icon"
                 type="delete"
                 onClick={() => {
                   this.handleDeleteClicked(record);

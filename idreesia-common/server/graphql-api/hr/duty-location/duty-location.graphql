@@ -1,21 +1,21 @@
-type DutyLocationType {
-  _id: String
-  name: String
-  usedCount: Int
+type DutyLocationType {	
+  _id: String	
+  name: String	
+  usedCount: Int	
 
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
 
-extend type Query {
-  allDutyLocations: [DutyLocationType]
-  dutyLocationById(id: String!): DutyLocationType
-}
+extend type Query {	
+  allDutyLocations: [DutyLocationType]	
+  dutyLocationById(id: String!): DutyLocationType	
+}	
 
-extend type Mutation {
-  createDutyLocation(name: String!): DutyLocationType
-  updateDutyLocation(id: String!, name: String!): DutyLocationType
-  removeDutyLocation(_id: String!): Int
+extend type Mutation {	
+  createDutyLocation(name: String!): DutyLocationType	
+  updateDutyLocation(id: String!, name: String!): DutyLocationType	
+  removeDutyLocation(_id: String!): Int	
 }

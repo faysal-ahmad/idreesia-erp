@@ -122,12 +122,16 @@ const permissionsData = [
         key: 'module-hr-karkuns',
         children: [
           {
-            title: 'View Karkuns',
+            title: 'View Karkuns Data',
             key: PermissionConstants.HR_VIEW_KARKUNS,
           },
           {
-            title: 'Manage Karkuns',
+            title: 'Manage Karkuns Data',
             key: PermissionConstants.HR_MANAGE_KARKUNS,
+          },
+          {
+            title: 'Delete Karkuns Data',
+            key: PermissionConstants.HR_DELETE_KARKUNS,
           },
         ],
       },
@@ -136,26 +140,16 @@ const permissionsData = [
         key: 'module-hr-employees',
         children: [
           {
-            title: 'View Employees',
+            title: 'View Employees Data',
             key: PermissionConstants.HR_VIEW_EMPLOYEES,
           },
           {
-            title: 'Manage Employees',
+            title: 'Manage Employees Data',
             key: PermissionConstants.HR_MANAGE_EMPLOYEES,
           },
-        ],
-      },
-      {
-        title: 'Attendance Sheets',
-        key: 'module-hr-attendance-sheets',
-        children: [
           {
-            title: 'View Attendance Sheets',
-            key: PermissionConstants.HR_VIEW_ATTENDANCES,
-          },
-          {
-            title: 'Manage Attendance Sheets',
-            key: PermissionConstants.HR_MANAGE_ATTENDANCES,
+            title: 'Delete Employees Data',
+            key: PermissionConstants.HR_DELETE_EMPLOYEES,
           },
         ],
       },

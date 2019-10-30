@@ -5,6 +5,7 @@ import { graphql } from "react-apollo";
 import moment from "moment";
 import { find, flowRight } from "lodash";
 
+import { StayReasons } from "meteor/idreesia-common/constants/security";
 import {
   Button,
   Pagination,
@@ -17,16 +18,10 @@ import {
   Col,
   message,
 } from "/imports/ui/controls";
-import StayReasons from "/imports/ui/modules/security/common/constants/stay-reasons";
 
 import NewForm from "../new-form";
 import EditForm from "../edit-form";
 import StayCard from "../card/stay-card-container";
-
-const IconStyle = {
-  cursor: "pointer",
-  fontSize: 20,
-};
 
 class List extends Component {
   static propTypes = {
@@ -105,7 +100,7 @@ class List extends Component {
           <Tooltip title="Edit stay">
             <Icon
               type="edit"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
               }}
@@ -125,7 +120,7 @@ class List extends Component {
             cancelText="No"
           >
             <Tooltip title="Cancel">
-              <Icon type="stop" style={IconStyle} />
+              <Icon type="stop" className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </Col>
@@ -137,7 +132,7 @@ class List extends Component {
             <Tooltip title="View card">
               <Icon
                 type="idcard"
-                style={IconStyle}
+                className="list-actions-icon"
                 onClick={() => {
                   this.handleShowCardClicked(record);
                 }}

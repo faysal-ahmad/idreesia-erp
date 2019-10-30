@@ -31,27 +31,6 @@ import {
 
 import ListFilter from './list-filter';
 
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -72,6 +51,10 @@ class List extends Component {
     }),
     removeIssuanceForm: PropTypes.func,
     approveIssuanceForm: PropTypes.func,
+  };
+
+  state = {
+    selectedRows: [],
   };
 
   columns = [
@@ -131,11 +114,11 @@ class List extends Component {
       render: (text, record) => {
         if (!record.approvedOn) {
           return (
-            <div style={ActionsStyle}>
+            <div className="list-actions-column">
               <Tooltip title="Approve">
                 <Icon
                   type="check-square-o"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.handleApproveClicked(record);
                   }}
@@ -144,7 +127,7 @@ class List extends Component {
               <Tooltip title="Edit">
                 <Icon
                   type="edit"
-                  style={IconStyle}
+                  className="list-actions-icon"
                   onClick={() => {
                     this.handleEditClicked(record);
                   }}
@@ -159,7 +142,7 @@ class List extends Component {
                 cancelText="No"
               >
                 <Tooltip title="Delete">
-                  <Icon type="delete" style={IconStyle} />
+                  <Icon type="delete" className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
             </div>
@@ -170,7 +153,7 @@ class List extends Component {
           <Tooltip title="View">
             <Icon
               type="file"
-              style={IconStyle}
+              className="list-actions-icon"
               onClick={() => {
                 this.handleViewClicked(record);
               }}
@@ -180,6 +163,14 @@ class List extends Component {
       },
     },
   ];
+
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
 
   refreshPage = newParams => {
     const {
@@ -271,6 +262,19 @@ class List extends Component {
       });
   };
 
+  handleExportSelected = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=IssuanceForms&reportArgs=${reportArgs.join(
+      ','
+    )}`;
+    window.open(url, '_blank');
+  };
+
   onChange = (pageIndex, pageSize) => {
     this.refreshPage({
       pageIndex: pageIndex - 1,
@@ -293,20 +297,31 @@ class List extends Component {
     } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <Button
+          size="large"
           type="primary"
           icon="plus-circle-o"
           onClick={this.handleNewClicked}
         >
           New Issuance Form
         </Button>
-        <ListFilter
-          allLocations={locationsByPhysicalStoreId}
-          refreshPage={this.refreshPage}
-          queryParams={queryParams}
-          refreshData={refetchListQuery}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            allLocations={locationsByPhysicalStoreId}
+            refreshPage={this.refreshPage}
+            queryParams={queryParams}
+            refreshData={refetchListQuery}
+          />
+          &nbsp;&nbsp;
+          <Tooltip title="Download Selected Data">
+            <Button
+              icon="download"
+              size="large"
+              onClick={this.handleExportSelected}
+            />
+          </Tooltip>
+        </div>
       </div>
     );
   };
@@ -330,6 +345,7 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         size="small"
         pagination={false}
         footer={() => (

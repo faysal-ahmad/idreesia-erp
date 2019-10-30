@@ -16,11 +16,6 @@ import {
 } from '/imports/ui/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
 class List extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -60,7 +55,7 @@ class List extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" style={IconStyle} />
+            <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       ),

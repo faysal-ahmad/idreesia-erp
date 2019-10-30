@@ -14,14 +14,19 @@ import {
   DutyLocationsEditForm,
   DutyLocationsList,
 } from './duty-locations';
-import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from './karkuns';
 import {
-  AttendanceSheetsNewForm,
-  AttendanceSheetsEditForm,
+  KarkunsNewForm,
+  KarkunsEditForm,
+  KarkunsList,
+  KarkunsScanCard,
+  KarkunPrintView,
+} from './karkuns';
+import {
   AttendanceSheetsUploadForm,
   AttendanceSheetsList,
   AttendanceSheetsMeetingCards,
 } from './attendance-sheets';
+import { SalarySheetsList, SalarySheetsSalaryReceipts } from './salary-sheets';
 import {
   SharedResidencesNewForm,
   SharedResidencesEditForm,
@@ -53,13 +58,11 @@ const HRRouter = () => (
     <Route path={paths.dutyLocationsPath} component={DutyLocationsList} />
 
     <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
+    <Route path={paths.karkunsScanCardPath} component={KarkunsScanCard} />
+    <Route path={paths.karkunsPrintPath()} component={KarkunPrintView} />
     <Route path={paths.karkunsEditFormPath} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
-    <Route
-      path={paths.attendanceSheetsNewFormPath}
-      component={AttendanceSheetsNewForm}
-    />
     <Route
       path={paths.attendanceSheetsUploadFormPath}
       component={AttendanceSheetsUploadForm}
@@ -68,11 +71,13 @@ const HRRouter = () => (
       path={paths.attendanceSheetsMeetingCardsPath}
       component={AttendanceSheetsMeetingCards}
     />
-    <Route
-      path={paths.attendanceSheetsEditFormPath()}
-      component={AttendanceSheetsEditForm}
-    />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
+
+    <Route
+      path={paths.salarySheetsSalaryReceiptsPath}
+      component={SalarySheetsSalaryReceipts}
+    />
+    <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
 
     <Route
       path={paths.sharedResidencesNewFormPath}

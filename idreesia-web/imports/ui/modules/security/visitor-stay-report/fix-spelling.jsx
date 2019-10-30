@@ -10,6 +10,7 @@ import {
 class FixSpelling extends Component {
   static propTypes = {
     form: PropTypes.object,
+    spellingType: PropTypes.string,
     existingSpelling: PropTypes.string,
     onSave: PropTypes.func,
     onCancel: PropTypes.func,
@@ -17,11 +18,11 @@ class FixSpelling extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, onSave } = this.props;
+    const { spellingType, form, onSave } = this.props;
 
     form.validateFields((err, { existingSpelling, newSpelling }) => {
       if (err) return;
-      onSave(existingSpelling, newSpelling);
+      onSave(spellingType, existingSpelling, newSpelling);
     });
   };
 

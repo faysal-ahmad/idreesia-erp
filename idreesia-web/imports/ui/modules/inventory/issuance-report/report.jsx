@@ -13,13 +13,6 @@ import {
 import { Button, DatePicker, Spin, Table } from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  width: '100%',
-};
-
 class Report extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -114,7 +107,7 @@ class Report extends Component {
   getTableHeader = () => {
     const { month } = this.props;
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <div>
           <Button
             type="primary"

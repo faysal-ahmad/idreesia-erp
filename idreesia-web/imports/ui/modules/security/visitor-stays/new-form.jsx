@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
+import { Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   CascaderField,
@@ -12,16 +12,15 @@ import {
   InputTextAreaField,
   SelectField,
   FormButtonsSubmit,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 import {
   WithAllDuties,
   WithAllDutyShifts,
-} from "/imports/ui/modules/hr/common/composers";
-import { WithDistinctStayAllowedBy } from "meteor/idreesia-common/composers/security";
-import { getDutyShiftCascaderData } from "/imports/ui/modules/hr/common/utilities";
-
-import StayReasons from "../common/constants/stay-reasons";
+} from '/imports/ui/modules/hr/common/composers';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
+import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
+import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 class NewForm extends Component {
   static propTypes = {
@@ -165,9 +164,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "createVisitorStay",
+    name: 'createVisitorStay',
     options: {
-      refetchQueries: ["pagedVisitorStays"],
+      refetchQueries: ['pagedVisitorStays'],
     },
   }),
   WithAllDuties(),

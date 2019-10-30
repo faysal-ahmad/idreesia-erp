@@ -5,7 +5,6 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Avatar,
   Button,
   Icon,
   Pagination,
@@ -14,48 +13,17 @@ import {
   Tooltip,
   message,
 } from '/imports/ui/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import ListFilter from './list-filter';
 
 const StatusStyle = {
   fontSize: 20,
 };
 
-const IconStyle = {
-  cursor: 'pointer',
-  fontSize: 20,
-};
-
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-};
-
 const ButtonGroupStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
-};
-
-const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-  color: '#1890FF',
-  cursor: 'pointer',
-};
-
-const ActionsStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  width: '100%',
 };
 
 class List extends Component {
@@ -113,31 +81,12 @@ class List extends Component {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => {
-      const onClickHandler = () => {
-        const { handleItemSelected } = this.props;
-        handleItemSelected(record);
-      };
-
-      if (record.imageId) {
-        const url = getDownloadUrl(record.imageId);
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" src={url} />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      }
-
-      return (
-        <div style={NameDivStyle} onClick={onClickHandler}>
-          <Avatar shape="square" size="large" icon="picture" />
-          &nbsp;&nbsp;
-          {text}
-        </div>
-      );
-    },
+    render: (text, record) => (
+      <VisitorName
+        visitor={record}
+        onVisitorNameClicked={this.props.handleItemSelected}
+      />
+    ),
   };
 
   cnicColumn = {
@@ -173,11 +122,11 @@ class List extends Component {
   actionsColumn = {
     key: 'action',
     render: (text, record) => (
-      <div style={ActionsStyle}>
+      <div className="list-actions-column">
         <Tooltip title="Stay History">
           <Icon
             type="history"
-            style={IconStyle}
+            className="list-actions-icon"
             onClick={() => {
               this.handleStayHistoryClicked(record);
             }}
@@ -192,7 +141,7 @@ class List extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" style={IconStyle} />
+            <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       </div>
@@ -267,7 +216,7 @@ class List extends Component {
     }
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <div style={ButtonGroupStyle}>
           {newButton}
           &nbsp;

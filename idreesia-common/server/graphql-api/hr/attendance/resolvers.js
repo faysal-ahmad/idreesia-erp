@@ -4,16 +4,16 @@ import { toInteger, round } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attendances,
   Karkuns,
+  Jobs,
   Duties,
   DutyShifts,
-  DutyLocations,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
   Formats,
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
-
+import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { processAttendanceSheet } from './helpers';
 
 export default {
@@ -22,20 +22,22 @@ export default {
       Karkuns.findOne({
         _id: { $eq: attendanceType.karkunId },
       }),
-    duty: attendanceType =>
-      Duties.findOne({
+    job: attendanceType => {
+      if (!attendanceType.jobId) return null;
+      return Jobs.findOne({
+        _id: { $eq: attendanceType.jobId },
+      });
+    },
+    duty: attendanceType => {
+      if (!attendanceType.dutyId) return null;
+      return Duties.findOne({
         _id: { $eq: attendanceType.dutyId },
-      }),
+      });
+    },
     shift: attendanceType => {
       if (!attendanceType.shiftId) return null;
       return DutyShifts.findOne({
         _id: { $eq: attendanceType.shiftId },
-      });
-    },
-    location: attendanceType => {
-      if (!attendanceType.locationId) return null;
-      return DutyLocations.findOne({
-        _id: { $eq: attendanceType.locationId },
       });
     },
   },
@@ -44,8 +46,9 @@ export default {
     attendanceById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_ATTENDANCES,
-          PermissionConstants.HR_MANAGE_ATTENDANCES,
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
         ])
       ) {
         return null;
@@ -54,13 +57,30 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    attendanceByMonth(obj, { month, dutyId, shiftId }, { user }) {
-      if (!dutyId) return [];
+    attendanceByKarkun(obj, { karkunId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
+        ])
+      ) {
+        return [];
+      }
+
+      return Attendances.find({
+        karkunId,
+      }).fetch();
+    },
+
+    attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
+      if (!categoryId) return [];
 
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_ATTENDANCES,
-          PermissionConstants.HR_MANAGE_ATTENDANCES,
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
         ])
       ) {
         return [];
@@ -70,11 +90,28 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      const query = {
-        month: formattedMonth,
-        dutyId,
-      };
-      if (shiftId) query.shiftId = shiftId;
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need to return attendance of employees with the
+       * selected job.
+       */
+      let query;
+      if (categoryId === 'all_jobs') {
+        query = {
+          month: formattedMonth,
+        };
+        if (subCategoryId) {
+          query.jobId = subCategoryId;
+        } else {
+          query.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        query = {
+          month: formattedMonth,
+          dutyId: categoryId,
+        };
+        if (subCategoryId) query.shiftId = subCategoryId;
+      }
 
       return Attendances.find(query).fetch();
     },
@@ -82,8 +119,9 @@ export default {
     attendanceByBarcodeId(obj, { barcodeId }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_ATTENDANCES,
-          PermissionConstants.HR_MANAGE_ATTENDANCES,
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
           PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
@@ -98,8 +136,9 @@ export default {
     attendanceByBarcodeIds(obj, { barcodeIds }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_ATTENDANCES,
-          PermissionConstants.HR_MANAGE_ATTENDANCES,
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
         ])
       ) {
         return [];
@@ -113,21 +152,12 @@ export default {
   },
 
   Mutation: {
-    createAttendance(
-      obj,
-      {
-        karkunId,
-        month,
-        dutyId,
-        shiftId,
-        totalCount,
-        presentCount,
-        absentCount,
-      },
-      { user }
-    ) {
+    createAttendances(obj, { month }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage attendances in the System.'
@@ -138,67 +168,24 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      const existingAttendance = Attendances.findOne({
-        karkunId,
-        dutyId,
-        shiftId,
-        month: formattedMonth,
-      });
-
-      if (existingAttendance) {
-        throw new Error(
-          'An existing attendance of this karkun already exists for the same duty/shift/month in the System.'
-        );
-      }
-
-      const date = new Date();
-      const numTotalCount = toInteger(totalCount);
-      const numPresentCount = toInteger(presentCount);
-      const numAbsentCount = toInteger(absentCount);
-
-      const attendanceId = Attendances.insert({
-        karkunId,
-        dutyId,
-        shiftId,
-        month: formattedMonth,
-        totalCount: numTotalCount,
-        presentCount: numPresentCount,
-        absentCount: numAbsentCount,
-        percentage: round((numPresentCount / numTotalCount) * 100),
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
-
-      return Attendances.findOne(attendanceId);
+      return createMonthlyAttendance(formattedMonth, user);
     },
 
     updateAttendance(
       obj,
-      {
-        _id,
-        karkunId,
-        month,
-        dutyId,
-        shiftId,
-        totalCount,
-        presentCount,
-        absentCount,
-      },
+      { _id, totalCount, presentCount, absentCount },
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage attendances in the System.'
         );
       }
-
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
 
       const date = new Date();
       const numTotalCount = toInteger(totalCount);
@@ -207,10 +194,6 @@ export default {
 
       Attendances.update(_id, {
         $set: {
-          karkunId,
-          dutyId,
-          shiftId,
-          month: formattedMonth,
           totalCount: numTotalCount,
           presentCount: numPresentCount,
           absentCount: numAbsentCount,
@@ -225,7 +208,7 @@ export default {
 
     uploadAttendances(obj, { csv, month, dutyId, shiftId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
         throw new Error(
           'You do not have permission to manage attendances in the System.'
@@ -236,17 +219,65 @@ export default {
       return processAttendanceSheet(csv, month, dutyId, shiftId, date, user);
     },
 
-    deleteAttendances(obj, { ids }, { user }) {
+    deleteAttendances(obj, { month, ids }, { user }) {
+      const currentMonth = moment().startOf('month');
+      const passedMonth = moment(month, Formats.DATE_FORMAT);
+
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_ATTENDANCES])
+        passedMonth.isBefore(currentMonth) &&
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_KARKUNS])
       ) {
         throw new Error(
-          'You do not have permission to manage attendances in the System.'
+          'You do not have permission to remove attendances for past months in the System.'
+        );
+      }
+
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances in the System.'
         );
       }
 
       return Attendances.remove({
         _id: { $in: ids },
+      });
+    },
+
+    deleteAllAttendances(obj, { month }, { user }) {
+      const currentMonth = moment().startOf('month');
+      const passedMonth = moment(month, Formats.DATE_FORMAT);
+
+      if (
+        passedMonth.isBefore(currentMonth) &&
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_KARKUNS])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances for past months in the System.'
+        );
+      }
+
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      return Attendances.remove({
+        month: formattedMonth,
       });
     },
   },

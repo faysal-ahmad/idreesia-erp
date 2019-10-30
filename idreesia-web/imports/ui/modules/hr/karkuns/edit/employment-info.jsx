@@ -1,20 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
 
-import { Form, message } from "/imports/ui/controls";
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { Form, message } from '/imports/ui/controls';
 import {
   DateField,
-  InputNumberField,
   SelectField,
   SwitchField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
-import { WithAllJobs } from "/imports/ui/modules/hr/common/composers";
+import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
 
 class EmploymentInfo extends Component {
   static propTypes = {
@@ -40,16 +39,7 @@ class EmploymentInfo extends Component {
     e.preventDefault();
     const { form, history, karkunById, setKarkunEmploymentInfo } = this.props;
     form.validateFields(
-      (
-        err,
-        {
-          isEmployee,
-          jobId,
-          employmentStartDate,
-          employmentEndDate,
-          currentSalary,
-        }
-      ) => {
+      (err, { isEmployee, jobId, employmentStartDate, employmentEndDate }) => {
         if (err) return;
 
         setKarkunEmploymentInfo({
@@ -59,7 +49,6 @@ class EmploymentInfo extends Component {
             jobId,
             employmentStartDate,
             employmentEndDate,
-            currentSalary,
           },
         })
           .then(() => {
@@ -119,13 +108,6 @@ class EmploymentInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputNumberField
-          fieldName="currentSalary"
-          fieldLabel="Current Salary"
-          initialValue={karkunById.currentSalary}
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -140,7 +122,6 @@ const formQuery = gql`
       jobId
       employmentStartDate
       employmentEndDate
-      currentSalary
     }
   }
 `;
@@ -152,7 +133,6 @@ const formMutation = gql`
     $jobId: String
     $employmentStartDate: String
     $employmentEndDate: String
-    $currentSalary: Float
   ) {
     setKarkunEmploymentInfo(
       _id: $_id
@@ -160,14 +140,12 @@ const formMutation = gql`
       jobId: $jobId
       employmentStartDate: $employmentStartDate
       employmentEndDate: $employmentEndDate
-      currentSalary: $currentSalary
     ) {
       _id
       isEmployee
       jobId
       employmentStartDate
       employmentEndDate
-      currentSalary
     }
   }
 `;
@@ -175,9 +153,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "setKarkunEmploymentInfo",
+    name: 'setKarkunEmploymentInfo',
     options: {
-      refetchQueries: ["pagedKarkuns", "allJobs"],
+      refetchQueries: ['pagedKarkuns', 'allJobs'],
     },
   }),
   graphql(formQuery, {

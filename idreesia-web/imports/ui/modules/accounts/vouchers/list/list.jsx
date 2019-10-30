@@ -1,34 +1,22 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { Button, Icon, Table, Tooltip, Pagination } from "/imports/ui/controls";
-import { AccountsSubModulePaths as paths } from "/imports/ui/modules/accounts";
-import ListFilter from "./list-filter";
-
-const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  width: "100%",
-};
+import { Formats } from 'meteor/idreesia-common/constants';
+import { Button, Icon, Table, Tooltip, Pagination } from '/imports/ui/controls';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
+import ListFilter from './list-filter';
 
 const ItemStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-};
-
-const IconStyle = {
-  cursor: "pointer",
-  fontSize: 20,
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
 };
 
 class List extends Component {
@@ -54,9 +42,9 @@ class List extends Component {
 
   columns = [
     {
-      title: "Voucher No.",
-      dataIndex: "voucherNumber",
-      key: "voucherNumber",
+      title: 'Voucher No.',
+      dataIndex: 'voucherNumber',
+      key: 'voucherNumber',
       render: (text, record) => {
         const voucherNumber = `${record.voucherType} - ${record.voucherNumber}`;
         const url = paths.vouchersEditFormPath(record.companyId, record._id);
@@ -64,31 +52,29 @@ class List extends Component {
       },
     },
     {
-      title: "Voucher Date",
-      dataIndex: "voucherDate",
-      key: "voucherDate",
+      title: 'Voucher Date',
+      dataIndex: 'voucherDate',
+      key: 'voucherDate',
       render: text => {
         const date = moment(Number(text));
-        return date.format("DD MMM, YYYY");
+        return date.format('DD MMM, YYYY');
       },
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
-      title: "Voucher Details",
-      key: "details",
+      title: 'Voucher Details',
+      key: 'details',
       render: (text, record) => {
         const { voucherDetails } = record;
         const formattedDetails = voucherDetails.map(voucherDetail => (
           <li key={voucherDetail._id} style={ItemStyle}>
-            <span>{`[${voucherDetail.refAccountHead.number}] ${
-              voucherDetail.refAccountHead.name
-            }`}</span>
+            <span>{`[${voucherDetail.refAccountHead.number}] ${voucherDetail.refAccountHead.name}`}</span>
             <span>{`Rs. ${voucherDetail.amount} ${
-              voucherDetail.isCredit ? "Credit" : "Debit"
+              voucherDetail.isCredit ? 'Credit' : 'Debit'
             }`}</span>
           </li>
         ));
@@ -96,12 +82,12 @@ class List extends Component {
       },
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => (
         <Tooltip title="Details">
           <Icon
             type="bars"
-            style={IconStyle}
+            className="list-actions-icon"
             onClick={() => {
               this.onViewClicked(record);
             }}
@@ -151,7 +137,7 @@ class List extends Component {
     }
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         {newButton}
         <ListFilter
           startDate={startDate}
@@ -249,11 +235,11 @@ export default flowRight(
       variables: {
         companyId,
         queryString: `?startDate=${
-          startDate ? startDate.format(Formats.DATE_FORMAT) : ""
+          startDate ? startDate.format(Formats.DATE_FORMAT) : ''
         }&endDate=${
-          endDate ? endDate.format(Formats.DATE_FORMAT) : ""
+          endDate ? endDate.format(Formats.DATE_FORMAT) : ''
         }&voucherNumber=${voucherNumber ||
-          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   })

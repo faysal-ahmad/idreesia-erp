@@ -7,9 +7,13 @@ type KarkunDutyType {
   role: String
   daysOfWeek: [String]
 
+  duty: DutyType
+  shift: DutyShiftType
+  location: DutyLocationType
+  
   dutyName: String
-  locationName: String
   shiftName: String
+  locationName: String
 
   createdAt: String
   createdBy: String

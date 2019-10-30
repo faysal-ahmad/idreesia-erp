@@ -16,6 +16,7 @@ export default class ListContainer extends Component {
     cnicNumber: null,
     phoneNumber: null,
     bloodGroup: null,
+    jobId: null,
     dutyId: null,
     shiftId: null,
     karkunType: ['volunteers', 'employees'],
@@ -34,6 +35,7 @@ export default class ListContainer extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       karkunType,
@@ -52,6 +54,7 @@ export default class ListContainer extends Component {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
+        jobId={jobId}
         dutyId={dutyId}
         shiftId={shiftId}
         showVolunteers={showVolunteers}

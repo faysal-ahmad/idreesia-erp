@@ -1,27 +1,37 @@
 import {
   KarkunDuties,
   Duties,
-  DutyLocations,
   DutyShifts,
+  DutyLocations,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   KarkunDutyType: {
+    duty: karkunDutyType => Duties.findOne(karkunDutyType.dutyId),
+    shift: karkunDutyType => {
+      if (!karkunDutyType.shiftId) return null;
+      return DutyShifts.findOne(karkunDutyType.shiftId);
+    },
+    location: karkunDutyType => {
+      if (!karkunDutyType.locationId) return null;
+      return DutyLocations.findOne(karkunDutyType.locationId);
+    },
+
     dutyName: karkunDutyType => {
       const duty = Duties.findOne(karkunDutyType.dutyId);
       return duty ? duty.name : null;
-    },
-    locationName: karkunDutyType => {
-      if (!karkunDutyType.locationId) return null;
-      const location = DutyLocations.findOne(karkunDutyType.locationId);
-      return location ? location.name : null;
     },
     shiftName: karkunDutyType => {
       if (!karkunDutyType.shiftId) return null;
       const shift = DutyShifts.findOne(karkunDutyType.shiftId);
       return shift ? shift.name : null;
+    },
+    locationName: karkunDutyType => {
+      if (!karkunDutyType.locationId) return null;
+      const location = DutyLocations.findOne(karkunDutyType.locationId);
+      return location ? location.name : null;
     },
   },
 
@@ -39,7 +49,7 @@ export default {
   Mutation: {
     createKarkunDuty(
       obj,
-      { karkunId, dutyId, locationId, role, shiftId, daysOfWeek },
+      { karkunId, dutyId, role, shiftId, locationId, daysOfWeek },
       { user }
     ) {
       if (

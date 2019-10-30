@@ -1,60 +1,38 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { filter, flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import {
-  Avatar,
   Button,
   Cascader,
   DatePicker,
   Dropdown,
   Icon,
   Menu,
+  Modal,
+  Popconfirm,
   Table,
   Tooltip,
-} from "/imports/ui/controls";
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import { Formats } from "meteor/idreesia-common/constants";
-
-const ToolbarStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-};
-
-const ToolbarSectionStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "left",
-};
+} from '/imports/ui/controls';
+import {
+  filter,
+  flowRight,
+  sortBy,
+} from 'meteor/idreesia-common/utilities/lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
+import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 const CascaderStyle = {
-  width: "300px",
-};
-
-const IconStyle = {
-  cursor: "pointer",
-  fontSize: 20,
-};
-
-const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
-  cursor: "pointer",
+  width: '300px',
 };
 
 export class List extends Component {
   static propTypes = {
     selectedMonth: PropTypes.object,
-    selectedDutyId: PropTypes.string,
-    selectedShiftId: PropTypes.string,
+    selectedCategoryId: PropTypes.string,
+    selectedSubCategoryId: PropTypes.string,
+    allJobs: PropTypes.array,
     allDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
 
@@ -62,11 +40,12 @@ export class List extends Component {
     attendanceLoading: PropTypes.bool,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
-    handleNewAttendance: PropTypes.func,
+    handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
     handleViewCards: PropTypes.func,
-    handleDeleteAttendance: PropTypes.func,
+    handleDeleteSelectedAttendances: PropTypes.func,
+    handleDeleteAllAttendances: PropTypes.func,
   };
 
   state = {
@@ -75,70 +54,80 @@ export class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "karkun.name",
-      key: "karkun.name",
+      title: 'Name',
+      dataIndex: 'karkun.name',
+      key: 'karkun.name',
+      render: (text, record) => (
+        <KarkunName
+          karkun={record.karkun}
+          onKarkunNameClicked={this.props.handleItemSelected}
+        />
+      ),
+    },
+    {
+      title: 'Job / Duty / Shift',
+      key: 'shift.name',
       render: (text, record) => {
-        const onClickHandler = () => {
-          const { handleItemSelected } = this.props;
-          handleItemSelected(record);
-        };
-
-        if (record.karkun.imageId) {
-          const url = getDownloadUrl(record.karkun.imageId);
-          return (
-            <div style={NameDivStyle} onClick={onClickHandler}>
-              <Avatar shape="square" size="large" src={url} />
-              &nbsp;&nbsp;
-              {text}
-            </div>
-          );
+        let name;
+        if (record.job) {
+          name = record.job.name;
+        } else {
+          name = record.duty.name;
+          if (record.shift) {
+            name = `${name} - ${record.shift.name}`;
+          }
         }
 
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" icon="picture" />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
+        return name;
       },
     },
     {
-      title: "Shift Name",
-      dataIndex: "shift.name",
-      key: "shift.name",
+      title: 'Present',
+      dataIndex: 'presentCount',
+      key: 'presentCount',
     },
     {
-      title: "Present",
-      dataIndex: "presentCount",
-      key: "presentCount",
+      title: 'Absent',
+      dataIndex: 'absentCount',
+      key: 'absentCount',
     },
     {
-      title: "Absent",
-      dataIndex: "absentCount",
-      key: "absentCount",
-    },
-    {
-      title: "Percentage",
-      dataIndex: "percentage",
-      key: "percentage",
+      title: 'Percentage',
+      dataIndex: 'percentage',
+      key: 'percentage',
       render: text => `${text}%`,
     },
     {
-      key: "action",
+      key: 'action',
       render: (text, record) => {
-        const { handleEditAttendance } = this.props;
+        const {
+          handleEditAttendance,
+          handleDeleteSelectedAttendances,
+        } = this.props;
         return (
-          <Tooltip key="edit" title="Edit">
-            <Icon
-              type="edit"
-              style={IconStyle}
-              onClick={() => {
-                handleEditAttendance(record);
+          <div className="list-actions-column">
+            <Tooltip key="edit" title="Edit">
+              <Icon
+                type="edit"
+                className="list-actions-icon"
+                onClick={() => {
+                  handleEditAttendance(record);
+                }}
+              />
+            </Tooltip>
+            <Popconfirm
+              title="Are you sure you want to delete this attendance record?"
+              onConfirm={() => {
+                handleDeleteSelectedAttendances([record]);
               }}
-            />
-          </Tooltip>
+              okText="Yes"
+              cancelText="No"
+            >
+              <Tooltip key="delete" title="Delete">
+                <Icon type="delete" className="list-actions-icon" />
+              </Tooltip>
+            </Popconfirm>
+          </div>
         );
       },
     },
@@ -162,22 +151,22 @@ export class List extends Component {
   handleMonthGoBack = () => {
     const { selectedMonth, setPageParams } = this.props;
     setPageParams({
-      selectedMonth: selectedMonth.clone().subtract(1, "months"),
+      selectedMonth: selectedMonth.clone().subtract(1, 'months'),
     });
   };
 
   handleMonthGoForward = () => {
     const { selectedMonth, setPageParams } = this.props;
     setPageParams({
-      selectedMonth: selectedMonth.clone().add(1, "months"),
+      selectedMonth: selectedMonth.clone().add(1, 'months'),
     });
   };
 
-  handleDutyShiftSelectionChange = value => {
+  handleSelectionChange = value => {
     const { setPageParams } = this.props;
     setPageParams({
-      selectedDutyId: value[0],
-      selectedShiftId: value[1],
+      selectedCategoryId: value[0],
+      selectedSubCategoryId: value[1],
     });
   };
 
@@ -189,22 +178,54 @@ export class List extends Component {
     }
   };
 
-  handleDeleteAttendance = () => {
-    const { handleDeleteAttendance } = this.props;
+  _handleDeleteSelectedAttendances = () => {
     const { selectedRows } = this.state;
-    if (handleDeleteAttendance) {
-      handleDeleteAttendance(selectedRows);
+    const { handleDeleteSelectedAttendances } = this.props;
+    if (handleDeleteSelectedAttendances) {
+      Modal.confirm({
+        title: 'Delete Attendances',
+        content:
+          'Are you sure you want to delete the selected attendance records?',
+        onOk() {
+          handleDeleteSelectedAttendances(selectedRows);
+        },
+      });
+    }
+  };
+
+  _handleDeleteAllAttendances = () => {
+    const { handleDeleteAllAttendances } = this.props;
+    if (handleDeleteAllAttendances) {
+      Modal.confirm({
+        title: 'Delete All Attendances',
+        content:
+          'Are you sure you want to delete all attendance records for the month?',
+        onOk() {
+          handleDeleteAllAttendances();
+        },
+      });
     }
   };
 
   getDutyShiftSelector = () => {
     const {
-      selectedDutyId,
-      selectedShiftId,
+      selectedCategoryId,
+      selectedSubCategoryId,
+      allJobs,
       allDuties,
       allDutyShifts,
     } = this.props;
-    const data = allDuties.map(duty => {
+
+    const jobsItem = {
+      label: 'All Jobs',
+      value: 'all_jobs',
+      children: allJobs.map(job => ({
+        value: job._id,
+        label: job.name,
+      })),
+    };
+
+    const dutiesData = allDuties.map(duty => {
       const dutyShifts = filter(
         allDutyShifts,
         dutyShift => dutyShift.dutyId === duty._id
@@ -221,24 +242,29 @@ export class List extends Component {
       return dataItem;
     });
 
+    const data = [jobsItem].concat(dutiesData);
     return (
       <Cascader
         style={CascaderStyle}
-        onChange={this.handleDutyShiftSelectionChange}
-        defaultValue={[selectedDutyId, selectedShiftId]}
+        onChange={this.handleSelectionChange}
+        defaultValue={[selectedCategoryId, selectedSubCategoryId]}
         options={data}
+        expandTrigger="hover"
         changeOnSelect
       />
     );
   };
 
   getActionsMenu = () => {
-    const { handleNewAttendance, handleUploadAttendanceSheet } = this.props;
+    const {
+      handleCreateMissingAttendances,
+      handleUploadAttendanceSheet,
+    } = this.props;
     const menu = (
       <Menu>
-        <Menu.Item key="1" onClick={handleNewAttendance}>
+        <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
           <Icon type="plus-circle" />
-          New Attendance
+          Create Missing Attendances
         </Menu.Item>
         <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
           <Icon type="upload" />
@@ -249,9 +275,14 @@ export class List extends Component {
           <Icon type="idcard" />
           Print Duty Cards
         </Menu.Item>
-        <Menu.Item key="4" onClick={this.handleDeleteAttendance}>
+        <Menu.Divider />
+        <Menu.Item key="4" onClick={this._handleDeleteSelectedAttendances}>
           <Icon type="delete" />
-          Delete Attendance
+          Delete Selected Attendances
+        </Menu.Item>
+        <Menu.Item key="5" onClick={this._handleDeleteAllAttendances}>
+          <Icon type="delete" />
+          Delete All Attendances
         </Menu.Item>
       </Menu>
     );
@@ -266,8 +297,8 @@ export class List extends Component {
   getTableHeader = () => {
     const { selectedMonth } = this.props;
     return (
-      <div style={ToolbarStyle}>
-        <div style={ToolbarSectionStyle}>
+      <div className="list-table-header">
+        <div className="list-table-header-section">
           {this.getDutyShiftSelector()}
           &nbsp;&nbsp;
           <Button
@@ -298,6 +329,7 @@ export class List extends Component {
 
   render() {
     const { attendanceByMonth } = this.props;
+    const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
 
     return (
       <Table
@@ -306,7 +338,7 @@ export class List extends Component {
         title={this.getTableHeader}
         columns={this.columns}
         rowSelection={this.rowSelection}
-        dataSource={attendanceByMonth}
+        dataSource={sortedAttendanceByMonth}
         pagination={false}
         bordered
       />
@@ -315,8 +347,16 @@ export class List extends Component {
 }
 
 const attendanceByMonthQuery = gql`
-  query attendanceByMonth($month: String!, $dutyId: String) {
-    attendanceByMonth(month: $month, dutyId: $dutyId) {
+  query attendanceByMonth(
+    $month: String!
+    $categoryId: String
+    $subCategoryId: String
+  ) {
+    attendanceByMonth(
+      month: $month
+      categoryId: $categoryId
+      subCategoryId: $subCategoryId
+    ) {
       _id
       karkunId
       month
@@ -331,7 +371,15 @@ const attendanceByMonthQuery = gql`
         name
         imageId
       }
+      duty {
+        _id
+        name
+      }
       shift {
+        _id
+        name
+      }
+      job {
         _id
         name
       }
@@ -342,11 +390,15 @@ const attendanceByMonthQuery = gql`
 export default flowRight(
   graphql(attendanceByMonthQuery, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
-    options: ({ selectedMonth, selectedDutyId, selectedShiftId }) => ({
+    options: ({
+      selectedMonth,
+      selectedCategoryId,
+      selectedSubCategoryId,
+    }) => ({
       variables: {
         month: selectedMonth.format(Formats.DATE_FORMAT),
-        dutyId: selectedDutyId,
-        shiftId: selectedShiftId,
+        categoryId: selectedCategoryId,
+        subCategoryId: selectedSubCategoryId,
       },
     }),
   })

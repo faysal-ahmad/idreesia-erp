@@ -93,10 +93,6 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
-  currentSalary: {
-    type: Number,
-    optional: true,
-  },
 })
   .extend(identifiable)
   .extend(timestamps);

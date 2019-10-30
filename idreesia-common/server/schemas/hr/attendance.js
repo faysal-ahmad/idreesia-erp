@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
-import { identifiable } from '../common';
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   karkunId: {
@@ -10,8 +10,14 @@ export default new SimpleSchema({
   dutyId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
+    optional: true,
   },
   shiftId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true,
+  },
+  jobId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
     optional: true,
@@ -39,4 +45,6 @@ export default new SimpleSchema({
   meetingCardBarcodeId: {
     type: String,
   },
-}).extend(identifiable);
+})
+  .extend(identifiable)
+  .extend(timestamps);

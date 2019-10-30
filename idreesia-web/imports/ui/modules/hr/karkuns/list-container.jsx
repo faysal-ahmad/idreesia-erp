@@ -21,27 +21,13 @@ class ListContainer extends Component {
     queryParams: PropTypes.object,
   };
 
-  state = {
-    pageIndex: 0,
-    pageSize: 20,
-    name: null,
-    cnicNumber: null,
-    phoneNumber: null,
-    bloodGroup: null,
-    dutyId: null,
-    shiftId: null,
-  };
-
-  setPageParams = pageParams => {
-    this.setState(pageParams);
-  };
-
   setPageParams = newParams => {
     const {
       name,
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      jobId,
       dutyId,
       shiftId,
       karkunType,
@@ -81,6 +67,10 @@ class ListContainer extends Component {
       bloodGroupVal = bloodGroup || '';
     else bloodGroupVal = queryParams.bloodGroup || '';
 
+    let jobIdVal;
+    if (newParams.hasOwnProperty('jobId')) jobIdVal = jobId || '';
+    else jobIdVal = queryParams.jobId || '';
+
     let dutyIdVal;
     if (newParams.hasOwnProperty('dutyId')) dutyIdVal = dutyId || '';
     else dutyIdVal = queryParams.dutyId || '';
@@ -97,13 +87,23 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&dutyId=${dutyIdVal}&shiftId=${shiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&shiftId=${shiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
   handleNewClicked = () => {
     const { history } = this.props;
     history.push(paths.karkunsNewFormPath);
+  };
+
+  handleScanClicked = () => {
+    const { history } = this.props;
+    history.push(paths.karkunsScanCardPath);
+  };
+
+  handlePrintClicked = karkun => {
+    const { history } = this.props;
+    history.push(paths.karkunsPrintPath(karkun._id));
   };
 
   handleItemSelected = karkun => {
@@ -120,6 +120,7 @@ class ListContainer extends Component {
         cnicNumber,
         phoneNumber,
         bloodGroup,
+        jobId,
         dutyId,
         shiftId,
         showVolunteers,
@@ -138,6 +139,7 @@ class ListContainer extends Component {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
+        jobId={jobId}
         dutyId={dutyId}
         shiftId={shiftId}
         showVolunteers={showVolunteers || 'true'}
@@ -146,6 +148,8 @@ class ListContainer extends Component {
         handleItemSelected={this.handleItemSelected}
         showNewButton
         handleNewClicked={this.handleNewClicked}
+        handleScanClicked={this.handleScanClicked}
+        handlePrintClicked={this.handlePrintClicked}
         showPhoneNumbersColumn
       />
     );

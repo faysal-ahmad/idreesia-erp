@@ -1,20 +1,36 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import moment from "moment";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
 
-import { Row, Col, Spin, message } from "/imports/ui/controls";
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { Row, Col, Spin, message } from '/imports/ui/controls';
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 const LabelStyle = {
-  fontWeight: "bold",
+  fontWeight: 'bold',
   fontSize: 26,
 };
 
 const DataStyle = {
   fontSize: 26,
+};
+
+const SearchResultRow = ({ label, value }) => (
+  <Row type="flex" gutter={16}>
+    <Col order={1}>
+      <span style={LabelStyle}>{label}:</span>
+    </Col>
+    <Col order={2}>
+      <span style={DataStyle}>{value}</span>
+    </Col>
+  </Row>
+);
+
+SearchResultRow.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.string,
 };
 
 const SearchResult = props => {
@@ -27,88 +43,34 @@ const SearchResult = props => {
     return null;
   }
 
-  const {
-    month,
-    percentage,
-    karkun,
-    duty,
-    shift,
-    location,
-  } = attendanceByBarcodeId;
+  const { month, percentage, karkun, duty, shift, job } = attendanceByBarcodeId;
 
   const url = getDownloadUrl(karkun.imageId);
   const imageColumn = url ? (
     <Col order={1}>
-      <img src={url} style={{ width: "250px" }} />
+      <img src={url} style={{ width: '250px' }} />
     </Col>
   ) : null;
 
-  const displayMonth = moment(`01-${month}`, "DD-MM-YYYY")
-    .add(1, "months")
-    .startOf("month");
+  const displayMonth = moment(`01-${month}`, 'DD-MM-YYYY')
+    .add(1, 'months')
+    .startOf('month');
 
   return (
     <Row type="flex" gutter={16}>
       {imageColumn}
       <Col order={2}>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>Name:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{karkun.name}</span>
-          </Col>
-        </Row>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>CNIC:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{karkun.cnicNumber}</span>
-          </Col>
-        </Row>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>Duty:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{duty.name}</span>
-          </Col>
-        </Row>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>Shift:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{shift.name}</span>
-          </Col>
-        </Row>
-        {location ? (
-          <Row type="flex" gutter={16}>
-            <Col order={1}>
-              <span style={LabelStyle}>Location:</span>
-            </Col>
-            <Col order={2}>
-              <span style={DataStyle}>{location.name}</span>
-            </Col>
-          </Row>
-        ) : null}
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>Month:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{displayMonth.format("D MMM YYYY")}</span>
-          </Col>
-        </Row>
-        <Row type="flex" gutter={16}>
-          <Col order={1}>
-            <span style={LabelStyle}>Attendance:</span>
-          </Col>
-          <Col order={2}>
-            <span style={DataStyle}>{percentage}%</span>
-          </Col>
-        </Row>
+        <SearchResultRow label="Name" value={karkun.name} />
+        <SearchResultRow label="CNIC" value={karkun.cnicNumber} />
+        <SearchResultRow label="Mobile" value={karkun.contactNumber1} />
+        {duty ? <SearchResultRow label="Duty" value={duty.name} /> : null}
+        {shift ? <SearchResultRow label="Shift" value={shift.name} /> : null}
+        {job ? <SearchResultRow label="Job" value={job.name} /> : null}
+        <SearchResultRow
+          label="Month"
+          value={displayMonth.format('D MMM YYYY')}
+        />
+        <SearchResultRow label="Attendance" value={`${percentage}%`} />
       </Col>
     </Row>
   );
@@ -135,6 +97,7 @@ const formQuery = gql`
         _id
         name
         cnicNumber
+        contactNumber1
         imageId
       }
       duty {
@@ -145,7 +108,7 @@ const formQuery = gql`
         _id
         name
       }
-      location {
+      job {
         _id
         name
       }

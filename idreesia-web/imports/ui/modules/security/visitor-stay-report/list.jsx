@@ -6,8 +6,8 @@ import moment from 'moment';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
-  Avatar,
   Button,
   Pagination,
   Icon,
@@ -15,9 +15,8 @@ import {
   Table,
   message,
 } from '/imports/ui/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
-import StayReasons from '/imports/ui/modules/security/common/constants/stay-reasons';
 
 import ListFilter from './list-filter';
 import FixSpelling from './fix-spelling';
@@ -27,25 +26,7 @@ const StatusStyle = {
   fontSize: 20,
 };
 
-const ToolbarStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'top',
-  width: '100%',
-};
-
-const NameDivStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-  color: '#1890FF',
-  cursor: 'pointer',
-};
-
-const CityDivStyle = {
+const LinkStyle = {
   width: '100%',
   color: '#1890FF',
   cursor: 'pointer',
@@ -55,6 +36,11 @@ const StayDetailDivStyle = {
   width: '100%',
   color: '#1890FF',
   cursor: 'pointer',
+};
+
+const SPELLING_TYPE = {
+  CITY: 'city',
+  NAME: 'name',
 };
 
 class List extends Component {
@@ -68,6 +54,7 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     fixCitySpelling: PropTypes.func,
+    fixNameSpelling: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedVisitorStays: PropTypes.shape({
@@ -80,6 +67,7 @@ class List extends Component {
     showViewDialog: false,
     visitorStayId: null,
     showFixSpellingDialog: false,
+    spellingType: null,
     existingSpelling: null,
   };
 
@@ -127,32 +115,12 @@ class List extends Component {
       ),
       dataIndex: 'refVisitor.name',
       key: 'refVisitor.name',
-      render: (text, record) => {
-        const { refVisitor } = record;
-        const onClickHandler = () => {
-          const { handleItemSelected } = this.props;
-          handleItemSelected(refVisitor);
-        };
-
-        if (refVisitor.imageId) {
-          const url = getDownloadUrl(refVisitor.imageId);
-          return (
-            <div style={NameDivStyle} onClick={onClickHandler}>
-              <Avatar shape="square" size="large" src={url} />
-              &nbsp;&nbsp;
-              {text}
-            </div>
-          );
-        }
-
-        return (
-          <div style={NameDivStyle} onClick={onClickHandler}>
-            <Avatar shape="square" size="large" icon="picture" />
-            &nbsp;&nbsp;
-            {text}
-          </div>
-        );
-      },
+      render: (text, record) => (
+        <VisitorName
+          visitor={record.refVisitor}
+          onVisitorNameClicked={this.props.handleItemSelected}
+        />
+      ),
     };
   };
 
@@ -175,9 +143,9 @@ class List extends Component {
         if (refVisitor.city) {
           return (
             <div
-              style={CityDivStyle}
+              style={LinkStyle}
               onClick={() => {
-                this.handleFixSpellingShow(refVisitor.city);
+                this.handleFixSpellingShow(SPELLING_TYPE.CITY, refVisitor.city);
               }}
             >
               {`${refVisitor.city}, ${refVisitor.country}`}
@@ -242,10 +210,20 @@ class List extends Component {
     },
   };
 
-  dutyShiftNameColumn = {
-    title: 'Duty / Shift',
-    key: 'dutyShiftName',
-    dataIndex: 'dutyShiftName',
+  stayAllowedByColumn = {
+    title: 'Allowed By',
+    key: 'stayAllowedBy',
+    dataIndex: 'stayAllowedBy',
+    render: text => (
+      <div
+        style={LinkStyle}
+        onClick={() => {
+          this.handleFixSpellingShow(SPELLING_TYPE.NAME, text);
+        }}
+      >
+        {text}
+      </div>
+    ),
   };
 
   getColumns = () => [
@@ -254,7 +232,7 @@ class List extends Component {
     this.getCityCountryColumn(),
     this.getStayDetailsColumn(),
     this.stayReasonColumn,
-    this.dutyShiftNameColumn,
+    this.stayAllowedByColumn,
   ];
 
   handleSortChange = (sortBy, sortOrder) => {
@@ -295,22 +273,26 @@ class List extends Component {
     });
   };
 
-  handleFixSpellingShow = existingSpelling => {
+  handleFixSpellingShow = (spellingType, existingSpelling) => {
     this.setState({
+      spellingType,
       existingSpelling,
       showFixSpellingDialog: true,
     });
   };
 
-  handleFixSpellingSave = (existingSpelling, newSpelling) => {
-    const { fixCitySpelling } = this.props;
+  handleFixSpellingSave = (spellingType, existingSpelling, newSpelling) => {
+    const { fixCitySpelling, fixNameSpelling } = this.props;
     this.setState({
+      spellingType: null,
       existingSpelling: null,
       showFixSpellingDialog: false,
     });
 
+    const fixSpellingFunction =
+      spellingType === SPELLING_TYPE.CITY ? fixCitySpelling : fixNameSpelling;
     if (existingSpelling !== newSpelling) {
-      fixCitySpelling({
+      fixSpellingFunction({
         variables: {
           existingSpelling,
           newSpelling,
@@ -323,6 +305,7 @@ class List extends Component {
 
   handleFixSpellingClose = () => {
     this.setState({
+      spellingType: null,
       existingSpelling: null,
       showFixSpellingDialog: false,
     });
@@ -332,7 +315,7 @@ class List extends Component {
     const { queryParams, setPageParams } = this.props;
 
     return (
-      <div style={ToolbarStyle}>
+      <div className="list-table-header">
         <ListFilter queryParams={queryParams} setPageParams={setPageParams} />
       </div>
     );
@@ -345,6 +328,7 @@ class List extends Component {
     const {
       visitorStayId,
       showViewDialog,
+      spellingType,
       existingSpelling,
       showFixSpellingDialog,
     } = this.state;
@@ -363,8 +347,9 @@ class List extends Component {
       ) : null;
 
     const fixSpellingForm =
-      existingSpelling && showFixSpellingDialog ? (
+      spellingType && existingSpelling && showFixSpellingDialog ? (
         <FixSpelling
+          spellingType={spellingType}
           existingSpelling={existingSpelling}
           onSave={this.handleFixSpellingSave}
           onCancel={this.handleFixSpellingClose}
@@ -437,7 +422,7 @@ const listQuery = gql`
         toDate
         numOfDays
         stayReason
-        dutyShiftName
+        stayAllowedBy
         refVisitor {
           _id
           name
@@ -455,9 +440,18 @@ const listQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const formCitySpellingMutation = gql`
   mutation fixCitySpelling($existingSpelling: String!, $newSpelling: String!) {
     fixCitySpelling(
+      existingSpelling: $existingSpelling
+      newSpelling: $newSpelling
+    )
+  }
+`;
+
+const formNameSpellingMutation = gql`
+  mutation fixNameSpelling($existingSpelling: String!, $newSpelling: String!) {
+    fixNameSpelling(
       existingSpelling: $existingSpelling
       newSpelling: $newSpelling
     )
@@ -473,8 +467,14 @@ export default flowRight(
       },
     }),
   }),
-  graphql(formMutation, {
+  graphql(formCitySpellingMutation, {
     name: 'fixCitySpelling',
+    options: {
+      refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
+    },
+  }),
+  graphql(formNameSpellingMutation, {
+    name: 'fixNameSpelling',
     options: {
       refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
     },

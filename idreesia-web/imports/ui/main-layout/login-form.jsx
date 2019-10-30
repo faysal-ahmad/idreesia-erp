@@ -34,13 +34,18 @@ class LoginForm extends Component {
   };
 
   handleLoginWithGoogle = () => {
+    const { history, location } = this.props;
     const options = {
       requestPermissions: ['email'],
     };
 
     Meteor.loginWithGoogle(options, error => {
-      if (error) {
-        message(error.message, 5);
+      if (!error) {
+        history.push(location.pathname);
+        // eslint-disable-next-line no-console
+        console.log(`Login successful. Routing to ${location.pathname}`);
+      } else {
+        message.error(error.message, 5);
       }
     });
   };

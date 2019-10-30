@@ -1,14 +1,16 @@
-import { compact, get, values } from 'meteor/idreesia-common/utilities/lodash';
+import { compact, get, values } from 'lodash';
 import {
   Jobs,
   Karkuns,
   KarkunDuties,
+  Attendances,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getKarkuns } from './queries';
+import { canDeleteKarkun } from './helpers';
 
 export default {
   KarkunType: {
@@ -18,10 +20,18 @@ export default {
       return {
         _id: user._id,
         username: user.username,
-        email: get(user, 'services.google.email', null),
+        email: get(user, 'emails.0.address', null),
         permissions: user.permissions,
         instances: user.instances,
       };
+    },
+    image: karkunType => {
+      const { imageId } = karkunType;
+      if (imageId) {
+        return Attachments.findOne({ _id: { $eq: imageId } });
+      }
+
+      return null;
     },
     job: karkunType => {
       if (!karkunType.jobId) return null;
@@ -235,27 +245,38 @@ export default {
 
     deleteKarkun(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_KARKUNS])
       ) {
         throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
+          'You do not have permission to delete Karkuns in the System.'
         );
       }
 
-      KarkunDuties.remove({ karkunId: _id });
-      return Karkuns.remove(_id);
+      if (canDeleteKarkun(_id)) {
+        const existingKarkun = Karkuns.findOne(_id);
+        // Remove the image for the karkun
+        if (existingKarkun.imageId) {
+          Attachments.remove(existingKarkun.imageId);
+        }
+        // Remove any file attachments
+        if (existingKarkun.attachmentIds) {
+          Attachments.remove({ _id: { $in: existingKarkun.attachmentIds } });
+        }
+        // Remove all attendance records for the karkun
+        Attendances.remove({ karkunId: { $eq: _id } });
+        // Remove all karkun duties
+        KarkunDuties.remove({ karkunId: { $eq: _id } });
+
+        KarkunDuties.remove({ karkunId: _id });
+        return Karkuns.remove(_id);
+      }
+
+      return 0;
     },
 
     setKarkunEmploymentInfo(
       obj,
-      {
-        _id,
-        isEmployee,
-        jobId,
-        employmentStartDate,
-        employmentEndDate,
-        currentSalary,
-      },
+      { _id, isEmployee, jobId, employmentStartDate, employmentEndDate },
       { user }
     ) {
       if (
@@ -273,7 +294,6 @@ export default {
           jobId,
           employmentStartDate,
           employmentEndDate,
-          currentSalary,
           updatedAt: date,
           updatedBy: user._id,
         },
@@ -289,6 +309,13 @@ export default {
         throw new Error(
           'You do not have permission to manage Karkuns in the System.'
         );
+      }
+
+      // If the user already has another image attached, then remove that attachment
+      // since it will now become orphaned.
+      const existingKarkun = Karkuns.findOne(_id);
+      if (existingKarkun.imageId) {
+        Attachments.remove(existingKarkun.imageId);
       }
 
       const date = new Date();
@@ -404,13 +431,13 @@ export default {
       if (email) {
         Meteor.users.update(userId, {
           $set: {
-            'services.google.email': email,
+            'emails.0.address': email,
           },
         });
       } else {
         Meteor.users.update(userId, {
           $unset: {
-            'services.google': '',
+            emails: '',
           },
         });
       }

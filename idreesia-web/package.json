@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "csvtojson": "^2.0.10",
     "express": "^4.17.1",
+    "file-saver": "^2.0.2",
     "graphql": "^14.4.2",
     "lodash": "^4.17.15",
     "meteor-babel": "^7.5.7",
@@ -31,11 +32,12 @@
     "react-input-mask": "^2.0.4",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
-    "react-to-print": "2.1.1",
+    "react-to-print": "2.5.0",
     "react-webcam": "^1.1.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
-    "simpl-schema": "^1.5.5"
+    "simpl-schema": "^1.5.5",
+    "xlsx": "^0.15.1"
   }
 }

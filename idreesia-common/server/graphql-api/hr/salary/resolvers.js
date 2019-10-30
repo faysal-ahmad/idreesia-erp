@@ -152,7 +152,7 @@ export default {
           arrears,
           closingLoan: openingLoan + newLoan - loanDeduction,
           netPayment:
-            salary + newLoan + arrears - loanDeduction - otherDeduction,
+            salary + arrears - loanDeduction - otherDeduction,
           updatedAt: date,
           updatedBy: user._id,
         },

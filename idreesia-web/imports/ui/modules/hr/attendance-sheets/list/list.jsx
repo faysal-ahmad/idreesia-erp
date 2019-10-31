@@ -186,7 +186,10 @@ export class List extends Component {
     const header = 'Name, CNIC, Phone No., Present, Absent, Percetage \r\n';
     const rows = sortedAttendanceByMonth.map(
       attendance =>
-        `${attendance.karkun.name}, ${attendance.karkun.cnicNumber}, ${attendance.karkun.contactNumber1}, ${attendance.presentCount}, ${attendance.absentCount}, ${attendance.percentage}`
+        `${attendance.karkun.name}, ${attendance.karkun.cnicNumber ||
+          ''}, ${attendance.karkun.contactNumber1 || ''}, ${
+          attendance.presentCount
+        }, ${attendance.absentCount}, ${attendance.percentage}`
     );
     const csvContent = `${header}${rows.join('\r\n')}`;
 

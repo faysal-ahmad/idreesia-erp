@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import FileSaver from 'file-saver';
 
 import {
   Button,
@@ -178,6 +179,23 @@ export class List extends Component {
     }
   };
 
+  handleDownloadAsCSV = () => {
+    const { attendanceByMonth } = this.props;
+    const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
+
+    const header = 'Name, CNIC, Phone No., Present, Absent, Percetage \r\n';
+    const rows = sortedAttendanceByMonth.map(
+      attendance =>
+        `${attendance.karkun.name}, ${attendance.karkun.cnicNumber}, ${attendance.karkun.contactNumber1}, ${attendance.presentCount}, ${attendance.absentCount}, ${attendance.percentage}`
+    );
+    const csvContent = `${header}${rows.join('\r\n')}`;
+
+    const blob = new Blob([csvContent], {
+      type: 'data:text/csv;charset=utf-8',
+    });
+    FileSaver.saveAs(blob, 'attendance-sheet.csv');
+  };
+
   _handleDeleteSelectedAttendances = () => {
     const { selectedRows } = this.state;
     const { handleDeleteSelectedAttendances } = this.props;
@@ -266,9 +284,13 @@ export class List extends Component {
           <Icon type="plus-circle" />
           Create Missing Attendances
         </Menu.Item>
+        <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
+          <Icon type="download" />
+          Download as CSV
+        </Menu.Item>
         <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
           <Icon type="upload" />
-          Upload Attendance
+          Upload Attendance CSV
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" onClick={this.handleViewCards}>
@@ -370,6 +392,8 @@ const attendanceByMonthQuery = gql`
         _id
         name
         imageId
+        cnicNumber
+        contactNumber1
       }
       duty {
         _id

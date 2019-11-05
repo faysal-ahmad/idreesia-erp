@@ -22,6 +22,7 @@ import {
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { CardTypes } from 'meteor/idreesia-common/constants/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 const CascaderStyle = {
@@ -171,11 +172,11 @@ export class List extends Component {
     });
   };
 
-  handleViewCards = () => {
+  handleViewCards = cardType => {
     const { handleViewCards } = this.props;
     const { selectedRows } = this.state;
     if (handleViewCards) {
-      handleViewCards(selectedRows);
+      handleViewCards(selectedRows, cardType);
     }
   };
 
@@ -296,10 +297,22 @@ export class List extends Component {
           Upload Attendance CSV
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="3" onClick={this.handleViewCards}>
-          <Icon type="idcard" />
-          Print Duty Cards
-        </Menu.Item>
+        <Menu.SubMenu key="3" title="Print Cards">
+          <Menu.Item
+            key="3-1"
+            onClick={() =>
+              this.handleViewCards(CardTypes.NAAM_I_MUBARIK_MEETING)
+            }
+          >
+            Naam-i-Mubarik Meeting Cards
+          </Menu.Item>
+          <Menu.Item
+            key="3-2"
+            onClick={() => this.handleViewCards(CardTypes.RABI_UL_AWAL_LANGAR)}
+          >
+            Rabi-ul-Awal Langar Shareef
+          </Menu.Item>
+        </Menu.SubMenu>
         <Menu.Divider />
         <Menu.Item key="4" onClick={this._handleDeleteSelectedAttendances}>
           <Icon type="delete" />

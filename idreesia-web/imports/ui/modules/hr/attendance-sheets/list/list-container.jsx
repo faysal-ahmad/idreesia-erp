@@ -142,13 +142,13 @@ class ListContainer extends Component {
       });
   };
 
-  handleViewCards = selectedRows => {
+  handleViewCards = (selectedRows, cardType) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
-    const path = `${paths.attendanceSheetsMeetingCardsPath}?barcodeIds=${barcodeIdsString}`;
+    const path = `${paths.attendanceSheetsMeetingCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 

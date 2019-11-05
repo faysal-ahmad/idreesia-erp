@@ -16,9 +16,13 @@ const MeetingCardsContainer = ({
   attendanceLoading,
   attendanceByBarcodeIds,
   history,
+  queryParams,
 }) => {
   const meetingCardsRef = useRef(null);
   if (attendanceLoading) return null;
+
+  const { cardType } = queryParams;
+  if (!cardType) return null;
 
   return (
     <>
@@ -43,6 +47,7 @@ const MeetingCardsContainer = ({
       <Divider />
       <MeetingCards
         ref={meetingCardsRef}
+        cardType={cardType}
         attendanceByBarcodeIds={attendanceByBarcodeIds}
       />
     </>
@@ -53,6 +58,7 @@ MeetingCardsContainer.propTypes = {
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
+  queryParams: PropTypes.object,
 
   attendanceLoading: PropTypes.bool,
   attendanceByBarcodeIds: PropTypes.array,

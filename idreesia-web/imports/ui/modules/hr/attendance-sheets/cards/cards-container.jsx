@@ -10,9 +10,9 @@ import {
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider } from '/imports/ui/controls';
-import MeetingCards from './meeting-cards';
+import Cards from './cards';
 
-const MeetingCardsContainer = ({
+const CardsContainer = ({
   attendanceLoading,
   attendanceByBarcodeIds,
   history,
@@ -45,7 +45,7 @@ const MeetingCardsContainer = ({
         Back
       </Button>
       <Divider />
-      <MeetingCards
+      <Cards
         ref={meetingCardsRef}
         cardType={cardType}
         attendanceByBarcodeIds={attendanceByBarcodeIds}
@@ -54,7 +54,7 @@ const MeetingCardsContainer = ({
   );
 };
 
-MeetingCardsContainer.propTypes = {
+CardsContainer.propTypes = {
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
@@ -108,5 +108,5 @@ export default flowRight(
       variables: { barcodeIds },
     }),
   }),
-  WithBreadcrumbs(['HR', 'Attendance Sheets', 'Meeting Cards'])
-)(MeetingCardsContainer);
+  WithBreadcrumbs(['HR', 'Attendance Sheets', 'Cards'])
+)(CardsContainer);

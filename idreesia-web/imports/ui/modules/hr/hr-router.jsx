@@ -24,7 +24,7 @@ import {
 import {
   AttendanceSheetsUploadForm,
   AttendanceSheetsList,
-  AttendanceSheetsMeetingCards,
+  AttendanceSheetsKarkunCards,
 } from './attendance-sheets';
 import { SalarySheetsList, SalarySheetsSalaryReceipts } from './salary-sheets';
 import {
@@ -68,8 +68,8 @@ const HRRouter = () => (
       component={AttendanceSheetsUploadForm}
     />
     <Route
-      path={paths.attendanceSheetsMeetingCardsPath}
-      component={AttendanceSheetsMeetingCards}
+      path={paths.attendanceSheetsKarkunCardsPath}
+      component={AttendanceSheetsKarkunCards}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 

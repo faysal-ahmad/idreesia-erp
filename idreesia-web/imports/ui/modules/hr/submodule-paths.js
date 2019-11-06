@@ -36,7 +36,7 @@ export default class SubModulePaths {
   // ******************************************************************************
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
   static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
-  static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
+  static attendanceSheetsKarkunCardsPath = `${SubModulePaths.attendanceSheetsPath}/karkun-cards`;
 
   // ******************************************************************************
   // Salary Sheets

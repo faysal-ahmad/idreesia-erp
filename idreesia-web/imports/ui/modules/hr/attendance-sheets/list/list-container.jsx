@@ -148,7 +148,7 @@ class ListContainer extends Component {
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
-    const path = `${paths.attendanceSheetsMeetingCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
+    const path = `${paths.attendanceSheetsKarkunCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 

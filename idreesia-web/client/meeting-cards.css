@@ -66,6 +66,14 @@
   border: 1px solid #ccc;
 }
 
+.pic_card_extended_k {
+  overflow: hidden;
+  height: 150px;
+  width: 100%;
+  margin: auto;
+  border: 1px solid #ccc;
+}
+
 .barcode_card_k {
   width: 120px;
   margin: auto;

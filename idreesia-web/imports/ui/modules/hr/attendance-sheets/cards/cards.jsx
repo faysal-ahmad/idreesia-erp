@@ -38,7 +38,7 @@ const MonthTranslations = {
   Dec: 'دسمبر',
 };
 
-export default class MeetingCards extends Component {
+export default class Cards extends Component {
   static propTypes = {
     cardType: PropTypes.string,
     attendanceByBarcodeIds: PropTypes.array,
@@ -56,18 +56,47 @@ export default class MeetingCards extends Component {
         MonthTranslations[month.format('MMM')]
       }`;
     } else if (cardType === CardTypes.RABI_UL_AWAL_LANGAR) {
-      subHeading = `١٢ربیع الاول - لنگر شریف تقسیم`;
+      subHeading = '١٢ ربیع الاول - لنگر شریف تقسیم';
+    } else if (cardType === CardTypes.SPECIAL_SECURITY) {
+      subHeading = 'اسپیشل سیکورٹی';
     }
 
     return subHeading;
   };
 
-  getCardMarkup(attendance) {
-    const headingImageUrl = '/images/heading.png';
-    const subHeading = this.getSubHeading(attendance);
+  getKarkunImage = attendance => {
+    const { cardType } = this.props;
     const karkunImage = attendance.karkun.image ? (
       <img src={`data:image/jpeg;base64,${attendance.karkun.image.data}`} />
     ) : null;
+    const className =
+      cardType !== CardTypes.SPECIAL_SECURITY
+        ? 'pic_card_k'
+        : 'pic_card_extended_k';
+
+    return <div className={className}>{karkunImage}</div>;
+  };
+
+  getDutyShiftInfo = attendance => {
+    const { cardType } = this.props;
+    const dutyShiftNode =
+      cardType !== CardTypes.SPECIAL_SECURITY ? (
+        <p className="duty_shift_job">
+          {attendance.duty ? attendance.duty.name : ''}
+          {attendance.job ? attendance.job.name : ''}
+          <br />
+          {attendance.shift ? attendance.shift.name : ''}
+        </p>
+      ) : null;
+
+    return dutyShiftNode;
+  };
+
+  getCardMarkup(attendance) {
+    const headingImageUrl = '/images/heading.png';
+    const subHeading = this.getSubHeading(attendance);
+    const karkunImage = this.getKarkunImage(attendance);
+    const dutyShiftInfo = this.getDutyShiftInfo(attendance);
 
     return (
       <div key={attendance._id} className="card_karkon">
@@ -75,14 +104,9 @@ export default class MeetingCards extends Component {
           <img src={headingImageUrl} />
         </div>
         <div className="subheading_card_k">{subHeading}</div>
-        <div className="pic_card_k">{karkunImage}</div>
+        {karkunImage}
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
-        <p className="duty_shift_job">
-          {attendance.duty ? attendance.duty.name : ''}
-          {attendance.job ? attendance.job.name : ''}
-          <br />
-          {attendance.shift ? attendance.shift.name : ''}
-        </p>
+        {dutyShiftInfo}
         <div className="barcode_card_k">
           <Barcode
             value={attendance.meetingCardBarcodeId}

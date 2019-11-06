@@ -308,6 +308,12 @@ export class List extends Component {
           </Menu.Item>
           <Menu.Item
             key="3-2"
+            onClick={() => this.handleViewCards(CardTypes.SPECIAL_SECURITY)}
+          >
+            Special Security
+          </Menu.Item>
+          <Menu.Item
+            key="3-3"
             onClick={() => this.handleViewCards(CardTypes.RABI_UL_AWAL_LANGAR)}
           >
             Rabi-ul-Awal Langar Shareef

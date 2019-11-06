@@ -44,9 +44,24 @@ export default class Cards extends Component {
     attendanceByBarcodeIds: PropTypes.array,
   };
 
+  getHeadingImage = () => {
+    const { cardType } = this.props;
+    const headingImageUrl = '/images/heading.png';
+    const headingImage =
+      cardType !== CardTypes.SPECIAL_SECURITY ? (
+        <div className="heading_card_k">
+          <img src={headingImageUrl} />
+        </div>
+      ) : null;
+
+    return headingImage;
+  };
+
   getSubHeading = attendance => {
     const { cardType } = this.props;
     let subHeading = '';
+    let className = 'subheading_card_k';
+
     const month = moment(`01-${attendance.month}`, 'DD-MM-YYYY')
       .add(1, 'months')
       .startOf('month');
@@ -59,15 +74,19 @@ export default class Cards extends Component {
       subHeading = '١٢ ربیع الاول - لنگر شریف تقسیم';
     } else if (cardType === CardTypes.SPECIAL_SECURITY) {
       subHeading = 'اسپیشل سیکورٹی';
+      className = 'subheading_card_extended_k';
     }
 
-    return subHeading;
+    return <div className={className}>{subHeading}</div>;
   };
 
   getKarkunImage = attendance => {
     const { cardType } = this.props;
     const karkunImage = attendance.karkun.image ? (
-      <img src={`data:image/jpeg;base64,${attendance.karkun.image.data}`} />
+      <img
+        src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
+        style={{ maxHeight: '100%', width: 'auto' }}
+      />
     ) : null;
     const className =
       cardType !== CardTypes.SPECIAL_SECURITY
@@ -93,17 +112,15 @@ export default class Cards extends Component {
   };
 
   getCardMarkup(attendance) {
-    const headingImageUrl = '/images/heading.png';
+    const headingImage = this.getHeadingImage();
     const subHeading = this.getSubHeading(attendance);
     const karkunImage = this.getKarkunImage(attendance);
     const dutyShiftInfo = this.getDutyShiftInfo(attendance);
 
     return (
       <div key={attendance._id} className="card_karkon">
-        <div className="heading_card_k">
-          <img src={headingImageUrl} />
-        </div>
-        <div className="subheading_card_k">{subHeading}</div>
+        {headingImage}
+        {subHeading}
         {karkunImage}
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
         {dutyShiftInfo}

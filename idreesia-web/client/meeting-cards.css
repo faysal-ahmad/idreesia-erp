@@ -58,20 +58,32 @@
   padding: 3px 0;
 }
 
+.subheading_card_extended_k {
+  font-weight: bold;
+  font-size: 26px;
+  background-color: black;
+  color: #fff;
+  padding: 3px 0;
+}
+
 .pic_card_k {
   overflow: hidden;
   height: 125px;
   width: 100%;
   margin: auto;
   border: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
 }
 
 .pic_card_extended_k {
   overflow: hidden;
-  height: 150px;
+  height: 175px;
   width: 100%;
   margin: auto;
   border: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
 }
 
 .barcode_card_k {

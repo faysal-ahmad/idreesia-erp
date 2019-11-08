@@ -304,19 +304,32 @@ export class List extends Component {
               this.handleViewCards(CardTypes.NAAM_I_MUBARIK_MEETING)
             }
           >
-            Naam-i-Mubarik Meeting Cards
+            Naam-i-Mubarik Meeting
           </Menu.Item>
           <Menu.Item
             key="3-2"
+            onClick={() => this.handleViewCards(CardTypes.RABI_UL_AWAL_LANGAR)}
+          >
+            Rabi-ul-Awal Langar Shareef
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item
+            key="3-3"
             onClick={() => this.handleViewCards(CardTypes.SPECIAL_SECURITY)}
           >
             Special Security
           </Menu.Item>
           <Menu.Item
-            key="3-3"
-            onClick={() => this.handleViewCards(CardTypes.RABI_UL_AWAL_LANGAR)}
+            key="3-4"
+            onClick={() => this.handleViewCards(CardTypes.ENTRY_GATE)}
           >
-            Rabi-ul-Awal Langar Shareef
+            Entry Gate
+          </Menu.Item>
+          <Menu.Item
+            key="3-5"
+            onClick={() => this.handleViewCards(CardTypes.HALL_SECURITY)}
+          >
+            Hall Security
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />

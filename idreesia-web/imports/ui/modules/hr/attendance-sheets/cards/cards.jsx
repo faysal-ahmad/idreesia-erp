@@ -38,6 +38,14 @@ const MonthTranslations = {
   Dec: 'دسمبر',
 };
 
+const HeadingMapping = {
+  [CardTypes.NAAM_I_MUBARIK_MEETING]: true,
+  [CardTypes.RABI_UL_AWAL_LANGAR]: true,
+  [CardTypes.SPECIAL_SECURITY]: false,
+  [CardTypes.ENTRY_GATE]: false,
+  [CardTypes.HALL_SECURITY]: false,
+};
+
 export default class Cards extends Component {
   static propTypes = {
     cardType: PropTypes.string,
@@ -47,12 +55,11 @@ export default class Cards extends Component {
   getHeadingImage = () => {
     const { cardType } = this.props;
     const headingImageUrl = '/images/heading.png';
-    const headingImage =
-      cardType !== CardTypes.SPECIAL_SECURITY ? (
-        <div className="heading_card_k">
-          <img src={headingImageUrl} />
-        </div>
-      ) : null;
+    const headingImage = HeadingMapping[cardType] ? (
+      <div className="heading_card_k">
+        <img src={headingImageUrl} />
+      </div>
+    ) : null;
 
     return headingImage;
   };
@@ -75,6 +82,12 @@ export default class Cards extends Component {
     } else if (cardType === CardTypes.SPECIAL_SECURITY) {
       subHeading = 'اسپیشل سیکورٹی';
       className = 'subheading_card_extended_k';
+    } else if (cardType === CardTypes.ENTRY_GATE) {
+      subHeading = 'اینٹری گیٹ';
+      className = 'subheading_card_extended_k';
+    } else if (cardType === CardTypes.HALL_SECURITY) {
+      subHeading = 'ہال سیکورٹی';
+      className = 'subheading_card_extended_k';
     }
 
     return <div className={className}>{subHeading}</div>;
@@ -88,25 +101,23 @@ export default class Cards extends Component {
         style={{ maxHeight: '100%', width: 'auto' }}
       />
     ) : null;
-    const className =
-      cardType !== CardTypes.SPECIAL_SECURITY
-        ? 'pic_card_k'
-        : 'pic_card_extended_k';
+    const className = HeadingMapping[cardType]
+      ? 'pic_card_k'
+      : 'pic_card_extended_k';
 
     return <div className={className}>{karkunImage}</div>;
   };
 
   getDutyShiftInfo = attendance => {
     const { cardType } = this.props;
-    const dutyShiftNode =
-      cardType !== CardTypes.SPECIAL_SECURITY ? (
-        <p className="duty_shift_job">
-          {attendance.duty ? attendance.duty.name : ''}
-          {attendance.job ? attendance.job.name : ''}
-          <br />
-          {attendance.shift ? attendance.shift.name : ''}
-        </p>
-      ) : null;
+    const dutyShiftNode = HeadingMapping[cardType] ? (
+      <p className="duty_shift_job">
+        {attendance.duty ? attendance.duty.name : ''}
+        {attendance.job ? attendance.job.name : ''}
+        <br />
+        {attendance.shift ? attendance.shift.name : ''}
+      </p>
+    ) : null;
 
     return dutyShiftNode;
   };

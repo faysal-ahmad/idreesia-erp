@@ -44,6 +44,7 @@ const HeadingMapping = {
   [CardTypes.SPECIAL_SECURITY]: false,
   [CardTypes.ENTRY_GATE]: false,
   [CardTypes.HALL_SECURITY]: false,
+  [CardTypes.INTERCOM_DUTY]: false,
 };
 
 export default class Cards extends Component {
@@ -87,6 +88,9 @@ export default class Cards extends Component {
       className = 'subheading_card_extended_k';
     } else if (cardType === CardTypes.HALL_SECURITY) {
       subHeading = 'ہال سیکورٹی';
+      className = 'subheading_card_extended_k';
+    } else if (cardType === CardTypes.INTERCOM_DUTY) {
+      subHeading = 'انٹرکام ڈیوٹی';
       className = 'subheading_card_extended_k';
     }
 

@@ -331,6 +331,12 @@ export class List extends Component {
           >
             Hall Security
           </Menu.Item>
+          <Menu.Item
+            key="3-6"
+            onClick={() => this.handleViewCards(CardTypes.INTERCOM_DUTY)}
+          >
+            Intercom Duty
+          </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />
         <Menu.Item key="4" onClick={this._handleDeleteSelectedAttendances}>

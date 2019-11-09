@@ -4,6 +4,7 @@ const CardTypes = {
   SPECIAL_SECURITY: 'special-security',
   ENTRY_GATE: 'entry-gate',
   HALL_SECURITY: 'hall-security',
+  INTERCOM_DUTY: 'intercom-duty',
 };
 
 export default CardTypes;

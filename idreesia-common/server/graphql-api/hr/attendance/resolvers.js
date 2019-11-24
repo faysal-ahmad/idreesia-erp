@@ -173,7 +173,7 @@ export default {
 
     updateAttendance(
       obj,
-      { _id, totalCount, presentCount, absentCount },
+      { _id, attendanceDetails, presentCount, lateCount, absentCount },
       { user }
     ) {
       if (
@@ -188,16 +188,20 @@ export default {
       }
 
       const date = new Date();
-      const numTotalCount = toInteger(totalCount);
       const numPresentCount = toInteger(presentCount);
+      const numLateCount = toInteger(lateCount);
       const numAbsentCount = toInteger(absentCount);
+      const total = numPresentCount + numLateCount + numAbsentCount;
+      const percentage =
+        total !== 0 ? round((numPresentCount / total) * 100) : 0;
 
       Attendances.update(_id, {
         $set: {
-          totalCount: numTotalCount,
+          attendanceDetails,
           presentCount: numPresentCount,
+          lateCount: numLateCount,
           absentCount: numAbsentCount,
-          percentage: round((numPresentCount / numTotalCount) * 100),
+          percentage,
           updatedAt: date,
           updatedBy: user._id,
         },

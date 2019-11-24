@@ -5,9 +5,10 @@ type AttendanceType {
   shiftId: String
   jobId: String
   month: String
-  totalCount: Int
-  absentCount: Int
+  attendanceDetails: String
   presentCount: Int
+  lateCount: Int
+  absentCount: Int
   percentage: Float
   meetingCardBarcodeId: String
 
@@ -46,8 +47,9 @@ extend type Mutation {
 
   updateAttendance(
     _id: String!
-    totalCount: Int
+    attendanceDetails: String
     presentCount: Int
+    lateCount: Int
     absentCount: Int
   ): AttendanceType
 

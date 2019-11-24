@@ -87,11 +87,19 @@ export class List extends Component {
       title: 'Present',
       dataIndex: 'presentCount',
       key: 'presentCount',
+      render: text => text || '0',
+    },
+    {
+      title: 'Late',
+      dataIndex: 'lateCount',
+      key: 'lateCount',
+      render: text => text || '0',
     },
     {
       title: 'Absent',
       dataIndex: 'absentCount',
       key: 'absentCount',
+      render: text => text || '0',
     },
     {
       title: 'Percentage',
@@ -425,8 +433,10 @@ const attendanceByMonthQuery = gql`
       month
       dutyId
       shiftId
-      absentCount
+      attendanceDetails
       presentCount
+      lateCount
+      absentCount
       percentage
       meetingCardBarcodeId
       karkun {

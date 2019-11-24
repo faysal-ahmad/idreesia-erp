@@ -1,0 +1,44 @@
+.attendance-body {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #e8e8e8;
+  padding: 8px 12px;
+  text-align: center;
+  width: 260px;
+}
+
+.attendance-date {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  padding: 0;
+  line-height: 22px;
+  text-align: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  -webkit-transition: background 0.3s ease;
+  transition: background 0.3s ease;
+}
+.attendance-date:hover {
+  cursor: pointer;
+}
+
+.attendance-present {
+  color: #a8daaa;
+  border-color: #a8daaa;
+  font-weight: bold;
+}
+
+.attendance-late {
+  color: #F7C602;
+  border-color: #F7C602;
+  font-weight: bold;
+}
+
+.attendance-absent {
+  color: #E86767;
+  border-color: #E86767;
+  font-weight: bold;
+}

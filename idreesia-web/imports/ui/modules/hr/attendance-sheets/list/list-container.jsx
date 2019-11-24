@@ -87,25 +87,16 @@ class ListContainer extends Component {
     });
   };
 
-  handleEditAttendanceSave = ({
-    _id,
-    totalCount,
-    presentCount,
-    absentCount,
-  }) => {
+  handleEditAttendanceSave = values => {
     const { updateAttendance } = this.props;
     this.setState({
       showEditForm: false,
       attendance: null,
     });
 
+    debugger;
     updateAttendance({
-      variables: {
-        _id,
-        totalCount,
-        presentCount,
-        absentCount,
-      },
+      variables: values,
     }).catch(error => {
       message.error(error.message, 5);
     });
@@ -251,7 +242,7 @@ class ListContainer extends Component {
           title="Update Attendance"
           visible={this.state.showEditForm}
           onCancel={this.handleEditAttendanceCancel}
-          width={370}
+          width={500}
           footer={null}
         >
           {this.state.showEditForm ? (
@@ -276,18 +267,21 @@ const createMutation = gql`
 const updateMutation = gql`
   mutation updateAttendance(
     $_id: String!
-    $totalCount: Int
+    $attendanceDetails: String
     $presentCount: Int
+    $lateCount: Int
     $absentCount: Int
   ) {
     updateAttendance(
       _id: $_id
-      totalCount: $totalCount
+      attendanceDetails: $attendanceDetails
       presentCount: $presentCount
+      lateCount: $lateCount
       absentCount: $absentCount
     ) {
       _id
-      totalCount
+      attendanceDetails
+      lateCount
       presentCount
       absentCount
     }

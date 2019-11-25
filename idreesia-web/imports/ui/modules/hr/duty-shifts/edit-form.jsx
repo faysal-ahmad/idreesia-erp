@@ -39,25 +39,28 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, dutyShiftById, updateDutyShift } = this.props;
-    form.validateFields((err, { name, dutyId, startTime, endTime }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { name, dutyId, startTime, endTime, attendanceSheet }) => {
+        if (err) return;
 
-      updateDutyShift({
-        variables: {
-          id: dutyShiftById._id,
-          name,
-          dutyId,
-          startTime,
-          endTime,
-        },
-      })
-        .then(() => {
-          history.push(paths.dutyShiftsPath);
+        updateDutyShift({
+          variables: {
+            id: dutyShiftById._id,
+            name,
+            dutyId,
+            startTime,
+            endTime,
+            attendanceSheet,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.push(paths.dutyShiftsPath);
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   render() {
@@ -100,13 +103,18 @@ class EditForm extends Component {
             }
             getFieldDecorator={getFieldDecorator}
           />
-
           <TimeField
             fieldName="endTime"
             fieldLabel="End Time"
             initialValue={
               dutyShiftById.endTime ? moment(dutyShiftById.endTime) : null
             }
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="attendanceSheet"
+            fieldLabel="Attendance Sheet"
+            initialValue={dutyShiftById.attendanceSheet}
             getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -125,6 +133,7 @@ const formQuery = gql`
       dutyId
       startTime
       endTime
+      attendanceSheet
       createdAt
       createdBy
       updatedAt
@@ -140,6 +149,7 @@ const formMutation = gql`
     $dutyId: String!
     $startTime: String
     $endTime: String
+    $attendanceSheet: String
   ) {
     updateDutyShift(
       id: $id
@@ -147,12 +157,14 @@ const formMutation = gql`
       dutyId: $dutyId
       startTime: $startTime
       endTime: $endTime
+      attendanceSheet: $attendanceSheet
     ) {
       _id
       name
       dutyId
       startTime
       endTime
+      attendanceSheet
       createdAt
       createdBy
       updatedAt

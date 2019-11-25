@@ -28,7 +28,7 @@ export default {
   },
 
   Mutation: {
-    createDuty(obj, { name, description }, { user }) {
+    createDuty(obj, { name, description, attendanceSheet }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -41,6 +41,7 @@ export default {
       const dutyId = Duties.insert({
         name,
         description,
+        attendanceSheet,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -50,7 +51,7 @@ export default {
       return Duties.findOne(dutyId);
     },
 
-    updateDuty(obj, { id, name, description }, { user }) {
+    updateDuty(obj, { id, name, description, attendanceSheet }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -64,6 +65,7 @@ export default {
         $set: {
           name,
           description,
+          attendanceSheet,
           updatedAt: date,
           updatedBy: user._id,
         },

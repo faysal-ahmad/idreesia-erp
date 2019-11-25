@@ -2,6 +2,7 @@ type DutyType {
   _id: String
   name: String
   description: String
+  attendanceSheet: String
 
   usedCount: Int
   shifts: [DutyShiftType]
@@ -18,7 +19,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createDuty(name: String!, description: String): DutyType
-  updateDuty(id: String!, name: String!, description: String): DutyType
+  createDuty(name: String!, description: String, attendanceSheet: String): DutyType
+  updateDuty(id: String!, name: String!, description: String, attendanceSheet: String): DutyType
   removeDuty(_id: String!): Int
 }

@@ -51,6 +51,7 @@ extend type Mutation {
     presentCount: Int
     lateCount: Int
     absentCount: Int
+    percentage: Int
   ): AttendanceType
 
   uploadAttendances(

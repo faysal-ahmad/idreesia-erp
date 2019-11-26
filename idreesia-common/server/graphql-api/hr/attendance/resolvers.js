@@ -2,7 +2,7 @@ import moment from 'moment';
 import request from 'request';
 import { google } from 'googleapis';
 
-import { toInteger, round } from 'meteor/idreesia-common/utilities/lodash';
+import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attendances,
   Karkuns,
@@ -175,7 +175,14 @@ export default {
 
     updateAttendance(
       obj,
-      { _id, attendanceDetails, presentCount, lateCount, absentCount },
+      {
+        _id,
+        attendanceDetails,
+        presentCount,
+        lateCount,
+        absentCount,
+        percentage,
+      },
       { user }
     ) {
       if (
@@ -190,20 +197,13 @@ export default {
       }
 
       const date = new Date();
-      const numPresentCount = toInteger(presentCount);
-      const numLateCount = toInteger(lateCount);
-      const numAbsentCount = toInteger(absentCount);
-      const total = numPresentCount + numLateCount + numAbsentCount;
-      const percentage =
-        total !== 0 ? round((numPresentCount / total) * 100) : 0;
-
       Attendances.update(_id, {
         $set: {
           attendanceDetails,
-          presentCount: numPresentCount,
-          lateCount: numLateCount,
-          absentCount: numAbsentCount,
-          percentage,
+          presentCount: toInteger(presentCount),
+          lateCount: toInteger(lateCount),
+          absentCount: toInteger(absentCount),
+          percentage: toInteger(percentage),
           updatedAt: date,
           updatedBy: user._id,
         },

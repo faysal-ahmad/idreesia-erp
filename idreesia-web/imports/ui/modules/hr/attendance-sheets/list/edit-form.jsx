@@ -19,7 +19,10 @@ class EditForm extends Component {
     e.preventDefault();
     const { attendance, form, handleSave } = this.props;
     form.validateFields(
-      (err, { attendanceDetails, presentCount, lateCount, absentCount }) => {
+      (
+        err,
+        { attendanceDetails, presentCount, lateCount, absentCount, percentage }
+      ) => {
         if (err) return;
 
         handleSave({
@@ -28,6 +31,7 @@ class EditForm extends Component {
           presentCount: presentCount || 0,
           lateCount: lateCount || 0,
           absentCount: absentCount || 0,
+          percentage: percentage || 0,
         });
       }
     );
@@ -74,6 +78,14 @@ class EditForm extends Component {
           initialValue={attendance.absentCount || 0}
           minValue={0}
           maxValue={31}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="percentage"
+          fieldLabel="Percentage"
+          initialValue={attendance.percentage || 0}
+          minValue={0}
+          maxValue={100}
           getFieldDecorator={getFieldDecorator}
         />
 

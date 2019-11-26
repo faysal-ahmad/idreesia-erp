@@ -1,4 +1,6 @@
 import moment from 'moment';
+import request from 'request';
+import { google } from 'googleapis';
 
 import { toInteger, round } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -221,6 +223,69 @@ export default {
 
       const date = new Date();
       return processAttendanceSheet(csv, month, dutyId, shiftId, date, user);
+    },
+
+    importAttendances(obj, { month, dutyId, shiftId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
+      ) {
+        throw new Error(
+          'You do not have permission to manage attendances in the System.'
+        );
+      }
+
+      let attendanceSheetId;
+      if (!shiftId) {
+        // Check if we have an attendance sheet associated with the passed duty
+        const duty = Duties.findOne(dutyId);
+        attendanceSheetId = duty.attendanceSheet;
+      } else {
+        const dutyShift = DutyShifts.findOne(shiftId);
+        attendanceSheetId = dutyShift.attendanceSheet;
+      }
+
+      if (!attendanceSheetId) {
+        throw new Error(
+          'Could not find an associated google sheet for attendance.'
+        );
+      }
+
+      const authFile = JSON.parse(Assets.getText('private/auth/google.json'));
+      const scopes = [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.readonly',
+      ];
+
+      const jwt = new google.auth.JWT(
+        authFile.client_email,
+        null,
+        authFile.private_key,
+        scopes
+      );
+
+      return new Promise((resolve, reject) => {
+        jwt.authorize((err, authResponse) => {
+          if (err) reject(err);
+          const accessToken = authResponse.access_token;
+          const options = {
+            uri: `https://www.googleapis.com/drive/v3/files/${attendanceSheetId}/export?mimeType=text/csv`,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+
+          request.get(options, (error, response, body) => {
+            if (error) reject(error);
+            // If the request is successfule, we get the csv data in the body
+
+            const date = new Date();
+            processAttendanceSheet(body, month, dutyId, shiftId, date, user)
+              .then(result => resolve(result))
+              .catch(e => reject(e));
+          });
+        });
+      });
     },
 
     deleteAttendances(obj, { month, ids }, { user }) {

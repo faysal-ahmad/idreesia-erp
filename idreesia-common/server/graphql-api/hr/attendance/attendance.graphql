@@ -60,6 +60,12 @@ extend type Mutation {
     shiftId: String
   ): Int
 
+  importAttendances(
+    month: String!
+    dutyId: String!
+    shiftId: String
+  ): Int
+   
   deleteAttendances(month: String!, ids: [String]!): Int
   deleteAllAttendances(month: String!): Int
 }

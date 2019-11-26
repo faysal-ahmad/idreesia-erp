@@ -45,6 +45,7 @@ export class List extends Component {
     handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
     handleUploadAttendanceSheet: PropTypes.func,
+    handleImportFromGoogleSheet: PropTypes.func,
     handleViewCards: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
@@ -289,6 +290,7 @@ export class List extends Component {
     const {
       handleCreateMissingAttendances,
       handleUploadAttendanceSheet,
+      handleImportFromGoogleSheet,
     } = this.props;
     const menu = (
       <Menu>
@@ -300,14 +302,18 @@ export class List extends Component {
           <Icon type="download" />
           Download as CSV
         </Menu.Item>
-        <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
+        <Menu.Item key="3" onClick={handleUploadAttendanceSheet}>
           <Icon type="upload" />
           Upload Attendance CSV
         </Menu.Item>
+        <Menu.Item key="4" onClick={handleImportFromGoogleSheet}>
+          <Icon type="import" />
+          Import from Google Sheets
+        </Menu.Item>
         <Menu.Divider />
-        <Menu.SubMenu key="3" title="Print Cards">
+        <Menu.SubMenu key="5" title="Print Cards">
           <Menu.Item
-            key="3-1"
+            key="5-1"
             onClick={() =>
               this.handleViewCards(CardTypes.NAAM_I_MUBARIK_MEETING)
             }
@@ -315,43 +321,43 @@ export class List extends Component {
             Naam-i-Mubarik Meeting
           </Menu.Item>
           <Menu.Item
-            key="3-2"
+            key="5-2"
             onClick={() => this.handleViewCards(CardTypes.RABI_UL_AWAL_LANGAR)}
           >
             Rabi-ul-Awal Langar Shareef
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item
-            key="3-3"
+            key="5-3"
             onClick={() => this.handleViewCards(CardTypes.SPECIAL_SECURITY)}
           >
             Special Security
           </Menu.Item>
           <Menu.Item
-            key="3-4"
+            key="5-4"
             onClick={() => this.handleViewCards(CardTypes.ENTRY_GATE)}
           >
             Entry Gate
           </Menu.Item>
           <Menu.Item
-            key="3-5"
+            key="5-5"
             onClick={() => this.handleViewCards(CardTypes.HALL_SECURITY)}
           >
             Hall Security
           </Menu.Item>
           <Menu.Item
-            key="3-6"
+            key="5-6"
             onClick={() => this.handleViewCards(CardTypes.INTERCOM_DUTY)}
           >
             Intercom Duty
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />
-        <Menu.Item key="4" onClick={this._handleDeleteSelectedAttendances}>
+        <Menu.Item key="6" onClick={this._handleDeleteSelectedAttendances}>
           <Icon type="delete" />
           Delete Selected Attendances
         </Menu.Item>
-        <Menu.Item key="5" onClick={this._handleDeleteAllAttendances}>
+        <Menu.Item key="7" onClick={this._handleDeleteAllAttendances}>
           <Icon type="delete" />
           Delete All Attendances
         </Menu.Item>

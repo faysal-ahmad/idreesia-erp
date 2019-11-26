@@ -33,6 +33,7 @@ class ListContainer extends Component {
     updateAttendance: PropTypes.func,
     deleteAttendances: PropTypes.func,
     deleteAllAttendances: PropTypes.func,
+    importAttendances: PropTypes.func,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -94,7 +95,6 @@ class ListContainer extends Component {
       attendance: null,
     });
 
-    debugger;
     updateAttendance({
       variables: values,
     }).catch(error => {
@@ -105,6 +105,29 @@ class ListContainer extends Component {
   handleUploadAttendanceSheet = () => {
     const { history } = this.props;
     history.push(paths.attendanceSheetsUploadFormPath);
+  };
+
+  handleImportFromGoogleSheet = () => {
+    const {
+      importAttendances,
+      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
+    } = this.props;
+
+    if (selectedCategoryId) {
+      importAttendances({
+        variables: {
+          month: selectedMonth || moment().format('MM-YYYY'),
+          dutyId: selectedCategoryId,
+          shiftId: selectedSubCategoryId,
+        },
+      })
+        .then(() => {
+          // show message regarding what was imported
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+    }
   };
 
   handleCreateMissingAttendances = () => {
@@ -230,6 +253,7 @@ class ListContainer extends Component {
           handleEditAttendance={this.handleEditAttendance}
           handleCreateMissingAttendances={this.handleCreateMissingAttendances}
           handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
+          handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
           handleViewCards={this.handleViewCards}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
@@ -300,6 +324,16 @@ const deleteAllMutation = gql`
   }
 `;
 
+const importMutation = gql`
+  mutation importAttendances(
+    $month: String!
+    $dutyId: String!
+    $shiftId: String
+  ) {
+    importAttendances(month: $month, dutyId: $dutyId, shiftId: $shiftId)
+  }
+`;
+
 export default flowRight(
   graphql(createMutation, {
     name: 'createAttendances',
@@ -321,6 +355,12 @@ export default flowRight(
   }),
   graphql(deleteAllMutation, {
     name: 'deleteAllAttendances',
+    options: {
+      refetchQueries: ['attendanceByMonth'],
+    },
+  }),
+  graphql(importMutation, {
+    name: 'importAttendances',
     options: {
       refetchQueries: ['attendanceByMonth'],
     },

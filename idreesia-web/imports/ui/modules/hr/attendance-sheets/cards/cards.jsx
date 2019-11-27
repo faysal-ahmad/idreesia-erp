@@ -98,7 +98,14 @@ export default class Cards extends Component {
   };
 
   getKarkunImage = attendance => {
+    debugger;
     const { cardType } = this.props;
+    const percentageClass =
+      attendance.percentage > 0 ? 'percentage' : 'percentage hidden';
+    const bloodGroupClass = attendance.karkun.bloodGroup
+      ? 'blood_group'
+      : 'blood_group hidden';
+
     const karkunImage = attendance.karkun.image ? (
       <img
         src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
@@ -109,7 +116,15 @@ export default class Cards extends Component {
       ? 'pic_card_k'
       : 'pic_card_extended_k';
 
-    return <div className={className}>{karkunImage}</div>;
+    return (
+      <div className={className}>
+        {karkunImage}
+        <div className="info_container">
+          <div className={percentageClass}>{attendance.percentage}%</div>
+          <div className={bloodGroupClass}>{attendance.karkun.bloodGroup}</div>
+        </div>
+      </div>
+    );
   };
 
   getDutyShiftInfo = attendance => {

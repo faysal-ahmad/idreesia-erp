@@ -36,18 +36,44 @@
   margin: 5px 16px;
 }
 
+.info_container {
+  display: flex;
+  width: 100%;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  z-index: 98;
+}
+
 .percentage {
   background-color: #000;
   color: #fff;
-  border-radius: 50%;
+  border-radius: 10%;
   width: 50px;
   height: 35px;
   font-weight: bold;
-  padding-top: 15px;
+  opacity: 60%;
+  padding-top: 8px;
   position: relative;
-  margin-top: -46px;
+  margin-top: -36px;
   z-index: 99;
-  margin-left: 5px;
+}
+
+.blood_group {
+  background-color: #000;
+  color: #fff;
+  border-radius: 10%;
+  width: 50px;
+  height: 35px;
+  font-weight: bold;
+  opacity: 60%;
+  padding-top: 8px;
+  position: relative;
+  margin-top: -36px;
+  z-index: 99;
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 .subheading_card_k {
@@ -72,8 +98,6 @@
   width: 100%;
   margin: auto;
   border: 1px solid #ccc;
-  display: flex;
-  justify-content: center;
 }
 
 .pic_card_extended_k {
@@ -82,8 +106,6 @@
   width: 100%;
   margin: auto;
   border: 1px solid #ccc;
-  display: flex;
-  justify-content: center;
 }
 
 .barcode_card_k {

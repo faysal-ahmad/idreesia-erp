@@ -79,6 +79,7 @@ const attendanceByBarcodeIdsQuery = gql`
       karkun {
         _id
         name
+        bloodGroup
         image {
           _id
           data

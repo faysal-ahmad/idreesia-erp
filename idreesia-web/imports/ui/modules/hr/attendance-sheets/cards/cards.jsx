@@ -98,7 +98,6 @@ export default class Cards extends Component {
   };
 
   getKarkunImage = attendance => {
-    debugger;
     const { cardType } = this.props;
     const percentageClass =
       attendance.percentage > 0 ? 'percentage' : 'percentage hidden';
@@ -111,7 +110,7 @@ export default class Cards extends Component {
         src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
       />
-    ) : null;
+    ) : ( <div style={{ height: '100%', width: 'auto' }} /> );
     const className = HeadingMapping[cardType]
       ? 'pic_card_k'
       : 'pic_card_extended_k';

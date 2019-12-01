@@ -26,6 +26,7 @@ Migrations.add({
 
       Companies.insert({
         name: 'Anjuman Jamia Masjid',
+        importData: true,
         connectivitySettings,
         createdAt: date,
         createdBy: adminUser._id,
@@ -45,6 +46,7 @@ Migrations.add({
 
       Companies.insert({
         name: 'Eastern Breeze Foundation',
+        importData: true,
         connectivitySettings,
         createdAt: date,
         createdBy: adminUser._id,

@@ -1,15 +1,23 @@
-import { Meteor } from "meteor/meteor";
-import { DDP } from "meteor/ddp-client";
-import { toString } from "lodash";
+import { Meteor } from 'meteor/meteor';
+import { DDP } from 'meteor/ddp-client';
+import { toString } from 'lodash';
 
-const { jobsAppUrl } = Meteor.settings.private;
+function getJobsAppUrl() {
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.JOBS_APP_URL;
+  }
+
+  return Meteor.settings.private.jobsAppUrl;
+}
 
 export const remoteCall = (methodName, args = {}, callback) => {
   if (Meteor.isClient) return;
+  const jobsAppUrl = getJobsAppUrl();
 
   if (!jobsAppUrl) {
+    // eslint-disable-next-line no-console
     console.warn(
-      "jobsAppUrl not in Meteor.settings; jobs will not be enqueued."
+      'jobsAppUrl not in Meteor.settings; jobs will not be enqueued.'
     );
     return;
   }
@@ -17,6 +25,7 @@ export const remoteCall = (methodName, args = {}, callback) => {
   const remote = DDP.connect(jobsAppUrl);
   remote.call(methodName, args, (error, result) => {
     if (error) {
+      // eslint-disable-next-line no-console
       console.error(
         `Error in remote call of ${methodName} result was ${result} with args ${toString(
           args

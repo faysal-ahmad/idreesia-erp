@@ -1,0 +1,37 @@
+version: "3"
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    
+  web:
+    build:
+      context: ./idreesia-web
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongo:27017/idreesia-erp
+      - ROOT_URL=https://381-erp-server.ngrok.io
+      - JOBS_APP_URL=http://jobs:3002
+      - GOOGLE_OAUTH_CLIENT_ID=961183879263-ef96r606qqhsjvvn2vdak512693d67ca.apps.googleusercontent.com
+      - GOOGLE_OAUTH_SECRET=VvFEISmArKNrWOXiyYY7mY9y
+
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  jobs:
+    build:
+      context: ./idreesia-jobs
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongo:27017/idreesia-erp
+      - ROOT_URL=http://localhost:3002
+      - EMAIL_PROVIDER_KEY=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
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongo

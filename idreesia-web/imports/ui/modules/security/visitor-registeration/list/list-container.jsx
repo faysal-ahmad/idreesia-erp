@@ -91,11 +91,6 @@ class ListContainer extends Component {
           width={600}
           onClose={this.handleStayListClose}
           visible={showStayList}
-          style={{
-            overflow: 'auto',
-            height: 'calc(100% - 108px)',
-            paddingBottom: '108px',
-          }}
         >
           <VisitorStaysList showNewButton visitorId={visitorIdForStayList} />
         </Drawer>

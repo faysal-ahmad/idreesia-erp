@@ -1,11 +1,11 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import moment from "moment";
-import { find, flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
+import { find, flowRight } from 'lodash';
 
-import { StayReasons } from "meteor/idreesia-common/constants/security";
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
   Button,
   Pagination,
@@ -17,11 +17,11 @@ import {
   Row,
   Col,
   message,
-} from "/imports/ui/controls";
+} from '/imports/ui/controls';
 
-import NewForm from "../new-form";
-import EditForm from "../edit-form";
-import StayCard from "../card/stay-card-container";
+import NewForm from '../new-form';
+import EditForm from '../edit-form';
+import StayCard from '../card/stay-card-container';
 
 class List extends Component {
   static propTypes = {
@@ -48,25 +48,25 @@ class List extends Component {
   };
 
   stayDetailsColumn = {
-    title: "Stay Details",
-    key: "stayDetails",
+    title: 'Stay Details',
+    key: 'stayDetails',
     render: (text, record) => {
       const fromDate = moment(Number(record.fromDate));
       const toDate = moment(Number(record.toDate));
       const days = record.numOfDays;
       if (days === 1) {
-        return `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
+        return `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
       }
       return `${days} days - [${fromDate.format(
-        "DD MMM, YYYY"
-      )} - ${toDate.format("DD MMM, YYYY")}]`;
+        'DD MMM, YYYY'
+      )} - ${toDate.format('DD MMM, YYYY')}]`;
     },
   };
 
   stayReasonColumn = {
-    title: "Stay Reason",
-    key: "stayReason",
-    dataIndex: "stayReason",
+    title: 'Stay Reason',
+    key: 'stayReason',
+    dataIndex: 'stayReason',
     render: text => {
       if (!text) return null;
       const reason = find(StayReasons, ({ _id }) => _id === text);
@@ -75,27 +75,26 @@ class List extends Component {
   };
 
   dutyShiftNameColumn = {
-    title: "Duty / Shift",
-    key: "dutyShiftName",
-    dataIndex: "dutyShiftName",
+    title: 'Duty / Shift',
+    key: 'dutyShiftName',
+    dataIndex: 'dutyShiftName',
   };
 
   actionsColumn = {
-    key: "action",
+    key: 'action',
     render: (text, record) => {
       if (record.cancelledDate) {
         const title = `Cancelled on ${moment(
           Number(record.cancelledDate)
-        ).format("DD MMM, YYYY")}`;
+        ).format('DD MMM, YYYY')}`;
         return <Tooltip title={title}>Cancelled</Tooltip>;
       }
 
-      const fromDate = moment(Number(record.fromDate));
-      const toDate = moment(Number(record.toDate));
-      const currentDate = moment();
-      const isValid = currentDate.isBetween(fromDate, toDate);
+      // const fromDate = moment(Number(record.fromDate));
+      // const toDate = moment(Number(record.toDate));
+      // const currentDate = moment();
 
-      const editAction = isValid ? (
+      const editAction = (
         <Col>
           <Tooltip title="Edit stay">
             <Icon
@@ -107,9 +106,9 @@ class List extends Component {
             />
           </Tooltip>
         </Col>
-      ) : null;
+      );
 
-      const cancelAction = isValid ? (
+      const cancelAction = (
         <Col>
           <Popconfirm
             title="Are you sure you want to cancel this stay entry?"
@@ -124,7 +123,7 @@ class List extends Component {
             </Tooltip>
           </Popconfirm>
         </Col>
-      ) : null;
+      );
 
       return (
         <Row type="flex" justify="start" align="middle" gutter={16}>
@@ -379,9 +378,9 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "cancelVisitorStay",
+    name: 'cancelVisitorStay',
     options: {
-      refetchQueries: ["pagedVisitorStays"],
+      refetchQueries: ['pagedVisitorStays'],
     },
   }),
   graphql(listQuery, {
@@ -389,7 +388,7 @@ export default flowRight(
     options: ({ visitorId, pageIndex, pageSize }) => ({
       variables: {
         queryString: `?visitorId=${visitorId ||
-          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   })

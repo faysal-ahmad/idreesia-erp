@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 
-import { Drawer, Icon, Input } from "/imports/ui/controls";
-import ListContainer from "./list-container";
+import { Drawer, Icon, Input } from '/imports/ui/controls';
+import ListContainer from './list-container';
 
 export default class CustomInput extends Component {
   static propTypes = {
@@ -50,11 +50,6 @@ export default class CustomInput extends Component {
           width={720}
           onClose={this.handleClose}
           visible={this.state.showSelectionForm}
-          style={{
-            overflow: "auto",
-            height: "calc(100% - 108px)",
-            paddingBottom: "108px",
-          }}
         >
           <ListContainer
             setSelectedValue={this.setSelectedValue}
@@ -63,7 +58,7 @@ export default class CustomInput extends Component {
         </Drawer>
         <Input
           type="text"
-          value={value ? value.formattedName : ""}
+          value={value ? value.formattedName : ''}
           readOnly
           addonAfter={<Icon type="edit" onClick={this.handleEditClick} />}
           placeholder={placeholder}

@@ -8,11 +8,11 @@ import { Col, Divider, Row } from '/imports/ui/controls';
 
 const LabelStyle = {
   fontWeight: 'bold',
-  fontSize: 16,
+  fontSize: 18,
 };
 
 const DataStyle = {
-  fontSize: 16,
+  fontSize: 18,
 };
 
 const ContainerStyle = {
@@ -66,22 +66,23 @@ export default class SalaryReceipts extends Component {
       <div key={salary._id} className="salary-receipt-print-view">
         <Row type="flex" justify="start" gutter={10}>
           {imageColumn}
-          <Col order={2}>
+          <Col order={2} style={{ minWidth: '150px' }}>
             <Item label="Name" value={karkun.name} />
+            <Item label="S/O" value={karkun.parentName} />
             <Item label="CNIC" value={karkun.cnicNumber || ''} />
             <Item label="Phone" value={karkun.contactNumber1 || ''} />
             <Item label="Dept." value={job.name} />
             <Item label="Month" value={displayMonth} />
           </Col>
-          <Col order={3}>
+          <Col order={3} style={{ minWidth: '150px' }}>
             <Item label="Salary" value={salary.salary} />
             <Item label="L/OB" value={salary.openingLoan || 0} />
             <Item label="Loan Ded." value={salary.loanDeduction || 0} />
             <Item label="Other Ded." value={salary.otherDeduction || 0} />
             <Item label="New Loan" value={salary.newLoan || 0} />
-          </Col>
-          <Col order={4}>
             <Item label="L/CB" value={salary.closingLoan || 0} />
+          </Col>
+          <Col order={4} style={{ minWidth: '150px' }}>
             <Item label="Arrears" value={salary.arrears || 0} />
             <Item label="Net Payment" value={salary.netPayment || 0} />
             <Item label="Signature" value="" />
@@ -103,7 +104,7 @@ export default class SalaryReceipts extends Component {
     let index = 0;
     const receiptContainers = [];
     while (receipts.length > 0) {
-      const receiptsForPage = receipts.splice(0, 5);
+      const receiptsForPage = receipts.splice(0, 4);
       receiptContainers.push(
         <div key={`container_${index}`} style={ContainerStyle}>
           {receiptsForPage}

@@ -90,10 +90,6 @@ class List extends Component {
         return <Tooltip title={title}>Cancelled</Tooltip>;
       }
 
-      // const fromDate = moment(Number(record.fromDate));
-      // const toDate = moment(Number(record.toDate));
-      // const currentDate = moment();
-
       const editAction = (
         <Col>
           <Tooltip title="Edit stay">

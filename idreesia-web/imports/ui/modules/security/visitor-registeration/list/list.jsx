@@ -13,6 +13,8 @@ import {
   Tooltip,
   message,
 } from '/imports/ui/controls';
+import { InputFile } from '/imports/ui/modules/helpers/controls';
+
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import ListFilter from './list-filter';
 
@@ -42,11 +44,16 @@ class List extends Component {
     handleScanClicked: PropTypes.func,
 
     deleteVisitor: PropTypes.func,
+    importCsvData: PropTypes.func,
     loading: PropTypes.bool,
     pagedVisitors: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
+  };
+
+  state = {
+    selectedRows: [],
   };
 
   statusColumn = {
@@ -157,6 +164,14 @@ class List extends Component {
     this.actionsColumn,
   ];
 
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
+
   onSelect = visitor => {
     const { handleItemSelected } = this.props;
     handleItemSelected(visitor);
@@ -194,6 +209,24 @@ class List extends Component {
     if (handleShowStayList) handleShowStayList(visitor);
   };
 
+  handleUploadData = fileContents => {
+    const { importCsvData } = this.props;
+    importCsvData({
+      variables: {
+        csvData: fileContents,
+      },
+    })
+      .then(response => {
+        const result = JSON.parse(response.data.importCsvData);
+        message.success(
+          `${result.imported} records were imported. ${result.ignored} were ignored.`
+        );
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
   getTableHeader = () => {
     const {
       name,
@@ -224,13 +257,24 @@ class List extends Component {
             Scan Visitor CNIC
           </Button>
         </div>
-        <ListFilter
-          name={name}
-          cnicNumber={cnicNumber}
-          phoneNumber={phoneNumber}
-          additionalInfo={additionalInfo}
-          setPageParams={setPageParams}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            name={name}
+            cnicNumber={cnicNumber}
+            phoneNumber={phoneNumber}
+            additionalInfo={additionalInfo}
+            setPageParams={setPageParams}
+          />
+          &nbsp;&nbsp;
+          <Tooltip title="Upload CSV Data">
+            <InputFile
+              label=""
+              accept=".csv"
+              showUploadList={false}
+              onChange={this.handleUploadData}
+            />
+          </Tooltip>
+        </div>
       </div>
     );
   };
@@ -254,6 +298,7 @@ class List extends Component {
         dataSource={data}
         columns={this.getColumns()}
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         bordered
         size="small"
         pagination={false}
@@ -295,14 +340,26 @@ const listQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const importCsvDataMutation = gql`
+  mutation importCsvData($csvData: String!) {
+    importCsvData(csvData: $csvData)
+  }
+`;
+
+const deleteMutation = gql`
   mutation deleteVisitor($_id: String!) {
     deleteVisitor(_id: $_id)
   }
 `;
 
 export default flowRight(
-  graphql(formMutation, {
+  graphql(importCsvDataMutation, {
+    name: 'importCsvData',
+    options: {
+      refetchQueries: ['pagedVisitors'],
+    },
+  }),
+  graphql(deleteMutation, {
     name: 'deleteVisitor',
     options: {
       refetchQueries: ['pagedVisitors'],

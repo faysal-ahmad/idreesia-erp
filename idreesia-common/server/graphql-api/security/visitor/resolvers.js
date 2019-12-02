@@ -8,6 +8,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 import { getVisitors } from './queries';
 import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
 import { createAttachment } from '../../common/attachments/utilities';
+import { processCsvData } from './helpers';
 
 export default {
   Query: {
@@ -218,6 +219,21 @@ export default {
       }
 
       return Visitors.remove(_id);
+    },
+
+    importCsvData(obj, { csvData }, { user }) {
+      if (
+        user &&
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      return processCsvData(csvData, new Date(), user);
     },
 
     setVisitorImage(obj, { _id, imageId }, { user }) {

@@ -69,6 +69,10 @@ extend type Mutation {
 
   deleteVisitor(_id: String!): Int
 
+  importCsvData(
+    csvData: String!
+  ): String
+
   setVisitorImage(_id: String!, imageId: String!): VisitorType
   updateNotes(
     _id: String!

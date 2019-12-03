@@ -146,7 +146,16 @@ export default {
 
     updateVisitorStay(
       obj,
-      { _id, numOfDays, stayReason, stayAllowedBy, dutyId, shiftId, notes },
+      {
+        _id,
+        fromDate,
+        toDate,
+        stayReason,
+        stayAllowedBy,
+        dutyId,
+        shiftId,
+        notes,
+      },
       { user }
     ) {
       if (
@@ -159,17 +168,15 @@ export default {
         );
       }
 
-      const existingStay = VisitorStays.findOne(_id);
-      const fromDate = moment(Number(existingStay.fromDate));
-      const toDate = fromDate.clone();
-      if (numOfDays > 1) {
-        toDate.add(numOfDays - 1, 'days');
-      }
+      const mFromDate = moment(fromDate);
+      const mToDate = moment(toDate);
+      const numOfDays = mToDate.diff(mFromDate, 'days') + 1;
 
       const date = new Date();
       VisitorStays.update(_id, {
         $set: {
-          toDate: toDate.endOf('day').toDate(),
+          fromDate: mFromDate.startOf('day').toDate(),
+          toDate: mToDate.endOf('day').toDate(),
           numOfDays,
           stayReason,
           stayAllowedBy,

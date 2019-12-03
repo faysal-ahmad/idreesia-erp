@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
+import moment from 'moment';
 
 import { Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   CascaderField,
-  InputNumberField,
+  DateField,
   InputTextAreaField,
   SelectField,
   FormButtonsSubmit,
@@ -48,13 +49,17 @@ class EditForm extends Component {
       updateVisitorStay,
     } = this.props;
     form.validateFields(
-      (err, { numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, notes }) => {
+      (
+        err,
+        { fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, notes }
+      ) => {
         if (err) return;
 
         updateVisitorStay({
           variables: {
             _id: visitorStayById._id,
-            numOfDays,
+            fromDate,
+            toDate,
             stayReason,
             stayAllowedBy,
             dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
@@ -99,11 +104,20 @@ class EditForm extends Component {
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputNumberField
-          fieldName="numOfDays"
-          fieldLabel="Num of Days"
-          minValue={1}
-          initialValue={visitorStayById.numOfDays}
+        <DateField
+          fieldName="fromDate"
+          fieldLabel="From Date"
+          initialValue={moment(Number(visitorStayById.fromDate))}
+          required
+          requiredMessage="Please select a from date."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <DateField
+          fieldName="toDate"
+          fieldLabel="To Date"
+          initialValue={moment(Number(visitorStayById.toDate))}
+          required
+          requiredMessage="Please select a to date."
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
@@ -163,7 +177,8 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateVisitorStay(
     $_id: String!
-    $numOfDays: Float!
+    $fromDate: String!
+    $toDate: String!
     $stayReason: String
     $stayAllowedBy: String
     $dutyId: String
@@ -172,7 +187,8 @@ const formMutation = gql`
   ) {
     updateVisitorStay(
       _id: $_id
-      numOfDays: $numOfDays
+      fromDate: $fromDate
+      toDate: $toDate
       stayReason: $stayReason
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId

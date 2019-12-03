@@ -48,7 +48,8 @@ extend type Mutation {
 
   updateVisitorStay(
     _id: String!
-    numOfDays: Float!
+    fromDate: String!
+    toDate: String!
     stayReason: String
     stayAllowedBy: String
     dutyId: String

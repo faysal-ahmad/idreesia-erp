@@ -55,8 +55,11 @@ Meteor.startup(() => {
         const attachment = Attachments.findOne(attachmentId);
         if (attachment) {
           const imgData = Buffer.from(attachment.data, 'base64');
+          res.removeHeader('Pragma');
+          res.removeHeader('Expires');
           res.writeHead(200, {
             'Content-Type': attachment.mimeType,
+            'Cache-Control': `max-age=${365 * 24 * 60 * 60}`,
           });
           res.end(imgData);
         } else {

@@ -87,6 +87,15 @@ export default {
 
       return compact(distincFunction('stayAllowedBy'));
     },
+
+    distinctTeamName() {
+      const distincFunction = Meteor.wrapAsync(
+        VisitorStays.rawCollection().distinct,
+        VisitorStays.rawCollection()
+      );
+
+      return compact(distincFunction('teamName'));
+    },
   },
 
   Mutation: {
@@ -99,7 +108,7 @@ export default {
         stayAllowedBy,
         dutyId,
         shiftId,
-        notes,
+        teamName,
       },
       { user }
     ) {
@@ -134,7 +143,7 @@ export default {
         stayAllowedBy,
         dutyId,
         shiftId,
-        notes,
+        teamName,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -154,7 +163,7 @@ export default {
         stayAllowedBy,
         dutyId,
         shiftId,
-        notes,
+        teamName,
       },
       { user }
     ) {
@@ -182,7 +191,7 @@ export default {
           stayAllowedBy,
           dutyId,
           shiftId,
-          notes,
+          teamName,
           updatedAt: date,
           updatedBy: user._id,
         },

@@ -10,13 +10,15 @@ import {
   AutoCompleteField,
   CascaderField,
   DateField,
-  InputTextAreaField,
   SelectField,
   FormButtonsSubmit,
 } from '/imports/ui/modules/helpers/fields';
 
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
+import {
+  WithDistinctTeamNames,
+  WithDistinctStayAllowedBy,
+} from 'meteor/idreesia-common/composers/security';
 import {
   WithAllDuties,
   WithAllDutyShifts,
@@ -38,6 +40,8 @@ class EditForm extends Component {
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
     distinctStayAllowedByLoading: PropTypes.bool,
+    distinctTeamNames: PropTypes.array,
+    distinctTeamNamesLoading: PropTypes.bool,
   };
 
   handleSubmit = e => {
@@ -51,7 +55,7 @@ class EditForm extends Component {
     form.validateFields(
       (
         err,
-        { fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, notes }
+        { fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, teamName }
       ) => {
         if (err) return;
 
@@ -64,7 +68,7 @@ class EditForm extends Component {
             stayAllowedBy,
             dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
             shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-            notes,
+            teamName,
           },
         })
           .then(() => {
@@ -84,16 +88,20 @@ class EditForm extends Component {
       allDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
+      distinctTeamNamesLoading,
       allDuties,
       allDutyShifts,
       distinctStayAllowedBy,
+      distinctTeamNames,
       form: { getFieldDecorator },
     } = this.props;
+
     if (
       formDataLoading ||
       allDutiesLoading ||
       allDutyShiftsLoading ||
-      distinctStayAllowedByLoading
+      distinctStayAllowedByLoading ||
+      distinctTeamNamesLoading
     )
       return null;
 
@@ -120,6 +128,13 @@ class EditForm extends Component {
           requiredMessage="Please select a to date."
           getFieldDecorator={getFieldDecorator}
         />
+        <AutoCompleteField
+          fieldName="stayAllowedBy"
+          fieldLabel="Stay Allowed By"
+          dataSource={distinctStayAllowedBy}
+          initialValue={visitorStayById.stayAllowedBy}
+          getFieldDecorator={getFieldDecorator}
+        />
         <SelectField
           data={StayReasons}
           getDataValue={({ _id }) => _id}
@@ -127,13 +142,6 @@ class EditForm extends Component {
           fieldName="stayReason"
           fieldLabel="Stay Reason"
           initialValue={visitorStayById.stayReason}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <AutoCompleteField
-          fieldName="stayAllowedBy"
-          fieldLabel="Stay Allowed By"
-          dataSource={distinctStayAllowedBy}
-          initialValue={visitorStayById.stayAllowedBy}
           getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
@@ -144,10 +152,11 @@ class EditForm extends Component {
           initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          initialValue={visitorStayById.notes}
+        <AutoCompleteField
+          fieldName="teamName"
+          fieldLabel="Team Name"
+          dataSource={distinctTeamNames}
+          initialValue={visitorStayById.teamName}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -169,7 +178,7 @@ const formQuery = gql`
       stayAllowedBy
       dutyId
       shiftId
-      notes
+      teamName
     }
   }
 `;
@@ -183,7 +192,7 @@ const formMutation = gql`
     $stayAllowedBy: String
     $dutyId: String
     $shiftId: String
-    $notes: String
+    $teamName: String
   ) {
     updateVisitorStay(
       _id: $_id
@@ -193,7 +202,7 @@ const formMutation = gql`
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId
       shiftId: $shiftId
-      notes: $notes
+      teamName: $teamName
     ) {
       _id
       visitorId
@@ -204,7 +213,7 @@ const formMutation = gql`
       stayAllowedBy
       dutyId
       shiftId
-      notes
+      teamName
     }
   }
 `;
@@ -223,5 +232,6 @@ export default flowRight(
   }),
   WithAllDuties(),
   WithAllDutyShifts(),
-  WithDistinctStayAllowedBy()
+  WithDistinctStayAllowedBy(),
+  WithDistinctTeamNames()
 )(EditForm);

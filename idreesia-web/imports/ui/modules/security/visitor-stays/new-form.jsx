@@ -9,7 +9,6 @@ import {
   AutoCompleteField,
   CascaderField,
   InputNumberField,
-  InputTextAreaField,
   SelectField,
   FormButtonsSubmit,
 } from '/imports/ui/modules/helpers/fields';
@@ -19,7 +18,10 @@ import {
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
+import {
+  WithDistinctTeamNames,
+  WithDistinctStayAllowedBy,
+} from 'meteor/idreesia-common/composers/security';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 class NewForm extends Component {
@@ -35,13 +37,18 @@ class NewForm extends Component {
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
     distinctStayAllowedByLoading: PropTypes.bool,
+    distinctTeamNames: PropTypes.array,
+    distinctTeamNamesLoading: PropTypes.bool,
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { form, visitorId, handleAddItem, createVisitorStay } = this.props;
     form.validateFields(
-      (err, { numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, notes }) => {
+      (
+        err,
+        { numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, teamName }
+      ) => {
         if (err) return;
 
         createVisitorStay({
@@ -52,7 +59,7 @@ class NewForm extends Component {
             stayAllowedBy,
             dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
             shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-            notes,
+            teamName,
           },
         })
           .then(({ data: { createVisitorStay: newVisitorStay } }) => {
@@ -70,15 +77,19 @@ class NewForm extends Component {
       allDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
+      distinctTeamNamesLoading,
       allDuties,
       allDutyShifts,
       distinctStayAllowedBy,
+      distinctTeamNames,
       form: { getFieldDecorator },
     } = this.props;
+
     if (
       allDutiesLoading ||
       allDutyShiftsLoading ||
-      distinctStayAllowedByLoading
+      distinctStayAllowedByLoading ||
+      distinctTeamNamesLoading
     )
       return null;
 
@@ -96,18 +107,18 @@ class NewForm extends Component {
           minValue={1}
           getFieldDecorator={getFieldDecorator}
         />
+        <AutoCompleteField
+          fieldName="stayAllowedBy"
+          fieldLabel="Stay Allowed By"
+          dataSource={distinctStayAllowedBy}
+          getFieldDecorator={getFieldDecorator}
+        />
         <SelectField
           data={StayReasons}
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
           fieldName="stayReason"
           fieldLabel="Stay Reason"
-          getFieldDecorator={getFieldDecorator}
-        />
-        <AutoCompleteField
-          fieldName="stayAllowedBy"
-          fieldLabel="Stay Allowed By"
-          dataSource={distinctStayAllowedBy}
           getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
@@ -117,9 +128,10 @@ class NewForm extends Component {
           fieldLabel="Duty Participation"
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
+        <AutoCompleteField
+          fieldName="teamName"
+          fieldLabel="Team Name"
+          dataSource={distinctTeamNames}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -137,7 +149,7 @@ const formMutation = gql`
     $stayAllowedBy: String
     $dutyId: String
     $shiftId: String
-    $notes: String
+    $teamName: String
   ) {
     createVisitorStay(
       visitorId: $visitorId
@@ -146,7 +158,7 @@ const formMutation = gql`
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId
       shiftId: $shiftId
-      notes: $notes
+      teamName: $teamName
     ) {
       _id
       visitorId
@@ -156,7 +168,7 @@ const formMutation = gql`
       stayAllowedBy
       dutyId
       shiftId
-      notes
+      teamName
     }
   }
 `;
@@ -171,5 +183,6 @@ export default flowRight(
   }),
   WithAllDuties(),
   WithAllDutyShifts(),
-  WithDistinctStayAllowedBy()
+  WithDistinctStayAllowedBy(),
+  WithDistinctTeamNames()
 )(NewForm);

@@ -39,16 +39,16 @@ const ViewForm = ({ formDataLoading, visitorStayById }) => {
         <b>Stay Detail:</b> {detail}
       </List.Item>
       <List.Item>
-        <b>Stay Reason:</b> {stayReason}
+        <b>Stay Allowed By:</b> {visitorStayById.stayAllowedBy}
       </List.Item>
       <List.Item>
-        <b>Stay Allowed By:</b> {visitorStayById.stayAllowedBy}
+        <b>Stay Reason:</b> {stayReason}
       </List.Item>
       <List.Item>
         <b>Duty / Shift:</b> {visitorStayById.dutyShiftName}
       </List.Item>
       <List.Item>
-        <b>Notes:</b> {visitorStayById.notes}
+        <b>Team Name:</b> {visitorStayById.teamName}
       </List.Item>
     </List>
   );
@@ -71,7 +71,7 @@ const formQuery = gql`
       stayReason
       stayAllowedBy
       dutyShiftName
-      notes
+      teamName
     }
   }
 `;

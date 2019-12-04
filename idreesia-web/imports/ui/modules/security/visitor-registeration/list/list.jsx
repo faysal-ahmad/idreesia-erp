@@ -52,10 +52,6 @@ class List extends Component {
     }),
   };
 
-  state = {
-    selectedRows: [],
-  };
-
   statusColumn = {
     title: '',
     key: 'status',
@@ -163,14 +159,6 @@ class List extends Component {
     this.cityCountryColumn,
     this.actionsColumn,
   ];
-
-  rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      this.setState({
-        selectedRows,
-      });
-    },
-  };
 
   onSelect = visitor => {
     const { handleItemSelected } = this.props;
@@ -298,7 +286,6 @@ class List extends Component {
         dataSource={data}
         columns={this.getColumns()}
         title={this.getTableHeader}
-        rowSelection={this.rowSelection}
         bordered
         size="small"
         pagination={false}

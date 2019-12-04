@@ -88,7 +88,7 @@ export default {
       return compact(distincFunction('stayAllowedBy'));
     },
 
-    distinctTeamName() {
+    distinctTeamNames() {
       const distincFunction = Meteor.wrapAsync(
         VisitorStays.rawCollection().distinct,
         VisitorStays.rawCollection()

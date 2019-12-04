@@ -11,6 +11,7 @@ type SalaryType {
   otherDeduction: Int
   arrears: Int
   netPayment: Int
+  rashanMadad: Int
 
   karkun: KarkunType
   job: JobType
@@ -45,6 +46,7 @@ extend type Mutation {
     otherDeduction: Int
     newLoan: Int
     arrears: Int
+    rashanMadad: Int
   ): SalaryType
 
   deleteSalaries(month: String!, ids: [String]!): Int

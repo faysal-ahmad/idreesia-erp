@@ -37,6 +37,7 @@ export class List extends Component {
     handleCreateMissingSalaries: PropTypes.func,
     handleEditSalary: PropTypes.func,
     handleViewSalaryReceipts: PropTypes.func,
+    handleViewRashanReceipts: PropTypes.func,
     handleDeleteSelectedSalaries: PropTypes.func,
     handleDeleteAllSalaries: PropTypes.func,
   };
@@ -60,6 +61,11 @@ export class List extends Component {
       title: 'Salary',
       dataIndex: 'salary',
       key: 'salary',
+    },
+    {
+      title: 'Rashan',
+      dataIndex: 'rashanMadad',
+      key: 'rashanMadad',
     },
     {
       title: 'Loan',
@@ -178,6 +184,14 @@ export class List extends Component {
     }
   };
 
+  handlePrintRashanReceipts = () => {
+    const { handleViewRashanReceipts } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewRashanReceipts) {
+      handleViewRashanReceipts(selectedRows);
+    }
+  };
+
   handleDownloadAsCSV = () => {
     const { salariesByMonth } = this.props;
     const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
@@ -262,6 +276,10 @@ export class List extends Component {
         <Menu.Item key="3" onClick={this.handlePrintSalaryReceipts}>
           <Icon type="printer" />
           Print Salary Receipts
+        </Menu.Item>
+        <Menu.Item key="3" onClick={this.handlePrintRashanReceipts}>
+          <Icon type="printer" />
+          Print Rashan Receipts
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="4" onClick={this._handleDeleteSelectedSalaries}>
@@ -349,6 +367,7 @@ const salariesByMonthQuery = gql`
       otherDeduction
       arrears
       netPayment
+      rashanMadad
       karkun {
         _id
         name

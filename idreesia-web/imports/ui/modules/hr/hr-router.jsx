@@ -26,7 +26,11 @@ import {
   AttendanceSheetsList,
   AttendanceSheetsKarkunCards,
 } from './attendance-sheets';
-import { SalarySheetsList, SalarySheetsSalaryReceipts } from './salary-sheets';
+import {
+  SalarySheetsList,
+  SalarySheetsSalaryReceipts,
+  SalarySheetsRashanReceipts,
+} from './salary-sheets';
 import {
   SharedResidencesNewForm,
   SharedResidencesEditForm,
@@ -76,6 +80,10 @@ const HRRouter = () => (
     <Route
       path={paths.salarySheetsSalaryReceiptsPath}
       component={SalarySheetsSalaryReceipts}
+    />
+    <Route
+      path={paths.salarySheetsRashanReceiptsPath}
+      component={SalarySheetsRashanReceipts}
     />
     <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
 

@@ -48,6 +48,10 @@ export default new SimpleSchema({
     type: Number,
     optional: true,
   },
+  rashanMadad: {
+    type: Number,
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

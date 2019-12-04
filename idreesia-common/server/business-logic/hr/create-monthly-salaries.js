@@ -46,6 +46,7 @@ export function createMonthlySalaries(
           otherDeduction: 0,
           netPayment: 0,
           arrears: 0,
+          rashanMadad: 0,
           createdAt: date,
           createdBy: user._id,
         });
@@ -58,6 +59,7 @@ export function createMonthlySalaries(
         );
         const closingLoan = openingLoan - loanDeduction;
         const netPayment = salary - loanDeduction;
+        const rashanMadad = existingPreviousMonthSalary.rashanMadad;
 
         Salaries.insert({
           karkunId: _id,
@@ -71,6 +73,7 @@ export function createMonthlySalaries(
           otherDeduction: 0,
           arrears: 0,
           netPayment,
+          rashanMadad,
           createdAt: date,
           createdBy: user._id,
         });

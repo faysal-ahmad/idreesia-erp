@@ -127,6 +127,7 @@ export default {
         newLoan,
         otherDeduction,
         arrears,
+        rashanMadad,
       },
       { user }
     ) {
@@ -150,9 +151,9 @@ export default {
           otherDeduction,
           newLoan,
           arrears,
+          rashanMadad,
           closingLoan: openingLoan + newLoan - loanDeduction,
-          netPayment:
-            salary + arrears - loanDeduction - otherDeduction,
+          netPayment: salary + arrears - loanDeduction - otherDeduction,
           updatedAt: date,
           updatedBy: user._id,
         },

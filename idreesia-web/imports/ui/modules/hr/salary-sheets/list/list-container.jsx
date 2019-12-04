@@ -78,6 +78,7 @@ class ListContainer extends Component {
     newLoan,
     otherDeduction,
     arrears,
+    rashanMadad,
   }) => {
     const { updateSalary } = this.props;
     this.setState({
@@ -94,6 +95,7 @@ class ListContainer extends Component {
         newLoan,
         otherDeduction,
         arrears,
+        rashanMadad,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -107,6 +109,16 @@ class ListContainer extends Component {
     const ids = selectedRows.map(row => row._id);
     const idsString = ids.join(',');
     const path = `${paths.salarySheetsSalaryReceiptsPath}?ids=${idsString}`;
+    history.push(path);
+  };
+
+  handleViewRashanReceipts = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { history } = this.props;
+    const ids = selectedRows.map(row => row._id);
+    const idsString = ids.join(',');
+    const path = `${paths.salarySheetsRashanReceiptsPath}?ids=${idsString}`;
     history.push(path);
   };
 
@@ -214,6 +226,7 @@ class ListContainer extends Component {
           setPageParams={this.setPageParams}
           handleEditSalary={this.handleEditSalary}
           handleViewSalaryReceipts={this.handleViewSalaryReceipts}
+          handleViewRashanReceipts={this.handleViewRashanReceipts}
           handleCreateMissingSalaries={this.handleCreateMissingSalaries}
           handleDeleteSelectedSalaries={this.handleDeleteSelectedSalaries}
           handleDeleteAllSalaries={this.handleDeleteAllSalaries}
@@ -255,6 +268,7 @@ const updateMutation = gql`
     $newLoan: Int
     $otherDeduction: Int
     $arrears: Int
+    $rashanMadad: Int
   ) {
     updateSalary(
       _id: $_id
@@ -264,6 +278,7 @@ const updateMutation = gql`
       newLoan: $newLoan
       otherDeduction: $otherDeduction
       arrears: $arrears
+      rashanMadad: $rashanMadad
     ) {
       _id
       karkunId
@@ -277,6 +292,7 @@ const updateMutation = gql`
       otherDeduction
       arrears
       netPayment
+      rashanMadad
     }
   }
 `;

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
 const LabelStyle = {
@@ -95,7 +95,12 @@ export default class SalaryReceipts extends Component {
 
   render() {
     const { salariesByIds } = this.props;
-    const sortedSalariesByMonth = sortBy(salariesByIds, 'karkun.name');
+    // Filter out records where the net payment amount is zero.
+    const filteredSalaries = filter(
+      salariesByIds,
+      salary => salary.netPayment !== 0
+    );
+    const sortedSalariesByMonth = sortBy(filteredSalaries, 'karkun.name');
 
     const receipts = sortedSalariesByMonth.map(salary =>
       this.getSalaryReceipts(salary)

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
 const LabelStyle = {
@@ -86,7 +86,12 @@ export default class RashanReceipts extends Component {
 
   render() {
     const { salariesByIds } = this.props;
-    const sortedSalariesByMonth = sortBy(salariesByIds, 'karkun.name');
+    // Filter out records where the rashan amount is zero.
+    const filteredSalaries = filter(
+      salariesByIds,
+      salary => salary.rashanMadad !== 0
+    );
+    const sortedSalariesByMonth = sortBy(filteredSalaries, 'karkun.name');
 
     const receipts = sortedSalariesByMonth.map(salary =>
       this.getRashanReceipts(salary)

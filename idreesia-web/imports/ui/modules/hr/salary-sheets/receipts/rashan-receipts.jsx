@@ -6,14 +6,7 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
-const LabelStyle = {
-  fontWeight: 'bold',
-  fontSize: 18,
-};
-
-const DataStyle = {
-  fontSize: 18,
-};
+import { Item } from './item';
 
 const ContainerStyle = {
   display: 'flex',
@@ -23,20 +16,9 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-const Item = ({ label, value }) => (
-  <Row type="flex" gutter={16}>
-    <Col order={1}>
-      <span style={LabelStyle}>{label}:</span>
-    </Col>
-    <Col order={2}>
-      <span style={DataStyle}>{value}</span>
-    </Col>
-  </Row>
-);
-
-Item.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.any,
+const HeaderStyle = {
+  fontSize: 20,
+  border: 'solid',
 };
 
 export default class RashanReceipts extends Component {
@@ -64,6 +46,9 @@ export default class RashanReceipts extends Component {
 
     return (
       <div key={salary._id} className="salary-receipt-print-view">
+        <Row type="flex" justify="center" style={HeaderStyle}>
+          <div>Rashan Receipt - {displayMonth}</div>
+        </Row>
         <Row type="flex" justify="start" gutter={10}>
           {imageColumn}
           <Col order={2} style={{ minWidth: '200px' }}>
@@ -72,7 +57,6 @@ export default class RashanReceipts extends Component {
             <Item label="CNIC" value={karkun.cnicNumber || ''} />
             <Item label="Phone" value={karkun.contactNumber1 || ''} />
             <Item label="Dept." value={job.name} />
-            <Item label="Month" value={displayMonth} />
           </Col>
           <Col order={3} style={{ minWidth: '200px' }}>
             <Item label="Rashan Payment" value={salary.rashanMadad} />

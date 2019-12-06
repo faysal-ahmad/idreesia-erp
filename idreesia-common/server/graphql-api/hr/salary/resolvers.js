@@ -24,6 +24,12 @@ export default {
         _id: { $eq: salaryType.jobId },
       });
     },
+    approver: salaryType => {
+      if (!salaryType.approvedBy) return null;
+      return Karkuns.findOne({
+        _id: { $eq: salaryType.approvedBy },
+      });
+    },
   },
 
   Query: {
@@ -157,9 +163,70 @@ export default {
           updatedAt: date,
           updatedBy: user._id,
         },
+        $unset: {
+          approvedOn: '',
+          approvedBy: '',
+        },
       });
 
       return Salaries.findOne(_id);
+    },
+
+    approveSalaries(obj, { month, ids }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_SALARIES])
+      ) {
+        throw new Error(
+          'You do not have permission to approve salaries in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      const date = new Date();
+      return Salaries.update(
+        {
+          _id: { $in: ids },
+          month: formattedMonth,
+        },
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
+    },
+
+    approveAllSalaries(obj, { month }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_SALARIES])
+      ) {
+        throw new Error(
+          'You do not have permission to approve salaries in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      const date = new Date();
+      return Salaries.update(
+        {
+          month: formattedMonth,
+        },
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
     },
 
     deleteSalaries(obj, { month, ids }, { user }) {

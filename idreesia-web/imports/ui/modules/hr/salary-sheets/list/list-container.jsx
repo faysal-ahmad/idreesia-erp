@@ -23,6 +23,8 @@ class ListContainer extends Component {
     allJobsLoading: PropTypes.bool,
     createSalaries: PropTypes.func,
     updateSalary: PropTypes.func,
+    approveSalaries: PropTypes.func,
+    approveAllSalaries: PropTypes.func,
     deleteSalaries: PropTypes.func,
     deleteAllSalaries: PropTypes.func,
 
@@ -148,6 +150,59 @@ class ListContainer extends Component {
       });
   };
 
+  handleApproveSelectedSalaries = selectedSalaries => {
+    if (!selectedSalaries || selectedSalaries.length === 0) return;
+
+    const {
+      approveSalaries,
+      queryParams: { selectedMonth },
+    } = this.props;
+    const ids = selectedSalaries.map(({ _id }) => _id);
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
+
+    approveSalaries({
+      variables: {
+        ids,
+        month: _selectedMonth.format(Formats.DATE_FORMAT),
+      },
+    })
+      .then(() => {
+        message.success('Selected salary records have been approved.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleApproveAllSalaries = () => {
+    const {
+      approveAllSalaries,
+      queryParams: { selectedMonth },
+    } = this.props;
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
+
+    approveAllSalaries({
+      variables: {
+        month: _selectedMonth.format(Formats.DATE_FORMAT),
+      },
+    })
+      .then(() => {
+        message.success(
+          'All salary records for the month have been approved.',
+          5
+        );
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
   handleDeleteSelectedSalaries = selectedSalaries => {
     if (!selectedSalaries || selectedSalaries.length === 0) return;
 
@@ -228,6 +283,8 @@ class ListContainer extends Component {
           handleViewSalaryReceipts={this.handleViewSalaryReceipts}
           handleViewRashanReceipts={this.handleViewRashanReceipts}
           handleCreateMissingSalaries={this.handleCreateMissingSalaries}
+          handleApproveSelectedSalaries={this.handleApproveSelectedSalaries}
+          handleApproveAllSalaries={this.handleApproveAllSalaries}
           handleDeleteSelectedSalaries={this.handleDeleteSelectedSalaries}
           handleDeleteAllSalaries={this.handleDeleteAllSalaries}
           handleItemSelected={this.handleItemSelected}
@@ -297,6 +354,18 @@ const updateMutation = gql`
   }
 `;
 
+const approveMutation = gql`
+  mutation approveSalaries($month: String!, $ids: [String]!) {
+    approveSalaries(month: $month, ids: $ids)
+  }
+`;
+
+const approveAllMutation = gql`
+  mutation approveAllSalaries($month: String!) {
+    approveAllSalaries(month: $month)
+  }
+`;
+
 const deleteMutation = gql`
   mutation deleteSalaries($month: String!, $ids: [String]!) {
     deleteSalaries(month: $month, ids: $ids)
@@ -318,6 +387,18 @@ export default flowRight(
   }),
   graphql(updateMutation, {
     name: 'updateSalary',
+    options: {
+      refetchQueries: ['salariesByMonth'],
+    },
+  }),
+  graphql(approveMutation, {
+    name: 'approveSalaries',
+    options: {
+      refetchQueries: ['salariesByMonth'],
+    },
+  }),
+  graphql(approveAllMutation, {
+    name: 'approveAllSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],
     },

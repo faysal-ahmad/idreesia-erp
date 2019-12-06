@@ -15,7 +15,10 @@ type SalaryType {
 
   karkun: KarkunType
   job: JobType
+  approver: KarkunType
 
+  approvedOn: String
+  approvedBy: String
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -49,6 +52,8 @@ extend type Mutation {
     rashanMadad: Int
   ): SalaryType
 
+  approveSalaries(month: String!, ids: [String]!): Int
+  approveAllSalaries(month: String!): Int
   deleteSalaries(month: String!, ids: [String]!): Int
   deleteAllSalaries(month: String!): Int
 }

@@ -16,12 +16,21 @@ import {
   Table,
   Tooltip,
 } from '/imports/ui/controls';
-import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  flowRight,
+  keyBy,
+  memoize,
+  sortBy,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 const SelectStyle = {
   width: '300px',
+};
+
+const IconStyle = {
+  fontSize: '20px',
 };
 
 export class List extends Component {
@@ -30,14 +39,18 @@ export class List extends Component {
     selectedJobId: PropTypes.string,
     allJobs: PropTypes.array,
 
-    salariesByMonth: PropTypes.array,
-    salariesLoading: PropTypes.bool,
+    prevSalaries: PropTypes.array,
+    prevSalariesLoading: PropTypes.bool,
+    currentSalaries: PropTypes.array,
+    currentSalariesLoading: PropTypes.bool,
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     handleCreateMissingSalaries: PropTypes.func,
     handleEditSalary: PropTypes.func,
     handleViewSalaryReceipts: PropTypes.func,
     handleViewRashanReceipts: PropTypes.func,
+    handleApproveSelectedSalaries: PropTypes.func,
+    handleApproveAllSalaries: PropTypes.func,
     handleDeleteSelectedSalaries: PropTypes.func,
     handleDeleteAllSalaries: PropTypes.func,
   };
@@ -47,6 +60,39 @@ export class List extends Component {
   };
 
   columns = [
+    {
+      key: 'approved',
+      render: (text, record) => {
+        if (record.approvedOn) {
+          let tooltip = 'Approved';
+          if (record.approver) {
+            tooltip = `Approved By ${record.approver.name}`;
+          }
+
+          return (
+            <Tooltip title={tooltip}>
+              <Icon
+                style={IconStyle}
+                type="check-circle"
+                theme="twoTone"
+                twoToneColor="#52c41a"
+              />
+            </Tooltip>
+          );
+        }
+
+        return (
+          <Tooltip title="Not Approved">
+            <Icon
+              style={IconStyle}
+              type="warning"
+              theme="twoTone"
+              twoToneColor="orange"
+            />
+          </Tooltip>
+        );
+      },
+    },
     {
       title: 'Name',
       key: 'name',
@@ -61,11 +107,27 @@ export class List extends Component {
       title: 'Salary',
       dataIndex: 'salary',
       key: 'salary',
+      render: (text, record) => {
+        if (record.salary !== record.prevSalary) {
+          return (
+            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
+          );
+        }
+        return text;
+      },
     },
     {
       title: 'Rashan',
       dataIndex: 'rashanMadad',
       key: 'rashanMadad',
+      render: (text, record) => {
+        if (record.rashanMadad !== record.prevRashanMadad) {
+          return (
+            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
+          );
+        }
+        return text;
+      },
     },
     {
       title: 'Loan',
@@ -96,11 +158,27 @@ export class List extends Component {
       title: 'Other Deduction',
       dataIndex: 'otherDeduction',
       key: 'otherDeduction',
+      render: (text, record) => {
+        if (record.otherDeduction !== record.prevOtherDeduction) {
+          return (
+            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
+          );
+        }
+        return text;
+      },
     },
     {
       title: 'Arrears',
       dataIndex: 'arrears',
       key: 'arrears',
+      render: (text, record) => {
+        if (record.arrears !== record.prevArrears) {
+          return (
+            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
+          );
+        }
+        return text;
+      },
     },
     {
       title: 'Net Payment',
@@ -193,8 +271,8 @@ export class List extends Component {
   };
 
   handleDownloadAsCSV = () => {
-    const { salariesByMonth } = this.props;
-    const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
+    const { currentSalaries } = this.props;
+    const sortedSalariesByMonth = sortBy(currentSalaries, 'karkun.name');
 
     const header =
       'Name, S/O, CNIC, Phone No., Dept, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
@@ -208,6 +286,14 @@ export class List extends Component {
       type: 'data:text/csv;charset=utf-8',
     });
     FileSaver.saveAs(blob, 'salary-sheet.csv');
+  };
+
+  _handleApproveSelectedSalaries = () => {
+    const { selectedRows } = this.state;
+    const { handleApproveSelectedSalaries } = this.props;
+    if (handleApproveSelectedSalaries) {
+      handleApproveSelectedSalaries(selectedRows);
+    }
   };
 
   _handleDeleteSelectedSalaries = () => {
@@ -261,7 +347,10 @@ export class List extends Component {
   };
 
   getActionsMenu = () => {
-    const { handleCreateMissingSalaries } = this.props;
+    const {
+      handleCreateMissingSalaries,
+      handleApproveAllSalaries,
+    } = this.props;
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingSalaries}>
@@ -269,24 +358,33 @@ export class List extends Component {
           Create Missing Salaries
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
+        <Menu.Item key="2-1" onClick={this._handleApproveSelectedSalaries}>
+          <Icon type="check-circle" />
+          Approve Selected Salaries
+        </Menu.Item>
+        <Menu.Item key="2-2" onClick={handleApproveAllSalaries}>
+          <Icon type="check-circle" />
+          Approve All Salaries
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={this.handleDownloadAsCSV}>
           <Icon type="file-excel" />
           Download as CSV
         </Menu.Item>
-        <Menu.Item key="3" onClick={this.handlePrintSalaryReceipts}>
+        <Menu.Item key="4" onClick={this.handlePrintSalaryReceipts}>
           <Icon type="printer" />
           Print Salary Receipts
         </Menu.Item>
-        <Menu.Item key="3" onClick={this.handlePrintRashanReceipts}>
+        <Menu.Item key="5" onClick={this.handlePrintRashanReceipts}>
           <Icon type="printer" />
           Print Rashan Receipts
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="4" onClick={this._handleDeleteSelectedSalaries}>
+        <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
           <Icon type="delete" />
           Delete Selected Salaries
         </Menu.Item>
-        <Menu.Item key="5" onClick={this._handleDeleteAllSalaries}>
+        <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
           <Icon type="delete" />
           Delete All Salaries
         </Menu.Item>
@@ -333,9 +431,26 @@ export class List extends Component {
     );
   };
 
+  getSortedSalaries = memoize((currentSalaries, prevSalaries) => {
+    const prevSalariesMap = keyBy(prevSalaries, 'karkunId');
+    const sortedCurrentSalaries = sortBy(currentSalaries, 'karkun.name');
+    return sortedCurrentSalaries.map(currentSalary => {
+      const prevSalary = prevSalariesMap[currentSalary.karkunId];
+      return Object.assign({}, currentSalary, {
+        prevSalary: prevSalary ? prevSalary.salary : 0,
+        prevOtherDeduction: prevSalary ? prevSalary.otherDeduction : 0,
+        prevArrears: prevSalary ? prevSalary.arrears : 0,
+        prevRashanMadad: prevSalary ? prevSalary.rashanMadad : 0,
+      });
+    });
+  });
+
   render() {
-    const { salariesByMonth } = this.props;
-    const sortedSalariesByMonth = sortBy(salariesByMonth, 'karkun.name');
+    const { currentSalaries, prevSalaries } = this.props;
+    const sortedSalariesByMonth = this.getSortedSalaries(
+      currentSalaries,
+      prevSalaries
+    );
 
     return (
       <Table
@@ -352,7 +467,7 @@ export class List extends Component {
   }
 }
 
-const salariesByMonthQuery = gql`
+const currentSalariesQuery = gql`
   query salariesByMonth($month: String!, $jobId: String) {
     salariesByMonth(month: $month, jobId: $jobId) {
       _id
@@ -368,6 +483,12 @@ const salariesByMonthQuery = gql`
       arrears
       netPayment
       rashanMadad
+      approvedOn
+      approvedBy
+      approver {
+        _id
+        name
+      }
       karkun {
         _id
         name
@@ -384,9 +505,44 @@ const salariesByMonthQuery = gql`
   }
 `;
 
+const prevSalariesQuery = gql`
+  query salariesByMonth($month: String!, $jobId: String) {
+    salariesByMonth(month: $month, jobId: $jobId) {
+      _id
+      karkunId
+      month
+      jobId
+      salary
+      otherDeduction
+      arrears
+      rashanMadad
+    }
+  }
+`;
+
 export default flowRight(
-  graphql(salariesByMonthQuery, {
-    props: ({ data }) => ({ salariesLoading: data.loading, ...data }),
+  graphql(prevSalariesQuery, {
+    props: ({ data }) => ({
+      prevSalariesLoading: data.loading,
+      prevSalaries: data.salariesByMonth,
+      ...data,
+    }),
+    options: ({ selectedMonth, selectedJobId }) => {
+      const previousMonth = selectedMonth.clone().subtract(1, 'month');
+      return {
+        variables: {
+          month: previousMonth.format(Formats.DATE_FORMAT),
+          jobId: selectedJobId,
+        },
+      };
+    },
+  }),
+  graphql(currentSalariesQuery, {
+    props: ({ data }) => ({
+      currentSalariesLoading: data.loading,
+      currentSalaries: data.salariesByMonth,
+      ...data,
+    }),
     options: ({ selectedMonth, selectedJobId }) => ({
       variables: {
         month: selectedMonth.format(Formats.DATE_FORMAT),

@@ -151,6 +151,10 @@ const permissionsData = [
             title: 'Delete Employees Data',
             key: PermissionConstants.HR_DELETE_EMPLOYEES,
           },
+          {
+            title: 'Approve Salaries Data',
+            key: PermissionConstants.HR_APPROVE_SALARIES,
+          },
         ],
       },
       {

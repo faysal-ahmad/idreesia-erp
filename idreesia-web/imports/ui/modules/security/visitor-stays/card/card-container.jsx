@@ -1,15 +1,17 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import ReactToPrint from "react-to-print";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
+import ReactToPrint from 'react-to-print';
 
-import { Button, Icon } from "/imports/ui/controls";
-import StayCard from "./stay-card";
+import { Button, Icon } from '/imports/ui/controls';
+import DutyCard from './duty-card';
+import StayCard from './stay-card';
 
 class StayCardContainer extends Component {
   static propTypes = {
+    cardType: PropTypes.string,
     visitorId: PropTypes.string,
     visitorStayId: PropTypes.string,
     visitorLoading: PropTypes.bool,
@@ -25,19 +27,31 @@ class StayCardContainer extends Component {
   }
 
   getCardMarkup() {
-    const { visitorById, visitorStayById } = this.props;
-    return (
-      <Fragment>
+    const { cardType, visitorById, visitorStayById } = this.props;
+    const card =
+      cardType === 'stay-card' ? (
         <StayCard
           ref={this.cardRef}
           visitor={visitorById}
           visitorStay={visitorStayById}
         />
-        <div style={{ paddingTop: "5px" }}>
+      ) : (
+        <DutyCard
+          ref={this.cardRef}
+          visitor={visitorById}
+          visitorStay={visitorStayById}
+        />
+      );
+
+    return (
+      <Fragment>
+        {card}
+        <div style={{ paddingTop: '5px' }}>
           <ReactToPrint
             trigger={() => (
               <Button type="primary" size="large">
-                <Icon type="printer" />Print
+                <Icon type="printer" />
+                Print
               </Button>
             )}
             content={() => this.cardRef.current}
@@ -73,6 +87,10 @@ const formQueryVisitor = gql`
       contactNumber1
       city
       criminalRecord
+      image {
+        _id
+        data
+      }
     }
   }
 `;

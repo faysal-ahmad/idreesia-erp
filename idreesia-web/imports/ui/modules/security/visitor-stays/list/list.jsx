@@ -14,14 +14,12 @@ import {
   Table,
   Tooltip,
   Modal,
-  Row,
-  Col,
   message,
 } from '/imports/ui/controls';
 
 import NewForm from '../new-form';
 import EditForm from '../edit-form';
-import StayCard from '../card/stay-card-container';
+import CardContainer from '../card/card-container';
 
 class List extends Component {
   static propTypes = {
@@ -43,7 +41,8 @@ class List extends Component {
   state = {
     showNewFormModal: false,
     showEditFormModal: false,
-    showStayCard: false,
+    showCard: false,
+    cardType: null,
     visitorStayId: null,
   };
 
@@ -82,6 +81,7 @@ class List extends Component {
 
   actionsColumn = {
     key: 'action',
+    width: 100,
     render: (text, record) => {
       if (record.cancelledDate) {
         const title = `Cancelled on ${moment(
@@ -91,52 +91,59 @@ class List extends Component {
       }
 
       const editAction = (
-        <Col>
-          <Tooltip title="Edit stay">
-            <Icon
-              type="edit"
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleEditClicked(record);
-              }}
-            />
-          </Tooltip>
-        </Col>
+        <Tooltip title="Edit stay">
+          <Icon
+            type="edit"
+            className="list-actions-icon"
+            onClick={() => {
+              this.handleEditClicked(record);
+            }}
+          />
+        </Tooltip>
       );
 
       const cancelAction = (
-        <Col>
-          <Popconfirm
-            title="Are you sure you want to cancel this stay entry?"
-            onConfirm={() => {
-              this.handleCancelClicked(record);
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Tooltip title="Cancel">
-              <Icon type="stop" className="list-actions-icon" />
-            </Tooltip>
-          </Popconfirm>
-        </Col>
+        <Popconfirm
+          title="Are you sure you want to cancel this stay entry?"
+          onConfirm={() => {
+            this.handleCancelClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Cancel">
+            <Icon type="stop" className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
       );
 
+      const dutyCardAction = record.stayReason ? (
+        <Tooltip title="Duty Card">
+          <Icon
+            type="idcard"
+            className="list-actions-icon"
+            onClick={() => {
+              this.handleDutyCardClicked(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
       return (
-        <Row type="flex" justify="start" align="middle" gutter={16}>
-          <Col>
-            <Tooltip title="View card">
-              <Icon
-                type="idcard"
-                className="list-actions-icon"
-                onClick={() => {
-                  this.handleShowCardClicked(record);
-                }}
-              />
-            </Tooltip>
-          </Col>
+        <div className="list-actions-column">
+          <Tooltip title="Night Stay Card">
+            <Icon
+              type="solution"
+              className="list-actions-icon"
+              onClick={() => {
+                this.handleNightStayCardClicked(record);
+              }}
+            />
+          </Tooltip>
           {editAction}
           {cancelAction}
-        </Row>
+          {dutyCardAction}
+        </div>
       );
     },
   };
@@ -182,16 +189,26 @@ class List extends Component {
     });
   };
 
-  handleShowCardClicked = record => {
+  handleNightStayCardClicked = record => {
     this.setState({
-      showStayCard: true,
+      showCard: true,
+      cardType: 'stay-card',
+      visitorStayId: record._id,
+    });
+  };
+
+  handleDutyCardClicked = record => {
+    this.setState({
+      showCard: true,
+      cardType: 'duty-card',
       visitorStayId: record._id,
     });
   };
 
   handleCloseViewCard = () => {
     this.setState({
-      showStayCard: false,
+      showCard: false,
+      cardType: null,
       visitorStayId: null,
     });
   };
@@ -205,7 +222,8 @@ class List extends Component {
   handleCloseNewForm = newVisitorStay => {
     this.setState({
       showNewFormModal: false,
-      showStayCard: true,
+      showCard: true,
+      cardType: 'stay-card',
       visitorStayId: newVisitorStay._id,
     });
   };
@@ -254,7 +272,8 @@ class List extends Component {
     const {
       showNewFormModal,
       showEditFormModal,
-      showStayCard,
+      showCard,
+      cardType,
       visitorStayId,
     } = this.state;
 
@@ -262,16 +281,17 @@ class List extends Component {
     const numPageSize = pageSize || 20;
 
     const card =
-      showStayCard && visitorStayId ? (
+      showCard && visitorStayId ? (
         <Modal
           closable={false}
-          visible={showStayCard}
-          width={400}
+          visible={showCard}
+          width={cardType === 'stay-card' ? 400 : 500}
           footer={null}
         >
-          <StayCard
+          <CardContainer
             visitorId={visitorId}
             visitorStayId={visitorStayId}
+            cardType={cardType}
             onCloseCard={this.handleCloseViewCard}
           />
         </Modal>

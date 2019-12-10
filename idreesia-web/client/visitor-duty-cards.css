@@ -1,0 +1,55 @@
+.visitor_duty_card {
+  border: 2px solid #000000;
+  border-radius: 10px;
+  width: 450px;
+  height: 255px;
+}
+
+.visitor_duty_card_content {
+  display: flex;
+  width: 100%;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.visitor_duty_card_heading {
+  border-bottom: 2px solid black;
+  color: black;
+  font-weight: bold;
+  font-family: arial;
+  font-size: 18px;
+  text-align: center;
+  width: 100%;
+}
+
+.visitor_duty_card_item {
+  font-family: arial;
+  font-size: 16px;
+  color: black;
+}
+
+.visitor_duty_card_pic {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: 150px;
+}
+
+.visitor_duty_card_footer {
+  border-top: 2px solid black;
+  color: black;
+  font-size: 12px;
+  text-align: center;
+  padding-top: 4px;
+  width: 100%;
+};
+
+@media print {
+  .visitor-duty-card-print-view { 
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
+    padding-top: 50px;
+    width: 800px
+  }
+};

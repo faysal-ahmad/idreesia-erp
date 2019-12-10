@@ -16,6 +16,8 @@ type VisitorType {
   otherNotes: String
   verified: Boolean
 
+  image: Attachment
+
   createdAt: String
   createdBy: String
   updatedAt: String

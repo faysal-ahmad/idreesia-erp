@@ -1,11 +1,11 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import moment from "moment";
-import { find, flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
+import { find, flowRight } from 'lodash';
 
-import { StayReasons } from "meteor/idreesia-common/constants/security";
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
   Button,
   Pagination,
@@ -14,14 +14,12 @@ import {
   Table,
   Tooltip,
   Modal,
-  Row,
-  Col,
   message,
-} from "/imports/ui/controls";
+} from '/imports/ui/controls';
 
-import NewForm from "../new-form";
-import EditForm from "../edit-form";
-import StayCard from "../card/stay-card-container";
+import NewForm from '../new-form';
+import EditForm from '../edit-form';
+import CardContainer from '../card/card-container';
 
 class List extends Component {
   static propTypes = {
@@ -43,30 +41,31 @@ class List extends Component {
   state = {
     showNewFormModal: false,
     showEditFormModal: false,
-    showStayCard: false,
+    showCard: false,
+    cardType: null,
     visitorStayId: null,
   };
 
   stayDetailsColumn = {
-    title: "Stay Details",
-    key: "stayDetails",
+    title: 'Stay Details',
+    key: 'stayDetails',
     render: (text, record) => {
       const fromDate = moment(Number(record.fromDate));
       const toDate = moment(Number(record.toDate));
       const days = record.numOfDays;
       if (days === 1) {
-        return `1 day - [${fromDate.format("DD MMM, YYYY")}]`;
+        return `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
       }
       return `${days} days - [${fromDate.format(
-        "DD MMM, YYYY"
-      )} - ${toDate.format("DD MMM, YYYY")}]`;
+        'DD MMM, YYYY'
+      )} - ${toDate.format('DD MMM, YYYY')}]`;
     },
   };
 
   stayReasonColumn = {
-    title: "Stay Reason",
-    key: "stayReason",
-    dataIndex: "stayReason",
+    title: 'Stay Reason',
+    key: 'stayReason',
+    dataIndex: 'stayReason',
     render: text => {
       if (!text) return null;
       const reason = find(StayReasons, ({ _id }) => _id === text);
@@ -75,73 +74,76 @@ class List extends Component {
   };
 
   dutyShiftNameColumn = {
-    title: "Duty / Shift",
-    key: "dutyShiftName",
-    dataIndex: "dutyShiftName",
+    title: 'Duty / Shift',
+    key: 'dutyShiftName',
+    dataIndex: 'dutyShiftName',
   };
 
   actionsColumn = {
-    key: "action",
+    key: 'action',
+    width: 100,
     render: (text, record) => {
       if (record.cancelledDate) {
         const title = `Cancelled on ${moment(
           Number(record.cancelledDate)
-        ).format("DD MMM, YYYY")}`;
+        ).format('DD MMM, YYYY')}`;
         return <Tooltip title={title}>Cancelled</Tooltip>;
       }
 
-      const fromDate = moment(Number(record.fromDate));
-      const toDate = moment(Number(record.toDate));
-      const currentDate = moment();
-      const isValid = currentDate.isBetween(fromDate, toDate);
-
-      const editAction = isValid ? (
-        <Col>
-          <Tooltip title="Edit stay">
-            <Icon
-              type="edit"
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleEditClicked(record);
-              }}
-            />
-          </Tooltip>
-        </Col>
-      ) : null;
-
-      const cancelAction = isValid ? (
-        <Col>
-          <Popconfirm
-            title="Are you sure you want to cancel this stay entry?"
-            onConfirm={() => {
-              this.handleCancelClicked(record);
+      const editAction = (
+        <Tooltip title="Edit stay">
+          <Icon
+            type="edit"
+            className="list-actions-icon"
+            onClick={() => {
+              this.handleEditClicked(record);
             }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Tooltip title="Cancel">
-              <Icon type="stop" className="list-actions-icon" />
-            </Tooltip>
-          </Popconfirm>
-        </Col>
+          />
+        </Tooltip>
+      );
+
+      const cancelAction = (
+        <Popconfirm
+          title="Are you sure you want to cancel this stay entry?"
+          onConfirm={() => {
+            this.handleCancelClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Cancel">
+            <Icon type="stop" className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
+      );
+
+      const dutyCardAction = record.stayReason ? (
+        <Tooltip title="Duty Card">
+          <Icon
+            type="idcard"
+            className="list-actions-icon"
+            onClick={() => {
+              this.handleDutyCardClicked(record);
+            }}
+          />
+        </Tooltip>
       ) : null;
 
       return (
-        <Row type="flex" justify="start" align="middle" gutter={16}>
-          <Col>
-            <Tooltip title="View card">
-              <Icon
-                type="idcard"
-                className="list-actions-icon"
-                onClick={() => {
-                  this.handleShowCardClicked(record);
-                }}
-              />
-            </Tooltip>
-          </Col>
+        <div className="list-actions-column">
+          <Tooltip title="Night Stay Card">
+            <Icon
+              type="solution"
+              className="list-actions-icon"
+              onClick={() => {
+                this.handleNightStayCardClicked(record);
+              }}
+            />
+          </Tooltip>
           {editAction}
           {cancelAction}
-        </Row>
+          {dutyCardAction}
+        </div>
       );
     },
   };
@@ -187,16 +189,26 @@ class List extends Component {
     });
   };
 
-  handleShowCardClicked = record => {
+  handleNightStayCardClicked = record => {
     this.setState({
-      showStayCard: true,
+      showCard: true,
+      cardType: 'stay-card',
+      visitorStayId: record._id,
+    });
+  };
+
+  handleDutyCardClicked = record => {
+    this.setState({
+      showCard: true,
+      cardType: 'duty-card',
       visitorStayId: record._id,
     });
   };
 
   handleCloseViewCard = () => {
     this.setState({
-      showStayCard: false,
+      showCard: false,
+      cardType: null,
       visitorStayId: null,
     });
   };
@@ -210,7 +222,8 @@ class List extends Component {
   handleCloseNewForm = newVisitorStay => {
     this.setState({
       showNewFormModal: false,
-      showStayCard: true,
+      showCard: true,
+      cardType: 'stay-card',
       visitorStayId: newVisitorStay._id,
     });
   };
@@ -259,7 +272,8 @@ class List extends Component {
     const {
       showNewFormModal,
       showEditFormModal,
-      showStayCard,
+      showCard,
+      cardType,
       visitorStayId,
     } = this.state;
 
@@ -267,16 +281,17 @@ class List extends Component {
     const numPageSize = pageSize || 20;
 
     const card =
-      showStayCard && visitorStayId ? (
+      showCard && visitorStayId ? (
         <Modal
           closable={false}
-          visible={showStayCard}
-          width={400}
+          visible={showCard}
+          width={cardType === 'stay-card' ? 400 : 300}
           footer={null}
         >
-          <StayCard
+          <CardContainer
             visitorId={visitorId}
             visitorStayId={visitorStayId}
+            cardType={cardType}
             onCloseCard={this.handleCloseViewCard}
           />
         </Modal>
@@ -379,9 +394,9 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "cancelVisitorStay",
+    name: 'cancelVisitorStay',
     options: {
-      refetchQueries: ["pagedVisitorStays"],
+      refetchQueries: ['pagedVisitorStays'],
     },
   }),
   graphql(listQuery, {
@@ -389,7 +404,7 @@ export default flowRight(
     options: ({ visitorId, pageIndex, pageSize }) => ({
       variables: {
         queryString: `?visitorId=${visitorId ||
-          ""}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   })

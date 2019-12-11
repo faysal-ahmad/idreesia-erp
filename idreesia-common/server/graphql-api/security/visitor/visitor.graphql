@@ -16,6 +16,8 @@ type VisitorType {
   otherNotes: String
   verified: Boolean
 
+  image: Attachment
+
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -68,6 +70,10 @@ extend type Mutation {
   ): VisitorType
 
   deleteVisitor(_id: String!): Int
+
+  importCsvData(
+    csvData: String!
+  ): String
 
   setVisitorImage(_id: String!, imageId: String!): VisitorType
   updateNotes(

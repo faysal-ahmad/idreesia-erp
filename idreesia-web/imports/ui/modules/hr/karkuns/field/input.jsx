@@ -1,15 +1,15 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 
-import { Tabs, Drawer, Icon, Input } from "/imports/ui/controls";
-import ListContainer from "./list-container";
+import { Tabs, Drawer, Icon, Input } from '/imports/ui/controls';
+import ListContainer from './list-container';
 
 const ContainerStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
 };
 
 export default class CustomInput extends Component {
@@ -87,18 +87,13 @@ export default class CustomInput extends Component {
           width={720}
           onClose={this.handleClose}
           visible={this.state.showSelectionForm}
-          style={{
-            overflow: "auto",
-            height: "calc(100% - 108px)",
-            paddingBottom: "108px",
-          }}
         >
           {containersNode}
         </Drawer>
         <div style={ContainerStyle}>
           <Input
             type="text"
-            value={value ? value.name : ""}
+            value={value ? value.name : ''}
             readOnly
             addonAfter={<Icon type="edit" onClick={this.handleEditClick} />}
             placeholder={placeholder}

@@ -23,6 +23,8 @@ class ListContainer extends Component {
     allJobsLoading: PropTypes.bool,
     createSalaries: PropTypes.func,
     updateSalary: PropTypes.func,
+    approveSalaries: PropTypes.func,
+    approveAllSalaries: PropTypes.func,
     deleteSalaries: PropTypes.func,
     deleteAllSalaries: PropTypes.func,
 
@@ -78,6 +80,7 @@ class ListContainer extends Component {
     newLoan,
     otherDeduction,
     arrears,
+    rashanMadad,
   }) => {
     const { updateSalary } = this.props;
     this.setState({
@@ -94,6 +97,7 @@ class ListContainer extends Component {
         newLoan,
         otherDeduction,
         arrears,
+        rashanMadad,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -107,6 +111,16 @@ class ListContainer extends Component {
     const ids = selectedRows.map(row => row._id);
     const idsString = ids.join(',');
     const path = `${paths.salarySheetsSalaryReceiptsPath}?ids=${idsString}`;
+    history.push(path);
+  };
+
+  handleViewRashanReceipts = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { history } = this.props;
+    const ids = selectedRows.map(row => row._id);
+    const idsString = ids.join(',');
+    const path = `${paths.salarySheetsRashanReceiptsPath}?ids=${idsString}`;
     history.push(path);
   };
 
@@ -128,6 +142,59 @@ class ListContainer extends Component {
       .then(({ data }) => {
         message.success(
           `${data.createSalaries} missing salary records have been created.`,
+          5
+        );
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleApproveSelectedSalaries = selectedSalaries => {
+    if (!selectedSalaries || selectedSalaries.length === 0) return;
+
+    const {
+      approveSalaries,
+      queryParams: { selectedMonth },
+    } = this.props;
+    const ids = selectedSalaries.map(({ _id }) => _id);
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
+
+    approveSalaries({
+      variables: {
+        ids,
+        month: _selectedMonth.format(Formats.DATE_FORMAT),
+      },
+    })
+      .then(() => {
+        message.success('Selected salary records have been approved.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  handleApproveAllSalaries = () => {
+    const {
+      approveAllSalaries,
+      queryParams: { selectedMonth },
+    } = this.props;
+
+    const _selectedMonth = selectedMonth
+      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : moment();
+
+    approveAllSalaries({
+      variables: {
+        month: _selectedMonth.format(Formats.DATE_FORMAT),
+      },
+    })
+      .then(() => {
+        message.success(
+          'All salary records for the month have been approved.',
           5
         );
       })
@@ -214,7 +281,10 @@ class ListContainer extends Component {
           setPageParams={this.setPageParams}
           handleEditSalary={this.handleEditSalary}
           handleViewSalaryReceipts={this.handleViewSalaryReceipts}
+          handleViewRashanReceipts={this.handleViewRashanReceipts}
           handleCreateMissingSalaries={this.handleCreateMissingSalaries}
+          handleApproveSelectedSalaries={this.handleApproveSelectedSalaries}
+          handleApproveAllSalaries={this.handleApproveAllSalaries}
           handleDeleteSelectedSalaries={this.handleDeleteSelectedSalaries}
           handleDeleteAllSalaries={this.handleDeleteAllSalaries}
           handleItemSelected={this.handleItemSelected}
@@ -255,6 +325,7 @@ const updateMutation = gql`
     $newLoan: Int
     $otherDeduction: Int
     $arrears: Int
+    $rashanMadad: Int
   ) {
     updateSalary(
       _id: $_id
@@ -264,6 +335,7 @@ const updateMutation = gql`
       newLoan: $newLoan
       otherDeduction: $otherDeduction
       arrears: $arrears
+      rashanMadad: $rashanMadad
     ) {
       _id
       karkunId
@@ -277,7 +349,20 @@ const updateMutation = gql`
       otherDeduction
       arrears
       netPayment
+      rashanMadad
     }
+  }
+`;
+
+const approveMutation = gql`
+  mutation approveSalaries($month: String!, $ids: [String]!) {
+    approveSalaries(month: $month, ids: $ids)
+  }
+`;
+
+const approveAllMutation = gql`
+  mutation approveAllSalaries($month: String!) {
+    approveAllSalaries(month: $month)
   }
 `;
 
@@ -302,6 +387,18 @@ export default flowRight(
   }),
   graphql(updateMutation, {
     name: 'updateSalary',
+    options: {
+      refetchQueries: ['salariesByMonth'],
+    },
+  }),
+  graphql(approveMutation, {
+    name: 'approveSalaries',
+    options: {
+      refetchQueries: ['salariesByMonth'],
+    },
+  }),
+  graphql(approveAllMutation, {
+    name: 'approveAllSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],
     },

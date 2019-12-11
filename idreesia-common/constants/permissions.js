@@ -39,6 +39,7 @@ const Permissions = {
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
   HR_DELETE_EMPLOYEES: 'hr-delete-employees',
+  HR_APPROVE_SALARIES: 'hr-approve-salaries',
 
   HR_VIEW_SHARED_RESIDENCES: 'hr-view-shared-residences',
   HR_MANAGE_SHARED_RESIDENCES: 'hr-manage-shared-residences',

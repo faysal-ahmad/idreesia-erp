@@ -14,6 +14,7 @@ export { default as isArray } from 'lodash/isArray';
 export { default as keyBy } from 'lodash/keyBy';
 export { default as keys } from 'lodash/keys';
 export { default as map } from 'lodash/map';
+export { default as memoize } from 'lodash/memoize';
 export { default as merge } from 'lodash/merge';
 export { default as noop } from 'lodash/noop';
 export { default as reduce } from 'lodash/reduce';

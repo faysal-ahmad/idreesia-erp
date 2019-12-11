@@ -10,20 +10,20 @@ import {
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider } from '/imports/ui/controls';
-import SalaryReceipts from './salary-receipts';
+import RashanReceipts from './rashan-receipts';
 
-const SalaryReceiptsContainer = ({
+const RashanReceiptsContainer = ({
   salariesLoading,
   salariesByIds,
   history,
 }) => {
-  const salaryReceiptsRef = useRef(null);
+  const rashanReceiptsRef = useRef(null);
   if (salariesLoading) return null;
 
   return (
     <>
       <ReactToPrint
-        content={() => salaryReceiptsRef.current}
+        content={() => rashanReceiptsRef.current}
         trigger={() => (
           <Button size="large" type="primary" icon="printer">
             Print Receipts
@@ -41,12 +41,12 @@ const SalaryReceiptsContainer = ({
         Back
       </Button>
       <Divider />
-      <SalaryReceipts ref={salaryReceiptsRef} salariesByIds={salariesByIds} />
+      <RashanReceipts ref={rashanReceiptsRef} salariesByIds={salariesByIds} />
     </>
   );
 };
 
-SalaryReceiptsContainer.propTypes = {
+RashanReceiptsContainer.propTypes = {
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
@@ -62,14 +62,7 @@ const salariesByIdsQuery = gql`
       karkunId
       month
       jobId
-      salary
-      openingLoan
-      loanDeduction
-      newLoan
-      closingLoan
-      otherDeduction
-      arrears
-      netPayment
+      rashanMadad
       karkun {
         _id
         name
@@ -97,5 +90,5 @@ export default flowRight(
       variables: { ids },
     }),
   }),
-  WithBreadcrumbs(['HR', 'Salary Sheets', 'Salary Receipts'])
-)(SalaryReceiptsContainer);
+  WithBreadcrumbs(['HR', 'Salary Sheets', 'Rashan Receipts'])
+)(RashanReceiptsContainer);

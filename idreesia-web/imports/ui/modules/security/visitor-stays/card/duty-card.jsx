@@ -54,9 +54,8 @@ export default class DutyCard extends Component {
         <div className="visitor_duty_card">
           <Row>
             <Col>
-              <div className="visitor_duty_card_heading">
-                {title} - {subTitle}
-              </div>
+              <div className="visitor_duty_card_heading">{title}</div>
+              <div className="visitor_duty_card_subheading">{subTitle}</div>
             </Col>
           </Row>
           <Row>
@@ -65,36 +64,20 @@ export default class DutyCard extends Component {
                 <div className="visitor_duty_card_pic">{visitorImage}</div>
                 <div>
                   <div className="visitor_duty_card_item">
-                    <b>Name:</b> {visitor.name}
+                    <b>Name: </b>
+                    {visitor.name}
                   </div>
                   <div className="visitor_duty_card_item">
-                    <b>S/O:</b> {visitor.parentName}
+                    <b>S/O: </b> {visitor.parentName}
                   </div>
                   <div className="visitor_duty_card_item">
-                    <b>R/O:</b> {visitor.referenceName}
-                  </div>
-                  <div className="visitor_duty_card_item">
-                    <b>City:</b> {visitor.city}
-                  </div>
-                  <div className="visitor_duty_card_item">
-                    <b>CNIC:</b> {visitor.cnicNumber}
-                  </div>
-                  <div className="visitor_duty_card_item">
-                    <b>Phone:</b> {visitor.contactNumber1}
+                    <b>City: </b>
+                    {visitor.city}, {visitor.country}
                   </div>
                   <div className="visitor_duty_card_item">
                     <Barcode value={visitorStay._id} {...barcodeOptions} />
                   </div>
                 </div>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <div className="visitor_duty_card_footer">
-                381 A-Block, Shah Rukn-e-Alam Colony, Multan
-                <br />
-                Ph: 061-111-111-381
               </div>
             </Col>
           </Row>

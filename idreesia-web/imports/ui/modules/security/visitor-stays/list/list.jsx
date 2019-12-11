@@ -285,7 +285,7 @@ class List extends Component {
         <Modal
           closable={false}
           visible={showCard}
-          width={cardType === 'stay-card' ? 400 : 500}
+          width={cardType === 'stay-card' ? 400 : 300}
           footer={null}
         >
           <CardContainer

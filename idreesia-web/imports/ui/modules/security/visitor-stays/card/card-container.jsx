@@ -86,6 +86,7 @@ const formQueryVisitor = gql`
       referenceName
       contactNumber1
       city
+      country
       criminalRecord
       image {
         _id

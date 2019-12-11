@@ -1,14 +1,15 @@
 .visitor_duty_card {
   border: 2px solid #000000;
   border-radius: 10px;
-  width: 450px;
-  height: 255px;
+  width: 250px;
+  height: 350px;
 }
 
 .visitor_duty_card_content {
   display: flex;
   width: 100%;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -22,6 +23,15 @@
   width: 100%;
 }
 
+.visitor_duty_card_subheading {
+  font-weight: bold;
+  font-size: 14px;
+  background-color: black;
+  color: #fff;
+  padding: 3px 0;
+  text-align: center;
+}
+
 .visitor_duty_card_item {
   font-family: arial;
   font-size: 16px;
@@ -32,24 +42,12 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  width: 150px;
+  width: 246px;
 }
-
-.visitor_duty_card_footer {
-  border-top: 2px solid black;
-  color: black;
-  font-size: 12px;
-  text-align: center;
-  padding-top: 4px;
-  width: 100%;
-};
 
 @media print {
   .visitor-duty-card-print-view { 
-    display: flex;
-    align-items: center;
     padding-left: 50px;
     padding-top: 50px;
-    width: 800px
   }
 };

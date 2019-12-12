@@ -14,7 +14,7 @@ const barcodeOptions = {
   displayValue: false,
   background: '#ffffff',
   lineColor: '#000000',
-  margin: 5,
+  margin: 3,
 };
 
 export default class DutyCard extends Component {
@@ -28,7 +28,7 @@ export default class DutyCard extends Component {
     const visitorImage = visitor.image ? (
       <img
         src={`data:image/jpeg;base64,${visitor.image.data}`}
-        style={{ height: 'auto', maxWidth: '100%' }}
+        style={{ height: 'auto', width: '100%' }}
       />
     ) : null;
 

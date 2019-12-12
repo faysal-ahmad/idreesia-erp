@@ -1,8 +1,8 @@
 .visitor_duty_card {
   border: 2px solid #000000;
   border-radius: 10px;
-  width: 240px;
-  height: 340px;
+  width: 235px;
+  height: 335px;
 }
 
 .visitor_duty_card_content {
@@ -18,7 +18,7 @@
   color: black;
   font-weight: bold;
   font-family: arial;
-  font-size: 18px;
+  font-size: 22px;
   text-align: center;
   width: 100%;
 }
@@ -42,7 +42,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  width: 236px;
+  width: 231px;
   border-bottom: 1px solid black;
 }
 

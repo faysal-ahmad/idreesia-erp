@@ -8,13 +8,13 @@ import { Col, Row } from '/imports/ui/controls';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
 const barcodeOptions = {
-  width: 1,
+  width: 0.9,
   height: 20,
   format: 'CODE128B',
   displayValue: false,
   background: '#ffffff',
   lineColor: '#000000',
-  margin: 3,
+  margin: 1,
 };
 
 export default class DutyCard extends Component {

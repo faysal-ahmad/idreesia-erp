@@ -34,6 +34,11 @@ class SalarySheets extends Component {
       key: 'salary',
     },
     {
+      title: 'Rashan',
+      dataIndex: 'rashanMadad',
+      key: 'rashanMadad',
+    },
+    {
       title: 'Loan',
       children: [
         {
@@ -98,6 +103,7 @@ const listQuery = gql`
       _id
       month
       salary
+      rashanMadad
       openingLoan
       loanDeduction
       newLoan

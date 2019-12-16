@@ -44,9 +44,12 @@ export default {
         return [];
       }
 
-      return Salaries.find({
-        karkunId,
-      }).fetch();
+      return Salaries.find(
+        {
+          karkunId,
+        },
+        { sort: { createdAt: -1 } }
+      ).fetch();
     },
 
     salariesByMonth(obj, { month, jobId }, { user }) {

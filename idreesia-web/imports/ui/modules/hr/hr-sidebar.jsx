@@ -78,16 +78,16 @@ class HRSidebar extends Component {
             Karkuns
           </span>
         </Menu.Item>
-        <Menu.Item key="attendance-sheets">
-          <span>
-            <Icon type="solution" />
-            Attendance Sheets
-          </span>
-        </Menu.Item>
         <Menu.Item key="salary-sheets">
           <span>
             <Icon type="dollar" />
             Salary Sheets
+          </span>
+        </Menu.Item>
+        <Menu.Item key="attendance-sheets">
+          <span>
+            <Icon type="solution" />
+            Attendance Sheets
           </span>
         </Menu.Item>
         <Menu.Item key="shared-residencs">

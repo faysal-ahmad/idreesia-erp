@@ -8,13 +8,13 @@ import { Col, Row } from '/imports/ui/controls';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
 const barcodeOptions = {
-  width: 1,
+  width: 0.9,
   height: 20,
   format: 'CODE128B',
   displayValue: false,
   background: '#ffffff',
   lineColor: '#000000',
-  margin: 5,
+  margin: 1,
 };
 
 export default class DutyCard extends Component {
@@ -28,7 +28,7 @@ export default class DutyCard extends Component {
     const visitorImage = visitor.image ? (
       <img
         src={`data:image/jpeg;base64,${visitor.image.data}`}
-        style={{ height: 'auto', maxWidth: '100%' }}
+        style={{ height: 'auto', width: '100%' }}
       />
     ) : null;
 

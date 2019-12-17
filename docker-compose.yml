@@ -4,7 +4,10 @@ services:
     image: mongo
     ports:
       - "27017:27017"
-    
+    volumes:
+      - ./data/mongo/db:/data/db
+      - ./data/mongo/configdb:/data/configdb
+  
   web:
     build:
       context: ./idreesia-web

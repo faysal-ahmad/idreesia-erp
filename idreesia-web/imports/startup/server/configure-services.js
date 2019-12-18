@@ -1,15 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-let googleService;
-
-if (process.env.NODE_ENV === 'production') {
-  googleService = {
-    clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
-    secret: process.env.GOOGLE_OAUTH_SECRET,
-  };
-} else {
-  googleService = Meteor.settings.private.oAuth.google;
-}
+const googleService = Meteor.settings.private.oAuth.google;
 
 ServiceConfiguration.configurations.upsert(
   { service: 'google' },

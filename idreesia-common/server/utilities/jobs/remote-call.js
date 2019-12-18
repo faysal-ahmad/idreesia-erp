@@ -2,17 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { DDP } from 'meteor/ddp-client';
 import { toString } from 'lodash';
 
-function getJobsAppUrl() {
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.JOBS_APP_URL;
-  }
-
-  return Meteor.settings.private.jobsAppUrl;
-}
-
 export const remoteCall = (methodName, args = {}, callback) => {
   if (Meteor.isClient) return;
-  const jobsAppUrl = getJobsAppUrl();
+  const jobsAppUrl = Meteor.settings.private.jobsAppUrl;
 
   if (!jobsAppUrl) {
     // eslint-disable-next-line no-console

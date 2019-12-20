@@ -15,6 +15,7 @@ export default () => WrappedComponent => {
     query allSharedResidences {
       allSharedResidences {
         _id
+        name
         address
         owner {
           _id

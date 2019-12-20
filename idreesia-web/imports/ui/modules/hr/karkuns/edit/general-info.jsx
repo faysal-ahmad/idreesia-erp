@@ -197,7 +197,7 @@ class GeneralInfo extends Component {
             initialValue={karkunById.sharedResidenceId}
             data={allSharedResidences}
             getDataValue={({ _id }) => _id}
-            getDataText={({ address }) => address}
+            getDataText={({ name, address }) => `${name} - ${address}`}
             getFieldDecorator={getFieldDecorator}
           />
 

@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  web:
+    build:
+      docker:
+        - image: circleci/node:8.15.1
+
+      working_directory: ~/idreesia-web
+
+      steps:
+        - checkout
+        - run:
+            name: Install Meteor
+            command: "curl https://install.meteor.com | /bin/sh"
+
+        # Download and cache dependencies
+        - restore_cache:
+            keys:
+              - v1-dependencies-{{ checksum "package.json" }}
+              # fallback to using the latest cache if no exact match is found
+              - v1-dependencies-
+
+        - run: meteor npm install
+
+        - save_cache:
+            paths:
+              - node_modules
+            key: v1-dependencies-{{ checksum "package.json" }}
+
+        # Build
+        - run: meteor npm build

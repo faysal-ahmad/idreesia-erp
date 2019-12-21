@@ -9,22 +9,17 @@ jobs:
     steps:
       - checkout
 
-      - run:
-        name: Install Meteor
-        command: "curl https://install.meteor.com | /bin/sh"
+      # Install Meteor
+      - run: "curl https://install.meteor.com | /bin/sh"
 
       - restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+          key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run:
-        name: NPM Install
-        command: "meteor npm install"
+      - run: "meteor npm install"
 
       - save_cache:
-        paths:
-          - node_modules
-        key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
 
       - run: meteor npm build

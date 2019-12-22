@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build-web:
     machine:
       image: ubuntu-1604:201903-01
 
@@ -10,7 +10,6 @@ jobs:
       - checkout:
           path: ~/idreesia-erp
 
-      # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"
 
       - restore_cache:
@@ -37,11 +36,51 @@ jobs:
       - run:
           command: docker push faysalahmad/idreesia-web
 
+  build-jobs:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/idreesia-erp/idreesia-jobs
+
+    steps:
+      - checkout:
+          path: ~/idreesia-erp
+
+      - run: "curl https://install.meteor.com | /bin/sh"
+
+      - restore_cache:
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: "meteor npm install"
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: meteor npm run build
+
+      - run:
+          working_directory: ~/idreesia-erp
+          command: docker build -t faysalahmad/idreesia-jobs idreesia-jobs
+
+      - run:
+          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - run:
+          command: docker push faysalahmad/idreesia-jobs
+
 workflows:
   version: 2
-  build-deploy:
+  build-apps:
     jobs:
-      - build:
+      - build-web:
+          filters:
+            branches:
+              only: master
+      - build-jobs:
           filters:
             branches:
               only: master

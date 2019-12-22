@@ -4,15 +4,11 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
 
-    working_directory: ~/idreesia
-
     steps:
       - checkout
 
       - run:
           command: |
-            "cd ~/idreesia"
-            "ls"
             "cd /home/circleci/idreesia"
             "ls"
 
@@ -21,7 +17,7 @@ jobs:
 
       # Build Web
       - run:
-          command: "cd $CIRCLE_REPOSITORY_URL/idreesia-web"
+          command: "cd /home/circleci/idreesia/idreesia-web"
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -38,7 +34,7 @@ jobs:
 
       # Build Jobs
       - run:
-          command: "cd $CIRCLE_REPOSITORY_URL/idreesia-jobs"
+          command: "cd /home/circleci/idreesia/idreesia-jobs"
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -60,14 +56,13 @@ jobs:
       # Build and push the web image to docker hub
       - run:
           command: |
-            "echo $CIRCLE_REPOSITORY_URL"
-            "cd $CIRCLE_REPOSITORY_URL/idreesia-web"
+            "cd /home/circleci/idreesia/idreesia-web"
             "docker build -t faysalahmad/idreesia-web ."
             "docker push faysalahmad/idreesia-web"
 
       # Build and push the web image to docker hub
       - run:
           command: |
-            "cd $CIRCLE_REPOSITORY_URL/idreesia-web"
+            "cd /home/circleci/idreesia/idreesia-web"
             "docker build -t faysalahmad/idreesia-jobs ."
             "docker push faysalahmad/idreesia-jobs"

@@ -13,7 +13,6 @@ jobs:
       # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"
 
-      # Build Web
       - restore_cache:
           key: web-dependencies-{{ checksum "package.json" }}
 
@@ -28,16 +27,15 @@ jobs:
       - run:
           command: meteor npm run build
 
-      # Build and push the web image to docker hub
       - run:
           working_directory: ~/idreesia-erp
           command: docker build -t faysalahmad/idreesia-web idreesia-web
 
-      # Build and push the web image to docker hub
       - run:
-          command: |
-            "docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD"
-            "docker push faysalahmad/idreesia-web"
+          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - run:
+          command: docker push faysalahmad/idreesia-web
 
 workflows:
   version: 2

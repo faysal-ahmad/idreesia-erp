@@ -32,7 +32,8 @@ jobs:
       - run:
           working_directory: ~/idreesia-erp
           command: |
-            "docker build -t faysalahmad/idreesia-web ./idreesia-web"
+            "pwd"
+            "docker build -t faysalahmad/idreesia-web idreesia-web"
             "docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD"
             "docker push faysalahmad/idreesia-web"
 

@@ -1,10 +1,10 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:8.15.1
+    machine:
+      image: ubuntu-1604:201903-01
 
-    working_directory: ~/idreesia-web
+    working_directory: ~/idreesia
 
     steps:
       - checkout
@@ -12,6 +12,8 @@ jobs:
       # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"
 
+      # Build Web
+      - run: "cd ~/idreesia/idreesia-web"
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -23,3 +25,30 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - run: meteor npm build
+
+      # Build Jobs
+      - run: "cd ~/idreesia/idreesia-jobs"
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: "meteor npm install"
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: meteor npm build
+
+      # Login to Docker
+      - run: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      # Build and push the web image to docker hub
+      - run: "cd ~/idreesia/idreesia-web"
+      - run: docker build -t faysalahmad/idreesia-web .
+      - run: docker push faysalahmad/idreesia-web
+
+      # Build and push the web image to docker hub
+      - run: "cd ~/idreesia/idreesia-jobs"
+      - run: docker build -t faysalahmad/idreesia-jobs .
+      - run: docker push faysalahmad/idreesia-jobs

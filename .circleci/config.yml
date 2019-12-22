@@ -8,7 +8,13 @@ jobs:
 
     steps:
       - checkout
-      - run: "echo $CIRCLE_REPOSITORY_URL"
+
+      - run:
+          command: |
+            "cd ~/idreesia"
+            "ls"
+            "cd /home/circleci/idreesia"
+            "ls"
 
       # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"

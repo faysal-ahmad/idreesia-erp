@@ -8,13 +8,14 @@ jobs:
 
     steps:
       - checkout
+      - run: "echo $CIRCLE_REPOSITORY_URL"
 
       # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"
 
       # Build Web
       - run:
-          command: "cd ~/idreesia/idreesia-web"
+          command: "cd $CIRCLE_REPOSITORY_URL/idreesia-web"
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -31,7 +32,7 @@ jobs:
 
       # Build Jobs
       - run:
-          command: "cd ~/idreesia/idreesia-jobs"
+          command: "cd $CIRCLE_REPOSITORY_URL/idreesia-jobs"
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -53,13 +54,14 @@ jobs:
       # Build and push the web image to docker hub
       - run:
           command: |
-            "cd ~/idreesia/idreesia-web"
-            docker build -t faysalahmad/idreesia-web .
-            docker push faysalahmad/idreesia-web
+            "echo $CIRCLE_REPOSITORY_URL"
+            "cd $CIRCLE_REPOSITORY_URL/idreesia-web"
+            "docker build -t faysalahmad/idreesia-web ."
+            "docker push faysalahmad/idreesia-web"
 
       # Build and push the web image to docker hub
       - run:
           command: |
-            "cd ~/idreesia/idreesia-web"
-            docker build -t faysalahmad/idreesia-jobs .
-            docker push faysalahmad/idreesia-jobs
+            "cd $CIRCLE_REPOSITORY_URL/idreesia-web"
+            "docker build -t faysalahmad/idreesia-jobs ."
+            "docker push faysalahmad/idreesia-jobs"

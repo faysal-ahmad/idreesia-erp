@@ -26,7 +26,7 @@ jobs:
       #    key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: meteor npm build
+          command: meteor npm run build
 
       # Login to Docker
       - run:
@@ -35,5 +35,5 @@ jobs:
       # Build and push the web image to docker hub
       - run:
           command: |
-            "docker build -t faysalahmad/idreesia-web ."
+            "docker build faysalahmad/idreesia-web ."
             "docker push faysalahmad/idreesia-web"

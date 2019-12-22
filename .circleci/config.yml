@@ -7,22 +7,23 @@ jobs:
     working_directory: ~/idreesia-erp/idreesia-web
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/idreesia-erp
 
       # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"
 
       # Build Web
-      - restore_cache:
-          key: v1-dependencies-{{ checksum "package.json" }}
+      # - restore_cache:
+      #    key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
           command: "meteor npm install"
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+      # - save_cache:
+      #    paths:
+      #      - node_modules
+      #    key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
           command: meteor npm build

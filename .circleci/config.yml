@@ -10,7 +10,7 @@ jobs:
 
       - run:
           command: |
-            "cd ~/idreesia"
+            "cd ~"
             "ls"
 
       # Install Meteor

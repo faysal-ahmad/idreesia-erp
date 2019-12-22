@@ -28,13 +28,19 @@ jobs:
       - run:
           command: meteor npm run build
 
-      # Login to Docker
-      - run:
-          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
-
       # Build and push the web image to docker hub
       - run:
+          working_directory: ~/idreesia-erp
           command: |
-            "cd ../"
             "docker build -t faysalahmad/idreesia-web ./idreesia-web"
+            "docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD"
             "docker push faysalahmad/idreesia-web"
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master

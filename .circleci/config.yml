@@ -4,37 +4,17 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
 
+    working_directory: ~/idreesia
+
     steps:
       - checkout
-
-      - run:
-          command: |
-            "cd /home/circleci"
-            "ls"
 
       # Install Meteor
       - run: "curl https://install.meteor.com | /bin/sh"
 
       # Build Web
       - run:
-          command: "cd ~/idreesia-erp/idreesia-web"
-      - restore_cache:
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run:
-          command: "meteor npm install"
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run:
-          command: meteor npm build
-
-      # Build Jobs
-      - run:
-          command: "cd ~/idreesia-erp/idreesia-jobs"
+          command: "cd idreesia-web"
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -56,13 +36,5 @@ jobs:
       # Build and push the web image to docker hub
       - run:
           command: |
-            "cd ~/idreesia-erp/idreesia-web"
             "docker build -t faysalahmad/idreesia-web ."
             "docker push faysalahmad/idreesia-web"
-
-      # Build and push the web image to docker hub
-      - run:
-          command: |
-            "cd ~/idreesia-erp/idreesia-web"
-            "docker build -t faysalahmad/idreesia-jobs ."
-            "docker push faysalahmad/idreesia-jobs"

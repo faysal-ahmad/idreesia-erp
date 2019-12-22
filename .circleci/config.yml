@@ -35,5 +35,6 @@ jobs:
       # Build and push the web image to docker hub
       - run:
           command: |
-            "docker build -t faysalahmad/idreesia-web ."
+            "cd ../"
+            "docker build -t faysalahmad/idreesia-web ./idreesia-web"
             "docker push faysalahmad/idreesia-web"

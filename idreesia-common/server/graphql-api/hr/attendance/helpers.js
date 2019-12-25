@@ -36,7 +36,7 @@ function getAttendanceValues(jsonRecord) {
     if (attendanceVal === 'P' || attendanceVal === 'p') {
       attendanceDetails[i.toString()] = 'pr';
       presentCount++;
-    } else if (attendanceVal === 'A' || attendanceVal === 'a') {
+    } else {
       attendanceDetails[i.toString()] = 'ab';
       absentCount++;
     }

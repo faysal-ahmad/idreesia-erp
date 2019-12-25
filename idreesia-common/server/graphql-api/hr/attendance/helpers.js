@@ -36,7 +36,9 @@ function getAttendanceValues(jsonRecord) {
     if (attendanceVal === 'P' || attendanceVal === 'p') {
       attendanceDetails[i.toString()] = 'pr';
       presentCount++;
-    } else {
+    } else if (attendanceVal) {
+      // Any other value then "P" or "p" is to be considered absent
+      // Blank/missing value is considered as day off
       attendanceDetails[i.toString()] = 'ab';
       absentCount++;
     }

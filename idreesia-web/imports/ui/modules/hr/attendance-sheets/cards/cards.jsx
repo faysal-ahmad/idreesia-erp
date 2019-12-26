@@ -100,17 +100,19 @@ export default class Cards extends Component {
   getKarkunImage = attendance => {
     const { cardType } = this.props;
     const percentageClass =
-      attendance.percentage > 0 ? 'percentage' : 'percentage hidden';
+      attendance.percentage > 0 ? 'info_box' : 'info_box hidden';
     const bloodGroupClass = attendance.karkun.bloodGroup
-      ? 'blood_group'
-      : 'blood_group hidden';
+      ? 'info_box'
+      : 'info_box hidden';
 
     const karkunImage = attendance.karkun.image ? (
       <img
         src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
       />
-    ) : ( <div style={{ height: '100%', width: 'auto' }} /> );
+    ) : (
+      <div style={{ height: '100%', width: 'auto' }} />
+    );
     const className = HeadingMapping[cardType]
       ? 'pic_card_k'
       : 'pic_card_extended_k';

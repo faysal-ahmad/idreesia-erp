@@ -221,8 +221,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      return processAttendanceSheet(csv, month, dutyId, shiftId, date, user);
+      return processAttendanceSheet(csv, month, dutyId, shiftId);
     },
 
     importAttendances(obj, { month, dutyId, shiftId }, { user }) {
@@ -279,8 +278,7 @@ export default {
             if (error) reject(error);
             // If the request is successfule, we get the csv data in the body
 
-            const date = new Date();
-            processAttendanceSheet(body, month, dutyId, shiftId, date, user)
+            processAttendanceSheet(body, month, dutyId, shiftId)
               .then(result => resolve(result))
               .catch(e => reject(e));
           });

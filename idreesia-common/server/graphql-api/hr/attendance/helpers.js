@@ -11,20 +11,6 @@ const NAME_COLUMN = 'Name';
 const CNIC_COLUMN = 'CNIC';
 const PHONE_COLUMN = 'Phone No.';
 
-function createKarkun(karkunCnic, karkunName, phoneNumber, date, user) {
-  const karkunId = Karkuns.insert({
-    name: karkunName.trim(),
-    cnicNumber: karkunCnic,
-    contactNumber1: phoneNumber,
-    createdAt: date,
-    createdBy: user._id,
-    updatedAt: date,
-    updatedBy: user._id,
-  });
-
-  return Karkuns.findOne(karkunId);
-}
-
 function getAttendanceValues(jsonRecord) {
   const attendanceDetails = {};
 
@@ -54,7 +40,7 @@ function getAttendanceValues(jsonRecord) {
   };
 }
 
-function processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user) {
+function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
   try {
     const karkunCnic = jsonRecord[CNIC_COLUMN];
     const karkunName = jsonRecord[NAME_COLUMN];
@@ -74,7 +60,9 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user) {
     }
 
     if (!karkun) {
-      karkun = createKarkun(karkunCnic, karkunName, phoneNumber, date, user);
+      throw new Error(
+        `Could not find a karkun with name '${karkunName}' against CNIC '${karkunCnic}' or contact number '${phoneNumber}'.`
+      );
     }
 
     // If there is already an attendance present for this karkun/month/duty/shift combination
@@ -134,17 +122,10 @@ function convertToJson(csvData) {
   });
 }
 
-export async function processAttendanceSheet(
-  csvData,
-  month,
-  dutyId,
-  shiftId,
-  date,
-  user
-) {
+export async function processAttendanceSheet(csvData, month, dutyId, shiftId) {
   return convertToJson(csvData).then(jsonArray => {
     jsonArray.forEach(jsonRecord => {
-      processJsonRecord(jsonRecord, month, dutyId, shiftId, date, user);
+      processJsonRecord(jsonRecord, month, dutyId, shiftId);
     });
 
     return jsonArray.length;

@@ -12,6 +12,3 @@ tunnels:
     bind_tls: true
     region: us
     subdomain: 381-mobile-server
-  ssh_server:
-    addr: 22
-    proto: tcp

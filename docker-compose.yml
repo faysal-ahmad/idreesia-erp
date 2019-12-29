@@ -1,24 +1,21 @@
 version: "3"
 services:
   mongo:
-    build:
-      context: ./containers/mongo
+    image: faysalahmad/idreesia-db
     ports:
       - "27017:27017"
     volumes:
       - ./data/mongo:/data/db
-  
+
   web:
-    build:
-      context: ./idreesia-web
+    image: faysalahmad/idreesia-web
     ports:
       - "3000:3000"
     depends_on:
       - mongo
 
   jobs:
-    build:
-      context: ./idreesia-jobs
+    image: faysalahmad/idreesia-jobs
     ports:
       - "3002:3002"
     depends_on:

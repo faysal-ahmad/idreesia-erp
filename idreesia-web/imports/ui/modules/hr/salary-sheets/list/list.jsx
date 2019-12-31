@@ -381,6 +381,21 @@ export class List extends Component {
       showDeleteMenu = true;
     }
 
+    let deleteMenuItems = [];
+    if (showDeleteMenu) {
+      deleteMenuItems = [
+        <Menu.Divider key="divider" />,
+        <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
+          <Icon type="delete" />
+          Delete Selected Salaries
+        </Menu.Item>,
+        <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
+          <Icon type="delete" />
+          Delete All Salaries
+        </Menu.Item>,
+      ];
+    }
+
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingSalaries}>
@@ -409,19 +424,7 @@ export class List extends Component {
           <Icon type="printer" />
           Print Rashan Receipts
         </Menu.Item>
-        {showDeleteMenu ? (
-          <>
-            <Menu.Divider />
-            <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
-              <Icon type="delete" />
-              Delete Selected Salaries
-            </Menu.Item>
-            <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
-              <Icon type="delete" />
-              Delete All Salaries
-            </Menu.Item>
-          </>
-        ) : null}
+        {deleteMenuItems}
       </Menu>
     );
 

@@ -5,12 +5,14 @@ import bodyParser from 'body-parser';
 import { kebabCase } from 'lodash';
 
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
-import { createIssuanceFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
-import { createPurchaseFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
+import { exportIsssuanceForms } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
+import { exportPurchaseForms } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
+import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 
 const ReportGenerators = {
-  IssuanceForms: createIssuanceFormReport,
-  PurchaseForms: createPurchaseFormReport,
+  IssuanceForms: exportIsssuanceForms,
+  PurchaseForms: exportPurchaseForms,
+  Karkuns: exportKarkuns,
 };
 
 Meteor.startup(() => {

@@ -57,6 +57,10 @@ class List extends Component {
     handlePrintClicked: noop,
   };
 
+  state = {
+    selectedRows: [],
+  };
+
   nameColumn = {
     title: 'Name',
     dataIndex: 'name',
@@ -177,6 +181,14 @@ class List extends Component {
     return [this.nameColumn, this.cnicColumn, this.dutiesColumn];
   };
 
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
+
   onSelect = karkun => {
     const { handleItemSelected } = this.props;
     handleItemSelected(karkun);
@@ -207,6 +219,17 @@ class List extends Component {
     }).catch(error => {
       message.error(error.message, 5);
     });
+  };
+
+  handleExportSelected = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=Karkuns&reportArgs=${reportArgs.join(',')}`;
+    window.open(url, '_blank');
   };
 
   getTableHeader = () => {
@@ -276,7 +299,17 @@ class List extends Component {
     return (
       <div className="list-table-header">
         {newButton}
-        {listFilter}
+        <div className="list-table-header-section">
+          {listFilter}
+          &nbsp;&nbsp;
+          <Tooltip title="Download Selected Data">
+            <Button
+              icon="download"
+              size="large"
+              onClick={this.handleExportSelected}
+            />
+          </Tooltip>
+        </div>
       </div>
     );
   };
@@ -300,6 +333,7 @@ class List extends Component {
         dataSource={karkuns}
         columns={this.getColumns()}
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         bordered
         size="small"
         pagination={false}

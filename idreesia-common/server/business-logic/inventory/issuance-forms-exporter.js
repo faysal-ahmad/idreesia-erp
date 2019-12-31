@@ -8,7 +8,7 @@ import {
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-export function createIssuanceFormReport(issuanceFormIdsString) {
+export function exportIsssuanceForms(issuanceFormIdsString) {
   const issuanceFormIds = issuanceFormIdsString.split(',');
   const issuanceForms = IssuanceForms.find({
     _id: { $in: issuanceFormIds },

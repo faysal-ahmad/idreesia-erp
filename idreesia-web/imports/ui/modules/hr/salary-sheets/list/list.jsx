@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import FileSaver from 'file-saver';
@@ -59,133 +60,144 @@ export class List extends Component {
     selectedRows: [],
   };
 
-  columns = [
-    {
-      key: 'approved',
-      render: (text, record) => {
-        if (record.approvedOn) {
-          let tooltip = 'Approved';
-          if (record.approver) {
-            tooltip = `Approved By ${record.approver.name}`;
+  getColumns = () => {
+    const columns = [
+      {
+        key: 'approved',
+        render: (text, record) => {
+          if (record.approvedOn) {
+            let tooltip = 'Approved';
+            if (record.approver) {
+              tooltip = `Approved By ${record.approver.name}`;
+            }
+
+            return (
+              <Tooltip title={tooltip}>
+                <Icon
+                  style={IconStyle}
+                  type="check-circle"
+                  theme="twoTone"
+                  twoToneColor="#52c41a"
+                />
+              </Tooltip>
+            );
           }
 
           return (
-            <Tooltip title={tooltip}>
+            <Tooltip title="Not Approved">
               <Icon
                 style={IconStyle}
-                type="check-circle"
+                type="warning"
                 theme="twoTone"
-                twoToneColor="#52c41a"
+                twoToneColor="orange"
               />
             </Tooltip>
           );
-        }
+        },
+      },
+      {
+        title: 'Name',
+        key: 'name',
+        render: (text, record) => (
+          <KarkunName
+            karkun={record.karkun}
+            onKarkunNameClicked={this.props.handleItemSelected}
+          />
+        ),
+      },
+      {
+        title: 'Salary',
+        dataIndex: 'salary',
+        key: 'salary',
+        render: (text, record) => {
+          if (record.salary !== record.prevSalary) {
+            return (
+              <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                {text}
+              </span>
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: 'Rashan',
+        dataIndex: 'rashanMadad',
+        key: 'rashanMadad',
+        render: (text, record) => {
+          if (record.rashanMadad !== record.prevRashanMadad) {
+            return (
+              <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                {text}
+              </span>
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: 'Loan',
+        children: [
+          {
+            title: 'Opening',
+            dataIndex: 'openingLoan',
+            key: 'openingLoan',
+          },
+          {
+            title: 'Deduction',
+            dataIndex: 'loanDeduction',
+            key: 'loanDeduction',
+          },
+          {
+            title: 'New',
+            dataIndex: 'newLoan',
+            key: 'newLoan',
+          },
+          {
+            title: 'Closing',
+            dataIndex: 'closingLoan',
+            key: 'closingLoan',
+          },
+        ],
+      },
+      {
+        title: 'Other Deduction',
+        dataIndex: 'otherDeduction',
+        key: 'otherDeduction',
+        render: (text, record) => {
+          if (record.otherDeduction !== record.prevOtherDeduction) {
+            return (
+              <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                {text}
+              </span>
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: 'Arrears',
+        dataIndex: 'arrears',
+        key: 'arrears',
+        render: (text, record) => {
+          if (record.arrears !== record.prevArrears) {
+            return (
+              <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                {text}
+              </span>
+            );
+          }
+          return text;
+        },
+      },
+      {
+        title: 'Net Payment',
+        dataIndex: 'netPayment',
+        key: 'netPayment',
+      },
+    ];
 
-        return (
-          <Tooltip title="Not Approved">
-            <Icon
-              style={IconStyle}
-              type="warning"
-              theme="twoTone"
-              twoToneColor="orange"
-            />
-          </Tooltip>
-        );
-      },
-    },
-    {
-      title: 'Name',
-      key: 'name',
-      render: (text, record) => (
-        <KarkunName
-          karkun={record.karkun}
-          onKarkunNameClicked={this.props.handleItemSelected}
-        />
-      ),
-    },
-    {
-      title: 'Salary',
-      dataIndex: 'salary',
-      key: 'salary',
-      render: (text, record) => {
-        if (record.salary !== record.prevSalary) {
-          return (
-            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
-          );
-        }
-        return text;
-      },
-    },
-    {
-      title: 'Rashan',
-      dataIndex: 'rashanMadad',
-      key: 'rashanMadad',
-      render: (text, record) => {
-        if (record.rashanMadad !== record.prevRashanMadad) {
-          return (
-            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
-          );
-        }
-        return text;
-      },
-    },
-    {
-      title: 'Loan',
-      children: [
-        {
-          title: 'Opening',
-          dataIndex: 'openingLoan',
-          key: 'openingLoan',
-        },
-        {
-          title: 'Deduction',
-          dataIndex: 'loanDeduction',
-          key: 'loanDeduction',
-        },
-        {
-          title: 'New',
-          dataIndex: 'newLoan',
-          key: 'newLoan',
-        },
-        {
-          title: 'Closing',
-          dataIndex: 'closingLoan',
-          key: 'closingLoan',
-        },
-      ],
-    },
-    {
-      title: 'Other Deduction',
-      dataIndex: 'otherDeduction',
-      key: 'otherDeduction',
-      render: (text, record) => {
-        if (record.otherDeduction !== record.prevOtherDeduction) {
-          return (
-            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
-          );
-        }
-        return text;
-      },
-    },
-    {
-      title: 'Arrears',
-      dataIndex: 'arrears',
-      key: 'arrears',
-      render: (text, record) => {
-        if (record.arrears !== record.prevArrears) {
-          return (
-            <span style={{ fontWeight: 'bold', color: 'orange' }}>{text}</span>
-          );
-        }
-        return text;
-      },
-    },
-    {
-      title: 'Net Payment',
-      dataIndex: 'netPayment',
-      key: 'netPayment',
-    },
-    {
+    const actionsColumn = {
       key: 'action',
       render: (text, record) => {
         const { handleEditSalary, handleDeleteSelectedSalaries } = this.props;
@@ -215,8 +227,17 @@ export class List extends Component {
           </div>
         );
       },
-    },
-  ];
+    };
+
+    // Don't show the edit and delete actions for salaries from previous months
+    const { selectedMonth } = this.props;
+    const currentMonth = moment();
+    if (currentMonth.diff(selectedMonth, 'months') === 0) {
+      return columns.concat(actionsColumn);
+    }
+
+    return columns;
+  };
 
   rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -351,6 +372,15 @@ export class List extends Component {
       handleCreateMissingSalaries,
       handleApproveAllSalaries,
     } = this.props;
+
+    // Don't show the delete and delete all options in the menu for salaries from previous months
+    const { selectedMonth } = this.props;
+    const currentMonth = moment();
+    let showDeleteMenu = false;
+    if (currentMonth.diff(selectedMonth, 'months') === 0) {
+      showDeleteMenu = true;
+    }
+
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingSalaries}>
@@ -379,15 +409,19 @@ export class List extends Component {
           <Icon type="printer" />
           Print Rashan Receipts
         </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
-          <Icon type="delete" />
-          Delete Selected Salaries
-        </Menu.Item>
-        <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
-          <Icon type="delete" />
-          Delete All Salaries
-        </Menu.Item>
+        {showDeleteMenu ? (
+          <>
+            <Menu.Divider />
+            <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
+              <Icon type="delete" />
+              Delete Selected Salaries
+            </Menu.Item>
+            <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
+              <Icon type="delete" />
+              Delete All Salaries
+            </Menu.Item>
+          </>
+        ) : null}
       </Menu>
     );
 
@@ -457,7 +491,7 @@ export class List extends Component {
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
-        columns={this.columns}
+        columns={this.getColumns()}
         rowSelection={this.rowSelection}
         dataSource={sortedSalariesByMonth}
         pagination={false}

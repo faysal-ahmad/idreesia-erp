@@ -64,7 +64,7 @@ class EditForm extends Component {
             _id: visitorStayById._id,
             fromDate,
             toDate,
-            stayReason,
+            stayReason: stayReason || null,
             stayAllowedBy,
             dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
             shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,

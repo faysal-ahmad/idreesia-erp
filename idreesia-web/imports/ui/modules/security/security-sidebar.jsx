@@ -37,6 +37,11 @@ class SecuritySidebar extends Component {
         history.push(paths.visitorStayReportPath);
         break;
 
+      case 'team-visit-report':
+        setActiveSubModuleName(SubModuleNames.teamVisitReport);
+        history.push(paths.teamVisitReportPath);
+        break;
+
       default:
         break;
     }
@@ -70,12 +75,22 @@ class SecuritySidebar extends Component {
               Card Verification
             </span>
           </Menu.Item>
-          <Menu.Item key="visitor-stay-report">
-            <span>
-              <Icon type="solution" />
-              Stay Report
-            </span>
-          </Menu.Item>
+          <Menu.SubMenu
+            key="security-reports"
+            title={
+              <span>
+                <Icon type="book" />
+                Reports
+              </span>
+            }
+          >
+            <Menu.Item key="visitor-stay-report">
+              <span>Stay Report</span>
+            </Menu.Item>
+            <Menu.Item key="team-visit-report">
+              <span>Team Visit Report</span>
+            </Menu.Item>
+          </Menu.SubMenu>
         </Menu.SubMenu>
       </Menu>
     );

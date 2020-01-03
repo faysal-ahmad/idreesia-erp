@@ -12,7 +12,7 @@ import {
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getVisitorStays } from './queries';
+import { getVisitorStays, getTeamVisits } from './queries';
 
 export default {
   VisitorStayType: {
@@ -64,6 +64,22 @@ export default {
       }
 
       return getVisitorStays(queryString);
+    },
+
+    pagedTeamVisits(obj, { queryString }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
+
+      return getTeamVisits(queryString);
     },
 
     visitorStayById(obj, { _id }, { user }) {

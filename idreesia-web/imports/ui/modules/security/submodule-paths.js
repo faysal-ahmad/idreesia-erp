@@ -25,4 +25,9 @@ export default class SubModulePaths {
   // Visitor's Stay Report Routes
   // *************************************************************************************
   static visitorStayReportPath = `${ModulePaths.security}/visitor-stay-report`;
+
+  // *************************************************************************************
+  // Team Visit Report Routes
+  // *************************************************************************************
+  static teamVisitReportPath = `${ModulePaths.security}/team-visit-report`;
 }

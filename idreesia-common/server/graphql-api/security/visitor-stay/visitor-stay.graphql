@@ -29,8 +29,21 @@ type PagedVisitorStayType {
   data: [VisitorStayType]
 }
 
+type TeamVisitType {
+  _id: String
+  teamName: String
+  visitDate: String
+  membersCount: Int
+}
+
+type PagedTeamVisitType {
+  totalResults: Int
+  data: [TeamVisitType]
+}
+
 extend type Query {
   pagedVisitorStays(queryString: String!): PagedVisitorStayType
+  pagedTeamVisits(queryString: String!): PagedTeamVisitType
   visitorStayById(_id: String!): VisitorStayType
   distinctStayAllowedBy: [String]
   distinctTeamNames: [String]

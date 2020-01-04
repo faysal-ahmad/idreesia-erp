@@ -49,6 +49,7 @@ export async function getVisitorStays(queryString) {
     endDate,
     name,
     city,
+    teamName,
     stayReason,
     additionalInfo,
     sortBy = DEFAULT_SORT_BY,
@@ -89,6 +90,14 @@ export async function getVisitorStays(queryString) {
             .endOf('day')
             .toDate(),
         },
+      },
+    });
+  }
+
+  if (teamName) {
+    pipeline.push({
+      $match: {
+        teamName: { $eq: teamName },
       },
     });
   }
@@ -181,6 +190,7 @@ export async function getTeamVisits(queryString) {
     {
       $match: {
         stayReason: { $in: ['team-visit', 'team-visit-co'] },
+        cancelledDate: { $exists: false },
       },
     },
   ];

@@ -85,7 +85,7 @@ class SecuritySidebar extends Component {
             }
           >
             <Menu.Item key="visitor-stay-report">
-              <span>Stay Report</span>
+              <span>Visitor Stay Report</span>
             </Menu.Item>
             <Menu.Item key="team-visit-report">
               <span>Team Visit Report</span>

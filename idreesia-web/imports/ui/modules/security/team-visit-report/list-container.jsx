@@ -14,8 +14,10 @@ import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
+import { Drawer } from '/imports/ui/controls';
 
 import List from './list';
+import MemberDetails from './member-details';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -23,6 +25,12 @@ class ListContainer extends Component {
     location: PropTypes.object,
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
+  };
+
+  state = {
+    showDetails: false,
+    teamName: null,
+    visitDate: null,
   };
 
   setPageParams = newParams => {
@@ -57,9 +65,30 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleItemSelected = () => {
-    // const { history } = this.props;
-    // history.push(paths.visitorRegistrationEditFormPath(visitor._id));
+  handleItemSelected = ({ teamName, visitDate }) => {
+    this.setState({
+      showDetails: true,
+      teamName,
+      visitDate,
+    });
+  };
+
+  getTeamMembersDetail = () => {
+    if (!this.state.showDetails) return null;
+    return (
+      <MemberDetails
+        teamName={this.state.teamName}
+        visitDate={this.state.visitDate}
+      />
+    );
+  };
+
+  handleDetailsClose = () => {
+    this.setState({
+      showDetails: false,
+      teamName: null,
+      visitDate: null,
+    });
   };
 
   render() {
@@ -73,14 +102,25 @@ class ListContainer extends Component {
       : DEFAULT_PAGE_SIZE_INT;
 
     return (
-      <List
-        queryString={queryString}
-        queryParams={queryParams || {}}
-        pageIndex={numPageIndex}
-        pageSize={numPageSize}
-        setPageParams={this.setPageParams}
-        handleItemSelected={this.handleItemSelected}
-      />
+      <>
+        <List
+          queryString={queryString}
+          queryParams={queryParams || {}}
+          pageIndex={numPageIndex}
+          pageSize={numPageSize}
+          setPageParams={this.setPageParams}
+          handleItemSelected={this.handleItemSelected}
+        />
+        <Drawer
+          title="Team Members Detail"
+          width={600}
+          placement="right"
+          onClose={this.handleDetailsClose}
+          visible={this.state.showDetails}
+        >
+          {this.getTeamMembersDetail()}
+        </Drawer>
+      </>
     );
   }
 }

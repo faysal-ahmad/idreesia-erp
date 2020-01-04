@@ -9,6 +9,12 @@ import { Pagination, Table } from '/imports/ui/controls';
 
 import ListFilter from './list-filter';
 
+const LinkStyle = {
+  width: '100%',
+  color: '#1890FF',
+  cursor: 'pointer',
+};
+
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -42,6 +48,16 @@ class List extends Component {
     title: 'Members Count',
     key: 'membersCount',
     dataIndex: 'membersCount',
+    render: (text, record) => (
+      <div
+        style={LinkStyle}
+        onClick={() => {
+          this.props.handleItemSelected(record);
+        }}
+      >
+        {text}
+      </div>
+    ),
   };
 
   getColumns = () => [

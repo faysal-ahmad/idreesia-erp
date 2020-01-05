@@ -21,6 +21,7 @@
     "csvtojson": "^2.0.10",
     "express": "^4.17.1",
     "fastclick": "^1.0.6",
+    "googleapis": "^45.0.0",
     "graphql": "^14.5.3",
     "lodash": "^4.17.15",
     "meteor-babel": "^7.5.7",

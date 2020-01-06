@@ -89,7 +89,6 @@ const listQuery = gql`
       shiftId
       jobId
       month
-      totalCount
       absentCount
       presentCount
       percentage

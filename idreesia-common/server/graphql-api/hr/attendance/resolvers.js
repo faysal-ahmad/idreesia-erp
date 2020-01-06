@@ -70,9 +70,12 @@ export default {
         return [];
       }
 
-      return Attendances.find({
-        karkunId,
-      }).fetch();
+      return Attendances.find(
+        {
+          karkunId,
+        },
+        { sort: { createdAt: -1 } }
+      ).fetch();
     },
 
     attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {

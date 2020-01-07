@@ -25,12 +25,16 @@ type AttendanceType {
   updatedAt: String
   updatedBy: String
 }
-
+type PagedAttendanceType {
+  totalResults: Int
+  attendance: [AttendanceType]
+}
 extend type Query {
   attendanceById(_id: String!): AttendanceType
   attendanceByKarkun(
     karkunId: String!
   ): [AttendanceType]
+  pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
   attendanceByMonth(
     month: String!
     categoryId: String

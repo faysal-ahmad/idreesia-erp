@@ -98,11 +98,26 @@ export default {
       }).fetch();
     },
 
-    pagedSalariesByKarkun(obj, { queryString }) {
+    pagedSalariesByKarkun(obj, { queryString }, { user }) {
       console.log(
         '/hr/salary/resolvers.js/resolvers.js::pagedSalariesByKarkun',
-        queryString
+        queryString,
+        ' <---> user ',
+        user._id
       );
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_EMPLOYEES,
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
+      ) {
+        return {
+          salaries: [],
+          totalResults: 0,
+        };
+      }
+
       const params = parse(queryString);
       const pipeline = [];
       const { pageIndex = '0', pageSize = '20', karkunId } = params;

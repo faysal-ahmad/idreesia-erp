@@ -148,7 +148,6 @@ SalarySheets.propTypes = {
   location: PropTypes.object,
 
   loading: PropTypes.bool,
-  salariesByKarkun: PropTypes.array,
   pagedSalariesByKarkun: PropTypes.shape({
     totalResults: PropTypes.number,
     salaries: PropTypes.array,

@@ -79,7 +79,19 @@ export default {
         { sort: { createdAt: -1 } }
       ).fetch();
     },
-    pagedAttendanceByKarkun(obj, { queryString }) {
+    pagedAttendanceByKarkun(obj, { queryString }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_KARKUNS,
+        ])
+      ) {
+        return {
+          attendance: [],
+          totalResults: 0,
+        };
+      }
       const params = parse(queryString);
       const pipeline = [];
       const { pageIndex = '0', pageSize = '20', karkunId } = params;

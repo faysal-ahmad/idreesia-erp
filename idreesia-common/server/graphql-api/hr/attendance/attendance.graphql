@@ -31,9 +31,6 @@ type PagedAttendanceType {
 }
 extend type Query {
   attendanceById(_id: String!): AttendanceType
-  attendanceByKarkun(
-    karkunId: String!
-  ): [AttendanceType]
   pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
   attendanceByMonth(
     month: String!

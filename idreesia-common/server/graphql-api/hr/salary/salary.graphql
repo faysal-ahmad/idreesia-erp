@@ -30,9 +30,6 @@ type PagedSalaryType {
 }
 extend type Query {
   pagedSalariesByKarkun(queryString: String): PagedSalaryType
-  salariesByKarkun(
-    karkunId: String!
-  ): [SalaryType]
   salariesByMonth(
     month: String!
     jobId: String

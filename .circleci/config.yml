@@ -16,7 +16,10 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: "meteor npm install"
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
 
       - save_cache:
           paths:
@@ -24,7 +27,7 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: meteor npm run build
+          command: meteor yarn run build
 
       - run:
           working_directory: ~/idreesia-erp
@@ -52,7 +55,10 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: "meteor npm install"
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
 
       - save_cache:
           paths:
@@ -60,7 +66,7 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: meteor npm run build
+          command: meteor yarn run build
 
       - run:
           working_directory: ~/idreesia-erp

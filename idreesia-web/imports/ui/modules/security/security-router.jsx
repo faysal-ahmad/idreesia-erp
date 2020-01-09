@@ -7,6 +7,7 @@ import {
   VisitorRegistrationScanForm,
   VisitorRegistrationNewForm,
   VisitorRegistrationEditForm,
+  VisitorRegistrationUploadForm,
   VisitorRegistrationList,
 } from './visitor-registeration';
 import { VisitorCardVerificationForm } from './visitor-stays';
@@ -27,6 +28,10 @@ const SecurityRouter = () => (
     <Route
       path={paths.visitorRegistrationNewFormPath}
       component={VisitorRegistrationNewForm}
+    />
+    <Route
+      path={paths.visitorRegistrationUploadFormPath}
+      component={VisitorRegistrationUploadForm}
     />
     <Route
       path={paths.visitorRegistrationEditFormPath()}

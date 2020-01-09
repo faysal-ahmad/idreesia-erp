@@ -8,7 +8,9 @@ export function exportKarkuns(karkunIdsString) {
     _id: { $in: karkunIds },
   }).fetch();
 
+  let index = 1;
   const sheetData = karkuns.map(karkun => ({
+    'No.': index++,
     Name: karkun.name,
     'S/O': karkun.parentName,
     CNIC: karkun.cnicNumber,

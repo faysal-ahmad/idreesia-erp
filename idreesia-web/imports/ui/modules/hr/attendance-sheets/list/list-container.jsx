@@ -102,11 +102,6 @@ class ListContainer extends Component {
     });
   };
 
-  handleUploadAttendanceSheet = () => {
-    const { history } = this.props;
-    history.push(paths.attendanceSheetsUploadFormPath);
-  };
-
   handleImportFromGoogleSheet = () => {
     const {
       importAttendances,
@@ -252,7 +247,6 @@ class ListContainer extends Component {
           setPageParams={this.setPageParams}
           handleEditAttendance={this.handleEditAttendance}
           handleCreateMissingAttendances={this.handleCreateMissingAttendances}
-          handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
           handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
           handleViewCards={this.handleViewCards}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}

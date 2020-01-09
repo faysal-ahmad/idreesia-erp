@@ -17,6 +17,7 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { processAttendanceSheet } from './helpers';
+import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   AttendanceType: {
@@ -59,7 +60,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    attendanceByKarkun(obj, { karkunId }, { user }) {
+    pagedAttendanceByKarkun(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -67,17 +68,13 @@ export default {
           PermissionConstants.HR_DELETE_KARKUNS,
         ])
       ) {
-        return [];
+        return {
+          attendance: [],
+          totalResults: 0,
+        };
       }
-
-      return Attendances.find(
-        {
-          karkunId,
-        },
-        { sort: { createdAt: -1 } }
-      ).fetch();
+      return getPagedAttendanceByKarkun(queryString);
     },
-
     attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
       if (!categoryId) return [];
 

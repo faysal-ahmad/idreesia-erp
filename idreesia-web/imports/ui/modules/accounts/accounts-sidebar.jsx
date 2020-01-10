@@ -35,6 +35,9 @@ class AccountsSidebar extends Component {
     } else if (key === 'amaanat-logs') {
       setActiveSubModuleName(SubModuleNames.amaanatLogs);
       history.push(paths.amaanatLogsPath);
+    } else if (key === 'payments') {
+      setActiveSubModuleName(SubModuleNames.payments);
+      history.push(paths.paymentsPath);
     }
   };
 
@@ -48,6 +51,14 @@ class AccountsSidebar extends Component {
         <span>
           <Icon type="bars" />
           Amaanat Logs
+        </span>
+      </Menu.Item>
+    );
+    subMenus.push(
+      <Menu.Item key="payments">
+        <span>
+          <Icon type="bars" />
+          Payments
         </span>
       </Menu.Item>
     );

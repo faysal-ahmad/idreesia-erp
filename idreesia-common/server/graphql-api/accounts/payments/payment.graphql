@@ -1,0 +1,57 @@
+type Payment {
+  _id: String
+  name: String
+  fatherName: String
+  cnicNumber: String
+  contactNumber: String
+  paymentType: String
+  paymentAmount: Float
+  paymentDate: String
+  paymentNumber: Int
+
+  description: String
+
+  approvedBy: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPayment {
+  data: [Payment]
+  totalResults: Int
+}
+
+extend type Query {
+  paymentById(_id: String!): Payment
+  pagedPayments(queryString: String): PagedPayment
+}
+
+extend type Mutation {
+  createPayment(
+    name: String
+    fatherName: String
+    cnicNumber: String
+    contactNumber: String
+    paymentAmount: Float
+    paymentType: String
+    paymentDate: String
+    description: String
+  ): Payment
+
+  updatePayment(
+  _id: String
+  name: String
+  fatherName: String
+  cnicNumber: String
+  contactNumber: String
+  paymentAmount: Float
+  paymentType: String
+  paymentDate: String
+  description: String
+
+  ): Payment
+
+  removePayment(_id: String!): Int
+}

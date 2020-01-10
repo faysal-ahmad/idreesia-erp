@@ -12,6 +12,9 @@ const Permissions = {
   ACCOUNTS_VIEW_AMAANAT_LOGS: 'accounts-view-amaanat-logs',
   ACCOUNTS_MANAGE_AMAANAT_LOGS: 'accounts-manage-amaanat-logs',
 
+  ACCOUNTS_VIEW_PAYMENTS: 'accounts-view-payments',
+  ACCOUNTS_MANAGE_PAYMENTS: 'accounts-manage-payments',
+
   // ****************************************************************************************
   // Admin Module
   // ****************************************************************************************

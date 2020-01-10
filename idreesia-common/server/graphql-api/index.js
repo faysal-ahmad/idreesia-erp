@@ -102,6 +102,9 @@ import VoucherDetailResolvers from './accounts/voucher-detail/resolvers';
 import AmaanatLogSchema from './accounts/amaanat-log/amaanat-log.graphql';
 import AmaanatLogResolvers from './accounts/amaanat-log/resolvers';
 
+import PaymentsSchema from './accounts/payments/payment.graphql';
+import PaymentsResolvers from './accounts/payments/resolvers';
+
 const typeDefs = [
   AttachmentSchema,
   AdminJobSchema,
@@ -135,6 +138,7 @@ const typeDefs = [
   VoucherDetailSchema,
   AccountMonthlyBalanceSchema,
   AmaanatLogSchema,
+  PaymentsSchema,
 ];
 
 const resolvers = merge(
@@ -169,7 +173,8 @@ const resolvers = merge(
   VoucherResolvers,
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
-  AmaanatLogResolvers
+  AmaanatLogResolvers,
+  PaymentsResolvers
 );
 
 export { typeDefs, resolvers };

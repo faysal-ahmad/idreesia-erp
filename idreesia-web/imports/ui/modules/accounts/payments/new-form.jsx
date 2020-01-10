@@ -11,6 +11,7 @@ import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   DateField,
   InputTextField,
+  SelectField,
   InputNumberField,
   InputMobileField,
   InputCnicField,
@@ -77,6 +78,25 @@ class NewForm extends Component {
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
+        <SelectField
+          data={[
+            {
+              value: 'IPT',
+              text: 'IPT',
+            },
+            {
+              value: 'OPT',
+              text: 'OPT',
+            },
+          ]}
+          getDataValue={({ value }) => value}
+          getDataText={({ text }) => text}
+          fieldName="paymentType"
+          fieldLabel="Payment Type"
+          required
+          requiredMessage="Please enter the Payment Type."
+          getFieldDecorator={getFieldDecorator}
+        />
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
@@ -105,14 +125,6 @@ class NewForm extends Component {
           fieldLabel="Mobile Number"
           required
           requiredMessage="Please enter the mobile number."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="paymentType"
-          fieldLabel="Payment Type"
-          required
-          requiredMessage="Please enter the payment type."
           getFieldDecorator={getFieldDecorator}
         />
 

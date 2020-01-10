@@ -54,4 +54,7 @@ export default class SubModulePaths {
   static paymentsEditFormPath(paymentId = ':paymentId') {
     return `${SubModulePaths.paymentsPath}/${paymentId}`;
   }
+  static paymentReceiptsPath(paymentId = ':paymentId') {
+    return `${SubModulePaths.paymentsPath}/${paymentId}/payment-receipts`;
+  }
 }

@@ -8,6 +8,8 @@ import numeral from 'numeral';
 
 import {
   Button,
+  Menu,
+  Dropdown,
   Icon,
   Pagination,
   Table,
@@ -35,13 +37,14 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleNewClicked: PropTypes.func,
     handleEditClicked: PropTypes.func,
+    handlePrintPaymentReceipts: PropTypes.func,
 
     loading: PropTypes.bool,
     pagedPayments: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
-    removeAmaanatLog: PropTypes.func,
+    removePayment: PropTypes.func,
   };
 
   columns = [
@@ -84,6 +87,15 @@ class List extends Component {
               }}
             />
           </Tooltip>
+          <Tooltip title="Print">
+            <Icon
+              type="printer"
+              className="list-actions-icon"
+              onClick={() => {
+                this.handlePrintPaymentReceipts(record);
+              }}
+            />
+          </Tooltip>
           <Tooltip title="Delete">
             <Icon
               type="delete"
@@ -103,9 +115,9 @@ class List extends Component {
     handleNewClicked();
   };
 
-  handleEditClicked = record => {
+  handleEditClicked = payment => {
     const { handleEditClicked } = this.props;
-    handleEditClicked(record);
+    handleEditClicked(payment);
   };
 
   handleDeleteClicked = payment => {
@@ -119,6 +131,13 @@ class List extends Component {
       .catch(error => {
         message.error(error.message, 5);
       });
+  };
+
+  handlePrintPaymentReceipts = payment => {
+    const { handlePrintPaymentReceipts } = this.props;
+    if (handlePrintPaymentReceipts) {
+      handlePrintPaymentReceipts(payment);
+    }
   };
 
   onChange = (pageIndex, pageSize) => {

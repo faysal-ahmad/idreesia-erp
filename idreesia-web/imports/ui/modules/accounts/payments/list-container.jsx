@@ -39,6 +39,11 @@ class ListContainer extends Component {
     history.push(paths.paymentsEditFormPath(payment._id));
   };
 
+  handlePrintPaymentReceipts = payment => {
+    const { history } = this.props;
+    history.push(paths.paymentReceiptsPath(payment._id));
+  };
+
   render() {
     const {
       pageIndex,
@@ -67,6 +72,7 @@ class ListContainer extends Component {
         setPageParams={this.setPageParams}
         handleNewClicked={this.handleNewClicked}
         handleEditClicked={this.handleEditClicked}
+        handlePrintPaymentReceipts={this.handlePrintPaymentReceipts}
       />
     );
   }

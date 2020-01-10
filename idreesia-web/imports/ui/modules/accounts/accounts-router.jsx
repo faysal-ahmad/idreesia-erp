@@ -10,7 +10,12 @@ import {
   AmaanatLogsNewForm,
   AmaanatLogsEditForm,
 } from './amaanat-logs';
-import { PaymentsList, PaymentsNewForm, PaymentsEditForm } from './payments';
+import {
+  PaymentsList,
+  PaymentsNewForm,
+  PaymentsEditForm,
+  PaymentReceipts,
+} from './payments';
 
 const AccountsRouter = () => (
   <Switch>
@@ -40,6 +45,7 @@ const AccountsRouter = () => (
     <Route path={paths.amaanatLogsPath} component={AmaanatLogsList} />
 
     <Route path={paths.paymentsNewFormPath} component={PaymentsNewForm} />
+    <Route path={paths.paymentReceiptsPath()} component={PaymentReceipts} />
     <Route path={paths.paymentsEditFormPath()} component={PaymentsEditForm} />
     <Route path={paths.paymentsPath} component={PaymentsList} />
   </Switch>

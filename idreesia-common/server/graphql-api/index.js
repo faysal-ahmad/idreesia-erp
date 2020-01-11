@@ -104,6 +104,8 @@ import AmaanatLogResolvers from './accounts/amaanat-log/resolvers';
 
 import PaymentsSchema from './accounts/payments/payment.graphql';
 import PaymentsResolvers from './accounts/payments/resolvers';
+import PaymentsHistorySchema from './accounts/payments-history/payment-history.graphql';
+import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
 
 const typeDefs = [
   AttachmentSchema,
@@ -139,6 +141,7 @@ const typeDefs = [
   AccountMonthlyBalanceSchema,
   AmaanatLogSchema,
   PaymentsSchema,
+  PaymentsHistorySchema,
 ];
 
 const resolvers = merge(
@@ -174,7 +177,8 @@ const resolvers = merge(
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
   AmaanatLogResolvers,
-  PaymentsResolvers
+  PaymentsResolvers,
+  PaymentsHistoryResolvers
 );
 
 export { typeDefs, resolvers };

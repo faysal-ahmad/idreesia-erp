@@ -99,11 +99,11 @@ class EditForm extends Component {
           data={[
             {
               value: 'IPT',
-              text: 'IPT',
+              text: 'Imdad Payment',
             },
             {
               value: 'OPT',
-              text: 'OPT',
+              text: 'Miscillinous Payment',
             },
           ]}
           getDataValue={({ value }) => value}
@@ -153,6 +153,8 @@ class EditForm extends Component {
           fieldName="paymentAmount"
           fieldLabel="Payment Amount"
           initialValue={paymentById.paymentAmount}
+          required
+          requiredMessage="Please enter the payment amount."
           minValue={0}
           getFieldDecorator={getFieldDecorator}
         />

@@ -1,8 +1,9 @@
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
+import { PaymentsHistory } from 'meteor/idreesia-common/server/collections/accounts';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getPayments, getInfoForNewPayment } from './queries';
+import { getPayments } from './queries';
 
 export default {
   Query: {
@@ -59,18 +60,19 @@ export default {
         );
       }
       const date = new Date();
-      const info = getInfoForNewPayment(paymentType, date);
+      const paymentNumber = Payments.getNextPaymentNo(paymentType, date);
       const paymentId = Payments.insert({
         name,
         fatherName,
         cnicNumber,
         contactNumber,
-        paymentNumber: info.paymentNumber,
+        paymentNumber,
         paymentType,
         paymentAmount,
         date,
         description,
         paymentDate,
+        isDeleted: false,
         createdAt: date,
         updatedAt: date,
         updatedBy: user._id,
@@ -104,19 +106,29 @@ export default {
           'You do not have permission to manage Payments in the System.'
         );
       }
-      console.log(
-        '::updatePayment ',
-        _id,
-        name,
-        fatherName,
-        cnicNumber,
-        contactNumber,
-        paymentType,
-        paymentAmount,
-        paymentDate,
-        description
-      );
       const date = new Date();
+      const payment = Payments.findOne(_id);
+      const version = PaymentsHistory.getNextVersionForPaymentHistory(_id);
+      PaymentsHistory.insert({
+        paymentId: payment._id,
+        version,
+        name: payment.name,
+        fatherName: payment.fatherName,
+        cnicNumber: payment.cnicNumber,
+        contactNumber: payment.contactNumber,
+        paymentNumber: payment.paymentNumber,
+        paymentType: payment.paymentType,
+        paymentAmount: payment.paymentAmount,
+        date: payment.date,
+        description: payment.description,
+        paymentDate: payment.paymentDate,
+        createdAt: date,
+        updatedAt: date,
+        updatedBy: user._id,
+        approvedBy: user._id,
+        createdBy: user._id,
+      });
+
       Payments.update(
         {
           _id,
@@ -151,8 +163,43 @@ export default {
           'You do not have permission to manage Payments in the System.'
         );
       }
-
-      return Payments.remove(_id);
+      const date = new Date();
+      Payments.update(
+        {
+          _id,
+        },
+        {
+          $set: {
+            isDeleted: true,
+            updatedAt: date,
+            updatedBy: user._id,
+            deletedAt: date,
+            deletedBy: user._id,
+          },
+        }
+      );
+      const payment = Payments.findOne(_id);
+      PaymentsHistory.insert({
+        paymentId: payment._id,
+        name: payment.name,
+        fatherName: payment.fatherName,
+        cnicNumber: payment.cnicNumber,
+        contactNumber: payment.contactNumber,
+        paymentNumber: payment.paymentNumber,
+        paymentType: payment.paymentType,
+        paymentAmount: payment.paymentAmount,
+        date: payment.date,
+        description: payment.description,
+        paymentDate: payment.paymentDate,
+        isDeleted: true,
+        createdAt: date,
+        updatedAt: date,
+        deletedAt: date,
+        approvedBy: user._id,
+        createdBy: user._id,
+        updatedBy: user._id,
+        deletedBy: user._id,
+      });
     },
   },
 };

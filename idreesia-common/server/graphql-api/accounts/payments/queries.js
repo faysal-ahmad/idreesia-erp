@@ -5,55 +5,6 @@ import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-export function getInfoForNewPayment(paymentType, paymentDate) {
-  const currentDate = moment(paymentDate);
-
-  let year = moment().year();
-  if (currentDate.month() <= 5) {
-    year -= 1;
-  }
-
-  const startDate = moment(`${year}-07-01 00:00:00`, 'YYYY-MM-DD hh:mm:ss');
-  const endDate = moment(`${year + 1}-06-30 23:59:59`, 'YYYY-MM-DD hh:mm:ss');
-  // Find the payment for this company, having the passed payment type, between the
-  // start and end date, that has the largest payment number.
-  const payment1 = Payments.findOne(
-    {
-      paymentType,
-      paymentDate: {
-        $gte: startDate.toDate(),
-        $lte: endDate.toDate(),
-      },
-    },
-    {
-      sort: {
-        paymentNumber: -1,
-      },
-    }
-  );
-
-  // Find the payment for this company, between the start and end date, that has
-  // the largest order.
-  const payment2 = Payments.findOne(
-    {
-      paymentDate: {
-        $gte: startDate.toDate(),
-        $lte: endDate.toDate(),
-      },
-    },
-    {
-      sort: {
-        order: -1,
-      },
-    }
-  );
-
-  return {
-    paymentNumber: payment1 ? payment1.paymentNumber + 1 : 1,
-    order: payment2 ? payment2.order + 1 : 1,
-  };
-}
-
 export function getPayments(queryString) {
   const params = parse(queryString);
   const pipeline = [];
@@ -67,6 +18,7 @@ export function getPayments(queryString) {
     paymentAmount,
     startDate,
     endDate,
+    isDeleted,
   } = params;
 
   const countingPipeline = pipeline.concat({
@@ -79,16 +31,19 @@ export function getPayments(queryString) {
         name: { $eq: name },
       },
     });
-
-    // if (name.length === 1) {
-    //   pipeline.push({
-    //     $match: { name: { $regex: `^${name}` } },
-    //   });
-    // } else {
-    //   pipeline.push({
-    //     $match: { $text: { $search: name } },
-    //   });
-    // }
+  }
+  if (isDeleted) {
+    pipeline.push({
+      $match: {
+        isDeleted: { $eq: isDeleted },
+      },
+    });
+  } else {
+    pipeline.push({
+      $match: {
+        isDeleted: { $eq: false },
+      },
+    });
   }
   if (cnicNumber) {
     pipeline.push({

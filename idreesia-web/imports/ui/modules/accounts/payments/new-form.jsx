@@ -82,11 +82,11 @@ class NewForm extends Component {
           data={[
             {
               value: 'IPT',
-              text: 'IPT',
+              text: 'Imdad Payment',
             },
             {
               value: 'OPT',
-              text: 'OPT',
+              text: 'Miscillinous Payment',
             },
           ]}
           getDataValue={({ value }) => value}
@@ -132,6 +132,8 @@ class NewForm extends Component {
           fieldName="paymentAmount"
           fieldLabel="Payment Amount"
           minValue={0}
+          required
+          requiredMessage="Please enter the payment amount."
           getFieldDecorator={getFieldDecorator}
         />
 

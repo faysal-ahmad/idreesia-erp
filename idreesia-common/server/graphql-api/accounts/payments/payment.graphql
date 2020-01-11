@@ -10,7 +10,7 @@ type Payment {
   paymentNumber: Int
 
   description: String
-
+  isDeleted: Boolean
   approvedBy: String
   createdAt: String
   createdBy: String
@@ -41,15 +41,15 @@ extend type Mutation {
   ): Payment
 
   updatePayment(
-  _id: String
-  name: String
-  fatherName: String
-  cnicNumber: String
-  contactNumber: String
-  paymentAmount: Float
-  paymentType: String
-  paymentDate: String
-  description: String
+    _id: String
+    name: String
+    fatherName: String
+    cnicNumber: String
+    contactNumber: String
+    paymentAmount: Float
+    paymentType: String
+    paymentDate: String
+    description: String
 
   ): Payment
 

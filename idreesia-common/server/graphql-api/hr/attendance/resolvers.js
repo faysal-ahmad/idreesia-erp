@@ -315,7 +315,7 @@ export default {
       });
     },
 
-    deleteAllAttendances(obj, { month }, { user }) {
+    deleteAllAttendances(obj, { month, categoryId, subCategoryId }, { user }) {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 
@@ -343,9 +343,27 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      return Attendances.remove({
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need toremove attendance of employees with the
+       * selected job.
+       */
+      const removeCriteria = {
         month: formattedMonth,
-      });
+      };
+
+      if (categoryId === 'all_jobs') {
+        if (subCategoryId) {
+          removeCriteria.jobId = subCategoryId;
+        } else {
+          removeCriteria.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        removeCriteria.dutyId = categoryId;
+        if (subCategoryId) removeCriteria.shiftId = subCategoryId;
+      }
+
+      return Attendances.remove(removeCriteria);
     },
   },
 };

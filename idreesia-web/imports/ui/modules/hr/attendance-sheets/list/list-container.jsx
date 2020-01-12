@@ -201,27 +201,31 @@ class ListContainer extends Component {
   handleDeleteAllAttendances = () => {
     const {
       deleteAllAttendances,
-      queryParams: { selectedMonth },
+      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
     } = this.props;
 
     const _selectedMonth = selectedMonth
       ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
       : moment();
 
-    deleteAllAttendances({
-      variables: {
-        month: _selectedMonth.format(Formats.DATE_FORMAT),
-      },
-    })
-      .then(() => {
-        message.success(
-          'All attendance records for the month have been deleted.',
-          5
-        );
+    if (selectedCategoryId) {
+      deleteAllAttendances({
+        variables: {
+          month: _selectedMonth.format(Formats.DATE_FORMAT),
+          categoryId: selectedCategoryId,
+          subCategoryId: selectedSubCategoryId,
+        },
       })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
+        .then(() => {
+          message.success(
+            'All attendance records for the selected duty/shift/job in the month have been deleted.',
+            5
+          );
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+    }
   };
 
   handleItemSelected = karkun => {
@@ -327,8 +331,16 @@ const deleteMutation = gql`
 `;
 
 const deleteAllMutation = gql`
-  mutation deleteAllAttendances($month: String!) {
-    deleteAllAttendances(month: $month)
+  mutation deleteAllAttendances(
+    $month: String!
+    $categoryId: String
+    $subCategoryId: String
+  ) {
+    deleteAllAttendances(
+      month: $month
+      categoryId: $categoryId
+      subCategoryId: $subCategoryId
+    )
   }
 `;
 

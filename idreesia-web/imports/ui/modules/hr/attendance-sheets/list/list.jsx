@@ -238,7 +238,7 @@ export class List extends Component {
       Modal.confirm({
         title: 'Delete All Attendances',
         content:
-          'Are you sure you want to delete all attendance records for the month?',
+          'Are you sure you want to delete all attendance records for the selected duty/shift/job in the month?',
         onOk() {
           handleDeleteAllAttendances();
         },

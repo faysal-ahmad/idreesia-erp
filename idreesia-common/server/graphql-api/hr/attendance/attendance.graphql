@@ -69,5 +69,5 @@ extend type Mutation {
   ): Int
    
   deleteAttendances(month: String!, ids: [String]!): Int
-  deleteAllAttendances(month: String!): Int
+  deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
 }

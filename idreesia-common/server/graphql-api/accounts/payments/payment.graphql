@@ -8,6 +8,7 @@ type Payment {
   paymentAmount: Float
   paymentDate: String
   paymentNumber: Int
+  history:[PaymentHistory]
 
   description: String
   isDeleted: Boolean
@@ -53,5 +54,5 @@ extend type Mutation {
 
   ): Payment
 
-  removePayment(_id: String!): Int
+  removePayment(_id: String!): Boolean
 }

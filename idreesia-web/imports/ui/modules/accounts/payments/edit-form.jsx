@@ -194,7 +194,27 @@ const formQuery = gql`
       paymentType
       paymentDate
       description
+      isDeleted
       approvedBy
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
+      history {
+        _id
+        name
+        fatherName
+        cnicNumber
+        paymentDate
+        paymentAmount
+        description
+        isDeleted
+        version
+        createdAt
+        createdBy
+        updatedAt
+        updatedBy
+      }
     }
   }
 `;

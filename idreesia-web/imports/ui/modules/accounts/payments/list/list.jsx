@@ -253,6 +253,7 @@ const listQuery = gql`
         paymentDate
         paymentAmount
         description
+        isDeleted
       }
     }
   }

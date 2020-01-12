@@ -1,11 +1,17 @@
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
-import { PaymentsHistory } from 'meteor/idreesia-common/server/collections/accounts';
+import {
+  Payments,
+  PaymentsHistory,
+} from 'meteor/idreesia-common/server/collections/accounts';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getPayments } from './queries';
 
 export default {
+  Payment: {
+    history: payment =>
+      PaymentsHistory.find({ paymentId: { $eq: payment._id } }).fetch(),
+  },
   Query: {
     pagedPayments(obj, { queryString }, { user }) {
       if (
@@ -179,8 +185,12 @@ export default {
         }
       );
       const payment = Payments.findOne(_id);
+      const version = PaymentsHistory.getNextVersionForPaymentHistory(
+        payment._id
+      );
       PaymentsHistory.insert({
         paymentId: payment._id,
+        version,
         name: payment.name,
         fatherName: payment.fatherName,
         cnicNumber: payment.cnicNumber,
@@ -200,6 +210,7 @@ export default {
         updatedBy: user._id,
         deletedBy: user._id,
       });
+      return true;
     },
   },
 };

@@ -8,7 +8,6 @@ import { Formats } from 'meteor/idreesia-common/constants';
 export function getPayments(queryString) {
   const params = parse(queryString);
   const pipeline = [];
-  console.log('::getPayments params = ', params);
   const {
     pageIndex = '0',
     pageSize = '20',
@@ -96,10 +95,6 @@ export function getPayments(queryString) {
     { $limit: nPageSize },
   ]);
 
-  console.log(
-    '::getPayments.resultsPipeline ',
-    JSON.stringify(resultsPipeline)
-  );
   const payments = Payments.aggregate(resultsPipeline).toArray();
   const totalResults = Payments.aggregate(countingPipeline).toArray();
 

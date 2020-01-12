@@ -32,6 +32,9 @@ export default new SimpleSchema({
   paymentDate: {
     type: Date,
   },
+  isDeleted: {
+    type: Boolean,
+  },
   description: {
     type: String,
     optional: true,

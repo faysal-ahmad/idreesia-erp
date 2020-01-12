@@ -26,6 +26,7 @@ export default class PaymentReceipts extends Component {
   };
 
   getPaymentReceipts = payment => {
+    const formattedDate = moment().format('DD-MM-YYYY h:mm a');
     return (
       <div key={payment._id} className="payment-receipt-print-view">
         <Row type="flex" justify="center" style={HeaderStyle}>
@@ -76,6 +77,9 @@ export default class PaymentReceipts extends Component {
           </Col>
         </Row>
         <Divider style={{ margin: '10px' }} />
+        <Row>
+          <Col order={1}>printed at : {formattedDate}</Col>
+        </Row>
       </div>
     );
   };

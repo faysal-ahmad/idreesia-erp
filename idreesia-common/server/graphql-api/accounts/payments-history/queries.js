@@ -6,7 +6,6 @@ import { PaymentsHistory } from 'meteor/idreesia-common/server/collections/accou
 export function getPaymentsHistory(queryString) {
   const params = parse(queryString);
   const pipeline = [];
-  console.log('::getPaymentsHistory params = ', params);
   const { pageIndex = '0', pageSize = '20', paymentId } = params;
   pipeline.push({
     $match: {
@@ -25,10 +24,6 @@ export function getPaymentsHistory(queryString) {
     { $limit: nPageSize },
   ]);
 
-  console.log(
-    '::getPaymentsHistory.resultsPipeline ',
-    JSON.stringify(resultsPipeline)
-  );
   const payments = PaymentsHistory.aggregate(resultsPipeline).toArray();
   const totalResults = PaymentsHistory.aggregate(countingPipeline).toArray();
 

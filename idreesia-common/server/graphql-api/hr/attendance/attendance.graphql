@@ -55,13 +55,6 @@ extend type Mutation {
     percentage: Int
   ): AttendanceType
 
-  uploadAttendances(
-    csv: String!
-    dutyId: String!
-    month: String!
-    shiftId: String
-  ): Int
-
   importAttendances(
     month: String!
     dutyId: String!

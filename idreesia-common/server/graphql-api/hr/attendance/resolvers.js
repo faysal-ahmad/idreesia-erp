@@ -212,18 +212,6 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    uploadAttendances(obj, { csv, month, dutyId, shiftId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage attendances in the System.'
-        );
-      }
-
-      return processAttendanceSheet(csv, month, dutyId, shiftId);
-    },
-
     importAttendances(obj, { month, dutyId, shiftId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])

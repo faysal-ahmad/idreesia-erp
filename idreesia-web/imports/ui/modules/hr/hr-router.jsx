@@ -24,6 +24,7 @@ import {
 import {
   AttendanceSheetsList,
   AttendanceSheetsKarkunCards,
+  AttendanceSheetsMehfilCards,
 } from './attendance-sheets';
 import {
   SalarySheetsList,
@@ -69,6 +70,10 @@ const HRRouter = () => (
     <Route
       path={paths.attendanceSheetsKarkunCardsPath}
       component={AttendanceSheetsKarkunCards}
+    />
+    <Route
+      path={paths.attendanceSheetsMehfilCardsPath}
+      component={AttendanceSheetsMehfilCards}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 

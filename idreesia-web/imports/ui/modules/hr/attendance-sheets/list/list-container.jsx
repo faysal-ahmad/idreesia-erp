@@ -151,13 +151,23 @@ class ListContainer extends Component {
       });
   };
 
-  handleViewCards = (selectedRows, cardType) => {
+  handleViewKarkunCards = (selectedRows, cardType) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
     const path = `${paths.attendanceSheetsKarkunCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
+    history.push(path);
+  };
+
+  handleViewMehfilCards = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { history } = this.props;
+    const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
+    const barcodeIdsString = barcodeIds.join(',');
+    const path = `${paths.attendanceSheetsMehfilCardsPath}?barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
@@ -248,7 +258,8 @@ class ListContainer extends Component {
           handleEditAttendance={this.handleEditAttendance}
           handleCreateMissingAttendances={this.handleCreateMissingAttendances}
           handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
-          handleViewCards={this.handleViewCards}
+          handleViewKarkunCards={this.handleViewKarkunCards}
+          handleViewMehfilCards={this.handleViewMehfilCards}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}

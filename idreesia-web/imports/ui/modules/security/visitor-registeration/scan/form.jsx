@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import InputMask from 'react-input-mask';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider, Row, Col, message } from '/imports/ui/controls';
@@ -14,15 +15,16 @@ class Form extends Component {
   };
 
   state = {
-    cnicNumber: '',
+    cnicNumbers: [],
   };
 
-  onCnicCaptured = cnic => {
-    if (!cnic) {
+  onCnicCaptured = cnicNumbers => {
+    this.manualCnic.value = '';
+    if (cnicNumbers.length === 0) {
       message.error('CNIC number was not recognized.', 3);
     } else {
       this.setState({
-        cnicNumber: cnic,
+        cnicNumbers,
       });
     }
   };
@@ -38,18 +40,54 @@ class Form extends Component {
   };
 
   render() {
-    const searchResults = this.state.cnicNumber ? (
-      <SearchResult cnicNumber={this.state.cnicNumber} />
-    ) : null;
+    const { cnicNumbers } = this.state;
+    const searchResults =
+      cnicNumbers.length > 0 ? (
+        <SearchResult cnicNumbers={cnicNumbers} />
+      ) : null;
     return (
       <Fragment>
         <Row type="flex" justify="space-between">
           <Col order={1}>
-            <ScanCnic onCnicCaptured={this.onCnicCaptured} />
+            <Row type="flex" justify="start" align="middle" gutter={16}>
+              <Col order={1}>Manual CNIC</Col>
+              <Col order={2}>
+                <InputMask
+                  mask="99999-9999999-9"
+                  ref={manualCnic => {
+                    this.manualCnic = manualCnic;
+                  }}
+                />
+              </Col>
+              <Col order={2}>
+                <Button
+                  icon="search"
+                  onClick={() => {
+                    if (this.manualCnic.value) {
+                      this.scanCnic.resetState();
+                      this.setState({
+                        cnicNumbers: [this.manualCnic.value],
+                      });
+                    }
+                  }}
+                />
+              </Col>
+            </Row>
+            <Divider />
+            <ScanCnic
+              onCnicCaptured={this.onCnicCaptured}
+              ref={scanCnic => {
+                this.scanCnic = scanCnic;
+              }}
+            />
           </Col>
           <Col order={2}>
-            <Button size="large" icon="search" onClick={this.handleSearch}>
-              Manual Search
+            <Button
+              size="large"
+              icon="unordered-list"
+              onClick={this.handleSearch}
+            >
+              Visitors List
             </Button>
             &nbsp;
             <Button

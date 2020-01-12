@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { debounce } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
 
-import { Col, Input, Row } from "/imports/ui/controls";
+import { Col, Input, Row } from '/imports/ui/controls';
 
 export default class ScanCnic extends Component {
   static propTypes = {
@@ -10,61 +10,65 @@ export default class ScanCnic extends Component {
   };
 
   state = {
-    code: "",
+    codes: [],
   };
 
   keyBuffer = [];
 
   componentDidMount = () => {
-    window.addEventListener("keypress", this.handleKeyPress);
+    window.addEventListener('keypress', this.handleKeyPress);
   };
 
   componentWillUnmount = () => {
-    window.removeEventListener("keypress", this.handleKeyPress);
+    window.removeEventListener('keypress', this.handleKeyPress);
   };
+
+  resetState = () => {
+    this.setState({ codes: [] });
+  };
+
+  formatCnicNumber = cnicString =>
+    `${cnicString.slice(0, 5)}-${cnicString.slice(5, 12)}-${cnicString.slice(
+      12,
+      13
+    )}`;
 
   sendBarcode = debounce(
     () => {
       const { onCnicCaptured } = this.props;
-      const scannedInput = this.keyBuffer.join("");
+      const scannedInput = this.keyBuffer.join('');
       setTimeout(() => {
         this.keyBuffer = [];
       }, 3000);
 
-      let barcode;
+      let barcodes = [];
       if (scannedInput.length === 15) {
-        barcode = `${scannedInput.slice(0, 5)}-${scannedInput.slice(
-          5,
-          12
-        )}-${scannedInput.slice(12, 13)}`;
+        barcodes = [this.formatCnicNumber(scannedInput.slice(0, 13))];
 
-        this.setState({ code: barcode });
+        this.setState({ codes: barcodes });
         if (onCnicCaptured) {
-          onCnicCaptured(barcode);
+          onCnicCaptured(barcodes);
         }
       } else if (scannedInput.length === 25) {
-        barcode = `${scannedInput.slice(11, 16)}-${scannedInput.slice(
-          16,
-          23
-        )}-${scannedInput.slice(23, 24)}`;
+        barcodes = [this.formatCnicNumber(scannedInput.slice(11, 24))];
 
-        this.setState({ code: barcode });
+        this.setState({ codes: barcodes });
         if (onCnicCaptured) {
-          onCnicCaptured(barcode);
+          onCnicCaptured(barcodes);
         }
       } else if (scannedInput.length === 26) {
-        barcode = `${scannedInput.slice(12, 17)}-${scannedInput.slice(
-          17,
-          24
-        )}-${scannedInput.slice(24, 25)}`;
+        barcodes = [
+          this.formatCnicNumber(scannedInput.slice(12, 25)),
+          this.formatCnicNumber(scannedInput.slice(11, 24)),
+        ];
 
-        this.setState({ code: barcode });
+        this.setState({ codes: barcodes });
         if (onCnicCaptured) {
-          onCnicCaptured(barcode);
+          onCnicCaptured(barcodes);
         }
       } else if (scannedInput.length > 50) {
         // Old 2D CNIC Formats
-        const parts = scannedInput.split("Enter");
+        const parts = scannedInput.split('Enter');
         if (parts.length > 6) {
           let idPart;
           if (parts[2].lnegth >= 13) {
@@ -73,21 +77,17 @@ export default class ScanCnic extends Component {
             idPart = parts[1];
           }
 
-          barcode = idPart;
           if (idPart.length > 13) {
-            barcode = `${idPart.slice(0, 5)}-${idPart.slice(
-              5,
-              12
-            )}-${idPart.slice(12, 13)}`;
+            barcodes = [this.formatCnicNumber(idPart.slice(0, 13))];
           }
 
-          this.setState({ code: barcode });
+          this.setState({ codes: barcodes });
           if (onCnicCaptured) {
-            onCnicCaptured(barcode);
+            onCnicCaptured(barcodes);
           }
         }
       } else if (onCnicCaptured) {
-        onCnicCaptured(null);
+        onCnicCaptured([]);
       }
     },
     100,
@@ -100,11 +100,19 @@ export default class ScanCnic extends Component {
   };
 
   render() {
+    const { codes } = this.state;
+
     return (
       <Row type="flex" justify="start" align="middle" gutter={16}>
         <Col order={1}>Scan CNIC</Col>
         <Col order={2}>
-          <Input readOnly value={this.state.code} />
+          {codes.length > 0 ? (
+            this.state.codes.map((code, index) => (
+              <Input key={index} readOnly value={code} />
+            ))
+          ) : (
+            <Input readOnly />
+          )}
         </Col>
       </Row>
     );

@@ -178,6 +178,20 @@ const permissionsData = [
     key: 'module-security',
     children: [
       {
+        title: 'Mehfils',
+        key: 'module-security-mehfils',
+        children: [
+          {
+            title: 'View Mehfils',
+            key: PermissionConstants.SECURITY_VIEW_MEHFILS,
+          },
+          {
+            title: 'Manage Mehfils',
+            key: PermissionConstants.SECURITY_MANAGE_MEHFILS,
+          },
+        ],
+      },
+      {
         title: 'Karkun Verification',
         key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
       },

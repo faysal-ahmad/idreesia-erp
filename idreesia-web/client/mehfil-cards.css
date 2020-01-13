@@ -50,7 +50,8 @@
   border: 1px solid #ccc;
 }
 
-.barcode_card_k {
+.mehfil_card_barcode {
   width: 120px;
   margin: auto;
+  padding: 5px 0;
 }

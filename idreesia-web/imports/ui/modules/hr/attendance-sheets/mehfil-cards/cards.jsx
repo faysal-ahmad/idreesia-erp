@@ -52,7 +52,7 @@ export default class Cards extends Component {
         ) : null}
         {karkunImage}
         <h1 className="mehfil_card_name">{attendance.karkun.name}</h1>
-        <div className="barcode_card_k">
+        <div className="mehfil_card_barcode">
           <Barcode
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}

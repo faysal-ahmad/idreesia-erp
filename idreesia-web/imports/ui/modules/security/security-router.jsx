@@ -21,10 +21,9 @@ const SecurityRouter = () => (
   <Switch>
     <Route path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
     <Route path={paths.mehfilsKarkunCardsPath()} component={MehfilCards} />
-
     <Route path={paths.mehfilsNewFormPath} component={MehfilsNewForm} />
     <Route path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
-    <Route path={paths.mehfilsListPath} component={MehfilsList} />
+    <Route path={paths.mehfilsPath} component={MehfilsList} />
 
     <Route
       path={paths.karkunCardVerificationPath}

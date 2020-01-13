@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faClipboardList,
   faIdCard,
+  faBarcode,
+  faIdBadge,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,38 +36,6 @@ const DrawerContent = ({ history, toggleDrawer }) => {
   return (
     <>
       {userProfile}
-      <List renderHeader="HR">
-        <List.Item
-          onClick={() => {
-            toggleDrawer();
-            dispatch(
-              setActiveModuleAndSubModuleName(
-                ModuleNames.hr,
-                HRSubModuleNames.attendanceSheets
-              )
-            );
-            history.push(HRSubModulePaths.attendanceSheetsPath);
-          }}
-          thumb={<FontAwesomeIcon icon={faClipboardList} style={IconStyle} />}
-        >
-          Attendance Sheets
-        </List.Item>
-        <List.Item
-          onClick={() => {
-            toggleDrawer();
-            dispatch(
-              setActiveModuleAndSubModuleName(
-                ModuleNames.hr,
-                HRSubModuleNames.teamManagement
-              )
-            );
-            history.push(HRSubModulePaths.teamManagementPath);
-          }}
-          thumb={<FontAwesomeIcon icon={faUsers} style={IconStyle} />}
-        >
-          Team Management
-        </List.Item>
-      </List>
       <List renderHeader="Security">
         <List.Item
           onClick={() => {
@@ -81,6 +51,21 @@ const DrawerContent = ({ history, toggleDrawer }) => {
           thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
         >
           Visitor Registration
+        </List.Item>
+        <List.Item
+          onClick={() => {
+            toggleDrawer();
+            dispatch(
+              setActiveModuleAndSubModuleName(
+                ModuleNames.security,
+                SecuritySubModuleNames.visitorRegistration
+              )
+            );
+            history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
+          }}
+          thumb={<FontAwesomeIcon icon={faBarcode} style={IconStyle} />}
+        >
+          Duty Card Verification
         </List.Item>
       </List>
     </>

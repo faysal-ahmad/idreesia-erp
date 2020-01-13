@@ -2,6 +2,15 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
+  // Mehfil Routes
+  // *************************************************************************************
+  static mehfilsPath = `${ModulePaths.security}/mehfils`;
+  static mehfilsNewFormPath = `${SubModulePaths.mehfilsPath}/new`;
+  static mehfilsEditFormPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}`;
+  }
+
+  // *************************************************************************************
   // Karkun Card Verification Routes
   // *************************************************************************************
   static karkunCardVerificationPath = `${ModulePaths.security}/karkun-card-verification`;

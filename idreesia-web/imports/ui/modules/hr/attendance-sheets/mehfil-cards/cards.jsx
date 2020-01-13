@@ -37,7 +37,7 @@ export default class Cards extends Component {
       <div style={{ height: '100%', width: 'auto' }} />
     );
 
-    return <div className="pic_card_extended_k">{karkunImage}</div>;
+    return <div className="mehfil_card_picture">{karkunImage}</div>;
   };
 
   getCardMarkup(attendance) {
@@ -45,13 +45,13 @@ export default class Cards extends Component {
     const karkunImage = this.getKarkunImage(attendance);
 
     return (
-      <div key={attendance._id} className="card_karkon">
-        <div className="heading_card_extended_k">{cardHeading}</div>
+      <div key={attendance._id} className="mehfil_card">
+        <div className="mehfil_card_heading">{cardHeading}</div>
         {cardSubHeading ? (
-          <div className="subheading_card_k">{cardSubHeading}</div>
+          <div className="mehfil_card_subheading">{cardSubHeading}</div>
         ) : null}
         {karkunImage}
-        <h1 className="name_card_k">{attendance.karkun.name}</h1>
+        <h1 className="mehfil_card_name">{attendance.karkun.name}</h1>
         <div className="barcode_card_k">
           <Barcode
             value={attendance.meetingCardBarcodeId}

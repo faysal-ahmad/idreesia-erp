@@ -8,7 +8,10 @@ import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 
 import App from '../imports/ui/app';
-import './meeting-cards.css';
+import './main.css';
+import './attendance.css';
+import './karkun-cards.css';
+import './mehfil-cards.css';
 import './stay-cards.css';
 
 const client = new ApolloClient({

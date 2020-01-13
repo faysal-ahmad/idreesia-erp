@@ -4,7 +4,7 @@ type MehfilType {
   mehfilDate: String
 
   karkunCount: Int
-  karkuns: KarkunType
+  mehfilKarkuns: MehfilKarkunType
 
   createdAt: String
   createdBy: String

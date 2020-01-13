@@ -35,11 +35,15 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     showNewButton: PropTypes.bool,
+    showDownloadButton: PropTypes.bool,
+    showSelectionColumn: PropTypes.bool,
+    showPhoneNumbersColumn: PropTypes.bool,
+    showDutiesColumn: PropTypes.bool,
+    showActionsColumn: PropTypes.bool,
+    predefinedFilterName: PropTypes.string,
+    handlePrintClicked: PropTypes.func,
     handleNewClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
-    handlePrintClicked: PropTypes.func,
-    showPhoneNumbersColumn: PropTypes.bool,
-    predefinedFilterName: PropTypes.string,
 
     deleteKarkun: PropTypes.func,
     loading: PropTypes.bool,
@@ -167,18 +171,26 @@ class List extends Component {
   };
 
   getColumns = () => {
-    const { showPhoneNumbersColumn } = this.props;
+    const {
+      showPhoneNumbersColumn,
+      showDutiesColumn,
+      showActionsColumn,
+    } = this.props;
+    const columns = [this.nameColumn, this.cnicColumn];
+
     if (showPhoneNumbersColumn) {
-      return [
-        this.nameColumn,
-        this.cnicColumn,
-        this.phoneNumberColumn,
-        this.dutiesColumn,
-        this.actionsColumn,
-      ];
+      columns.push(this.phoneNumberColumn);
     }
 
-    return [this.nameColumn, this.cnicColumn, this.dutiesColumn];
+    if (showDutiesColumn) {
+      columns.push(this.dutiesColumn);
+    }
+
+    if (showActionsColumn) {
+      columns.push(this.actionsColumn);
+    }
+
+    return columns;
   };
 
   rowSelection = {
@@ -246,6 +258,7 @@ class List extends Component {
       setPageParams,
       refetchListQuery,
       showNewButton,
+      showDownloadButton,
       handleNewClicked,
       handleScanClicked,
       predefinedFilterName,
@@ -295,6 +308,19 @@ class List extends Component {
       );
     }
 
+    let downloadButton = null;
+    if (showDownloadButton) {
+      downloadButton = (
+        <Tooltip title="Download Selected Data">
+          <Button
+            icon="download"
+            size="large"
+            onClick={this.handleExportSelected}
+          />
+        </Tooltip>
+      );
+    }
+
     if (!newButton && !listFilter) return null;
     return (
       <div className="list-table-header">
@@ -302,20 +328,14 @@ class List extends Component {
         <div className="list-table-header-section">
           {listFilter}
           &nbsp;&nbsp;
-          <Tooltip title="Download Selected Data">
-            <Button
-              icon="download"
-              size="large"
-              onClick={this.handleExportSelected}
-            />
-          </Tooltip>
+          {downloadButton}
         </div>
       </div>
     );
   };
 
   render() {
-    const { loading } = this.props;
+    const { loading, showSelectionColumn } = this.props;
     if (loading) return null;
 
     const {
@@ -333,7 +353,7 @@ class List extends Component {
         dataSource={karkuns}
         columns={this.getColumns()}
         title={this.getTableHeader}
-        rowSelection={this.rowSelection}
+        rowSelection={showSelectionColumn ? this.rowSelection : null}
         bordered
         size="small"
         pagination={false}

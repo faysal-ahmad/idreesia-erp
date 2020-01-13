@@ -11,7 +11,7 @@ export default {
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
       }).count(),
-    karkuns: mehfilType =>
+    mehfilKarkuns: mehfilType =>
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
       }).fetch(),

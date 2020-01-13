@@ -44,8 +44,21 @@ class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
+        const karkunsAction = (
+          <Tooltip key="karkuns" title="Karkuns">
+            <Icon
+              type="team"
+              className="list-actions-icon"
+              onClick={() => {
+                this.handleKarkunsClicked(record);
+              }}
+            />
+          </Tooltip>
+        );
+
+        let deleteAction = null;
         if (record.karkunCount === 0) {
-          return (
+          deleteAction = (
             <Tooltip key="delete" title="Delete">
               <Icon
                 type="delete"
@@ -58,7 +71,12 @@ class List extends Component {
           );
         }
 
-        return null;
+        return (
+          <div className="list-actions-column">
+            {karkunsAction}
+            {deleteAction}
+          </div>
+        );
       },
     },
   ];
@@ -77,6 +95,11 @@ class List extends Component {
     }).catch(error => {
       message.error(error.message, 5);
     });
+  };
+
+  handleKarkunsClicked = record => {
+    const { history } = this.props;
+    history.push(paths.mehfilsKarkunListPath(record._id));
   };
 
   render() {

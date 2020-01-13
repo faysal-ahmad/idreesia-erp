@@ -10,6 +10,14 @@ export default class SubModulePaths {
     return `${SubModulePaths.mehfilsPath}/${mehfilId}`;
   }
 
+  static mehfilsKarkunListPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkuns`;
+  }
+
+  static mehfilsKarkunCardsPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-cards`;
+  }
+
   // *************************************************************************************
   // Karkun Card Verification Routes
   // *************************************************************************************

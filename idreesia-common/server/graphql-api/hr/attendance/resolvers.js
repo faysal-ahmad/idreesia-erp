@@ -127,7 +127,7 @@ export default {
           PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
-        return [];
+        return null;
       }
 
       return Attendances.findOne({

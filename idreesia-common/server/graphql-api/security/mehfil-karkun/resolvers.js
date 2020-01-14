@@ -68,6 +68,29 @@ export default {
       return MehfilKarkuns.findOne(mehfilKarkunId);
     },
 
+    updateMehfilKarkun(obj, { _id, dutyDetail }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_MEHFILS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Mehfils Data in the System.'
+        );
+      }
+
+      const date = new Date();
+      MehfilKarkuns.update(_id, {
+        $set: {
+          dutyDetail,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return MehfilKarkuns.findOne(_id);
+    },
+
     removeMehfilKarkun(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [

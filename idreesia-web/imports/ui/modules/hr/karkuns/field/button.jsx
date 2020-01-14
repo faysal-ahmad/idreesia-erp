@@ -14,8 +14,16 @@ const ContainerStyle = {
 
 export default class SelectionButton extends Component {
   static propTypes = {
+    icon: PropTypes.string,
+    label: PropTypes.string,
     disabled: PropTypes.bool,
     onSelection: PropTypes.func,
+  };
+
+  static defaultProps = {
+    icon: 'plus-circle',
+    label: 'Select Karkuns',
+    disabled: false,
   };
 
   state = {
@@ -53,8 +61,13 @@ export default class SelectionButton extends Component {
           <ListContainer setSelectedValue={this.setSelectedValue} />
         </Drawer>
         <div style={ContainerStyle}>
-          <Button onClick={this.handleClick} disabled={this.props.disabled}>
-            Select Karkuns
+          <Button
+            size="large"
+            onClick={this.handleClick}
+            disabled={this.props.disabled}
+            icon={this.props.icon}
+          >
+            {this.props.label}
           </Button>
         </div>
       </>

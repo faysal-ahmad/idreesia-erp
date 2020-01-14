@@ -3,6 +3,7 @@ type MehfilKarkunType {
   mehfilId: String
   karkunId: String
   dutyName: String
+  dutyDetail: String
   dutyCardBarcodeId: String
 
   karkun: KarkunType
@@ -20,5 +21,6 @@ extend type Query {
 
 extend type Mutation {
   addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyName: String!): MehfilKarkunType
+  updateMehfilKarkun(_id: String!, dutyDetail: String): MehfilKarkunType
   removeMehfilKarkun(_id: String!): Int
 }

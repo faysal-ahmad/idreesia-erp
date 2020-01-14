@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { message } from '/imports/ui/controls';
+import { Modal, message } from '/imports/ui/controls';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithBreadcrumbs,
@@ -12,10 +12,12 @@ import {
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';
+import EditForm from './edit-form';
 
 class ListContainer extends Component {
   static propTypes = {
     addMehfilKarkun: PropTypes.func,
+    updateMehfilKarkun: PropTypes.func,
     removeMehfilKarkun: PropTypes.func,
 
     match: PropTypes.object,
@@ -23,6 +25,11 @@ class ListContainer extends Component {
     location: PropTypes.object,
     queryString: PropTypes.string,
     queryParams: PropTypes.object,
+  };
+
+  state = {
+    showEditForm: false,
+    mehfilKarkun: null,
   };
 
   setPageParams = newParams => {
@@ -79,6 +86,41 @@ class ListContainer extends Component {
     history.push(path);
   };
 
+  handleEditMehfilKarkun = mehfilKarkun => {
+    this.setState({
+      mehfilKarkun,
+      showEditForm: true,
+    });
+  };
+
+  handleEditMehfilKarkunSave = dutyDetail => {
+    const { mehfilKarkun } = this.state;
+    const { updateMehfilKarkun } = this.props;
+
+    if (dutyDetail !== mehfilKarkun.dutyDetail) {
+      updateMehfilKarkun({
+        variables: {
+          _id: mehfilKarkun._id,
+          dutyDetail,
+        },
+      }).catch(error => {
+        message.error(error.message, 5);
+      });
+    }
+
+    this.setState({
+      mehfilKarkun: null,
+      showEditForm: false,
+    });
+  };
+
+  handleEditMehfilKarkunClose = () => {
+    this.setState({
+      mehfilKarkun: null,
+      showEditForm: false,
+    });
+  };
+
   render() {
     const {
       match,
@@ -86,6 +128,15 @@ class ListContainer extends Component {
     } = this.props;
 
     const { mehfilId } = match.params;
+    const { showEditForm, mehfilKarkun } = this.state;
+
+    const editForm = showEditForm ? (
+      <EditForm
+        mehfilKarkun={mehfilKarkun}
+        onSave={this.handleEditMehfilKarkunSave}
+        onCancel={this.handleEditMehfilKarkunClose}
+      />
+    ) : null;
 
     return (
       <>
@@ -94,9 +145,19 @@ class ListContainer extends Component {
           dutyName={dutyName}
           setPageParams={this.setPageParams}
           handleAddMehfilKarkun={this.handleAddMehfilKarkun}
+          handleEditMehfilKarkun={this.handleEditMehfilKarkun}
           handleRemoveMehfilKarkun={this.handleRemoveMehfilKarkun}
           handleViewMehfilCards={this.handleViewMehfilCards}
         />
+        <Modal
+          title="Edit Duty Details"
+          visible={showEditForm}
+          onCancel={this.handleEditMehfilKarkunClose}
+          width={600}
+          footer={null}
+        >
+          <div>{editForm}</div>
+        </Modal>
       </>
     );
   }
@@ -117,6 +178,20 @@ const addMutation = gql`
       mehfilId
       karkunId
       dutyName
+      dutyDetail
+      dutyCardBarcodeId
+    }
+  }
+`;
+
+const editMutation = gql`
+  mutation updateMehfilKarkun($_id: String!, $dutyDetail: String!) {
+    updateMehfilKarkun(_id: $_id, dutyDetail: $dutyDetail) {
+      _id
+      mehfilId
+      karkunId
+      dutyName
+      dutyDetail
       dutyCardBarcodeId
     }
   }
@@ -135,6 +210,12 @@ export default flowRight(
       refetchQueries: ['mehfilKarkunsByMehfilId'],
     },
   }),
+  graphql(editMutation, {
+    name: 'updateMehfilKarkun',
+    options: {
+      refetchQueries: ['mehfilKarkunsByMehfilId'],
+    },
+  }),
   graphql(removeMutation, {
     name: 'removeMehfilKarkun',
     options: {
@@ -142,5 +223,5 @@ export default flowRight(
     },
   }),
   WithQueryParams(),
-  WithBreadcrumbs(['Security', 'Mehfils', 'karkuns'])
+  WithBreadcrumbs(['Security', 'Mehfils', 'Karkuns'])
 )(ListContainer);

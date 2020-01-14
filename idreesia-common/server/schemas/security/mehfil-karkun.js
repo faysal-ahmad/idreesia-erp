@@ -12,6 +12,10 @@ export default new SimpleSchema({
   dutyName: {
     type: String,
   },
+  dutyDetail: {
+    type: String,
+    optional: true,
+  },
   dutyCardBarcodeId: {
     type: String,
   },

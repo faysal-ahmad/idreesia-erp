@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
@@ -11,18 +11,12 @@ const ControlsContainer = {
   width: '100%',
 };
 
-const InputControlsContainer = {
-  display: 'flex',
-  flexFlow: 'column wrap',
-  justifyContent: 'flex-start',
-};
-
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Button, Divider, Input } from '/imports/ui/controls';
+import { Button, Divider } from '/imports/ui/controls';
 import Cards from './cards';
 
 const mehfilKarkunsByIdsQuery = gql`
@@ -32,6 +26,7 @@ const mehfilKarkunsByIdsQuery = gql`
       mehfilId
       karkunId
       dutyName
+      dutyDetail
       dutyCardBarcodeId
       karkun {
         _id
@@ -46,23 +41,12 @@ const mehfilKarkunsByIdsQuery = gql`
 `;
 
 const CardsContainer = ({ queryParams: { ids }, history }) => {
-  const [cardSubHeading, setCardSubHeading] = useState(null);
   const mehfilCardsRef = useRef(null);
   const { data, loading } = useQuery(mehfilKarkunsByIdsQuery, {
     variables: { ids },
   });
 
   if (loading) return null;
-
-  debugger;
-  const cardSubHeadingInput = (
-    <Input
-      placeholder="Sub Heading"
-      onChange={event => {
-        setCardSubHeading(event.target.value);
-      }}
-    />
-  );
 
   return (
     <>
@@ -87,12 +71,10 @@ const CardsContainer = ({ queryParams: { ids }, history }) => {
             Back
           </Button>
         </div>
-        <div style={InputControlsContainer}>{cardSubHeadingInput}</div>
       </div>
       <Divider />
       <Cards
         ref={mehfilCardsRef}
-        cardSubHeading={cardSubHeading}
         mehfilKarkunsByIds={data.mehfilKarkunsByIds}
       />
     </>

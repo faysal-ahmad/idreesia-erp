@@ -26,7 +26,6 @@ const ContainerStyle = {
 export default class Cards extends Component {
   static propTypes = {
     loading: PropTypes.bool,
-    cardSubHeading: PropTypes.string,
     mehfilKarkunsByIds: PropTypes.array,
   };
 
@@ -44,7 +43,6 @@ export default class Cards extends Component {
   };
 
   getCardMarkup(mehfilKarkun) {
-    const { cardSubHeading } = this.props;
     const karkunImage = this.getKarkunImage(mehfilKarkun);
     const mehfilDuty = find(MehfilDuties, { _id: mehfilKarkun.dutyName });
 
@@ -53,8 +51,10 @@ export default class Cards extends Component {
         <div className="mehfil_card_heading">
           {mehfilDuty ? mehfilDuty.urduName : ''}
         </div>
-        {cardSubHeading ? (
-          <div className="mehfil_card_subheading">{cardSubHeading}</div>
+        {mehfilKarkun.dutyDetail ? (
+          <div className="mehfil_card_subheading">
+            {mehfilKarkun.dutyDetail}
+          </div>
         ) : null}
         {karkunImage}
         <h1 className="mehfil_card_name">{mehfilKarkun.karkun.name}</h1>

@@ -21,6 +21,7 @@ export class List extends Component {
     karkunsLoading: PropTypes.bool,
     mehfilKarkunsByMehfilId: PropTypes.array,
     handleAddMehfilKarkun: PropTypes.func,
+    handleEditMehfilKarkun: PropTypes.func,
     handleRemoveMehfilKarkun: PropTypes.func,
     handleViewMehfilCards: PropTypes.func,
   };
@@ -49,9 +50,24 @@ export class List extends Component {
       key: 'karkun.contactNumber1',
     },
     {
+      title: 'Duty Detail',
+      dataIndex: 'dutyDetail',
+      key: 'dutyDetail',
+    },
+    {
       key: 'action',
       render: (text, record) => (
         <div className="list-actions-column">
+          <Tooltip key="edit" title="Edit Duty Detail">
+            <Icon
+              type="edit"
+              className="list-actions-icon"
+              onClick={() => {
+                const { handleEditMehfilKarkun } = this.props;
+                handleEditMehfilKarkun(record);
+              }}
+            />
+          </Tooltip>
           <Tooltip key="delete" title="Remove Karkun">
             <Icon
               type="delete"
@@ -121,11 +137,17 @@ export class List extends Component {
         <div>{dutySelector}</div>
         <div className="list-table-header-section">
           <KarkunSelectionButton
+            label="Add Karkuns"
             onSelection={this.onKarkunSelection}
             disabled={!dutyName}
           />
           &nbsp;&nbsp;
-          <Button disabled={!dutyName} onClick={this.handleViewMehfilCards}>
+          <Button
+            disabled={!dutyName}
+            icon="printer"
+            size="large"
+            onClick={this.handleViewMehfilCards}
+          >
             Print Cards
           </Button>
         </div>
@@ -161,6 +183,7 @@ const mehfilKarkunsByMehfilIdQuery = gql`
       mehfilId
       karkunId
       dutyName
+      dutyDetail
       dutyCardBarcodeId
       karkun {
         _id

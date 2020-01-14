@@ -25,18 +25,7 @@ import {
 import { Button, Divider, Input, Select } from '/imports/ui/controls';
 import Cards from './cards';
 
-const CardHeadings = [
-  'اسپیشل سیکورٹی',
-  'اینٹری گیٹ سیکورٹی',
-  'ہال سیکورٹی',
-  '٨٠٢ سیکورٹی',
-  'محفل زیارت',
-  'انٹرکام ڈیوٹی',
-  'ٹیلی فون روم',
-  'جوتا اسٹینڈ',
-  'لنگر شریف تقسیم',
-  'گوشت تقسیم',
-];
+const CardHeadings = ['لنگر شریف تقسیم', 'گوشت تقسیم'];
 
 const CardsContainer = ({
   attendanceLoading,

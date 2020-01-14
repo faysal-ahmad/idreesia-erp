@@ -1,12 +1,16 @@
 import { Random } from 'meteor/random';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
-import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/security';
+import {
+  Mehfils,
+  MehfilKarkuns,
+} from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   MehfilKarkunType: {
     karkun: mehfilKarkunType => Karkuns.findOne(mehfilKarkunType.karkunId),
+    mehfil: mehfilKarkunType => Mehfils.findOne(mehfilKarkunType.mehfilId),
   },
 
   Query: {
@@ -38,6 +42,21 @@ export default {
       return MehfilKarkuns.find({
         _id: { $in: idsArray },
       }).fetch();
+    },
+
+    mehfilKarkunByBarcodeId(obj, { barcode }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_MEHFILS,
+          PermissionConstants.SECURITY_MANAGE_MEHFILS,
+        ])
+      ) {
+        return null;
+      }
+
+      return MehfilKarkuns.findOne({
+        dutyCardBarcodeId: barcode,
+      });
     },
   },
 

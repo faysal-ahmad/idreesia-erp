@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
+import { MehfilCardVerificationForm } from './mehfil-card-verification';
 import { KarkunVerificationForm } from './karkun-verification';
 import { MehfilsNewForm, MehfilsEditForm, MehfilsList } from './mehfils';
 import { MehfilKarkunsList } from './mehfil-karkuns';
@@ -25,6 +26,10 @@ const SecurityRouter = () => (
     <Route path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
     <Route path={paths.mehfilsPath} component={MehfilsList} />
 
+    <Route
+      path={paths.mehfilCardVerificationPath}
+      component={MehfilCardVerificationForm}
+    />
     <Route
       path={paths.karkunCardVerificationPath}
       component={KarkunVerificationForm}

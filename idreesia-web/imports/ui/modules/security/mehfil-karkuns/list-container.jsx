@@ -223,5 +223,5 @@ export default flowRight(
     },
   }),
   WithQueryParams(),
-  WithBreadcrumbs(['Security', 'Mehfils', 'Karkuns'])
+  WithBreadcrumbs(['Security', 'Mehfils', 'Karkun Duties'])
 )(ListContainer);

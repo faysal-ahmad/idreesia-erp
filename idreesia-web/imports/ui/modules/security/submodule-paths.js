@@ -19,9 +19,11 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
-  // Karkun Card Verification Routes
+  // Card Verification Routes
   // *************************************************************************************
+  static mehfilCardVerificationPath = `${ModulePaths.security}/mehfil-card-verification`;
   static karkunCardVerificationPath = `${ModulePaths.security}/karkun-card-verification`;
+  static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************
   // Visitor Registration Routes
@@ -33,11 +35,6 @@ export default class SubModulePaths {
   static visitorRegistrationEditFormPath(visitorId = ':visitorId') {
     return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
   }
-
-  // *************************************************************************************
-  // Visitor Card Verification Routes
-  // *************************************************************************************
-  static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************
   // Visitor's Stay Report Routes

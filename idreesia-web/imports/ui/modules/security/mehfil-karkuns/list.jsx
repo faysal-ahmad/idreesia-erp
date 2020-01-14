@@ -60,7 +60,7 @@ export class List extends Component {
         <div className="list-actions-column">
           <Tooltip key="delete" title="Remove Karkun">
             <Icon
-              type="delete"
+              type="usergroup-delete"
               className="list-actions-icon"
               onClick={() => {
                 const { handleRemoveMehfilKarkun } = this.props;
@@ -135,6 +135,7 @@ export class List extends Component {
         <div>{dutySelector}</div>
         <div className="list-table-header-section">
           <KarkunSelectionButton
+            icon="usergroup-add"
             label="Add Karkuns"
             onSelection={this.onKarkunSelection}
             disabled={!dutyName}

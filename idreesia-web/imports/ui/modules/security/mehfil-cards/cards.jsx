@@ -23,55 +23,53 @@ const ContainerStyle = {
   padding: '20px',
 };
 
+export const Card = ({ mehfilKarkun }) => {
+  const mehfilDuty = find(MehfilDuties, { _id: mehfilKarkun.dutyName });
+
+  const karkunImage = mehfilKarkun.karkun.image ? (
+    <img
+      src={`data:image/jpeg;base64,${mehfilKarkun.karkun.image.data}`}
+      style={{ maxHeight: '100%', width: 'auto' }}
+    />
+  ) : (
+    <div style={{ height: '100%', width: 'auto' }} />
+  );
+
+  return (
+    <div key={mehfilKarkun._id} className="mehfil_card">
+      <div className="mehfil_card_heading">
+        {mehfilDuty ? mehfilDuty.urduName : ''}
+      </div>
+      {mehfilKarkun.dutyDetail ? (
+        <div className="mehfil_card_subheading">{mehfilKarkun.dutyDetail}</div>
+      ) : null}
+      <div className="mehfil_card_picture">{karkunImage}</div>
+      <h1 className="mehfil_card_name">{mehfilKarkun.karkun.name}</h1>
+      <div className="mehfil_card_barcode">
+        <Barcode value={mehfilKarkun.dutyCardBarcodeId} {...barcodeOptions} />
+      </div>
+    </div>
+  );
+};
+
+Card.propTypes = {
+  mehfilKarkun: PropTypes.object,
+};
+
+// eslint-disable-next-line react/prefer-stateless-function
 export default class Cards extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     mehfilKarkunsByIds: PropTypes.array,
   };
 
-  getKarkunImage = mehfilKarkun => {
-    const karkunImage = mehfilKarkun.karkun.image ? (
-      <img
-        src={`data:image/jpeg;base64,${mehfilKarkun.karkun.image.data}`}
-        style={{ maxHeight: '100%', width: 'auto' }}
-      />
-    ) : (
-      <div style={{ height: '100%', width: 'auto' }} />
-    );
-
-    return <div className="mehfil_card_picture">{karkunImage}</div>;
-  };
-
-  getCardMarkup(mehfilKarkun) {
-    const karkunImage = this.getKarkunImage(mehfilKarkun);
-    const mehfilDuty = find(MehfilDuties, { _id: mehfilKarkun.dutyName });
-
-    return (
-      <div key={mehfilKarkun._id} className="mehfil_card">
-        <div className="mehfil_card_heading">
-          {mehfilDuty ? mehfilDuty.urduName : ''}
-        </div>
-        {mehfilKarkun.dutyDetail ? (
-          <div className="mehfil_card_subheading">
-            {mehfilKarkun.dutyDetail}
-          </div>
-        ) : null}
-        {karkunImage}
-        <h1 className="mehfil_card_name">{mehfilKarkun.karkun.name}</h1>
-        <div className="mehfil_card_barcode">
-          <Barcode value={mehfilKarkun.dutyCardBarcodeId} {...barcodeOptions} />
-        </div>
-      </div>
-    );
-  }
-
   render() {
     const { mehfilKarkunsByIds } = this.props;
     if (!mehfilKarkunsByIds) return null;
 
-    const cards = mehfilKarkunsByIds.map(mehfilKarkun =>
-      this.getCardMarkup(mehfilKarkun)
-    );
+    const cards = mehfilKarkunsByIds.map((mehfilKarkun, index) => (
+      <Card key={index} mehfilKarkun={mehfilKarkun} />
+    ));
 
     let index = 0;
     const cardContainers = [];

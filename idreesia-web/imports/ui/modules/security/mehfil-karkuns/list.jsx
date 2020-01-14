@@ -58,16 +58,6 @@ export class List extends Component {
       key: 'action',
       render: (text, record) => (
         <div className="list-actions-column">
-          <Tooltip key="edit" title="Edit Duty Detail">
-            <Icon
-              type="edit"
-              className="list-actions-icon"
-              onClick={() => {
-                const { handleEditMehfilKarkun } = this.props;
-                handleEditMehfilKarkun(record);
-              }}
-            />
-          </Tooltip>
           <Tooltip key="delete" title="Remove Karkun">
             <Icon
               type="delete"
@@ -96,6 +86,14 @@ export class List extends Component {
     setPageParams({
       dutyName: value,
     });
+  };
+
+  handleEditDutyDetails = () => {
+    const { handleEditMehfilKarkun } = this.props;
+    const { selectedRows } = this.state;
+    if (handleEditMehfilKarkun) {
+      handleEditMehfilKarkun(selectedRows);
+    }
   };
 
   handleViewMehfilCards = () => {
@@ -141,6 +139,15 @@ export class List extends Component {
             onSelection={this.onKarkunSelection}
             disabled={!dutyName}
           />
+          &nbsp;&nbsp;
+          <Button
+            disabled={!dutyName}
+            icon="edit"
+            size="large"
+            onClick={this.handleEditDutyDetails}
+          >
+            Edit Duty Detail
+          </Button>
           &nbsp;&nbsp;
           <Button
             disabled={!dutyName}

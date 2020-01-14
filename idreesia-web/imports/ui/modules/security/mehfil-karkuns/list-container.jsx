@@ -17,7 +17,7 @@ import EditForm from './edit-form';
 class ListContainer extends Component {
   static propTypes = {
     addMehfilKarkun: PropTypes.func,
-    updateMehfilKarkun: PropTypes.func,
+    setDutyDetail: PropTypes.func,
     removeMehfilKarkun: PropTypes.func,
 
     match: PropTypes.object,
@@ -29,7 +29,7 @@ class ListContainer extends Component {
 
   state = {
     showEditForm: false,
-    mehfilKarkun: null,
+    mehfilKarkuns: [],
   };
 
   setPageParams = newParams => {
@@ -86,37 +86,38 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleEditMehfilKarkun = mehfilKarkun => {
-    this.setState({
-      mehfilKarkun,
-      showEditForm: true,
-    });
+  handleEditMehfilKarkun = selectedRows => {
+    if (selectedRows.length > 0) {
+      this.setState({
+        mehfilKarkuns: selectedRows,
+        showEditForm: true,
+      });
+    }
   };
 
   handleEditMehfilKarkunSave = dutyDetail => {
-    const { mehfilKarkun } = this.state;
-    const { updateMehfilKarkun } = this.props;
+    const { mehfilKarkuns } = this.state;
+    const { setDutyDetail } = this.props;
 
-    if (dutyDetail !== mehfilKarkun.dutyDetail) {
-      updateMehfilKarkun({
-        variables: {
-          _id: mehfilKarkun._id,
-          dutyDetail,
-        },
-      }).catch(error => {
-        message.error(error.message, 5);
-      });
-    }
+    const ids = mehfilKarkuns.map(({ _id }) => _id);
+    setDutyDetail({
+      variables: {
+        ids,
+        dutyDetail,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
 
     this.setState({
-      mehfilKarkun: null,
+      mehfilKarkuns: [],
       showEditForm: false,
     });
   };
 
   handleEditMehfilKarkunClose = () => {
     this.setState({
-      mehfilKarkun: null,
+      mehfilKarkuns: [],
       showEditForm: false,
     });
   };
@@ -128,11 +129,10 @@ class ListContainer extends Component {
     } = this.props;
 
     const { mehfilId } = match.params;
-    const { showEditForm, mehfilKarkun } = this.state;
+    const { showEditForm } = this.state;
 
     const editForm = showEditForm ? (
       <EditForm
-        mehfilKarkun={mehfilKarkun}
         onSave={this.handleEditMehfilKarkunSave}
         onCancel={this.handleEditMehfilKarkunClose}
       />
@@ -185,8 +185,8 @@ const addMutation = gql`
 `;
 
 const editMutation = gql`
-  mutation updateMehfilKarkun($_id: String!, $dutyDetail: String!) {
-    updateMehfilKarkun(_id: $_id, dutyDetail: $dutyDetail) {
+  mutation setDutyDetail($ids: [String]!, $dutyDetail: String!) {
+    setDutyDetail(ids: $ids, dutyDetail: $dutyDetail) {
       _id
       mehfilId
       karkunId
@@ -211,7 +211,7 @@ export default flowRight(
     },
   }),
   graphql(editMutation, {
-    name: 'updateMehfilKarkun',
+    name: 'setDutyDetail',
     options: {
       refetchQueries: ['mehfilKarkunsByMehfilId'],
     },

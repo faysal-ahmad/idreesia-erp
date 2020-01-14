@@ -10,7 +10,6 @@ import {
 class EditForm extends Component {
   static propTypes = {
     form: PropTypes.object,
-    mehfilKarkun: PropTypes.object,
     onSave: PropTypes.func,
     onCancel: PropTypes.func,
   };
@@ -26,7 +25,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { mehfilKarkun, form, onCancel } = this.props;
+    const { form, onCancel } = this.props;
     const { getFieldDecorator } = form;
 
     return (
@@ -34,7 +33,6 @@ class EditForm extends Component {
         <InputTextField
           fieldName="dutyDetail"
           fieldLabel="Duty Detail"
-          initialValue={mehfilKarkun.dutyDetail}
           getFieldDecorator={getFieldDecorator}
         />
 

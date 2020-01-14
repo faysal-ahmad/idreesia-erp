@@ -21,6 +21,6 @@ extend type Query {
 
 extend type Mutation {
   addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyName: String!): MehfilKarkunType
-  updateMehfilKarkun(_id: String!, dutyDetail: String): MehfilKarkunType
+  setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
   removeMehfilKarkun(_id: String!): Int
 }

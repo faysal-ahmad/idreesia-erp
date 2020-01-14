@@ -68,7 +68,7 @@ export default {
       return MehfilKarkuns.findOne(mehfilKarkunId);
     },
 
-    updateMehfilKarkun(obj, { _id, dutyDetail }, { user }) {
+    setDutyDetail(obj, { ids, dutyDetail }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_MEHFILS,
@@ -80,15 +80,21 @@ export default {
       }
 
       const date = new Date();
-      MehfilKarkuns.update(_id, {
-        $set: {
-          dutyDetail,
-          updatedAt: date,
-          updatedBy: user._id,
+      MehfilKarkuns.update(
+        {
+          _id: { $in: ids },
         },
-      });
+        {
+          $set: {
+            dutyDetail,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
 
-      return MehfilKarkuns.findOne(_id);
+      return MehfilKarkuns.find({ _id: { $in: ids } }).fetch();
     },
 
     removeMehfilKarkun(obj, { _id }, { user }) {

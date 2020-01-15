@@ -15,6 +15,8 @@ const MehfilDuties = [
   { _id: 'inercom-duty', name: 'Intercom Duty', urduName: 'انٹرکام ڈیوٹی' },
   { _id: 'telephone-room', name: 'Telephone Room', urduName: 'ٹیلی فون روم' },
   { _id: 'joota-stand', name: 'Shoe Rack', urduName: 'جوتا اسٹینڈ' },
+  { _id: 'madad-committee', name: 'Madad Committee', urduName: 'مدد کمیٹی' },
+  { _id: 'wazaif-room', name: 'Wazaif Room', urduName: 'وظائف روم' },
 ];
 
 export default MehfilDuties;

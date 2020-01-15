@@ -59,7 +59,6 @@ Card.propTypes = {
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Cards extends Component {
   static propTypes = {
-    loading: PropTypes.bool,
     mehfilKarkunsByIds: PropTypes.array,
   };
 

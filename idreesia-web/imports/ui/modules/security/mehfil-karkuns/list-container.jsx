@@ -76,13 +76,17 @@ class ListContainer extends Component {
   };
 
   handleViewMehfilCards = selectedRows => {
-    if (!selectedRows || selectedRows.length === 0) return;
-
-    const { history, match } = this.props;
+    const {
+      history,
+      match,
+      queryParams: { dutyName },
+    } = this.props;
     const { mehfilId } = match.params;
     const ids = selectedRows.map(row => row._id);
     const idsString = ids.join(',');
-    const path = `${paths.mehfilsKarkunCardsPath(mehfilId)}?ids=${idsString}`;
+    const path = `${paths.mehfilsKarkunCardsPath(
+      mehfilId
+    )}?dutyName=${dutyName}&ids=${idsString}`;
     history.push(path);
   };
 

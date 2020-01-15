@@ -18,6 +18,7 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider } from '/imports/ui/controls';
 import Cards from './cards';
+import AnonymousCards from './anonymous-cards';
 
 const mehfilKarkunsByIdsQuery = gql`
   query mehfilKarkunsByIds($ids: String!) {
@@ -40,13 +41,19 @@ const mehfilKarkunsByIdsQuery = gql`
   }
 `;
 
-const CardsContainer = ({ queryParams: { ids }, history }) => {
+const CardsContainer = ({ queryParams: { ids, dutyName }, history }) => {
   const mehfilCardsRef = useRef(null);
   const { data, loading } = useQuery(mehfilKarkunsByIdsQuery, {
     variables: { ids },
   });
 
   if (loading) return null;
+
+  const cards = ids ? (
+    <Cards ref={mehfilCardsRef} mehfilKarkunsByIds={data.mehfilKarkunsByIds} />
+  ) : (
+    <AnonymousCards ref={mehfilCardsRef} dutyName={dutyName} />
+  );
 
   return (
     <>
@@ -60,7 +67,7 @@ const CardsContainer = ({ queryParams: { ids }, history }) => {
               </Button>
             )}
           />
-          &nbsp;
+          &nbsp;&nbsp;
           <Button
             size="large"
             type="primary"
@@ -73,10 +80,7 @@ const CardsContainer = ({ queryParams: { ids }, history }) => {
         </div>
       </div>
       <Divider />
-      <Cards
-        ref={mehfilCardsRef}
-        mehfilKarkunsByIds={data.mehfilKarkunsByIds}
-      />
+      {cards}
     </>
   );
 };

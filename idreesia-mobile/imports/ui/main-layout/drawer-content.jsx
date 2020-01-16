@@ -3,17 +3,10 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faClipboardList,
-  faIdCard,
-  faBarcode,
-  faIdBadge,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faIdCard, faBarcode } from '@fortawesome/free-solid-svg-icons';
 
 import { setActiveModuleAndSubModuleName } from 'meteor/idreesia-common/action-creators';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { HRSubModuleNames, HRSubModulePaths } from '/imports/ui/modules/hr';
 import {
   SecuritySubModuleNames,
   SecuritySubModulePaths,
@@ -39,6 +32,7 @@ const DrawerContent = ({ history, toggleDrawer }) => {
       <List renderHeader="Security">
         <List.Item
           onClick={() => {
+            /*
             toggleDrawer();
             dispatch(
               setActiveModuleAndSubModuleName(
@@ -47,6 +41,7 @@ const DrawerContent = ({ history, toggleDrawer }) => {
               )
             );
             history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
+            */
           }}
           thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
         >
@@ -58,14 +53,14 @@ const DrawerContent = ({ history, toggleDrawer }) => {
             dispatch(
               setActiveModuleAndSubModuleName(
                 ModuleNames.security,
-                SecuritySubModuleNames.visitorRegistration
+                SecuritySubModuleNames.mehfilCardVerification
               )
             );
-            history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
+            history.push(SecuritySubModulePaths.mehfilCardVerificationPath);
           }}
           thumb={<FontAwesomeIcon icon={faBarcode} style={IconStyle} />}
         >
-          Duty Card Verification
+          Mehfil Card Verification
         </List.Item>
       </List>
     </>

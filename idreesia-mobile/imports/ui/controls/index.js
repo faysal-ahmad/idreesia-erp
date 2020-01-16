@@ -1,3 +1,4 @@
+import 'antd-mobile/lib/activity-indicator/style/css';
 import 'antd-mobile/lib/button/style/css';
 import 'antd-mobile/lib/drawer/style/css';
 import 'antd-mobile/lib/flex/style/css';
@@ -12,6 +13,9 @@ import 'antd-mobile/lib/toast/style/css';
 import 'antd-mobile/lib/wing-blank/style/css';
 import 'antd-mobile/lib/white-space/style/css';
 
+export {
+  default as ActivityIndicator,
+} from 'antd-mobile/lib/activity-indicator';
 export { default as Button } from 'antd-mobile/lib/button';
 export { default as Drawer } from 'antd-mobile/lib/drawer';
 export { default as Flex } from 'antd-mobile/lib/flex';

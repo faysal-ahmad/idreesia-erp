@@ -2,8 +2,8 @@ import { WebApp } from 'meteor/webapp';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import { kebabCase } from 'lodash';
 
+import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
 import { exportIsssuanceForms } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
 import { exportPurchaseForms } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';

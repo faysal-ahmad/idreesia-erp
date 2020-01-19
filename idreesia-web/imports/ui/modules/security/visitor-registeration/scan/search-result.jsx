@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
 import moment from 'moment';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Col, Spin, Icon } from '/imports/ui/controls';
 import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';

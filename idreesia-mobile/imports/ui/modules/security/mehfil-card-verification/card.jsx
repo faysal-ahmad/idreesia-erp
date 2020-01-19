@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import { find } from 'lodash';
 
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 
 const barcodeOptions = {

@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
 import ReactToPrint from 'react-to-print';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Icon } from '/imports/ui/controls';
 import DutyCard from './duty-card';
 import StayCard from './stay-card';

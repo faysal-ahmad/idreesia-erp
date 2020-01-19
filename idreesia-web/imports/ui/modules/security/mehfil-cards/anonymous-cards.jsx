@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import { find } from 'lodash';
 import moment from 'moment';
-import { Avatar } from '/imports/ui/controls';
 
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
+import { Avatar } from '/imports/ui/controls';
 
 const barcodeOptions = {
   width: 1,

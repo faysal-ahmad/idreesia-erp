@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
-import { find, flowRight } from 'lodash';
 
-import { List } from '/imports/ui/controls';
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
+import { List } from '/imports/ui/controls';
 
 const ViewForm = ({ formDataLoading, visitorStayById }) => {
   if (formDataLoading) return null;

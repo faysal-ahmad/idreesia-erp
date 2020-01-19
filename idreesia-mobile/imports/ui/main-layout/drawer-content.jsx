@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faIdCard, faBarcode } from '@fortawesome/free-solid-svg-icons';
+import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard';
+import { faBarcode } from '@fortawesome/free-solid-svg-icons/faBarcode';
 
 import { setActiveModuleAndSubModuleName } from 'meteor/idreesia-common/action-creators';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
@@ -32,7 +33,6 @@ const DrawerContent = ({ history, toggleDrawer }) => {
       <List renderHeader="Security">
         <List.Item
           onClick={() => {
-            /*
             toggleDrawer();
             dispatch(
               setActiveModuleAndSubModuleName(
@@ -41,7 +41,6 @@ const DrawerContent = ({ history, toggleDrawer }) => {
               )
             );
             history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
-            */
           }}
           thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
         >

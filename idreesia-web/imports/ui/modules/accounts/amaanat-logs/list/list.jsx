@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
-import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
 import numeral from 'numeral';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Icon,

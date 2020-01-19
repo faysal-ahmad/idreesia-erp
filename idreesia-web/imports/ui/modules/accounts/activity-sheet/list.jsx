@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { filter, flowRight, keyBy } from 'lodash';
 import numeral from 'numeral';
 
+import { filter, flowRight, keyBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, DatePicker, Drawer, Spin, Table } from '/imports/ui/controls';
 import {
   WithAccountHeadsByCompany,

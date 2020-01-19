@@ -1,16 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
-import moment from "moment";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
 
-import { Row, Col, Spin, Icon } from "/imports/ui/controls";
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
-import { VisitorStaysList } from "/imports/ui/modules/security/visitor-stays";
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { Row, Col, Spin, Icon } from '/imports/ui/controls';
+import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 const LabelStyle = {
-  fontWeight: "bold",
+  fontWeight: 'bold',
   fontSize: 22,
 };
 
@@ -20,16 +20,16 @@ const DataStyle = {
 
 const WarningDataStyle = {
   fontSize: 22,
-  color: "orange",
+  color: 'orange',
 };
 
 const ErrorDataStyle = {
   fontSize: 22,
-  color: "red",
+  color: 'red',
 };
 
 const NoRecordFoundStyle = {
-  color: "orange",
+  color: 'orange',
   fontSize: 36,
 };
 
@@ -51,8 +51,8 @@ SearchResultRow.propTypes = {
 };
 
 const SearchResult = props => {
-  const { cnicNumber, loading, visitorByCnic } = props;
-  if (!cnicNumber) return null;
+  const { cnicNumbers, loading, visitorByCnic } = props;
+  if (cnicNumbers.length === 0) return null;
   if (loading) return <Spin size="large" />;
 
   if (!visitorByCnic) {
@@ -68,7 +68,7 @@ const SearchResult = props => {
         </Col>
         <Col>
           <div style={NoRecordFoundStyle}>
-            {"No records found against scanned CNIC."}
+            {'No records found against scanned CNIC.'}
           </div>
         </Col>
       </Row>
@@ -79,6 +79,7 @@ const SearchResult = props => {
     _id,
     name,
     parentName,
+    cnicNumber,
     ehadDate,
     referenceName,
     contactNumber1,
@@ -90,7 +91,7 @@ const SearchResult = props => {
   } = visitorByCnic;
 
   const url = getDownloadUrl(imageId);
-  const image = url ? <img src={url} style={{ width: "250px" }} /> : null;
+  const image = url ? <img src={url} style={{ width: '250px' }} /> : null;
 
   let dataStyle = DataStyle;
   if (otherNotes) dataStyle = WarningDataStyle;
@@ -105,7 +106,7 @@ const SearchResult = props => {
         <SearchResultRow label="S/O" text={parentName} dataStyle={dataStyle} />
         <SearchResultRow
           label="Ehad Date"
-          text={moment(Number(ehadDate)).format("DD MMMM, YYYY")}
+          text={moment(Number(ehadDate)).format('MMMM, YYYY')}
           dataStyle={dataStyle}
         />
         <SearchResultRow
@@ -130,13 +131,13 @@ const SearchResult = props => {
 
 SearchResult.propTypes = {
   loading: PropTypes.bool,
-  cnicNumber: PropTypes.string,
+  cnicNumbers: PropTypes.array,
   visitorByCnic: PropTypes.object,
 };
 
 const formQuery = gql`
-  query visitorByCnic($cnic: String!) {
-    visitorByCnic(cnic: $cnic) {
+  query visitorByCnic($cnicNumbers: [String]!) {
+    visitorByCnic(cnicNumbers: $cnicNumbers) {
       _id
       name
       cnicNumber
@@ -145,6 +146,7 @@ const formQuery = gql`
       referenceName
       contactNumber1
       city
+      country
       imageId
       criminalRecord
       otherNotes
@@ -155,9 +157,9 @@ const formQuery = gql`
 export default flowRight(
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ cnicNumber }) => ({
-      variables: { cnic: cnicNumber },
-      fetchPolicy: "network-only",
+    options: ({ cnicNumbers }) => ({
+      variables: { cnicNumbers },
+      fetchPolicy: 'network-only',
     }),
   })
 )(SearchResult);

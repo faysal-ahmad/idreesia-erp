@@ -6,14 +6,15 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
+  Dropdown,
   Icon,
+  Menu,
   Pagination,
   Popconfirm,
   Table,
   Tooltip,
   message,
 } from '/imports/ui/controls';
-import { InputFile } from '/imports/ui/modules/helpers/controls';
 
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import ListFilter from './list-filter';
@@ -41,15 +42,19 @@ class List extends Component {
     handleShowStayList: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
+    handleUploadClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
 
     deleteVisitor: PropTypes.func,
-    importCsvData: PropTypes.func,
     loading: PropTypes.bool,
     pagedVisitors: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
+  };
+
+  state = {
+    selectedRows: [],
   };
 
   statusColumn = {
@@ -160,6 +165,14 @@ class List extends Component {
     this.actionsColumn,
   ];
 
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
+
   onSelect = visitor => {
     const { handleItemSelected } = this.props;
     handleItemSelected(visitor);
@@ -197,22 +210,48 @@ class List extends Component {
     if (handleShowStayList) handleShowStayList(visitor);
   };
 
-  handleUploadData = fileContents => {
-    const { importCsvData } = this.props;
-    importCsvData({
-      variables: {
-        csvData: fileContents,
-      },
-    })
-      .then(response => {
-        const result = JSON.parse(response.data.importCsvData);
-        message.success(
-          `${result.imported} records were imported. ${result.ignored} were ignored.`
-        );
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
+  handleDownloadSelectedAsCSV = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=Visitors&reportArgs=${reportArgs.join(',')}`;
+    window.open(url, '_blank');
+  };
+
+  handleDownloadAllAsCSV = () => {
+    const url = `${window.location.origin}/generate-report?reportName=Visitors&reportArgs=all`;
+    window.open(url, '_blank');
+  };
+
+  getActionsMenu = () => {
+    const { handleUploadClicked } = this.props;
+
+    const menu = (
+      <Menu>
+        <Menu.Item key="1" onClick={this.handleDownloadSelectedAsCSV}>
+          <Icon type="download" />
+          Download Selected
+        </Menu.Item>
+        <Menu.Item key="2" onClick={this.handleDownloadAllAsCSV}>
+          <Icon type="upload" />
+          Download All
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={handleUploadClicked}>
+          <Icon type="upload" />
+          Upload CSV Data
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <Button icon="setting" size="large" />
+      </Dropdown>
+    );
   };
 
   getTableHeader = () => {
@@ -230,7 +269,12 @@ class List extends Component {
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+        <Button
+          type="primary"
+          icon="plus-circle-o"
+          size="large"
+          onClick={handleNewClicked}
+        >
           New Visitor Registration
         </Button>
       );
@@ -241,8 +285,8 @@ class List extends Component {
         <div style={ButtonGroupStyle}>
           {newButton}
           &nbsp;
-          <Button icon="scan" onClick={handleScanClicked}>
-            Scan Visitor CNIC
+          <Button icon="scan" size="large" onClick={handleScanClicked}>
+            Scan CNIC
           </Button>
         </div>
         <div className="list-table-header-section">
@@ -254,14 +298,7 @@ class List extends Component {
             setPageParams={setPageParams}
           />
           &nbsp;&nbsp;
-          <Tooltip title="Upload CSV Data">
-            <InputFile
-              label=""
-              accept=".csv"
-              showUploadList={false}
-              onChange={this.handleUploadData}
-            />
-          </Tooltip>
+          {this.getActionsMenu()}
         </div>
       </div>
     );
@@ -286,6 +323,7 @@ class List extends Component {
         dataSource={data}
         columns={this.getColumns()}
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         bordered
         size="small"
         pagination={false}
@@ -327,12 +365,6 @@ const listQuery = gql`
   }
 `;
 
-const importCsvDataMutation = gql`
-  mutation importCsvData($csvData: String!) {
-    importCsvData(csvData: $csvData)
-  }
-`;
-
 const deleteMutation = gql`
   mutation deleteVisitor($_id: String!) {
     deleteVisitor(_id: $_id)
@@ -340,12 +372,6 @@ const deleteMutation = gql`
 `;
 
 export default flowRight(
-  graphql(importCsvDataMutation, {
-    name: 'importCsvData',
-    options: {
-      refetchQueries: ['pagedVisitors'],
-    },
-  }),
   graphql(deleteMutation, {
     name: 'deleteVisitor',
     options: {

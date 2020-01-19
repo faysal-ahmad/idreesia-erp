@@ -53,7 +53,7 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    visitorByCnic(obj, { cnic }, { user }) {
+    visitorByCnic(obj, { cnicNumbers }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -63,9 +63,9 @@ export default {
         return null;
       }
 
-      if (cnic) {
+      if (cnicNumbers.length > 0) {
         return Visitors.findOne({
-          cnicNumber: { $eq: cnic },
+          cnicNumber: { $in: cnicNumbers },
         });
       }
 

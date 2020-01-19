@@ -25,12 +25,13 @@ type AttendanceType {
   updatedAt: String
   updatedBy: String
 }
-
+type PagedAttendanceType {
+  totalResults: Int
+  attendance: [AttendanceType]
+}
 extend type Query {
   attendanceById(_id: String!): AttendanceType
-  attendanceByKarkun(
-    karkunId: String!
-  ): [AttendanceType]
+  pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
   attendanceByMonth(
     month: String!
     categoryId: String
@@ -54,13 +55,6 @@ extend type Mutation {
     percentage: Int
   ): AttendanceType
 
-  uploadAttendances(
-    csv: String!
-    dutyId: String!
-    month: String!
-    shiftId: String
-  ): Int
-
   importAttendances(
     month: String!
     dutyId: String!
@@ -68,5 +62,5 @@ extend type Mutation {
   ): Int
    
   deleteAttendances(month: String!, ids: [String]!): Int
-  deleteAllAttendances(month: String!): Int
+  deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
 }

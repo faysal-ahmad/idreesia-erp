@@ -11,6 +11,7 @@ import {
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
+import { getPagedSalariesByKarkun } from './queries';
 
 export default {
   SalaryType: {
@@ -33,25 +34,6 @@ export default {
   },
 
   Query: {
-    salariesByKarkun(obj, { karkunId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_EMPLOYEES,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
-        ])
-      ) {
-        return [];
-      }
-
-      return Salaries.find(
-        {
-          karkunId,
-        },
-        { sort: { createdAt: -1 } }
-      ).fetch();
-    },
-
     salariesByMonth(obj, { month, jobId }, { user }) {
       if (
         !hasOnePermission(user._id, [
@@ -94,6 +76,28 @@ export default {
       return Salaries.find({
         _id: { $in: idsArray },
       }).fetch();
+    },
+
+    pagedSalariesByKarkun(obj, { queryString }, { user }) {
+      console.log(
+        '/hr/salary/resolvers.js/resolvers.js::pagedSalariesByKarkun',
+        queryString,
+        ' <---> user ',
+        user._id
+      );
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_EMPLOYEES,
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
+      ) {
+        return {
+          salaries: [],
+          totalResults: 0,
+        };
+      }
+      return getPagedSalariesByKarkun(queryString);
     },
   },
 

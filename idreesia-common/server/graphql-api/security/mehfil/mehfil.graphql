@@ -1,0 +1,24 @@
+type MehfilType {
+  _id: String
+  name: String
+  mehfilDate: String
+
+  karkunCount: Int
+  mehfilKarkuns: MehfilKarkunType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allMehfils: [MehfilType]
+  mehfilById(id: String!): MehfilType
+}
+
+extend type Mutation {
+  createMehfil(name: String!, mehfilDate: String!): MehfilType
+  updateMehfil(id: String!, name: String!, mehfilDate: String): MehfilType
+  removeMehfil(_id: String!): Int
+}

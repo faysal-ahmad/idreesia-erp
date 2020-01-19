@@ -17,6 +17,14 @@ services:
     depends_on:
       - mongo
 
+  mobile:
+    build:
+      context: ./idreesia-mobile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+
   jobs:
     build:
       context: ./idreesia-jobs

@@ -44,9 +44,9 @@ export class List extends Component {
     handleItemSelected: PropTypes.func,
     handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
-    handleUploadAttendanceSheet: PropTypes.func,
     handleImportFromGoogleSheet: PropTypes.func,
-    handleViewCards: PropTypes.func,
+    handleViewKarkunCards: PropTypes.func,
+    handleViewMehfilCards: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
   };
@@ -181,11 +181,19 @@ export class List extends Component {
     });
   };
 
-  handleViewCards = cardType => {
-    const { handleViewCards } = this.props;
+  handleViewKarkunCards = cardType => {
+    const { handleViewKarkunCards } = this.props;
     const { selectedRows } = this.state;
-    if (handleViewCards) {
-      handleViewCards(selectedRows, cardType);
+    if (handleViewKarkunCards) {
+      handleViewKarkunCards(selectedRows, cardType);
+    }
+  };
+
+  handleViewMehfilCards = () => {
+    const { handleViewMehfilCards } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewMehfilCards) {
+      handleViewMehfilCards(selectedRows);
     }
   };
 
@@ -230,7 +238,7 @@ export class List extends Component {
       Modal.confirm({
         title: 'Delete All Attendances',
         content:
-          'Are you sure you want to delete all attendance records for the month?',
+          'Are you sure you want to delete all attendance records for the selected duty/shift/job in the month?',
         onOk() {
           handleDeleteAllAttendances();
         },
@@ -289,7 +297,6 @@ export class List extends Component {
   getActionsMenu = () => {
     const {
       handleCreateMissingAttendances,
-      handleUploadAttendanceSheet,
       handleImportFromGoogleSheet,
     } = this.props;
     const menu = (
@@ -302,10 +309,6 @@ export class List extends Component {
           <Icon type="download" />
           Download as CSV
         </Menu.Item>
-        <Menu.Item key="3" onClick={handleUploadAttendanceSheet}>
-          <Icon type="upload" />
-          Upload Attendance CSV
-        </Menu.Item>
         <Menu.Item key="4" onClick={handleImportFromGoogleSheet}>
           <Icon type="import" />
           Import from Google Sheets
@@ -315,41 +318,14 @@ export class List extends Component {
           <Menu.Item
             key="5-1"
             onClick={() =>
-              this.handleViewCards(CardTypes.NAAM_I_MUBARIK_MEETING)
+              this.handleViewKarkunCards(CardTypes.NAAM_I_MUBARIK_MEETING)
             }
           >
             Naam-i-Mubarik Meeting
           </Menu.Item>
-          <Menu.Item
-            key="5-2"
-            onClick={() => this.handleViewCards(CardTypes.RABI_UL_AWAL_LANGAR)}
-          >
-            Rabi-ul-Awal Langar Shareef
-          </Menu.Item>
           <Menu.Divider />
-          <Menu.Item
-            key="5-3"
-            onClick={() => this.handleViewCards(CardTypes.SPECIAL_SECURITY)}
-          >
-            Special Security
-          </Menu.Item>
-          <Menu.Item
-            key="5-4"
-            onClick={() => this.handleViewCards(CardTypes.ENTRY_GATE)}
-          >
-            Entry Gate
-          </Menu.Item>
-          <Menu.Item
-            key="5-5"
-            onClick={() => this.handleViewCards(CardTypes.HALL_SECURITY)}
-          >
-            Hall Security
-          </Menu.Item>
-          <Menu.Item
-            key="5-6"
-            onClick={() => this.handleViewCards(CardTypes.INTERCOM_DUTY)}
-          >
-            Intercom Duty
+          <Menu.Item key="5-2" onClick={() => this.handleViewMehfilCards()}>
+            Mehfil Cards
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />

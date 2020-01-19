@@ -16,7 +16,10 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: "meteor npm install"
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
 
       - save_cache:
           paths:
@@ -24,7 +27,7 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: meteor npm run build
+          command: meteor yarn run build
 
       - run:
           working_directory: ~/idreesia-erp
@@ -35,6 +38,45 @@ jobs:
 
       - run:
           command: docker push faysalahmad/idreesia-web
+
+  build-mobile:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/idreesia-erp/idreesia-mobile
+
+    steps:
+      - checkout:
+          path: ~/idreesia-erp
+
+      - run: "curl https://install.meteor.com | /bin/sh"
+
+      - restore_cache:
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: meteor yarn run build
+
+      - run:
+          working_directory: ~/idreesia-erp
+          command: docker build -t faysalahmad/idreesia-mobile idreesia-mobile
+
+      - run:
+          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - run:
+          command: docker push faysalahmad/idreesia-mobile
 
   build-jobs:
     machine:
@@ -52,7 +94,10 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: "meteor npm install"
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
 
       - save_cache:
           paths:
@@ -60,7 +105,7 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: meteor npm run build
+          command: meteor yarn run build
 
       - run:
           working_directory: ~/idreesia-erp
@@ -77,6 +122,10 @@ workflows:
   build-apps:
     jobs:
       - build-web:
+          filters:
+            branches:
+              only: master
+      - build-mobile:
           filters:
             branches:
               only: master

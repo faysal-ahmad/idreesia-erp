@@ -61,7 +61,9 @@ export default class ListContainer extends Component {
         showEmployees={showEmployees}
         setPageParams={this.setPageParams}
         handleItemSelected={setSelectedValue}
-        showPhoneNumbersColumn={false}
+        showPhoneNumbersColumn
+        showDutiesColumn={false}
+        showActionsColumn={false}
         predefinedFilterName={predefinedFilterName}
       />
     );

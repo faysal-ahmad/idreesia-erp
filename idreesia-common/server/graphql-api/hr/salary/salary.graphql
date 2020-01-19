@@ -24,11 +24,12 @@ type SalaryType {
   updatedAt: String
   updatedBy: String
 }
-
+type PagedSalaryType {
+  totalResults: Int
+  salaries: [SalaryType]
+}
 extend type Query {
-  salariesByKarkun(
-    karkunId: String!
-  ): [SalaryType]
+  pagedSalariesByKarkun(queryString: String): PagedSalaryType
   salariesByMonth(
     month: String!
     jobId: String

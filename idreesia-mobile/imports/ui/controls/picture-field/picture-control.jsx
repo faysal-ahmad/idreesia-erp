@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Flex, Modal, WhiteSpace } from '/imports/ui/controls';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCameraRetro } from '@fortawesome/free-solid-svg-icons';
+import { faCameraRetro } from '@fortawesome/free-solid-svg-icons/faCameraRetro';
 
 import PictureModal from './picture-modal';
 

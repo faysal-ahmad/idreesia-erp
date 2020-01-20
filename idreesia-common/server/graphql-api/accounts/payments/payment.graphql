@@ -12,7 +12,6 @@ type Payment {
 
   description: String
   isDeleted: Boolean
-  approvedBy: String
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -31,13 +30,13 @@ extend type Query {
 
 extend type Mutation {
   createPayment(
-    name: String
-    fatherName: String
-    cnicNumber: String
+    name: String!
+    fatherName: String!
+    cnicNumber: String!
     contactNumber: String
-    paymentAmount: Float
-    paymentType: String
-    paymentDate: String
+    paymentAmount: Float!
+    paymentType: String!
+    paymentDate: String!
     description: String
   ): Payment
 

@@ -64,7 +64,6 @@ const paymentByIdQuery = gql`
       paymentType
       paymentDate
       description
-      approvedBy
     }
   }
 `;

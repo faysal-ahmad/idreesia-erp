@@ -82,7 +82,6 @@ export default {
         createdAt: date,
         updatedAt: date,
         updatedBy: user._id,
-        approvedBy: user._id,
         createdBy: user._id,
       });
       return Payments.findOne(paymentId);
@@ -131,7 +130,6 @@ export default {
         createdAt: date,
         updatedAt: date,
         updatedBy: user._id,
-        approvedBy: user._id,
         createdBy: user._id,
       });
 
@@ -149,7 +147,6 @@ export default {
             paymentAmount,
             paymentDate,
             description,
-            approvedBy: user._id,
             updatedAt: date,
             updatedBy: user._id,
           },
@@ -205,7 +202,6 @@ export default {
         createdAt: date,
         updatedAt: date,
         deletedAt: date,
-        approvedBy: user._id,
         createdBy: user._id,
         updatedBy: user._id,
         deletedBy: user._id,

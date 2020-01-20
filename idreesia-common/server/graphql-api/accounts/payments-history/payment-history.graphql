@@ -13,7 +13,6 @@ type PaymentHistory {
 
   description: String
   isDeleted: Boolean
-  approvedBy: String
   createdAt: String
   createdBy: String
   updatedAt: String

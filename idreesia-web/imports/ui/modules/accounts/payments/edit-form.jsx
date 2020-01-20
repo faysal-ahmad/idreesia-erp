@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -8,6 +8,7 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 import {
   DateField,
@@ -84,99 +85,96 @@ class EditForm extends Component {
     const { getFieldDecorator } = form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputNumberField
-          fieldName="paymentNumber"
-          fieldLabel="Payment Number"
-          disabled
-          initialValue={paymentById.paymentNumber}
-          required
-          requiredMessage="Please enter the payment number."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Fragment>
+        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <InputNumberField
+            fieldName="paymentNumber"
+            fieldLabel="Voucher Number"
+            disabled
+            initialValue={paymentById.paymentNumber}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <SelectField
-          data={[
-            {
-              value: 'IPT',
-              text: 'Imdad Payment',
-            },
-            {
-              value: 'OPT',
-              text: 'Miscillinous Payment',
-            },
-          ]}
-          getDataValue={({ value }) => value}
-          getDataText={({ text }) => text}
-          initialValue={paymentById.paymentType}
-          fieldName="paymentType"
-          fieldLabel="Payment Type"
-          getFieldDecorator={getFieldDecorator}
-        />
+          <SelectField
+            data={[
+              {
+                value: 'IPT',
+                text: 'Imdad Payment',
+              },
+              {
+                value: 'OPT',
+                text: 'Miscellaneous Payment',
+              },
+            ]}
+            getDataValue={({ value }) => value}
+            getDataText={({ text }) => text}
+            initialValue={paymentById.paymentType}
+            fieldName="paymentType"
+            fieldLabel="Payment Type"
+            getFieldDecorator={getFieldDecorator}
+          />
+          <DateField
+            fieldName="paymentDate"
+            fieldLabel="Payment Date"
+            initialValue={moment(Number(paymentById.paymentDate))}
+            required
+            requiredMessage="Please select a payment date."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            initialValue={paymentById.name}
+            required
+            requiredMessage="Please enter the name."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
+            fieldName="fatherName"
+            fieldLabel="Father Name"
+            initialValue={paymentById.fatherName}
+            required
+            requiredMessage="Please enter the fahter name."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={paymentById.name}
-          required
-          requiredMessage="Please enter the name."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextField
-          fieldName="fatherName"
-          fieldLabel="Father Name"
-          initialValue={paymentById.fatherName}
-          required
-          requiredMessage="Please enter the fahter name."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputCnicField
+            fieldName="cnicNumber"
+            fieldLabel="CNIC Number"
+            initialValue={paymentById.cnicNumber}
+            required
+            requiredMessage="Please input a valid CNIC number."
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputCnicField
-          fieldName="cnicNumber"
-          fieldLabel="CNIC Number"
-          initialValue={paymentById.cnicNumber}
-          required
-          requiredMessage="Please input a valid CNIC number."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputMobileField
+            fieldName="contactNumber"
+            fieldLabel="Mobile Number"
+            initialValue={paymentById.contactNumber}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputMobileField
-          fieldName="contactNumber"
-          fieldLabel="Mobile Number"
-          initialValue={paymentById.contactNumber}
-          required
-          requiredMessage="Please enter the mobile number."
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputNumberField
+            fieldName="paymentAmount"
+            fieldLabel="Payment Amount"
+            initialValue={paymentById.paymentAmount}
+            required
+            requiredMessage="Please enter the payment amount."
+            minValue={0}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <InputNumberField
-          fieldName="paymentAmount"
-          fieldLabel="Payment Amount"
-          initialValue={paymentById.paymentAmount}
-          required
-          requiredMessage="Please enter the payment amount."
-          minValue={0}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <DateField
-          fieldName="paymentDate"
-          fieldLabel="Payment Date"
-          initialValue={moment(Number(paymentById.paymentDate))}
-          required
-          requiredMessage="Please select a payment date."
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-          initialValue={paymentById.description}
-          required
-          requiredMessage="Please enter the description"
-          getFieldDecorator={getFieldDecorator}
-        />
+          <InputTextAreaField
+            fieldName="description"
+            fieldLabel="Description"
+            initialValue={paymentById.description}
+            getFieldDecorator={getFieldDecorator}
+          />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
-      </Form>
+          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        </Form>
+        <RecordInfo record={paymentById} />
+      </Fragment>
     );
   }
 }
@@ -195,7 +193,6 @@ const formQuery = gql`
       paymentDate
       description
       isDeleted
-      approvedBy
       createdAt
       createdBy
       updatedAt

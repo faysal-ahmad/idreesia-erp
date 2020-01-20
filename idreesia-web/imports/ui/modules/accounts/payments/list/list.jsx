@@ -14,9 +14,11 @@ import {
   Pagination,
   Table,
   Tooltip,
+  Modal,
   message,
 } from '/imports/ui/controls';
 import ListFilter from './list-filter';
+const { confirm } = Modal;
 
 class List extends Component {
   static propTypes = {
@@ -48,6 +50,11 @@ class List extends Component {
   };
 
   columns = [
+    {
+      title: 'Voucher No',
+      dataIndex: 'paymentNumber',
+      key: 'paymentNumber',
+    },
     {
       title: 'Payment Date',
       dataIndex: 'paymentDate',
@@ -122,15 +129,22 @@ class List extends Component {
 
   handleDeleteClicked = payment => {
     const { removePayment } = this.props;
-    removePayment({
-      variables: { _id: payment._id },
-    })
-      .then(() => {
-        message.success('Amaanat Log item has been deleted.', 5);
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
+
+    confirm({
+      title: 'Do you want to delete the payment item?',
+      onOk() {
+        removePayment({
+          variables: { _id: payment._id },
+        })
+          .then(() => {
+            message.success('Payment item has been deleted.', 5);
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      },
+      onCancel() {},
+    });
   };
 
   handlePrintPaymentReceipts = payment => {
@@ -252,6 +266,7 @@ const listQuery = gql`
         cnicNumber
         paymentDate
         paymentAmount
+        paymentNumber
         description
         isDeleted
       }

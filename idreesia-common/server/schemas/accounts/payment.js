@@ -5,15 +5,12 @@ import { identifiable, timestamps } from '../common';
 export default new SimpleSchema({
   name: {
     type: String,
-    optional: true,
   },
   fatherName: {
     type: String,
-    optional: true,
   },
   cnicNumber: {
     type: String,
-    optional: true,
   },
   contactNumber: {
     type: String,
@@ -36,10 +33,6 @@ export default new SimpleSchema({
     type: Boolean,
   },
   description: {
-    type: String,
-    optional: true,
-  },
-  approvedBy: {
     type: String,
     optional: true,
   },

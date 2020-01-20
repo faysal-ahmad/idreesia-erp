@@ -86,7 +86,7 @@ class NewForm extends Component {
             },
             {
               value: 'OPT',
-              text: 'Miscillinous Payment',
+              text: 'Miscellaneous Payment',
             },
           ]}
           getDataValue={({ value }) => value}
@@ -95,6 +95,13 @@ class NewForm extends Component {
           fieldLabel="Payment Type"
           required
           requiredMessage="Please enter the Payment Type."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <DateField
+          fieldName="paymentDate"
+          fieldLabel="Payment Date"
+          required
+          requiredMessage="Please select a payment date."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -123,8 +130,6 @@ class NewForm extends Component {
         <InputMobileField
           fieldName="contactNumber"
           fieldLabel="Mobile Number"
-          required
-          requiredMessage="Please enter the mobile number."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -137,18 +142,9 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <DateField
-          fieldName="paymentDate"
-          fieldLabel="Payment Date"
-          required
-          requiredMessage="Please select a payment date."
-          getFieldDecorator={getFieldDecorator}
-        />
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          required
-          requiredMessage="Please enter the description"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -160,13 +156,13 @@ class NewForm extends Component {
 
 const formMutation = gql`
   mutation createPayment(
-    $name: String
-    $fatherName: String
-    $cnicNumber: String
+    $name: String!
+    $fatherName: String!
+    $cnicNumber: String!
     $contactNumber: String
-    $paymentType: String
-    $paymentAmount: Float
-    $paymentDate: String
+    $paymentType: String!
+    $paymentAmount: Float!
+    $paymentDate: String!
     $description: String
   ) {
     createPayment(

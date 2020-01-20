@@ -46,10 +46,6 @@ export default new SimpleSchema({
     type: Boolean,
     optional: true,
   },
-  approvedBy: {
-    type: String,
-    optional: true,
-  },
 })
   .extend(identifiable)
   .extend(timestamps);

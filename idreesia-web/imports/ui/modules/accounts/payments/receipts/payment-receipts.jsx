@@ -29,8 +29,18 @@ export default class PaymentReceipts extends Component {
     const formattedDate = moment().format('DD-MM-YYYY h:mm a');
     return (
       <div key={payment._id} className="payment-receipt-print-view">
-        <Row type="flex" justify="center" style={HeaderStyle}>
-          <div>Payment Receipt</div>
+        <Row type="flex" justify="space-between" style={HeaderStyle}>
+          <Col order={1} style={{ minWidth: '100px', marginLeft: '10px' }}>
+            <Item label="No" value={payment.paymentNumber} />
+          </Col>
+          <Col order={2}>
+            <div style={{ fontSize: '22px', fontWeight: 'bold' }}>
+              Payment Receipt
+            </div>
+          </Col>
+          <Col order={3} style={{ marginRight: '10px' }} Í>
+            <div>{payment.paymentType}</div>
+          </Col>
         </Row>
         <Row type="flex" justify="start" gutter={10}>
           <Col order={2} style={{ minWidth: '600px' }}>
@@ -43,12 +53,9 @@ export default class PaymentReceipts extends Component {
                   )}
                 />
               </Col>
-              <Col order={2} style={{ minWidth: '100px' }}>
-                <Item label="No" value={payment.paymentNumber} />
-              </Col>
             </Row>
 
-            <Item label="Received Cash Rs:" value={payment.paymentAmount} />
+            <Item label="Received Cash Rs" value={payment.paymentAmount} />
             <Item label="Description" value={payment.description || ''} />
             <Row type="flex">
               <Col order={1} style={{ minWidth: '350px' }}>
@@ -70,13 +77,10 @@ export default class PaymentReceipts extends Component {
               <Col order={1} style={{ minWidth: '350px' }}>
                 <Item label="Signature" value={'' || ''} />
               </Col>
-              <Col order={2} style={{ minWidth: '350px' }}>
-                <Item label="Approved By" />
-              </Col>
             </Row>
           </Col>
         </Row>
-        <Divider style={{ margin: '10px' }} />
+        <Divider style={{ 'margin-top': '60px' }} />
         <Row>
           <Col order={1}>printed at : {formattedDate}</Col>
         </Row>

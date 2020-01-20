@@ -257,7 +257,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'updatePayment',
     options: {
-      refetchQueries: ['pagedPayment'],
+      refetchQueries: ['pagedPayments'],
     },
   }),
   graphql(formQuery, {

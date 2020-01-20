@@ -30,7 +30,7 @@ export default class PaymentReceipts extends Component {
     return (
       <div key={payment._id} className="payment-receipt-print-view">
         <Row type="flex" justify="space-between" style={HeaderStyle}>
-          <Col order={1} style={{ minWidth: '100px', marginLeft: '10px' }}>
+          <Col order={1} style={{ marginLeft: '10px' }}>
             <Item label="No" value={payment.paymentNumber} />
           </Col>
           <Col order={2}>

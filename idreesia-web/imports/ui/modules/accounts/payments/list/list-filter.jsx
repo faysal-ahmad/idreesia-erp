@@ -103,11 +103,11 @@ class ListFilter extends Component {
               data={[
                 {
                   value: 'IPT',
-                  text: 'IPT',
+                  text: 'Imdad Payment',
                 },
                 {
                   value: 'OPT',
-                  text: 'OPT',
+                  text: 'Miscellaneous Payment',
                 },
               ]}
               getDataValue={({ value }) => value}

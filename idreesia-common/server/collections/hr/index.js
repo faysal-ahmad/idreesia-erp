@@ -7,3 +7,4 @@ export { default as KarkunDuties } from './karkun-duties';
 export { default as Attendances } from './attendances';
 export { default as Salaries } from './salaries';
 export { default as SharedResidences } from './shared-residences';
+export {default as Ehads} from './ehads';

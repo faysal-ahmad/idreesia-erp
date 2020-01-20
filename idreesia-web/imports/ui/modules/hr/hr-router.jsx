@@ -22,9 +22,9 @@ import {
   KarkunPrintView,
 } from './karkuns';
 import {
-  AttendanceSheetsUploadForm,
   AttendanceSheetsList,
   AttendanceSheetsKarkunCards,
+  AttendanceSheetsMehfilCards,
 } from './attendance-sheets';
 import {
   SalarySheetsList,
@@ -68,12 +68,12 @@ const HRRouter = () => (
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
     <Route
-      path={paths.attendanceSheetsUploadFormPath}
-      component={AttendanceSheetsUploadForm}
-    />
-    <Route
       path={paths.attendanceSheetsKarkunCardsPath}
       component={AttendanceSheetsKarkunCards}
+    />
+    <Route
+      path={paths.attendanceSheetsMehfilCardsPath}
+      component={AttendanceSheetsMehfilCards}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 

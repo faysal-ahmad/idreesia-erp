@@ -3,15 +3,11 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faClipboardList,
-  faIdCard,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard';
+import { faBarcode } from '@fortawesome/free-solid-svg-icons/faBarcode';
 
 import { setActiveModuleAndSubModuleName } from 'meteor/idreesia-common/action-creators';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { HRSubModuleNames, HRSubModulePaths } from '/imports/ui/modules/hr';
 import {
   SecuritySubModuleNames,
   SecuritySubModulePaths,
@@ -34,38 +30,6 @@ const DrawerContent = ({ history, toggleDrawer }) => {
   return (
     <>
       {userProfile}
-      <List renderHeader="HR">
-        <List.Item
-          onClick={() => {
-            toggleDrawer();
-            dispatch(
-              setActiveModuleAndSubModuleName(
-                ModuleNames.hr,
-                HRSubModuleNames.attendanceSheets
-              )
-            );
-            history.push(HRSubModulePaths.attendanceSheetsPath);
-          }}
-          thumb={<FontAwesomeIcon icon={faClipboardList} style={IconStyle} />}
-        >
-          Attendance Sheets
-        </List.Item>
-        <List.Item
-          onClick={() => {
-            toggleDrawer();
-            dispatch(
-              setActiveModuleAndSubModuleName(
-                ModuleNames.hr,
-                HRSubModuleNames.teamManagement
-              )
-            );
-            history.push(HRSubModulePaths.teamManagementPath);
-          }}
-          thumb={<FontAwesomeIcon icon={faUsers} style={IconStyle} />}
-        >
-          Team Management
-        </List.Item>
-      </List>
       <List renderHeader="Security">
         <List.Item
           onClick={() => {
@@ -81,6 +45,21 @@ const DrawerContent = ({ history, toggleDrawer }) => {
           thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
         >
           Visitor Registration
+        </List.Item>
+        <List.Item
+          onClick={() => {
+            toggleDrawer();
+            dispatch(
+              setActiveModuleAndSubModuleName(
+                ModuleNames.security,
+                SecuritySubModuleNames.mehfilCardVerification
+              )
+            );
+            history.push(SecuritySubModulePaths.mehfilCardVerificationPath);
+          }}
+          thumb={<FontAwesomeIcon icon={faBarcode} style={IconStyle} />}
+        >
+          Mehfil Card Verification
         </List.Item>
       </List>
     </>

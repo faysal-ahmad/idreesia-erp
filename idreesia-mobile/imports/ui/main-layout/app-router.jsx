@@ -5,6 +5,7 @@ import LoginForm from './login-form';
 import BlankPage from './blank-page';
 
 import { default as securityPaths } from '/imports/ui/modules/security/submodule-paths';
+import { MehfilCardVerificationForm } from '/imports/ui/modules/security/mehfil-card-verification';
 import {
   VisitorRegistrationList,
   VisitorRegistrationNewForm,
@@ -13,6 +14,12 @@ import {
 const AppRouter = () => (
   <Switch>
     <Route exact path="/login" component={LoginForm} />
+    <Route
+      exact
+      path={securityPaths.mehfilCardVerificationPath}
+      component={MehfilCardVerificationForm}
+    />
+
     <Route
       exact
       path={securityPaths.visitorRegistrationListPath}

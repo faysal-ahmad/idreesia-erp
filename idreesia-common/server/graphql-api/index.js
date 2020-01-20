@@ -15,6 +15,12 @@ import AdminJobResolvers from './admin/admin-job/resolvers';
 /**
  * Schema and Resolvers for the Security module
  */
+import MehfilSchema from './security/mehfil/mehfil.graphql';
+import MehfilResolvers from './security/mehfil/resolvers';
+
+import MehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun.graphql';
+import MehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
+
 import VisitorSchema from './security/visitor/visitor.graphql';
 import VisitorResolvers from './security/visitor/resolvers';
 
@@ -111,6 +117,8 @@ const typeDefs = [
   AttachmentSchema,
   AdminJobSchema,
 
+  MehfilSchema,
+  MehfilKarkunSchema,
   VisitorSchema,
   VisitorStaySchema,
 
@@ -148,6 +156,8 @@ const resolvers = merge(
   AttachmentResolvers,
   AdminJobResolvers,
 
+  MehfilResolvers,
+  MehfilKarkunResolvers,
   VisitorResolvers,
   VisitorStayResolvers,
 

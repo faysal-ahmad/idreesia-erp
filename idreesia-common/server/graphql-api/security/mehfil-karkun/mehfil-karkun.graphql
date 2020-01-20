@@ -1,0 +1,28 @@
+type MehfilKarkunType {
+  _id: String
+  mehfilId: String
+  karkunId: String
+  dutyName: String
+  dutyDetail: String
+  dutyCardBarcodeId: String
+
+  karkun: KarkunType
+  mehfil: MehfilType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  mehfilKarkunsByMehfilId(mehfilId: String!, dutyName: String): [MehfilKarkunType]
+  mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
+  mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
+}
+
+extend type Mutation {
+  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyName: String!): MehfilKarkunType
+  setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
+  removeMehfilKarkun(_id: String!): Int
+}

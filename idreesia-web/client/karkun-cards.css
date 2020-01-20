@@ -36,6 +36,12 @@
   margin: 5px 16px;
 }
 
+.heading_card_extended_k {
+  font-weight: bold;
+  font-size: 26px;
+  border-bottom: 1px solid #000;
+}
+
 .info_container {
   display: flex;
   width: 100%;
@@ -65,14 +71,6 @@
 .subheading_card_k {
   font-weight: bold;
   font-size: 14px;
-  background-color: black;
-  color: #fff;
-  padding: 3px 0;
-}
-
-.subheading_card_extended_k {
-  font-weight: bold;
-  font-size: 26px;
   background-color: black;
   color: #fff;
   padding: 3px 0;

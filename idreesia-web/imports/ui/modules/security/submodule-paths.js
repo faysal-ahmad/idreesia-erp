@@ -2,9 +2,28 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
-  // Karkun Card Verification Routes
+  // Mehfil Routes
   // *************************************************************************************
+  static mehfilsPath = `${ModulePaths.security}/mehfils`;
+  static mehfilsNewFormPath = `${SubModulePaths.mehfilsPath}/new`;
+  static mehfilsEditFormPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}`;
+  }
+
+  static mehfilsKarkunListPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkuns`;
+  }
+
+  static mehfilsKarkunCardsPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-cards`;
+  }
+
+  // *************************************************************************************
+  // Card Verification Routes
+  // *************************************************************************************
+  static mehfilCardVerificationPath = `${ModulePaths.security}/mehfil-card-verification`;
   static karkunCardVerificationPath = `${ModulePaths.security}/karkun-card-verification`;
+  static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************
   // Visitor Registration Routes
@@ -12,14 +31,10 @@ export default class SubModulePaths {
   static visitorRegistrationPath = `${ModulePaths.security}/visitor-registration`;
   static visitorRegistrationListPath = `${SubModulePaths.visitorRegistrationPath}/list`;
   static visitorRegistrationNewFormPath = `${SubModulePaths.visitorRegistrationPath}/new`;
+  static visitorRegistrationUploadFormPath = `${SubModulePaths.visitorRegistrationPath}/upload`;
   static visitorRegistrationEditFormPath(visitorId = ':visitorId') {
     return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
   }
-
-  // *************************************************************************************
-  // Visitor Card Verification Routes
-  // *************************************************************************************
-  static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************
   // Visitor's Stay Report Routes

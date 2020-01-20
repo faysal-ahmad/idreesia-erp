@@ -1,5 +1,6 @@
 const SubModuleNames = {
-  visitorRegistration: "Visitor Registration",
+  visitorRegistration: 'Visitor Registration',
+  mehfilCardVerification: 'Mehfil Card Verificaton',
 };
 
 export default SubModuleNames;

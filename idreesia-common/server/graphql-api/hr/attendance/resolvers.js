@@ -17,6 +17,7 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { processAttendanceSheet } from './helpers';
+import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   AttendanceType: {
@@ -59,7 +60,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    attendanceByKarkun(obj, { karkunId }, { user }) {
+    pagedAttendanceByKarkun(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -67,17 +68,13 @@ export default {
           PermissionConstants.HR_DELETE_KARKUNS,
         ])
       ) {
-        return [];
+        return {
+          attendance: [],
+          totalResults: 0,
+        };
       }
-
-      return Attendances.find(
-        {
-          karkunId,
-        },
-        { sort: { createdAt: -1 } }
-      ).fetch();
+      return getPagedAttendanceByKarkun(queryString);
     },
-
     attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
       if (!categoryId) return [];
 
@@ -130,7 +127,7 @@ export default {
           PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
-        return [];
+        return null;
       }
 
       return Attendances.findOne({
@@ -213,18 +210,6 @@ export default {
       });
 
       return Attendances.findOne(_id);
-    },
-
-    uploadAttendances(obj, { csv, month, dutyId, shiftId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage attendances in the System.'
-        );
-      }
-
-      return processAttendanceSheet(csv, month, dutyId, shiftId);
     },
 
     importAttendances(obj, { month, dutyId, shiftId }, { user }) {
@@ -318,7 +303,7 @@ export default {
       });
     },
 
-    deleteAllAttendances(obj, { month }, { user }) {
+    deleteAllAttendances(obj, { month, categoryId, subCategoryId }, { user }) {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 
@@ -346,9 +331,27 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      return Attendances.remove({
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need toremove attendance of employees with the
+       * selected job.
+       */
+      const removeCriteria = {
         month: formattedMonth,
-      });
+      };
+
+      if (categoryId === 'all_jobs') {
+        if (subCategoryId) {
+          removeCriteria.jobId = subCategoryId;
+        } else {
+          removeCriteria.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        removeCriteria.dutyId = categoryId;
+        if (subCategoryId) removeCriteria.shiftId = subCategoryId;
+      }
+
+      return Attendances.remove(removeCriteria);
     },
   },
 };

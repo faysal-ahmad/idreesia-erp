@@ -1,8 +1,6 @@
 /* global importScripts, workbox */
 /* eslint-disable no-restricted-globals */
 
-console.log(`Hello from service worker.`);
-
 importScripts('/workbox-v4.3.1/workbox-sw.js');
 
 workbox.setConfig({
@@ -10,8 +8,10 @@ workbox.setConfig({
 });
 
 if (workbox) {
-  console.log(`Yay! Workbox is loaded 🎉`);
-  workbox.precaching.precacheAndRoute([]);
-} else {
-  console.log(`Boo! Workbox didn't load 😬`);
+  workbox.routing.registerRoute(
+    /\.(?:js|css)$/,
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'static-resources',
+    })
+  );
 }

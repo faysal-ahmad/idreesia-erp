@@ -16,6 +16,7 @@ import {
   WhiteSpace,
 } from '/imports/ui/controls';
 
+import StayHistory from './stay-history';
 import SearchResultRow from './search-result-row';
 import VISITOR_BY_CNIC_OR_CONTACT_NUMBER from '../gql/visitor-by-cnic-or-contact-number';
 
@@ -77,6 +78,7 @@ const SearchResult = ({ cnicNumber, contactNumber }) => {
           <WhiteSpace size="lg" />
         </List>
         <img src={getDownloadUrl(visitor.imageId)} />
+        <StayHistory visitorId={visitor._id} />
       </Carousel>
     </WingBlank>
   );

@@ -43,6 +43,7 @@ type PagedTeamVisitType {
 
 extend type Query {
   pagedVisitorStays(queryString: String!): PagedVisitorStayType
+  pagedVisitorStaysByVisitorId(visitorId: String!): PagedVisitorStayType
   pagedTeamVisits(queryString: String!): PagedTeamVisitType
   visitorStayById(_id: String!): VisitorStayType
   distinctStayAllowedBy: [String]

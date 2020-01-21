@@ -66,6 +66,22 @@ export default {
       return getVisitorStays(queryString);
     },
 
+    pagedVisitorStaysByVisitorId(obj, { visitorId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
+
+      return getVisitorStays(`?visitorId=${visitorId}&pageSize=5`);
+    },
+
     pagedTeamVisits(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [

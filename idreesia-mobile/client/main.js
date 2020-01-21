@@ -15,9 +15,8 @@ import App from '../imports/ui/app';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';
 
 const store = createStore(combinedReducer, applyMiddleware(thunkMiddleware));
-const uri = `${Meteor.absoluteUrl()}/graphql`;
 const client = new ApolloClient({
-  uri,
+  uri: '/graphql',
   request: operation =>
     operation.setContext(() => ({
       headers: {

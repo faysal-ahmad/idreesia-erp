@@ -11,6 +11,7 @@ const ColStyle = { paddingLeft: '10px', paddingRight: '10px' };
 
 export default class PictureControl extends Component {
   static propTypes = {
+    error: PropTypes.bool,
     value: PropTypes.string,
     onChange: PropTypes.func,
   };
@@ -29,13 +30,14 @@ export default class PictureControl extends Component {
 
   render() {
     const { showModal } = this.state;
-    const { value } = this.props;
+    const { error, value } = this.props;
     const imageCtrl = value ? <img src={value} /> : null;
     return (
       <Flex direction="column" justify="end" align="end" style={ColStyle}>
         {imageCtrl}
         <WhiteSpace />
         <Button
+          type={error ? 'warning' : 'default'}
           icon={
             <FontAwesomeIcon
               icon={faCameraRetro}

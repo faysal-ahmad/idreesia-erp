@@ -185,7 +185,9 @@ const NewForm = ({
       </List.Item>
       <PictureField
         fieldName="imageData"
+        getFieldError={getFieldError}
         getFieldDecorator={getFieldDecorator}
+        required
       />
       <WhiteSpace size="lg" />
       <FormButtonsSaveCancel

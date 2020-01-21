@@ -1,0 +1,38 @@
+type SecurityGroupType {
+  _id: String
+  name: String
+  description: String
+  permissions: [String]
+  instances: [String]
+}
+
+type PagedSecurityGroupType {
+  totalResults: Int
+  data: [SecurityGroupType]
+}
+
+extend type Query {
+  pagedSecurityGroup(queryString: String): PagedSecurityGroupType
+  securityGroupById(_id: String!): SecurityGroupType
+}
+
+extend type Mutation {
+  createSecurityGroup(
+    name: String!
+    description: String
+  ): SecurityGroupType
+  updateSecurityGroup(
+    _id: String!
+    name: String
+    description: String
+  ): SecurityGroupType
+  deleteSecurityGroup(_id: String!): Int
+  setPermissions(
+    _id: String!
+    permissions: [String]!
+  ): SecurityGroupType
+  setInstanceAccess(
+    _id: String!
+    instances: [String]!
+  ): SecurityGroupType
+}

@@ -16,6 +16,13 @@ export default new SimpleSchema({
   'permissions.$': {
     type: String,
   },
+  instances: {
+    type: Array,
+    optional: true,
+  },
+  'instances.$': {
+    type: String,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

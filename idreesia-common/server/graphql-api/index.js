@@ -15,6 +15,9 @@ import AdminJobResolvers from './admin/admin-job/resolvers';
 import SecurityAccountSchema from './admin/security-account/security-account.graphql';
 import SecurityAccountResolvers from './admin/security-account/resolvers';
 
+import SecurityGroupSchema from './admin/security-group/security-group.graphql';
+import SecurityGroupResolvers from './admin/security-group/resolvers';
+
 /**
  * Schema and Resolvers for the Security module
  */
@@ -115,6 +118,7 @@ const typeDefs = [
   AttachmentSchema,
   AdminJobSchema,
   SecurityAccountSchema,
+  SecurityGroupSchema,
 
   MehfilSchema,
   MehfilKarkunSchema,
@@ -153,6 +157,7 @@ const resolvers = merge(
   AttachmentResolvers,
   AdminJobResolvers,
   SecurityAccountResolvers,
+  SecurityGroupResolvers,
 
   MehfilResolvers,
   MehfilKarkunResolvers,

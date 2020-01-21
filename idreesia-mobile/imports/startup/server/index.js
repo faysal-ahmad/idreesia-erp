@@ -1,3 +1,5 @@
+import './setup-rest-endpoints';
+
 import { ApolloServer } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { getUser } from 'meteor/apollo';

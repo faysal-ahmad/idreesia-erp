@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Icon, Table, Tooltip } from '/imports/ui/controls';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
@@ -13,6 +13,7 @@ class List extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     physicalStoreId: PropTypes.string,
+    stockItemId: PropTypes.string,
     loading: PropTypes.bool,
     purchaseFormsByStockItem: PropTypes.array,
   };
@@ -37,14 +38,11 @@ class List extends Component {
       dataIndex: 'items',
       key: 'items',
       render: items => {
-        const formattedItems = items.map(item => (
-          <li key={`${item.stockItemId}${item.isInflow}`}>
-            {`${item.stockItemName} [${item.quantity} ${
-              item.isInflow ? 'Purchased' : 'Returned'
-            }]`}
-          </li>
-        ));
-        return <ul>{formattedItems}</ul>;
+        const { stockItemId } = this.props;
+        const item = find(items, _item => _item.stockItemId === stockItemId);
+        return `${item.stockItemName} [${item.quantity} ${
+          item.isInflow ? 'Purchased' : 'Returned'
+        }]`;
       },
     },
     {

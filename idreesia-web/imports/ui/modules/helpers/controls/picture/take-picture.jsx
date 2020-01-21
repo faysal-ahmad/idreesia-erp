@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 
-import { Button, Icon, Modal, message } from "/imports/ui/controls";
-import { getUploadUrl } from "/imports/ui/modules/helpers/misc";
-import TakePictureForm from "./take-picture-form";
+import { getUploadUrl } from 'meteor/idreesia-common/utilities';
+import { Button, Icon, Modal, message } from '/imports/ui/controls';
+import TakePictureForm from './take-picture-form';
 
 export default class TakePicture extends Component {
   static propTypes = {
@@ -15,13 +15,10 @@ export default class TakePicture extends Component {
 
   static defaultProps = {
     disabled: false,
-    buttonText: "Take Picture",
+    buttonText: 'Take Picture',
   };
 
   state = {
-    value: 1,
-    height: 300,
-    width: 350,
     showForm: false,
   };
 
@@ -37,9 +34,9 @@ export default class TakePicture extends Component {
 
   uploadAttachment = ({ name, mimeType, data }) =>
     fetch(getUploadUrl(), {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         name,
@@ -56,13 +53,13 @@ export default class TakePicture extends Component {
 
     const timestamp = moment();
 
-    if (data.startsWith("data:image/jpeg;base64,")) {
+    if (data.startsWith('data:image/jpeg;base64,')) {
       data = data.slice(23);
     }
 
     this.uploadAttachment({
-      name: `Image_${timestamp.format("DD-MM-YY_HH:mm")}.jpeg`,
-      mimeType: "image/jpeg",
+      name: `Image_${timestamp.format('DD-MM-YY_HH:mm')}.jpeg`,
+      mimeType: 'image/jpeg',
       data,
     })
       .then(({ attachmentId }) => {
@@ -73,31 +70,9 @@ export default class TakePicture extends Component {
       });
   };
 
-  setDimensions = value => {
-    if (value === 1) {
-      this.setState({
-        value,
-        height: 300,
-        width: 350,
-      });
-    } else if (value === 2) {
-      this.setState({
-        value,
-        height: 600,
-        width: 700,
-      });
-    } else if (value === 3) {
-      this.setState({
-        value,
-        height: 900,
-        width: 1050,
-      });
-    }
-  };
-
   render() {
     const { disabled, buttonText } = this.props;
-    const { value, height, width, showForm } = this.state;
+    const { showForm } = this.state;
 
     return (
       <Fragment>
@@ -109,17 +84,13 @@ export default class TakePicture extends Component {
         <Modal
           visible={showForm}
           title={buttonText}
-          width={width + 50}
+          width={750}
           okText="Save"
           destroyOnClose
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >
           <TakePictureForm
-            value={value}
-            height={height}
-            width={width}
-            setDimensions={this.setDimensions}
             ref={f => {
               this.pictureForm = f;
             }}

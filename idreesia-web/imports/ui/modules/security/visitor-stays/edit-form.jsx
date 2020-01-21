@@ -2,20 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
+import moment from 'moment';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   CascaderField,
-  InputNumberField,
-  InputTextAreaField,
+  DateField,
   SelectField,
   FormButtonsSubmit,
 } from '/imports/ui/modules/helpers/fields';
 
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
+import {
+  WithDistinctTeamNames,
+  WithDistinctStayAllowedBy,
+} from 'meteor/idreesia-common/composers/security';
 import {
   WithAllDuties,
   WithAllDutyShifts,
@@ -37,6 +40,8 @@ class EditForm extends Component {
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
     distinctStayAllowedByLoading: PropTypes.bool,
+    distinctTeamNames: PropTypes.array,
+    distinctTeamNamesLoading: PropTypes.bool,
   };
 
   handleSubmit = e => {
@@ -48,18 +53,22 @@ class EditForm extends Component {
       updateVisitorStay,
     } = this.props;
     form.validateFields(
-      (err, { numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, notes }) => {
+      (
+        err,
+        { fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, teamName }
+      ) => {
         if (err) return;
 
         updateVisitorStay({
           variables: {
             _id: visitorStayById._id,
-            numOfDays,
-            stayReason,
+            fromDate,
+            toDate,
+            stayReason: stayReason || null,
             stayAllowedBy,
             dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
             shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-            notes,
+            teamName,
           },
         })
           .then(() => {
@@ -79,16 +88,20 @@ class EditForm extends Component {
       allDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
+      distinctTeamNamesLoading,
       allDuties,
       allDutyShifts,
       distinctStayAllowedBy,
+      distinctTeamNames,
       form: { getFieldDecorator },
     } = this.props;
+
     if (
       formDataLoading ||
       allDutiesLoading ||
       allDutyShiftsLoading ||
-      distinctStayAllowedByLoading
+      distinctStayAllowedByLoading ||
+      distinctTeamNamesLoading
     )
       return null;
 
@@ -99,11 +112,27 @@ class EditForm extends Component {
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputNumberField
-          fieldName="numOfDays"
-          fieldLabel="Num of Days"
-          minValue={1}
-          initialValue={visitorStayById.numOfDays}
+        <DateField
+          fieldName="fromDate"
+          fieldLabel="From Date"
+          initialValue={moment(Number(visitorStayById.fromDate))}
+          required
+          requiredMessage="Please select a from date."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <DateField
+          fieldName="toDate"
+          fieldLabel="To Date"
+          initialValue={moment(Number(visitorStayById.toDate))}
+          required
+          requiredMessage="Please select a to date."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <AutoCompleteField
+          fieldName="stayAllowedBy"
+          fieldLabel="Stay Allowed By"
+          dataSource={distinctStayAllowedBy}
+          initialValue={visitorStayById.stayAllowedBy}
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
@@ -115,13 +144,6 @@ class EditForm extends Component {
           initialValue={visitorStayById.stayReason}
           getFieldDecorator={getFieldDecorator}
         />
-        <AutoCompleteField
-          fieldName="stayAllowedBy"
-          fieldLabel="Stay Allowed By"
-          dataSource={distinctStayAllowedBy}
-          initialValue={visitorStayById.stayAllowedBy}
-          getFieldDecorator={getFieldDecorator}
-        />
         <CascaderField
           data={dutyShiftCascaderData}
           changeOnSelect={false}
@@ -130,10 +152,11 @@ class EditForm extends Component {
           initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
           getFieldDecorator={getFieldDecorator}
         />
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          initialValue={visitorStayById.notes}
+        <AutoCompleteField
+          fieldName="teamName"
+          fieldLabel="Team Name"
+          dataSource={distinctTeamNames}
+          initialValue={visitorStayById.teamName}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -155,7 +178,7 @@ const formQuery = gql`
       stayAllowedBy
       dutyId
       shiftId
-      notes
+      teamName
     }
   }
 `;
@@ -163,21 +186,23 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateVisitorStay(
     $_id: String!
-    $numOfDays: Float!
+    $fromDate: String!
+    $toDate: String!
     $stayReason: String
     $stayAllowedBy: String
     $dutyId: String
     $shiftId: String
-    $notes: String
+    $teamName: String
   ) {
     updateVisitorStay(
       _id: $_id
-      numOfDays: $numOfDays
+      fromDate: $fromDate
+      toDate: $toDate
       stayReason: $stayReason
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId
       shiftId: $shiftId
-      notes: $notes
+      teamName: $teamName
     ) {
       _id
       visitorId
@@ -188,7 +213,7 @@ const formMutation = gql`
       stayAllowedBy
       dutyId
       shiftId
-      notes
+      teamName
     }
   }
 `;
@@ -207,5 +232,6 @@ export default flowRight(
   }),
   WithAllDuties(),
   WithAllDutyShifts(),
-  WithDistinctStayAllowedBy()
+  WithDistinctStayAllowedBy(),
+  WithDistinctTeamNames()
 )(EditForm);

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import FileSaver from 'file-saver';
 
 import {
   Button,
@@ -21,6 +22,7 @@ import {
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { CardTypes } from 'meteor/idreesia-common/constants/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 const CascaderStyle = {
@@ -42,8 +44,9 @@ export class List extends Component {
     handleItemSelected: PropTypes.func,
     handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
-    handleUploadAttendanceSheet: PropTypes.func,
-    handleViewCards: PropTypes.func,
+    handleImportFromGoogleSheet: PropTypes.func,
+    handleViewKarkunCards: PropTypes.func,
+    handleViewMehfilCards: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
   };
@@ -85,11 +88,19 @@ export class List extends Component {
       title: 'Present',
       dataIndex: 'presentCount',
       key: 'presentCount',
+      render: text => text || '0',
+    },
+    {
+      title: 'Late',
+      dataIndex: 'lateCount',
+      key: 'lateCount',
+      render: text => text || '0',
     },
     {
       title: 'Absent',
       dataIndex: 'absentCount',
       key: 'absentCount',
+      render: text => text || '0',
     },
     {
       title: 'Percentage',
@@ -170,12 +181,40 @@ export class List extends Component {
     });
   };
 
-  handleViewCards = () => {
-    const { handleViewCards } = this.props;
+  handleViewKarkunCards = cardType => {
+    const { handleViewKarkunCards } = this.props;
     const { selectedRows } = this.state;
-    if (handleViewCards) {
-      handleViewCards(selectedRows);
+    if (handleViewKarkunCards) {
+      handleViewKarkunCards(selectedRows, cardType);
     }
+  };
+
+  handleViewMehfilCards = () => {
+    const { handleViewMehfilCards } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewMehfilCards) {
+      handleViewMehfilCards(selectedRows);
+    }
+  };
+
+  handleDownloadAsCSV = () => {
+    const { attendanceByMonth } = this.props;
+    const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
+
+    const header = 'Name, CNIC, Phone No., Present, Absent, Percetage \r\n';
+    const rows = sortedAttendanceByMonth.map(
+      attendance =>
+        `${attendance.karkun.name}, ${attendance.karkun.cnicNumber ||
+          ''}, ${attendance.karkun.contactNumber1 || ''}, ${
+          attendance.presentCount
+        }, ${attendance.absentCount}, ${attendance.percentage}`
+    );
+    const csvContent = `${header}${rows.join('\r\n')}`;
+
+    const blob = new Blob([csvContent], {
+      type: 'data:text/csv;charset=utf-8',
+    });
+    FileSaver.saveAs(blob, 'attendance-sheet.csv');
   };
 
   _handleDeleteSelectedAttendances = () => {
@@ -199,7 +238,7 @@ export class List extends Component {
       Modal.confirm({
         title: 'Delete All Attendances',
         content:
-          'Are you sure you want to delete all attendance records for the month?',
+          'Are you sure you want to delete all attendance records for the selected duty/shift/job in the month?',
         onOk() {
           handleDeleteAllAttendances();
         },
@@ -258,7 +297,7 @@ export class List extends Component {
   getActionsMenu = () => {
     const {
       handleCreateMissingAttendances,
-      handleUploadAttendanceSheet,
+      handleImportFromGoogleSheet,
     } = this.props;
     const menu = (
       <Menu>
@@ -266,21 +305,35 @@ export class List extends Component {
           <Icon type="plus-circle" />
           Create Missing Attendances
         </Menu.Item>
-        <Menu.Item key="2" onClick={handleUploadAttendanceSheet}>
-          <Icon type="upload" />
-          Upload Attendance
+        <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
+          <Icon type="download" />
+          Download as CSV
+        </Menu.Item>
+        <Menu.Item key="4" onClick={handleImportFromGoogleSheet}>
+          <Icon type="import" />
+          Import from Google Sheets
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="3" onClick={this.handleViewCards}>
-          <Icon type="idcard" />
-          Print Duty Cards
-        </Menu.Item>
+        <Menu.SubMenu key="5" title="Print Cards">
+          <Menu.Item
+            key="5-1"
+            onClick={() =>
+              this.handleViewKarkunCards(CardTypes.NAAM_I_MUBARIK_MEETING)
+            }
+          >
+            Naam-i-Mubarik Meeting
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item key="5-2" onClick={() => this.handleViewMehfilCards()}>
+            Mehfil Cards
+          </Menu.Item>
+        </Menu.SubMenu>
         <Menu.Divider />
-        <Menu.Item key="4" onClick={this._handleDeleteSelectedAttendances}>
+        <Menu.Item key="6" onClick={this._handleDeleteSelectedAttendances}>
           <Icon type="delete" />
           Delete Selected Attendances
         </Menu.Item>
-        <Menu.Item key="5" onClick={this._handleDeleteAllAttendances}>
+        <Menu.Item key="7" onClick={this._handleDeleteAllAttendances}>
           <Icon type="delete" />
           Delete All Attendances
         </Menu.Item>
@@ -362,14 +415,18 @@ const attendanceByMonthQuery = gql`
       month
       dutyId
       shiftId
-      absentCount
+      attendanceDetails
       presentCount
+      lateCount
+      absentCount
       percentage
       meetingCardBarcodeId
       karkun {
         _id
         name
         imageId
+        cnicNumber
+        contactNumber1
       }
       duty {
         _id

@@ -33,6 +33,7 @@ class ListContainer extends Component {
     updateAttendance: PropTypes.func,
     deleteAttendances: PropTypes.func,
     deleteAllAttendances: PropTypes.func,
+    importAttendances: PropTypes.func,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -87,12 +88,7 @@ class ListContainer extends Component {
     });
   };
 
-  handleEditAttendanceSave = ({
-    _id,
-    totalCount,
-    presentCount,
-    absentCount,
-  }) => {
+  handleEditAttendanceSave = values => {
     const { updateAttendance } = this.props;
     this.setState({
       showEditForm: false,
@@ -100,20 +96,33 @@ class ListContainer extends Component {
     });
 
     updateAttendance({
-      variables: {
-        _id,
-        totalCount,
-        presentCount,
-        absentCount,
-      },
+      variables: values,
     }).catch(error => {
       message.error(error.message, 5);
     });
   };
 
-  handleUploadAttendanceSheet = () => {
-    const { history } = this.props;
-    history.push(paths.attendanceSheetsUploadFormPath);
+  handleImportFromGoogleSheet = () => {
+    const {
+      importAttendances,
+      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
+    } = this.props;
+
+    if (selectedCategoryId) {
+      importAttendances({
+        variables: {
+          month: selectedMonth || moment().format('MM-YYYY'),
+          dutyId: selectedCategoryId,
+          shiftId: selectedSubCategoryId,
+        },
+      })
+        .then(() => {
+          // show message regarding what was imported
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+    }
   };
 
   handleCreateMissingAttendances = () => {
@@ -142,13 +151,23 @@ class ListContainer extends Component {
       });
   };
 
-  handleViewCards = selectedRows => {
+  handleViewKarkunCards = (selectedRows, cardType) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
-    const path = `${paths.attendanceSheetsMeetingCardsPath}?barcodeIds=${barcodeIdsString}`;
+    const path = `${paths.attendanceSheetsKarkunCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
+    history.push(path);
+  };
+
+  handleViewMehfilCards = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { history } = this.props;
+    const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
+    const barcodeIdsString = barcodeIds.join(',');
+    const path = `${paths.attendanceSheetsMehfilCardsPath}?barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
@@ -182,27 +201,31 @@ class ListContainer extends Component {
   handleDeleteAllAttendances = () => {
     const {
       deleteAllAttendances,
-      queryParams: { selectedMonth },
+      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
     } = this.props;
 
     const _selectedMonth = selectedMonth
       ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
       : moment();
 
-    deleteAllAttendances({
-      variables: {
-        month: _selectedMonth.format(Formats.DATE_FORMAT),
-      },
-    })
-      .then(() => {
-        message.success(
-          'All attendance records for the month have been deleted.',
-          5
-        );
+    if (selectedCategoryId) {
+      deleteAllAttendances({
+        variables: {
+          month: _selectedMonth.format(Formats.DATE_FORMAT),
+          categoryId: selectedCategoryId,
+          subCategoryId: selectedSubCategoryId,
+        },
       })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
+        .then(() => {
+          message.success(
+            'All attendance records for the selected duty/shift/job in the month have been deleted.',
+            5
+          );
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+    }
   };
 
   handleItemSelected = karkun => {
@@ -238,8 +261,9 @@ class ListContainer extends Component {
           setPageParams={this.setPageParams}
           handleEditAttendance={this.handleEditAttendance}
           handleCreateMissingAttendances={this.handleCreateMissingAttendances}
-          handleUploadAttendanceSheet={this.handleUploadAttendanceSheet}
-          handleViewCards={this.handleViewCards}
+          handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
+          handleViewKarkunCards={this.handleViewKarkunCards}
+          handleViewMehfilCards={this.handleViewMehfilCards}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}
@@ -251,7 +275,7 @@ class ListContainer extends Component {
           title="Update Attendance"
           visible={this.state.showEditForm}
           onCancel={this.handleEditAttendanceCancel}
-          width={370}
+          width={500}
           footer={null}
         >
           {this.state.showEditForm ? (
@@ -276,20 +300,26 @@ const createMutation = gql`
 const updateMutation = gql`
   mutation updateAttendance(
     $_id: String!
-    $totalCount: Int
+    $attendanceDetails: String
     $presentCount: Int
+    $lateCount: Int
     $absentCount: Int
+    $percentage: Int
   ) {
     updateAttendance(
       _id: $_id
-      totalCount: $totalCount
+      attendanceDetails: $attendanceDetails
       presentCount: $presentCount
+      lateCount: $lateCount
       absentCount: $absentCount
+      percentage: $percentage
     ) {
       _id
-      totalCount
+      attendanceDetails
+      lateCount
       presentCount
       absentCount
+      percentage
     }
   }
 `;
@@ -301,8 +331,26 @@ const deleteMutation = gql`
 `;
 
 const deleteAllMutation = gql`
-  mutation deleteAllAttendances($month: String!) {
-    deleteAllAttendances(month: $month)
+  mutation deleteAllAttendances(
+    $month: String!
+    $categoryId: String
+    $subCategoryId: String
+  ) {
+    deleteAllAttendances(
+      month: $month
+      categoryId: $categoryId
+      subCategoryId: $subCategoryId
+    )
+  }
+`;
+
+const importMutation = gql`
+  mutation importAttendances(
+    $month: String!
+    $dutyId: String!
+    $shiftId: String
+  ) {
+    importAttendances(month: $month, dutyId: $dutyId, shiftId: $shiftId)
   }
 `;
 
@@ -327,6 +375,12 @@ export default flowRight(
   }),
   graphql(deleteAllMutation, {
     name: 'deleteAllAttendances',
+    options: {
+      refetchQueries: ['attendanceByMonth'],
+    },
+  }),
+  graphql(importMutation, {
+    name: 'importAttendances',
     options: {
       refetchQueries: ['attendanceByMonth'],
     },

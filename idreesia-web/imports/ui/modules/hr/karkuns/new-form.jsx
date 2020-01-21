@@ -174,7 +174,7 @@ class NewForm extends Component {
           required={false}
           data={allSharedResidences}
           getDataValue={({ _id }) => _id}
-          getDataText={({ address }) => address}
+          getDataText={({ name, address }) => `${name} - ${address}`}
           getFieldDecorator={getFieldDecorator}
         />
 

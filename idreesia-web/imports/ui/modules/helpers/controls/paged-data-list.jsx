@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { toSafeInteger } from 'lodash';
 
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Pagination, Table } from '/imports/ui/controls';
 
 export default class PagedDataList extends Component {

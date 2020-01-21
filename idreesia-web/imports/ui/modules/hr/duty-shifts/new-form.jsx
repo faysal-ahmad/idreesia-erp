@@ -33,24 +33,27 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createDutyShift, history } = this.props;
-    form.validateFields((err, { name, dutyId, startTime, endTime }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { name, dutyId, startTime, endTime, attendanceSheet }) => {
+        if (err) return;
 
-      createDutyShift({
-        variables: {
-          name,
-          dutyId,
-          startTime,
-          endTime,
-        },
-      })
-        .then(() => {
-          history.push(paths.dutyShiftsPath);
+        createDutyShift({
+          variables: {
+            name,
+            dutyId,
+            startTime,
+            endTime,
+            attendanceSheet,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.push(paths.dutyShiftsPath);
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   render() {
@@ -81,10 +84,14 @@ class NewForm extends Component {
           fieldLabel="Start Time"
           getFieldDecorator={getFieldDecorator}
         />
-
         <TimeField
           fieldName="endTime"
           fieldLabel="End Time"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="attendanceSheet"
+          fieldLabel="Attendance Sheet"
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -99,18 +106,21 @@ const formMutation = gql`
     $dutyId: String!
     $startTime: String
     $endTime: String
+    $attendanceSheet: String
   ) {
     createDutyShift(
       name: $name
       dutyId: $dutyId
       startTime: $startTime
       endTime: $endTime
+      attendanceSheet: $attendanceSheet
     ) {
       _id
       name
       dutyId
       startTime
       endTime
+      attendanceSheet
     }
   }
 `;

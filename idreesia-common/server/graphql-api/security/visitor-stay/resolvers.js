@@ -12,7 +12,7 @@ import {
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getVisitorStays } from './queries';
+import { getVisitorStays, getTeamVisits } from './queries';
 
 export default {
   VisitorStayType: {
@@ -66,6 +66,38 @@ export default {
       return getVisitorStays(queryString);
     },
 
+    pagedVisitorStaysByVisitorId(obj, { visitorId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
+
+      return getVisitorStays(`?visitorId=${visitorId}&pageSize=5`);
+    },
+
+    pagedTeamVisits(obj, { queryString }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
+
+      return getTeamVisits(queryString);
+    },
+
     visitorStayById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
@@ -87,6 +119,15 @@ export default {
 
       return compact(distincFunction('stayAllowedBy'));
     },
+
+    distinctTeamNames() {
+      const distincFunction = Meteor.wrapAsync(
+        VisitorStays.rawCollection().distinct,
+        VisitorStays.rawCollection()
+      );
+
+      return compact(distincFunction('teamName'));
+    },
   },
 
   Mutation: {
@@ -99,7 +140,7 @@ export default {
         stayAllowedBy,
         dutyId,
         shiftId,
-        notes,
+        teamName,
       },
       { user }
     ) {
@@ -134,7 +175,7 @@ export default {
         stayAllowedBy,
         dutyId,
         shiftId,
-        notes,
+        teamName,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -146,7 +187,16 @@ export default {
 
     updateVisitorStay(
       obj,
-      { _id, numOfDays, stayReason, stayAllowedBy, dutyId, shiftId, notes },
+      {
+        _id,
+        fromDate,
+        toDate,
+        stayReason,
+        stayAllowedBy,
+        dutyId,
+        shiftId,
+        teamName,
+      },
       { user }
     ) {
       if (
@@ -159,23 +209,21 @@ export default {
         );
       }
 
-      const existingStay = VisitorStays.findOne(_id);
-      const fromDate = moment(Number(existingStay.fromDate));
-      const toDate = fromDate.clone();
-      if (numOfDays > 1) {
-        toDate.add(numOfDays - 1, 'days');
-      }
+      const mFromDate = moment(fromDate);
+      const mToDate = moment(toDate);
+      const numOfDays = mToDate.diff(mFromDate, 'days') + 1;
 
       const date = new Date();
       VisitorStays.update(_id, {
         $set: {
-          toDate: toDate.endOf('day').toDate(),
+          fromDate: mFromDate.startOf('day').toDate(),
+          toDate: mToDate.endOf('day').toDate(),
           numOfDays,
           stayReason,
           stayAllowedBy,
           dutyId,
           shiftId,
-          notes,
+          teamName,
           updatedAt: date,
           updatedBy: user._id,
         },

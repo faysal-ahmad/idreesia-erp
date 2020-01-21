@@ -8,7 +8,7 @@ import {
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-export function createPurchaseFormReport(purchaseFormIdsString) {
+export function exportPurchaseForms(purchaseFormIdsString) {
   const purchaseFormIds = purchaseFormIdsString.split(',');
   const purchaseForms = PurchaseForms.find({
     _id: { $in: purchaseFormIds },

@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
-import { find, flowRight } from 'lodash';
 
-import { List } from '/imports/ui/controls';
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
+import { List } from '/imports/ui/controls';
 
 const ViewForm = ({ formDataLoading, visitorStayById }) => {
   if (formDataLoading) return null;
@@ -39,16 +39,16 @@ const ViewForm = ({ formDataLoading, visitorStayById }) => {
         <b>Stay Detail:</b> {detail}
       </List.Item>
       <List.Item>
-        <b>Stay Reason:</b> {stayReason}
+        <b>Stay Allowed By:</b> {visitorStayById.stayAllowedBy}
       </List.Item>
       <List.Item>
-        <b>Stay Allowed By:</b> {visitorStayById.stayAllowedBy}
+        <b>Stay Reason:</b> {stayReason}
       </List.Item>
       <List.Item>
         <b>Duty / Shift:</b> {visitorStayById.dutyShiftName}
       </List.Item>
       <List.Item>
-        <b>Notes:</b> {visitorStayById.notes}
+        <b>Team Name:</b> {visitorStayById.teamName}
       </List.Item>
     </List>
   );
@@ -71,7 +71,7 @@ const formQuery = gql`
       stayReason
       stayAllowedBy
       dutyShiftName
-      notes
+      teamName
     }
   }
 `;

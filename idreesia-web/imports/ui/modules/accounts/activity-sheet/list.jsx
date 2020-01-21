@@ -1,21 +1,20 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { filter, flowRight, keyBy } from "lodash";
-import numeral from "numeral";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import numeral from 'numeral';
 
-import { Button, DatePicker, Drawer, Spin, Table } from "/imports/ui/controls";
+import { filter, flowRight, keyBy } from 'meteor/idreesia-common/utilities/lodash';
+import { Button, DatePicker, Drawer, Spin, Table } from '/imports/ui/controls';
 import {
   WithAccountHeadsByCompany,
   WithAccountMonthlyBalancesByCompany,
-} from "/imports/ui/modules/accounts/common/composers";
+} from '/imports/ui/modules/accounts/common/composers';
 
-import { treeify } from "/imports/ui/modules/accounts/common/utilities";
-import { VoucherDetailsList } from "../voucher-details";
-
+import { treeify } from '/imports/ui/modules/accounts/common/utilities';
+import { VoucherDetailsList } from '../voucher-details';
 
 const ClickableNumberStyle = {
-  cursor: "pointer",
-  color: "#1890ff",
+  cursor: 'pointer',
+  color: '#1890ff',
 };
 
 class List extends Component {
@@ -43,9 +42,9 @@ class List extends Component {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => {
         const nameText = `[${record.number}] ${record.name}`;
         if (record.hasChildren) {
@@ -55,15 +54,15 @@ class List extends Component {
       },
     },
     {
-      title: "Previous Balance",
-      dataIndex: "prevBalance",
-      key: "prevBalance",
-      render: text => numeral(text).format("0,0"),
+      title: 'Previous Balance',
+      dataIndex: 'prevBalance',
+      key: 'prevBalance',
+      render: text => numeral(text).format('0,0'),
     },
     {
-      title: "Credits",
-      dataIndex: "credits",
-      key: "credits",
+      title: 'Credits',
+      dataIndex: 'credits',
+      key: 'credits',
       render: (text, record) => {
         const Style = text !== 0 ? ClickableNumberStyle : null;
         return (
@@ -73,15 +72,15 @@ class List extends Component {
               this.handleCreditValueClicked(record);
             }}
           >
-            {numeral(text).format("0,0")}
+            {numeral(text).format('0,0')}
           </div>
         );
       },
     },
     {
-      title: "Debits",
-      dataIndex: "debits",
-      key: "debits",
+      title: 'Debits',
+      dataIndex: 'debits',
+      key: 'debits',
       render: (text, record) => {
         const Style = text !== 0 ? ClickableNumberStyle : null;
         return (
@@ -91,15 +90,15 @@ class List extends Component {
               this.handleDebitValueClicked(record);
             }}
           >
-            {numeral(text).format("0,0")}
+            {numeral(text).format('0,0')}
           </div>
         );
       },
     },
     {
-      title: "Balance",
-      dataIndex: "balance",
-      key: "balance",
+      title: 'Balance',
+      dataIndex: 'balance',
+      key: 'balance',
       render: (text, record) => {
         const Style =
           record.credits !== 0 || record.credits !== 0
@@ -112,7 +111,7 @@ class List extends Component {
               this.handleBalanceValueClicked(record);
             }}
           >
-            {numeral(text).format("0,0")}
+            {numeral(text).format('0,0')}
           </div>
         );
       },
@@ -129,14 +128,14 @@ class List extends Component {
   handleMonthGoBack = () => {
     const { setPageParams, month } = this.props;
     setPageParams({
-      month: month.clone().subtract(1, "months"),
+      month: month.clone().subtract(1, 'months'),
     });
   };
 
   handleMonthGoForward = () => {
     const { setPageParams, month } = this.props;
     setPageParams({
-      month: month.clone().add(1, "months"),
+      month: month.clone().add(1, 'months'),
     });
   };
 
@@ -247,8 +246,8 @@ class List extends Component {
       <VoucherDetailsList
         companyId={accountHeadWithMonthlyBalances.companyId}
         accountHeadIds={accountHeadIds}
-        startDate={month.clone().startOf("month")}
-        endDate={month.clone().endOf("month")}
+        startDate={month.clone().startOf('month')}
+        endDate={month.clone().endOf('month')}
         includeCredits={includeCredits}
         includeDebits={includeDebits}
       />
@@ -270,7 +269,7 @@ class List extends Component {
 
     const accountMonthlyBalancesMap = keyBy(
       accountMonthlyBalancesByCompanyId,
-      "accountHeadId"
+      'accountHeadId'
     );
 
     // Put the monthly balance values into the account heads
@@ -310,11 +309,6 @@ class List extends Component {
           placement="left"
           onClose={this.handleClose}
           visible={showForm}
-          style={{
-            overflow: "auto",
-            height: "calc(100% - 108px)",
-            paddingBottom: "108px",
-          }}
         >
           {this.getVoucherDetailsList()}
         </Drawer>

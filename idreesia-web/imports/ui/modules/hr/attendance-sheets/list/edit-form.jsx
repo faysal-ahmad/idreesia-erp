@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Col, Form, Row } from '/imports/ui/controls';
-import { InputNumberField } from '/imports/ui/modules/helpers/fields';
+import {
+  AttendanceDetailField,
+  InputNumberField,
+} from '/imports/ui/modules/helpers/fields';
 
 class EditForm extends Component {
   static propTypes = {
@@ -15,16 +18,23 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { attendance, form, handleSave } = this.props;
-    form.validateFields((err, { totalCount, presentCount, absentCount }) => {
-      if (err) return;
+    form.validateFields(
+      (
+        err,
+        { attendanceDetails, presentCount, lateCount, absentCount, percentage }
+      ) => {
+        if (err) return;
 
-      handleSave({
-        _id: attendance._id,
-        totalCount,
-        presentCount,
-        absentCount,
-      });
-    });
+        handleSave({
+          _id: attendance._id,
+          attendanceDetails: JSON.stringify(attendanceDetails),
+          presentCount: presentCount || 0,
+          lateCount: lateCount || 0,
+          absentCount: absentCount || 0,
+          percentage: percentage || 0,
+        });
+      }
+    );
   };
 
   render() {
@@ -35,18 +45,29 @@ class EditForm extends Component {
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputNumberField
-          fieldName="totalCount"
-          fieldLabel="Total Days"
-          initialValue={attendance.totalCount}
-          minValue={0}
-          maxValue={31}
+        <AttendanceDetailField
+          fieldName="attendanceDetails"
+          fieldLabel="Attendance Details"
+          initialValue={
+            attendance.attendanceDetails
+              ? JSON.parse(attendance.attendanceDetails)
+              : {}
+          }
+          forMonth={attendance.month}
           getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="presentCount"
           fieldLabel="Present Days"
-          initialValue={attendance.presentCount}
+          initialValue={attendance.presentCount || 0}
+          minValue={0}
+          maxValue={31}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="lateCount"
+          fieldLabel="Late Days"
+          initialValue={attendance.lateCount || 0}
           minValue={0}
           maxValue={31}
           getFieldDecorator={getFieldDecorator}
@@ -54,14 +75,22 @@ class EditForm extends Component {
         <InputNumberField
           fieldName="absentCount"
           fieldLabel="Absent Days"
-          initialValue={attendance.absentCount}
+          initialValue={attendance.absentCount || 0}
           minValue={0}
           maxValue={31}
           getFieldDecorator={getFieldDecorator}
         />
+        <InputNumberField
+          fieldName="percentage"
+          fieldLabel="Percentage"
+          initialValue={attendance.percentage || 0}
+          minValue={0}
+          maxValue={100}
+          getFieldDecorator={getFieldDecorator}
+        />
 
         <Row type="flex" justify="start">
-          <Col offset={5}>
+          <Col offset={10}>
             <Button
               size="large"
               type="default"

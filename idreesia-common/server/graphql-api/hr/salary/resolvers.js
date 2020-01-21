@@ -11,6 +11,7 @@ import {
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
+import { getPagedSalariesByKarkun } from './queries';
 
 export default {
   SalaryType: {
@@ -24,25 +25,15 @@ export default {
         _id: { $eq: salaryType.jobId },
       });
     },
+    approver: salaryType => {
+      if (!salaryType.approvedBy) return null;
+      return Karkuns.findOne({
+        _id: { $eq: salaryType.approvedBy },
+      });
+    },
   },
 
   Query: {
-    salariesByKarkun(obj, { karkunId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_EMPLOYEES,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
-        ])
-      ) {
-        return [];
-      }
-
-      return Salaries.find({
-        karkunId,
-      }).fetch();
-    },
-
     salariesByMonth(obj, { month, jobId }, { user }) {
       if (
         !hasOnePermission(user._id, [
@@ -86,6 +77,28 @@ export default {
         _id: { $in: idsArray },
       }).fetch();
     },
+
+    pagedSalariesByKarkun(obj, { queryString }, { user }) {
+      console.log(
+        '/hr/salary/resolvers.js/resolvers.js::pagedSalariesByKarkun',
+        queryString,
+        ' <---> user ',
+        user._id
+      );
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.HR_VIEW_EMPLOYEES,
+          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_EMPLOYEES,
+        ])
+      ) {
+        return {
+          salaries: [],
+          totalResults: 0,
+        };
+      }
+      return getPagedSalariesByKarkun(queryString);
+    },
   },
 
   Mutation: {
@@ -127,6 +140,7 @@ export default {
         newLoan,
         otherDeduction,
         arrears,
+        rashanMadad,
       },
       { user }
     ) {
@@ -150,15 +164,76 @@ export default {
           otherDeduction,
           newLoan,
           arrears,
+          rashanMadad,
           closingLoan: openingLoan + newLoan - loanDeduction,
-          netPayment:
-            salary + arrears - loanDeduction - otherDeduction,
+          netPayment: salary + arrears - loanDeduction - otherDeduction,
           updatedAt: date,
           updatedBy: user._id,
+        },
+        $unset: {
+          approvedOn: '',
+          approvedBy: '',
         },
       });
 
       return Salaries.findOne(_id);
+    },
+
+    approveSalaries(obj, { month, ids }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_SALARIES])
+      ) {
+        throw new Error(
+          'You do not have permission to approve salaries in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      const date = new Date();
+      return Salaries.update(
+        {
+          _id: { $in: ids },
+          month: formattedMonth,
+        },
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
+    },
+
+    approveAllSalaries(obj, { month }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_SALARIES])
+      ) {
+        throw new Error(
+          'You do not have permission to approve salaries in the System.'
+        );
+      }
+
+      const formattedMonth = moment(month, Formats.DATE_FORMAT)
+        .startOf('month')
+        .format('MM-YYYY');
+
+      const date = new Date();
+      return Salaries.update(
+        {
+          month: formattedMonth,
+        },
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
     },
 
     deleteSalaries(obj, { month, ids }, { user }) {

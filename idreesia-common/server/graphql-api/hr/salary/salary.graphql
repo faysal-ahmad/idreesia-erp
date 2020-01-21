@@ -11,20 +11,25 @@ type SalaryType {
   otherDeduction: Int
   arrears: Int
   netPayment: Int
+  rashanMadad: Int
 
   karkun: KarkunType
   job: JobType
+  approver: KarkunType
 
+  approvedOn: String
+  approvedBy: String
   createdAt: String
   createdBy: String
   updatedAt: String
   updatedBy: String
 }
-
+type PagedSalaryType {
+  totalResults: Int
+  salaries: [SalaryType]
+}
 extend type Query {
-  salariesByKarkun(
-    karkunId: String!
-  ): [SalaryType]
+  pagedSalariesByKarkun(queryString: String): PagedSalaryType
   salariesByMonth(
     month: String!
     jobId: String
@@ -45,8 +50,11 @@ extend type Mutation {
     otherDeduction: Int
     newLoan: Int
     arrears: Int
+    rashanMadad: Int
   ): SalaryType
 
+  approveSalaries(month: String!, ids: [String]!): Int
+  approveAllSalaries(month: String!): Int
   deleteSalaries(month: String!, ids: [String]!): Int
   deleteAllSalaries(month: String!): Int
 }

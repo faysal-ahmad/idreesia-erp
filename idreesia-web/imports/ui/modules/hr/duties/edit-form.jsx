@@ -34,7 +34,7 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, dutyById, updateDuty } = this.props;
-    form.validateFields((err, { name, description }) => {
+    form.validateFields((err, { name, description, attendanceSheet }) => {
       if (err) return;
 
       updateDuty({
@@ -42,6 +42,7 @@ class EditForm extends Component {
           id: dutyById._id,
           name,
           description,
+          attendanceSheet,
         },
       })
         .then(() => {
@@ -75,6 +76,12 @@ class EditForm extends Component {
             initialValue={dutyById.description}
             getFieldDecorator={getFieldDecorator}
           />
+          <InputTextField
+            fieldName="attendanceSheet"
+            fieldLabel="Attendance Sheet"
+            initialValue={dutyById.attendanceSheet}
+            getFieldDecorator={getFieldDecorator}
+          />
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
         <RecordInfo record={dutyById} />
@@ -89,6 +96,7 @@ const formQuery = gql`
       _id
       name
       description
+      attendanceSheet
       createdAt
       createdBy
       updatedAt
@@ -98,11 +106,22 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updateDuty($id: String!, $name: String!, $description: String) {
-    updateDuty(id: $id, name: $name, description: $description) {
+  mutation updateDuty(
+    $id: String!
+    $name: String!
+    $description: String
+    $attendanceSheet: String
+  ) {
+    updateDuty(
+      id: $id
+      name: $name
+      description: $description
+      attendanceSheet: $attendanceSheet
+    ) {
       _id
       name
       description
+      attendanceSheet
       createdAt
       createdBy
       updatedAt

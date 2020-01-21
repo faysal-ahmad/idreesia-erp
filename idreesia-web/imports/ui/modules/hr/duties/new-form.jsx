@@ -29,13 +29,14 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createDuty, history } = this.props;
-    form.validateFields((err, { name, description }) => {
+    form.validateFields((err, { name, description, attendanceSheet }) => {
       if (err) return;
 
       createDuty({
         variables: {
           name,
           description,
+          attendanceSheet,
         },
       })
         .then(() => {
@@ -64,6 +65,11 @@ class NewForm extends Component {
           fieldLabel="Description"
           getFieldDecorator={getFieldDecorator}
         />
+        <InputTextField
+          fieldName="attendanceSheet"
+          fieldLabel="Attendance Sheet"
+          getFieldDecorator={getFieldDecorator}
+        />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>
     );
@@ -71,11 +77,20 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createDuty($name: String!, $description: String) {
-    createDuty(name: $name, description: $description) {
+  mutation createDuty(
+    $name: String!
+    $description: String
+    $attendanceSheet: String
+  ) {
+    createDuty(
+      name: $name
+      description: $description
+      attendanceSheet: $attendanceSheet
+    ) {
       _id
       name
       description
+      attendanceSheet
     }
   }
 `;

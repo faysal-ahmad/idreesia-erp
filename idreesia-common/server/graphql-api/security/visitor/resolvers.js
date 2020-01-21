@@ -2,14 +2,27 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { isNil, compact } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getVisitors } from './queries';
 import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
 import { createAttachment } from '../../common/attachments/utilities';
+import { processCsvData } from './helpers';
 
 export default {
+  VisitorType: {
+    image: visitorType => {
+      const { imageId } = visitorType;
+      if (imageId) {
+        return Attachments.findOne({ _id: { $eq: imageId } });
+      }
+
+      return null;
+    },
+  },
+
   Query: {
     pagedVisitors(obj, { queryString }, { user }) {
       if (
@@ -40,7 +53,7 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    visitorByCnic(obj, { cnic }, { user }) {
+    visitorByCnic(obj, { cnicNumbers }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -50,13 +63,45 @@ export default {
         return null;
       }
 
-      if (cnic) {
+      if (cnicNumbers.length > 0) {
         return Visitors.findOne({
-          cnicNumber: { $eq: cnic },
+          cnicNumber: { $in: cnicNumbers },
         });
       }
 
       return null;
+    },
+
+    visitorByCnicOrContactNumber(obj, { cnicNumber, contactNumber }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return null;
+      }
+
+      let visitor = null;
+
+      if (cnicNumber) {
+        visitor = Visitors.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+      }
+
+      if (visitor) return visitor;
+
+      if (contactNumber) {
+        visitor = Visitors.findOne({
+          $or: [
+            { contactNumber1: contactNumber },
+            { contactNumber2: contactNumber },
+          ],
+        });
+      }
+
+      return visitor;
     },
 
     distinctCities() {
@@ -218,6 +263,21 @@ export default {
       }
 
       return Visitors.remove(_id);
+    },
+
+    importCsvData(obj, { csvData }, { user }) {
+      if (
+        user &&
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      return processCsvData(csvData, new Date(), user);
     },
 
     setVisitorImage(obj, { _id, imageId }, { user }) {

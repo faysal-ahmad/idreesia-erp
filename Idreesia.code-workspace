@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "/Users/faisal/Workspaces/idreesia-digitalocean"
 		}
 	],
 	"settings": {}

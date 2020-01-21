@@ -26,15 +26,19 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  totalCount: {
+  attendanceDetails: {
+    type: String,
+    optional: true,
+  },
+  presentCount: {
+    type: Number,
+    optional: true,
+  },
+  lateCount: {
     type: Number,
     optional: true,
   },
   absentCount: {
-    type: Number,
-    optional: true,
-  },
-  presentCount: {
     type: Number,
     optional: true,
   },

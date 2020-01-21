@@ -36,6 +36,11 @@ class ListContainer extends Component {
     history.push(paths.visitorRegistrationNewFormPath);
   };
 
+  handleUploadClicked = () => {
+    const { history } = this.props;
+    history.push(paths.visitorRegistrationUploadFormPath);
+  };
+
   handleScanClicked = () => {
     const { history } = this.props;
     history.push(paths.visitorRegistrationPath);
@@ -84,6 +89,7 @@ class ListContainer extends Component {
           handleShowStayList={this.handleShowStayList}
           showNewButton
           handleNewClicked={this.handleNewClicked}
+          handleUploadClicked={this.handleUploadClicked}
           handleScanClicked={this.handleScanClicked}
         />
         <Drawer
@@ -91,11 +97,6 @@ class ListContainer extends Component {
           width={600}
           onClose={this.handleStayListClose}
           visible={showStayList}
-          style={{
-            overflow: 'auto',
-            height: 'calc(100% - 108px)',
-            paddingBottom: '108px',
-          }}
         >
           <VisitorStaysList showNewButton visitorId={visitorIdForStayList} />
         </Drawer>

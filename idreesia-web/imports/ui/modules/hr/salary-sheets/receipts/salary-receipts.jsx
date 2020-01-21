@@ -3,17 +3,10 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
-const LabelStyle = {
-  fontWeight: 'bold',
-  fontSize: 16,
-};
-
-const DataStyle = {
-  fontSize: 16,
-};
+import { Item } from './item';
 
 const ContainerStyle = {
   display: 'flex',
@@ -23,20 +16,9 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-const Item = ({ label, value }) => (
-  <Row type="flex" gutter={16}>
-    <Col order={1}>
-      <span style={LabelStyle}>{label}:</span>
-    </Col>
-    <Col order={2}>
-      <span style={DataStyle}>{value}</span>
-    </Col>
-  </Row>
-);
-
-Item.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.any,
+const HeaderStyle = {
+  fontSize: 20,
+  border: 'solid',
 };
 
 export default class SalaryReceipts extends Component {
@@ -64,23 +46,26 @@ export default class SalaryReceipts extends Component {
 
     return (
       <div key={salary._id} className="salary-receipt-print-view">
+        <Row type="flex" justify="center" style={HeaderStyle}>
+          <div>Salary Receipt - {displayMonth}</div>
+        </Row>
         <Row type="flex" justify="start" gutter={10}>
           {imageColumn}
-          <Col order={2}>
+          <Col order={2} style={{ minWidth: '150px' }}>
             <Item label="Name" value={karkun.name} />
+            <Item label="S/O" value={karkun.parentName} />
             <Item label="CNIC" value={karkun.cnicNumber || ''} />
             <Item label="Phone" value={karkun.contactNumber1 || ''} />
             <Item label="Dept." value={job.name} />
-            <Item label="Month" value={displayMonth} />
           </Col>
-          <Col order={3}>
+          <Col order={3} style={{ minWidth: '150px' }}>
             <Item label="Salary" value={salary.salary} />
             <Item label="L/OB" value={salary.openingLoan || 0} />
             <Item label="Loan Ded." value={salary.loanDeduction || 0} />
             <Item label="Other Ded." value={salary.otherDeduction || 0} />
             <Item label="New Loan" value={salary.newLoan || 0} />
           </Col>
-          <Col order={4}>
+          <Col order={4} style={{ minWidth: '150px' }}>
             <Item label="L/CB" value={salary.closingLoan || 0} />
             <Item label="Arrears" value={salary.arrears || 0} />
             <Item label="Net Payment" value={salary.netPayment || 0} />
@@ -94,7 +79,12 @@ export default class SalaryReceipts extends Component {
 
   render() {
     const { salariesByIds } = this.props;
-    const sortedSalariesByMonth = sortBy(salariesByIds, 'karkun.name');
+    // Filter out records where the net payment amount is zero.
+    const filteredSalaries = filter(
+      salariesByIds,
+      salary => salary.netPayment !== 0
+    );
+    const sortedSalariesByMonth = sortBy(filteredSalaries, 'karkun.name');
 
     const receipts = sortedSalariesByMonth.map(salary =>
       this.getSalaryReceipts(salary)
@@ -103,7 +93,7 @@ export default class SalaryReceipts extends Component {
     let index = 0;
     const receiptContainers = [];
     while (receipts.length > 0) {
-      const receiptsForPage = receipts.splice(0, 5);
+      const receiptsForPage = receipts.splice(0, 4);
       receiptContainers.push(
         <div key={`container_${index}`} style={ContainerStyle}>
           {receiptsForPage}

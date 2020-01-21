@@ -18,13 +18,22 @@ class EditForm extends Component {
     form.validateFields(
       (
         err,
-        { salary, openingLoan, loanDeduction, newLoan, otherDeduction, arrears }
+        {
+          salary,
+          rashanMadad,
+          openingLoan,
+          loanDeduction,
+          newLoan,
+          otherDeduction,
+          arrears,
+        }
       ) => {
         if (err) return;
 
         handleSave({
           _id: salaryObj._id,
           salary,
+          rashanMadad,
           openingLoan,
           loanDeduction,
           newLoan,
@@ -47,6 +56,12 @@ class EditForm extends Component {
           fieldName="salary"
           fieldLabel="Salary"
           initialValue={salary.salary}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputNumberField
+          fieldName="rashanMadad"
+          fieldLabel="Rashan"
+          initialValue={salary.rashanMadad}
           getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField

@@ -1,0 +1,135 @@
+version: 2
+jobs:
+  build-web:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/idreesia-erp/idreesia-web
+
+    steps:
+      - checkout:
+          path: ~/idreesia-erp
+
+      - run: "curl https://install.meteor.com | /bin/sh"
+
+      - restore_cache:
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: meteor yarn run build
+
+      - run:
+          working_directory: ~/idreesia-erp
+          command: docker build -t faysalahmad/idreesia-web idreesia-web
+
+      - run:
+          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - run:
+          command: docker push faysalahmad/idreesia-web
+
+  build-mobile:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/idreesia-erp/idreesia-mobile
+
+    steps:
+      - checkout:
+          path: ~/idreesia-erp
+
+      - run: "curl https://install.meteor.com | /bin/sh"
+
+      - restore_cache:
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: meteor yarn run build
+
+      - run:
+          working_directory: ~/idreesia-erp
+          command: docker build -t faysalahmad/idreesia-mobile idreesia-mobile
+
+      - run:
+          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - run:
+          command: docker push faysalahmad/idreesia-mobile
+
+  build-jobs:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/idreesia-erp/idreesia-jobs
+
+    steps:
+      - checkout:
+          path: ~/idreesia-erp
+
+      - run: "curl https://install.meteor.com | /bin/sh"
+
+      - restore_cache:
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: "meteor npm install -g yarn"
+
+      - run:
+          command: "meteor yarn install"
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: web-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          command: meteor yarn run build
+
+      - run:
+          working_directory: ~/idreesia-erp
+          command: docker build -t faysalahmad/idreesia-jobs idreesia-jobs
+
+      - run:
+          command: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - run:
+          command: docker push faysalahmad/idreesia-jobs
+
+workflows:
+  version: 2
+  build-apps:
+    jobs:
+      - build-web:
+          filters:
+            branches:
+              only: master
+      - build-mobile:
+          filters:
+            branches:
+              only: master
+      - build-jobs:
+          filters:
+            branches:
+              only: master

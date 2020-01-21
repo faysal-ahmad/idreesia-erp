@@ -8,7 +8,7 @@ type VisitorStayType {
   stayAllowedBy: String
   dutyId: String
   shiftId: String
-  notes: String
+  teamName: String
   cancelledDate: String
 
   isValid: Boolean
@@ -29,10 +29,25 @@ type PagedVisitorStayType {
   data: [VisitorStayType]
 }
 
+type TeamVisitType {
+  _id: String
+  teamName: String
+  visitDate: String
+  membersCount: Int
+}
+
+type PagedTeamVisitType {
+  totalResults: Int
+  data: [TeamVisitType]
+}
+
 extend type Query {
   pagedVisitorStays(queryString: String!): PagedVisitorStayType
+  pagedVisitorStaysByVisitorId(visitorId: String!): PagedVisitorStayType
+  pagedTeamVisits(queryString: String!): PagedTeamVisitType
   visitorStayById(_id: String!): VisitorStayType
   distinctStayAllowedBy: [String]
+  distinctTeamNames: [String]
 }
 
 extend type Mutation {
@@ -43,17 +58,18 @@ extend type Mutation {
     stayAllowedBy: String
     dutyId: String
     shiftId: String
-    notes: String
+    teamName: String
   ): VisitorStayType
 
   updateVisitorStay(
     _id: String!
-    numOfDays: Float!
+    fromDate: String!
+    toDate: String!
     stayReason: String
     stayAllowedBy: String
     dutyId: String
     shiftId: String
-    notes: String
+    teamName: String
   ): VisitorStayType
 
   fixNameSpelling(existingSpelling: String!, newSpelling: String!): Int

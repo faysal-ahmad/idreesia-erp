@@ -2,15 +2,19 @@ import { WebApp } from 'meteor/webapp';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import { kebabCase } from 'lodash';
 
+import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
-import { createIssuanceFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
-import { createPurchaseFormReport } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
+import { exportIsssuanceForms } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
+import { exportPurchaseForms } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
+import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
+import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
 
 const ReportGenerators = {
-  IssuanceForms: createIssuanceFormReport,
-  PurchaseForms: createPurchaseFormReport,
+  IssuanceForms: exportIsssuanceForms,
+  PurchaseForms: exportPurchaseForms,
+  Karkuns: exportKarkuns,
+  Visitors: exportVisitors,
 };
 
 Meteor.startup(() => {
@@ -55,8 +59,11 @@ Meteor.startup(() => {
         const attachment = Attachments.findOne(attachmentId);
         if (attachment) {
           const imgData = Buffer.from(attachment.data, 'base64');
+          res.removeHeader('Pragma');
+          res.removeHeader('Expires');
           res.writeHead(200, {
             'Content-Type': attachment.mimeType,
+            'Cache-Control': `max-age=${365 * 24 * 60 * 60}`,
           });
           res.end(imgData);
         } else {

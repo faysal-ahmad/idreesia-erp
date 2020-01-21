@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from '../common';
+import { approvable, identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   karkunId: {
@@ -48,6 +48,11 @@ export default new SimpleSchema({
     type: Number,
     optional: true,
   },
+  rashanMadad: {
+    type: Number,
+    optional: true,
+  },
 })
+  .extend(approvable)
   .extend(identifiable)
   .extend(timestamps);

@@ -32,7 +32,11 @@ export default {
   },
 
   Mutation: {
-    createDutyShift(obj, { name, dutyId, startTime, endTime }, { user }) {
+    createDutyShift(
+      obj,
+      { name, dutyId, startTime, endTime, attendanceSheet },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -47,6 +51,7 @@ export default {
         dutyId,
         startTime,
         endTime,
+        attendanceSheet,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -56,7 +61,11 @@ export default {
       return DutyShifts.findOne(dutyShiftId);
     },
 
-    updateDutyShift(obj, { id, name, dutyId, startTime, endTime }, { user }) {
+    updateDutyShift(
+      obj,
+      { id, name, dutyId, startTime, endTime, attendanceSheet },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -72,6 +81,7 @@ export default {
           dutyId,
           startTime,
           endTime,
+          attendanceSheet,
           updatedAt: date,
           updatedBy: user._id,
         },

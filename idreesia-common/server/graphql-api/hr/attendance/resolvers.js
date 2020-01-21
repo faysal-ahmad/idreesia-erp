@@ -1,6 +1,8 @@
 import moment from 'moment';
+import request from 'request';
+import { google } from 'googleapis';
 
-import { toInteger, round } from 'meteor/idreesia-common/utilities/lodash';
+import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attendances,
   Karkuns,
@@ -15,6 +17,7 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { processAttendanceSheet } from './helpers';
+import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   AttendanceType: {
@@ -57,7 +60,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    attendanceByKarkun(obj, { karkunId }, { user }) {
+    pagedAttendanceByKarkun(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -65,14 +68,13 @@ export default {
           PermissionConstants.HR_DELETE_KARKUNS,
         ])
       ) {
-        return [];
+        return {
+          attendance: [],
+          totalResults: 0,
+        };
       }
-
-      return Attendances.find({
-        karkunId,
-      }).fetch();
+      return getPagedAttendanceByKarkun(queryString);
     },
-
     attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
       if (!categoryId) return [];
 
@@ -125,7 +127,7 @@ export default {
           PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
-        return [];
+        return null;
       }
 
       return Attendances.findOne({
@@ -173,7 +175,14 @@ export default {
 
     updateAttendance(
       obj,
-      { _id, totalCount, presentCount, absentCount },
+      {
+        _id,
+        attendanceDetails,
+        presentCount,
+        lateCount,
+        absentCount,
+        percentage,
+      },
       { user }
     ) {
       if (
@@ -188,16 +197,13 @@ export default {
       }
 
       const date = new Date();
-      const numTotalCount = toInteger(totalCount);
-      const numPresentCount = toInteger(presentCount);
-      const numAbsentCount = toInteger(absentCount);
-
       Attendances.update(_id, {
         $set: {
-          totalCount: numTotalCount,
-          presentCount: numPresentCount,
-          absentCount: numAbsentCount,
-          percentage: round((numPresentCount / numTotalCount) * 100),
+          attendanceDetails,
+          presentCount: toInteger(presentCount),
+          lateCount: toInteger(lateCount),
+          absentCount: toInteger(absentCount),
+          percentage: toInteger(percentage),
           updatedAt: date,
           updatedBy: user._id,
         },
@@ -206,7 +212,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    uploadAttendances(obj, { csv, month, dutyId, shiftId }, { user }) {
+    importAttendances(obj, { month, dutyId, shiftId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
@@ -215,8 +221,57 @@ export default {
         );
       }
 
-      const date = new Date();
-      return processAttendanceSheet(csv, month, dutyId, shiftId, date, user);
+      let attendanceSheetId;
+      if (!shiftId) {
+        // Check if we have an attendance sheet associated with the passed duty
+        const duty = Duties.findOne(dutyId);
+        attendanceSheetId = duty.attendanceSheet;
+      } else {
+        const dutyShift = DutyShifts.findOne(shiftId);
+        attendanceSheetId = dutyShift.attendanceSheet;
+      }
+
+      if (!attendanceSheetId) {
+        throw new Error(
+          'Could not find an associated google sheet for attendance.'
+        );
+      }
+
+      const authFile = JSON.parse(Assets.getText('private/auth/google.json'));
+      const scopes = [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.readonly',
+      ];
+
+      const jwt = new google.auth.JWT(
+        authFile.client_email,
+        null,
+        authFile.private_key,
+        scopes
+      );
+
+      return new Promise((resolve, reject) => {
+        jwt.authorize((err, authResponse) => {
+          if (err) reject(err);
+          const accessToken = authResponse.access_token;
+          const options = {
+            uri: `https://www.googleapis.com/drive/v3/files/${attendanceSheetId}/export?mimeType=text/csv`,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+
+          request.get(options, (error, response, body) => {
+            if (error) reject(error);
+            // If the request is successfule, we get the csv data in the body
+
+            processAttendanceSheet(body, month, dutyId, shiftId)
+              .then(result => resolve(result))
+              .catch(e => reject(e));
+          });
+        });
+      });
     },
 
     deleteAttendances(obj, { month, ids }, { user }) {
@@ -248,7 +303,7 @@ export default {
       });
     },
 
-    deleteAllAttendances(obj, { month }, { user }) {
+    deleteAllAttendances(obj, { month, categoryId, subCategoryId }, { user }) {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 
@@ -276,9 +331,27 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      return Attendances.remove({
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need toremove attendance of employees with the
+       * selected job.
+       */
+      const removeCriteria = {
         month: formattedMonth,
-      });
+      };
+
+      if (categoryId === 'all_jobs') {
+        if (subCategoryId) {
+          removeCriteria.jobId = subCategoryId;
+        } else {
+          removeCriteria.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        removeCriteria.dutyId = categoryId;
+        if (subCategoryId) removeCriteria.shiftId = subCategoryId;
+      }
+
+      return Attendances.remove(removeCriteria);
     },
   },
 };

@@ -80,7 +80,7 @@ form {
 .list-actions-column {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
   width: 100%;
 }
@@ -88,6 +88,7 @@ form {
 .list-actions-icon {
   cursor: pointer;
   font-size: 20px;
+  padding-right: 7px;
 }
 
 @media print {

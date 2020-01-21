@@ -1,0 +1,34 @@
+version: "3"
+services:
+  mongo:
+    build:
+      context: ./containers/mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+      - ~/Dropbox/Idreesia-ERP-Backup:/data/backup
+
+  web:
+    build:
+      context: ./idreesia-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  mobile:
+    build:
+      context: ./idreesia-mobile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+
+  jobs:
+    build:
+      context: ./idreesia-jobs
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongo

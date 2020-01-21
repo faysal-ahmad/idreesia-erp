@@ -6,7 +6,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Dropdown, Menu, Modal, message } from './antd-controls';
 import ChangePasswordForm from './change-password-form';
 

@@ -22,11 +22,15 @@ import {
   KarkunPrintView,
 } from './karkuns';
 import {
-  AttendanceSheetsUploadForm,
   AttendanceSheetsList,
-  AttendanceSheetsMeetingCards,
+  AttendanceSheetsKarkunCards,
+  AttendanceSheetsMehfilCards,
 } from './attendance-sheets';
-import { SalarySheetsList, SalarySheetsSalaryReceipts } from './salary-sheets';
+import {
+  SalarySheetsList,
+  SalarySheetsSalaryReceipts,
+  SalarySheetsRashanReceipts,
+} from './salary-sheets';
 import {
   SharedResidencesNewForm,
   SharedResidencesEditForm,
@@ -64,18 +68,22 @@ const HRRouter = () => (
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
     <Route
-      path={paths.attendanceSheetsUploadFormPath}
-      component={AttendanceSheetsUploadForm}
+      path={paths.attendanceSheetsKarkunCardsPath}
+      component={AttendanceSheetsKarkunCards}
     />
     <Route
-      path={paths.attendanceSheetsMeetingCardsPath}
-      component={AttendanceSheetsMeetingCards}
+      path={paths.attendanceSheetsMehfilCardsPath}
+      component={AttendanceSheetsMehfilCards}
     />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 
     <Route
       path={paths.salarySheetsSalaryReceiptsPath}
       component={SalarySheetsSalaryReceipts}
+    />
+    <Route
+      path={paths.salarySheetsRashanReceiptsPath}
+      component={SalarySheetsRashanReceipts}
     />
     <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
 

@@ -12,17 +12,27 @@ import {
   PictureField,
   FormButtonsSaveCancel,
   List,
+  Switch,
   Toast,
   WhiteSpace,
 } from '/imports/ui/controls';
 
 import CREATE_VISITOR from './gql/create-visitor';
+import CREATE_VISITOR_STAY from './gql/create-visitor-stay';
 
 const NewForm = ({
   history,
-  form: { getFieldDecorator, getFieldError, resetFields, validateFields },
+  form: {
+    getFieldDecorator,
+    getFieldProps,
+    getFieldError,
+    resetFields,
+    setFieldsValue,
+    validateFields,
+  },
 }) => {
   const [createVisitor] = useMutation(CREATE_VISITOR);
+  const [createVisitorStay] = useMutation(CREATE_VISITOR_STAY);
 
   const getEhadDateFromDuration = duration => {
     const currentDate = moment();
@@ -50,9 +60,11 @@ const NewForm = ({
           city,
           country,
           imageData,
+          addStay,
         }
       ) => {
         if (error) return;
+
         createVisitor({
           variables: {
             name,
@@ -73,12 +85,24 @@ const NewForm = ({
             imageData,
           },
         })
+          .then(({ data: { createVisitor: newVisitor } }) => {
+            if (addStay) {
+              return createVisitorStay({
+                variables: {
+                  visitorId: newVisitor._id,
+                  numOfDays: 1,
+                },
+              });
+            }
+
+            return Promise.resolve();
+          })
           .then(() => {
             resetFields();
             Toast.info('Visitor information was saved.', 2);
           })
-          .catch(() => {
-            Toast.fail('Visitor information was not saved.', 2);
+          .catch(err => {
+            Toast.fail(err.message, 2);
           });
       }
     );
@@ -142,6 +166,23 @@ const NewForm = ({
         getFieldDecorator={getFieldDecorator}
         required
       />
+      <List.Item
+        extra={
+          <Switch
+            {...getFieldProps('addStay', {
+              initialValue: true,
+              valuePropName: 'checked',
+            })}
+            onClick={checked => {
+              setFieldsValue({
+                addStay: checked,
+              });
+            }}
+          />
+        }
+      >
+        Add 1 Day Stay
+      </List.Item>
       <PictureField
         fieldName="imageData"
         getFieldDecorator={getFieldDecorator}

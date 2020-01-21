@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 const NameDivStyle = {
   display: 'flex',

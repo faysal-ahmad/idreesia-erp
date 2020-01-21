@@ -4,9 +4,9 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Col, Spin, message } from '/imports/ui/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 const LabelStyle = {
   fontWeight: 'bold',

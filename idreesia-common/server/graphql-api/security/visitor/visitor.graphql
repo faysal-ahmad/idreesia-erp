@@ -33,6 +33,7 @@ extend type Query {
   pagedVisitors(queryString: String): PagedVisitorType
   visitorById(_id: String!): VisitorType
   visitorByCnic(cnicNumbers: [String]!): VisitorType
+  visitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
 
   distinctCities: [String]
   distinctCountries: [String]

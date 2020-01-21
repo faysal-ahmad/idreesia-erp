@@ -6,7 +6,6 @@ import { useMutation } from '@apollo/react-hooks';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { CREATE_VISITOR } from 'meteor/idreesia-common/graphql/security';
 import {
   InputItemField,
   EhadDurationField,
@@ -16,6 +15,8 @@ import {
   Toast,
   WhiteSpace,
 } from '/imports/ui/controls';
+
+import CREATE_VISITOR from './gql/create-visitor';
 
 const NewForm = ({
   history,

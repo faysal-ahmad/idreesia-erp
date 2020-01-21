@@ -7,7 +7,7 @@ import BlankPage from './blank-page';
 import { default as securityPaths } from '/imports/ui/modules/security/submodule-paths';
 import { MehfilCardVerificationForm } from '/imports/ui/modules/security/mehfil-card-verification';
 import {
-  VisitorRegistrationList,
+  VisitorRegistrationSearchForm,
   VisitorRegistrationNewForm,
 } from '/imports/ui/modules/security/visitor-registeration';
 
@@ -22,8 +22,8 @@ const AppRouter = () => (
 
     <Route
       exact
-      path={securityPaths.visitorRegistrationListPath}
-      component={VisitorRegistrationList}
+      path={securityPaths.visitorRegistrationSearchPath}
+      component={VisitorRegistrationSearchForm}
     />
     <Route
       exact

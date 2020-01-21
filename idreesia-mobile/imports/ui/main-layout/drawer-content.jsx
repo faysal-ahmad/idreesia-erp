@@ -40,7 +40,7 @@ const DrawerContent = ({ history, toggleDrawer }) => {
                 SecuritySubModuleNames.visitorRegistration
               )
             );
-            history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
+            history.push(SecuritySubModulePaths.visitorRegistrationSearchPath);
           }}
           thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
         >

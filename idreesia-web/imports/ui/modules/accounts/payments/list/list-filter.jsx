@@ -131,7 +131,7 @@ class ListFilter extends Component {
               fieldName="cnicNumber"
               fieldLabel="CNIC Number"
               fieldLayout={formItemLayout}
-              // initialValue={cnicNumber}
+              initialValue={cnicNumber}
               getFieldDecorator={getFieldDecorator}
             />
 

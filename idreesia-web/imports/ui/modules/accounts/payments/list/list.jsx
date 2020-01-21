@@ -5,11 +5,9 @@ import gql from 'graphql-tag';
 import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
 import numeral from 'numeral';
-
+import ListFilter from './list-filter';
 import {
   Button,
-  Menu,
-  Dropdown,
   Icon,
   Pagination,
   Table,
@@ -17,7 +15,7 @@ import {
   Modal,
   message,
 } from '/imports/ui/controls';
-import ListFilter from './list-filter';
+
 const { confirm } = Modal;
 
 class List extends Component {

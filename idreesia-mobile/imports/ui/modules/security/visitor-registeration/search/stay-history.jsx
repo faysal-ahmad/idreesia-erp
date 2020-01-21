@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { List, WingBlank, WhiteSpace } from '/imports/ui/controls';
+import { List } from '/imports/ui/controls';
 
 import PAGED_VISITOR_STAYS from '../gql/paged-visitor-stays';
 

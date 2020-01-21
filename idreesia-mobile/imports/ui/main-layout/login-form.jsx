@@ -4,6 +4,8 @@ import { createForm, formShape } from 'rc-form';
 import { useDispatch } from 'react-redux';
 
 import { setLoggedInUser } from 'meteor/idreesia-common/action-creators';
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 
 import {
   InputItemField,
@@ -71,4 +73,7 @@ LoginForm.propTypes = {
   form: formShape,
 };
 
-export default createForm()(LoginForm);
+export default flowRight(
+  createForm(),
+  WithBreadcrumbs(['Idreesia ERP', 'Login'])
+)(LoginForm);

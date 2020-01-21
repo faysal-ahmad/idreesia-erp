@@ -9,6 +9,10 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import {
+  paymentById as paymentByIdQuery,
+  updatePayment as updatePaymentQuery,
+} from './queries';
 
 import {
   DateField,
@@ -21,83 +25,10 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
-const formQuery = gql`
-  query paymentById($_id: String!) {
-    paymentById(_id: $_id) {
-      _id
-      name
-      fatherName
-      cnicNumber
-      contactNumber
-      paymentNumber
-      paymentAmount
-      paymentType
-      paymentDate
-      description
-      isDeleted
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-      history {
-        _id
-        name
-        fatherName
-        cnicNumber
-        paymentDate
-        paymentAmount
-        description
-        isDeleted
-        version
-        createdAt
-        createdBy
-        updatedAt
-        updatedBy
-      }
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updatePayment(
-    $_id: String!
-    $name: String
-    $fatherName: String
-    $cnicNumber: String
-    $contactNumber: String
-    $paymentAmount: Float
-    $paymentType: String
-    $paymentDate: String
-    $description: String
-  ) {
-    updatePayment(
-      _id: $_id
-      name: $name
-      fatherName: $fatherName
-      cnicNumber: $cnicNumber
-      contactNumber: $contactNumber
-      paymentType: $paymentType
-      paymentAmount: $paymentAmount
-      paymentDate: $paymentDate
-      description: $description
-    ) {
-      _id
-      name
-      fatherName
-      cnicNumber
-      contactNumber
-      paymentAmount
-      paymentType
-      paymentDate
-      description
-    }
-  }
-`;
-
 const EditForm = ({ form, match, history }) => {
   const { paymentId } = match.params;
-  const [updatePayment] = useMutation(formMutation);
-  const { data, formDataLoading } = useQuery(formQuery, {
+  const [updatePayment] = useMutation(updatePaymentQuery);
+  const { data, formDataLoading } = useQuery(paymentByIdQuery, {
     variables: { _id: paymentId },
   });
 

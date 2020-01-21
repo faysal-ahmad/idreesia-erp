@@ -7,6 +7,10 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
+import {
+  pagedPayments as pagedPaymentsQuery,
+  createPayment as createPaymentQuery,
+} from './queries';
 
 import {
   DateField,
@@ -18,64 +22,12 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
-const listQuery = gql`
-  query pagedPayments($queryString: String) {
-    pagedPayments(queryString: $queryString) {
-      totalResults
-      data {
-        _id
-        name
-        fatherName
-        cnicNumber
-        paymentDate
-        paymentAmount
-        paymentNumber
-        description
-        isDeleted
-      }
-    }
-  }
-`;
-const formMutation = gql`
-  mutation createPayment(
-    $name: String!
-    $fatherName: String!
-    $cnicNumber: String!
-    $contactNumber: String
-    $paymentType: String!
-    $paymentAmount: Float!
-    $paymentDate: String!
-    $description: String
-  ) {
-    createPayment(
-      name: $name
-      fatherName: $fatherName
-      cnicNumber: $cnicNumber
-      contactNumber: $contactNumber
-      paymentType: $paymentType
-      paymentAmount: $paymentAmount
-      paymentDate: $paymentDate
-      description: $description
-    ) {
-      _id
-      name
-      fatherName
-      cnicNumber
-      contactNumber
-      paymentType
-      paymentAmount
-      paymentNumber
-      paymentDate
-      description
-    }
-  }
-`;
 
 const NewForm = ({ form, history }) => {
-  const [createPayment] = useMutation(formMutation, {
+  const [createPayment] = useMutation(createPaymentQuery, {
     refetchQueries: [
       {
-        query: listQuery,
+        query: pagedPaymentsQuery,
         variables: {
           queryString:
             '?name=&cnicNumber=&paymentType=&paymentAmount=&pageIndex=0&pageSize=20',

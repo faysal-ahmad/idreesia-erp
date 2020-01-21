@@ -20,10 +20,6 @@ export function getPayments(queryString) {
     isDeleted,
   } = params;
 
-  const countingPipeline = pipeline.concat({
-    $count: 'total',
-  });
-
   if (name) {
     pipeline.push({
       $match: {
@@ -94,7 +90,9 @@ export function getPayments(queryString) {
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
-
+  const countingPipeline = pipeline.concat({
+    $count: 'total',
+  });
   const payments = Payments.aggregate(resultsPipeline).toArray();
   const totalResults = Payments.aggregate(countingPipeline).toArray();
 

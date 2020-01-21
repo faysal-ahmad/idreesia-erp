@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Tabs } from '/imports/ui/controls';
-import GeneralInfo from './edit/general-info';
-import Permissions from './edit/permissions';
-import InstanceAccess from './edit/instance-access';
+import GeneralInfo from './general-info';
+import Permissions from './permissions';
+import InstanceAccess from './instance-access';
 
 const EditForm = props => {
   const karkunId = get(props, ['match', 'params', 'karkunId'], null);

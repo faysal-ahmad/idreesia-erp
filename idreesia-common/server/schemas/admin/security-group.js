@@ -3,22 +3,18 @@ import SimpleSchema from 'simpl-schema';
 import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
-  userId: {
+  name: {
     type: String,
+  },
+  description: {
+    type: String,
+  },
+  permissions: {
+    type: Array,
     optional: true,
   },
-  firstName: {
+  'permissions.$': {
     type: String,
-  },
-  lastName: {
-    type: String,
-  },
-  cnicNumber: {
-    type: String,
-  },
-  address: {
-    type: String,
-    optional: true,
   },
 })
   .extend(identifiable)

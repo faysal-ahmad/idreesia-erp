@@ -1,0 +1,36 @@
+type UserType {
+  _id: String
+  username: String
+  email: String
+  permissions: [String]
+  instances: [String]
+}
+
+extend type Query {
+  userById(_id: String!): UserType
+}
+
+extend type Mutation {
+  createAccount(
+    karkunId: String!
+    userName: String
+    password: String
+    email: String
+  ): KarkunType
+  updateAccount(
+    userId: String!
+    password: String
+    email: String
+  ): KarkunType
+  deleteAccount(karkunId: String!, karkunUserId: String!): Int
+  setPermissions(
+    karkunId: String!
+    karkunUserId: String!
+    permissions: [String]!
+  ): KarkunType
+  setInstanceAccess(
+    karkunId: String!
+    karkunUserId: String!
+    instances: [String]!
+  ): KarkunType
+}

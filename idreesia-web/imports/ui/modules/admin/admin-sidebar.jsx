@@ -51,9 +51,14 @@ class AdminSidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
-        <Menu.Item key="companies">Companies</Menu.Item>
-        <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
-        <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
+        <Menu.SubMenu key="instances" title={<span>Instances</span>}>
+          <Menu.Item key="companies">Companies</Menu.Item>
+          <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="access" title={<span>Access Management </span>}>
+          <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
+          <Menu.Item key="security-groups">Security Groups</Menu.Item>
+        </Menu.SubMenu>
       </Menu>
     );
   }

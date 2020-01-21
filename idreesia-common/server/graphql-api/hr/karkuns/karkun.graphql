@@ -1,11 +1,3 @@
-type UserType {
-  _id: String
-  username: String
-  email: String
-  permissions: [String]
-  instances: [String]
-}
-
 type KarkunType {
   _id: String
   name: String
@@ -49,7 +41,6 @@ type PagedKarkunType {
 }
 
 extend type Query {
-  userById(_id: String!): UserType
   allKarkunsWithAccounts: [KarkunType]
   pagedKarkuns(queryString: String): PagedKarkunType
   karkunById(_id: String!): KarkunType
@@ -107,27 +98,4 @@ extend type Mutation {
   setKarkunProfileImage(_id: String!, imageId: String!): KarkunType
   addKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
   removeKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
-
-  createAccount(
-    karkunId: String!
-    userName: String
-    password: String
-    email: String
-  ): KarkunType
-  updateAccount(
-    userId: String!
-    password: String
-    email: String
-  ): KarkunType
-  deleteAccount(karkunId: String!, karkunUserId: String!): Int
-  setPermissions(
-    karkunId: String!
-    karkunUserId: String!
-    permissions: [String]!
-  ): KarkunType
-  setInstanceAccess(
-    karkunId: String!
-    karkunUserId: String!
-    instances: [String]!
-  ): KarkunType
 }

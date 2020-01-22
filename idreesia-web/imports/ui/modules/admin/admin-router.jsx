@@ -13,6 +13,7 @@ import {
   AccountsEditForm,
   AccountsList,
 } from './security-accounts';
+import { GroupsNewForm, GroupsEditForm, GroupsList } from './security-groups';
 import {
   PhysicalStoresNewForm,
   PhysicalStoresEditForm,
@@ -43,6 +44,10 @@ const AdminRouter = () => (
     <Route path={paths.accountsNewFormPath} component={AccountsNewForm} />
     <Route path={paths.accountsEditFormPath} component={AccountsEditForm} />
     <Route path={paths.accountsPath} component={AccountsList} />
+
+    <Route path={paths.groupsNewFormPath} component={GroupsNewForm} />
+    <Route path={paths.groupsEditFormPath} component={GroupsEditForm} />
+    <Route path={paths.groupsPath} component={GroupsList} />
 
     <Route
       path={paths.physicalStoresNewFormPath}

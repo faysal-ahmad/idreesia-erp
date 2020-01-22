@@ -12,7 +12,7 @@ type PagedSecurityGroupType {
 }
 
 extend type Query {
-  pagedSecurityGroup(queryString: String): PagedSecurityGroupType
+  pagedSecurityGroups(queryString: String): PagedSecurityGroupType
   securityGroupById(_id: String!): SecurityGroupType
 }
 
@@ -27,11 +27,11 @@ extend type Mutation {
     description: String
   ): SecurityGroupType
   deleteSecurityGroup(_id: String!): Int
-  setPermissions(
+  setSecurityGroupPermissions(
     _id: String!
     permissions: [String]!
   ): SecurityGroupType
-  setInstanceAccess(
+  setSecurityGroupInstanceAccess(
     _id: String!
     instances: [String]!
   ): SecurityGroupType

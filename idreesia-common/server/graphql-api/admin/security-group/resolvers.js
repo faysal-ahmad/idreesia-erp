@@ -6,7 +6,7 @@ import { getSecurityGroups } from './queries';
 
 export default {
   Query: {
-    pagedSecurityGroup(obj, { queryString }, { user }) {
+    pagedSecurityGroups(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_VIEW_SECURITY_GROUPS,
@@ -104,7 +104,7 @@ export default {
       return SecurityGroups.remove(_id);
     },
 
-    setPermissions(obj, { _id, permissions }, { user }) {
+    setSecurityGroupPermissions(obj, { _id, permissions }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_MANAGE_SECURITY_GROUPS,
@@ -119,7 +119,7 @@ export default {
       return SecurityGroups.findOne(_id);
     },
 
-    setInstanceAccess(obj, { _id, instances }, { user }) {
+    setSecurityGroupInstanceAccess(obj, { _id, instances }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_MANAGE_SECURITY_GROUPS,

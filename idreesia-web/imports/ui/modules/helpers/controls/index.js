@@ -1,4 +1,11 @@
 export {
+  default as InstanceSelection,
+} from './access-management/instance-selection';
+export {
+  default as PermissionSelection,
+} from './access-management/permission-selection';
+
+export {
   default as AttendanceDetail,
 } from './attendance-detail/attendance-detail';
 export { default as TakePicture } from './picture/take-picture';

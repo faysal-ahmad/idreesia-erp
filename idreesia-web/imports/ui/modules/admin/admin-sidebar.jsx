@@ -28,6 +28,11 @@ class AdminSidebar extends Component {
         history.push(paths.accountsPath);
         break;
 
+      case 'security-groups':
+        setActiveSubModuleName(SubModuleNames.groups);
+        history.push(paths.groupsPath);
+        break;
+
       case 'physical-stores':
         setActiveSubModuleName(SubModuleNames.physicalStores);
         history.push(paths.physicalStoresPath);
@@ -51,13 +56,13 @@ class AdminSidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
-        <Menu.SubMenu key="instances" title={<span>Instances</span>}>
+        <Menu.SubMenu key="instances" title={<span>Instance Management</span>}>
           <Menu.Item key="companies">Companies</Menu.Item>
           <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="access" title={<span>Access Management </span>}>
-          <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
           <Menu.Item key="security-groups">Security Groups</Menu.Item>
+          <Menu.Item key="security-accounts">Security Accounts</Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

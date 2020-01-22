@@ -4,13 +4,28 @@ import {
   PaymentsHistory,
 } from 'meteor/idreesia-common/server/collections/accounts';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import DataLoader from 'dataloader';
 
 import { getPayments } from './queries';
 
+const loaderFunction = async keys => {
+  const values = await Promise.all(
+    keys.map(key => {
+      const found = PaymentsHistory.find({
+        paymentId: key,
+      }).fetch();
+      return found;
+    })
+  );
+  return values;
+};
+
+const loader = new DataLoader(loaderFunction);
 export default {
   Payment: {
-    history: payment =>
-      PaymentsHistory.find({ paymentId: { $eq: payment._id } }).fetch(),
+    history: payment => {
+      return loader.load(payment._id);
+    },
   },
   Query: {
     pagedPayments(obj, { queryString }, { user }) {

@@ -14,6 +14,21 @@ const pagedPayments = gql`
         paymentNumber
         description
         isDeleted
+        history {
+          _id
+          name
+          fatherName
+          cnicNumber
+          paymentDate
+          paymentAmount
+          description
+          isDeleted
+          version
+          createdAt
+          createdBy
+          updatedAt
+          updatedBy
+        }
       }
     }
   }
@@ -126,5 +141,16 @@ const updatePayment = gql`
     }
   }
 `;
+const removePayment = gql`
+  mutation removePayment($_id: String!) {
+    removePayment(_id: $_id)
+  }
+`;
 
-export { pagedPayments, updatePayment, createPayment, paymentById };
+export {
+  pagedPayments,
+  updatePayment,
+  createPayment,
+  paymentById,
+  removePayment,
+};

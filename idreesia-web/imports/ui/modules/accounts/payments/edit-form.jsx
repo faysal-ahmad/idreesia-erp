@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import moment from 'moment';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 

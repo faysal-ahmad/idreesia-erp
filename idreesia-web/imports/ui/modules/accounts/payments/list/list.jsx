@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
 import numeral from 'numeral';
@@ -15,6 +14,10 @@ import {
   Modal,
   message,
 } from '/imports/ui/controls';
+import {
+  removePayment as removePaymentQuery,
+  pagedPayments as pagedPaymentsQuery,
+} from '../queries';
 
 const { confirm } = Modal;
 
@@ -247,39 +250,14 @@ class List extends Component {
   }
 }
 
-const formMutationRemove = gql`
-  mutation removePayment($_id: String!) {
-    removePayment(_id: $_id)
-  }
-`;
-
-const listQuery = gql`
-  query pagedPayments($queryString: String) {
-    pagedPayments(queryString: $queryString) {
-      totalResults
-      data {
-        _id
-        name
-        fatherName
-        cnicNumber
-        paymentDate
-        paymentAmount
-        paymentNumber
-        description
-        isDeleted
-      }
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutationRemove, {
+  graphql(removePaymentQuery, {
     name: 'removePayment',
     options: {
       refetchQueries: ['pagedPayments'],
     },
   }),
-  graphql(listQuery, {
+  graphql(pagedPaymentsQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ queryString }) => ({
       variables: { queryString },

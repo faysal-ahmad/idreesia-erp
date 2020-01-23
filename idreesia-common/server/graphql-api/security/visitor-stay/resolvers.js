@@ -21,7 +21,7 @@ export default {
       return moment().isBefore(toDate);
     },
     isExpired: visitorStay => {
-      const toDate = moment(Number(visitorStay.toDate));
+      const toDate = moment(Number(visitorStay.toDate)).hour(18);
       return moment().isAfter(toDate);
     },
     refVisitor: visitorStay =>
@@ -64,6 +64,22 @@ export default {
       }
 
       return getVisitorStays(queryString);
+    },
+
+    pagedVisitorStaysByVisitorId(obj, { visitorId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
+
+      return getVisitorStays(`?visitorId=${visitorId}&pageSize=5`);
     },
 
     pagedTeamVisits(obj, { queryString }, { user }) {
@@ -147,6 +163,18 @@ export default {
       const toDate = fromDate.clone();
       if (numOfDays > 1) {
         toDate.add(numOfDays - 1, 'days');
+      }
+
+      // Before creating a stay, ensure that there isn't already another stay created
+      // for the current date for this visitor.
+      const existingStay = VisitorStays.findOne({
+        visitorId,
+        fromDate: fromDate.startOf('day').toDate(),
+        cancelledDate: { $exists: false },
+      });
+
+      if (existingStay) {
+        throw new Error('Visitor already has a stay for this date.');
       }
 
       const date = new Date();

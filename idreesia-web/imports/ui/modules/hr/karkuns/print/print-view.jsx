@@ -6,9 +6,9 @@ import ReactToPrint from 'react-to-print';
 import Barcode from 'react-barcode';
 import moment from 'moment';
 
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Divider, Row } from '/imports/ui/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
 
 const barcodeOptions = {

@@ -149,10 +149,12 @@ class ListContainer extends Component {
         showNewButton
         showDownloadButton
         showSelectionColumn
+        showPhoneNumbersColumn
+        showDutiesColumn
+        showActionsColumn
         handleNewClicked={this.handleNewClicked}
         handleScanClicked={this.handleScanClicked}
         handlePrintClicked={this.handlePrintClicked}
-        showPhoneNumbersColumn
       />
     );
   }

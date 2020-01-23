@@ -1,15 +1,15 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Row, Col, message } from "/imports/ui/controls";
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import { Row, Col, message } from '/imports/ui/controls';
 import {
   TakePicture,
   UploadAttachment,
-} from "/imports/ui/modules/helpers/controls";
-import { getDownloadUrl } from "/imports/ui/modules/helpers/misc";
+} from '/imports/ui/modules/helpers/controls';
 
 class Picture extends Component {
   static propTypes = {
@@ -40,7 +40,7 @@ class Picture extends Component {
       <Fragment>
         <Row>
           <Col span={16}>
-            <img style={{ maxWidth: "400px" }} src={url} />
+            <img style={{ maxWidth: '400px' }} src={url} />
           </Col>
         </Row>
         <br />
@@ -75,9 +75,9 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: "setStockItemImage",
+    name: 'setStockItemImage',
     options: {
-      refetchQueries: ["pagedStockItems"],
+      refetchQueries: ['pagedStockItems'],
     },
   }),
   graphql(formQuery, {

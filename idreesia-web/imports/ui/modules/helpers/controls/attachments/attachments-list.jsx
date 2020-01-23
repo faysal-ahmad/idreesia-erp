@@ -2,7 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 
 import {
   Col,
@@ -19,7 +21,6 @@ import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 import AttachmentForm from './attachment-form';
 

@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/faysal-ahmad/idreesia-erp/tree/master.svg?style=svg)](https://circleci.com/gh/faysal-ahmad/idreesia-erp/tree/master)
+
 # Overview
 This is a custom built ERP to automate and digitize the processes for `Idreesia`, a non-profit organization, to fulfill the requirements and process flows of the organization.
 

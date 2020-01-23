@@ -1,2 +1,3 @@
 ecosystem.config.js
 node_modules
+**/workbox-v4.3.1

@@ -9,9 +9,9 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 
 import {
   ActivityIndicator,
-  Carousel,
   List,
   Result,
+  Tabs,
   WingBlank,
   WhiteSpace,
 } from '/imports/ui/controls';
@@ -21,6 +21,19 @@ import SearchResultRow from './search-result-row';
 import VISITOR_BY_CNIC_OR_CONTACT_NUMBER from '../gql/visitor-by-cnic-or-contact-number';
 
 const IconStyle = { fontSize: 50, margin: 0, color: 'red' };
+const TabContainerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  backgroundColor: '#fff',
+};
+
+const tabs = [
+  { title: 'Visitor Info' },
+  { title: 'Picture' },
+  { title: 'Stay History' },
+];
 
 const SearchResult = ({ cnicNumber, contactNumber }) => {
   const { data, loading } = useQuery(VISITOR_BY_CNIC_OR_CONTACT_NUMBER, {
@@ -47,39 +60,40 @@ const SearchResult = ({ cnicNumber, contactNumber }) => {
 
   return (
     <WingBlank>
-      <Carousel
-        autoplay={false}
-        frameOverflow="visible"
-        cellSpacing={10}
-        slideWidth={0.9}
-      >
-        <List>
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="Name" data={visitor.name} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="CNIC" data={visitor.cnicNumber} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="S/O" data={visitor.parentName} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow
-            label="Ehad Date"
-            data={moment(Number(visitor.ehadDate)).format('MMMM, YYYY')}
-          />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="R/O" data={visitor.referenceName} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="Mobile No." data={visitor.contactNumber1} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="Phone No." data={visitor.contactNumber2} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="City" data={visitor.city} />
-          <WhiteSpace size="sm" />
-          <SearchResultRow label="Country" data={visitor.country} />
-          <WhiteSpace size="lg" />
-        </List>
-        <img src={getDownloadUrl(visitor.imageId)} />
-        <StayHistory visitorId={visitor._id} />
-      </Carousel>
+      <Tabs tabs={tabs} animated={false}>
+        <div style={TabContainerStyle}>
+          <List>
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="Name" data={visitor.name} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="CNIC" data={visitor.cnicNumber} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="S/O" data={visitor.parentName} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow
+              label="Ehad Date"
+              data={moment(Number(visitor.ehadDate)).format('MMMM, YYYY')}
+            />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="R/O" data={visitor.referenceName} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="Mobile No." data={visitor.contactNumber1} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="Phone No." data={visitor.contactNumber2} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="City" data={visitor.city} />
+            <WhiteSpace size="sm" />
+            <SearchResultRow label="Country" data={visitor.country} />
+            <WhiteSpace size="lg" />
+          </List>
+        </div>
+        <div style={TabContainerStyle}>
+          <img src={getDownloadUrl(visitor.imageId)} />
+        </div>
+        <div style={TabContainerStyle}>
+          <StayHistory visitorId={visitor._id} />
+        </div>
+      </Tabs>
     </WingBlank>
   );
 };

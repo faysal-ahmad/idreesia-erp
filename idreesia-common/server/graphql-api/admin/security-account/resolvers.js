@@ -48,6 +48,15 @@ export default {
       adminUser.permissions = values(PermissionConstants);
       return adminUser;
     },
+
+    currentUser(obj, {}, { user }) {
+      const _user = findOneUser(user._id);
+      if (_user.username !== 'erp-admin') return _user;
+
+      const adminUser = mapUser(_user);
+      adminUser.permissions = values(PermissionConstants);
+      return adminUser;
+    },
   },
 
   Mutation: {

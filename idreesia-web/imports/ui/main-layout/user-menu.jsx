@@ -24,7 +24,8 @@ class UserMenu extends Component {
     setActiveModuleName: PropTypes.func,
     setActiveSubModuleName: PropTypes.func,
 
-    karkunByUserId: PropTypes.object,
+    loading: PropTypes.bool,
+    currentUser: PropTypes.object,
   };
 
   state = {
@@ -90,13 +91,17 @@ class UserMenu extends Component {
   };
 
   render() {
-    const { karkunByUserId } = this.props;
+    const { loading, currentUser } = this.props;
+    if (loading) return null;
+
     const { showChangePasswordForm } = this.state;
-    const userName = karkunByUserId ? karkunByUserId.name : '';
+    const userName = currentUser.karkun
+      ? currentUser.karkun.name
+      : currentUser.displayName;
 
     let avatar = <Avatar size="large" icon="user" />;
-    if (karkunByUserId && karkunByUserId.imageId) {
-      const url = getDownloadUrl(karkunByUserId.imageId);
+    if (currentUser.karkun && currentUser.karkun.imageId) {
+      const url = getDownloadUrl(currentUser.karkun.imageId);
       avatar = <Avatar size="large" src={url} />;
     }
 
@@ -138,11 +143,15 @@ class UserMenu extends Component {
 }
 
 const formQuery = gql`
-  query karkunByUserId($userId: String!) {
-    karkunByUserId(userId: $userId) {
+  query currentUser {
+    currentUser {
       _id
-      name
-      imageId
+      displayName
+      karkun {
+        _id
+        name
+        imageId
+      }
     }
   }
 `;
@@ -151,6 +160,5 @@ export default flowRight(
   WithActiveModule(),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: () => ({ variables: { userId: Meteor.userId() } }),
   })
 )(UserMenu);

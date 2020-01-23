@@ -76,11 +76,21 @@ class InstanceAccess extends Component {
         <br />
         <br />
         <Row type="flex" justify="start">
-          <Button type="default" onClick={this.handleCancel}>
+          <Button
+            size="large"
+            icon="close-circle"
+            type="default"
+            onClick={this.handleCancel}
+          >
             Cancel
           </Button>
           &nbsp;
-          <Button type="primary" onClick={this.handleSave}>
+          <Button
+            size="large"
+            icon="save"
+            type="primary"
+            onClick={this.handleSave}
+          >
             Save
           </Button>
         </Row>

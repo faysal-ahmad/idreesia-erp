@@ -61,7 +61,7 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
-        <img src={imageUrl} />
+        <img src={imageUrl} style={{ maxWidth: '470px' }} />
       </Modal>
     </>
   );

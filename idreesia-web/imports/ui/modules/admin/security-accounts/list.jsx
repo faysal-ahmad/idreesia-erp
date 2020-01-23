@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
@@ -11,6 +12,7 @@ import {
 } from 'meteor/idreesia-common/constants/list-options';
 
 import { Button, Icon, Pagination, Table } from '/imports/ui/controls';
+import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const listQuery = gql`
@@ -26,6 +28,7 @@ const listQuery = gql`
         karkun {
           _id
           name
+          imageId
         }
       }
     }
@@ -61,7 +64,12 @@ const columns = [
   {
     title: 'Karkun name',
     key: 'karkun.name',
-    render: (text, record) => (record.karkun ? record.karkun.name : ''),
+    render: (text, record) =>
+      record.karkun ? (
+        <KarkunName karkun={record.karkun} onKarkunNameClicked={noop} />
+      ) : (
+        ''
+      ),
   },
 ];
 

@@ -43,14 +43,20 @@ export default class ScanCnic extends Component {
 
       let barcodes = [];
       if (scannedInput.length === 15) {
-        barcodes = [this.formatCnicNumber(scannedInput.slice(0, 13))];
+        barcodes = [
+          this.formatCnicNumber(scannedInput.slice(0, 13)),
+          this.formatCnicNumber(scannedInput.slice(1, 14)),
+        ];
 
         this.setState({ codes: barcodes });
         if (onCnicCaptured) {
           onCnicCaptured(barcodes);
         }
       } else if (scannedInput.length === 25) {
-        barcodes = [this.formatCnicNumber(scannedInput.slice(11, 24))];
+        barcodes = [
+          this.formatCnicNumber(scannedInput.slice(11, 24)),
+          this.formatCnicNumber(scannedInput.slice(10, 23)),
+        ];
 
         this.setState({ codes: barcodes });
         if (onCnicCaptured) {
@@ -58,8 +64,8 @@ export default class ScanCnic extends Component {
         }
       } else if (scannedInput.length === 26) {
         barcodes = [
-          this.formatCnicNumber(scannedInput.slice(12, 25)),
           this.formatCnicNumber(scannedInput.slice(11, 24)),
+          this.formatCnicNumber(scannedInput.slice(12, 25)),
         ];
 
         this.setState({ codes: barcodes });
@@ -70,15 +76,11 @@ export default class ScanCnic extends Component {
         // Old 2D CNIC Formats
         const parts = scannedInput.split('Enter');
         if (parts.length > 6) {
-          let idPart;
-          if (parts[2].lnegth >= 13) {
-            idPart = parts[2];
-          } else {
-            idPart = parts[1];
+          if (parts[1].length >= 13) {
+            barcodes.push(this.formatCnicNumber(parts[1].slice(0, 13)));
           }
-
-          if (idPart.length > 13) {
-            barcodes = [this.formatCnicNumber(idPart.slice(0, 13))];
+          if (parts[2].length >= 13) {
+            barcodes.push(this.formatCnicNumber(parts[2].slice(0, 13)));
           }
 
           this.setState({ codes: barcodes });

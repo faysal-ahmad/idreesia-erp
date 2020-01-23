@@ -1,6 +1,5 @@
 import 'antd-mobile/lib/activity-indicator/style/css';
 import 'antd-mobile/lib/button/style/css';
-import 'antd-mobile/lib/carousel/style/css';
 import 'antd-mobile/lib/drawer/style/css';
 import 'antd-mobile/lib/flex/style/css';
 import 'antd-mobile/lib/icon/style/css';
@@ -13,6 +12,7 @@ import 'antd-mobile/lib/pagination/style/css';
 import 'antd-mobile/lib/picker/style/css';
 import 'antd-mobile/lib/result/style/css';
 import 'antd-mobile/lib/switch/style/css';
+import 'antd-mobile/lib/tabs/style/css';
 import 'antd-mobile/lib/toast/style/css';
 import 'antd-mobile/lib/wing-blank/style/css';
 import 'antd-mobile/lib/white-space/style/css';
@@ -21,7 +21,6 @@ export {
   default as ActivityIndicator,
 } from 'antd-mobile/lib/activity-indicator';
 export { default as Button } from 'antd-mobile/lib/button';
-export { default as Carousel } from 'antd-mobile/lib/carousel';
 export { default as Drawer } from 'antd-mobile/lib/drawer';
 export { default as Flex } from 'antd-mobile/lib/flex';
 export { default as Icon } from 'antd-mobile/lib/icon';
@@ -34,6 +33,7 @@ export { default as Pagination } from 'antd-mobile/lib/pagination';
 export { default as Picker } from 'antd-mobile/lib/picker';
 export { default as Result } from 'antd-mobile/lib/result';
 export { default as Switch } from 'antd-mobile/lib/switch';
+export { default as Tabs } from 'antd-mobile/lib/tabs';
 export { default as Toast } from 'antd-mobile/lib/toast';
 export { default as WingBlank } from 'antd-mobile/lib/wing-blank';
 export { default as WhiteSpace } from 'antd-mobile/lib/white-space';

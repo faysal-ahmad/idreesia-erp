@@ -3,20 +3,59 @@ import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-export default {
-  Query: {
-    userById(obj, { _id }) {
-      const user = Meteor.users.findOne(_id);
-      if (user.username !== 'erp-admin') return user;
+import { getUsers } from './queries';
+import { findOneUser, mapUser } from './helpers';
 
-      const adminUser = Object.assign({}, user);
+export default {
+  UserType: {
+    karkun: userType => {
+      if (!userType.karkunId) return null;
+      return Karkuns.findOne(userType.karkunId);
+    },
+  },
+
+  Query: {
+    pagedUsers(obj, { queryString }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+          PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+        ])
+      ) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
+
+      return getUsers(queryString);
+    },
+
+    userById(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+          PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+        ])
+      ) {
+        return null;
+      }
+
+      const _user = findOneUser(_id);
+      if (_user.username !== 'erp-admin') return _user;
+
+      const adminUser = mapUser(_user);
       adminUser.permissions = values(PermissionConstants);
       return adminUser;
     },
   },
 
   Mutation: {
-    createAccount(obj, { karkunId, userName, password, email }, { user }) {
+    createUser(
+      obj,
+      { userName, password, email, displayName, karkunId },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
@@ -32,8 +71,8 @@ export default {
         }
       }
 
-      const existingkarkun = Karkuns.findOne(karkunId);
-      if (existingkarkun.userId) {
+      const existingUser = Meteor.users.findOne({ karkunId });
+      if (existingUser) {
         throw new Error(`This karkun already has a user account.`);
       }
 
@@ -43,18 +82,21 @@ export default {
         password,
       });
 
-      const time = Date.now();
-      Karkuns.update(karkunId, {
+      Meteor.users.update(newUserId, {
         $set: {
-          userId: newUserId,
-          updatedAt: time,
+          displayName,
+          karkunId,
         },
       });
 
-      return Karkuns.findOne(karkunId);
+      return findOneUser(newUserId);
     },
 
-    updateAccount(obj, { userId, password, email }, { user }) {
+    updateUser(
+      obj,
+      { userId, password, email, displayName, locked },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
@@ -71,6 +113,8 @@ export default {
         Meteor.users.update(userId, {
           $set: {
             'emails.0.address': email,
+            displayName,
+            locked,
           },
         });
       } else {
@@ -78,13 +122,17 @@ export default {
           $unset: {
             emails: '',
           },
+          $set: {
+            displayName,
+            locked,
+          },
         });
       }
 
-      return Karkuns.findOne({ userId });
+      return findOneUser(userId);
     },
 
-    deleteAccount(obj, { karkunId, karkunUserId }, { user }) {
+    setPermissions(obj, { userId, permissions }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
@@ -93,18 +141,11 @@ export default {
         );
       }
 
-      const time = Date.now();
-      Karkuns.update(karkunId, {
-        $set: {
-          userId: null,
-          updatedAt: time,
-        },
-      });
-
-      return Meteor.users.remove(karkunUserId);
+      Meteor.users.update(userId, { $set: { permissions } });
+      return findOneUser(userId);
     },
 
-    setPermissions(obj, { karkunId, karkunUserId, permissions }, { user }) {
+    setInstanceAccess(obj, { userId, instances }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
       ) {
@@ -113,21 +154,8 @@ export default {
         );
       }
 
-      Meteor.users.update(karkunUserId, { $set: { permissions } });
-      return Karkuns.findOne(karkunId);
-    },
-
-    setInstanceAccess(obj, { karkunId, karkunUserId, instances }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Accounts in the System.'
-        );
-      }
-
-      Meteor.users.update(karkunUserId, { $set: { instances } });
-      return Karkuns.findOne(karkunId);
+      Meteor.users.update(userId, { $set: { instances } });
+      return findOneUser(userId);
     },
   },
 };

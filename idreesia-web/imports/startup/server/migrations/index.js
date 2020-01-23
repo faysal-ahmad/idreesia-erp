@@ -19,6 +19,7 @@ import './15-create-hr-indexes';
 import './16-create-security-indexes';
 import './17-update-salary-structure';
 import './18-create-security-indexes';
+import './19-update-users';
 
 Migrations.config({
   log: true,

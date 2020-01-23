@@ -6,44 +6,84 @@ export const permissionsData = [
     key: 'module-admin',
     children: [
       {
-        title: 'Security Accounts',
-        key: 'module-admin-security-accounts',
+        title: 'Admin Jobs',
+        key: 'module-admin-admin-jobs',
         children: [
           {
-            title: 'View Accounts',
-            key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+            title: 'View Admin Jobs',
+            key: PermissionConstants.ADMIN_VIEW_ADMIN_JOBS,
           },
           {
-            title: 'Manage Accounts',
-            key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+            title: 'Manage Admin Jobs',
+            key: PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS,
           },
         ],
       },
       {
-        title: 'Physical Stores',
-        key: 'module-admin-physical-stores',
+        title: 'Access Management',
+        key: 'module-admin-access-management',
         children: [
           {
-            title: 'View Physical Stores',
-            key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
+            title: 'Security Accounts',
+            key: 'module-admin-security-accounts',
+            children: [
+              {
+                title: 'View Accounts',
+                key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+              },
+              {
+                title: 'Manage Accounts',
+                key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+              },
+            ],
           },
           {
-            title: 'Manage Physical Stores',
-            key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
+            title: 'Security Groups',
+            key: 'module-admin-security-groups',
+            children: [
+              {
+                title: 'View Security Groups',
+                key: PermissionConstants.ADMIN_VIEW_SECURITY_GROUPS,
+              },
+              {
+                title: 'Manage Security Groups',
+                key: PermissionConstants.ADMIN_MANAGE_SECURITY_GROUPS,
+              },
+            ],
           },
         ],
       },
       {
-        title: 'Accounts',
-        key: 'module-admin-companies',
+        title: 'Instance Management',
+        key: 'module-admin-instance-management',
         children: [
           {
-            title: 'View Companies',
-            key: PermissionConstants.ADMIN_VIEW_COMPANIES,
+            title: 'Accounts',
+            key: 'module-admin-companies',
+            children: [
+              {
+                title: 'View Companies',
+                key: PermissionConstants.ADMIN_VIEW_COMPANIES,
+              },
+              {
+                title: 'Manage Companies',
+                key: PermissionConstants.ADMIN_MANAGE_COMPANIES,
+              },
+            ],
           },
           {
-            title: 'Manage Companies',
-            key: PermissionConstants.ADMIN_MANAGE_COMPANIES,
+            title: 'Physical Stores',
+            key: 'module-admin-physical-stores',
+            children: [
+              {
+                title: 'View Physical Stores',
+                key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
+              },
+              {
+                title: 'Manage Physical Stores',
+                key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
+              },
+            ],
           },
         ],
       },
@@ -63,7 +103,7 @@ export const permissionsData = [
           },
           {
             title: 'Manage Account Heads',
-            key: PermissionConstants.ACCOUNTS_ACCOUNT_HEADS,
+            key: PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
           },
         ],
       },

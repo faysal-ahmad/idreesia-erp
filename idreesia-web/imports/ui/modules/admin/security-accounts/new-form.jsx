@@ -62,14 +62,6 @@ class NewForm extends Component {
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <KarkunField
-          required
-          requiredMessage="Please select a karkun for creating the account."
-          fieldName="karkun"
-          fieldLabel="Karkun Name"
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"
@@ -86,6 +78,18 @@ class NewForm extends Component {
         <InputTextField
           fieldName="email"
           fieldLabel="Google Email"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="displayName"
+          fieldLabel="Display name"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <KarkunField
+          fieldName="karkun"
+          fieldLabel="Karkun Name"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -121,5 +125,5 @@ export default flowRight(
       refetchQueries: ['pagedKarkuns', 'allKarkunsWithAccounts'],
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Account', 'New'])
+  WithBreadcrumbs(['Admin', 'Security Accounts', 'New'])
 )(NewForm);

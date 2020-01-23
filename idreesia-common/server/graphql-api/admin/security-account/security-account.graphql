@@ -2,35 +2,52 @@ type UserType {
   _id: String
   username: String
   email: String
+
+  karkunId: String
+  displayName: String
+  locked: Boolean
   permissions: [String]
   instances: [String]
+  lastLoggedInAt: String
+  lastActiveAt: String
+
+  karkun: KarkunType
+}
+
+type PagedUserType {
+  totalResults: Int
+  data: [UserType]
 }
 
 extend type Query {
+  pagedUsers(queryString: String): PagedUserType
   userById(_id: String!): UserType
 }
 
 extend type Mutation {
-  createAccount(
-    karkunId: String!
-    userName: String
-    password: String
+  createUser(
+    userName: String!
+    password: String!
     email: String
-  ): KarkunType
-  updateAccount(
+    displayName: String
+    karkunId: String
+  ): UserType
+
+  updateUser(
     userId: String!
     password: String
     email: String
-  ): KarkunType
-  deleteAccount(karkunId: String!, karkunUserId: String!): Int
+    displayName: String
+    locked: Boolean
+  ): UserType
+
   setPermissions(
-    karkunId: String!
-    karkunUserId: String!
+    userId: String!
     permissions: [String]!
-  ): KarkunType
+  ): UserType
+
   setInstanceAccess(
-    karkunId: String!
-    karkunUserId: String!
+    userId: String!
     instances: [String]!
-  ): KarkunType
+  ): UserType
 }

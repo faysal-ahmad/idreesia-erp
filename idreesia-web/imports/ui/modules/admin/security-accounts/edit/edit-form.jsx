@@ -9,17 +9,17 @@ import Permissions from './permissions';
 import InstanceAccess from './instance-access';
 
 const EditForm = props => {
-  const karkunId = get(props, ['match', 'params', 'karkunId'], null);
+  const userId = get(props, ['match', 'params', 'userId'], null);
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="General Info" key="1">
-        <GeneralInfo karkunId={karkunId} {...props} />
+        <GeneralInfo userId={userId} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Permissions" key="2">
-        <Permissions karkunId={karkunId} {...props} />
+        <Permissions userId={userId} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Instance Access" key="3">
-        <InstanceAccess karkunId={karkunId} {...props} />
+        <InstanceAccess userId={userId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );
@@ -31,4 +31,6 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Setup', 'Account', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['Admin', 'Security Accounts', 'Edit'])(
+  EditForm
+);

@@ -1,11 +1,11 @@
-import React, { Fragment, Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { filter, flowRight } from "lodash";
+import React, { Fragment, Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Button, Row, Tree, message } from "/imports/ui/controls";
-import { AdminSubModulePaths as paths } from "/imports/ui/modules/admin";
+import { Button, Row, message } from '/imports/ui/controls';
+import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
 class InstanceAccess extends Component {
   static propTypes = {
@@ -13,15 +13,10 @@ class InstanceAccess extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    karkunId: PropTypes.string,
-    karkunLoading: PropTypes.bool,
-    karkunById: PropTypes.object,
+    userId: PropTypes.string,
+    loading: PropTypes.bool,
+    userById: PropTypes.object,
     setInstanceAccess: PropTypes.func,
-
-    physicalStoresListLoading: PropTypes.bool,
-    allPhysicalStores: PropTypes.array,
-    companiesListLoading: PropTypes.bool,
-    allCompanies: PropTypes.array,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -44,19 +39,17 @@ class InstanceAccess extends Component {
 
   handleSave = e => {
     e.preventDefault();
-    const { history, karkunById, setInstanceAccess } = this.props;
-    const { checkedKeys } = this.state;
-    const instances = filter(checkedKeys, key => !key.startsWith("module-"));
+    const { history, userById, setInstanceAccess } = this.props;
+    const instances = this.instanceSelection.getSelectedInstances();
 
     setInstanceAccess({
       variables: {
-        karkunId: karkunById._id,
-        karkunUserId: karkunById.userId,
+        userId: userById._id,
         instances,
       },
     })
       .then(() => {
-        history.push(paths.accountsPath);
+        history.goBack();
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -65,75 +58,21 @@ class InstanceAccess extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.accountsPath);
+    history.goBack();
   };
-
-  onExpand = expandedKeys => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
-  };
-
-  onCheck = checkedKeys => {
-    this.setState({ checkedKeys });
-  };
-
-  renderTreeNodes = data =>
-    data.map(item => {
-      if (item.children) {
-        return (
-          <Tree.TreeNode title={item.title} key={item.key} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </Tree.TreeNode>
-        );
-      }
-
-      return <Tree.TreeNode {...item} />;
-    });
 
   render() {
-    const {
-      karkunLoading,
-      physicalStoresListLoading,
-      allPhysicalStores,
-      companiesListLoading,
-      allCompanies,
-    } = this.props;
-    if (karkunLoading || physicalStoresListLoading || companiesListLoading)
-      return null;
-
-    const accessData = [
-      {
-        title: "Physical Stores",
-        key: "module-inventory-physical-stores",
-        children: allPhysicalStores.map(physicalStore => ({
-          title: physicalStore.name,
-          key: physicalStore._id,
-        })),
-      },
-      {
-        title: "Companies",
-        key: "module-accounts-companies",
-        children: allCompanies.map(company => ({
-          title: company.name,
-          key: company._id,
-        })),
-      },
-    ];
+    const { userById, loading } = this.props;
+    if (loading) return null;
 
     return (
       <Fragment>
-        <Tree
-          checkable
-          onExpand={this.onExpand}
-          expandedKeys={this.state.expandedKeys}
-          autoExpandParent={this.state.autoExpandParent}
-          onCheck={this.onCheck}
-          checkedKeys={this.state.checkedKeys}
-        >
-          {this.renderTreeNodes(accessData)}
-        </Tree>
+        <InstanceSelection
+          securityEntity={userById}
+          ref={is => {
+            this.instanceSelection = is;
+          }}
+        />
         <br />
         <br />
         <Row type="flex" justify="start">
@@ -151,72 +90,32 @@ class InstanceAccess extends Component {
 }
 
 const formMutation = gql`
-  mutation setInstanceAccess(
-    $karkunId: String!
-    $karkunUserId: String!
-    $instances: [String]!
-  ) {
-    setInstanceAccess(
-      karkunId: $karkunId
-      karkunUserId: $karkunUserId
-      instances: $instances
-    ) {
+  mutation setInstanceAccess($userId: String!, $instances: [String]!) {
+    setInstanceAccess(userId: $userId, instances: $instances) {
       _id
-      userId
-      user {
-        _id
-        instances
-      }
+      instances
     }
   }
 `;
 
 const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
+  query userById($_id: String!) {
+    userById(_id: $_id) {
       _id
-      userId
-      user {
-        _id
-        instances
-      }
-    }
-  }
-`;
-
-const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
-      _id
-      name
-    }
-  }
-`;
-
-const companiesListQuery = gql`
-  query allCompanies {
-    allCompanies {
-      _id
-      name
+      instances
     }
   }
 `;
 
 export default flowRight(
   graphql(formMutation, {
-    name: "setInstanceAccess",
+    name: 'setInstanceAccess',
     options: {
-      refetchQueries: ["allKarkunsWithAccounts"],
+      refetchQueries: ['pagedUser'],
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ karkunLoading: data.loading, ...data }),
-    options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
-  }),
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
-  }),
-  graphql(companiesListQuery, {
-    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
+    props: ({ data }) => ({ ...data }),
+    options: ({ userId }) => ({ variables: { _id: userId } }),
   })
 )(InstanceAccess);

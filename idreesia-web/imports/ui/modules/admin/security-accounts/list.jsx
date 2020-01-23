@@ -1,136 +1,129 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
-  Button,
-  Icon,
-  Popconfirm,
-  Table,
-  Tooltip,
-  message,
-} from '/imports/ui/controls';
+  DEFAULT_PAGE_INDEX_INT,
+  DEFAULT_PAGE_SIZE_INT,
+} from 'meteor/idreesia-common/constants/list-options';
+
+import { Button, Icon, Pagination, Table } from '/imports/ui/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    allKarkunsWithAccounts: PropTypes.array,
-    deleteAccount: PropTypes.func,
-  };
-
-  columns = [
-    {
-      title: 'Karkun name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
-      ),
-    },
-    {
-      title: 'User name',
-      dataIndex: 'user.username',
-      key: 'username',
-    },
-    {
-      title: 'Email',
-      dataIndex: 'user.email',
-      key: 'user.email',
-    },
-    {
-      key: 'action',
-      render: (text, record) => (
-        <Popconfirm
-          title="Are you sure you want to delete this account?"
-          onConfirm={() => {
-            this.handleDeleteClicked(record);
-          }}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
-      ),
-    },
-  ];
-
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.accountsNewFormPath);
-  };
-
-  handleDeleteClicked = record => {
-    const { deleteAccount } = this.props;
-    deleteAccount({
-      variables: {
-        karkunId: record._id,
-        karkunUserId: record.user._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  render() {
-    const { allKarkunsWithAccounts } = this.props;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allKarkunsWithAccounts}
-        columns={this.columns}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon="plus-circle-o"
-            onClick={this.handleNewClicked}
-          >
-            New Account
-          </Button>
-        )}
-      />
-    );
-  }
-}
-
-const formMutation = gql`
-  mutation deleteAccount($karkunId: String!, $karkunUserId: String!) {
-    deleteAccount(karkunId: $karkunId, karkunUserId: $karkunUserId)
-  }
-`;
-
 const listQuery = gql`
-  query allKarkunsWithAccounts {
-    allKarkunsWithAccounts {
-      _id
-      name
-      user {
+  query pagedUsers {
+    pagedUsers {
+      totalResults
+      data {
         _id
         username
         email
+        displayName
+        locked
+        karkun {
+          _id
+          name
+        }
       }
     }
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'deleteAccount',
-    options: {
-      refetchQueries: ['allKarkunsWithAccounts'],
+const getQueryString = ({ pageIndex, pageSize }) =>
+  `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+
+const columns = [
+  {
+    key: 'locked',
+    render: (text, record) => (record.locked ? <Icon type="lock" /> : null),
+  },
+  {
+    title: 'User name',
+    dataIndex: 'username',
+    key: 'username',
+    render: (text, record) => (
+      <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
+    ),
+  },
+  {
+    title: 'Email',
+    dataIndex: 'email',
+    key: 'email',
+  },
+  {
+    title: 'Display name',
+    dataIndex: 'displayName',
+    key: 'displayName',
+  },
+  {
+    title: 'Karkun name',
+    key: 'karkun.name',
+    render: (text, record) => (record.karkun ? record.karkun.name : ''),
+  },
+];
+
+const List = ({ history }) => {
+  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
+  const { data, loading } = useQuery(listQuery, {
+    variables: {
+      queryString: getQueryString({ pageIndex, pageSize }),
     },
-  }),
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Accounts', 'List'])
-)(List);
+  });
+
+  if (loading) return null;
+  const { pagedUsers } = data;
+
+  const onChange = (index, size) => {
+    setPageIndex(index - 1);
+    setPageSize(size);
+  };
+
+  const onShowSizeChange = (index, size) => {
+    setPageIndex(index - 1);
+    setPageSize(size);
+  };
+
+  const handleNewClicked = () => {
+    history.push(paths.accountsNewFormPath);
+  };
+
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={pagedUsers.data}
+      columns={columns}
+      bordered
+      pagination={false}
+      size="small"
+      title={() => (
+        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+          New Account
+        </Button>
+      )}
+      footer={() => (
+        <Pagination
+          current={pageIndex + 1}
+          pageSize={pageSize}
+          showSizeChanger
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`
+          }
+          onChange={onChange}
+          onShowSizeChange={onShowSizeChange}
+          total={pagedUsers.totalResults}
+        />
+      )}
+    />
+  );
+};
+
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default WithBreadcrumbs(['Admin', 'Security Accounts', 'List'])(List);

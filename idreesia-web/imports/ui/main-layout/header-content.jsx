@@ -76,22 +76,24 @@ class HeaderContent extends Component {
   render() {
     const menuItems = [];
     const selectedMenuItemKey = [];
-    const { history, location } = this.props;
+    const { userById, history, location } = this.props;
     const { pathname } = location;
 
-    const moduleNames = keys(modulePathsMapping);
-    moduleNames.forEach((moduleName, index) => {
-      const isAccessible = this.isModuleAccessible(moduleName);
-      if (isAccessible) {
-        const modulePath = modulePathsMapping[moduleName];
-        menuItems.push(
-          <Menu.Item key={index.toString()}>{moduleName}</Menu.Item>
-        );
-        if (pathname.startsWith(modulePath)) {
-          selectedMenuItemKey.push(index.toString());
+    if (userById) {
+      const moduleNames = keys(modulePathsMapping);
+      moduleNames.forEach((moduleName, index) => {
+        const isAccessible = this.isModuleAccessible(moduleName);
+        if (isAccessible) {
+          const modulePath = modulePathsMapping[moduleName];
+          menuItems.push(
+            <Menu.Item key={index.toString()}>{moduleName}</Menu.Item>
+          );
+          if (pathname.startsWith(modulePath)) {
+            selectedMenuItemKey.push(index.toString());
+          }
         }
-      }
-    });
+      });
+    }
 
     return (
       <Layout.Header>

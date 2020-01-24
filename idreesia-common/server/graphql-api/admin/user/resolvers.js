@@ -33,6 +33,7 @@ export default {
 
     userById(obj, { _id }, { user }) {
       if (
+        !_id ||
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
           PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,

@@ -1,7 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { connect } from 'react-redux';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 
 export default () => WrappedComponent => {
   const WithLoggedInUser = props => <WrappedComponent {...props} />;
@@ -12,7 +15,7 @@ export default () => WrappedComponent => {
   };
 
   const formQuery = gql`
-    query userById($_id: String!) {
+    query userById($_id: String) {
       userById(_id: $_id) {
         _id
         username
@@ -21,8 +24,17 @@ export default () => WrappedComponent => {
     }
   `;
 
-  return graphql(formQuery, {
-    props: ({ data }) => ({ userByIdLoading: data.loading, ...data }),
-    options: () => ({ variables: { _id: Meteor.userId() } }),
-  })(WithLoggedInUser);
+  const mapStateToProps = state => ({
+    loggedInUser: state.loggedInUser,
+  });
+
+  return flowRight(
+    connect(mapStateToProps),
+    graphql(formQuery, {
+      props: ({ data }) => ({ userByIdLoading: data.loading, ...data }),
+      options: ({ loggedInUser }) => ({
+        variables: { _id: loggedInUser ? loggedInUser._id : null },
+      }),
+    })
+  )(WithLoggedInUser);
 };

@@ -1,4 +1,4 @@
-import { compact, get } from 'lodash';
+import { compact } from 'lodash';
 import {
   Jobs,
   Karkuns,
@@ -14,17 +14,6 @@ import { canDeleteKarkun } from './helpers';
 
 export default {
   KarkunType: {
-    user: karkunType => {
-      if (!karkunType.userId) return null;
-      const user = Meteor.users.findOne(karkunType.userId);
-      return {
-        _id: user._id,
-        username: user.username,
-        email: get(user, 'emails.0.address', null),
-        permissions: user.permissions,
-        instances: user.instances,
-      };
-    },
     image: karkunType => {
       const { imageId } = karkunType;
       if (imageId) {
@@ -52,55 +41,12 @@ export default {
   },
 
   Query: {
-    allKarkunsWithAccounts(obj, params, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_ACCOUNTS])
-      ) {
-        return [];
-      }
-
-      return Karkuns.find({
-        userId: { $ne: null },
-      }).fetch();
-    },
-
     pagedKarkuns(obj, { queryString }) {
       return getKarkuns(queryString);
     },
 
     karkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
-    },
-
-    karkunByUserId(obj, { userId }) {
-      return Karkuns.findOne({
-        userId: { $eq: userId },
-      });
-    },
-
-    karkunNames(obj, { ids }) {
-      const names = [];
-      if (!ids) return names;
-
-      const idsToSearch = compact(ids);
-      idsToSearch.forEach(id => {
-        const karkun = Karkuns.findOne({
-          userId: { $eq: id },
-        });
-
-        if (karkun) {
-          names.push(karkun.name);
-        } else {
-          const user = Meteor.users.findOne(id);
-          if (user.username === 'erp-admin') {
-            names.push('ERP Admin');
-          } else {
-            names.push('Unknown User');
-          }
-        }
-      });
-
-      return names;
     },
   },
 

@@ -31,4 +31,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Security Groups', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['Admin', 'User Groups', 'Edit'])(EditForm);

@@ -1,7 +1,7 @@
 const SubModuleNames = {
   adminJobs: 'Admin Jobs',
-  accounts: 'Security Accounts',
-  groups: 'Security Groups',
+  users: 'Users',
+  userGroups: 'User Groups',
   companies: 'Companies',
   physicalStores: 'Physical Stores',
 };

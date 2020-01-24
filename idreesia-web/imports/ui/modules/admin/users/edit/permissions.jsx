@@ -103,7 +103,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'setPermissions',
     options: {
-      refetchQueries: ['allKarkunsWithAccounts'],
+      refetchQueries: ['pagedUsers'],
     },
   }),
   graphql(formQuery, {

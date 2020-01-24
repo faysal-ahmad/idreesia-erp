@@ -1,9 +1,9 @@
 import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
-import { SecurityGroups } from 'meteor/idreesia-common/server/collections/admin';
+import { UserGroups } from 'meteor/idreesia-common/server/collections/admin';
 
-export function getSecurityGroups(queryString) {
+export function getUserGroups(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
@@ -21,10 +21,10 @@ export function getSecurityGroups(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const securityGroups = SecurityGroups.aggregate(resultsPipeline).toArray();
-  const totalResults = SecurityGroups.aggregate(countingPipeline).toArray();
+  const userGroups = UserGroups.aggregate(resultsPipeline).toArray();
+  const totalResults = UserGroups.aggregate(countingPipeline).toArray();
 
-  return Promise.all([securityGroups, totalResults]).then(results => ({
+  return Promise.all([userGroups, totalResults]).then(results => ({
     data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));

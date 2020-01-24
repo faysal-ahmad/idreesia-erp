@@ -10,18 +10,18 @@ export default class SubModulePaths {
   static adminJobsNewAccountsCalculationPath = `${SubModulePaths.adminJobsPath}/new-accounts-calculation`;
 
   // *************************************************************************************
-  // Security Accounts Routes
+  // Users Routes
   // *************************************************************************************
-  static accountsPath = `${ModulePaths.admin}/accounts`;
-  static accountsNewFormPath = `${SubModulePaths.accountsPath}/new`;
-  static accountsEditFormPath = `${SubModulePaths.accountsPath}/:userId`;
+  static usersPath = `${ModulePaths.admin}/users`;
+  static usersNewFormPath = `${SubModulePaths.usersPath}/new`;
+  static usersEditFormPath = `${SubModulePaths.usersPath}/:userId`;
 
   // *************************************************************************************
-  // Security Groups Routes
+  // User Groups Routes
   // *************************************************************************************
-  static groupsPath = `${ModulePaths.admin}/groups`;
-  static groupsNewFormPath = `${SubModulePaths.groupsPath}/new`;
-  static groupsEditFormPath = `${SubModulePaths.groupsPath}/:groupId`;
+  static userGroupsPath = `${ModulePaths.admin}/user-groups`;
+  static userGroupsNewFormPath = `${SubModulePaths.userGroupsPath}/new`;
+  static userGroupsEditFormPath = `${SubModulePaths.userGroupsPath}/:groupId`;
 
   // *************************************************************************************
   // Instance Routes

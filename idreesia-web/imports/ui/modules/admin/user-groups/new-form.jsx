@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
@@ -11,17 +12,12 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class GeneralInfo extends Component {
+class NewForm extends Component {
   static propTypes = {
-    match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-
-    loading: PropTypes.bool,
-    groupId: PropTypes.string,
-    securityGroupById: PropTypes.object,
-    updateSecurityGroup: PropTypes.func,
+    createUserGroup: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -31,18 +27,12 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const {
-      form,
-      history,
-      securityGroupById,
-      updateSecurityGroup,
-    } = this.props;
+    const { form, createUserGroup, history } = this.props;
     form.validateFields((err, { name, description }) => {
       if (err) return;
 
-      updateSecurityGroup({
+      createUserGroup({
         variables: {
-          _id: securityGroupById.user._id,
           name,
           description,
         },
@@ -57,24 +47,22 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { loading, securityGroupById } = this.props;
     const { getFieldDecorator } = this.props.form;
-    if (loading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="name"
-          fieldLabel="Name"
+          fieldLabel="Group name"
           getFieldDecorator={getFieldDecorator}
-          initialValue={securityGroupById.name}
+          required
+          requiredMessage="Please input a name for the group."
         />
 
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
           getFieldDecorator={getFieldDecorator}
-          initialValue={securityGroupById.description}
         />
 
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -83,23 +71,9 @@ class GeneralInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query securityGroupById($_id: String!) {
-    securityGroupById(_id: $_id) {
-      _id
-      name
-      description
-    }
-  }
-`;
-
 const formMutation = gql`
-  mutation updateSecurityGroup(
-    $_id: String!
-    $name: String!
-    $description: String
-  ) {
-    updateSecurityGroup(_id: $_id, name: $name, description: $description) {
+  mutation createUserGroup($name: String!, $description: String) {
+    createUserGroup(name: $name, description: $description) {
       _id
       name
       description
@@ -110,13 +84,10 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateSecurityGroup',
+    name: 'createUserGroup',
     options: {
-      refetchQueries: ['pagedSecurityGroups'],
+      refetchQueries: ['pagedUserGroups'],
     },
   }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ groupId }) => ({ variables: { _id: groupId } }),
-  })
-)(GeneralInfo);
+  WithBreadcrumbs(['Admin', 'User Groups', 'New'])
+)(NewForm);

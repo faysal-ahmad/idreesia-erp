@@ -122,8 +122,8 @@ export default flowRight(
   graphql(formMutation, {
     name: 'createAccount',
     options: {
-      refetchQueries: ['pagedKarkuns', 'allKarkunsWithAccounts'],
+      refetchQueries: ['pagedUsers'],
     },
   }),
-  WithBreadcrumbs(['Admin', 'Security Accounts', 'New'])
+  WithBreadcrumbs(['Admin', 'Users', 'New'])
 )(NewForm);

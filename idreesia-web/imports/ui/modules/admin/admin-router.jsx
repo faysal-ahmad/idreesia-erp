@@ -8,12 +8,12 @@ import {
   AdminJobsNewVouchersImport,
   AdminJobsNewAccountsCalculation,
 } from './admin-jobs';
+import { UsersNewForm, UsersEditForm, UsersList } from './users';
 import {
-  AccountsNewForm,
-  AccountsEditForm,
-  AccountsList,
-} from './security-accounts';
-import { GroupsNewForm, GroupsEditForm, GroupsList } from './security-groups';
+  UserGroupsNewForm,
+  UserGroupsEditForm,
+  UserGroupsList,
+} from './user-groups';
 import {
   PhysicalStoresNewForm,
   PhysicalStoresEditForm,
@@ -41,13 +41,13 @@ const AdminRouter = () => (
     />
     <Route path={paths.adminJobsPath} component={AdminJobsList} />
 
-    <Route path={paths.accountsNewFormPath} component={AccountsNewForm} />
-    <Route path={paths.accountsEditFormPath} component={AccountsEditForm} />
-    <Route path={paths.accountsPath} component={AccountsList} />
+    <Route path={paths.usersNewFormPath} component={UsersNewForm} />
+    <Route path={paths.usersEditFormPath} component={UsersEditForm} />
+    <Route path={paths.usersPath} component={UsersList} />
 
-    <Route path={paths.groupsNewFormPath} component={GroupsNewForm} />
-    <Route path={paths.groupsEditFormPath} component={GroupsEditForm} />
-    <Route path={paths.groupsPath} component={GroupsList} />
+    <Route path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
+    <Route path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
+    <Route path={paths.userGroupsPath} component={UserGroupsList} />
 
     <Route
       path={paths.physicalStoresNewFormPath}

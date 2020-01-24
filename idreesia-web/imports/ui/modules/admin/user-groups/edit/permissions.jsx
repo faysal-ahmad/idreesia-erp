@@ -2,12 +2,12 @@ import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Row, message } from '/imports/ui/controls';
-import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
+import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
 
-class InstanceAccess extends Component {
+class Permissions extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
@@ -15,22 +15,24 @@ class InstanceAccess extends Component {
 
     groupId: PropTypes.string,
     loading: PropTypes.bool,
-    securityGroupById: PropTypes.object,
-    setSecurityGroupInstanceAccess: PropTypes.func,
+    userGroupById: PropTypes.object,
+    setUserGroupPermissions: PropTypes.func,
+  };
+
+  handleCancel = () => {
+    const { history } = this.props;
+    history.goBack();
   };
 
   handleSave = e => {
     e.preventDefault();
-    const {
-      history,
-      securityGroupById,
-      setSecurityGroupInstanceAccess,
-    } = this.props;
-    const instances = this.instanceSelection.getSelectedInstances();
-    setSecurityGroupInstanceAccess({
+    const { history, userGroupById, setUserGroupPermissions } = this.props;
+    const permissions = this.permissionSelection.getSelectedPermissions();
+
+    setUserGroupPermissions({
       variables: {
-        _id: securityGroupById._id,
-        instances,
+        _id: userGroupById._id,
+        permissions,
       },
     })
       .then(() => {
@@ -41,21 +43,16 @@ class InstanceAccess extends Component {
       });
   };
 
-  handleCancel = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
-
   render() {
-    const { securityGroupById, loading } = this.props;
+    const { userGroupById, loading } = this.props;
     if (loading) return null;
 
     return (
       <Fragment>
-        <InstanceSelection
-          securityEntity={securityGroupById}
+        <PermissionSelection
+          securityEntity={userGroupById}
           ref={is => {
-            this.instanceSelection = is;
+            this.permissionSelection = is;
           }}
         />
         <br />
@@ -84,33 +81,30 @@ class InstanceAccess extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation setSecurityGroupInstanceAccess(
-    $_id: String!
-    $instances: [String]!
-  ) {
-    setSecurityGroupInstanceAccess(_id: $_id, instances: $instances) {
+const formQuery = gql`
+  query userGroupById($_id: String!) {
+    userGroupById(_id: $_id) {
       _id
-      instances
+      permissions
     }
   }
 `;
 
-const formQuery = gql`
-  query securityGroupById($_id: String!) {
-    securityGroupById(_id: $_id) {
+const formMutation = gql`
+  mutation setUserGroupPermissions($_id: String!, $permissions: [String]!) {
+    setUserGroupPermissions(_id: $_id, permissions: $permissions) {
       _id
-      instances
+      permissions
     }
   }
 `;
 
 export default flowRight(
   graphql(formMutation, {
-    name: 'setSecurityGroupInstanceAccess',
+    name: 'setUserGroupPermissions',
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ groupId }) => ({ variables: { _id: groupId } }),
   })
-)(InstanceAccess);
+)(Permissions);

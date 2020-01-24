@@ -48,7 +48,7 @@ const columns = [
     dataIndex: 'username',
     key: 'username',
     render: (text, record) => (
-      <Link to={`${paths.accountsPath}/${record._id}`}>{text}</Link>
+      <Link to={`${paths.usersPath}/${record._id}`}>{text}</Link>
     ),
   },
   {
@@ -96,7 +96,7 @@ const List = ({ history }) => {
   };
 
   const handleNewClicked = () => {
-    history.push(paths.accountsNewFormPath);
+    history.push(paths.usersNewFormPath);
   };
 
   return (
@@ -109,7 +109,7 @@ const List = ({ history }) => {
       size="small"
       title={() => (
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Account
+          New User
         </Button>
       )}
       footer={() => (
@@ -134,4 +134,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Security Accounts', 'List'])(List);
+export default WithBreadcrumbs(['Admin', 'Users', 'List'])(List);

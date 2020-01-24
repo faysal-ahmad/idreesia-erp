@@ -1,4 +1,4 @@
-import { values } from 'lodash';
+import { compact, values } from 'lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -18,8 +18,8 @@ export default {
     pagedUsers(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_VIEW_ACCOUNTS,
-          PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+          PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
+          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
         ])
       ) {
         return {
@@ -34,8 +34,8 @@ export default {
     userById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_VIEW_ACCOUNTS,
-          PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+          PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
+          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
         ])
       ) {
         return null;
@@ -57,6 +57,24 @@ export default {
       adminUser.permissions = values(PermissionConstants);
       return adminUser;
     },
+
+    userNames(obj, { ids }) {
+      const names = [];
+      if (!ids) return names;
+
+      const idsToSearch = compact(ids);
+      idsToSearch.forEach(_id => {
+        const user = Meteor.users.findOne(_id);
+        if (user.karkunId) {
+          const karkun = Karkuns.findOne(user.karkunId);
+          names.push(karkun.name);
+        } else {
+          names.push(user.displayName);
+        }
+      });
+
+      return names;
+    },
   },
 
   Mutation: {
@@ -66,10 +84,12 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
+        ])
       ) {
         throw new Error(
-          'You do not have permission to manage Accounts in the System.'
+          'You do not have permission to manage Users in the System.'
         );
       }
 
@@ -107,10 +127,12 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
+        ])
       ) {
         throw new Error(
-          'You do not have permission to manage Accounts in the System.'
+          'You do not have permission to manage Users in the System.'
         );
       }
 
@@ -143,10 +165,12 @@ export default {
 
     setPermissions(obj, { userId, permissions }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
+        ])
       ) {
         throw new Error(
-          'You do not have permission to manage Accounts in the System.'
+          'You do not have permission to manage Users in the System.'
         );
       }
 
@@ -156,10 +180,12 @@ export default {
 
     setInstanceAccess(obj, { userId, instances }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
+        ])
       ) {
         throw new Error(
-          'You do not have permission to manage Accounts in the System.'
+          'You do not have permission to manage Users in the System.'
         );
       }
 

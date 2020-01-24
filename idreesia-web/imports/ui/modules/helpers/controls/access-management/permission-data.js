@@ -20,36 +20,16 @@ export const permissionsData = [
         ],
       },
       {
-        title: 'Access Management',
-        key: 'module-admin-access-management',
+        title: 'Users & Groups',
+        key: 'module-admin-users-and-groups',
         children: [
           {
-            title: 'Security Accounts',
-            key: 'module-admin-security-accounts',
-            children: [
-              {
-                title: 'View Accounts',
-                key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
-              },
-              {
-                title: 'Manage Accounts',
-                key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
-              },
-            ],
+            title: 'View Users & Groups',
+            key: PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
           },
           {
-            title: 'Security Groups',
-            key: 'module-admin-security-groups',
-            children: [
-              {
-                title: 'View Security Groups',
-                key: PermissionConstants.ADMIN_VIEW_SECURITY_GROUPS,
-              },
-              {
-                title: 'Manage Security Groups',
-                key: PermissionConstants.ADMIN_MANAGE_SECURITY_GROUPS,
-              },
-            ],
+            title: 'Manage Users & Groups',
+            key: PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
           },
         ],
       },

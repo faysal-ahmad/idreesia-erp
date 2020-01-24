@@ -22,8 +22,8 @@ import {
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const listQuery = gql`
-  query pagedSecurityGroups($queryString: String) {
-    pagedSecurityGroups(queryString: $queryString) {
+  query pagedUserGroups($queryString: String) {
+    pagedUserGroups(queryString: $queryString) {
       totalResults
       data {
         _id
@@ -35,8 +35,8 @@ const listQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation deleteSecurityGroup($_id: String!) {
-    deleteSecurityGroup(_id: $_id)
+  mutation deleteUserGroup($_id: String!) {
+    deleteUserGroup(_id: $_id)
   }
 `;
 
@@ -49,7 +49,7 @@ const getColumns = ({ handleDeleteClicked }) => [
     dataIndex: 'name',
     key: 'name',
     render: (text, record) => (
-      <Link to={`${paths.groupsPath}/${record._id}`}>{text}</Link>
+      <Link to={`${paths.userGroupsPath}/${record._id}`}>{text}</Link>
     ),
   },
   {
@@ -60,18 +60,23 @@ const getColumns = ({ handleDeleteClicked }) => [
   {
     key: 'action',
     render: (text, record) => (
-      <Popconfirm
-        title="Are you sure you want to delete this group?"
-        onConfirm={() => {
-          handleDeleteClicked(record);
-        }}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Tooltip title="Delete">
-          <Icon type="delete" className="list-actions-icon" />
+      <div className="list-actions-column">
+        <Tooltip title="Add Users">
+          <Icon type="team" className="list-actions-icon" />
         </Tooltip>
-      </Popconfirm>
+        <Popconfirm
+          title="Are you sure you want to delete this group?"
+          onConfirm={() => {
+            handleDeleteClicked(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Delete">
+            <Icon type="delete" className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
+      </div>
     ),
   },
 ];
@@ -79,7 +84,7 @@ const getColumns = ({ handleDeleteClicked }) => [
 const List = ({ history }) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const [deleteSecurityGroup] = useMutation(formMutation);
+  const [deleteUserGroup] = useMutation(formMutation);
   const { data, loading } = useQuery(listQuery, {
     variables: {
       queryString: getQueryString({ pageIndex, pageSize }),
@@ -87,7 +92,7 @@ const List = ({ history }) => {
   });
 
   if (loading) return null;
-  const { pagedSecurityGroups } = data;
+  const { pagedUserGroups } = data;
 
   const onChange = (index, size) => {
     setPageIndex(index - 1);
@@ -100,11 +105,11 @@ const List = ({ history }) => {
   };
 
   const handleNewClicked = () => {
-    history.push(paths.groupsNewFormPath);
+    history.push(paths.userGroupsNewFormPath);
   };
 
   const handleDeleteClicked = record => {
-    deleteSecurityGroup({
+    deleteUserGroup({
       variables: {
         _id: record._id,
       },
@@ -116,14 +121,14 @@ const List = ({ history }) => {
   return (
     <Table
       rowKey="_id"
-      dataSource={pagedSecurityGroups.data}
+      dataSource={pagedUserGroups.data}
       columns={getColumns({ handleDeleteClicked })}
       bordered
       size="small"
       pagination={false}
       title={() => (
         <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
-          New Security Group
+          New User Group
         </Button>
       )}
       footer={() => (
@@ -136,7 +141,7 @@ const List = ({ history }) => {
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={pagedSecurityGroups.totalResults}
+          total={pagedUserGroups.totalResults}
         />
       )}
     />
@@ -148,4 +153,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Security Groups', 'List'])(List);
+export default WithBreadcrumbs(['Admin', 'User Groups', 'List'])(List);

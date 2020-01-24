@@ -1,0 +1,38 @@
+type UserGroupType {
+  _id: String
+  name: String
+  description: String
+  permissions: [String]
+  instances: [String]
+}
+
+type PagedUserGroupType {
+  totalResults: Int
+  data: [UserGroupType]
+}
+
+extend type Query {
+  pagedUserGroups(queryString: String): PagedUserGroupType
+  userGroupById(_id: String!): UserGroupType
+}
+
+extend type Mutation {
+  createUserGroup(
+    name: String!
+    description: String
+  ): UserGroupType
+  updateUserGroup(
+    _id: String!
+    name: String
+    description: String
+  ): UserGroupType
+  deleteUserGroup(_id: String!): Int
+  setUserGroupPermissions(
+    _id: String!
+    permissions: [String]!
+  ): UserGroupType
+  setUserGroupInstanceAccess(
+    _id: String!
+    instances: [String]!
+  ): UserGroupType
+}

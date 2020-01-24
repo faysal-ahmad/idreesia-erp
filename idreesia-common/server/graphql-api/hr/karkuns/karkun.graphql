@@ -15,7 +15,6 @@ type KarkunType {
   ehadDate: String
   referenceName: String
   imageId: String
-  userId: String
   attachmentIds: [String]
 
   isEmployee: Boolean
@@ -23,7 +22,6 @@ type KarkunType {
   employmentStartDate: String
   employmentEndDate: String
 
-  user: UserType
   job: JobType
   duties: [KarkunDutyType]
   attachments: [Attachment]
@@ -41,12 +39,8 @@ type PagedKarkunType {
 }
 
 extend type Query {
-  allKarkunsWithAccounts: [KarkunType]
   pagedKarkuns(queryString: String): PagedKarkunType
   karkunById(_id: String!): KarkunType
-  karkunByUserId(userId: String!): KarkunType
-
-  karkunNames(ids: [String]): [String]
 }
 
 extend type Mutation {

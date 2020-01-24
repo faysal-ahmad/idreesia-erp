@@ -23,6 +23,7 @@ extend type Query {
   pagedUsers(queryString: String): PagedUserType
   userById(_id: String!): UserType
   currentUser: UserType
+  userNames(ids: [String]): [String]
 }
 
 extend type Mutation {

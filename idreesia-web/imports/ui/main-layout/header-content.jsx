@@ -27,7 +27,7 @@ class HeaderContent extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    userById: PropTypes.object,
+    user: PropTypes.object,
     setActiveModuleName: PropTypes.func,
   };
 
@@ -59,7 +59,7 @@ class HeaderContent extends Component {
     // For a module to be accessible to the user, the user needs to have at least
     // one permission for that module.
     const {
-      userById: { permissions },
+      user: { permissions },
     } = this.props;
 
     const lcModuleName = moduleName.toLowerCase();
@@ -76,10 +76,10 @@ class HeaderContent extends Component {
   render() {
     const menuItems = [];
     const selectedMenuItemKey = [];
-    const { userById, history, location } = this.props;
+    const { user, history, location } = this.props;
     const { pathname } = location;
 
-    if (userById) {
+    if (user) {
       const moduleNames = keys(modulePathsMapping);
       moduleNames.forEach((moduleName, index) => {
         const isAccessible = this.isModuleAccessible(moduleName);

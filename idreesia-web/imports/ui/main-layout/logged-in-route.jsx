@@ -15,8 +15,8 @@ class LoggedInRoute extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    userByIdLoading: PropTypes.bool,
-    userById: PropTypes.object,
+    userLoading: PropTypes.bool,
+    user: PropTypes.object,
   };
 
   getBreadcrumbs() {
@@ -39,17 +39,13 @@ class LoggedInRoute extends Component {
   }
 
   render() {
-    const { location, history, userByIdLoading, userById } = this.props;
+    const { location, history, userLoading, user } = this.props;
 
-    if (userByIdLoading) return null;
+    if (userLoading) return null;
 
     return (
       <Layout>
-        <HeaderContent
-          location={location}
-          history={history}
-          userById={userById}
-        />
+        <HeaderContent location={location} history={history} user={user} />
         <Layout>
           <SidebarContent location={location} history={history} />
           <Layout style={{ padding: '0 24px 24px' }}>

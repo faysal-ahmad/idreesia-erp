@@ -10,13 +10,13 @@ export default () => WrappedComponent => {
   const WithLoggedInUser = props => <WrappedComponent {...props} />;
 
   WithLoggedInUser.propTypes = {
-    userByIdLoading: PropTypes.bool,
-    userById: PropTypes.object,
+    userLoading: PropTypes.bool,
+    user: PropTypes.object,
   };
 
   const formQuery = gql`
-    query userById($_id: String) {
-      userById(_id: $_id) {
+    query currentUser {
+      currentUser {
         _id
         username
         permissions
@@ -31,9 +31,10 @@ export default () => WrappedComponent => {
   return flowRight(
     connect(mapStateToProps),
     graphql(formQuery, {
-      props: ({ data }) => ({ userByIdLoading: data.loading, ...data }),
-      options: ({ loggedInUser }) => ({
-        variables: { _id: loggedInUser ? loggedInUser._id : null },
+      props: ({ data }) => ({
+        userLoading: data.loading,
+        user: data.currentUser,
+        ...data,
       }),
     })
   )(WithLoggedInUser);

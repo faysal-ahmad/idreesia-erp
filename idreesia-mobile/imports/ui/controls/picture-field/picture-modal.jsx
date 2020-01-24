@@ -48,6 +48,10 @@ const PictureModal = ({ handleClose }) => {
     );
   }
 
+  const videoConstraints = {
+    facingMode: { exact: 'environment' },
+  };
+
   return (
     <div>
       <Webcam
@@ -56,6 +60,7 @@ const PictureModal = ({ handleClose }) => {
         height={300}
         width={350}
         screenshotFormat="image/jpeg"
+        videoConstraints={videoConstraints}
       />
       <Flex direction="row" justify="center" style={RowStyle}>
         <Flex.Item>

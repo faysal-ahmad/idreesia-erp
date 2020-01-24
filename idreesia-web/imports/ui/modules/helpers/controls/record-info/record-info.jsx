@@ -12,8 +12,8 @@ const ListStyle = {
   backgroundColor: '#F0F2F5',
 };
 
-const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
-  if (formDataLoading || !karkunNames || karkunNames.length === 0) return null;
+const RecordInfo = ({ record, formDataLoading, userNames }) => {
+  if (formDataLoading || !userNames || userNames.length === 0) return null;
   const { createdAt, updatedAt, approvedOn } = record;
 
   const strCreatedAt = createdAt
@@ -31,7 +31,7 @@ const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
     approvalNode = (
       <List.Item>
         <Typography.Text type="secondary">
-          {`Approved by ${karkunNames[2]} on ${strApprovedOn}`}
+          {`Approved by ${userNames[2]} on ${strApprovedOn}`}
         </Typography.Text>
       </List.Item>
     );
@@ -42,12 +42,12 @@ const RecordInfo = ({ record, formDataLoading, karkunNames }) => {
       {approvalNode}
       <List.Item>
         <Typography.Text type="secondary">
-          {`Updated by ${karkunNames[1]} on ${strUpdatedAt}`}
+          {`Updated by ${userNames[1]} on ${strUpdatedAt}`}
         </Typography.Text>
       </List.Item>
       <List.Item>
         <Typography.Text type="secondary">
-          {`Created by ${karkunNames[0]} on ${strCreatedAt}`}
+          {`Created by ${userNames[0]} on ${strCreatedAt}`}
         </Typography.Text>
       </List.Item>
     </List>
@@ -64,12 +64,12 @@ RecordInfo.propTypes = {
     approvedBy: PropTypes.string,
   }),
   formDataLoading: PropTypes.bool,
-  karkunNames: PropTypes.array,
+  userNames: PropTypes.array,
 };
 
 const formQuery = gql`
-  query karkunNames($ids: [String]) {
-    karkunNames(ids: $ids)
+  query userNames($ids: [String]) {
+    userNames(ids: $ids)
   }
 `;
 

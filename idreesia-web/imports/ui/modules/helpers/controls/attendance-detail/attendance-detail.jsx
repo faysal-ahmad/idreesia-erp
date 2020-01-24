@@ -28,7 +28,6 @@ export default class AttendanceDetail extends Component {
     const firstDayOfMonth = month.startOf('month').format('d');
     const attendances = value || initialValue || {};
 
-    debugger;
     const blanks = [];
     for (let i = 0; i < firstDayOfMonth; i++) {
       blanks.push(<td key={`b${i}`} className="ant-calendar-cell" />);

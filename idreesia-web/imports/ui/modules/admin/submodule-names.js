@@ -1,8 +1,9 @@
 const SubModuleNames = {
-  adminJobs: "Admin Jobs",
-  companies: "Companies",
-  accounts: "Security Accounts",
-  physicalStores: "Physical Stores",
+  adminJobs: 'Admin Jobs',
+  users: 'Users',
+  userGroups: 'User Groups',
+  companies: 'Companies',
+  physicalStores: 'Physical Stores',
 };
 
 export default SubModuleNames;

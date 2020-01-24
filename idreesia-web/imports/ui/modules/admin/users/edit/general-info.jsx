@@ -8,6 +8,7 @@ import { Form, message } from '/imports/ui/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
+  SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -19,9 +20,9 @@ class GeneralInfo extends Component {
     form: PropTypes.object,
 
     loading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
-    updateAccount: PropTypes.func,
+    userId: PropTypes.string,
+    userById: PropTypes.object,
+    updateUser: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -31,8 +32,8 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, karkunById, updateAccount } = this.props;
-    form.validateFields((err, { password, email }) => {
+    const { form, history, userById, updateUser } = this.props;
+    form.validateFields((err, { password, email, displayName, locked }) => {
       if (err) return;
 
       if (email && !email.includes('@gmail.com')) {
@@ -40,15 +41,17 @@ class GeneralInfo extends Component {
         return;
       }
 
-      updateAccount({
+      updateUser({
         variables: {
-          userId: karkunById.user._id,
+          userId: userById._id,
           password,
           email,
+          displayName,
+          locked,
         },
       })
         .then(() => {
-          history.push(paths.accountsPath);
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -57,25 +60,24 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { loading, karkunById } = this.props;
+    const { loading, userById } = this.props;
     const { getFieldDecorator } = this.props.form;
     if (loading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          disabled
-          initialValue={karkunById.name}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
           fieldName="userName"
           fieldLabel="User name"
           disabled
-          initialValue={karkunById.user.username}
+          initialValue={userById.username}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <SwitchField
+          fieldName="locked"
+          fieldLabel="Locked"
+          initialValue={userById.locked}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -89,7 +91,22 @@ class GeneralInfo extends Component {
         <InputTextField
           fieldName="email"
           fieldLabel="Google Email"
-          initialValue={karkunById.user.email}
+          initialValue={userById.email}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="displayName"
+          fieldLabel="Display Name"
+          initialValue={userById.displayName}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextField
+          fieldName="karkunName"
+          fieldLabel="Karkun Name"
+          disabled
+          initialValue={userById.karkun ? userById.karkun.name : ''}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -100,28 +117,44 @@ class GeneralInfo extends Component {
 }
 
 const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
+  query userById($_id: String!) {
+    userById(_id: $_id) {
       _id
-      name
-      user {
+      username
+      email
+      displayName
+      locked
+      karkun {
         _id
-        username
-        email
+        name
       }
     }
   }
 `;
 
 const formMutation = gql`
-  mutation updateAccount($userId: String!, $password: String, $email: String) {
-    updateAccount(userId: $userId, password: $password, email: $email) {
+  mutation updateUser(
+    $userId: String!
+    $password: String
+    $email: String
+    $displayName: String
+    $locked: Boolean
+  ) {
+    updateUser(
+      userId: $userId
+      password: $password
+      email: $email
+      displayName: $displayName
+      locked: $locked
+    ) {
       _id
-      name
-      user {
+      username
+      email
+      displayName
+      locked
+      karkun {
         _id
-        username
-        email
+        name
       }
     }
   }
@@ -130,16 +163,13 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateAccount',
+    name: 'updateUser',
     options: {
-      refetchQueries: ['allKarkunsWithAccounts'],
+      refetchQueries: ['pagedUsers'],
     },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
+    options: ({ userId }) => ({ variables: { _id: userId } }),
   })
 )(GeneralInfo);

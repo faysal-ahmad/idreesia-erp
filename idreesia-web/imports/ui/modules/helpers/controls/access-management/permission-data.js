@@ -1,57 +1,69 @@
-import React, { Fragment, Component } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-
-import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { Button, Row, Tree, message } from '/imports/ui/controls';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-const permissionsData = [
+export const permissionsData = [
   {
     title: 'Admin',
     key: 'module-admin',
     children: [
       {
-        title: 'Security Accounts',
-        key: 'module-admin-security-accounts',
+        title: 'Admin Jobs',
+        key: 'module-admin-admin-jobs',
         children: [
           {
-            title: 'View Accounts',
-            key: PermissionConstants.ADMIN_VIEW_ACCOUNTS,
+            title: 'View Admin Jobs',
+            key: PermissionConstants.ADMIN_VIEW_ADMIN_JOBS,
           },
           {
-            title: 'Manage Accounts',
-            key: PermissionConstants.ADMIN_MANAGE_ACCOUNTS,
+            title: 'Manage Admin Jobs',
+            key: PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS,
           },
         ],
       },
       {
-        title: 'Physical Stores',
-        key: 'module-admin-physical-stores',
+        title: 'Users & Groups',
+        key: 'module-admin-users-and-groups',
         children: [
           {
-            title: 'View Physical Stores',
-            key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
+            title: 'View Users & Groups',
+            key: PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
           },
           {
-            title: 'Manage Physical Stores',
-            key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
+            title: 'Manage Users & Groups',
+            key: PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
           },
         ],
       },
       {
-        title: 'Accounts',
-        key: 'module-admin-companies',
+        title: 'Instance Management',
+        key: 'module-admin-instance-management',
         children: [
           {
-            title: 'View Companies',
-            key: PermissionConstants.ADMIN_VIEW_COMPANIES,
+            title: 'Accounts',
+            key: 'module-admin-companies',
+            children: [
+              {
+                title: 'View Companies',
+                key: PermissionConstants.ADMIN_VIEW_COMPANIES,
+              },
+              {
+                title: 'Manage Companies',
+                key: PermissionConstants.ADMIN_MANAGE_COMPANIES,
+              },
+            ],
           },
           {
-            title: 'Manage Companies',
-            key: PermissionConstants.ADMIN_MANAGE_COMPANIES,
+            title: 'Physical Stores',
+            key: 'module-admin-physical-stores',
+            children: [
+              {
+                title: 'View Physical Stores',
+                key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
+              },
+              {
+                title: 'Manage Physical Stores',
+                key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
+              },
+            ],
           },
         ],
       },
@@ -71,7 +83,7 @@ const permissionsData = [
           },
           {
             title: 'Manage Account Heads',
-            key: PermissionConstants.ACCOUNTS_ACCOUNT_HEADS,
+            key: PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
           },
         ],
       },
@@ -286,162 +298,3 @@ const permissionsData = [
     ],
   },
 ];
-
-class Permissions extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-
-    loading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
-    setPermissions: PropTypes.func,
-  };
-
-  state = {
-    initDone: false,
-    expandedKeys: [],
-    checkedKeys: [],
-  };
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { karkunById } = nextProps;
-    if (karkunById && !prevState.initDone) {
-      return {
-        initDone: true,
-        checkedKeys: karkunById.user.permissions,
-      };
-    }
-
-    return null;
-  }
-
-  handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.accountsPath);
-  };
-
-  handleSave = e => {
-    e.preventDefault();
-    const { history, karkunById, setPermissions } = this.props;
-    const { checkedKeys } = this.state;
-    const permissions = filter(checkedKeys, key => !key.startsWith('module-'));
-
-    setPermissions({
-      variables: {
-        karkunId: karkunById._id,
-        karkunUserId: karkunById.userId,
-        permissions,
-      },
-    })
-      .then(() => {
-        history.push(paths.accountsPath);
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  };
-
-  onExpand = expandedKeys => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
-  };
-
-  onCheck = checkedKeys => {
-    this.setState({ checkedKeys });
-  };
-
-  renderTreeNodes = data =>
-    data.map(item => {
-      if (item.children) {
-        return (
-          <Tree.TreeNode title={item.title} key={item.key} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </Tree.TreeNode>
-        );
-      }
-
-      return <Tree.TreeNode {...item} />;
-    });
-
-  render() {
-    const { loading } = this.props;
-    if (loading) return null;
-
-    return (
-      <Fragment>
-        <Tree
-          checkable
-          onExpand={this.onExpand}
-          expandedKeys={this.state.expandedKeys}
-          autoExpandParent={this.state.autoExpandParent}
-          onCheck={this.onCheck}
-          checkedKeys={this.state.checkedKeys}
-        >
-          {this.renderTreeNodes(permissionsData)}
-        </Tree>
-        <br />
-        <br />
-        <Row type="flex" justify="start">
-          <Button type="default" onClick={this.handleCancel}>
-            Cancel
-          </Button>
-          &nbsp;
-          <Button type="primary" onClick={this.handleSave}>
-            Save
-          </Button>
-        </Row>
-      </Fragment>
-    );
-  }
-}
-
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      userId
-      user {
-        _id
-        permissions
-      }
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setPermissions(
-    $karkunId: String!
-    $karkunUserId: String!
-    $permissions: [String]!
-  ) {
-    setPermissions(
-      karkunId: $karkunId
-      karkunUserId: $karkunUserId
-      permissions: $permissions
-    ) {
-      _id
-      userId
-      user {
-        _id
-        permissions
-      }
-    }
-  }
-`;
-
-export default flowRight(
-  graphql(formMutation, {
-    name: 'setPermissions',
-    options: {
-      refetchQueries: ['allKarkunsWithAccounts'],
-    },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
-  })
-)(Permissions);

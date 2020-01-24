@@ -18,8 +18,8 @@ const Permissions = {
   ADMIN_VIEW_ADMIN_JOBS: 'admin-view-admin-jobs',
   ADMIN_MANAGE_ADMIN_JOBS: 'admin-manage-admin-jobs',
 
-  ADMIN_VIEW_ACCOUNTS: 'admin-view-accounts',
-  ADMIN_MANAGE_ACCOUNTS: 'admin-manage-accounts',
+  ADMIN_VIEW_USERS_AND_GROUPS: 'admin-view-users-and-groups',
+  ADMIN_MANAGE_USERS_AND_GROUPS: 'admin-manage-users-and-groups',
 
   ADMIN_VIEW_PHYSICAL_STORES: 'admin-view-physical-stores',
   ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',

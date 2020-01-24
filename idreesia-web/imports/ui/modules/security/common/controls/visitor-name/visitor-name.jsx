@@ -29,7 +29,9 @@ const VisitorName = ({ visitor, onVisitorNameClicked }) => {
       {visitor.name}
     </div>
   ) : (
-    <Link to={`${paths.karkunsPath}/${visitor._id}`}>{visitor.name}</Link>
+    <Link to={`${paths.visitorRegistrationPath}/${visitor._id}`}>
+      {visitor.name}
+    </Link>
   );
 
   let imageUrl;

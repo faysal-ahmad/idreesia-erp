@@ -14,9 +14,19 @@ Migrations.add({
           karkunId: karkun._id,
         },
       });
+
+      Karkuns.update(karkun._id, {
+        $unset: {
+          karkunId: '',
+        },
+      });
     });
 
-    // TODO: Remove the userId from Karkuns
-    // Indexes on users
+    const users = Meteor.users.rawCollection();
+    users.createIndex({ permissions: 1 }, { background: true });
+    users.createIndex({ instances: 1 }, { background: true });
+    users.createIndex({ groups: 1 }, { background: true });
+    users.createIndex({ locked: 1 }, { background: true });
+    users.createIndex({ karkunId: 1 }, { background: true });
   },
 });

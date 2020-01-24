@@ -57,7 +57,7 @@ const PictureModal = ({ handleClose }) => {
       <Webcam
         ref={webcam}
         audio={false}
-        height={300}
+        height={262}
         width={350}
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}

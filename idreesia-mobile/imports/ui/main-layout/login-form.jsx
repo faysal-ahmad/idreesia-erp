@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createForm, formShape } from 'rc-form';
 import { useDispatch } from 'react-redux';
 
-import { setLoggedInUser } from 'meteor/idreesia-common/action-creators';
+import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 
@@ -32,7 +32,7 @@ const LoginForm = ({
         Meteor.loginWithPassword(userName, password, error => {
           if (!error) {
             history.push('/');
-            dispatch(setLoggedInUser(Meteor.user()));
+            dispatch(setLoggedInUserId(Meteor.userId()));
           } else {
             Toast.fail('Login failed.', 2);
           }

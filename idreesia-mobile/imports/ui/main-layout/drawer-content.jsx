@@ -21,15 +21,15 @@ const IconStyle = {
 
 const DrawerContent = ({ history, toggleDrawer }) => {
   const dispatch = useDispatch();
-  const loggedInUser = useSelector(state => state.loggedInUser);
+  const loggedInUserId = useSelector(state => state.loggedInUserId);
   const userProfile = (
-    <UserProfile history={history} loggedInUser={loggedInUser} />
+    <UserProfile history={history} loggedInUserId={loggedInUserId} />
   );
 
   return (
     <>
       {userProfile}
-      {loggedInUser ? (
+      {loggedInUserId ? (
         <List renderHeader="Security">
           <List.Item
             onClick={() => {

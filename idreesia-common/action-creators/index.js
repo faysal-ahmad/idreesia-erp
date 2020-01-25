@@ -3,5 +3,5 @@ export {
   setActiveSubModuleName,
   setActiveModuleAndSubModuleName,
   setBreadcrumbs,
-  setLoggedInUser,
+  setLoggedInUserId,
 } from './global-actions-creator';

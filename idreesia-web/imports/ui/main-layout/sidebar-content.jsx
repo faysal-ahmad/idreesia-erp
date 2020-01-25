@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 import { Layout } from './antd-controls';
@@ -24,7 +24,8 @@ const sidebarsMap = {
 };
 
 const SidebarContent = props => {
-  const { activeModuleName, history } = props;
+  const activeModuleName = useSelector(state => state.activeModuleName);
+  const { history } = props;
   const ModuleSidebar = sidebarsMap[activeModuleName];
 
   let sidebar = <div />;
@@ -46,12 +47,6 @@ const SidebarContent = props => {
 SidebarContent.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
-  activeModuleName: PropTypes.string,
 };
 
-const mapStateToProps = state => ({
-  activeModuleName: state.activeModuleName,
-});
-
-const SidebarContentContainer = connect(mapStateToProps)(SidebarContent);
-export default SidebarContentContainer;
+export default SidebarContent;

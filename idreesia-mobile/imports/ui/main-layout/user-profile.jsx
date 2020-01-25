@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
 import {
-  setLoggedInUser,
+  setLoggedInUserId,
   setActiveModuleAndSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
 import { Button, WingBlank } from '/imports/ui/controls';
@@ -14,10 +14,10 @@ const ContainerStyle = {
   paddingBottom: '10px',
 };
 
-const UserProfile = ({ history, loggedInUser }) => {
+const UserProfile = ({ history, loggedInUserId }) => {
   const dispatch = useDispatch();
 
-  if (!loggedInUser) {
+  if (!loggedInUserId) {
     return (
       <div style={ContainerStyle}>
         <WingBlank>
@@ -46,7 +46,7 @@ const UserProfile = ({ history, loggedInUser }) => {
                 // eslint-disable-next-line no-console
                 console.log(error);
               }
-              dispatch(setLoggedInUser(null));
+              dispatch(setLoggedInUserId(null));
               dispatch(setActiveModuleAndSubModuleName(null, null));
               history.push('/');
             });
@@ -61,7 +61,7 @@ const UserProfile = ({ history, loggedInUser }) => {
 
 UserProfile.propTypes = {
   history: PropTypes.object,
-  loggedInUser: PropTypes.object,
+  loggedInUserId: PropTypes.object,
 };
 
 export default UserProfile;

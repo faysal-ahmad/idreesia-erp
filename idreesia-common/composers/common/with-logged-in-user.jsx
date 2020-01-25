@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { connect } from 'react-redux';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 
@@ -24,12 +23,7 @@ export default () => WrappedComponent => {
     }
   `;
 
-  const mapStateToProps = state => ({
-    loggedInUser: state.loggedInUser,
-  });
-
   return flowRight(
-    connect(mapStateToProps),
     graphql(formQuery, {
       props: ({ data }) => ({
         userLoading: data.loading,

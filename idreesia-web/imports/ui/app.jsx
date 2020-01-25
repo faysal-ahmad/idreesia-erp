@@ -4,14 +4,14 @@ import { Switch, Route } from 'react-router-dom';
 import { withTracker } from 'meteor/react-meteor-data';
 import { useDispatch } from 'react-redux';
 
-import { setLoggedInUser } from 'meteor/idreesia-common/action-creators';
+import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import { LoggedInRoute, LoggedOutRoute } from './main-layout';
 
-const App = ({ userId, user }) => {
+const App = ({ userId }) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setLoggedInUser(user || null));
+    dispatch(setLoggedInUserId(userId || null));
   });
 
   if (userId) {
@@ -31,12 +31,10 @@ const App = ({ userId, user }) => {
 
 App.propTypes = {
   userId: PropTypes.string,
-  user: PropTypes.object,
   isOnline: PropTypes.bool,
 };
 
 export default withTracker(() => ({
-  user: Meteor.user(),
   userId: Meteor.userId(),
   isOnline: Meteor.status().connected,
 }))(App);

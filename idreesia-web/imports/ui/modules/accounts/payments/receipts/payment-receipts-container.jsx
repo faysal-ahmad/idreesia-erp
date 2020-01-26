@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
-import { paymentById as paymentByIdQuery } from '../queries';
+import { PAYMENT_BY_ID } from '../gql';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -53,7 +53,7 @@ PaymentReceiptsContainer.propTypes = {
 
 export default flowRight(
   WithQueryParams(),
-  graphql(paymentByIdQuery, {
+  graphql(PAYMENT_BY_ID, {
     props: ({ data }) => ({ paymentLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { paymentId } = match.params;

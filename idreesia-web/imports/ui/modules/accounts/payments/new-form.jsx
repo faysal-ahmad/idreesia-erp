@@ -2,14 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/react-hooks';
 
+import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
-import {
-  pagedPayments as pagedPaymentsQuery,
-  createPayment as createPaymentQuery,
-} from './queries';
+import { PAGED_PAYMENTS, CREATE_PAYMENT } from './gql';
 
 import {
   DateField,
@@ -23,10 +21,10 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 const NewForm = ({ form, history }) => {
-  const [createPayment] = useMutation(createPaymentQuery, {
+  const [createPayment] = useMutation(CREATE_PAYMENT, {
     refetchQueries: [
       {
-        query: pagedPaymentsQuery,
+        query: PAGED_PAYMENTS,
         variables: {
           queryString:
             '?name=&cnicNumber=&paymentType=&paymentAmount=&pageIndex=0&pageSize=20',
@@ -35,6 +33,7 @@ const NewForm = ({ form, history }) => {
     ],
     awaitRefetchQueries: true,
   });
+
   const handleCancel = () => {
     history.push(paths.paymentsPath);
   };
@@ -86,11 +85,11 @@ const NewForm = ({ form, history }) => {
       <SelectField
         data={[
           {
-            value: 'IPT',
+            value: PaymentType.IMDAD_PAYMENT,
             text: 'Imdad Payment',
           },
           {
-            value: 'OPT',
+            value: PaymentType.MISCELLANEOUS_PAYMENT,
             text: 'Miscellaneous Payment',
           },
         ]}

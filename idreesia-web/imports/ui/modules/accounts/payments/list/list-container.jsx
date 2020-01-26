@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
-import List from './list/list';
+import List from './list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -67,6 +66,8 @@ class ListContainer extends Component {
         pageSize={pageSize}
         name={name}
         cnicNumber={cnicNumber}
+        paymentType={paymentType}
+        paymentAmount={paymentAmount}
         startDate={startDate}
         endDate={endDate}
         setPageParams={this.setPageParams}
@@ -78,6 +79,4 @@ class ListContainer extends Component {
   }
 }
 
-export default flowRight(WithBreadcrumbs(['Accounts', 'Payments']))(
-  ListContainer
-);
+export default WithBreadcrumbs(['Accounts', 'Payments', 'List'])(ListContainer);

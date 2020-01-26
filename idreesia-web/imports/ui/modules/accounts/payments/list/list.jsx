@@ -14,10 +14,7 @@ import {
   Modal,
   message,
 } from '/imports/ui/controls';
-import {
-  removePayment as removePaymentQuery,
-  pagedPayments as pagedPaymentsQuery,
-} from '../queries';
+import { REMOVE_PAYMENT, PAGED_PAYMENTS } from '../gql';
 
 const { confirm } = Modal;
 
@@ -28,15 +25,10 @@ class List extends Component {
     queryString: PropTypes.string,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
-
-    fatherName: PropTypes.string,
-    contactNumber: PropTypes.string,
-    paymentNumber: PropTypes.number,
-    paymentType: PropTypes.string,
-    paymentAmount: PropTypes.number,
-
     startDate: PropTypes.object,
     endDate: PropTypes.object,
+    paymentType: PropTypes.string,
+    paymentAmount: PropTypes.number,
     setPageParams: PropTypes.func,
     handleNewClicked: PropTypes.func,
     handleEditClicked: PropTypes.func,
@@ -188,7 +180,7 @@ class List extends Component {
         icon="plus-circle-o"
         onClick={this.handleNewClicked}
       >
-        New Payment
+        New Payment Voucher
       </Button>
     );
 
@@ -251,13 +243,13 @@ class List extends Component {
 }
 
 export default flowRight(
-  graphql(removePaymentQuery, {
+  graphql(REMOVE_PAYMENT, {
     name: 'removePayment',
     options: {
       refetchQueries: ['pagedPayments'],
     },
   }),
-  graphql(pagedPaymentsQuery, {
+  graphql(PAGED_PAYMENTS, {
     props: ({ data }) => ({ ...data }),
     options: ({ queryString }) => ({
       variables: { queryString },

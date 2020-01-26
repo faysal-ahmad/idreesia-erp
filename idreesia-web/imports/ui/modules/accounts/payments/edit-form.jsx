@@ -3,15 +3,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
+import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
-import {
-  paymentById as paymentByIdQuery,
-  updatePayment as updatePaymentQuery,
-} from './queries';
+import { PAYMENT_BY_ID, UPDATE_PAYMENT } from './gql';
 
 import {
   DateField,
@@ -26,13 +24,17 @@ import {
 
 const EditForm = ({ form, match, history }) => {
   const { paymentId } = match.params;
-  const [updatePayment] = useMutation(updatePaymentQuery);
-  const { data, formDataLoading } = useQuery(paymentByIdQuery, {
+  const [updatePayment] = useMutation(UPDATE_PAYMENT);
+  const { data, loading } = useQuery(PAYMENT_BY_ID, {
     variables: { _id: paymentId },
   });
 
+  if (loading) return null;
+  const { paymentById } = data;
+  const { getFieldDecorator } = form;
+
   const handleCancel = () => {
-    history.push(paths.paymentsPath);
+    history.push(paths.goBack());
   };
 
   const handleSubmit = e => {
@@ -67,7 +69,7 @@ const EditForm = ({ form, match, history }) => {
           },
         })
           .then(() => {
-            history.push(paths.paymentsPath);
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -76,11 +78,6 @@ const EditForm = ({ form, match, history }) => {
     );
   };
 
-  if (formDataLoading) return null;
-  const { getFieldDecorator } = form;
-
-  if (!data) return null;
-  const paymentById = data.paymentById;
   return (
     <Fragment>
       <Form layout="horizontal" onSubmit={handleSubmit}>
@@ -95,11 +92,11 @@ const EditForm = ({ form, match, history }) => {
         <SelectField
           data={[
             {
-              value: 'IPT',
+              value: PaymentType.IMDAD_PAYMENT,
               text: 'Imdad Payment',
             },
             {
-              value: 'OPT',
+              value: PaymentType.MISCELLANEOUS_PAYMENT,
               text: 'Miscellaneous Payment',
             },
           ]}
@@ -183,5 +180,5 @@ EditForm.propTypes = {
 
 export default flowRight(
   Form.create(),
-  WithBreadcrumbs(['Accounts', 'Payment', 'Edit'])
+  WithBreadcrumbs(['Accounts', 'Payments', 'Edit'])
 )(EditForm);

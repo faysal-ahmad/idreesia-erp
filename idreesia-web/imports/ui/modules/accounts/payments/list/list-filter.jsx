@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
+import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { Collapse, Form, Row, Button } from '/imports/ui/controls';
 import {
@@ -30,15 +31,10 @@ class ListFilter extends Component {
     form: PropTypes.object,
 
     name: PropTypes.string,
-    fatherName: PropTypes.string,
     cnicNumber: PropTypes.string,
-    contactNumber: PropTypes.string,
     paymentNumber: PropTypes.string,
     paymentType: PropTypes.string,
     paymentAmount: PropTypes.string,
-    description: PropTypes.string,
-
-    hasPortion: PropTypes.string,
     startDate: PropTypes.object,
     endDate: PropTypes.object,
     setPageParams: PropTypes.func,
@@ -102,11 +98,11 @@ class ListFilter extends Component {
             <SelectField
               data={[
                 {
-                  value: 'IPT',
+                  value: PaymentType.IMDAD_PAYMENT,
                   text: 'Imdad Payment',
                 },
                 {
-                  value: 'OPT',
+                  value: PaymentType.MISCELLANEOUS_PAYMENT,
                   text: 'Miscellaneous Payment',
                 },
               ]}

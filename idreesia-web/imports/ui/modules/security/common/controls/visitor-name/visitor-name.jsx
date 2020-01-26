@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 const NameDivStyle = {
   display: 'flex',
@@ -29,7 +29,9 @@ const VisitorName = ({ visitor, onVisitorNameClicked }) => {
       {visitor.name}
     </div>
   ) : (
-    <Link to={`${paths.karkunsPath}/${visitor._id}`}>{visitor.name}</Link>
+    <Link to={`${paths.visitorRegistrationPath}/${visitor._id}`}>
+      {visitor.name}
+    </Link>
   );
 
   let imageUrl;

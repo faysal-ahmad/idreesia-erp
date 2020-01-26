@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+
+import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import { Button, Form, Icon, Input, message } from './antd-controls';
 
@@ -7,15 +10,10 @@ const loginFormButtonStyle = {
   width: '100%',
 };
 
-class LoginForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    form: PropTypes.object,
-  };
+const LoginForm = ({ history, location, form }) => {
+  const dispatch = useDispatch();
 
-  handleSubmit = e => {
-    const { history, location, form } = this.props;
+  const handleSubmit = e => {
     e.preventDefault();
     form.validateFields((err, values) => {
       if (!err) {
@@ -23,8 +21,7 @@ class LoginForm extends Component {
         Meteor.loginWithPassword(userName, password, error => {
           if (!error) {
             history.push(location.pathname);
-            // eslint-disable-next-line no-console
-            console.log(`Login successful. Routing to ${location.pathname}`);
+            dispatch(setLoggedInUserId(Meteor.userId()));
           } else {
             message.error(error.message, 5);
           }
@@ -33,8 +30,7 @@ class LoginForm extends Component {
     });
   };
 
-  handleLoginWithGoogle = () => {
-    const { history, location } = this.props;
+  const handleLoginWithGoogle = () => {
     const options = {
       requestPermissions: ['email'],
     };
@@ -42,69 +38,66 @@ class LoginForm extends Component {
     Meteor.loginWithGoogle(options, error => {
       if (!error) {
         history.push(location.pathname);
-        // eslint-disable-next-line no-console
-        console.log(`Login successful. Routing to ${location.pathname}`);
+        dispatch(setLoggedInUserId(Meteor.userId()));
       } else {
         message.error(error.message, 5);
       }
     });
   };
 
-  getUserNameField() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+  const getUserNameField = () => {
     const rules = [
       {
         required: true,
         message: 'Please input your username.',
       },
     ];
-    return getFieldDecorator('userName', { rules })(
+    return form.getFieldDecorator('userName', { rules })(
       <Input placeholder="Username" />
     );
-  }
+  };
 
-  getPasswordField() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+  const getPasswordField = () => {
     const rules = [
       {
         required: true,
         message: 'Please input your password.',
       },
     ];
-    return getFieldDecorator('password', { rules })(
+    return form.getFieldDecorator('password', { rules })(
       <Input type="password" placeholder="Password" />
     );
-  }
+  };
 
-  render() {
-    const itemLayout = {
-      wrapperCol: { span: 14 },
-    };
+  const itemLayout = {
+    wrapperCol: { span: 14 },
+  };
 
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Form.Item {...itemLayout}>{this.getUserNameField()}</Form.Item>
-        <Form.Item {...itemLayout}>{this.getPasswordField()}</Form.Item>
-        <Form.Item {...itemLayout}>
-          <Button type="primary" htmlType="submit" style={loginFormButtonStyle}>
-            Log in
-          </Button>
-          <Button
-            type="primary"
-            style={loginFormButtonStyle}
-            onClick={this.handleLoginWithGoogle}
-          >
-            <Icon type="google" style={{ fontSize: 20 }} />
-            Log in with Google
-          </Button>
-        </Form.Item>
-      </Form>
-    );
-  }
-}
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Form.Item {...itemLayout}>{getUserNameField()}</Form.Item>
+      <Form.Item {...itemLayout}>{getPasswordField()}</Form.Item>
+      <Form.Item {...itemLayout}>
+        <Button type="primary" htmlType="submit" style={loginFormButtonStyle}>
+          Log in
+        </Button>
+        <Button
+          type="primary"
+          style={loginFormButtonStyle}
+          onClick={handleLoginWithGoogle}
+        >
+          <Icon type="google" style={{ fontSize: 20 }} />
+          Log in with Google
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
+
+LoginForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  form: PropTypes.object,
+};
 
 export default Form.create()(LoginForm);

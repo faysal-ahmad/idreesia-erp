@@ -12,6 +12,12 @@ import AttachmentResolvers from './common/attachments/resolvers';
 import AdminJobSchema from './admin/admin-job/admin-job.graphql';
 import AdminJobResolvers from './admin/admin-job/resolvers';
 
+import UserSchema from './admin/user/user.graphql';
+import UserResolvers from './admin/user/resolvers';
+
+import UserGroupSchema from './admin/user-group/user-group.graphql';
+import UserGroupResolvers from './admin/user-group/resolvers';
+
 /**
  * Schema and Resolvers for the Security module
  */
@@ -116,6 +122,8 @@ import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
 const typeDefs = [
   AttachmentSchema,
   AdminJobSchema,
+  UserSchema,
+  UserGroupSchema,
 
   MehfilSchema,
   MehfilKarkunSchema,
@@ -155,6 +163,8 @@ const typeDefs = [
 const resolvers = merge(
   AttachmentResolvers,
   AdminJobResolvers,
+  UserResolvers,
+  UserGroupResolvers,
 
   MehfilResolvers,
   MehfilKarkunResolvers,

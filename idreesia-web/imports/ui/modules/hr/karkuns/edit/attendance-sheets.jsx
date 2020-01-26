@@ -45,6 +45,7 @@ const listQuery = gql`
 
 const getQueryString = (karkunId, pageIndex, pageSize) =>
   `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+
 const columns = [
   {
     title: 'Month',
@@ -89,6 +90,7 @@ const columns = [
     render: text => `${text}%`,
   },
 ];
+
 const AttendanceSheets = ({ karkunId }) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
@@ -97,6 +99,7 @@ const AttendanceSheets = ({ karkunId }) => {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },
   });
+
   const onChange = (index, size) => {
     setPageIndex(index - 1);
     setPageSize(size);
@@ -106,6 +109,7 @@ const AttendanceSheets = ({ karkunId }) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
+
   if (loading) return null;
 
   return (
@@ -132,6 +136,7 @@ const AttendanceSheets = ({ karkunId }) => {
     />
   );
 };
+
 AttendanceSheets.propTypes = {
   karkunId: PropTypes.string,
   setPageParams: PropTypes.func,
@@ -144,4 +149,5 @@ AttendanceSheets.propTypes = {
     attendance: PropTypes.array,
   }),
 };
+
 export default AttendanceSheets;

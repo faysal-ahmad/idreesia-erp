@@ -1,15 +1,15 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-import { Avatar } from "/imports/ui/controls";
-import getDownloadUrl from "../misc/get-download-url";
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import { Avatar } from '/imports/ui/controls';
 
 const NameDivStyle = {
-  display: "flex",
-  flexFlow: "row nowrap",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "100%",
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
 };
 
 export function getNameWithImageRenderer(
@@ -17,7 +17,7 @@ export function getNameWithImageRenderer(
   imageId,
   name,
   path,
-  iconToUse = "user"
+  iconToUse = 'user'
 ) {
   if (imageId) {
     const url = getDownloadUrl(imageId);

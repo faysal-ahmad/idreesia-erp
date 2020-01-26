@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 
 import { keys, forEach } from 'meteor/idreesia-common/utilities/lodash';
 import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
-import { setActiveModuleName as setActiveModuleNameAction } from 'meteor/idreesia-common/action-creators';
+import { setActiveModuleName } from 'meteor/idreesia-common/action-creators';
 import { Layout, Menu } from './antd-controls';
 import UserMenu from './user-menu';
 
@@ -16,72 +16,59 @@ const ContainerStyle = {
   width: '100%',
 };
 
-const modulePathsMapping = {};
-modulePathsMapping[ModuleNames.admin] = ModulePaths.admin;
-modulePathsMapping[ModuleNames.accounts] = ModulePaths.accounts;
-modulePathsMapping[ModuleNames.hr] = ModulePaths.hr;
-modulePathsMapping[ModuleNames.inventory] = ModulePaths.inventory;
-modulePathsMapping[ModuleNames.security] = ModulePaths.security;
+const modulePathsMapping = {
+  [ModuleNames.admin]: ModulePaths.admin,
+  [ModuleNames.accounts]: ModulePaths.accounts,
+  [ModuleNames.hr]: ModulePaths.hr,
+  [ModuleNames.inventory]: ModulePaths.inventory,
+  [ModuleNames.security]: ModulePaths.security,
+};
 
-class HeaderContent extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    userById: PropTypes.object,
-    setActiveModuleName: PropTypes.func,
-  };
+const isModuleAccessible = (user, moduleName) => {
+  // For a module to be accessible to the user, the user needs to have at least
+  // one permission for that module.
+  const { permissions } = user;
+  const lcModuleName = moduleName.toLowerCase();
+  let isAccessible = false;
+  forEach(permissions, permission => {
+    if (permission.startsWith(lcModuleName)) {
+      isAccessible = true;
+    }
+  });
 
-  handleMenuItemSelected = ({ item /* , key, selectedKeys */ }) => {
-    const moduleName = item.props.children;
-    const modulePath = modulePathsMapping[moduleName];
-    const { history, setActiveModuleName } = this.props;
-    history.push(modulePath);
-    setActiveModuleName(moduleName);
-  };
+  return isAccessible;
+};
 
-  componentDidMount() {
-    // We need to set the active module on initial mount
-    const { location, setActiveModuleName } = this.props;
-    const { pathname } = location;
+const HeaderContent = ({ history, location, user }) => {
+  const dispatch = useDispatch();
+  const { pathname } = location;
 
+  useEffect(() => {
     if (pathname !== '/') {
       const moduleNames = keys(modulePathsMapping);
       forEach(moduleNames, moduleName => {
         const modulePath = modulePathsMapping[moduleName];
         if (pathname.startsWith(modulePath)) {
-          setActiveModuleName(moduleName);
+          dispatch(setActiveModuleName(moduleName));
         }
       });
     }
-  }
+  });
 
-  isModuleAccessible = moduleName => {
-    // For a module to be accessible to the user, the user needs to have at least
-    // one permission for that module.
-    const {
-      userById: { permissions },
-    } = this.props;
-
-    const lcModuleName = moduleName.toLowerCase();
-    let isAccessible = false;
-    forEach(permissions, permission => {
-      if (permission.startsWith(lcModuleName)) {
-        isAccessible = true;
-      }
-    });
-
-    return isAccessible;
+  const handleMenuItemSelected = ({ item /* , key, selectedKeys */ }) => {
+    const moduleName = item.props.children;
+    const modulePath = modulePathsMapping[moduleName];
+    history.push(modulePath);
+    dispatch(setActiveModuleName(moduleName));
   };
 
-  render() {
-    const menuItems = [];
-    const selectedMenuItemKey = [];
-    const { history, location } = this.props;
-    const { pathname } = location;
+  const menuItems = [];
+  const selectedMenuItemKey = [];
 
+  if (user) {
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName, index) => {
-      const isAccessible = this.isModuleAccessible(moduleName);
+      const isAccessible = isModuleAccessible(user, moduleName);
       if (isAccessible) {
         const modulePath = modulePathsMapping[moduleName];
         menuItems.push(
@@ -92,34 +79,30 @@ class HeaderContent extends Component {
         }
       }
     });
-
-    return (
-      <Layout.Header>
-        <div style={ContainerStyle}>
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            defaultSelectedKeys={selectedMenuItemKey}
-            style={{ lineHeight: '64px' }}
-            onSelect={this.handleMenuItemSelected}
-          >
-            {menuItems}
-          </Menu>
-          <UserMenu history={history} location={location} />
-        </div>
-      </Layout.Header>
-    );
   }
-}
 
-const mapDispatchToProps = dispatch => ({
-  setActiveModuleName: moduleName => {
-    dispatch(setActiveModuleNameAction(moduleName));
-  },
-});
+  return (
+    <Layout.Header>
+      <div style={ContainerStyle}>
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={selectedMenuItemKey}
+          style={{ lineHeight: '64px' }}
+          onSelect={handleMenuItemSelected}
+        >
+          {menuItems}
+        </Menu>
+        <UserMenu history={history} location={location} />
+      </div>
+    </Layout.Header>
+  );
+};
 
-const HeaderContentContainer = connect(
-  null,
-  mapDispatchToProps
-)(HeaderContent);
-export default HeaderContentContainer;
+HeaderContent.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  user: PropTypes.object,
+};
+
+export default HeaderContent;

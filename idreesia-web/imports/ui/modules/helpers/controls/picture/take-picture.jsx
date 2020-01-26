@@ -2,8 +2,8 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
+import { getUploadUrl } from 'meteor/idreesia-common/utilities';
 import { Button, Icon, Modal, message } from '/imports/ui/controls';
-import { getUploadUrl } from '/imports/ui/modules/helpers/misc';
 import TakePictureForm from './take-picture-form';
 
 export default class TakePicture extends Component {

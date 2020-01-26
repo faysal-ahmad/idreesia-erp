@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import { Switch, Form } from "/imports/ui/controls";
+import { Switch, Form } from '/imports/ui/controls';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -32,9 +32,11 @@ export default class SwitchField extends Component {
   getField() {
     const { fieldName, getFieldDecorator, initialValue } = this.props;
 
-    return getFieldDecorator(fieldName, { initialValue })(
+    return getFieldDecorator(fieldName, {
+      initialValue,
+      valuePropName: 'checked',
+    })(
       <Switch
-        defaultChecked={initialValue}
         onChange={checked => {
           if (this.props.handleChange) {
             this.props.handleChange(checked);

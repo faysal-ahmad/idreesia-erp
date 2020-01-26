@@ -72,6 +72,38 @@ export default {
       return null;
     },
 
+    visitorByCnicOrContactNumber(obj, { cnicNumber, contactNumber }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_VIEW_VISITORS,
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        return null;
+      }
+
+      let visitor = null;
+
+      if (cnicNumber) {
+        visitor = Visitors.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+      }
+
+      if (visitor) return visitor;
+
+      if (contactNumber) {
+        visitor = Visitors.findOne({
+          $or: [
+            { contactNumber1: contactNumber },
+            { contactNumber2: contactNumber },
+          ],
+        });
+      }
+
+      return visitor;
+    },
+
     distinctCities() {
       const distincFunction = Meteor.wrapAsync(
         Visitors.rawCollection().distinct,

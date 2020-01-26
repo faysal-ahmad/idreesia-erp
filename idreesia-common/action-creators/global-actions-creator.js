@@ -1,9 +1,9 @@
 import { ActionNames } from '../constants';
 
-export function setLoggedInUser(user) {
+export function setLoggedInUserId(userId) {
   return {
-    type: ActionNames.SET_LOGGED_IN_USER,
-    user,
+    type: ActionNames.SET_LOGGED_IN_USER_ID,
+    userId,
   };
 }
 

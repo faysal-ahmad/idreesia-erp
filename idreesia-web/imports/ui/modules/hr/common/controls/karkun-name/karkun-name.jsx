@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
 
 const NameDivStyle = {
   display: 'flex',
@@ -61,7 +61,7 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
-        <img src={imageUrl} />
+        <img src={imageUrl} style={{ maxWidth: '470px' }} />
       </Modal>
     </>
   );

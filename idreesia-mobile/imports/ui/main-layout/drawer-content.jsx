@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard';
-import { faBarcode } from '@fortawesome/free-solid-svg-icons/faBarcode';
 
 import { setActiveModuleAndSubModuleName } from 'meteor/idreesia-common/action-creators';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
@@ -22,46 +21,35 @@ const IconStyle = {
 
 const DrawerContent = ({ history, toggleDrawer }) => {
   const dispatch = useDispatch();
-  const loggedInUser = useSelector(state => state.loggedInUser);
+  const loggedInUserId = useSelector(state => state.loggedInUserId);
   const userProfile = (
-    <UserProfile history={history} loggedInUser={loggedInUser} />
+    <UserProfile history={history} loggedInUserId={loggedInUserId} />
   );
 
   return (
     <>
       {userProfile}
-      <List renderHeader="Security">
-        <List.Item
-          onClick={() => {
-            toggleDrawer();
-            dispatch(
-              setActiveModuleAndSubModuleName(
-                ModuleNames.security,
-                SecuritySubModuleNames.visitorRegistration
-              )
-            );
-            history.push(SecuritySubModulePaths.visitorRegistrationNewFormPath);
-          }}
-          thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
-        >
-          Visitor Registration
-        </List.Item>
-        <List.Item
-          onClick={() => {
-            toggleDrawer();
-            dispatch(
-              setActiveModuleAndSubModuleName(
-                ModuleNames.security,
-                SecuritySubModuleNames.mehfilCardVerification
-              )
-            );
-            history.push(SecuritySubModulePaths.mehfilCardVerificationPath);
-          }}
-          thumb={<FontAwesomeIcon icon={faBarcode} style={IconStyle} />}
-        >
-          Mehfil Card Verification
-        </List.Item>
-      </List>
+      {loggedInUserId ? (
+        <List renderHeader="Security">
+          <List.Item
+            onClick={() => {
+              toggleDrawer();
+              dispatch(
+                setActiveModuleAndSubModuleName(
+                  ModuleNames.security,
+                  SecuritySubModuleNames.visitorRegistration
+                )
+              );
+              history.push(
+                SecuritySubModulePaths.visitorRegistrationSearchPath
+              );
+            }}
+            thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
+          >
+            Visitor Registration
+          </List.Item>
+        </List>
+      ) : null}
     </>
   );
 };

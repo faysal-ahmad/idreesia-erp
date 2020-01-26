@@ -3,14 +3,14 @@ import {
   activeModuleName,
   activeSubModuleName,
   breadcrumbs,
-  loggedInUser,
+  loggedInUserId,
 } from './global-reducer';
 
 const combinedReducer = combineReducers({
   activeModuleName,
   activeSubModuleName,
   breadcrumbs,
-  loggedInUser,
+  loggedInUserId,
 });
 
 export default combinedReducer;

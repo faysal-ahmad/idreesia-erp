@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { Layout } from './antd-controls';
 
 const routersMap = {
@@ -23,8 +23,8 @@ const routersMap = {
   ),
 };
 
-const MainContent = props => {
-  const { activeModuleName } = props;
+const MainContent = () => {
+  const activeModuleName = useSelector(state => state.activeModuleName);
   const Router = routersMap[activeModuleName];
 
   let main = <div />;
@@ -48,9 +48,6 @@ const MainContent = props => {
 MainContent.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
-  activeModuleName: PropTypes.string,
-  activeSubModuleName: PropTypes.string,
 };
 
-const MainContentContainer = WithActiveModule()(MainContent);
-export default MainContentContainer;
+export default MainContent;

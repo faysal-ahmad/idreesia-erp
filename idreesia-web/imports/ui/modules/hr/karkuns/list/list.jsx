@@ -88,11 +88,13 @@ class List extends Component {
     key: 'contactNumber',
     render: (text, record) => {
       const numbers = [];
-      if (record.contactNumber1) numbers.push(record.contactNumber1);
-      if (record.contactNumber2) numbers.push(record.contactNumber2);
+      if (record.contactNumber1)
+        numbers.push(<Row key="1">{record.contactNumber1}</Row>);
+      if (record.contactNumber2)
+        numbers.push(<Row key="2">{record.contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
-      return numbers.join(', ');
+      return <>{numbers}</>;
     },
   };
 
@@ -144,7 +146,7 @@ class List extends Component {
   actionsColumn = {
     key: 'action',
     render: (text, record) => (
-      <>
+      <div className="list-actions-column">
         <Tooltip title="Print">
           <Icon
             type="printer"
@@ -166,7 +168,7 @@ class List extends Component {
             <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
-      </>
+      </div>
     ),
   };
 

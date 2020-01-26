@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useDispatch } from 'react-redux';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { getDownloadUrl } from '/imports/ui/modules/helpers/misc';
+import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
+import {
+  setLoggedInUserId,
+  setActiveModuleName,
+  setActiveSubModuleName,
+} from 'meteor/idreesia-common/action-creators';
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Dropdown, Menu, Modal, message } from './antd-controls';
 import ChangePasswordForm from './change-password-form';
 
@@ -17,25 +20,15 @@ const ContainerStyle = {
   alignItems: 'center',
 };
 
-class UserMenu extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    setActiveModuleName: PropTypes.func,
-    setActiveSubModuleName: PropTypes.func,
+const UserMenu = ({ history }) => {
+  const dispatch = useDispatch();
+  const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
+  const changePasswordForm = useRef(null);
+  const { user, userLoading } = useLoggedInUser();
 
-    karkunByUserId: PropTypes.object,
-  };
+  if (userLoading) return null;
 
-  state = {
-    showChangePasswordForm: false,
-  };
-
-  changePasswordForm;
-
-  handleMenuItemClicked = ({ key }) => {
-    const { history, setActiveModuleName, setActiveSubModuleName } = this.props;
-
+  const handleMenuItemClicked = ({ key }) => {
     switch (key) {
       case 'logout':
         Meteor.logoutOtherClients();
@@ -45,15 +38,14 @@ class UserMenu extends Component {
             console.log(error);
           }
           history.push('/');
-          setActiveModuleName(null);
-          setActiveSubModuleName(null);
+          dispatch(setLoggedInUserId(null));
+          dispatch(setActiveModuleName(null));
+          dispatch(setActiveSubModuleName(null));
         });
         break;
 
       case 'change-password':
-        this.setState({
-          showChangePasswordForm: true,
-        });
+        setShowChangePasswordForm(true);
         break;
 
       default:
@@ -61,15 +53,13 @@ class UserMenu extends Component {
     }
   };
 
-  handleChagePassword = () => {
-    this.changePasswordForm.validateFields(null, (err, values) => {
+  const handleChagePassword = () => {
+    changePasswordForm.current.validateFields(null, (err, values) => {
       if (!err) {
         const { oldPassword, newPassword } = values;
 
         Accounts.changePassword(oldPassword, newPassword, error => {
-          this.setState({
-            showChangePasswordForm: false,
-          });
+          setShowChangePasswordForm(false);
 
           if (!error) {
             Meteor.logoutOtherClients();
@@ -83,74 +73,53 @@ class UserMenu extends Component {
     });
   };
 
-  handleChangePasswordCancelled = () => {
-    this.setState({
-      showChangePasswordForm: false,
-    });
+  const handleChangePasswordCancelled = () => {
+    setShowChangePasswordForm(false);
   };
 
-  render() {
-    const { karkunByUserId } = this.props;
-    const { showChangePasswordForm } = this.state;
-    const userName = karkunByUserId ? karkunByUserId.name : '';
+  const userName = user.karkun ? user.karkun.name : user.displayName;
 
-    let avatar = <Avatar size="large" icon="user" />;
-    if (karkunByUserId && karkunByUserId.imageId) {
-      const url = getDownloadUrl(karkunByUserId.imageId);
-      avatar = <Avatar size="large" src={url} />;
-    }
+  let avatar = <Avatar size="large" icon="user" />;
+  if (user.karkun && user.karkun.imageId) {
+    const url = getDownloadUrl(user.karkun.imageId);
+    avatar = <Avatar size="large" src={url} />;
+  }
 
-    const menu = (
-      <Menu
-        style={{ height: '100%', borderRight: 0 }}
-        onClick={this.handleMenuItemClicked}
+  const menu = (
+    <Menu
+      style={{ height: '100%', borderRight: 0 }}
+      onClick={handleMenuItemClicked}
+    >
+      <Menu.Item key="change-password">Change Password</Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="logout">Logout</Menu.Item>
+    </Menu>
+  );
+
+  return (
+    <>
+      <Dropdown overlay={menu} placement="bottomLeft">
+        <div style={ContainerStyle}>
+          <div style={{ color: '#FFFFFF' }}>{userName}</div>
+          &nbsp; &nbsp;
+          {avatar}
+        </div>
+      </Dropdown>
+      <Modal
+        title="Change Password"
+        visible={showChangePasswordForm}
+        onOk={handleChagePassword}
+        onCancel={handleChangePasswordCancelled}
       >
-        <Menu.Item key="change-password">Change Password</Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="logout">Logout</Menu.Item>
-      </Menu>
-    );
+        <ChangePasswordForm ref={changePasswordForm} />
+      </Modal>
+    </>
+  );
+};
 
-    return (
-      <>
-        <Dropdown overlay={menu} placement="bottomLeft">
-          <div style={ContainerStyle}>
-            <div style={{ color: '#FFFFFF' }}>{userName}</div>
-            &nbsp; &nbsp;
-            {avatar}
-          </div>
-        </Dropdown>
-        <Modal
-          title="Change Password"
-          visible={showChangePasswordForm}
-          onOk={this.handleChagePassword}
-          onCancel={this.handleChangePasswordCancelled}
-        >
-          <ChangePasswordForm
-            ref={f => {
-              this.changePasswordForm = f;
-            }}
-          />
-        </Modal>
-      </>
-    );
-  }
-}
+UserMenu.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-const formQuery = gql`
-  query karkunByUserId($userId: String!) {
-    karkunByUserId(userId: $userId) {
-      _id
-      name
-      imageId
-    }
-  }
-`;
-
-export default flowRight(
-  WithActiveModule(),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: () => ({ variables: { userId: Meteor.userId() } }),
-  })
-)(UserMenu);
+export default UserMenu;

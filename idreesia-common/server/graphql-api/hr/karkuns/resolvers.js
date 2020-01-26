@@ -1,4 +1,4 @@
-import { compact, get, values } from 'lodash';
+import { compact } from 'lodash';
 import {
   Jobs,
   Karkuns,
@@ -14,17 +14,6 @@ import { canDeleteKarkun } from './helpers';
 
 export default {
   KarkunType: {
-    user: karkunType => {
-      if (!karkunType.userId) return null;
-      const user = Meteor.users.findOne(karkunType.userId);
-      return {
-        _id: user._id,
-        username: user.username,
-        email: get(user, 'emails.0.address', null),
-        permissions: user.permissions,
-        instances: user.instances,
-      };
-    },
     image: karkunType => {
       const { imageId } = karkunType;
       if (imageId) {
@@ -52,64 +41,12 @@ export default {
   },
 
   Query: {
-    userById(obj, { _id }) {
-      const user = Meteor.users.findOne(_id);
-      if (user.username !== 'erp-admin') return user;
-
-      const adminUser = Object.assign({}, user);
-      adminUser.permissions = values(PermissionConstants);
-      return adminUser;
-    },
-
-    allKarkunsWithAccounts(obj, params, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_ACCOUNTS])
-      ) {
-        return [];
-      }
-
-      return Karkuns.find({
-        userId: { $ne: null },
-      }).fetch();
-    },
-
     pagedKarkuns(obj, { queryString }) {
       return getKarkuns(queryString);
     },
 
     karkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
-    },
-
-    karkunByUserId(obj, { userId }) {
-      return Karkuns.findOne({
-        userId: { $eq: userId },
-      });
-    },
-
-    karkunNames(obj, { ids }) {
-      const names = [];
-      if (!ids) return names;
-
-      const idsToSearch = compact(ids);
-      idsToSearch.forEach(id => {
-        const karkun = Karkuns.findOne({
-          userId: { $eq: id },
-        });
-
-        if (karkun) {
-          names.push(karkun.name);
-        } else {
-          const user = Meteor.users.findOne(id);
-          if (user.username === 'erp-admin') {
-            names.push('ERP Admin');
-          } else {
-            names.push('Unknown User');
-          }
-        }
-      });
-
-      return names;
     },
   },
 
@@ -384,120 +321,6 @@ export default {
 
       Attachments.remove(attachmentId);
       return Karkuns.findOne(_id);
-    },
-
-    createAccount(obj, { karkunId, userName, password, email }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Accounts in the System.'
-        );
-      }
-
-      if (userName) {
-        const existingUser = Accounts.findUserByUsername(userName);
-        if (existingUser) {
-          throw new Error(`User name '${userName}' is already in use.`);
-        }
-      }
-
-      const existingkarkun = Karkuns.findOne(karkunId);
-      if (existingkarkun.userId) {
-        throw new Error(`This karkun already has a user account.`);
-      }
-
-      const newUserId = Accounts.createUser({
-        username: userName,
-        email,
-        password,
-      });
-
-      const time = Date.now();
-      Karkuns.update(karkunId, {
-        $set: {
-          userId: newUserId,
-          updatedAt: time,
-        },
-      });
-
-      return Karkuns.findOne(karkunId);
-    },
-
-    updateAccount(obj, { userId, password, email }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Accounts in the System.'
-        );
-      }
-
-      if (password) {
-        Accounts.setPassword(userId, password);
-      }
-
-      if (email) {
-        Meteor.users.update(userId, {
-          $set: {
-            'emails.0.address': email,
-          },
-        });
-      } else {
-        Meteor.users.update(userId, {
-          $unset: {
-            emails: '',
-          },
-        });
-      }
-
-      return Karkuns.findOne({ userId });
-    },
-
-    deleteAccount(obj, { karkunId, karkunUserId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Accounts in the System.'
-        );
-      }
-
-      const time = Date.now();
-      Karkuns.update(karkunId, {
-        $set: {
-          userId: null,
-          updatedAt: time,
-        },
-      });
-
-      return Meteor.users.remove(karkunUserId);
-    },
-
-    setPermissions(obj, { karkunId, karkunUserId, permissions }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Accounts in the System.'
-        );
-      }
-
-      Meteor.users.update(karkunUserId, { $set: { permissions } });
-      return Karkuns.findOne(karkunId);
-    },
-
-    setInstanceAccess(obj, { karkunId, karkunUserId, instances }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_ACCOUNTS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Accounts in the System.'
-        );
-      }
-
-      Meteor.users.update(karkunUserId, { $set: { instances } });
-      return Karkuns.findOne(karkunId);
     },
   },
 };

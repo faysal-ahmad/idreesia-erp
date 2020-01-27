@@ -3,4 +3,9 @@ const PaymentType = {
   MISCELLANEOUS_PAYMENT: 'miscellaneous-payment',
 };
 
+export const PaymentTypeDisplayNames = {
+  'imdad-payment': 'Imdad Payment',
+  'miscellaneous-payment': 'Miscellaneous Payment',
+};
+
 export default PaymentType;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
+import { PaymentTypeDisplayNames } from 'meteor/idreesia-common/constants/accounts';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
 import { Item } from './item';
@@ -25,21 +26,21 @@ export default class PaymentReceipts extends Component {
     paymentById: PropTypes.object,
   };
 
-  getPaymentReceipts = payment => {
+  getPaymentReceipt = payment => {
     const formattedDate = moment().format('DD-MM-YYYY h:mm a');
     return (
       <div key={payment._id} className="payment-receipt-print-view">
         <Row type="flex" justify="space-between" style={HeaderStyle}>
           <Col order={1} style={{ marginLeft: '10px' }}>
-            <Item label="No" value={payment.paymentNumber} />
+            {payment.paymentNumber}
           </Col>
           <Col order={2}>
             <div style={{ fontSize: '22px', fontWeight: 'bold' }}>
               Payment Receipt
             </div>
           </Col>
-          <Col order={3} style={{ marginRight: '10px' }} Í>
-            <div>{payment.paymentType}</div>
+          <Col order={3} style={{ marginRight: '10px' }}>
+            <div>{PaymentTypeDisplayNames[payment.paymentType]}</div>
           </Col>
         </Row>
         <Row type="flex" justify="start" gutter={10}>
@@ -70,17 +71,20 @@ export default class PaymentReceipts extends Component {
                 <Item label="CNIC" value={payment.cnicNumber || ''} />
               </Col>
               <Col order={2} style={{ minWidth: '350px' }}>
-                <Item label="Cell#" value={payment.contactNumber} />
+                <Item label="Mobile No." value={payment.contactNumber} />
               </Col>
             </Row>
             <Row type="flex">
               <Col order={1} style={{ minWidth: '350px' }}>
-                <Item label="Signature" value={'' || ''} />
+                <Item label="Signature" value="" />
+              </Col>
+              <Col order={1} style={{ minWidth: '350px' }}>
+                <Item label="Approved By" value="" />
               </Col>
             </Row>
           </Col>
         </Row>
-        <Divider style={{ 'margin-top': '60px' }} />
+        <Divider />
         <Row>
           <Col order={1}>printed at : {formattedDate}</Col>
         </Row>
@@ -90,22 +94,13 @@ export default class PaymentReceipts extends Component {
 
   render() {
     const { paymentById } = this.props;
-    const receiptsForPage = this.getPaymentReceipts(paymentById);
+    const receiptForPage = this.getPaymentReceipt(paymentById);
 
-    let index = 0;
-    const receiptContainers = [];
-
-    receiptContainers.push(
-      <div key={`container_${index}`} style={ContainerStyle}>
-        {receiptsForPage}
+    return (
+      <div>
+        <div style={ContainerStyle}>{receiptForPage}</div>
+        <div style={ContainerStyle}>{receiptForPage}</div>
       </div>
     );
-    index++;
-    receiptContainers.push(
-      <div key={`container_${index}`} style={ContainerStyle}>
-        {receiptsForPage}
-      </div>
-    );
-    return <div>{receiptContainers}</div>;
   }
 }

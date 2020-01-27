@@ -7,7 +7,6 @@ import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 import { PAYMENT_BY_ID, UPDATE_PAYMENT } from './gql';
 
@@ -34,7 +33,7 @@ const EditForm = ({ form, match, history }) => {
   const { getFieldDecorator } = form;
 
   const handleCancel = () => {
-    history.push(paths.goBack());
+    history.goBack();
   };
 
   const handleSubmit = e => {

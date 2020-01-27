@@ -7,6 +7,7 @@ class PaymentsHistory extends AggregatableCollection {
     vouchers.attachSchema(PaymentsHistorySchema);
     return vouchers;
   }
+
   getNextVersionForPaymentHistory(paymentId) {
     const history = this.findOne(
       {
@@ -18,6 +19,7 @@ class PaymentsHistory extends AggregatableCollection {
         },
       }
     );
+
     return history ? history.version + 1 : 1;
   }
 }

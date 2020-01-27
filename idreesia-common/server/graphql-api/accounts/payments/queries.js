@@ -5,7 +5,18 @@ import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-export function getPayments(queryString) {
+async function getPaymentIdsByNameSearch(name) {
+  const pipeline = [
+    { $match: { $text: { $search: name } } },
+    { $sort: { score: { $meta: 'textScore' } } },
+    { $limit: 50 },
+  ];
+
+  const payments = await Payments.aggregate(pipeline).toArray();
+  return payments.map(({ _id }) => _id);
+}
+
+export async function getPayments(queryString) {
   const params = parse(queryString);
   const pipeline = [];
   const {
@@ -21,12 +32,14 @@ export function getPayments(queryString) {
   } = params;
 
   if (name) {
+    const paymentIds = await getPaymentIdsByNameSearch(name);
     pipeline.push({
       $match: {
-        name: { $eq: name },
+        _id: { $in: paymentIds },
       },
     });
   }
+
   if (isDeleted) {
     pipeline.push({
       $match: {
@@ -40,6 +53,7 @@ export function getPayments(queryString) {
       },
     });
   }
+
   if (cnicNumber) {
     pipeline.push({
       $match: {
@@ -47,6 +61,7 @@ export function getPayments(queryString) {
       },
     });
   }
+
   if (paymentType) {
     pipeline.push({
       $match: {
@@ -54,6 +69,7 @@ export function getPayments(queryString) {
       },
     });
   }
+
   if (paymentAmount) {
     pipeline.push({
       $match: {
@@ -61,6 +77,7 @@ export function getPayments(queryString) {
       },
     });
   }
+
   if (startDate) {
     pipeline.push({
       $match: {
@@ -72,6 +89,7 @@ export function getPayments(queryString) {
       },
     });
   }
+
   if (endDate) {
     pipeline.push({
       $match: {
@@ -83,6 +101,7 @@ export function getPayments(queryString) {
       },
     });
   }
+
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([

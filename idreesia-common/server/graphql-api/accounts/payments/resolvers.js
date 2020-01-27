@@ -23,15 +23,14 @@ const loaderFunction = async keys => {
 const loader = new DataLoader(loaderFunction);
 export default {
   Payment: {
-    history: payment => {
-      return loader.load(payment._id);
-    },
+    history: payment => loader.load(payment._id),
   },
   Query: {
     pagedPayments(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
+          PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
         ])
       ) {
         return {
@@ -47,13 +46,13 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
+          PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
         ])
       ) {
         return null;
       }
 
-      const payment = Payments.findOne(_id);
-      return payment;
+      return Payments.findOne(_id);
     },
   },
   Mutation: {
@@ -80,6 +79,7 @@ export default {
           'You do not have permission to manage Payments in the System.'
         );
       }
+
       const date = new Date();
       const paymentNumber = Payments.getNextPaymentNo(paymentType, date);
       const paymentId = Payments.insert({
@@ -99,6 +99,7 @@ export default {
         updatedBy: user._id,
         createdBy: user._id,
       });
+
       return Payments.findOne(paymentId);
     },
 
@@ -126,6 +127,7 @@ export default {
           'You do not have permission to manage Payments in the System.'
         );
       }
+
       const date = new Date();
       const payment = Payments.findOne(_id);
       const version = PaymentsHistory.getNextVersionForPaymentHistory(_id);
@@ -143,9 +145,9 @@ export default {
         description: payment.description,
         paymentDate: payment.paymentDate,
         createdAt: date,
+        createdBy: user._id,
         updatedAt: date,
         updatedBy: user._id,
-        createdBy: user._id,
       });
 
       Payments.update(
@@ -181,6 +183,7 @@ export default {
           'You do not have permission to manage Payments in the System.'
         );
       }
+
       const date = new Date();
       Payments.update(
         {
@@ -196,6 +199,7 @@ export default {
           },
         }
       );
+
       const payment = Payments.findOne(_id);
       const version = PaymentsHistory.getNextVersionForPaymentHistory(
         payment._id

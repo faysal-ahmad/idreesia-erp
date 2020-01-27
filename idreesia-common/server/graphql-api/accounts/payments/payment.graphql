@@ -50,7 +50,6 @@ extend type Mutation {
     paymentType: String
     paymentDate: String
     description: String
-
   ): Payment
 
   removePayment(_id: String!): Boolean

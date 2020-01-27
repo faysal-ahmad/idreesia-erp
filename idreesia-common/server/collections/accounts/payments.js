@@ -8,6 +8,7 @@ class Payments extends AggregatableCollection {
     vouchers.attachSchema(PaymentSchema);
     return vouchers;
   }
+
   getNextPaymentNo(paymentType, paymentDate) {
     const currentDate = moment(paymentDate);
     let year = moment().year();
@@ -30,6 +31,7 @@ class Payments extends AggregatableCollection {
         },
       }
     );
+
     return payment ? payment.paymentNumber + 1 : 1;
   }
 }

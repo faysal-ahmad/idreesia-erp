@@ -47,18 +47,18 @@ class AccountsSidebar extends Component {
 
     const subMenus = [];
     subMenus.push(
-      <Menu.Item key="amaanat-logs">
+      <Menu.Item key="payments">
         <span>
-          <Icon type="bars" />
-          Amaanat Logs
+          <Icon type="dollar" />
+          Payments
         </span>
       </Menu.Item>
     );
     subMenus.push(
-      <Menu.Item key="payments">
+      <Menu.Item key="amaanat-logs">
         <span>
           <Icon type="bars" />
-          Payments
+          Amaanat Logs
         </span>
       </Menu.Item>
     );

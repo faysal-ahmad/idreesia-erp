@@ -44,7 +44,7 @@ class List extends Component {
 
   columns = [
     {
-      title: 'Voucher No',
+      title: 'Voucher No.',
       dataIndex: 'paymentNumber',
       key: 'paymentNumber',
     },

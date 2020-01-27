@@ -8,7 +8,7 @@ export default {
     pagedPaymentHistory(obj, { paymentId }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_VIEW_PAYMENTS_HISTORY,
+          PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
         ])
       ) {
         return {

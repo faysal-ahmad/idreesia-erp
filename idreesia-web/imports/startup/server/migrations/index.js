@@ -20,6 +20,7 @@ import './16-create-security-indexes';
 import './17-update-salary-structure';
 import './18-create-security-indexes';
 import './19-update-users';
+import './20-create-account-payment-indexes';
 
 Migrations.config({
   log: true,

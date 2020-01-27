@@ -106,6 +106,20 @@ export const permissionsData = [
         ],
       },
       {
+        title: 'Payments',
+        key: 'module-accounts-payments',
+        children: [
+          {
+            title: 'View Payments',
+            key: PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
+          },
+          {
+            title: 'Manage Payments',
+            key: PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
+          },
+        ],
+      },
+      {
         title: 'Amaanat Logs',
         key: 'module-accounts-amaanat-logs',
         children: [

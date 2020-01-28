@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import { JobsNewForm, JobsEditForm, JobsList } from './jobs';
+import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import { DutiesNewForm, DutiesEditForm, DutiesList } from './duties';
 import {
   DutyLocationsNewForm,
@@ -37,6 +38,10 @@ const HRRouter = () => (
     <Route path={paths.jobsNewFormPath} component={JobsNewForm} />
     <Route path={paths.jobsEditFormPath()} component={JobsEditForm} />
     <Route path={paths.jobsPath} component={JobsList} />
+
+    <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
+    <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />
+    <Route path={paths.citiesPath} component={CitiesList} />
 
     <Route path={paths.dutiesNewFormPath} component={DutiesNewForm} />
     <Route path={paths.dutiesEditFormPath()} component={DutiesEditForm} />

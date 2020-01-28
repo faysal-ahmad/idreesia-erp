@@ -106,9 +106,9 @@ class HRSidebar extends Component {
           }
         >
           <Menu.Item key="jobs">Jobs</Menu.Item>
-          <Menu.Item key="cities">Cities &amp; Mehfils</Menu.Item>
           <Menu.Item key="duties">Duties &amp; Shifts</Menu.Item>
           <Menu.Item key="duty-locations">Duty Locations</Menu.Item>
+          <Menu.Item key="cities">Cities &amp; Mehfils</Menu.Item>
         </SubMenu>
       </Menu>
     );

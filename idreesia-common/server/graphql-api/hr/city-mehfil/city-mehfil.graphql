@@ -11,7 +11,7 @@ type CityMehfilType {
 }
 
 extend type Query {
-  allCityShifts: [CityMehfilType]
+  allCityMehfils: [CityMehfilType]
   cityMehfilsByCityId(cityId: String!): [CityMehfilType]
   cityMehfilById(_id: String!): CityMehfilType
 }

@@ -1,0 +1,23 @@
+type CityType {
+  _id: String
+  name: String
+  country: String
+ 
+  mehfils: [CityMehfilType]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allCities: [CityType]
+  cityById(_id: String!): CityType
+}
+
+extend type Mutation {
+  createCity(name: String!, country: String): CityType
+  updateCity(id: String!, name: String!, country: String): CityType
+  removeCity(_id: String!): Int
+}

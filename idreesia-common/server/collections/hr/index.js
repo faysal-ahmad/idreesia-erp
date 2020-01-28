@@ -1,4 +1,6 @@
 export { default as Jobs } from './jobs';
+export { default as Cities } from './cities';
+export { default as CityMehfils } from './city-mehfils';
 export { default as Duties } from './duties';
 export { default as DutyShifts } from './duty-shifts';
 export { default as DutyLocations } from './duty-locations';

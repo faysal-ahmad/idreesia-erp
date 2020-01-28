@@ -10,6 +10,12 @@ export default class SubModulePaths {
     return `${SubModulePaths.jobsPath}/${jobId}`;
   }
 
+  static citiesPath = `${ModulePaths.hr}/cities`;
+  static citiesNewFormPath = `${SubModulePaths.citiesPath}/new`;
+  static citiesEditFormPath(cityId = ':cityId') {
+    return `${SubModulePaths.citiesPath}/${cityId}`;
+  }
+
   static dutiesPath = `${ModulePaths.hr}/duties`;
   static dutiesNewFormPath = `${SubModulePaths.dutiesPath}/new`;
   static dutiesEditFormPath(dutyId = ':dutyId') {
@@ -20,6 +26,9 @@ export default class SubModulePaths {
   static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
   static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
 
+  // ******************************************************************************
+  // Karkuns
+  // ******************************************************************************
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsScanCardPath = `${SubModulePaths.karkunsPath}/scan-card`;

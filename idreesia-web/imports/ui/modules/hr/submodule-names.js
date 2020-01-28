@@ -1,6 +1,7 @@
 const SubModuleNames = {
   jobs: 'Jobs',
-  duties: 'Duties',
+  cities: 'Cities & Mehfils',
+  duties: 'Duties & Shifts',
   dutyLocations: 'Duty Locations',
   karkuns: 'Karkuns',
   sharedResidences: 'Shared Residences',

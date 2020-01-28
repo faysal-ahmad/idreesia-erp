@@ -30,7 +30,7 @@ extend type Mutation {
     attendanceSheet: String
   ): DutyShiftType
   updateDutyShift(
-    id: String!
+    _id: String!
     name: String!
     dutyId: String!
     startTime: String

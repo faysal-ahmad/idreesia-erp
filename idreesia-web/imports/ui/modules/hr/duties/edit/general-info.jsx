@@ -4,9 +4,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
@@ -28,7 +26,7 @@ class EditForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.dutiesPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -46,7 +44,7 @@ class EditForm extends Component {
         },
       })
         .then(() => {
-          history.push(paths.dutiesPath);
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -140,10 +138,6 @@ export default flowRight(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { dutyId } = match.params;
-      return { variables: { id: dutyId } };
-    },
-  }),
-  WithBreadcrumbs(['HR', 'Duties', 'Edit'])
+    options: ({ dutyId }) => ({ variables: { id: dutyId } }),
+  })
 )(EditForm);

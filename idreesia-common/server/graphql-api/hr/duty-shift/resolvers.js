@@ -63,7 +63,7 @@ export default {
 
     updateDutyShift(
       obj,
-      { id, name, dutyId, startTime, endTime, attendanceSheet },
+      { _id, name, dutyId, startTime, endTime, attendanceSheet },
       { user }
     ) {
       if (
@@ -75,7 +75,7 @@ export default {
       }
 
       const date = new Date();
-      DutyShifts.update(id, {
+      DutyShifts.update(_id, {
         $set: {
           name,
           dutyId,
@@ -87,7 +87,7 @@ export default {
         },
       });
 
-      return DutyShifts.findOne(id);
+      return DutyShifts.findOne(_id);
     },
 
     removeDutyShift(obj, { _id }, { user }) {

@@ -5,11 +5,6 @@ import { default as paths } from './submodule-paths';
 import { JobsNewForm, JobsEditForm, JobsList } from './jobs';
 import { DutiesNewForm, DutiesEditForm, DutiesList } from './duties';
 import {
-  DutyShiftsNewForm,
-  DutyShiftsEditForm,
-  DutyShiftsList,
-} from './duty-shifts';
-import {
   DutyLocationsNewForm,
   DutyLocationsEditForm,
   DutyLocationsList,
@@ -46,10 +41,6 @@ const HRRouter = () => (
     <Route path={paths.dutiesNewFormPath} component={DutiesNewForm} />
     <Route path={paths.dutiesEditFormPath()} component={DutiesEditForm} />
     <Route path={paths.dutiesPath} component={DutiesList} />
-
-    <Route path={paths.dutyShiftsNewFormPath} component={DutyShiftsNewForm} />
-    <Route path={paths.dutyShiftsEditFormPath} component={DutyShiftsEditForm} />
-    <Route path={paths.dutyShiftsPath} component={DutyShiftsList} />
 
     <Route
       path={paths.dutyLocationsNewFormPath}

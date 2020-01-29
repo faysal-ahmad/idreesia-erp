@@ -24,6 +24,7 @@ import {
   CompaniesEditForm,
   CompaniesList,
 } from './companies';
+import { PortalsNewForm, PortalsEditForm, PortalsList } from './portals';
 
 const AdminRouter = () => (
   <Switch>
@@ -62,6 +63,10 @@ const AdminRouter = () => (
     <Route path={paths.companiesNewFormPath} component={CompaniesNewForm} />
     <Route path={paths.companiesEditFormPath} component={CompaniesEditForm} />
     <Route path={paths.companiesPath} component={CompaniesList} />
+
+    <Route path={paths.portalsNewFormPath} component={PortalsNewForm} />
+    <Route path={paths.portalsEditFormPath} component={PortalsEditForm} />
+    <Route path={paths.portalsPath} component={PortalsList} />
   </Switch>
 );
 

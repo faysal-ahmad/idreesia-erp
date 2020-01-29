@@ -33,4 +33,8 @@ export default class SubModulePaths {
   static companiesPath = `${ModulePaths.admin}/companies`;
   static companiesNewFormPath = `${SubModulePaths.companiesPath}/new`;
   static companiesEditFormPath = `${SubModulePaths.companiesPath}/:companyId`;
+
+  static portalsPath = `${ModulePaths.admin}/portals`;
+  static portalsNewFormPath = `${SubModulePaths.portalsPath}/new`;
+  static portalsEditFormPath = `${SubModulePaths.portalsPath}/:portalId`;
 }

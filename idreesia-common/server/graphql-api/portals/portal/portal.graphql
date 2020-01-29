@@ -1,7 +1,9 @@
 type PortalType {
   _id: String
   name: String
-  citiies: [String]
+  cityIds: [String]
+
+  cities: [CityType]
 
   createdAt: String
   createdBy: String
@@ -18,11 +20,11 @@ extend type Query {
 extend type Mutation {
   createPortal(
     name: String!
-    cities: [String]
+    cityIds: [String]
   ): PortalType
   updatePortal(
     _id: String!
     name: String!
-    cities: [String]
+    cityIds: [String]
   ): PortalType
 }

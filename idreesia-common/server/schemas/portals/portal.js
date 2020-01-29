@@ -6,11 +6,11 @@ export default new SimpleSchema({
   name: {
     type: String,
   },
-  cities: {
+  cityIds: {
     type: Array,
     optional: true,
   },
-  'cities.$': {
+  'cityIds.$': {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
   },

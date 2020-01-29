@@ -1,4 +1,5 @@
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
+import { Cities } from 'meteor/idreesia-common/server/collections/hr';
 import {
   filterByInstanceAccess,
   hasOnePermission,
@@ -6,6 +7,13 @@ import {
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
+  PortalType: {
+    cities: portalType =>
+      Cities.find({
+        _id: { $in: portalType.cityIds },
+      }).fetch(),
+  },
+
   Query: {
     allPortals(obj, params, { user }) {
       if (
@@ -26,7 +34,7 @@ export default {
       return filteredPortals;
     },
 
-    companyById(obj, { id }, { user }) {
+    portalById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_VIEW_PORTALS,
@@ -36,12 +44,12 @@ export default {
         return null;
       }
 
-      return Portals.findOne(id);
+      return Portals.findOne(_id);
     },
   },
 
   Mutation: {
-    createPortal(obj, { name, cities }, { user }) {
+    createPortal(obj, { name, cityIds }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_PORTALS])
       ) {
@@ -53,7 +61,7 @@ export default {
       const date = new Date();
       const portalId = Portals.insert({
         name,
-        cities,
+        cityIds,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -63,7 +71,7 @@ export default {
       return Portals.findOne(portalId);
     },
 
-    updatePortal(obj, { _id, name, cities }, { user }) {
+    updatePortal(obj, { _id, name, cityIds }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_PORTALS])
       ) {
@@ -76,7 +84,7 @@ export default {
       Portals.update(_id, {
         $set: {
           name,
-          cities,
+          cityIds,
           updatedAt: date,
           updatedBy: user._id,
         },

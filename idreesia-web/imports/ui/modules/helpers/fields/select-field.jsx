@@ -26,6 +26,7 @@ export default class SelectField extends Component {
   static propTypes = {
     allowClear: PropTypes.bool,
     dropdownMatchSelectWidth: PropTypes.bool,
+    mode: PropTypes.string,
     data: PropTypes.array,
     getDataValue: PropTypes.func,
     getDataText: PropTypes.func,
@@ -43,6 +44,7 @@ export default class SelectField extends Component {
   static defaultProps = {
     allowClear: true,
     dropdownMatchSelectWidth: true,
+    mode: 'default',
     data: [],
     getDataValue: ({ _id }) => _id,
     getDataText: ({ name }) => name,
@@ -54,6 +56,7 @@ export default class SelectField extends Component {
     const {
       allowClear,
       dropdownMatchSelectWidth,
+      mode,
       data,
       getDataValue,
       getDataText,
@@ -91,6 +94,7 @@ export default class SelectField extends Component {
         placeholder={placeholder}
         onChange={onChange}
         allowClear={allowClear}
+        mode={mode}
         dropdownMatchSelectWidth={dropdownMatchSelectWidth}
       >
         {options}

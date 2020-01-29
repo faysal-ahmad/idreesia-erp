@@ -4,6 +4,7 @@ const SubModuleNames = {
   userGroups: 'User Groups',
   companies: 'Companies',
   physicalStores: 'Physical Stores',
+  portals: 'Portals',
 };
 
 export default SubModuleNames;

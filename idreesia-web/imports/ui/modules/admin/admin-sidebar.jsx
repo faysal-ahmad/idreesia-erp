@@ -43,6 +43,11 @@ class AdminSidebar extends Component {
         history.push(paths.companiesPath);
         break;
 
+      case 'portals':
+        setActiveSubModuleName(SubModuleNames.portals);
+        history.push(paths.portalsPath);
+        break;
+
       default:
         break;
     }
@@ -63,6 +68,7 @@ class AdminSidebar extends Component {
         <Menu.SubMenu key="instances" title={<span>Instance Management</span>}>
           <Menu.Item key="companies">Companies</Menu.Item>
           <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
+          <Menu.Item key="portals">Portals</Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

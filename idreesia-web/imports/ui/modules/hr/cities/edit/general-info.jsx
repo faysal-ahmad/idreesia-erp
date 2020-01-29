@@ -56,7 +56,6 @@ class GeneralInfo extends Component {
     const { getFieldDecorator } = this.props.form;
     if (loading) return null;
 
-    debugger;
     return (
       <Fragment>
         <Form layout="horizontal" onSubmit={this.handleSubmit}>

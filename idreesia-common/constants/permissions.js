@@ -61,6 +61,12 @@ const Permissions = {
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
 
   // ****************************************************************************************
+  // Portals Module
+  // ****************************************************************************************
+  PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',
+  PORTALS_MANAGE_KARKUNS: 'mehfil-portals-manage-karkuns',
+
+  // ****************************************************************************************
   // Inventory Module
   // ****************************************************************************************
   IN_MANAGE_SETUP_DATA: 'inventory-manage-setup-data',

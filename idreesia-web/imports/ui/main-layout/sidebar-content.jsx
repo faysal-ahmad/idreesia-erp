@@ -21,6 +21,9 @@ const sidebarsMap = {
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/security-sidebar')
   ),
+  [ModuleNames.portals]: React.lazy(() =>
+    import('/imports/ui/modules/portals/portals-sidebar')
+  ),
 };
 
 const SidebarContent = props => {

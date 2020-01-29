@@ -325,4 +325,24 @@ export const permissionsData = [
       },
     ],
   },
+  {
+    title: 'Portals',
+    key: 'module-portals',
+    children: [
+      {
+        title: 'Karkuns',
+        key: 'module-portals-karkuns',
+        children: [
+          {
+            title: 'View karkuns',
+            key: PermissionConstants.PORTALS_VIEW_KARKUNS,
+          },
+          {
+            title: 'Manage Karkuns',
+            key: PermissionConstants.PORTALS_MANAGE_KARKUNS,
+          },
+        ],
+      },
+    ],
+  },
 ];

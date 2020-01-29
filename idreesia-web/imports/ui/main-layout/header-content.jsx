@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
-import { keys, forEach } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  kebabCase,
+  keys,
+  forEach,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
 import { setActiveModuleName } from 'meteor/idreesia-common/action-creators';
 import { Layout, Menu } from './antd-controls';
@@ -22,13 +26,14 @@ const modulePathsMapping = {
   [ModuleNames.hr]: ModulePaths.hr,
   [ModuleNames.inventory]: ModulePaths.inventory,
   [ModuleNames.security]: ModulePaths.security,
+  [ModuleNames.portals]: ModulePaths.portals,
 };
 
 const isModuleAccessible = (user, moduleName) => {
   // For a module to be accessible to the user, the user needs to have at least
   // one permission for that module.
   const { permissions } = user;
-  const lcModuleName = moduleName.toLowerCase();
+  const lcModuleName = kebabCase(moduleName);
   let isAccessible = false;
   forEach(permissions, permission => {
     if (permission.startsWith(lcModuleName)) {

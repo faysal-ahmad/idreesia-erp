@@ -11,6 +11,7 @@ export { default as groupBy } from 'lodash/groupBy';
 export { default as isNil } from 'lodash/isNil';
 export { default as isString } from 'lodash/isString';
 export { default as isArray } from 'lodash/isArray';
+export { default as kebabCase } from 'lodash/kebabCase';
 export { default as keyBy } from 'lodash/keyBy';
 export { default as keys } from 'lodash/keys';
 export { default as map } from 'lodash/map';

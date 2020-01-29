@@ -13,6 +13,8 @@ class InstanceSelection extends Component {
     allCompanies: PropTypes.array,
     physicalStoresListLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
+    portalsListLoading: PropTypes.bool,
+    allPortals: PropTypes.array,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -69,8 +71,11 @@ class InstanceSelection extends Component {
       allPhysicalStores,
       companiesListLoading,
       allCompanies,
+      portalsListLoading,
+      allPortals,
     } = this.props;
-    if (physicalStoresListLoading || companiesListLoading) return null;
+    if (physicalStoresListLoading || companiesListLoading || portalsListLoading)
+      return null;
 
     const accessData = [
       {
@@ -87,6 +92,14 @@ class InstanceSelection extends Component {
         children: allCompanies.map(company => ({
           title: company.name,
           key: company._id,
+        })),
+      },
+      {
+        title: 'Portals',
+        key: 'module-portals',
+        children: allPortals.map(portal => ({
+          title: portal.name,
+          key: portal._id,
         })),
       },
     ];
@@ -124,11 +137,23 @@ const companiesListQuery = gql`
   }
 `;
 
+const portalsListQuery = gql`
+  query allPortals {
+    allPortals {
+      _id
+      name
+    }
+  }
+`;
+
 export default flowRight(
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
   }),
   graphql(companiesListQuery, {
     props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
+  }),
+  graphql(portalsListQuery, {
+    props: ({ data }) => ({ portalsListLoading: data.loading, ...data }),
   })
 )(InstanceSelection);

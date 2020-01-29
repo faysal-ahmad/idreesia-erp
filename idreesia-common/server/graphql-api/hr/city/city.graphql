@@ -18,6 +18,6 @@ extend type Query {
 
 extend type Mutation {
   createCity(name: String!, country: String): CityType
-  updateCity(id: String!, name: String!, country: String): CityType
+  updateCity(_id: String!, name: String!, country: String): CityType
   removeCity(_id: String!): Int
 }

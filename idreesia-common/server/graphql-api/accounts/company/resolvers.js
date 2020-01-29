@@ -9,7 +9,10 @@ export default {
   Query: {
     allCompanies(obj, params, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_COMPANIES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_VIEW_COMPANIES,
+          PermissionConstants.ADMIN_MANAGE_COMPANIES,
+        ])
       ) {
         return [];
       }
@@ -25,7 +28,10 @@ export default {
 
     companyById(obj, { id }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_VIEW_COMPANIES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.ADMIN_VIEW_COMPANIES,
+          PermissionConstants.ADMIN_MANAGE_COMPANIES,
+        ])
       ) {
         return null;
       }
@@ -47,7 +53,7 @@ export default {
       }
 
       const date = new Date();
-      const accountId = Companies.insert({
+      const companyId = Companies.insert({
         name,
         importData,
         connectivitySettings,
@@ -57,7 +63,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return Companies.findOne(accountId);
+      return Companies.findOne(companyId);
     },
 
     updateCompany(

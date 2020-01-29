@@ -19,6 +19,12 @@ import UserGroupSchema from './admin/user-group/user-group.graphql';
 import UserGroupResolvers from './admin/user-group/resolvers';
 
 /**
+ * Schema and Resolvers for the Portals module
+ */
+import PortalSchema from './portals/portal/portal.graphql';
+import PortalResolvers from './portals/portal/resolvers';
+
+/**
  * Schema and Resolvers for the Security module
  */
 import MehfilSchema from './security/mehfil/mehfil.graphql';
@@ -131,6 +137,8 @@ const typeDefs = [
   UserSchema,
   UserGroupSchema,
 
+  PortalSchema,
+
   MehfilSchema,
   MehfilKarkunSchema,
   VisitorSchema,
@@ -173,6 +181,8 @@ const resolvers = merge(
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
+
+  PortalResolvers,
 
   MehfilResolvers,
   MehfilKarkunResolvers,

@@ -1,0 +1,28 @@
+type PortalType {
+  _id: String
+  name: String
+  citiies: [String]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allPortals: [PortalType]
+  allAccessiblePortals: [PortalType]
+  portalById(_id: String!): PortalType
+}
+
+extend type Mutation {
+  createPortal(
+    name: String!
+    cities: [String]
+  ): PortalType
+  updatePortal(
+    _id: String!
+    name: String!
+    cities: [String]
+  ): PortalType
+}

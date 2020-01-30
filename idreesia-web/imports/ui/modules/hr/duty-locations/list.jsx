@@ -113,5 +113,5 @@ export default flowRight(
       refetchQueries: ['allDutyLocations'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Setup', 'Duty Locations', 'List'])
+  WithBreadcrumbs(['HR', 'Duty Locations', 'List'])
 )(List);

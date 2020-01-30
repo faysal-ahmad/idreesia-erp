@@ -6,6 +6,9 @@ export default new SimpleSchema({
   name: {
     type: String,
   },
+  isMehfilDuty: {
+    type: Boolean,
+  },
   description: {
     type: String,
     optional: true,

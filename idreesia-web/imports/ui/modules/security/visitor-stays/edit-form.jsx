@@ -20,7 +20,7 @@ import {
   WithDistinctStayAllowedBy,
 } from 'meteor/idreesia-common/composers/security';
 import {
-  WithAllDuties,
+  WithAllMSDuties,
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
@@ -34,8 +34,8 @@ class EditForm extends Component {
 
     formDataLoading: PropTypes.bool,
     visitorStayById: PropTypes.object,
-    allDuties: PropTypes.array,
-    allDutiesLoading: PropTypes.bool,
+    allMSDuties: PropTypes.array,
+    allMSDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
@@ -85,11 +85,11 @@ class EditForm extends Component {
     const {
       formDataLoading,
       visitorStayById,
-      allDutiesLoading,
+      allMSDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
       distinctTeamNamesLoading,
-      allDuties,
+      allMSDuties,
       allDutyShifts,
       distinctStayAllowedBy,
       distinctTeamNames,
@@ -98,7 +98,7 @@ class EditForm extends Component {
 
     if (
       formDataLoading ||
-      allDutiesLoading ||
+      allMSDutiesLoading ||
       allDutyShiftsLoading ||
       distinctStayAllowedByLoading ||
       distinctTeamNamesLoading
@@ -106,7 +106,7 @@ class EditForm extends Component {
       return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
-      allDuties,
+      allMSDuties,
       allDutyShifts
     );
 
@@ -230,7 +230,7 @@ export default flowRight(
       refetchQueries: ['pagedVisitorStays'],
     },
   }),
-  WithAllDuties(),
+  WithAllMSDuties(),
   WithAllDutyShifts(),
   WithDistinctStayAllowedBy(),
   WithDistinctTeamNames()

@@ -38,10 +38,10 @@ class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
     allJobs: PropTypes.array,
-    allDuties: PropTypes.array,
+    allMSDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
     allJobsLoading: PropTypes.bool,
-    allDutiesLoading: PropTypes.bool,
+    allMSDutiesLoading: PropTypes.bool,
     allDutyShiftsLoading: PropTypes.bool,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
@@ -138,16 +138,17 @@ class ListFilter extends Component {
       dutyId,
       shiftId,
       allJobs,
-      allDuties,
+      allMSDuties,
       allDutyShifts,
       allJobsLoading,
-      allDutiesLoading,
+      allMSDutiesLoading,
       allDutyShiftsLoading,
     } = this.props;
-    if (allJobsLoading || allDutiesLoading || allDutyShiftsLoading) return null;
+    if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
+      return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
-      allDuties,
+      allMSDuties,
       allDutyShifts
     );
 
@@ -264,9 +265,9 @@ const allJobsListQuery = gql`
   }
 `;
 
-const allDutiesListQuery = gql`
-  query allDuties {
-    allDuties {
+const allMSDutiesListQuery = gql`
+  query allMSDuties {
+    allMSDuties {
       _id
       name
     }
@@ -288,8 +289,8 @@ export default flowRight(
   graphql(allJobsListQuery, {
     props: ({ data }) => ({ allJobsLoading: data.loading, ...data }),
   }),
-  graphql(allDutiesListQuery, {
-    props: ({ data }) => ({ allDutiesLoading: data.loading, ...data }),
+  graphql(allMSDutiesListQuery, {
+    props: ({ data }) => ({ allMSDutiesLoading: data.loading, ...data }),
   }),
   graphql(allDutyShiftsListQuery, {
     props: ({ data }) => ({ allDutyShiftsLoading: data.loading, ...data }),

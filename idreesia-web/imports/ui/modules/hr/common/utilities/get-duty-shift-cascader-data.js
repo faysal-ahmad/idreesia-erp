@@ -1,7 +1,7 @@
-import { filter } from "lodash";
+import { filter } from 'lodash';
 
-export default function getDutyShiftCascaderData(allDuties, allDutyShifts) {
-  const data = allDuties.map(duty => {
+export default function getDutyShiftCascaderData(allMSDuties, allDutyShifts) {
+  const data = allMSDuties.map(duty => {
     const dutyShifts = filter(
       allDutyShifts,
       dutyShift => dutyShift.dutyId === duty._id

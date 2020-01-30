@@ -8,6 +8,8 @@ type KarkunType {
   emailAddress: String
   currentAddress: String
   permanentAddress: String
+  cityId: String
+  cityMehfilId: String
   bloodGroup: String
   sharedResidenceId: String
   educationalQualification: String
@@ -52,6 +54,8 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     currentAddress: String
+    cityId: String
+    cityMehfilId: String
     permanentAddress: String
     bloodGroup: String
     sharedResidenceId: String
@@ -71,6 +75,8 @@ extend type Mutation {
     emailAddress: String
     currentAddress: String
     permanentAddress: String
+    cityId: String
+    cityMehfilId: String
     bloodGroup: String
     sharedResidenceId: String
     educationalQualification: String

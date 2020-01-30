@@ -13,7 +13,7 @@ import {
 import { Modal, message } from '/imports/ui/controls';
 import {
   WithAllJobs,
-  WithAllDuties,
+  WithAllMSDuties,
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
@@ -23,8 +23,8 @@ import EditForm from './edit-form';
 
 class ListContainer extends Component {
   static propTypes = {
-    allDuties: PropTypes.array,
-    allDutiesLoading: PropTypes.bool,
+    allMSDuties: PropTypes.array,
+    allMSDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
     allDutyShiftsLoading: PropTypes.bool,
     allJobs: PropTypes.array,
@@ -236,13 +236,14 @@ class ListContainer extends Component {
   render() {
     const {
       allJobs,
-      allDuties,
+      allMSDuties,
       allDutyShifts,
       allJobsLoading,
-      allDutiesLoading,
+      allMSDutiesLoading,
       allDutyShiftsLoading,
     } = this.props;
-    if (allJobsLoading || allDutiesLoading || allDutyShiftsLoading) return null;
+    if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
+      return null;
 
     const {
       queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
@@ -268,7 +269,7 @@ class ListContainer extends Component {
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}
           allJobs={allJobs}
-          allDuties={allDuties}
+          allMSDuties={allMSDuties}
           allDutyShifts={allDutyShifts}
         />
         <Modal
@@ -387,7 +388,7 @@ export default flowRight(
   }),
   WithQueryParams(),
   WithAllJobs(),
-  WithAllDuties(),
+  WithAllMSDuties(),
   WithAllDutyShifts(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'List'])
 )(ListContainer);

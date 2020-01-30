@@ -1,6 +1,7 @@
 type DutyType {
   _id: String
   name: String
+  isMehfilDuty: Boolean
   description: String
   attendanceSheet: String
 
@@ -14,12 +15,13 @@ type DutyType {
 }
 
 extend type Query {
-  allDuties: [DutyType]
+  allMSDuties: [DutyType]
+  allMehfilDuties: [DutyType]
   dutyById(id: String!): DutyType
 }
 
 extend type Mutation {
-  createDuty(name: String!, description: String, attendanceSheet: String): DutyType
+  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, attendanceSheet: String): DutyType
   updateDuty(id: String!, name: String!, description: String, attendanceSheet: String): DutyType
   removeDuty(_id: String!): Int
 }

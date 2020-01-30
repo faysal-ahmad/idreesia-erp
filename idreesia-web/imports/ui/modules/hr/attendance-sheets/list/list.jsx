@@ -35,7 +35,7 @@ export class List extends Component {
     selectedCategoryId: PropTypes.string,
     selectedSubCategoryId: PropTypes.string,
     allJobs: PropTypes.array,
-    allDuties: PropTypes.array,
+    allMSDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
 
     attendanceByMonth: PropTypes.array,
@@ -251,7 +251,7 @@ export class List extends Component {
       selectedCategoryId,
       selectedSubCategoryId,
       allJobs,
-      allDuties,
+      allMSDuties,
       allDutyShifts,
     } = this.props;
 
@@ -264,7 +264,7 @@ export class List extends Component {
       })),
     };
 
-    const dutiesData = allDuties.map(duty => {
+    const dutiesData = allMSDuties.map(duty => {
       const dutyShifts = filter(
         allDutyShifts,
         dutyShift => dutyShift.dutyId === duty._id

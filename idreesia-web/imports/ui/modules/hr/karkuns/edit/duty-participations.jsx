@@ -16,7 +16,7 @@ import {
   message,
 } from '/imports/ui/controls';
 import {
-  WithAllDuties,
+  WithAllMSDuties,
   WithAllDutyShifts,
   WithAllDutyLocations,
 } from '/imports/ui/modules/hr/common/composers';
@@ -30,7 +30,7 @@ class DutyParticipation extends Component {
 
     karkunId: PropTypes.string,
     karkunDutiesByKarkunId: PropTypes.array,
-    allDuties: PropTypes.array,
+    allMSDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
     allDutyLocations: PropTypes.array,
     createKarkunDuty: PropTypes.func,
@@ -187,7 +187,7 @@ class DutyParticipation extends Component {
     const { showNewForm, showEditForm, defaultValues } = this.state;
     const {
       karkunDutiesByKarkunId,
-      allDuties,
+      allMSDuties,
       allDutyShifts,
       allDutyLocations,
     } = this.props;
@@ -224,7 +224,7 @@ class DutyParticipation extends Component {
               this.newDutyForm = f;
             }}
             defaultValues={defaultValues}
-            allDuties={allDuties}
+            allMSDuties={allMSDuties}
             allDutyShifts={allDutyShifts}
             allDutyLocations={allDutyLocations}
           />
@@ -244,7 +244,7 @@ class DutyParticipation extends Component {
               this.editDutyForm = f;
             }}
             defaultValues={defaultValues}
-            allDuties={allDuties}
+            allMSDuties={allMSDuties}
             allDutyShifts={allDutyShifts}
             allDutyLocations={allDutyLocations}
           />
@@ -360,10 +360,10 @@ export default flowRight(
   graphql(removeKarkunDutyMutation, {
     name: 'removeKarkunDuty',
     options: {
-      refetchQueries: ['pagedKarkuns', 'karkunDutiesByKarkunId', 'allDuties'],
+      refetchQueries: ['pagedKarkuns', 'karkunDutiesByKarkunId', 'allMSDuties'],
     },
   }),
-  WithAllDuties(),
+  WithAllMSDuties(),
   WithAllDutyShifts(),
   WithAllDutyLocations()
 )(DutyParticipation);

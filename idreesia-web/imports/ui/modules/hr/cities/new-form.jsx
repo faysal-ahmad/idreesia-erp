@@ -87,5 +87,5 @@ export default flowRight(
       refetchQueries: ['allCities'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Cities', 'New'])
+  WithBreadcrumbs(['HR', 'Cities & Mehfils', 'New'])
 )(NewForm);

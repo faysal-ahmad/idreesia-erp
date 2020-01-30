@@ -13,7 +13,7 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allDuties: PropTypes.array,
+    allMSDuties: PropTypes.array,
     removeDuty: PropTypes.func,
   };
 
@@ -22,14 +22,16 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 200,
       render: (text, record) => (
-        <Link to={`${paths.dutiesEditFormPath(record._id)}`}>{text}</Link>
+        <Link to={`${paths.msDutiesEditFormPath(record._id)}`}>{text}</Link>
       ),
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
+      width: 200,
     },
     {
       title: 'Shifts',
@@ -70,7 +72,7 @@ class List extends Component {
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.dutiesNewFormPath);
+    history.push(paths.msDutiesNewFormPath);
   };
 
   handleDeleteClicked = record => {
@@ -85,15 +87,16 @@ class List extends Component {
   };
 
   render() {
-    const { allDuties } = this.props;
+    const { allMSDuties } = this.props;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allDuties}
+        dataSource={allMSDuties}
         columns={this.columns}
         pagination={{ defaultPageSize: 20 }}
         bordered
+        size="small"
         title={() => (
           <Button
             type="primary"
@@ -109,10 +112,11 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allDuties {
-    allDuties {
+  query allMSDuties {
+    allMSDuties {
       _id
       name
+      description
       usedCount
       shifts {
         _id
@@ -135,8 +139,8 @@ export default flowRight(
   graphql(removeDutyMutation, {
     name: 'removeDuty',
     options: {
-      refetchQueries: ['allDuties'],
+      refetchQueries: ['allMSDuties'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Duties', 'List'])
+  WithBreadcrumbs(['HR', 'Duties & Shifts', 'List'])
 )(List);

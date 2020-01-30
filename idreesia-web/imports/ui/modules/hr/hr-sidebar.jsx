@@ -25,9 +25,14 @@ class HRSidebar extends Component {
         history.push(paths.jobsPath);
         break;
 
-      case 'duties':
-        setActiveSubModuleName(SubModuleNames.duties);
-        history.push(paths.dutiesPath);
+      case 'ms-duties':
+        setActiveSubModuleName(SubModuleNames.msDuties);
+        history.push(paths.msDutiesPath);
+        break;
+
+      case 'mehfil-duties':
+        setActiveSubModuleName(SubModuleNames.mehfilDuties);
+        history.push(paths.mehfilDutiesPath);
         break;
 
       case 'cities':
@@ -106,9 +111,10 @@ class HRSidebar extends Component {
           }
         >
           <Menu.Item key="jobs">Jobs</Menu.Item>
-          <Menu.Item key="duties">Duties &amp; Shifts</Menu.Item>
+          <Menu.Item key="ms-duties">Duties &amp; Shifts</Menu.Item>
           <Menu.Item key="duty-locations">Duty Locations</Menu.Item>
           <Menu.Item key="cities">Cities &amp; Mehfils</Menu.Item>
+          <Menu.Item key="mehfil-duties">Mehfil Duties</Menu.Item>
         </SubMenu>
       </Menu>
     );

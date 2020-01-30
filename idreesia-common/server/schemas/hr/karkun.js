@@ -27,6 +27,14 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  cityId: {
+    type: String,
+    optional: true,
+  },
+  cityMehfilId: {
+    type: String,
+    optional: true,
+  },
   sharedResidenceId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,

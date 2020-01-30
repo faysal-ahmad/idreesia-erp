@@ -133,7 +133,7 @@ export default flowRight(
   graphql(formMutation, {
     name: 'updateDuty',
     options: {
-      refetchQueries: ['allDuties'],
+      refetchQueries: ['allMSDuties'],
     },
   }),
   graphql(formQuery, {

@@ -19,8 +19,17 @@ export default {
   },
 
   Query: {
-    allDuties() {
-      return Duties.find({}, { sort: { name: 1 } }).fetch();
+    allMSDuties() {
+      return Duties.find(
+        { isMehfilDuty: { $eq: false } },
+        { sort: { name: 1 } }
+      ).fetch();
+    },
+    allMehfilDuties() {
+      return Duties.find(
+        { isMehfilDuty: { $eq: true } },
+        { sort: { name: 1 } }
+      ).fetch();
     },
     dutyById(obj, { id }) {
       return Duties.findOne(id);
@@ -28,7 +37,11 @@ export default {
   },
 
   Mutation: {
-    createDuty(obj, { name, description, attendanceSheet }, { user }) {
+    createDuty(
+      obj,
+      { name, isMehfilDuty, description, attendanceSheet },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
       ) {
@@ -40,6 +53,7 @@ export default {
       const date = new Date();
       const dutyId = Duties.insert({
         name,
+        isMehfilDuty,
         description,
         attendanceSheet,
         createdAt: date,

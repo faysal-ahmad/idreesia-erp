@@ -31,6 +31,8 @@ function getKarkunsByFilter(params) {
     jobId,
     dutyId,
     shiftId,
+    cityId,
+    cityMehfilId,
     showVolunteers,
     showEmployees,
     pageIndex = '0',
@@ -97,6 +99,22 @@ function getKarkunsByFilter(params) {
     pipeline.push({
       $match: {
         jobId: { $eq: jobId },
+      },
+    });
+  }
+
+  if (cityId) {
+    pipeline.push({
+      $match: {
+        cityId: { $eq: cityId },
+      },
+    });
+  }
+
+  if (cityMehfilId) {
+    pipeline.push({
+      $match: {
+        cityMehfilId: { $eq: cityMehfilId },
       },
     });
   }

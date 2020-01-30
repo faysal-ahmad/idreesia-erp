@@ -13,8 +13,8 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    allCities: PropTypes.array,
-    removeCity: PropTypes.func,
+    allMehfilDuties: PropTypes.array,
+    removeDuty: PropTypes.func,
   };
 
   columns = [
@@ -22,24 +22,20 @@ class List extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 200,
       render: (text, record) => (
-        <Link to={`${paths.citiesEditFormPath(record._id)}`}>{text}</Link>
+        <Link to={`${paths.mehfilDutiesEditFormPath(record._id)}`}>{text}</Link>
       ),
     },
     {
-      title: 'Country',
-      dataIndex: 'country',
-      key: 'country',
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
-      title: 'Mehfils',
-      dataIndex: 'mehfils',
-      key: 'mehfils',
-      render: (text, record) => {
-        if (!record.mehfils || record.mehfils.length === 0) return null;
-        const mehfilNames = record.mehfils.map(mehfil => mehfil.name);
-        return mehfilNames.join(', ');
-      },
+      title: 'Karkuns',
+      dataIndex: 'usedCount',
+      key: 'usedCount',
     },
     {
       key: 'action',
@@ -65,12 +61,12 @@ class List extends Component {
 
   handleNewClicked = () => {
     const { history } = this.props;
-    history.push(paths.citiesNewFormPath);
+    history.push(paths.mehfilDutiesNewFormPath);
   };
 
   handleDeleteClicked = record => {
-    const { removeCity } = this.props;
-    removeCity({
+    const { removeDuty } = this.props;
+    removeDuty({
       variables: {
         _id: record._id,
       },
@@ -80,22 +76,23 @@ class List extends Component {
   };
 
   render() {
-    const { allCities } = this.props;
+    const { allMehfilDuties } = this.props;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={allCities}
+        dataSource={allMehfilDuties}
         columns={this.columns}
         pagination={{ defaultPageSize: 20 }}
         bordered
+        size="small"
         title={() => (
           <Button
             type="primary"
             icon="plus-circle-o"
             onClick={this.handleNewClicked}
           >
-            New City
+            New Duty
           </Button>
         )}
       />
@@ -104,22 +101,19 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query allCities {
-    allCities {
+  query allMehfilDuties {
+    allMehfilDuties {
       _id
       name
-      country
-      mehfils {
-        _id
-        name
-      }
+      description
+      usedCount
     }
   }
 `;
 
-const removeCityMutation = gql`
-  mutation removeCity($_id: String!) {
-    removeCity(_id: $_id)
+const removeDutyMutation = gql`
+  mutation removeDuty($_id: String!) {
+    removeDuty(_id: $_id)
   }
 `;
 
@@ -127,11 +121,11 @@ export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  graphql(removeCityMutation, {
-    name: 'removeCity',
+  graphql(removeDutyMutation, {
+    name: 'removeDuty',
     options: {
-      refetchQueries: ['allCities'],
+      refetchQueries: ['allMehfilDuties'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Cities & Mehfils', 'List'])
+  WithBreadcrumbs(['HR', 'Mehfil Duties', 'List'])
 )(List);

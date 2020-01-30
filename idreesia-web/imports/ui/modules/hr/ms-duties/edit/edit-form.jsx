@@ -35,5 +35,5 @@ EditForm.propTypes = {
 
 export default flowRight(
   WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Duties', 'Edit'])
+  WithBreadcrumbs(['HR', 'Duties & Shifts', 'Edit'])
 )(EditForm);

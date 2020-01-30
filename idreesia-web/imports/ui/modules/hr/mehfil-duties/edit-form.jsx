@@ -4,11 +4,14 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
+  InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
@@ -21,29 +24,30 @@ class EditForm extends Component {
     form: PropTypes.object,
 
     loading: PropTypes.bool,
-    dutyLocationById: PropTypes.object,
-    updateDutyLocation: PropTypes.func,
+    dutyById: PropTypes.object,
+    updateDuty: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.dutyLocationsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, dutyLocationById, updateDutyLocation } = this.props;
-    form.validateFields((err, { name }) => {
+    const { form, history, dutyById, updateDuty } = this.props;
+    form.validateFields((err, { name, description }) => {
       if (err) return;
 
-      updateDutyLocation({
+      updateDuty({
         variables: {
-          id: dutyLocationById._id,
+          id: dutyById._id,
           name,
+          description,
         },
       })
         .then(() => {
-          history.push(paths.dutyLocationsPath);
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -52,7 +56,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, dutyLocationById } = this.props;
+    const { loading, dutyById } = this.props;
     const { getFieldDecorator } = this.props.form;
     if (loading) return null;
 
@@ -61,25 +65,32 @@ class EditForm extends Component {
         <Form layout="horizontal" onSubmit={this.handleSubmit}>
           <InputTextField
             fieldName="name"
-            fieldLabel="Name"
-            initialValue={dutyLocationById.name}
+            fieldLabel="Duty Name"
+            initialValue={dutyById.name}
             required
-            requiredMessage="Please input a name for the duty location."
+            requiredMessage="Please input a name for the duty."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextAreaField
+            fieldName="description"
+            fieldLabel="Description"
+            initialValue={dutyById.description}
             getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
-        <RecordInfo record={dutyLocationById} />
+        <RecordInfo record={dutyById} />
       </Fragment>
     );
   }
 }
 
 const formQuery = gql`
-  query dutyLocationById($id: String!) {
-    dutyLocationById(id: $id) {
+  query dutyById($id: String!) {
+    dutyById(id: $id) {
       _id
       name
+      description
       createdAt
       createdBy
       updatedAt
@@ -89,10 +100,21 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updateDutyLocation($id: String!, $name: String!) {
-    updateDutyLocation(id: $id, name: $name) {
+  mutation updateDuty(
+    $id: String!
+    $name: String!
+    $description: String
+    $attendanceSheet: String
+  ) {
+    updateDuty(
+      id: $id
+      name: $name
+      description: $description
+      attendanceSheet: $attendanceSheet
+    ) {
       _id
       name
+      description
       createdAt
       createdBy
       updatedAt
@@ -103,18 +125,19 @@ const formMutation = gql`
 
 export default flowRight(
   Form.create(),
+  WithQueryParams(),
   graphql(formMutation, {
-    name: 'updateDutyLocation',
+    name: 'updateDuty',
     options: {
-      refetchQueries: ['allDutyLocations'],
+      refetchQueries: ['allMehfilDuties'],
     },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
-      const { dutyLocationId } = match.params;
-      return { variables: { id: dutyLocationId } };
+      const { dutyId } = match.params;
+      return { variables: { id: dutyId } };
     },
   }),
-  WithBreadcrumbs(['HR', 'Duty Locations', 'Edit'])
+  WithBreadcrumbs(['HR', 'Mehfil Duties', 'Edit'])
 )(EditForm);

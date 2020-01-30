@@ -12,9 +12,9 @@ import allDutyRoles from '../../all-duty_roles';
 
 const DutyForm = props => {
   const { getFieldDecorator } = props.form;
-  const { defaultValues, allDuties, allDutyShifts, allDutyLocations } = props;
+  const { defaultValues, allMSDuties, allDutyShifts, allDutyLocations } = props;
   const dutyShiftCascaderData = getDutyShiftCascaderData(
-    allDuties,
+    allMSDuties,
     allDutyShifts
   );
 
@@ -67,7 +67,7 @@ const DutyForm = props => {
 DutyForm.propTypes = {
   form: PropTypes.object,
   defaultValues: PropTypes.object,
-  allDuties: PropTypes.array,
+  allMSDuties: PropTypes.array,
   allDutyShifts: PropTypes.array,
   allDutyLocations: PropTypes.array,
 };

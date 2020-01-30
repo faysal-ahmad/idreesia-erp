@@ -6,9 +6,9 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
+  InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -17,27 +17,29 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createDutyLocation: PropTypes.func,
+    createDuty: PropTypes.func,
   };
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.dutyLocationsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createDutyLocation, history } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    const { form, createDuty, history } = this.props;
+    form.validateFields((err, { name, description }) => {
       if (err) return;
 
-      createDutyLocation({
+      createDuty({
         variables: {
-          name: fieldsValue.name,
+          name,
+          isMehfilDuty: true,
+          description,
         },
       })
         .then(() => {
-          history.push(paths.dutyLocationsPath);
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -47,13 +49,19 @@ class NewForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="name"
-          fieldLabel="Name"
+          fieldLabel="Duty Name"
           required
-          requiredMessage="Please input a name for the duty location."
+          requiredMessage="Please input a name for the duty."
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextAreaField
+          fieldName="description"
+          fieldLabel="Description"
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -63,10 +71,23 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createDutyLocation($name: String!) {
-    createDutyLocation(name: $name) {
+  mutation createDuty(
+    $name: String!
+    $isMehfilDuty: Boolean!
+    $description: String
+    $attendanceSheet: String
+  ) {
+    createDuty(
+      name: $name
+      isMehfilDuty: $isMehfilDuty
+      description: $description
+      attendanceSheet: $attendanceSheet
+    ) {
       _id
       name
+      isMehfilDuty
+      description
+      attendanceSheet
     }
   }
 `;
@@ -74,10 +95,10 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'createDutyLocation',
+    name: 'createDuty',
     options: {
-      refetchQueries: ['allDutyLocations'],
+      refetchQueries: ['allMehfilDuties'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Duty Locations', 'New'])
+  WithBreadcrumbs(['HR', 'Mehfil Duties', 'New'])
 )(NewForm);

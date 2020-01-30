@@ -6,7 +6,6 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
@@ -23,7 +22,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.dutiesPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -35,12 +34,13 @@ class NewForm extends Component {
       createDuty({
         variables: {
           name,
+          isMehfilDuty: false,
           description,
           attendanceSheet,
         },
       })
         .then(() => {
-          history.push(paths.dutiesPath);
+          history.goBack();
         })
         .catch(error => {
           message.error(error.message, 5);
@@ -79,16 +79,19 @@ class NewForm extends Component {
 const formMutation = gql`
   mutation createDuty(
     $name: String!
+    $isMehfilDuty: Boolean!
     $description: String
     $attendanceSheet: String
   ) {
     createDuty(
       name: $name
+      isMehfilDuty: $isMehfilDuty
       description: $description
       attendanceSheet: $attendanceSheet
     ) {
       _id
       name
+      isMehfilDuty
       description
       attendanceSheet
     }
@@ -100,8 +103,8 @@ export default flowRight(
   graphql(formMutation, {
     name: 'createDuty',
     options: {
-      refetchQueries: ['allDuties'],
+      refetchQueries: ['allMSDuties'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Duties', 'New'])
+  WithBreadcrumbs(['HR', 'Duties & Shifts', 'New'])
 )(NewForm);

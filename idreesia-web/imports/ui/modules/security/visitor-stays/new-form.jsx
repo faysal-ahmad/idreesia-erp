@@ -14,7 +14,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import {
-  WithAllDuties,
+  WithAllMSDuties,
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
@@ -31,8 +31,8 @@ class NewForm extends Component {
     handleAddItem: PropTypes.func,
     createVisitorStay: PropTypes.func,
 
-    allDuties: PropTypes.array,
-    allDutiesLoading: PropTypes.bool,
+    allMSDuties: PropTypes.array,
+    allMSDutiesLoading: PropTypes.bool,
     allDutyShifts: PropTypes.array,
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
@@ -74,11 +74,11 @@ class NewForm extends Component {
 
   render() {
     const {
-      allDutiesLoading,
+      allMSDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
       distinctTeamNamesLoading,
-      allDuties,
+      allMSDuties,
       allDutyShifts,
       distinctStayAllowedBy,
       distinctTeamNames,
@@ -86,7 +86,7 @@ class NewForm extends Component {
     } = this.props;
 
     if (
-      allDutiesLoading ||
+      allMSDutiesLoading ||
       allDutyShiftsLoading ||
       distinctStayAllowedByLoading ||
       distinctTeamNamesLoading
@@ -94,7 +94,7 @@ class NewForm extends Component {
       return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
-      allDuties,
+      allMSDuties,
       allDutyShifts
     );
 
@@ -181,7 +181,7 @@ export default flowRight(
       refetchQueries: ['pagedVisitorStays'],
     },
   }),
-  WithAllDuties(),
+  WithAllMSDuties(),
   WithAllDutyShifts(),
   WithDistinctStayAllowedBy(),
   WithDistinctTeamNames()

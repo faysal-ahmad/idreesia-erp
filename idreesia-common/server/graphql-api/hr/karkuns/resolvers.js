@@ -8,7 +8,7 @@ import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getKarkuns } from './queries';
+import { getKarkuns, getOutstationKarkuns } from './queries';
 import { canDeleteKarkun } from './helpers';
 
 export default {
@@ -40,12 +40,16 @@ export default {
   },
 
   Query: {
+    karkunById(obj, { _id }) {
+      return Karkuns.findOne(_id);
+    },
+
     pagedKarkuns(obj, { queryString }) {
       return getKarkuns(queryString);
     },
 
-    karkunById(obj, { _id }) {
-      return Karkuns.findOne(_id);
+    pagedOutstationKarkuns(obj, { queryString }) {
+      return getOutstationKarkuns(queryString);
     },
   },
 

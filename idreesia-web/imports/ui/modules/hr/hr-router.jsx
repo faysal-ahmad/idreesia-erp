@@ -3,13 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import { JobsNewForm, JobsEditForm, JobsList } from './jobs';
-import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import { MSDutiesNewForm, MSDutiesEditForm, MSDutiesList } from './ms-duties';
-import {
-  MehfilDutiesNewForm,
-  MehfilDutiesEditForm,
-  MehfilDutiesList,
-} from './mehfil-duties';
 import {
   DutyLocationsNewForm,
   DutyLocationsEditForm,
@@ -44,23 +38,9 @@ const HRRouter = () => (
     <Route path={paths.jobsEditFormPath()} component={JobsEditForm} />
     <Route path={paths.jobsPath} component={JobsList} />
 
-    <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
-    <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />
-    <Route path={paths.citiesPath} component={CitiesList} />
-
     <Route path={paths.msDutiesNewFormPath} component={MSDutiesNewForm} />
     <Route path={paths.msDutiesEditFormPath()} component={MSDutiesEditForm} />
     <Route path={paths.msDutiesPath} component={MSDutiesList} />
-
-    <Route
-      path={paths.mehfilDutiesNewFormPath}
-      component={MehfilDutiesNewForm}
-    />
-    <Route
-      path={paths.mehfilDutiesEditFormPath()}
-      component={MehfilDutiesEditForm}
-    />
-    <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
 
     <Route
       path={paths.dutyLocationsNewFormPath}

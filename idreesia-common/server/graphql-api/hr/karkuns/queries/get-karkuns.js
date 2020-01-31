@@ -9,19 +9,16 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
-const bloodGroupValueConversion = {
-  'A-': 'A-',
-  Aplus: 'A+',
-  'B-': 'B-',
-  Bplus: 'B+',
-  'AB-': 'AB-',
-  ABplus: 'AB+',
-  'O-': 'O-',
-  Oplus: 'O+',
-};
+import { bloodGroupValueConversion } from './blood-group-value-conversions';
 
 function getKarkunsByFilter(params) {
-  const pipeline = [];
+  const pipeline = [
+    {
+      $match: {
+        $or: [{ cityId: { $exists: false } }, { cityId: { $eq: null } }],
+      },
+    },
+  ];
 
   const {
     name,
@@ -31,8 +28,6 @@ function getKarkunsByFilter(params) {
     jobId,
     dutyId,
     shiftId,
-    cityId,
-    cityMehfilId,
     showVolunteers,
     showEmployees,
     pageIndex = '0',
@@ -99,22 +94,6 @@ function getKarkunsByFilter(params) {
     pipeline.push({
       $match: {
         jobId: { $eq: jobId },
-      },
-    });
-  }
-
-  if (cityId) {
-    pipeline.push({
-      $match: {
-        cityId: { $eq: cityId },
-      },
-    });
-  }
-
-  if (cityMehfilId) {
-    pipeline.push({
-      $match: {
-        cityMehfilId: { $eq: cityMehfilId },
       },
     });
   }

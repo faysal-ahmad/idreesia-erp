@@ -61,6 +61,12 @@ const Permissions = {
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
 
   // ****************************************************************************************
+  // Outstation Module
+  // ****************************************************************************************
+  OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
+  OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
+
+  // ****************************************************************************************
   // Portals Module
   // ****************************************************************************************
   PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',

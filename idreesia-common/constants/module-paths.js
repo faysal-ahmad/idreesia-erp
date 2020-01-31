@@ -4,6 +4,7 @@ const ModulePaths = {
   inventory: '/inventory',
   hr: '/hr',
   security: '/security',
+  outstation: '/outstation',
   portals: '/portals',
 };
 

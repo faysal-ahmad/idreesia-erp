@@ -10,22 +10,10 @@ export default class SubModulePaths {
     return `${SubModulePaths.jobsPath}/${jobId}`;
   }
 
-  static citiesPath = `${ModulePaths.hr}/cities`;
-  static citiesNewFormPath = `${SubModulePaths.citiesPath}/new`;
-  static citiesEditFormPath(cityId = ':cityId') {
-    return `${SubModulePaths.citiesPath}/${cityId}`;
-  }
-
   static msDutiesPath = `${ModulePaths.hr}/ms-duties`;
   static msDutiesNewFormPath = `${SubModulePaths.msDutiesPath}/new`;
   static msDutiesEditFormPath(dutyId = ':dutyId') {
     return `${SubModulePaths.msDutiesPath}/${dutyId}`;
-  }
-
-  static mehfilDutiesPath = `${ModulePaths.hr}/mehfil-duties`;
-  static mehfilDutiesNewFormPath = `${SubModulePaths.mehfilDutiesPath}/new`;
-  static mehfilDutiesEditFormPath(dutyId = ':dutyId') {
-    return `${SubModulePaths.mehfilDutiesPath}/${dutyId}`;
   }
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;

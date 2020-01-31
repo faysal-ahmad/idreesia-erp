@@ -6,9 +6,9 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 import {
+  CascaderField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -17,15 +17,23 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import {
+  WithAllCities,
+  WithAllCityMehfils,
+} from '/imports/ui/modules/outstation/common/composers';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
+
+    allCities: PropTypes.array,
+    allCitiesLoading: PropTypes.bool,
+    allCityMehfils: PropTypes.array,
+    allCityMehfilsLoading: PropTypes.bool,
     createKarkun: PropTypes.func,
-    allSharedResidencesLoading: PropTypes.bool,
-    allSharedResidences: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -48,8 +56,8 @@ class NewForm extends Component {
           emailAddress,
           currentAddress,
           permanentAddress,
+          cityIdMehfilId,
           bloodGroup,
-          sharedResidenceId,
           educationalQualification,
           meansOfEarning,
           ehadDate,
@@ -68,8 +76,9 @@ class NewForm extends Component {
             emailAddress,
             currentAddress,
             permanentAddress,
+            cityId: cityIdMehfilId[0],
+            cityMehfilId: cityIdMehfilId[1],
             bloodGroup,
-            sharedResidenceId,
             educationalQualification,
             meansOfEarning,
             ehadDate,
@@ -88,12 +97,19 @@ class NewForm extends Component {
 
   render() {
     const {
-      allSharedResidences,
-      allSharedResidencesLoading,
+      allCities,
+      allCitiesLoading,
+      allCityMehfils,
+      allCityMehfilsLoading,
       form: { getFieldDecorator },
     } = this.props;
-    if (allSharedResidencesLoading) return null;
 
+    if (allCitiesLoading || allCityMehfilsLoading) return null;
+
+    const cityMehfilCascaderData = getCityMehfilCascaderData(
+      allCities,
+      allCityMehfils
+    );
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
@@ -168,16 +184,6 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <SelectField
-          fieldName="sharedResidenceId"
-          fieldLabel="Shared Residence"
-          required={false}
-          data={allSharedResidences}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name, address }) => `${name} - ${address}`}
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
@@ -188,6 +194,15 @@ class NewForm extends Component {
           fieldName="permanentAddress"
           fieldLabel="Permanent Address"
           required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <CascaderField
+          data={cityMehfilCascaderData}
+          fieldName="cityIdMehfilId"
+          fieldLabel="City/Mehfil"
+          required
+          requiredMessage="Please select a city/mehfil from the list."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -220,8 +235,9 @@ const formMutation = gql`
     $emailAddress: String
     $currentAddress: String
     $permanentAddress: String
+    $cityId: String
+    $cityMehfilId: String
     $bloodGroup: String
-    $sharedResidenceId: String
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
@@ -236,8 +252,9 @@ const formMutation = gql`
       emailAddress: $emailAddress
       currentAddress: $currentAddress
       permanentAddress: $permanentAddress
+      cityId: $cityId
+      cityMehfilId: $cityMehfilId
       bloodGroup: $bloodGroup
-      sharedResidenceId: $sharedResidenceId
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
@@ -252,8 +269,9 @@ const formMutation = gql`
       emailAddress
       currentAddress
       permanentAddress
+      cityId
+      cityMehfilId
       bloodGroup
-      sharedResidenceId
       educationalQualification
       meansOfEarning
       ehadDate
@@ -264,12 +282,13 @@ const formMutation = gql`
 
 export default flowRight(
   Form.create(),
+  WithAllCities(),
+  WithAllCityMehfils(),
   graphql(formMutation, {
     name: 'createKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedOutstationKarkuns'],
     },
   }),
-  WithAllSharedResidences(),
-  WithBreadcrumbs(['HR', 'Karkuns', 'New'])
+  WithBreadcrumbs(['Outstation', 'Karkuns', 'New'])
 )(NewForm);

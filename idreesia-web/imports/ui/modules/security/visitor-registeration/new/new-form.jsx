@@ -12,6 +12,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Divider, Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
+  EhadDurationField,
   InputCnicField,
   InputMobileField,
   InputTextField,
@@ -19,7 +20,6 @@ import {
   SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { EhadDurationField } from '/imports/ui/modules/hr/common/fields';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 class NewForm extends Component {

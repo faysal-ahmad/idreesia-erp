@@ -4,6 +4,7 @@ const ModuleNames = {
   inventory: 'Inventory',
   hr: 'HR',
   security: 'Security',
+  outstation: 'Outstation',
   portals: 'Mehfil Portals',
 };
 

@@ -21,6 +21,9 @@ const routersMap = {
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/security-router')
   ),
+  [ModuleNames.outstation]: React.lazy(() =>
+    import('/imports/ui/modules/outstation/outstation-router')
+  ),
   [ModuleNames.portals]: React.lazy(() =>
     import('/imports/ui/modules/portals/portals-router')
   ),

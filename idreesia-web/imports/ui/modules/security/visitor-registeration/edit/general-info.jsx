@@ -1,28 +1,28 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Divider, Form, message } from "/imports/ui/controls";
+import { Divider, Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
+  EhadDurationField,
   InputCnicField,
   InputMobileField,
   InputTextField,
   InputTextAreaField,
   SwitchField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { EhadDurationField } from "/imports/ui/modules/hr/common/fields";
-import { RecordInfo } from "/imports/ui/modules/helpers/controls";
+} from '/imports/ui/modules/helpers/fields';
+import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
 import {
   WithDistinctCities,
   WithDistinctCountries,
-} from "meteor/idreesia-common/composers/security";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
+} from 'meteor/idreesia-common/composers/security';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -195,7 +195,7 @@ class GeneralInfo extends Component {
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={visitorById.cnicNumber || ""}
+            initialValue={visitorById.cnicNumber || ''}
             required={this.state.cnicRequired}
             requiredMessage="Please input the CNIC for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -222,7 +222,7 @@ class GeneralInfo extends Component {
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={visitorById.contactNumber1 || ""}
+            initialValue={visitorById.contactNumber1 || ''}
             required={this.state.mobileRequired}
             getFieldDecorator={getFieldDecorator}
           />
@@ -314,9 +314,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: "updateVisitor",
+    name: 'updateVisitor',
     options: {
-      refetchQueries: ["pagedVisitors"],
+      refetchQueries: ['pagedVisitors'],
     },
   }),
   graphql(formQuery, {

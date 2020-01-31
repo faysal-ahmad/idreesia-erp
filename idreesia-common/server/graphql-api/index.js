@@ -42,12 +42,6 @@ import VisitorStayResolvers from './security/visitor-stay/resolvers';
 /**
  * Schema and Resolvers for the HR module
  */
-import CitySchema from './hr/city/city.graphql';
-import CityResolvers from './hr/city/resolvers';
-
-import CityMehfilSchema from './hr/city-mehfil/city-mehfil.graphql';
-import CityMehfilResolvers from './hr/city-mehfil/resolvers';
-
 import DutyShiftSchema from './hr/duty-shift/duty-shift.graphql';
 import DutyShiftResolvers from './hr/duty-shift/resolvers';
 
@@ -74,6 +68,15 @@ import SalaryResolvers from './hr/salary/resolvers';
 
 import SharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
 import SharedResidenceResolvers from './hr/shared-residence/resolvers';
+
+/**
+ * Schema and Resolvers for the HR module
+ */
+import CitySchema from './outstation/city/city.graphql';
+import CityResolvers from './outstation/city/resolvers';
+
+import CityMehfilSchema from './outstation/city-mehfil/city-mehfil.graphql';
+import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
 
 /**
  * Schema and Resolvers for the Inventory module

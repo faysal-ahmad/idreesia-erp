@@ -30,16 +30,6 @@ class HRSidebar extends Component {
         history.push(paths.msDutiesPath);
         break;
 
-      case 'mehfil-duties':
-        setActiveSubModuleName(SubModuleNames.mehfilDuties);
-        history.push(paths.mehfilDutiesPath);
-        break;
-
-      case 'cities':
-        setActiveSubModuleName(SubModuleNames.cities);
-        history.push(paths.citiesPath);
-        break;
-
       case 'attendance-sheets':
         setActiveSubModuleName(SubModuleNames.attendanceSheets);
         history.push(paths.attendanceSheetsPath);

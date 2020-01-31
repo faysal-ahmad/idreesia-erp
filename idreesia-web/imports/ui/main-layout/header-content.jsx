@@ -26,6 +26,7 @@ const modulePathsMapping = {
   [ModuleNames.hr]: ModulePaths.hr,
   [ModuleNames.inventory]: ModulePaths.inventory,
   [ModuleNames.security]: ModulePaths.security,
+  [ModuleNames.outstation]: ModulePaths.outstation,
   [ModuleNames.portals]: ModulePaths.portals,
 };
 

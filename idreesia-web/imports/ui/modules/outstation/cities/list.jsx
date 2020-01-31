@@ -7,7 +7,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 class List extends Component {
   static propTypes = {

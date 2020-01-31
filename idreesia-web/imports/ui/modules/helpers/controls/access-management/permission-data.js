@@ -326,6 +326,26 @@ export const permissionsData = [
     ],
   },
   {
+    title: 'Outstation',
+    key: 'module-outstation',
+    children: [
+      {
+        title: 'Karkuns',
+        key: 'module-Outstation-karkuns',
+        children: [
+          {
+            title: 'View karkuns',
+            key: PermissionConstants.OUTSTATION_VIEW_KARKUNS,
+          },
+          {
+            title: 'Manage Karkuns',
+            key: PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+          },
+        ],
+      },
+    ],
+  },
+  {
     title: 'Portals',
     key: 'module-portals',
     children: [

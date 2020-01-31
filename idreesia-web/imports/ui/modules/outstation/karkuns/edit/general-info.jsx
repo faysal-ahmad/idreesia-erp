@@ -7,6 +7,7 @@ import moment from 'moment';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
+  CascaderField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -15,8 +16,12 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import {
+  WithAllCities,
+  WithAllCityMehfils,
+} from '/imports/ui/modules/outstation/common/composers';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -25,11 +30,13 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
+    allCities: PropTypes.array,
+    allCitiesLoading: PropTypes.bool,
+    allCityMehfils: PropTypes.array,
+    allCityMehfilsLoading: PropTypes.bool,
+    formDataLoading: PropTypes.bool,
     karkunById: PropTypes.object,
-    allSharedResidencesLoading: PropTypes.bool,
-    allSharedResidences: PropTypes.array,
     updateKarkun: PropTypes.func,
   };
 
@@ -53,8 +60,8 @@ class GeneralInfo extends Component {
           emailAddress,
           currentAddress,
           permanentAddress,
+          cityIdMehfilId,
           bloodGroup,
-          sharedResidenceId,
           educationalQualification,
           meansOfEarning,
           ehadDate,
@@ -74,8 +81,9 @@ class GeneralInfo extends Component {
             emailAddress,
             currentAddress,
             permanentAddress,
+            cityId: cityIdMehfilId[0],
+            cityMehfilId: cityIdMehfilId[1],
             bloodGroup: bloodGroup || null,
-            sharedResidenceId: sharedResidenceId || null,
             educationalQualification,
             meansOfEarning,
             ehadDate,
@@ -94,13 +102,21 @@ class GeneralInfo extends Component {
 
   render() {
     const {
+      allCities,
+      allCitiesLoading,
+      allCityMehfils,
+      allCityMehfilsLoading,
       formDataLoading,
       karkunById,
-      allSharedResidencesLoading,
-      allSharedResidences,
       form: { getFieldDecorator },
     } = this.props;
-    if (formDataLoading || allSharedResidencesLoading) return null;
+    if (allCitiesLoading || allCityMehfilsLoading || formDataLoading)
+      return null;
+
+    const cityMehfilCascaderData = getCityMehfilCascaderData(
+      allCities,
+      allCityMehfils
+    );
 
     return (
       <Fragment>
@@ -190,17 +206,6 @@ class GeneralInfo extends Component {
             getFieldDecorator={getFieldDecorator}
           />
 
-          <SelectField
-            fieldName="sharedResidenceId"
-            fieldLabel="Shared Residence"
-            required={false}
-            initialValue={karkunById.sharedResidenceId}
-            data={allSharedResidences}
-            getDataValue={({ _id }) => _id}
-            getDataText={({ name, address }) => `${name} - ${address}`}
-            getFieldDecorator={getFieldDecorator}
-          />
-
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
@@ -214,6 +219,16 @@ class GeneralInfo extends Component {
             fieldLabel="Permanent Address"
             initialValue={karkunById.permanentAddress}
             required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <CascaderField
+            data={cityMehfilCascaderData}
+            fieldName="cityIdMehfilId"
+            fieldLabel="City/Mehfil"
+            initialValue={[karkunById.cityId, karkunById.cityMehfilId]}
+            required
+            requiredMessage="Please select a city/mehfil from the list."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -253,8 +268,9 @@ const formQuery = gql`
       emailAddress
       currentAddress
       permanentAddress
+      cityId
+      cityMehfilId
       bloodGroup
-      sharedResidenceId
       educationalQualification
       meansOfEarning
       ehadDate
@@ -278,8 +294,9 @@ const formMutation = gql`
     $emailAddress: String
     $currentAddress: String
     $permanentAddress: String
+    $cityId: String
+    $cityMehfilId: String
     $bloodGroup: String
-    $sharedResidenceId: String
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
@@ -295,8 +312,9 @@ const formMutation = gql`
       emailAddress: $emailAddress
       currentAddress: $currentAddress
       permanentAddress: $permanentAddress
+      cityId: $cityId
+      cityMehfilId: $cityMehfilId
       bloodGroup: $bloodGroup
-      sharedResidenceId: $sharedResidenceId
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
@@ -311,8 +329,9 @@ const formMutation = gql`
       emailAddress
       currentAddress
       permanentAddress
+      cityId
+      cityMehfilId
       bloodGroup
-      sharedResidenceId
       educationalQualification
       meansOfEarning
       ehadDate
@@ -327,10 +346,12 @@ const formMutation = gql`
 
 export default flowRight(
   Form.create(),
+  WithAllCities(),
+  WithAllCityMehfils(),
   graphql(formMutation, {
     name: 'updateKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedOutstationKarkuns'],
     },
   }),
   graphql(formQuery, {
@@ -339,6 +360,5 @@ export default flowRight(
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
     },
-  }),
-  WithAllSharedResidences()
+  })
 )(GeneralInfo);

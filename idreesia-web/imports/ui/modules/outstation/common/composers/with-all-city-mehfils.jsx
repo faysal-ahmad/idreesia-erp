@@ -15,10 +15,9 @@ export default () => WrappedComponent => {
     query allCityMehfils {
       allCityMehfils {
         _id
-        dutyId
+        cityId
         name
-        startTime
-        endTime
+        address
       }
     }
   `;

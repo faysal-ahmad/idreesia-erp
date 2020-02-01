@@ -29,28 +29,39 @@ class PortalsSidebar extends Component {
     }
   };
 
+  getMenuItemsForPortal = portalId => [
+    <Menu.Item parent-key={portalId} key={`karkuns-${portalId}`}>
+      <span>
+        <Icon type="team" />
+        Karkuns
+      </span>
+    </Menu.Item>,
+  ];
+
   render() {
     const { loading, allAccessiblePortals } = this.props;
     if (loading) return null;
 
-    const subMenus = [];
-    allAccessiblePortals.forEach(portal => {
-      subMenus.push(
-        <Menu.SubMenu
-          key={portal._id}
-          title={
-            <span>
-              <Icon type="shop" />
-              {portal.name}
-            </span>
-          }
-        >
-          <Menu.Item parent-key={portal._id} key={`karkuns-${portal._id}`}>
-            Karkuns
-          </Menu.Item>
-        </Menu.SubMenu>
-      );
-    });
+    let subMenus = [];
+    if (allAccessiblePortals.length === 1) {
+      subMenus = this.getMenuItemsForPortal(allAccessiblePortals[0]._id);
+    } else {
+      allAccessiblePortals.forEach(portal => {
+        subMenus.push(
+          <Menu.SubMenu
+            key={portal._id}
+            title={
+              <span>
+                <Icon type="shop" />
+                {portal.name}
+              </span>
+            }
+          >
+            {this.getMenuItemsForPortal(portal._id)}
+          </Menu.SubMenu>
+        );
+      });
+    }
 
     return (
       <Menu

@@ -23,7 +23,7 @@ export default {
     },
     citiesByPortalId(obj, { portalId }) {
       const portal = Portals.findOne(portalId);
-      return Cities.find({ _id: { $in: portal.citiesId } }).fetch();
+      return Cities.find({ _id: { $in: portal.cityIds } }).fetch();
     },
   },
 

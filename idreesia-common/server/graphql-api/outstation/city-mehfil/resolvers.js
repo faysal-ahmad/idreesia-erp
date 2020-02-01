@@ -18,7 +18,7 @@ export default {
     cityMehfilsByPortalId(obj, { portalId }) {
       const portal = Portals.findOne(portalId);
       return CityMehfils.find({
-        cityId: { $in: portal.citiesId },
+        cityId: { $in: portal.cityIds },
       }).fetch();
     },
 

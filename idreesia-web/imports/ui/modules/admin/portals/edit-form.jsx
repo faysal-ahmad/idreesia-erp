@@ -97,7 +97,7 @@ const formQuery = gql`
 
 const formMutation = gql`
   mutation updatePortal($_id: String!, $name: String!, $cityIds: [String]) {
-    updateCompany(_id: $_id, name: $name, cityIds: $cityIds) {
+    updatePortal(_id: $_id, name: $name, cityIds: $cityIds) {
       _id
       name
       cityIds

@@ -14,6 +14,7 @@ type CityType {
 extend type Query {
   allCities: [CityType]
   cityById(_id: String!): CityType
+  citiesByPortalId(portalId: String!): [CityType]
 }
 
 extend type Mutation {

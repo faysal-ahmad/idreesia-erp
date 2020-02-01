@@ -1,4 +1,5 @@
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
+import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
@@ -11,6 +12,13 @@ export default {
     cityMehfilsByCityId(obj, { cityId }) {
       return CityMehfils.find({
         cityId,
+      }).fetch();
+    },
+
+    cityMehfilsByPortalId(obj, { portalId }) {
+      const portal = Portals.findOne(portalId);
+      return CityMehfils.find({
+        cityId: { $in: portal.citiesId },
       }).fetch();
     },
 

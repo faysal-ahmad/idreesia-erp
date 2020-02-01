@@ -13,6 +13,7 @@ type CityMehfilType {
 extend type Query {
   allCityMehfils: [CityMehfilType]
   cityMehfilsByCityId(cityId: String!): [CityMehfilType]
+  cityMehfilsByPortalId(portalId: String!): [CityMehfilType]
   cityMehfilById(_id: String!): CityMehfilType
 }
 

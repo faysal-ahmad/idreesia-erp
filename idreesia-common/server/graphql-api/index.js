@@ -19,12 +19,6 @@ import UserGroupSchema from './admin/user-group/user-group.graphql';
 import UserGroupResolvers from './admin/user-group/resolvers';
 
 /**
- * Schema and Resolvers for the Portals module
- */
-import PortalSchema from './portals/portal/portal.graphql';
-import PortalResolvers from './portals/portal/resolvers';
-
-/**
  * Schema and Resolvers for the Security module
  */
 import MehfilSchema from './security/mehfil/mehfil.graphql';
@@ -88,6 +82,15 @@ import OutstationAttendanceSchema from './outstation/attendance/attendance.graph
 import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 
 /**
+ * Schema and Resolvers for the Portals module
+ */
+import PortalSchema from './portals/portal/portal.graphql';
+import PortalResolvers from './portals/portal/resolvers';
+
+import PortalKarkunSchema from './portals/karkuns/karkun.graphql';
+import PortalKarkunResolvers from './portals/karkuns/resolvers';
+
+/**
  * Schema and Resolvers for the Inventory module
  */
 import CommonSchema from './inventory/common/common.graphql';
@@ -149,8 +152,6 @@ const typeDefs = [
   UserSchema,
   UserGroupSchema,
 
-  PortalSchema,
-
   MehfilSchema,
   MehfilKarkunSchema,
   VisitorSchema,
@@ -171,6 +172,9 @@ const typeDefs = [
   OutstationKarkunSchema,
   OutstationKarkunDutySchema,
   OutstationAttendanceSchema,
+
+  PortalSchema,
+  PortalKarkunSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -198,8 +202,6 @@ const resolvers = merge(
   UserResolvers,
   UserGroupResolvers,
 
-  PortalResolvers,
-
   MehfilResolvers,
   MehfilKarkunResolvers,
   VisitorResolvers,
@@ -220,6 +222,9 @@ const resolvers = merge(
   OutstationKarkunResolvers,
   OutstationKarkunDutyResolvers,
   OutstationAttendanceResolvers,
+
+  PortalResolvers,
+  PortalKarkunResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,

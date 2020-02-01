@@ -45,5 +45,5 @@ extend type Mutation {
 
   deletePortalKarkun(portalId: String!, _id: String!): Int
 
-  setPortalKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  setPortalKarkunProfileImage(portalId: String!, _id: String!, imageId: String!): KarkunType
 }

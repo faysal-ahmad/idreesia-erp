@@ -1,5 +1,5 @@
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
-import { Cities } from 'meteor/idreesia-common/server/collections/hr';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import {
   filterByInstanceAccess,
   hasOnePermission,

@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { WithAllCities } from '/imports/ui/modules/hr/common/composers';
+import { WithAllCities } from '/imports/ui/modules/outstation/common/composers';
 import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,

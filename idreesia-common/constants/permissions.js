@@ -59,6 +59,14 @@ const Permissions = {
   OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
 
   // ****************************************************************************************
+  // Portals Module
+  // ****************************************************************************************
+  PORTALS_DELETE_DATA: 'mehfil-portals-delete-data',
+
+  PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',
+  PORTALS_MANAGE_KARKUNS: 'mehfil-portals-manage-karkuns',
+
+  // ****************************************************************************************
   // Security Module
   // ****************************************************************************************
   SECURITY_VIEW_KARKUN_VERIFICATION: 'security-view-karkun-verification',
@@ -67,12 +75,6 @@ const Permissions = {
 
   SECURITY_VIEW_MEHFILS: 'security-view-mehfils',
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
-
-  // ****************************************************************************************
-  // Portals Module
-  // ****************************************************************************************
-  PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',
-  PORTALS_MANAGE_KARKUNS: 'mehfil-portals-manage-karkuns',
 
   // ****************************************************************************************
   // Inventory Module

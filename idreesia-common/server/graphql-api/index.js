@@ -70,13 +70,22 @@ import SharedResidenceSchema from './hr/shared-residence/shared-residence.graphq
 import SharedResidenceResolvers from './hr/shared-residence/resolvers';
 
 /**
- * Schema and Resolvers for the HR module
+ * Schema and Resolvers for the Outstation module
  */
 import CitySchema from './outstation/city/city.graphql';
 import CityResolvers from './outstation/city/resolvers';
 
 import CityMehfilSchema from './outstation/city-mehfil/city-mehfil.graphql';
 import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
+
+import OutstationKarkunSchema from './outstation/karkuns/karkun.graphql';
+import OutstationKarkunResolvers from './outstation/karkuns/resolvers';
+
+import OutstationKarkunDutySchema from './outstation/karkun-duties/karkun-duty.graphql';
+import OutstationKarkunDutyResolvers from './outstation/karkun-duties/resolvers';
+
+import OutstationAttendanceSchema from './outstation/attendance/attendance.graphql';
+import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 
 /**
  * Schema and Resolvers for the Inventory module
@@ -147,8 +156,6 @@ const typeDefs = [
   VisitorSchema,
   VisitorStaySchema,
 
-  CitySchema,
-  CityMehfilSchema,
   DutyShiftSchema,
   DutySchema,
   DutyLocationSchema,
@@ -158,6 +165,12 @@ const typeDefs = [
   AttendanceSchema,
   SalarySchema,
   SharedResidenceSchema,
+
+  CitySchema,
+  CityMehfilSchema,
+  OutstationKarkunSchema,
+  OutstationKarkunDutySchema,
+  OutstationAttendanceSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -192,8 +205,6 @@ const resolvers = merge(
   VisitorResolvers,
   VisitorStayResolvers,
 
-  CityResolvers,
-  CityMehfilResolvers,
   DutyShiftResolvers,
   DutyResolvers,
   DutyLocationResolvers,
@@ -203,6 +214,12 @@ const resolvers = merge(
   AttendanceResolvers,
   SalaryResolvers,
   SharedResidenceResolvers,
+
+  CityResolvers,
+  CityMehfilResolvers,
+  OutstationKarkunResolvers,
+  OutstationKarkunDutyResolvers,
+  OutstationAttendanceResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,

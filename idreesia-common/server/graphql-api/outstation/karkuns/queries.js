@@ -3,7 +3,16 @@ import { parse } from 'query-string';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 
-import { bloodGroupValueConversion } from './blood-group-value-conversions';
+const bloodGroupValueConversion = {
+  'A-': 'A-',
+  Aplus: 'A+',
+  'B-': 'B-',
+  Bplus: 'B+',
+  'AB-': 'AB-',
+  ABplus: 'AB+',
+  'O-': 'O-',
+  Oplus: 'O+',
+};
 
 export function getOutstationKarkuns(queryString) {
   const params = parse(queryString);

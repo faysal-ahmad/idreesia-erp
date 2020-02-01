@@ -1,8 +1,4 @@
-import {
-  Jobs,
-  Karkuns,
-  KarkunDuties,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -11,48 +7,21 @@ import {
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
 
-import { getKarkuns } from './queries';
+import { getOutstationKarkuns } from './queries';
 
 export default {
-  KarkunType: {
-    image: karkunType => {
-      const { imageId } = karkunType;
-      if (imageId) {
-        return Attachments.findOne({ _id: { $eq: imageId } });
-      }
-
-      return null;
-    },
-    job: karkunType => {
-      if (!karkunType.jobId) return null;
-      return Jobs.findOne(karkunType.jobId);
-    },
-    duties: karkunType =>
-      KarkunDuties.find({
-        karkunId: { $eq: karkunType._id },
-      }).fetch(),
-    attachments: karkunType => {
-      const { attachmentIds } = karkunType;
-      if (attachmentIds && attachmentIds.length > 0) {
-        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
-      }
-
-      return [];
-    },
-  },
-
   Query: {
-    karkunById(obj, { _id }) {
+    outstationKarkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
     },
 
-    pagedKarkuns(obj, { queryString }) {
-      return getKarkuns(queryString);
+    pagedOutstationKarkuns(obj, { queryString }) {
+      return getOutstationKarkuns(queryString);
     },
   },
 
   Mutation: {
-    createKarkun(
+    createOutstationKarkun(
       obj,
       {
         name,
@@ -66,7 +35,6 @@ export default {
         cityId,
         cityMehfilId,
         bloodGroup,
-        sharedResidenceId,
         educationalQualification,
         meansOfEarning,
         ehadDate,
@@ -76,12 +44,11 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
         ])
       ) {
         throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
+          'You do not have permission to manage Outstation Karkuns in the System.'
         );
       }
 
@@ -109,7 +76,6 @@ export default {
         cityId,
         cityMehfilId,
         bloodGroup,
-        sharedResidenceId,
         educationalQualification,
         meansOfEarning,
         ehadDate,
@@ -123,7 +89,7 @@ export default {
       return Karkuns.findOne(karkunId);
     },
 
-    updateKarkun(
+    updateOutstationKarkun(
       obj,
       {
         _id,
@@ -138,7 +104,6 @@ export default {
         cityId,
         cityMehfilId,
         bloodGroup,
-        sharedResidenceId,
         educationalQualification,
         meansOfEarning,
         ehadDate,
@@ -148,8 +113,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
         ])
       ) {
         throw new Error(
@@ -182,7 +146,6 @@ export default {
           cityId,
           cityMehfilId,
           bloodGroup,
-          sharedResidenceId,
           educationalQualification,
           meansOfEarning,
           ehadDate,
@@ -195,10 +158,14 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    deleteKarkun(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])) {
+    deleteOutstationKarkun(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_DELETE_DATA,
+        ])
+      ) {
         throw new Error(
-          'You do not have permission to delete Karkuns in the System.'
+          'You do not have permission to delete Outstation Karkuns in the System.'
         );
       }
 
@@ -209,40 +176,14 @@ export default {
       return 0;
     },
 
-    setKarkunEmploymentInfo(
-      obj,
-      { _id, isEmployee, jobId, employmentStartDate, employmentEndDate },
-      { user }
-    ) {
+    setOutstationKarkunProfileImage(obj, { _id, imageId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+        ])
       ) {
         throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          isEmployee,
-          jobId,
-          employmentStartDate,
-          employmentEndDate,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
-    },
-
-    setKarkunProfileImage(obj, { _id, imageId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
+          'You do not have permission to manage Outstation Karkuns in the System.'
         );
       }
 
@@ -262,53 +203,6 @@ export default {
         },
       });
 
-      return Karkuns.findOne(_id);
-    },
-
-    addKarkunAttachment(obj, { _id, attachmentId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $addToSet: {
-          attachmentIds: attachmentId,
-        },
-        $set: {
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
-    },
-
-    removeKarkunAttachment(obj, { _id, attachmentId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $pull: {
-          attachmentIds: attachmentId,
-        },
-        $set: {
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      Attachments.remove(attachmentId);
       return Karkuns.findOne(_id);
     },
   },

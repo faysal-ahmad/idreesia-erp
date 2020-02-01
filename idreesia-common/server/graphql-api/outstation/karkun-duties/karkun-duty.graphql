@@ -1,0 +1,8 @@
+extend type Mutation {
+  createOutstationKarkunDuty(
+    karkunId: String!
+    dutyId: String!
+  ): KarkunDutyType
+
+  removeOutstationKarkunDuty(_id: String!): Int
+}

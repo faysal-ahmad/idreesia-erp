@@ -1,4 +1,4 @@
-import { CityMehfils } from 'meteor/idreesia-common/server/collections/hr';
+import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
@@ -22,7 +22,9 @@ export default {
   Mutation: {
     createCityMehfil(obj, { name, cityId, address }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage City Mehfils Setup Data in the System.'
@@ -45,7 +47,9 @@ export default {
 
     updateCityMehfil(obj, { _id, name, cityId, address }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage City Mehfils Setup Data in the System.'
@@ -68,7 +72,9 @@ export default {
 
     removeCityMehfil(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage City Mehfils Setup Data in the System.'

@@ -36,8 +36,8 @@ class GeneralInfo extends Component {
     allCityMehfils: PropTypes.array,
     allCityMehfilsLoading: PropTypes.bool,
     formDataLoading: PropTypes.bool,
-    karkunById: PropTypes.object,
-    updateKarkun: PropTypes.func,
+    outstationKarkunById: PropTypes.object,
+    updateOutstationKarkun: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -47,7 +47,12 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, karkunById, updateKarkun } = this.props;
+    const {
+      form,
+      history,
+      outstationKarkunById,
+      updateOutstationKarkun,
+    } = this.props;
     form.validateFields(
       (
         err,
@@ -70,9 +75,9 @@ class GeneralInfo extends Component {
       ) => {
         if (err) return;
 
-        updateKarkun({
+        updateOutstationKarkun({
           variables: {
-            _id: karkunById._id,
+            _id: outstationKarkunById._id,
             name,
             parentName,
             cnicNumber,
@@ -107,7 +112,7 @@ class GeneralInfo extends Component {
       allCityMehfils,
       allCityMehfilsLoading,
       formDataLoading,
-      karkunById,
+      outstationKarkunById,
       form: { getFieldDecorator },
     } = this.props;
     if (allCitiesLoading || allCityMehfilsLoading || formDataLoading)
@@ -124,7 +129,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
-            initialValue={karkunById.name}
+            initialValue={outstationKarkunById.name}
             required
             requiredMessage="Please input the name for the karkun."
             getFieldDecorator={getFieldDecorator}
@@ -133,7 +138,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="parentName"
             fieldLabel="S/O"
-            initialValue={karkunById.parentName}
+            initialValue={outstationKarkunById.parentName}
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -141,8 +146,8 @@ class GeneralInfo extends Component {
             fieldName="ehadDate"
             fieldLabel="Ehad Duration"
             initialValue={
-              karkunById.ehadDate
-                ? moment(Number(karkunById.ehadDate))
+              outstationKarkunById.ehadDate
+                ? moment(Number(outstationKarkunById.ehadDate))
                 : moment()
             }
             getFieldDecorator={getFieldDecorator}
@@ -151,21 +156,21 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="referenceName"
             fieldLabel="R/O"
-            initialValue={karkunById.referenceName}
+            initialValue={outstationKarkunById.referenceName}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={karkunById.cnicNumber || ''}
+            initialValue={outstationKarkunById.cnicNumber || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={karkunById.contactNumber1 || ''}
+            initialValue={outstationKarkunById.contactNumber1 || ''}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -173,7 +178,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={karkunById.contactNumber2}
+            initialValue={outstationKarkunById.contactNumber2}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -194,14 +199,14 @@ class GeneralInfo extends Component {
             ]}
             getDataValue={({ value }) => value}
             getDataText={({ label }) => label}
-            initialValue={karkunById.bloodGroup}
+            initialValue={outstationKarkunById.bloodGroup}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
             fieldName="emailAddress"
             fieldLabel="Email"
-            initialValue={karkunById.emailAddress}
+            initialValue={outstationKarkunById.emailAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -209,7 +214,7 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
-            initialValue={karkunById.currentAddress}
+            initialValue={outstationKarkunById.currentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -217,7 +222,7 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="permanentAddress"
             fieldLabel="Permanent Address"
-            initialValue={karkunById.permanentAddress}
+            initialValue={outstationKarkunById.permanentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -226,7 +231,10 @@ class GeneralInfo extends Component {
             data={cityMehfilCascaderData}
             fieldName="cityIdMehfilId"
             fieldLabel="City/Mehfil"
-            initialValue={[karkunById.cityId, karkunById.cityMehfilId]}
+            initialValue={[
+              outstationKarkunById.cityId,
+              outstationKarkunById.cityMehfilId,
+            ]}
             required
             requiredMessage="Please select a city/mehfil from the list."
             getFieldDecorator={getFieldDecorator}
@@ -235,7 +243,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="educationalQualification"
             fieldLabel="Education"
-            initialValue={karkunById.educationalQualification}
+            initialValue={outstationKarkunById.educationalQualification}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -243,22 +251,22 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="meansOfEarning"
             fieldLabel="Means of Earning"
-            initialValue={karkunById.meansOfEarning}
+            initialValue={outstationKarkunById.meansOfEarning}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
-        <RecordInfo record={karkunById} />
+        <RecordInfo record={outstationKarkunById} />
       </Fragment>
     );
   }
 }
 
 const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
+  query outstationKarkunById($_id: String!) {
+    outstationKarkunById(_id: $_id) {
       _id
       name
       parentName
@@ -284,7 +292,7 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updateKarkun(
+  mutation updateOutstationKarkun(
     $_id: String!
     $name: String!
     $parentName: String
@@ -302,7 +310,7 @@ const formMutation = gql`
     $ehadDate: String
     $referenceName: String
   ) {
-    updateKarkun(
+    updateOutstationKarkun(
       _id: $_id
       name: $name
       parentName: $parentName
@@ -349,7 +357,7 @@ export default flowRight(
   WithAllCities(),
   WithAllCityMehfils(),
   graphql(formMutation, {
-    name: 'updateKarkun',
+    name: 'updateOutstationKarkun',
     options: {
       refetchQueries: ['pagedOutstationKarkuns'],
     },

@@ -13,9 +13,9 @@ import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstatio
 
 import ListFilter from './list-filter';
 
-const DELETE_KARKUN = gql`
-  mutation deleteKarkun($_id: String!) {
-    deleteKarkun(_id: $_id)
+const DELETE_OUTSTATION_KARKUN = gql`
+  mutation deleteOutstationKarkun($_id: String!) {
+    deleteOutstationKarkun(_id: $_id)
   }
 `;
 
@@ -44,7 +44,7 @@ const PAGED_DATA = gql`
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const karkunsList = useRef(null);
-  const [deleteKarkun] = useMutation(DELETE_KARKUN);
+  const [deleteOutstationKarkun] = useMutation(DELETE_OUTSTATION_KARKUN);
   const { queryString, queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -74,7 +74,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteClicked = record => {
-    deleteKarkun({
+    deleteOutstationKarkun({
       variables: {
         _id: record._id,
       },

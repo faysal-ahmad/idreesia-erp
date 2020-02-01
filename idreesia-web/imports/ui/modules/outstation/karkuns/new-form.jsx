@@ -33,7 +33,7 @@ class NewForm extends Component {
     allCitiesLoading: PropTypes.bool,
     allCityMehfils: PropTypes.array,
     allCityMehfilsLoading: PropTypes.bool,
-    createKarkun: PropTypes.func,
+    createOutstationKarkun: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -43,7 +43,7 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createKarkun, history } = this.props;
+    const { form, createOutstationKarkun, history } = this.props;
     form.validateFields(
       (
         err,
@@ -66,7 +66,7 @@ class NewForm extends Component {
       ) => {
         if (err) return;
 
-        createKarkun({
+        createOutstationKarkun({
           variables: {
             name,
             parentName,
@@ -85,7 +85,7 @@ class NewForm extends Component {
             referenceName,
           },
         })
-          .then(({ data: { createKarkun: newKarkun } }) => {
+          .then(({ data: { createOutstationKarkun: newKarkun } }) => {
             history.push(`${paths.karkunsPath}/${newKarkun._id}`);
           })
           .catch(error => {
@@ -226,7 +226,7 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createKarkun(
+  mutation createOutstationKarkun(
     $name: String!
     $parentName: String
     $cnicNumber: String
@@ -243,7 +243,7 @@ const formMutation = gql`
     $ehadDate: String
     $referenceName: String
   ) {
-    createKarkun(
+    createOutstationKarkun(
       name: $name
       parentName: $parentName
       cnicNumber: $cnicNumber
@@ -285,7 +285,7 @@ export default flowRight(
   WithAllCities(),
   WithAllCityMehfils(),
   graphql(formMutation, {
-    name: 'createKarkun',
+    name: 'createOutstationKarkun',
     options: {
       refetchQueries: ['pagedOutstationKarkuns'],
     },

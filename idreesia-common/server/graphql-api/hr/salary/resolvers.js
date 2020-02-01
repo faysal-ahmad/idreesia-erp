@@ -66,7 +66,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return [];

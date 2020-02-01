@@ -158,6 +158,10 @@ export const permissionsData = [
         key: PermissionConstants.HR_MANAGE_SETUP_DATA,
       },
       {
+        title: 'Delete Data',
+        key: PermissionConstants.HR_DELETE_DATA,
+      },
+      {
         title: 'Karkuns',
         key: 'module-hr-karkuns',
         children: [
@@ -168,10 +172,6 @@ export const permissionsData = [
           {
             title: 'Manage Karkuns Data',
             key: PermissionConstants.HR_MANAGE_KARKUNS,
-          },
-          {
-            title: 'Delete Karkuns Data',
-            key: PermissionConstants.HR_DELETE_KARKUNS,
           },
         ],
       },
@@ -186,10 +186,6 @@ export const permissionsData = [
           {
             title: 'Manage Employees Data',
             key: PermissionConstants.HR_MANAGE_EMPLOYEES,
-          },
-          {
-            title: 'Delete Employees Data',
-            key: PermissionConstants.HR_DELETE_EMPLOYEES,
           },
           {
             title: 'Approve Salaries Data',
@@ -330,8 +326,16 @@ export const permissionsData = [
     key: 'module-outstation',
     children: [
       {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+      },
+      {
+        title: 'Delete Data',
+        key: PermissionConstants.OUTSTATION_DELETE_DATA,
+      },
+      {
         title: 'Karkuns',
-        key: 'module-Outstation-karkuns',
+        key: 'module-outstation-karkuns',
         children: [
           {
             title: 'View karkuns',

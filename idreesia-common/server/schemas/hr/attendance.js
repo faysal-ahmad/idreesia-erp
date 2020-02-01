@@ -7,6 +7,9 @@ export default new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id,
   },
+  month: {
+    type: String,
+  },
   dutyId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
@@ -20,10 +23,6 @@ export default new SimpleSchema({
   jobId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
-    optional: true,
-  },
-  month: {
-    type: String,
     optional: true,
   },
   attendanceDetails: {
@@ -48,6 +47,7 @@ export default new SimpleSchema({
   },
   meetingCardBarcodeId: {
     type: String,
+    optional: true,
   },
 })
   .extend(identifiable)

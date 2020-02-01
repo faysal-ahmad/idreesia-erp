@@ -15,13 +15,13 @@ class ProfilePicture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
-    setKarkunProfileImage: PropTypes.func,
+    outstationKarkunById: PropTypes.object,
+    setOutstationKarkunProfileImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { karkunId, setKarkunProfileImage } = this.props;
-    setKarkunProfileImage({
+    const { karkunId, setOutstationKarkunProfileImage } = this.props;
+    setOutstationKarkunProfileImage({
       variables: {
         _id: karkunId,
         imageId,
@@ -32,9 +32,9 @@ class ProfilePicture extends Component {
   };
 
   render() {
-    const { loading, karkunById } = this.props;
+    const { loading, outstationKarkunById } = this.props;
     if (loading) return null;
-    const url = getDownloadUrl(karkunById.imageId);
+    const url = getDownloadUrl(outstationKarkunById.imageId);
 
     return (
       <Fragment>
@@ -56,8 +56,8 @@ class ProfilePicture extends Component {
 }
 
 const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
+  query outstationKarkunById($_id: String!) {
+    outstationKarkunById(_id: $_id) {
       _id
       imageId
     }
@@ -65,8 +65,8 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation setKarkunProfileImage($_id: String!, $imageId: String!) {
-    setKarkunProfileImage(_id: $_id, imageId: $imageId) {
+  mutation setOutstationKarkunProfileImage($_id: String!, $imageId: String!) {
+    setOutstationKarkunProfileImage(_id: $_id, imageId: $imageId) {
       _id
       imageId
     }
@@ -75,7 +75,7 @@ const formMutation = gql`
 
 export default flowRight(
   graphql(formMutation, {
-    name: 'setKarkunProfileImage',
+    name: 'setOutstationKarkunProfileImage',
     options: {
       refetchQueries: ['pagedOutstationKarkuns'],
     },

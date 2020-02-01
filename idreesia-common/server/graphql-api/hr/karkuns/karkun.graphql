@@ -43,7 +43,6 @@ type PagedKarkunType {
 extend type Query {
   karkunById(_id: String!): KarkunType
   pagedKarkuns(queryString: String): PagedKarkunType
-  pagedOutstationKarkuns(queryString: String): PagedKarkunType
 }
 
 extend type Mutation {

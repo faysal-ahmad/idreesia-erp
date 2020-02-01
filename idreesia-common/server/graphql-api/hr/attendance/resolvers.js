@@ -51,7 +51,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return null;
@@ -65,7 +65,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return {
@@ -82,7 +82,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return [];
@@ -123,7 +123,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
           PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
@@ -140,7 +140,7 @@ export default {
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return [];
@@ -158,7 +158,7 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -188,7 +188,7 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -280,7 +280,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_KARKUNS])
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove attendances for past months in the System.'
@@ -290,7 +290,7 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -309,7 +309,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_KARKUNS])
+        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove attendances for past months in the System.'
@@ -319,7 +319,7 @@ export default {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(

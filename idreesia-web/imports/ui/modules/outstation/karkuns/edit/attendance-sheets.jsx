@@ -14,30 +14,15 @@ import {
 } from 'meteor/idreesia-common/constants/list-options';
 
 const listQuery = gql`
-  query pagedAttendanceByKarkun($queryString: String) {
-    pagedAttendanceByKarkun(queryString: $queryString) {
+  query pagedOutstationAttendanceByKarkun($queryString: String) {
+    pagedOutstationAttendanceByKarkun(queryString: $queryString) {
       totalResults
       attendance {
         _id
-        dutyId
-        shiftId
-        jobId
         month
         absentCount
         presentCount
         percentage
-        job {
-          _id
-          name
-        }
-        duty {
-          _id
-          name
-        }
-        shift {
-          _id
-          name
-        }
       }
     }
   }
@@ -54,23 +39,6 @@ const columns = [
     render: text => {
       const date = moment(`01-${text}`, Formats.DATE_FORMAT);
       return date.format('MMM, YYYY');
-    },
-  },
-  {
-    title: 'Job / Duty / Shift',
-    key: 'shift.name',
-    render: (text, record) => {
-      let name;
-      if (record.job) {
-        name = record.job.name;
-      } else if (record.duty) {
-        name = record.duty.name;
-        if (record.shift) {
-          name = `${name} - ${record.shift.name}`;
-        }
-      }
-
-      return name;
     },
   },
   {
@@ -117,7 +85,7 @@ const AttendanceSheets = ({ karkunId }) => {
       rowKey="_id"
       size="small"
       columns={columns}
-      dataSource={data.pagedAttendanceByKarkun.attendance}
+      dataSource={data.pagedOutstationAttendanceByKarkun.attendance}
       pagination={false}
       bordered
       footer={() => (
@@ -130,7 +98,7 @@ const AttendanceSheets = ({ karkunId }) => {
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={data.pagedAttendanceByKarkun.totalResults}
+          total={data.pagedOutstationAttendanceByKarkun.totalResults}
         />
       )}
     />
@@ -144,7 +112,7 @@ AttendanceSheets.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
   loading: PropTypes.bool,
-  pagedAttendanceByKarkun: PropTypes.shape({
+  pagedOutstationAttendanceByKarkun: PropTypes.shape({
     totalResults: PropTypes.number,
     attendance: PropTypes.array,
   }),

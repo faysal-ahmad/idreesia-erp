@@ -1,0 +1,47 @@
+extend type Query {
+  outstationKarkunById(_id: String!): KarkunType
+  pagedOutstationKarkuns(queryString: String): PagedKarkunType
+}
+
+extend type Mutation {
+  createOutstationKarkun(
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    cityId: String
+    cityMehfilId: String
+    permanentAddress: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    referenceName: String
+  ): KarkunType
+
+  updateOutstationKarkun(
+    _id: String!
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    permanentAddress: String
+    cityId: String
+    cityMehfilId: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    referenceName: String
+  ): KarkunType
+
+  deleteOutstationKarkun(_id: String!): Int
+
+  setOutstationKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+}

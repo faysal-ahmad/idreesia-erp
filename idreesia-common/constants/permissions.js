@@ -37,18 +37,26 @@ const Permissions = {
   // HR Module
   // ****************************************************************************************
   HR_MANAGE_SETUP_DATA: 'hr-manage-setup-data',
+  HR_DELETE_DATA: 'hr-delete-data',
 
   HR_VIEW_KARKUNS: 'hr-view-karkuns',
   HR_MANAGE_KARKUNS: 'hr-manage-karkuns',
-  HR_DELETE_KARKUNS: 'hr-delete-karkuns',
 
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
-  HR_DELETE_EMPLOYEES: 'hr-delete-employees',
   HR_APPROVE_SALARIES: 'hr-approve-salaries',
 
   HR_VIEW_SHARED_RESIDENCES: 'hr-view-shared-residences',
   HR_MANAGE_SHARED_RESIDENCES: 'hr-manage-shared-residences',
+
+  // ****************************************************************************************
+  // Outstation Module
+  // ****************************************************************************************
+  OUTSTATION_MANAGE_SETUP_DATA: 'outstation-manage-setup-data',
+  OUTSTATION_DELETE_DATA: 'outstation-delete-data',
+
+  OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
+  OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
 
   // ****************************************************************************************
   // Security Module
@@ -59,12 +67,6 @@ const Permissions = {
 
   SECURITY_VIEW_MEHFILS: 'security-view-mehfils',
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
-
-  // ****************************************************************************************
-  // Outstation Module
-  // ****************************************************************************************
-  OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
-  OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
 
   // ****************************************************************************************
   // Portals Module

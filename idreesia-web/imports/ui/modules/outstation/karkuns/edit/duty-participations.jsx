@@ -29,8 +29,8 @@ class DutyParticipation extends Component {
     karkunDutiesByKarkunId: PropTypes.array,
     allMehfilDuties: PropTypes.array,
     allMehfilDutiesLoading: PropTypes.bool,
-    createKarkunDuty: PropTypes.func,
-    removeKarkunDuty: PropTypes.func,
+    createOutstationKarkunDuty: PropTypes.func,
+    removeOutstationKarkunDuty: PropTypes.func,
   };
 
   columns = [
@@ -99,7 +99,11 @@ class DutyParticipation extends Component {
   };
 
   handleAddClicked = () => {
-    const { karkunId, karkunDutiesByKarkunId, createKarkunDuty } = this.props;
+    const {
+      karkunId,
+      karkunDutiesByKarkunId,
+      createOutstationKarkunDuty,
+    } = this.props;
     const dutyId = this.state.selectedDutyId;
 
     if (!dutyId) return;
@@ -109,7 +113,7 @@ class DutyParticipation extends Component {
     );
     if (existingDuty) return;
 
-    createKarkunDuty({
+    createOutstationKarkunDuty({
       variables: {
         karkunId,
         dutyId,
@@ -120,8 +124,8 @@ class DutyParticipation extends Component {
   };
 
   handleDeleteClicked = record => {
-    const { removeKarkunDuty } = this.props;
-    removeKarkunDuty({
+    const { removeOutstationKarkunDuty } = this.props;
+    removeOutstationKarkunDuty({
       variables: {
         _id: record._id,
       },
@@ -172,9 +176,9 @@ const listQuery = gql`
   }
 `;
 
-const createKarkunDutyMutation = gql`
-  mutation createKarkunDuty($karkunId: String!, $dutyId: String!) {
-    createKarkunDuty(karkunId: $karkunId, dutyId: $dutyId) {
+const createOutstationKarkunDutyMutation = gql`
+  mutation createOutstationKarkunDuty($karkunId: String!, $dutyId: String!) {
+    createOutstationKarkunDuty(karkunId: $karkunId, dutyId: $dutyId) {
       _id
       dutyId
       dutyName
@@ -182,9 +186,9 @@ const createKarkunDutyMutation = gql`
   }
 `;
 
-const removeKarkunDutyMutation = gql`
-  mutation removeKarkunDuty($_id: String!) {
-    removeKarkunDuty(_id: $_id)
+const removeOutstationKarkunDutyMutation = gql`
+  mutation removeOutstationKarkunDuty($_id: String!) {
+    removeOutstationKarkunDuty(_id: $_id)
   }
 `;
 
@@ -196,14 +200,14 @@ export default flowRight(
       return { variables: { karkunId } };
     },
   }),
-  graphql(createKarkunDutyMutation, {
-    name: 'createKarkunDuty',
+  graphql(createOutstationKarkunDutyMutation, {
+    name: 'createOutstationKarkunDuty',
     options: {
       refetchQueries: ['karkunDutiesByKarkunId'],
     },
   }),
-  graphql(removeKarkunDutyMutation, {
-    name: 'removeKarkunDuty',
+  graphql(removeOutstationKarkunDutyMutation, {
+    name: 'removeOutstationKarkunDuty',
     options: {
       refetchQueries: [
         'pagedOutstationKarkuns',

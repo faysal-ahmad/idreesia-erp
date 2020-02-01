@@ -9,7 +9,16 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
-import { bloodGroupValueConversion } from './blood-group-value-conversions';
+const bloodGroupValueConversion = {
+  'A-': 'A-',
+  Aplus: 'A+',
+  'B-': 'B-',
+  Bplus: 'B+',
+  'AB-': 'AB-',
+  ABplus: 'AB+',
+  'O-': 'O-',
+  Oplus: 'O+',
+};
 
 function getKarkunsByFilter(params) {
   const pipeline = [

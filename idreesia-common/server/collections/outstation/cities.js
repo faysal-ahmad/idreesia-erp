@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 
-import { City as CitySchema } from 'meteor/idreesia-common/server/schemas/hr';
+import { City as CitySchema } from 'meteor/idreesia-common/server/schemas/outstation';
 
 class Cities extends Mongo.Collection {
   constructor(name = 'outstation-cities', options = {}) {

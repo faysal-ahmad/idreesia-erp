@@ -8,7 +8,6 @@ export default new SimpleSchema({
   },
   country: {
     type: String,
-    optional: true,
   },
 })
   .extend(identifiable)

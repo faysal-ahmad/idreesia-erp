@@ -71,6 +71,8 @@ class GeneralInfo extends Component {
             fieldName="country"
             fieldLabel="Country"
             initialValue={cityById.country}
+            required
+            requiredMessage="Please input a name for the country."
             getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />

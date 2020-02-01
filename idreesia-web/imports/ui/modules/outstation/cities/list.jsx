@@ -133,5 +133,5 @@ export default flowRight(
       refetchQueries: ['allCities'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Cities & Mehfils', 'List'])
+  WithBreadcrumbs(['Outstation', 'Cities & Mehfils', 'List'])
 )(List);

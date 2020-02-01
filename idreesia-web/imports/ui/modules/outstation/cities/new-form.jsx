@@ -61,6 +61,8 @@ class NewForm extends Component {
           fieldName="country"
           fieldLabel="Country"
           initialValue="Pakistan"
+          required
+          requiredMessage="Please input a name for the country."
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
@@ -70,7 +72,7 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createCity($name: String!, $country: String) {
+  mutation createCity($name: String!, $country: String!) {
     createCity(name: $name, country: $country) {
       _id
       name
@@ -87,5 +89,5 @@ export default flowRight(
       refetchQueries: ['allCities'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Cities & Mehfils', 'New'])
+  WithBreadcrumbs(['Outstation', 'Cities & Mehfils', 'New'])
 )(NewForm);

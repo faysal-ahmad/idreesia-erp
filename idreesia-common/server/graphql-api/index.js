@@ -87,8 +87,11 @@ import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 import PortalSchema from './portals/portal/portal.graphql';
 import PortalResolvers from './portals/portal/resolvers';
 
-import PortalKarkunSchema from './portals/karkuns/karkun.graphql';
-import PortalKarkunResolvers from './portals/karkuns/resolvers';
+import PortalKarkunSchema from './portals/karkun/karkun.graphql';
+import PortalKarkunResolvers from './portals/karkun/resolvers';
+
+import PortalVisitorSchema from './portals/visitor/visitor.graphql';
+import PortalVisitorResolvers from './portals/visitor/resolvers';
 
 /**
  * Schema and Resolvers for the Inventory module
@@ -175,6 +178,7 @@ const typeDefs = [
 
   PortalSchema,
   PortalKarkunSchema,
+  PortalVisitorSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -225,6 +229,7 @@ const resolvers = merge(
 
   PortalResolvers,
   PortalKarkunResolvers,
+  PortalVisitorResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,

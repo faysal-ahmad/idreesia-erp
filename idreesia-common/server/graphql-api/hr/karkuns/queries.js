@@ -21,13 +21,7 @@ const bloodGroupValueConversion = {
 };
 
 function getKarkunsByFilter(params) {
-  const pipeline = [
-    {
-      $match: {
-        $or: [{ cityId: { $exists: false } }, { cityId: { $eq: null } }],
-      },
-    },
-  ];
+  const pipeline = [];
 
   const {
     name,
@@ -42,6 +36,24 @@ function getKarkunsByFilter(params) {
     pageIndex = '0',
     pageSize = '20',
   } = params;
+
+  if (name) {
+    if (name.length === 1) {
+      pipeline.push({
+        $match: { name: { $regex: `^${name}` } },
+      });
+    } else {
+      pipeline.push({
+        $match: { $text: { $search: name } },
+      });
+    }
+  }
+
+  pipeline.push({
+    $match: {
+      $or: [{ cityId: { $exists: false } }, { cityId: { $eq: null } }],
+    },
+  });
 
   if (showVolunteers === 'false' && showEmployees === 'false') {
     return {
@@ -60,18 +72,6 @@ function getKarkunsByFilter(params) {
         isEmployee: { $eq: true },
       },
     });
-  }
-
-  if (name) {
-    if (name.length === 1) {
-      pipeline.push({
-        $match: { name: { $regex: `^${name}` } },
-      });
-    } else {
-      pipeline.push({
-        $match: { $text: { $search: name } },
-      });
-    }
   }
 
   if (cnicNumber) {

@@ -9,7 +9,7 @@ import {
 import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './general-info';
 import ProfilePicture from './profile-picture';
-import DutyParticipation from './duty-participations';
+import DutyParticipation from './duty-participation';
 import AttendanceSheets from './attendance-sheets';
 
 const EditForm = props => {

@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { find, flowRight } from 'lodash';
 
@@ -18,6 +17,12 @@ import {
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+
+import {
+  PORTAL_VISITOR_BY_ID,
+  UPDATE_PORTAL_VISITOR,
+  PAGED_PORTAL_VISITORS,
+} from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -226,82 +231,16 @@ class GeneralInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query portalVisitorById($portalId: String!, $_id: String!) {
-    portalVisitorById(portalId: $portalId, _id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      address
-      city
-      country
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updatePortalVisitor(
-    $portalId: String!
-    $_id: String!
-    $name: String!
-    $parentName: String!
-    $cnicNumber: String!
-    $ehadDate: String!
-    $referenceName: String!
-    $contactNumber1: String
-    $contactNumber2: String
-    $address: String
-    $city: String
-    $country: String
-  ) {
-    updatePortalVisitor(
-      portalId: $portalId
-      _id: $_id
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      address: $address
-      city: $city
-      country: $country
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      address
-      city
-      country
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithPortalCities(),
-  graphql(formMutation, {
+  graphql(UPDATE_PORTAL_VISITOR, {
     name: 'updatePortalVisitor',
     options: {
-      refetchQueries: ['pagedPortalVisitors'],
+      refetchQueries: [{ query: PAGED_PORTAL_VISITORS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(PORTAL_VISITOR_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ portalId, visitorId }) => ({
       variables: { portalId, _id: visitorId },

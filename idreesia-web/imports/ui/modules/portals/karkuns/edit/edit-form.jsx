@@ -7,6 +7,7 @@ import { WithPortal } from '/imports/ui/modules/portals/common/composers';
 import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './general-info';
 import ProfilePicture from './profile-picture';
+import DutyParticipation from './duty-participation';
 
 const EditForm = props => {
   const { match } = props;
@@ -19,6 +20,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Profile Picture" key="2">
         <ProfilePicture portalId={portalId} karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Duty Participation" key="3">
+        <DutyParticipation portalId={portalId} karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

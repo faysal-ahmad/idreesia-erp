@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
@@ -15,24 +14,7 @@ import { VisitorsList } from '/imports/ui/modules/helpers/controls';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 import ListFilter from './list-filter';
-
-const PAGED_DATA = gql`
-  query pagedPortalVisitors($portalId: String!, $queryString: String) {
-    pagedPortalVisitors(portalId: $portalId, queryString: $queryString) {
-      totalResults
-      data {
-        _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        city
-        country
-        imageId
-      }
-    }
-  }
-`;
+import { PAGED_PORTAL_VISITORS } from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -47,7 +29,7 @@ const List = ({ history, location }) => {
     paramNames: ['name', 'cnicNumber', 'phoneNumber', 'pageIndex', 'pageSize'],
   });
 
-  const { data, loading, refetch } = useQuery(PAGED_DATA, {
+  const { data, loading, refetch } = useQuery(PAGED_PORTAL_VISITORS, {
     variables: {
       portalId,
       queryString,

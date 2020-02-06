@@ -90,6 +90,9 @@ import PortalResolvers from './portals/portal/resolvers';
 import PortalKarkunSchema from './portals/karkun/karkun.graphql';
 import PortalKarkunResolvers from './portals/karkun/resolvers';
 
+import PortalKarkunDutySchema from './portals/karkun-duties/karkun-duty.graphql';
+import PortalKarkunDutyResolvers from './portals/karkun-duties/resolvers';
+
 import PortalVisitorSchema from './portals/visitor/visitor.graphql';
 import PortalVisitorResolvers from './portals/visitor/resolvers';
 
@@ -178,6 +181,7 @@ const typeDefs = [
 
   PortalSchema,
   PortalKarkunSchema,
+  PortalKarkunDutySchema,
   PortalVisitorSchema,
 
   CommonSchema,
@@ -229,6 +233,7 @@ const resolvers = merge(
 
   PortalResolvers,
   PortalKarkunResolvers,
+  PortalKarkunDutyResolvers,
   PortalVisitorResolvers,
 
   CommonResolvers,

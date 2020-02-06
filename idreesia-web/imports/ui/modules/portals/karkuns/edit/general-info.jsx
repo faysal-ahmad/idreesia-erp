@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -22,6 +21,12 @@ import {
   WithPortalCityMehfils,
 } from '/imports/ui/modules/portals/common/composers';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+
+import {
+  PORTAL_KARKUN_BY_ID,
+  UPDATE_PORTAL_KARKUN,
+  PAGED_PORTAL_KARKUNS,
+} from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -267,107 +272,17 @@ class GeneralInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query portalKarkunById($portalId: String!, $_id: String!) {
-    portalKarkunById(portalId: $portalId, _id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updatePortalKarkun(
-    $portalId: String!
-    $_id: String!
-    $name: String!
-    $parentName: String
-    $cnicNumber: String
-    $contactNumber1: String
-    $contactNumber2: String
-    $emailAddress: String
-    $currentAddress: String
-    $permanentAddress: String
-    $cityId: String
-    $cityMehfilId: String
-    $bloodGroup: String
-    $educationalQualification: String
-    $meansOfEarning: String
-    $ehadDate: String
-    $referenceName: String
-  ) {
-    updatePortalKarkun(
-      portalId: $portalId
-      _id: $_id
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      emailAddress: $emailAddress
-      currentAddress: $currentAddress
-      permanentAddress: $permanentAddress
-      cityId: $cityId
-      cityMehfilId: $cityMehfilId
-      bloodGroup: $bloodGroup
-      educationalQualification: $educationalQualification
-      meansOfEarning: $meansOfEarning
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithPortalCities(),
   WithPortalCityMehfils(),
-  graphql(formMutation, {
+  graphql(UPDATE_PORTAL_KARKUN, {
     name: 'updatePortalKarkun',
     options: {
-      refetchQueries: ['pagedPortalKarkuns'],
+      refetchQueries: [{ query: PAGED_PORTAL_KARKUNS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(PORTAL_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { portalId, karkunId } = match.params;

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -23,6 +22,8 @@ import {
   WithPortalCityMehfils,
 } from '/imports/ui/modules/portals/common/composers';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+
+import { CREATE_PORTAL_KARKUN, PAGED_PORTAL_KARKUNS } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -231,72 +232,15 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createPortalKarkun(
-    $portalId: String!
-    $name: String!
-    $parentName: String
-    $cnicNumber: String
-    $contactNumber1: String
-    $contactNumber2: String
-    $emailAddress: String
-    $currentAddress: String
-    $permanentAddress: String
-    $cityId: String
-    $cityMehfilId: String
-    $bloodGroup: String
-    $educationalQualification: String
-    $meansOfEarning: String
-    $ehadDate: String
-    $referenceName: String
-  ) {
-    createPortalKarkun(
-      portalId: $portalId
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      emailAddress: $emailAddress
-      currentAddress: $currentAddress
-      permanentAddress: $permanentAddress
-      cityId: $cityId
-      cityMehfilId: $cityMehfilId
-      bloodGroup: $bloodGroup
-      educationalQualification: $educationalQualification
-      meansOfEarning: $meansOfEarning
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithPortal(),
   WithPortalCities(),
   WithPortalCityMehfils(),
-  graphql(formMutation, {
+  graphql(CREATE_PORTAL_KARKUN, {
     name: 'createPortalKarkun',
     options: {
-      refetchQueries: ['pagedPortalKarkuns'],
+      refetchQueries: [{ query: PAGED_PORTAL_KARKUNS }],
     },
   }),
   WithDynamicBreadcrumbs(({ portal }) => {

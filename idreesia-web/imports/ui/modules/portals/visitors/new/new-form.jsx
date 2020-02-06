@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -20,6 +19,8 @@ import {
   WithPortalCities,
 } from '/imports/ui/modules/portals/common/composers';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
+
+import { CREATE_PORTAL_VISITOR, PAGED_PORTAL_VISITORS } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -211,56 +212,14 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createPortalVisitor(
-    $portalId: String!
-    $name: String!
-    $parentName: String!
-    $cnicNumber: String!
-    $ehadDate: String!
-    $referenceName: String!
-    $contactNumber1: String
-    $contactNumber2: String
-    $address: String
-    $city: String
-    $country: String
-  ) {
-    createPortalVisitor(
-      portalId: $portalId
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      address: $address
-      city: $city
-      country: $country
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      address
-      city
-      country
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithPortal(),
   WithPortalCities(),
-  graphql(formMutation, {
+  graphql(CREATE_PORTAL_VISITOR, {
     name: 'createPortalVisitor',
     options: {
-      refetchQueries: ['pagedPortalVisitors'],
+      refetchQueries: [{ query: PAGED_PORTAL_VISITORS }],
     },
   }),
   WithDynamicBreadcrumbs(({ portal }) => {

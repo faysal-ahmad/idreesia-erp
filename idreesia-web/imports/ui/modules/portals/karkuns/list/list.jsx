@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
@@ -14,36 +13,7 @@ import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { usePortal } from '/imports/ui/modules/portals/common/hooks';
 
 import ListFilter from './list-filter';
-
-const PAGED_DATA = gql`
-  query pagedPortalKarkuns($portalId: String!, $queryString: String) {
-    pagedPortalKarkuns(portalId: $portalId, queryString: $queryString) {
-      totalResults
-      karkuns {
-        _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        imageId
-        duties {
-          _id
-          dutyId
-          dutyName
-        }
-        city {
-          _id
-          name
-          country
-        }
-        cityMehfil {
-          _id
-          name
-        }
-      }
-    }
-  }
-`;
+import { PAGED_PORTAL_KARKUNS } from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -64,7 +34,7 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const { data, loading, refetch } = useQuery(PAGED_DATA, {
+  const { data, loading, refetch } = useQuery(PAGED_PORTAL_KARKUNS, {
     variables: {
       portalId,
       queryString,

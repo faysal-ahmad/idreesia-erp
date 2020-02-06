@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -19,18 +18,25 @@ const SelectStyle = {
   width: '300px',
 };
 
+import {
+  KARKUN_DUTIES_BY_KARKUN_ID,
+  CREATE_PORTAL_KARKUN_DUTY,
+  REMOVE_PORTAL_KARKUN_DUTY,
+} from '../gql';
+
 class DutyParticipation extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
 
+    portalId: PropTypes.string,
     karkunId: PropTypes.string,
     karkunDutiesByKarkunId: PropTypes.array,
     allMehfilDuties: PropTypes.array,
     allMehfilDutiesLoading: PropTypes.bool,
-    createOutstationKarkunDuty: PropTypes.func,
-    removeOutstationKarkunDuty: PropTypes.func,
+    createPortalKarkunDuty: PropTypes.func,
+    removePortalKarkunDuty: PropTypes.func,
   };
 
   columns = [
@@ -100,9 +106,10 @@ class DutyParticipation extends Component {
 
   handleAddClicked = () => {
     const {
+      portalId,
       karkunId,
       karkunDutiesByKarkunId,
-      createOutstationKarkunDuty,
+      createPortalKarkunDuty,
     } = this.props;
     const dutyId = this.state.selectedDutyId;
 
@@ -113,8 +120,9 @@ class DutyParticipation extends Component {
     );
     if (existingDuty) return;
 
-    createOutstationKarkunDuty({
+    createPortalKarkunDuty({
       variables: {
+        portalId,
         karkunId,
         dutyId,
       },
@@ -124,9 +132,10 @@ class DutyParticipation extends Component {
   };
 
   handleDeleteClicked = record => {
-    const { removeOutstationKarkunDuty } = this.props;
-    removeOutstationKarkunDuty({
+    const { portalId, removePortalKarkunDuty } = this.props;
+    removePortalKarkunDuty({
       variables: {
+        portalId,
         _id: record._id,
       },
     }).catch(error => {
@@ -166,54 +175,23 @@ class DutyParticipation extends Component {
   }
 }
 
-const listQuery = gql`
-  query karkunDutiesByKarkunId($karkunId: String!) {
-    karkunDutiesByKarkunId(karkunId: $karkunId) {
-      _id
-      dutyId
-      dutyName
-    }
-  }
-`;
-
-const createOutstationKarkunDutyMutation = gql`
-  mutation createOutstationKarkunDuty($karkunId: String!, $dutyId: String!) {
-    createOutstationKarkunDuty(karkunId: $karkunId, dutyId: $dutyId) {
-      _id
-      dutyId
-      dutyName
-    }
-  }
-`;
-
-const removeOutstationKarkunDutyMutation = gql`
-  mutation removeOutstationKarkunDuty($_id: String!) {
-    removeOutstationKarkunDuty(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(KARKUN_DUTIES_BY_KARKUN_ID, {
     props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { karkunId } };
+    options: ({ portalId, karkunId }) => ({
+      variables: { portalId, karkunId },
+    }),
+  }),
+  graphql(CREATE_PORTAL_KARKUN_DUTY, {
+    name: 'createPortalKarkunDuty',
+    options: {
+      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
     },
   }),
-  graphql(createOutstationKarkunDutyMutation, {
-    name: 'createOutstationKarkunDuty',
+  graphql(REMOVE_PORTAL_KARKUN_DUTY, {
+    name: 'removePortalKarkunDuty',
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
-    },
-  }),
-  graphql(removeOutstationKarkunDutyMutation, {
-    name: 'removeOutstationKarkunDuty',
-    options: {
-      refetchQueries: [
-        'pagedOutstationKarkuns',
-        'karkunDutiesByKarkunId',
-        'allMehfilDuties',
-      ],
+      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
     },
   }),
   WithAllMehfilDuties()

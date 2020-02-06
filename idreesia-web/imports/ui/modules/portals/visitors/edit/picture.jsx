@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -10,6 +9,12 @@ import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
+
+import {
+  PORTAL_VISITOR_BY_ID,
+  PAGED_PORTAL_VISITORS,
+  SET_PORTAL_VISITOR_IMAGE,
+} from '../gql';
 
 class Picture extends Component {
   static propTypes = {
@@ -57,32 +62,14 @@ class Picture extends Component {
   }
 }
 
-const formQuery = gql`
-  query portalVisitorById($portalId: String!, $_id: String!) {
-    portalVisitorById(portalId: $portalId, _id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setPortalVisitorImage($_id: String!, $imageId: String!) {
-    setPortalVisitorImage(_id: $_id, imageId: $imageId) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(SET_PORTAL_VISITOR_IMAGE, {
     name: 'setPortalVisitorImage',
     options: {
-      refetchQueries: ['pagedPortalVisitors'],
+      refetchQueries: [{ query: PAGED_PORTAL_VISITORS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(PORTAL_VISITOR_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ portalId, visitorId }) => ({
       variables: { portalId, _id: visitorId },

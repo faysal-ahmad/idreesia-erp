@@ -1,0 +1,9 @@
+extend type Mutation {
+  createPortalKarkunDuty(
+    portalId: String!
+    karkunId: String!
+    dutyId: String!
+  ): KarkunDutyType
+
+  removePortalKarkunDuty(portalId: String!, _id: String!): Int
+}

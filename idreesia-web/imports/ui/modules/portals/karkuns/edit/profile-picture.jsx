@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -10,6 +9,12 @@ import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
+
+import {
+  PORTAL_KARKUN_BY_ID,
+  PAGED_PORTAL_KARKUNS,
+  SET_PORTAL_KARKUN_PROFILE_IMAGE,
+} from '../gql';
 
 class ProfilePicture extends Component {
   static propTypes = {
@@ -57,40 +62,14 @@ class ProfilePicture extends Component {
   }
 }
 
-const formQuery = gql`
-  query portalKarkunById($portalId: String!, $_id: String!) {
-    portalKarkunById(portalId: $portalId, _id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setPortalKarkunProfileImage(
-    $portalId: String!
-    $_id: String!
-    $imageId: String!
-  ) {
-    setPortalKarkunProfileImage(
-      portalId: $portalId
-      _id: $_id
-      imageId: $imageId
-    ) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(SET_PORTAL_KARKUN_PROFILE_IMAGE, {
     name: 'setPortalKarkunProfileImage',
     options: {
-      refetchQueries: ['pagedPortalKarkuns'],
+      refetchQueries: [{ query: PAGED_PORTAL_KARKUNS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(PORTAL_KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ portalId, karkunId }) => ({
       variables: { portalId, _id: karkunId },

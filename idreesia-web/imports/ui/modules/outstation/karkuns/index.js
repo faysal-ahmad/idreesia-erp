@@ -1,3 +1,3 @@
 export { default as KarkunsList } from './list/list';
-export { default as KarkunsNewForm } from './new-form';
-export { default as KarkunsEditForm } from './edit-form';
+export { default as KarkunsNewForm } from './new/new-form';
+export { default as KarkunsEditForm } from './edit/edit-form';

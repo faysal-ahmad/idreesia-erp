@@ -5,8 +5,8 @@ import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { WithPortal } from '/imports/ui/modules/portals/common/composers';
 import { Tabs } from '/imports/ui/controls';
-import GeneralInfo from './edit/general-info';
-import ProfilePicture from './edit/profile-picture';
+import GeneralInfo from './general-info';
+import ProfilePicture from './profile-picture';
 
 const EditForm = props => {
   const { match } = props;

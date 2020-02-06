@@ -4,9 +4,9 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
+import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import {
   CascaderField,
   EhadDurationField,
@@ -18,9 +18,10 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import {
-  WithAllCities,
-  WithAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/composers';
+  WithPortal,
+  WithPortalCities,
+  WithPortalCityMehfils,
+} from '/imports/ui/modules/portals/common/composers';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
 
 class NewForm extends Component {
@@ -29,11 +30,13 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    allCities: PropTypes.array,
-    allCitiesLoading: PropTypes.bool,
-    allCityMehfils: PropTypes.array,
-    allCityMehfilsLoading: PropTypes.bool,
-    createOutstationKarkun: PropTypes.func,
+    portal: PropTypes.object,
+    portalLoading: PropTypes.bool,
+    portalCities: PropTypes.array,
+    portalCitiesLoading: PropTypes.bool,
+    portalCityMehfils: PropTypes.array,
+    portalCityMehfilsLoading: PropTypes.bool,
+    createPortalKarkun: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -43,7 +46,7 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createOutstationKarkun, history } = this.props;
+    const { form, createPortalKarkun, portal, history } = this.props;
     form.validateFields(
       (
         err,
@@ -66,8 +69,9 @@ class NewForm extends Component {
       ) => {
         if (err) return;
 
-        createOutstationKarkun({
+        createPortalKarkun({
           variables: {
+            portalId: portal._id,
             name,
             parentName,
             cnicNumber,
@@ -85,7 +89,7 @@ class NewForm extends Component {
             referenceName,
           },
         })
-          .then(({ data: { createOutstationKarkun: newKarkun } }) => {
+          .then(({ data: { createPortalKarkun: newKarkun } }) => {
             history.push(`${paths.karkunsPath}/${newKarkun._id}`);
           })
           .catch(error => {
@@ -97,18 +101,20 @@ class NewForm extends Component {
 
   render() {
     const {
-      allCities,
-      allCitiesLoading,
-      allCityMehfils,
-      allCityMehfilsLoading,
+      portalLoading,
+      portalCities,
+      portalCitiesLoading,
+      portalCityMehfils,
+      portalCityMehfilsLoading,
       form: { getFieldDecorator },
     } = this.props;
 
-    if (allCitiesLoading || allCityMehfilsLoading) return null;
+    if (portalLoading || portalCitiesLoading || portalCityMehfilsLoading)
+      return null;
 
     const cityMehfilCascaderData = getCityMehfilCascaderData(
-      allCities,
-      allCityMehfils
+      portalCities,
+      portalCityMehfils
     );
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -117,6 +123,15 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <CascaderField
+          data={cityMehfilCascaderData}
+          fieldName="cityIdMehfilId"
+          fieldLabel="City/Mehfil"
+          required
+          requiredMessage="Please select a city/mehfil from the list."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -197,15 +212,6 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <CascaderField
-          data={cityMehfilCascaderData}
-          fieldName="cityIdMehfilId"
-          fieldLabel="City/Mehfil"
-          required
-          requiredMessage="Please select a city/mehfil from the list."
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <InputTextField
           fieldName="educationalQualification"
           fieldLabel="Education"
@@ -226,7 +232,8 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createOutstationKarkun(
+  mutation createPortalKarkun(
+    $portalId: String!
     $name: String!
     $parentName: String
     $cnicNumber: String
@@ -243,7 +250,8 @@ const formMutation = gql`
     $ehadDate: String
     $referenceName: String
   ) {
-    createOutstationKarkun(
+    createPortalKarkun(
+      portalId: $portalId
       name: $name
       parentName: $parentName
       cnicNumber: $cnicNumber
@@ -282,13 +290,19 @@ const formMutation = gql`
 
 export default flowRight(
   Form.create(),
-  WithAllCities(),
-  WithAllCityMehfils(),
+  WithPortal(),
+  WithPortalCities(),
+  WithPortalCityMehfils(),
   graphql(formMutation, {
-    name: 'createOutstationKarkun',
+    name: 'createPortalKarkun',
     options: {
-      refetchQueries: ['pagedOutstationKarkuns'],
+      refetchQueries: ['pagedPortalKarkuns'],
     },
   }),
-  WithBreadcrumbs(['Outstation', 'Karkuns', 'New'])
+  WithDynamicBreadcrumbs(({ portal }) => {
+    if (portal) {
+      return `Mehfil Portal, ${portal.name}, Karkuns, New`;
+    }
+    return `Mehfil Portal, Karkuns, New`;
+  })
 )(NewForm);

@@ -138,6 +138,19 @@ class GeneralInfo extends Component {
             getFieldDecorator={getFieldDecorator}
           />
 
+          <CascaderField
+            data={cityMehfilCascaderData}
+            fieldName="cityIdMehfilId"
+            fieldLabel="City/Mehfil"
+            initialValue={[
+              portalKarkunById.cityId,
+              portalKarkunById.cityMehfilId,
+            ]}
+            required
+            requiredMessage="Please select a city/mehfil from the list."
+            getFieldDecorator={getFieldDecorator}
+          />
+
           <InputTextField
             fieldName="parentName"
             fieldLabel="S/O"
@@ -227,19 +240,6 @@ class GeneralInfo extends Component {
             fieldLabel="Permanent Address"
             initialValue={portalKarkunById.permanentAddress}
             required={false}
-            getFieldDecorator={getFieldDecorator}
-          />
-
-          <CascaderField
-            data={cityMehfilCascaderData}
-            fieldName="cityIdMehfilId"
-            fieldLabel="City/Mehfil"
-            initialValue={[
-              portalKarkunById.cityId,
-              portalKarkunById.cityMehfilId,
-            ]}
-            required
-            requiredMessage="Please select a city/mehfil from the list."
             getFieldDecorator={getFieldDecorator}
           />
 

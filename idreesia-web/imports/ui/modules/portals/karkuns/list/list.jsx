@@ -31,6 +31,15 @@ const PAGED_DATA = gql`
           dutyId
           dutyName
         }
+        city {
+          _id
+          name
+          country
+        }
+        cityMehfil {
+          _id
+          name
+        }
       }
     }
   }
@@ -124,6 +133,7 @@ const List = ({ history, location }) => {
       showSelectionColumn={false}
       showCnicColumn
       showPhoneNumbersColumn
+      showMehfilCityColumn
       showDutiesColumn
       showDeleteAction={false}
       listHeader={getTableHeader}

@@ -19,6 +19,7 @@ export default class KarkunsList extends Component {
     showCnicColumn: PropTypes.bool,
     showPhoneNumbersColumn: PropTypes.bool,
     showDutiesColumn: PropTypes.bool,
+    showMehfilCityColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
@@ -77,6 +78,27 @@ export default class KarkunsList extends Component {
     },
   };
 
+  mehfilCityColumn = {
+    title: 'City / Mehfil',
+    key: 'cityMehfil',
+    render: (text, record) => {
+      const { city, cityMehfil } = record;
+      const cityMehfilInfo = [];
+
+      if (cityMehfil) {
+        cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
+      }
+      if (city) {
+        cityMehfilInfo.push(
+          <Row key="2">{`${city.name}, ${city.country}`}</Row>
+        );
+      }
+
+      if (cityMehfilInfo.length === 0) return '';
+      return <>{cityMehfilInfo}</>;
+    },
+  };
+
   dutiesColumn = {
     title: 'Duties',
     dataIndex: 'duties',
@@ -132,6 +154,7 @@ export default class KarkunsList extends Component {
     const {
       showCnicColumn,
       showPhoneNumbersColumn,
+      showMehfilCityColumn,
       showDutiesColumn,
       showDeleteAction,
     } = this.props;
@@ -143,6 +166,10 @@ export default class KarkunsList extends Component {
 
     if (showPhoneNumbersColumn) {
       columns.push(this.phoneNumberColumn);
+    }
+
+    if (showMehfilCityColumn) {
+      columns.push(this.mehfilCityColumn);
     }
 
     if (showDutiesColumn) {

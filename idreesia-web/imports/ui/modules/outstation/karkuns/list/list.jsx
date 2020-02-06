@@ -36,6 +36,15 @@ const PAGED_DATA = gql`
           shiftId
           dutyName
         }
+        city {
+          _id
+          name
+          country
+        }
+        cityMehfil {
+          _id
+          name
+        }
       }
     }
   }
@@ -147,9 +156,10 @@ const List = ({ history, location }) => {
   return (
     <KarkunsList
       ref={karkunsList}
-      showSelectionColumn={false}
+      showSelectionColumn
       showCnicColumn
       showPhoneNumbersColumn
+      showMehfilCityColumn
       showDutiesColumn
       showDeleteAction
       listHeader={getTableHeader}

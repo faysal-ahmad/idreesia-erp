@@ -28,6 +28,8 @@ type KarkunType {
   duties: [KarkunDutyType]
   attachments: [Attachment]
   image: Attachment
+  city: CityType
+  cityMehfil: CityMehfilType
 
   createdAt: String
   createdBy: String

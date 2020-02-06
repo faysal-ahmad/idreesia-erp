@@ -4,6 +4,10 @@ import {
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  Cities,
+  CityMehfils,
+} from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import {
@@ -38,6 +42,14 @@ export default {
       }
 
       return [];
+    },
+    city: karkunType => {
+      if (!karkunType.cityId) return null;
+      return Cities.findOne(karkunType.cityId);
+    },
+    cityMehfil: karkunType => {
+      if (!karkunType.cityMehfilId) return null;
+      return CityMehfils.findOne(karkunType.cityMehfilId);
     },
   },
 

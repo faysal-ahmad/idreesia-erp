@@ -18,6 +18,7 @@ export default () => WrappedComponent => {
       citiesByPortalId(portalId: $portalId) {
         _id
         name
+        country
       }
     }
   `;

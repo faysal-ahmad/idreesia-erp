@@ -26,15 +26,18 @@ class PortalsSidebar extends Component {
     if (key.startsWith('karkuns')) {
       setActiveSubModuleName(SubModuleNames.karkuns);
       history.push(paths.karkunsPath(portalId));
+    } else if (key.startsWith('visitors')) {
+      setActiveSubModuleName(SubModuleNames.visitors);
+      history.push(paths.visitorsPath(portalId));
     }
   };
 
   getMenuItemsForPortal = portalId => [
     <Menu.Item parent-key={portalId} key={`karkuns-${portalId}`}>
-      <span>
-        <Icon type="team" />
-        Karkuns
-      </span>
+      Karkuns
+    </Menu.Item>,
+    <Menu.Item parent-key={portalId} key={`visitors-${portalId}`}>
+      Visitors
     </Menu.Item>,
   ];
 

@@ -28,6 +28,7 @@ class List extends Component {
     visitorId: PropTypes.string,
     showNewButton: PropTypes.bool,
     showDutyColumn: PropTypes.bool,
+    showActionsColumn: PropTypes.bool,
     setPageParams: PropTypes.func,
 
     cancelVisitorStay: PropTypes.func,
@@ -149,17 +150,18 @@ class List extends Component {
   };
 
   getColumns = () => {
-    const { showDutyColumn } = this.props;
+    const { showDutyColumn, showActionsColumn } = this.props;
+    const columns = [this.stayDetailsColumn, this.stayReasonColumn];
+
     if (showDutyColumn) {
-      return [
-        this.stayDetailsColumn,
-        this.stayReasonColumn,
-        this.dutyShiftNameColumn,
-        this.actionsColumn,
-      ];
+      columns.push(this.dutyShiftNameColumn);
     }
 
-    return [this.stayDetailsColumn, this.stayReasonColumn, this.actionsColumn];
+    if (showActionsColumn) {
+      columns.push(this.actionsColumn);
+    }
+
+    return columns;
   };
 
   onChange = (pageIndex, pageSize) => {

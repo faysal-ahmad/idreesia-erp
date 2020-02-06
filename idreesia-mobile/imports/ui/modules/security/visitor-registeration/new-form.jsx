@@ -69,7 +69,6 @@ const NewForm = ({
           variables: {
             name,
             parentName,
-            isMinor: false,
             cnicNumber: `${cnicNumber.slice(0, 5)}-${cnicNumber.slice(
               5,
               12

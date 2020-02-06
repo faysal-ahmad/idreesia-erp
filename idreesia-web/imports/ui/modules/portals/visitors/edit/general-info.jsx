@@ -3,24 +3,20 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
+import { find, flowRight } from 'lodash';
 
 import { Divider, Form, message } from '/imports/ui/controls';
 import {
-  AutoCompleteField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
   InputTextField,
   InputTextAreaField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
-
-import {
-  WithDistinctCities,
-  WithDistinctCountries,
-} from 'meteor/idreesia-common/composers/security';
+import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 class GeneralInfo extends Component {
@@ -30,15 +26,13 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    formDataLoading: PropTypes.bool,
+    portalId: PropTypes.string,
     visitorId: PropTypes.string,
-    visitorById: PropTypes.object,
-    updateVisitor: PropTypes.func,
-
-    distinctCitiesLoading: PropTypes.bool,
-    distinctCities: PropTypes.array,
-    distinctCountriesLoading: PropTypes.bool,
-    distinctCountries: PropTypes.array,
+    portalVisitorById: PropTypes.object,
+    formDataLoading: PropTypes.bool,
+    portalCities: PropTypes.array,
+    portalCitiesLoading: PropTypes.bool,
+    updatePortalVisitor: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -48,7 +42,14 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, visitorById, updateVisitor } = this.props;
+    const {
+      form,
+      history,
+      portalId,
+      portalVisitorById,
+      portalCities,
+      updatePortalVisitor,
+    } = this.props;
     form.validateFields(
       (
         err,
@@ -61,8 +62,7 @@ class GeneralInfo extends Component {
           contactNumber1,
           contactNumber2,
           address,
-          city,
-          country,
+          cityCountry,
         }
       ) => {
         if (err) return;
@@ -87,9 +87,15 @@ class GeneralInfo extends Component {
           return;
         }
 
-        updateVisitor({
+        const visitorCity = find(
+          portalCities,
+          city => city._id === cityCountry
+        );
+
+        updatePortalVisitor({
           variables: {
-            _id: visitorById._id,
+            portalId,
+            _id: portalVisitorById._id,
             name,
             parentName,
             cnicNumber,
@@ -98,8 +104,8 @@ class GeneralInfo extends Component {
             contactNumber1,
             contactNumber2,
             address,
-            city,
-            country,
+            city: visitorCity.name,
+            country: visitorCity.country,
           },
         })
           .then(() => {
@@ -112,26 +118,20 @@ class GeneralInfo extends Component {
     );
   };
 
-  handleIsMinorChanged = checked => {
-    this.setState({
-      cnicRequired: !checked,
-      mobileRequired: checked,
-    });
-  };
-
   render() {
     const {
+      portalVisitorById,
       formDataLoading,
-      visitorById,
-      distinctCities,
-      distinctCitiesLoading,
-      distinctCountries,
-      distinctCountriesLoading,
+      portalCities,
+      portalCitiesLoading,
     } = this.props;
-    if (formDataLoading || distinctCitiesLoading || distinctCountriesLoading)
-      return null;
+    if (formDataLoading || portalCitiesLoading) return null;
 
     const { getFieldDecorator } = this.props.form;
+    const visitorCity = find(
+      portalCities,
+      city => city.name === portalVisitorById.city
+    );
 
     return (
       <Fragment>
@@ -139,7 +139,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
-            initialValue={visitorById.name}
+            initialValue={portalVisitorById.name}
             required
             requiredMessage="Please input the first name for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -148,36 +148,29 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="parentName"
             fieldLabel="S/O"
-            initialValue={visitorById.parentName}
+            initialValue={portalVisitorById.parentName}
             required
             requiredMessage="Please input the parent name for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
 
-          <AutoCompleteField
-            fieldName="city"
-            fieldLabel="City"
-            dataSource={distinctCities}
-            initialValue={visitorById.city}
+          <SelectField
+            allowClear={false}
+            data={portalCities}
+            initialValue={visitorCity._id}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name, country }) => `${name}, ${country}`}
+            fieldName="cityCountry"
+            fieldLabel="City / Country"
             required
-            requiredMessage="Please input the city for the visitor."
-            getFieldDecorator={getFieldDecorator}
-          />
-
-          <AutoCompleteField
-            fieldName="country"
-            fieldLabel="Country"
-            dataSource={distinctCountries}
-            initialValue={visitorById.country}
-            required
-            requiredMessage="Please input the country for the visitor."
+            requiredMessage="Please select a city for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextAreaField
             fieldName="address"
             fieldLabel="Address"
-            initialValue={visitorById.address}
+            initialValue={portalVisitorById.address}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -188,7 +181,7 @@ class GeneralInfo extends Component {
             fieldName="ehadDate"
             fieldLabel="Ehad Duration"
             required
-            initialValue={moment(Number(visitorById.ehadDate))}
+            initialValue={moment(Number(portalVisitorById.ehadDate))}
             requiredMessage="Please specify the Ehad duration for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
@@ -196,7 +189,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="referenceName"
             fieldLabel="R/O"
-            initialValue={visitorById.referenceName}
+            initialValue={portalVisitorById.referenceName}
             required
             requiredMessage="Please input the referene name for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -205,36 +198,37 @@ class GeneralInfo extends Component {
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={visitorById.cnicNumber || ''}
+            initialValue={portalVisitorById.cnicNumber || ''}
+            requiredMessage="Please input the CNIC for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={visitorById.contactNumber1 || ''}
+            initialValue={portalVisitorById.contactNumber1 || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={visitorById.contactNumber2}
+            initialValue={portalVisitorById.contactNumber2}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
-        <RecordInfo record={visitorById} />
+        <RecordInfo record={portalVisitorById} />
       </Fragment>
     );
   }
 }
 
 const formQuery = gql`
-  query visitorById($_id: String!) {
-    visitorById(_id: $_id) {
+  query portalVisitorById($portalId: String!, $_id: String!) {
+    portalVisitorById(portalId: $portalId, _id: $_id) {
       _id
       name
       parentName
@@ -255,7 +249,8 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updateVisitor(
+  mutation updatePortalVisitor(
+    $portalId: String!
     $_id: String!
     $name: String!
     $parentName: String!
@@ -268,7 +263,8 @@ const formMutation = gql`
     $city: String
     $country: String
   ) {
-    updateVisitor(
+    updatePortalVisitor(
+      portalId: $portalId
       _id: $_id
       name: $name
       parentName: $parentName
@@ -298,19 +294,17 @@ const formMutation = gql`
 
 export default flowRight(
   Form.create(),
+  WithPortalCities(),
   graphql(formMutation, {
-    name: 'updateVisitor',
+    name: 'updatePortalVisitor',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedPortalVisitors'],
     },
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { visitorId } = match.params;
-      return { variables: { _id: visitorId } };
-    },
-  }),
-  WithDistinctCities(),
-  WithDistinctCountries()
+    options: ({ portalId, visitorId }) => ({
+      variables: { portalId, _id: visitorId },
+    }),
+  })
 )(GeneralInfo);

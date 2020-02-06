@@ -11,11 +11,7 @@ export function getPortalVisitors(portalId, queryString) {
   const cityNames = cities.map(city => city.name);
 
   const params = parse(queryString);
-  const pipeline = [
-    {
-      city: { $in: cityNames },
-    },
-  ];
+  const pipeline = [];
 
   const {
     name,
@@ -30,6 +26,12 @@ export function getPortalVisitors(portalId, queryString) {
       $match: { $text: { $search: name } },
     });
   }
+
+  pipeline.push({
+    $match: {
+      city: { $in: cityNames },
+    },
+  });
 
   if (cnicNumber) {
     pipeline.push({

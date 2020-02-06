@@ -1,13 +1,14 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import List from "./list";
+import List from './list';
 
 export default class ListContainer extends Component {
   static propTypes = {
     visitorId: PropTypes.string,
     showNewButton: PropTypes.bool,
     showDutyColumn: PropTypes.bool,
+    showActionsColumn: PropTypes.bool,
   };
 
   state = {
@@ -20,7 +21,12 @@ export default class ListContainer extends Component {
   };
 
   render() {
-    const { visitorId, showNewButton, showDutyColumn } = this.props;
+    const {
+      visitorId,
+      showNewButton,
+      showDutyColumn,
+      showActionsColumn,
+    } = this.props;
     const { pageIndex, pageSize } = this.state;
 
     return (
@@ -30,6 +36,7 @@ export default class ListContainer extends Component {
         visitorId={visitorId}
         showNewButton={showNewButton}
         showDutyColumn={showDutyColumn}
+        showActionsColumn={showActionsColumn}
       />
     );
   }

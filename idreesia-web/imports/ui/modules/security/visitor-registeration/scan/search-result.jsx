@@ -123,7 +123,12 @@ const SearchResult = props => {
         <SearchResultRow label="Country" text={country} dataStyle={dataStyle} />
       </Col>
       <Col order={2}>
-        <VisitorStaysList visitorId={_id} showDutyColumn showNewButton />
+        <VisitorStaysList
+          visitorId={_id}
+          showDutyColumn
+          showNewButton
+          showActionsColumn
+        />
       </Col>
     </Row>
   );

@@ -3,40 +3,35 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithDistinctCities,
-  WithDistinctCountries,
-} from 'meteor/idreesia-common/composers/security';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Divider, Form, message } from '/imports/ui/controls';
 import {
-  AutoCompleteField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
   InputTextField,
   InputTextAreaField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+import {
+  WithPortal,
+  WithPortalCities,
+} from '/imports/ui/modules/portals/common/composers';
+import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createVisitor: PropTypes.func,
+    createPortalVisitor: PropTypes.func,
 
-    distinctCitiesLoading: PropTypes.bool,
-    distinctCities: PropTypes.array,
-    distinctCountriesLoading: PropTypes.bool,
-    distinctCountries: PropTypes.array,
-  };
-
-  state = {
-    cnicRequired: true,
-    mobileRequired: false,
+    portal: PropTypes.object,
+    portalLoading: PropTypes.bool,
+    portalCities: PropTypes.array,
+    portalCitiesLoading: PropTypes.bool,
   };
 
   handleCancel = () => {
@@ -46,7 +41,13 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createVisitor, history } = this.props;
+    const {
+      form,
+      createPortalVisitor,
+      history,
+      portal,
+      portalCities,
+    } = this.props;
     form.validateFields(
       (
         err,
@@ -59,8 +60,7 @@ class NewForm extends Component {
           contactNumber1,
           contactNumber2,
           address,
-          city,
-          country,
+          cityCountry,
         }
       ) => {
         if (err) return;
@@ -85,8 +85,14 @@ class NewForm extends Component {
           return;
         }
 
-        createVisitor({
+        const visitorCity = find(
+          portalCities,
+          city => city._id === cityCountry
+        );
+
+        createPortalVisitor({
           variables: {
+            portalId: portal._id,
             name,
             parentName,
             cnicNumber,
@@ -95,8 +101,8 @@ class NewForm extends Component {
             contactNumber1,
             contactNumber2,
             address,
-            city,
-            country,
+            city: visitorCity.name,
+            country: visitorCity.country,
           },
         })
           .then(({ data: { createVisitor: newVisitor } }) => {
@@ -113,13 +119,12 @@ class NewForm extends Component {
 
   render() {
     const {
+      portalLoading,
+      portalCities,
+      portalCitiesLoading,
       form,
-      distinctCities,
-      distinctCitiesLoading,
-      distinctCountries,
-      distinctCountriesLoading,
     } = this.props;
-    if (distinctCitiesLoading || distinctCountriesLoading) return null;
+    if (portalLoading || portalCitiesLoading) return null;
 
     const { getFieldDecorator } = form;
 
@@ -141,22 +146,16 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <AutoCompleteField
-          fieldName="city"
-          fieldLabel="City"
-          dataSource={distinctCities}
+        <SelectField
+          allowClear={false}
+          data={portalCities}
+          initialValue={portalCities[0]._id}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name, country }) => `${name}, ${country}`}
+          fieldName="cityCountry"
+          fieldLabel="City / Country"
           required
-          requiredMessage="Please input the city for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <AutoCompleteField
-          fieldName="country"
-          fieldLabel="Country"
-          dataSource={distinctCountries}
-          initialValue="Pakistan"
-          required
-          requiredMessage="Please input the country for the visitor."
+          requiredMessage="Please select a city for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -188,12 +187,14 @@ class NewForm extends Component {
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
+          requiredMessage="Please input the CNIC for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
+          requiredMessage="Please input the mobile number for the visitor."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -211,7 +212,8 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createVisitor(
+  mutation createPortalVisitor(
+    $portalId: String!
     $name: String!
     $parentName: String!
     $cnicNumber: String!
@@ -223,7 +225,8 @@ const formMutation = gql`
     $city: String
     $country: String
   ) {
-    createVisitor(
+    createPortalVisitor(
+      portalId: $portalId
       name: $name
       parentName: $parentName
       cnicNumber: $cnicNumber
@@ -252,13 +255,18 @@ const formMutation = gql`
 
 export default flowRight(
   Form.create(),
+  WithPortal(),
+  WithPortalCities(),
   graphql(formMutation, {
-    name: 'createVisitor',
+    name: 'createPortalVisitor',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedPortalVisitors'],
     },
   }),
-  WithDistinctCities(),
-  WithDistinctCountries(),
-  WithBreadcrumbs(['Security', 'Visitor Registration', 'New'])
+  WithDynamicBreadcrumbs(({ portal }) => {
+    if (portal) {
+      return `Mehfil Portal, ${portal.name}, Visitors, New`;
+    }
+    return `Mehfil Portal, Visitors, New`;
+  })
 )(NewForm);

@@ -98,7 +98,11 @@ class ListContainer extends Component {
           onClose={this.handleStayListClose}
           visible={showStayList}
         >
-          <VisitorStaysList showNewButton visitorId={visitorIdForStayList} />
+          <VisitorStaysList
+            showNewButton
+            showActionsColumn
+            visitorId={visitorIdForStayList}
+          />
         </Drawer>
       </Fragment>
     );

@@ -54,7 +54,6 @@ export default {
         portalId,
         name,
         parentName,
-        isMinor,
         cnicNumber,
         ehadDate,
         referenceName,
@@ -103,7 +102,6 @@ export default {
       const visitorId = Visitors.insert({
         name,
         parentName,
-        isMinor,
         cnicNumber,
         ehadDate,
         referenceName,
@@ -131,7 +129,6 @@ export default {
         _id,
         name,
         parentName,
-        isMinor,
         cnicNumber,
         ehadDate,
         referenceName,
@@ -169,7 +166,6 @@ export default {
         $set: {
           name,
           parentName,
-          isMinor,
           cnicNumber,
           ehadDate,
           referenceName,

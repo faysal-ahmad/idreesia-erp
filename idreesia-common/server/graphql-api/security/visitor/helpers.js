@@ -35,7 +35,6 @@ function processJsonRecord(jsonRecord, date, user) {
     Visitors.insert({
       name,
       parentName,
-      isMinor: false,
       cnicNumber,
       ehadDate,
       referenceName,

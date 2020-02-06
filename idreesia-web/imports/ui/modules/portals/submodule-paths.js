@@ -13,4 +13,20 @@ export default class SubModulePaths {
   static karkunsEditFormPath(portalId = ':portalId', karkunId = ':karkunId') {
     return `${SubModulePaths.karkunsPath(portalId)}/${karkunId}`;
   }
+
+  // *************************************************************************************
+  // Visitor Routes
+  // *************************************************************************************
+  static visitorsPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/visitors`;
+  }
+  static visitorsNewFormPath(portalId = ':portalId') {
+    return `${SubModulePaths.visitorsPath(portalId)}/new`;
+  }
+  static visitorsEditFormPath(
+    portalId = ':portalId',
+    visitorId = ':visitorId'
+  ) {
+    return `${SubModulePaths.visitorsPath(portalId)}/${visitorId}`;
+  }
 }

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const NameDivStyle = {
   display: 'flex',
@@ -16,26 +14,26 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const KarkunName = ({ karkun, onKarkunNameClicked }) => {
+const PersonName = ({ person, onPersonNameClicked }) => {
   const [showDialog, setShowDialog] = useState(false);
-  if (!karkun) return null;
+  if (!person) return null;
 
-  const nameNode = onKarkunNameClicked ? (
+  const nameNode = onPersonNameClicked ? (
     <div
       onClick={() => {
-        onKarkunNameClicked(karkun);
+        onPersonNameClicked(person);
       }}
     >
-      {karkun.name}
+      {person.name}
     </div>
   ) : (
-    <Link to={`${paths.karkunsPath}/${karkun._id}`}>{karkun.name}</Link>
+    <span>{person.name}</span>
   );
 
   let imageUrl;
   let avatarNode = <Avatar shape="square" size="large" icon="user" />;
-  if (karkun.imageId) {
-    imageUrl = getDownloadUrl(karkun.imageId);
+  if (person.imageId) {
+    imageUrl = getDownloadUrl(person.imageId);
     avatarNode = (
       <Avatar
         shape="square"
@@ -56,7 +54,7 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
         {nameNode}
       </div>
       <Modal
-        title={karkun.name}
+        title={person.name}
         visible={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
@@ -67,9 +65,12 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
   );
 };
 
-KarkunName.propTypes = {
-  karkun: PropTypes.object,
-  onKarkunNameClicked: PropTypes.func,
+PersonName.propTypes = {
+  onPersonNameClicked: PropTypes.func,
+  person: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    imageId: PropTypes.string.isRequired,
+  }),
 };
 
-export default KarkunName;
+export default PersonName;

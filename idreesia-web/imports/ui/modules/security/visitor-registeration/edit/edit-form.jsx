@@ -27,6 +27,7 @@ const EditForm = props => {
           visitorId={visitorId}
           showNewButton
           showDutyColumn
+          showActionsColumn
           {...props}
         />
       </Tabs.TabPane>

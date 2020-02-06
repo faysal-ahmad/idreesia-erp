@@ -4,7 +4,6 @@ const CREATE_VISITOR = gql`
   mutation createVisitor(
     $name: String!
     $parentName: String!
-    $isMinor: Boolean!
     $cnicNumber: String!
     $ehadDate: String!
     $referenceName: String!
@@ -18,7 +17,6 @@ const CREATE_VISITOR = gql`
     createVisitor(
       name: $name
       parentName: $parentName
-      isMinor: $isMinor
       cnicNumber: $cnicNumber
       ehadDate: $ehadDate
       referenceName: $referenceName
@@ -32,7 +30,6 @@ const CREATE_VISITOR = gql`
       _id
       name
       parentName
-      isMinor
       cnicNumber
       ehadDate
       referenceName

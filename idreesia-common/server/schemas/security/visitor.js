@@ -9,9 +9,6 @@ export default new SimpleSchema({
   parentName: {
     type: String,
   },
-  isMinor: {
-    type: Boolean,
-  },
   verified: {
     type: Boolean,
   },

@@ -73,7 +73,7 @@ const List = ({ history, location }) => {
     history.push(paths.karkunsNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteItem = record => {
     deleteOutstationKarkun({
       variables: {
         _id: record._id,
@@ -147,14 +147,14 @@ const List = ({ history, location }) => {
   return (
     <KarkunsList
       ref={karkunsList}
-      showSelectionColumn
+      showSelectionColumn={false}
       showCnicColumn
       showPhoneNumbersColumn
       showDutiesColumn
-      showActionsColumn
+      showDeleteAction
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
-      handleDeleteItem={handleDeleteClicked}
+      handleDeleteItem={handleDeleteItem}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

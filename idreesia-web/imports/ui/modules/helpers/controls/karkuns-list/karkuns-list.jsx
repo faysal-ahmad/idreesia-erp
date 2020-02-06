@@ -19,7 +19,7 @@ export default class KarkunsList extends Component {
     showCnicColumn: PropTypes.bool,
     showPhoneNumbersColumn: PropTypes.bool,
     showDutiesColumn: PropTypes.bool,
-    showActionsColumn: PropTypes.bool,
+    showDeleteAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
@@ -107,12 +107,13 @@ export default class KarkunsList extends Component {
 
   actionsColumn = {
     key: 'action',
-    render: (text, record) => (
-      <div className="list-actions-column">
+    render: (text, record) => {
+      const { showDeleteAction, handleDeleteItem } = this.props;
+      const deleteAction = showDeleteAction ? (
         <Popconfirm
           title="Are you sure you want to delete this karkun?"
           onConfirm={() => {
-            this.handleDeleteClicked(record);
+            handleDeleteItem(record);
           }}
           okText="Yes"
           cancelText="No"
@@ -121,8 +122,10 @@ export default class KarkunsList extends Component {
             <Icon type="delete" className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
-      </div>
-    ),
+      ) : null;
+
+      return <div className="list-actions-column">{deleteAction}</div>;
+    },
   };
 
   getColumns = () => {
@@ -130,7 +133,7 @@ export default class KarkunsList extends Component {
       showCnicColumn,
       showPhoneNumbersColumn,
       showDutiesColumn,
-      showActionsColumn,
+      showDeleteAction,
     } = this.props;
     const columns = [this.nameColumn];
 
@@ -146,7 +149,7 @@ export default class KarkunsList extends Component {
       columns.push(this.dutiesColumn);
     }
 
-    if (showActionsColumn) {
+    if (showDeleteAction) {
       columns.push(this.actionsColumn);
     }
 
@@ -175,11 +178,6 @@ export default class KarkunsList extends Component {
       pageIndex: pageIndex - 1,
       pageSize,
     });
-  };
-
-  handleDeleteClicked = record => {
-    const { handleDeleteItem } = this.props;
-    handleDeleteItem(record);
   };
 
   getSelectedRows = () => this.state.selectedRows;

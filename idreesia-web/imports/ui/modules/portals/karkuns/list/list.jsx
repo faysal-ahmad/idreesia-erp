@@ -2,24 +2,18 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useDispatch } from 'react-redux';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { Button, Tooltip, message } from '/imports/ui/controls';
+import { Button } from '/imports/ui/controls';
 import { KarkunsList } from '/imports/ui/modules/helpers/controls';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { usePortal } from '/imports/ui/modules/portals/common/hooks';
 
 import ListFilter from './list-filter';
-
-const DELETE_PORTAL_KARKUN = gql`
-  mutation deletePortalKarkun($portalId: String!, $_id: String!) {
-    deleteOutstationKarkun(portalId: $portalId, _id: $_id)
-  }
-`;
 
 const PAGED_DATA = gql`
   query pagedPortalKarkuns($portalId: String!, $queryString: String) {
@@ -47,7 +41,6 @@ const List = ({ history, location }) => {
   const karkunsList = useRef(null);
   const { portalId } = useParams();
   const { portal } = usePortal();
-  const [deletePortalKarkun] = useMutation(DELETE_PORTAL_KARKUN);
   const { queryString, queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -83,30 +76,6 @@ const List = ({ history, location }) => {
     history.push(paths.karkunsNewFormPath(portalId));
   };
 
-  const handleDeleteClicked = record => {
-    deletePortalKarkun({
-      variables: {
-        portalId,
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  const handleExportSelected = () => {
-    const selectedRows = karkunsList.current.getSelectedRows();
-    if (selectedRows.length === 0) return;
-
-    const reportArgs = selectedRows.map(row => row._id);
-    const url = `${
-      window.location.origin
-    }/generate-report?reportName=PortalKarkuns&reportArgs=${reportArgs.join(
-      ','
-    )}`;
-    window.open(url, '_blank');
-  };
-
   const handleSelectItem = karkun => {
     history.push(paths.karkunsEditFormPath(portalId, karkun._id));
   };
@@ -137,35 +106,28 @@ const List = ({ history, location }) => {
           New Karkun
         </Button>
       </div>
-      <div className="list-table-header-section">
-        <ListFilter
-          name={name}
-          cnicNumber={cnicNumber}
-          phoneNumber={phoneNumber}
-          bloodGroup={bloodGroup}
-          dutyId={dutyId}
-          setPageParams={setPageParams}
-          refreshData={refetch}
-        />
-        &nbsp;&nbsp;
-        <Tooltip title="Download Selected Data">
-          <Button icon="download" size="large" onClick={handleExportSelected} />
-        </Tooltip>
-      </div>
+      <ListFilter
+        name={name}
+        cnicNumber={cnicNumber}
+        phoneNumber={phoneNumber}
+        bloodGroup={bloodGroup}
+        dutyId={dutyId}
+        setPageParams={setPageParams}
+        refreshData={refetch}
+      />
     </div>
   );
 
   return (
     <KarkunsList
       ref={karkunsList}
-      showSelectionColumn
+      showSelectionColumn={false}
       showCnicColumn
       showPhoneNumbersColumn
       showDutiesColumn
-      showActionsColumn
+      showDeleteAction={false}
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
-      handleDeleteItem={handleDeleteClicked}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

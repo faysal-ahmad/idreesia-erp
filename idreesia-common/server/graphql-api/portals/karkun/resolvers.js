@@ -5,10 +5,6 @@ import {
   hasOnePermission,
 } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import {
-  canDeleteKarkun,
-  deleteKarkun,
-} from 'meteor/idreesia-common/server/business-logic/hr';
 
 import { getPortalKarkuns } from './queries';
 
@@ -177,28 +173,6 @@ export default {
       });
 
       return Karkuns.findOne(_id);
-    },
-
-    deletePortalKarkun(obj, { portalId, _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTALS_DELETE_DATA])
-      ) {
-        throw new Error(
-          'You do not have permission to delete Karkuns in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to delete Karkuns in this Mehfil Portal.'
-        );
-      }
-
-      if (canDeleteKarkun(_id)) {
-        return deleteKarkun(_id);
-      }
-
-      return 0;
     },
 
     setPortalKarkunProfileImage(obj, { portalId, _id, imageId }, { user }) {

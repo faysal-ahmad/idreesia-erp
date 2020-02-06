@@ -44,6 +44,7 @@ export default class VisitorsList extends Component {
   static defaultProps = {
     handleSelectItem: noop,
     handleDeleteItem: noop,
+    handleShowStayHistory: noop,
     listHeader: () => null,
   };
 

@@ -43,6 +43,7 @@ class List extends Component {
     },
     {
       key: 'action',
+      width: 50,
       render: (text, record) => {
         const karkunsAction = (
           <Tooltip key="karkuns" title="Karkuns">

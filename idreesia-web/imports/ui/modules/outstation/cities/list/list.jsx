@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
+
+import { ALL_CITIES, REMOVE_CITY } from '../gql';
 
 class List extends Component {
   static propTypes = {
@@ -103,31 +104,11 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query allCities {
-    allCities {
-      _id
-      name
-      country
-      mehfils {
-        _id
-        name
-      }
-    }
-  }
-`;
-
-const removeCityMutation = gql`
-  mutation removeCity($_id: String!) {
-    removeCity(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(ALL_CITIES, {
     props: ({ data }) => ({ ...data }),
   }),
-  graphql(removeCityMutation, {
+  graphql(REMOVE_CITY, {
     name: 'removeCity',
     options: {
       refetchQueries: ['allCities'],

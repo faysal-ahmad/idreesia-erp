@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -10,6 +9,8 @@ import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+
+import { ALL_CITIES, CREATE_CITY } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -71,22 +72,12 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createCity($name: String!, $country: String!) {
-    createCity(name: $name, country: $country) {
-      _id
-      name
-      country
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(CREATE_CITY, {
     name: 'createCity',
     options: {
-      refetchQueries: ['allCities'],
+      refetchQueries: [{ query: ALL_CITIES }],
     },
   }),
   WithBreadcrumbs(['Outstation', 'Cities & Mehfils', 'New'])

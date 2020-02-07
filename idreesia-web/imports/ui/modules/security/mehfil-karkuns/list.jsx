@@ -143,17 +143,17 @@ export class List extends Component {
       </Select>
     );
 
-    const actions = !isPastMehfil ? (
+    const actions = (
       <div className="list-table-header-section">
         <KarkunSelectionButton
           icon="usergroup-add"
           label="Add Karkuns"
           onSelection={this.onKarkunSelection}
-          disabled={!dutyName}
+          disabled={isPastMehfil || !dutyName}
         />
         &nbsp;&nbsp;
         <Button
-          disabled={!dutyName}
+          disabled={isPastMehfil || !dutyName}
           icon="edit"
           size="large"
           onClick={this.handleEditDutyDetails}
@@ -162,7 +162,7 @@ export class List extends Component {
         </Button>
         &nbsp;&nbsp;
         <Button
-          disabled={!dutyName}
+          disabled={isPastMehfil || !dutyName}
           icon="printer"
           size="large"
           onClick={this.handleViewMehfilCards}
@@ -170,14 +170,12 @@ export class List extends Component {
           Print Cards
         </Button>
       </div>
-    ) : null;
+    );
 
     return (
       <div className="list-table-header">
-        <div>
-          {dutySelector}
-          {actions}
-        </div>
+        <div>{dutySelector}</div>
+        {actions}
       </div>
     );
   };

@@ -17,7 +17,7 @@ class SecuritySidebar extends Component {
   handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
     switch (key) {
-      case 'mehfil-duties':
+      case 'mehfils':
         setActiveSubModuleName(SubModuleNames.mehfils);
         history.push(paths.mehfilsPath);
         break;
@@ -64,17 +64,20 @@ class SecuritySidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
-        <Menu.SubMenu key="mehfils" title={<span>Mehfils</span>}>
-          <Menu.Item key="mehfil-duties">
+        <Menu.SubMenu
+          key="mehfil-management"
+          title={<span>Mehfil Management</span>}
+        >
+          <Menu.Item key="mehfils">
             <span>
-              <Icon type="solution" />
-              Karkun Duties
+              <Icon type="flag" />
+              Mehfils
             </span>
           </Menu.Item>
           <Menu.Item key="mehfil-card-verification">
             <span>
               <Icon type="barcode" />
-              Card Verification
+              Scan Karkun Card
             </span>
           </Menu.Item>
         </Menu.SubMenu>

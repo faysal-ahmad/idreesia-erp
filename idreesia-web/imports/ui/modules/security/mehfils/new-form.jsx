@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -11,6 +10,8 @@ import {
   DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+
+import { CREATE_MEHFIL, ALL_MEHFILS } from './gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -71,22 +72,12 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createMehfil($name: String!, $mehfilDate: String!) {
-    createMehfil(name: $name, mehfilDate: $mehfilDate) {
-      _id
-      name
-      mehfilDate
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(CREATE_MEHFIL, {
     name: 'createMehfil',
     options: {
-      refetchQueries: ['allMehfils'],
+      refetchQueries: [{ query: ALL_MEHFILS }],
     },
   }),
   WithBreadcrumbs(['Security', 'Mehfils', 'New'])

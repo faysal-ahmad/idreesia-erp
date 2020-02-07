@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -13,6 +12,8 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+
+import { MEHFIL_BY_ID, UPDATE_MEHFIL, ALL_MEHFILS } from './gql';
 
 class EditForm extends Component {
   static propTypes = {
@@ -39,7 +40,7 @@ class EditForm extends Component {
 
       updateMehfil({
         variables: {
-          id: mehfilById._id,
+          _id: mehfilById._id,
           name,
           mehfilDate,
         },
@@ -83,47 +84,19 @@ class EditForm extends Component {
   }
 }
 
-const formQuery = gql`
-  query mehfilById($id: String!) {
-    mehfilById(id: $id) {
-      _id
-      name
-      mehfilDate
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateMehfil($id: String!, $name: String!, $mehfilDate: String!) {
-    updateMehfil(id: $id, name: $name, mehfilDate: $mehfilDate) {
-      _id
-      name
-      mehfilDate
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(UPDATE_MEHFIL, {
     name: 'updateMehfil',
     options: {
-      refetchQueries: ['allMehfils'],
+      refetchQueries: [{ query: ALL_MEHFILS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(MEHFIL_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { mehfilId } = match.params;
-      return { variables: { id: mehfilId } };
+      return { variables: { _id: mehfilId } };
     },
   }),
   WithBreadcrumbs(['Security', 'Mehfils', 'Edit'])

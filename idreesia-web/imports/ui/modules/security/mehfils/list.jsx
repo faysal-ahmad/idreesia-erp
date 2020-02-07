@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -9,6 +8,8 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+
+import { ALL_MEHFILS, REMOVE_MEHFIL } from './gql';
 
 class List extends Component {
   static propTypes = {
@@ -127,31 +128,14 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query allMehfils {
-    allMehfils {
-      _id
-      name
-      mehfilDate
-      karkunCount
-    }
-  }
-`;
-
-const removeMehfilMutation = gql`
-  mutation removeMehfil($_id: String!) {
-    removeMehfil(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(ALL_MEHFILS, {
     props: ({ data }) => ({ ...data }),
   }),
-  graphql(removeMehfilMutation, {
+  graphql(REMOVE_MEHFIL, {
     name: 'removeMehfil',
     options: {
-      refetchQueries: ['allMehfils'],
+      refetchQueries: [{ query: ALL_MEHFILS }],
     },
   }),
   WithBreadcrumbs(['Security', 'Mehfils', 'List'])

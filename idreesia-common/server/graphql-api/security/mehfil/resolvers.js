@@ -28,9 +28,9 @@ export default {
         return [];
       }
 
-      return Mehfils.find({}, { sort: { mehfilDate: 1 } }).fetch();
+      return Mehfils.find({}, { sort: { mehfilDate: -1 } }).fetch();
     },
-    mehfilById(obj, { id }, { user }) {
+    mehfilById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_MEHFILS,
@@ -40,7 +40,7 @@ export default {
         return null;
       }
 
-      return Mehfils.findOne(id);
+      return Mehfils.findOne(_id);
     },
   },
 
@@ -69,7 +69,7 @@ export default {
       return Mehfils.findOne(mehfilId);
     },
 
-    updateMehfil(obj, { id, name, mehfilDate }, { user }) {
+    updateMehfil(obj, { _id, name, mehfilDate }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_MEHFILS,
@@ -81,7 +81,7 @@ export default {
       }
 
       const date = new Date();
-      Mehfils.update(id, {
+      Mehfils.update(_id, {
         $set: {
           name,
           mehfilDate,
@@ -90,7 +90,7 @@ export default {
         },
       });
 
-      return Mehfils.findOne(id);
+      return Mehfils.findOne(_id);
     },
 
     removeMehfil(obj, { _id }, { user }) {

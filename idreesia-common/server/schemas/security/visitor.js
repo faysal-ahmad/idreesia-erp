@@ -9,9 +9,6 @@ export default new SimpleSchema({
   parentName: {
     type: String,
   },
-  verified: {
-    type: Boolean,
-  },
   cnicNumber: {
     type: String,
     optional: true,

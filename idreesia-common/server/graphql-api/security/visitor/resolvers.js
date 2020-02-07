@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { isNil, compact } from 'meteor/idreesia-common/utilities/lodash';
+import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
@@ -182,7 +182,6 @@ export default {
         city,
         country,
         imageId,
-        verified: !isNil(user),
         createdAt: date,
         createdBy: user ? user._id : guestUser._id,
         updatedAt: date,
@@ -238,7 +237,6 @@ export default {
           address,
           city,
           country,
-          verified: !isNil(user),
           updatedAt: date,
           updatedBy: user._id,
         },

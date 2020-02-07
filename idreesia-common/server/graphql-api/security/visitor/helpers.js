@@ -41,7 +41,6 @@ function processJsonRecord(jsonRecord, date, user) {
       contactNumber1: phoneNumber,
       city,
       country: 'Pakistan',
-      verified: false,
       createdAt: date,
       createdBy: user._id,
       updatedAt: date,

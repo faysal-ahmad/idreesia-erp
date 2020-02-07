@@ -1,4 +1,3 @@
-import { isNil } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import {
   hasInstanceAccess,
@@ -112,7 +111,6 @@ export default {
         city,
         country,
         imageId,
-        verified: true,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -175,7 +173,6 @@ export default {
           address,
           city,
           country,
-          verified: !isNil(user),
           updatedAt: date,
           updatedBy: user._id,
         },

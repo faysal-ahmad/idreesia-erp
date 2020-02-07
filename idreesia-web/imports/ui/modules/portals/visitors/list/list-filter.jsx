@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+
 import {
   Button,
   Collapse,
@@ -13,7 +15,9 @@ import {
   InputCnicField,
   InputMobileField,
   InputTextField,
+  SelectField,
 } from '/imports/ui/modules/helpers/fields';
+import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
 
 const ContainerStyle = {
   width: '500px',
@@ -31,11 +35,16 @@ const buttonItemLayout = {
 class ListFilter extends Component {
   static propTypes = {
     form: PropTypes.object,
+
+    portalId: PropTypes.string,
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
     setPageParams: PropTypes.func,
     refreshData: PropTypes.func,
+
+    portalCities: PropTypes.array,
+    portalCitiesLoading: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -51,19 +60,21 @@ class ListFilter extends Component {
       name: '',
       cnicNumber: '',
       phoneNumber: '',
+      city: '',
     });
   };
 
   handleSubmit = () => {
     const { form, setPageParams } = this.props;
 
-    form.validateFields((err, { name, cnicNumber, phoneNumber }) => {
+    form.validateFields((err, { name, cnicNumber, phoneNumber, city }) => {
       if (err) return;
       setPageParams({
         pageIndex: 0,
         name,
         cnicNumber,
         phoneNumber,
+        city,
       });
     });
   };
@@ -86,7 +97,7 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { name, cnicNumber, phoneNumber } = this.props;
+    const { name, cnicNumber, phoneNumber, portalCities } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -117,6 +128,16 @@ class ListFilter extends Component {
               initialValue={phoneNumber}
               getFieldDecorator={getFieldDecorator}
             />
+            <SelectField
+              data={portalCities}
+              getDataValue={city => city.name}
+              getDataText={city => city.name}
+              fieldName="city"
+              fieldLabel="City"
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleReset}>
@@ -135,4 +156,7 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create({ name: 'visitorsListFilter' })(ListFilter);
+export default flowRight(
+  Form.create({ name: 'visitorsListFilter' }),
+  WithPortalCities()
+)(ListFilter);

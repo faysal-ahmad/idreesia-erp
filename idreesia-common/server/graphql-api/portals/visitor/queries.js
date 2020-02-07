@@ -17,6 +17,7 @@ export function getPortalVisitors(portalId, queryString) {
     name,
     cnicNumber,
     phoneNumber,
+    city,
     pageIndex = '0',
     pageSize = '20',
   } = params;
@@ -27,11 +28,19 @@ export function getPortalVisitors(portalId, queryString) {
     });
   }
 
-  pipeline.push({
-    $match: {
-      city: { $in: cityNames },
-    },
-  });
+  if (city) {
+    pipeline.push({
+      $match: {
+        city: { $eq: city },
+      },
+    });
+  } else {
+    pipeline.push({
+      $match: {
+        city: { $in: cityNames },
+      },
+    });
+  }
 
   if (cnicNumber) {
     pipeline.push({

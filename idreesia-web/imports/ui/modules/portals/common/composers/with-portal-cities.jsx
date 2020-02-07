@@ -29,8 +29,10 @@ export default () => WrappedComponent => {
       portalCities: data.citiesByPortalId,
       ...data,
     }),
-    options: ({ match }) => ({
-      variables: { portalId: get(match, ['params', 'portalId'], null) },
+    options: ({ match, portalId }) => ({
+      variables: {
+        portalId: portalId || get(match, ['params', 'portalId'], null),
+      },
     }),
   })(WithPortalCities);
 };

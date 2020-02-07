@@ -26,7 +26,14 @@ const List = ({ history, location }) => {
   const { queryString, queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: ['name', 'cnicNumber', 'phoneNumber', 'pageIndex', 'pageSize'],
+    paramNames: [
+      'name',
+      'cnicNumber',
+      'phoneNumber',
+      'city',
+      'pageIndex',
+      'pageSize',
+    ],
   });
 
   const { data, loading, refetch } = useQuery(PAGED_PORTAL_VISITORS, {
@@ -66,7 +73,14 @@ const List = ({ history, location }) => {
 
   if (loading) return null;
   const { pagedPortalVisitors } = data;
-  const { name, cnicNumber, phoneNumber, pageIndex, pageSize } = queryParams;
+  const {
+    name,
+    cnicNumber,
+    phoneNumber,
+    city,
+    pageIndex,
+    pageSize,
+  } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -81,9 +95,11 @@ const List = ({ history, location }) => {
         New Visitor
       </Button>
       <ListFilter
+        portalId={portalId}
         name={name}
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
+        city={city}
         setPageParams={setPageParams}
         refreshData={refetch}
       />

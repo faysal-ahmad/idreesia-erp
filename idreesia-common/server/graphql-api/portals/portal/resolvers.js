@@ -15,16 +15,7 @@ export default {
   },
 
   Query: {
-    allPortals(obj, params, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_VIEW_PORTALS,
-          PermissionConstants.ADMIN_MANAGE_PORTALS,
-        ])
-      ) {
-        return [];
-      }
-
+    allPortals() {
       return Portals.find({}).fetch();
     },
 
@@ -34,16 +25,7 @@ export default {
       return filteredPortals;
     },
 
-    portalById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_VIEW_PORTALS,
-          PermissionConstants.ADMIN_MANAGE_PORTALS,
-        ])
-      ) {
-        return null;
-      }
-
+    portalById(obj, { _id }) {
       return Portals.findOne(_id);
     },
   },

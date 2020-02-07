@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { WithPortals } from 'meteor/idreesia-common/composers/portals';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -14,7 +15,11 @@ class List extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
+
+    citiesLoading: PropTypes.bool,
     allCities: PropTypes.array,
+    portalsLoading: PropTypes.bool,
+    allPortals: PropTypes.array,
     removeCity: PropTypes.func,
   };
 
@@ -40,6 +45,19 @@ class List extends Component {
         if (!record.mehfils || record.mehfils.length === 0) return null;
         const mehfilNames = record.mehfils.map(mehfil => mehfil.name);
         return mehfilNames.join(', ');
+      },
+    },
+    {
+      title: 'In Portal',
+      key: 'portal',
+      render: (text, record) => {
+        const { allPortals } = this.props;
+        const cityPortal = find(allPortals, portal => {
+          const cityIds = portal.cityIds || [];
+          return cityIds.indexOf(record._id) !== -1;
+        });
+
+        return cityPortal ? cityPortal.name : '';
       },
     },
     {
@@ -81,7 +99,8 @@ class List extends Component {
   };
 
   render() {
-    const { allCities } = this.props;
+    const { citiesLoading, portalsLoading, allCities } = this.props;
+    if (citiesLoading || portalsLoading) return null;
 
     return (
       <Table
@@ -105,8 +124,9 @@ class List extends Component {
 }
 
 export default flowRight(
+  WithPortals(),
   graphql(ALL_CITIES, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ citiesLoading: data.loading, ...data }),
   }),
   graphql(REMOVE_CITY, {
     name: 'removeCity',

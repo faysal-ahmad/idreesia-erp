@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { Modal, message } from '/imports/ui/controls';
@@ -13,6 +12,12 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';
 import EditForm from './edit-form';
+import {
+  ADD_MEHFIL_KARKUN,
+  SET_DUTY_DETAIL,
+  REMOVE_MEHFIL_KARKUN,
+  MEHFIL_KARKUNS_BY_MEHFIL_ID,
+} from './gql';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -167,63 +172,23 @@ class ListContainer extends Component {
   }
 }
 
-const addMutation = gql`
-  mutation addMehfilKarkun(
-    $mehfilId: String!
-    $karkunId: String!
-    $dutyName: String!
-  ) {
-    addMehfilKarkun(
-      mehfilId: $mehfilId
-      karkunId: $karkunId
-      dutyName: $dutyName
-    ) {
-      _id
-      mehfilId
-      karkunId
-      dutyName
-      dutyDetail
-      dutyCardBarcodeId
-    }
-  }
-`;
-
-const editMutation = gql`
-  mutation setDutyDetail($ids: [String]!, $dutyDetail: String!) {
-    setDutyDetail(ids: $ids, dutyDetail: $dutyDetail) {
-      _id
-      mehfilId
-      karkunId
-      dutyName
-      dutyDetail
-      dutyCardBarcodeId
-    }
-  }
-`;
-
-const removeMutation = gql`
-  mutation removeMehfilKarkun($_id: String!) {
-    removeMehfilKarkun(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(addMutation, {
+  graphql(ADD_MEHFIL_KARKUN, {
     name: 'addMehfilKarkun',
     options: {
-      refetchQueries: ['mehfilKarkunsByMehfilId'],
+      refetchQueries: [{ query: MEHFIL_KARKUNS_BY_MEHFIL_ID }],
     },
   }),
-  graphql(editMutation, {
+  graphql(SET_DUTY_DETAIL, {
     name: 'setDutyDetail',
     options: {
-      refetchQueries: ['mehfilKarkunsByMehfilId'],
+      refetchQueries: [{ query: MEHFIL_KARKUNS_BY_MEHFIL_ID }],
     },
   }),
-  graphql(removeMutation, {
+  graphql(REMOVE_MEHFIL_KARKUN, {
     name: 'removeMehfilKarkun',
     options: {
-      refetchQueries: ['mehfilKarkunsByMehfilId'],
+      refetchQueries: [{ query: MEHFIL_KARKUNS_BY_MEHFIL_ID }],
     },
   }),
   WithQueryParams(),

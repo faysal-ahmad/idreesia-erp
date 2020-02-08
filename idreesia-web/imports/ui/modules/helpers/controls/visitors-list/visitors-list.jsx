@@ -26,11 +26,13 @@ export default class VisitorsList extends Component {
     showCityCountryColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
     showStayHistoryAction: PropTypes.bool,
+    showLookupAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
-    handleShowStayHistory: PropTypes.func,
+    handleStayHistoryAction: PropTypes.func,
+    handleLookupAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
     pageIndex: PropTypes.number,
@@ -44,7 +46,7 @@ export default class VisitorsList extends Component {
   static defaultProps = {
     handleSelectItem: noop,
     handleDeleteItem: noop,
-    handleShowStayHistory: noop,
+    handleStayHistoryAction: noop,
     listHeader: () => null,
   };
 
@@ -130,8 +132,10 @@ export default class VisitorsList extends Component {
       const {
         showDeleteAction,
         showStayHistoryAction,
+        showLookupAction,
         handleDeleteItem,
-        handleShowStayHistory,
+        handleStayHistoryAction,
+        handleLookupAction,
       } = this.props;
 
       const stayHistoryAction = showStayHistoryAction ? (
@@ -140,7 +144,19 @@ export default class VisitorsList extends Component {
             type="history"
             className="list-actions-icon"
             onClick={() => {
-              handleShowStayHistory(record);
+              handleStayHistoryAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
+      const lookupAction = showLookupAction ? (
+        <Tooltip title="Find in Karkuns">
+          <Icon
+            type="file-search"
+            className="list-actions-icon"
+            onClick={() => {
+              handleLookupAction(record);
             }}
           />
         </Tooltip>
@@ -164,6 +180,7 @@ export default class VisitorsList extends Component {
       return (
         <div className="list-actions-column">
           {stayHistoryAction}
+          {lookupAction}
           {deleteAction}
         </div>
       );

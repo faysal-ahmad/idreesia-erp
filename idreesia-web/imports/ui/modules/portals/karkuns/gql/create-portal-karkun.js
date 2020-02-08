@@ -18,6 +18,7 @@ const CREATE_PORTAL_KARKUN = gql`
     $meansOfEarning: String
     $ehadDate: String
     $referenceName: String
+    $imageId: String
   ) {
     createPortalKarkun(
       portalId: $portalId
@@ -36,6 +37,7 @@ const CREATE_PORTAL_KARKUN = gql`
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
       referenceName: $referenceName
+      imageId: $imageId
     ) {
       _id
       name
@@ -53,6 +55,7 @@ const CREATE_PORTAL_KARKUN = gql`
       meansOfEarning
       ehadDate
       referenceName
+      imageId
     }
   }
 `;

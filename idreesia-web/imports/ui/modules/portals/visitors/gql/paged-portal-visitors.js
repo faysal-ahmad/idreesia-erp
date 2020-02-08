@@ -12,6 +12,8 @@ const PAGED_PORTAL_VISITORS = gql`
         contactNumber2
         city
         country
+        ehadDate
+        referenceName
         imageId
       }
     }

@@ -69,7 +69,7 @@ PersonName.propTypes = {
   onPersonNameClicked: PropTypes.func,
   person: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    imageId: PropTypes.string.isRequired,
+    imageId: PropTypes.string,
   }),
 };
 

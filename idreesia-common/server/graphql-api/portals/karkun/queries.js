@@ -18,13 +18,7 @@ const bloodGroupValueConversion = {
 export function getPortalKarkuns(portalId, queryString) {
   const portal = Portals.findOne(portalId);
   const params = parse(queryString);
-  const pipeline = [
-    {
-      $match: {
-        cityId: { $in: portal.cityIds },
-      },
-    },
-  ];
+  const pipeline = [];
 
   const {
     name,
@@ -49,6 +43,12 @@ export function getPortalKarkuns(portalId, queryString) {
       });
     }
   }
+
+  pipeline.push({
+    $match: {
+      cityId: { $in: portal.cityIds },
+    },
+  });
 
   if (cnicNumber) {
     pipeline.push({
@@ -136,4 +136,66 @@ export function getPortalKarkuns(portalId, queryString) {
     karkuns: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
+}
+
+export function getPortalKarkunsByVisitor(
+  portalId,
+  visitorName,
+  visitorCnic,
+  visitorPhone
+) {
+  const portal = Portals.findOne(portalId);
+
+  let karkun;
+
+  // First try to find a karkun by cnic
+  if (visitorCnic) {
+    karkun = Karkuns.findOne({
+      cnicNumber: { $eq: visitorCnic },
+      cityId: { $in: portal.cityIds },
+    });
+
+    if (karkun) {
+      return {
+        karkuns: [karkun],
+        totalResults: 1,
+      };
+    }
+  }
+
+  // Try finding by contact number
+  if (visitorPhone) {
+    karkun = Karkuns.findOne({
+      $or: [{ contactNumber1: visitorPhone }, { contactNumber2: visitorPhone }],
+      cityId: { $in: portal.cityIds },
+    });
+
+    if (karkun) {
+      return {
+        karkuns: [karkun],
+        totalResults: 1,
+      };
+    }
+  }
+
+  // Finally lookup by name
+  const pipeline = [
+    {
+      $match: { $text: { $search: visitorName } },
+    },
+    {
+      $match: {
+        cityId: { $in: portal.cityIds },
+      },
+    },
+    { $sort: { name: 1 } },
+    { $limit: 20 },
+  ];
+
+  return Karkuns.aggregate(pipeline)
+    .toArray()
+    .then(karkuns => ({
+      karkuns,
+      totalResults: karkuns.length,
+    }));
 }

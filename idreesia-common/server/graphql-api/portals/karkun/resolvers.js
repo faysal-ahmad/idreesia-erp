@@ -6,7 +6,7 @@ import {
 } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getPortalKarkuns } from './queries';
+import { getPortalKarkuns, getPortalKarkunsByVisitor } from './queries';
 
 export default {
   Query: {
@@ -24,6 +24,26 @@ export default {
       }
 
       return getPortalKarkuns(portalId, queryString);
+    },
+
+    portalKarkunsByVisitor(
+      obj,
+      { portalId, visitorName, visitorCnic, visitorPhone },
+      { user }
+    ) {
+      if (hasInstanceAccess(user._id, portalId) === false) {
+        return {
+          karkuns: [],
+          totalResults: 0,
+        };
+      }
+
+      return getPortalKarkunsByVisitor(
+        portalId,
+        visitorName,
+        visitorCnic,
+        visitorPhone
+      );
     },
   },
 
@@ -47,6 +67,7 @@ export default {
         meansOfEarning,
         ehadDate,
         referenceName,
+        imageId,
       },
       { user }
     ) {
@@ -76,6 +97,23 @@ export default {
       }
 
       const date = new Date();
+      let updateImageId = null;
+      // If an imageId is passed when creating a karkun, then clone that image
+      // and use the id of the newly cloned image as imageId for this karkun
+      if (imageId) {
+        const image = Attachments.findOne(imageId);
+        updateImageId = Attachments.insert({
+          name: image.name,
+          description: image.description,
+          mimeType: image.mimeType,
+          data: image.data,
+          createdAt: date,
+          createdBy: user._id,
+          updatedAt: date,
+          updatedBy: user._id,
+        });
+      }
+
       const karkunId = Karkuns.insert({
         name,
         parentName,
@@ -92,6 +130,7 @@ export default {
         meansOfEarning,
         ehadDate,
         referenceName,
+        imageId: updateImageId,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

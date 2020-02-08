@@ -120,7 +120,7 @@ export default {
       return Visitors.findOne(visitorId);
     },
 
-    updateVisitor(
+    updatePortalVisitor(
       obj,
       {
         portalId,

@@ -14,8 +14,14 @@ class InstanceAccess extends Component {
     location: PropTypes.object,
 
     userId: PropTypes.string,
-    loading: PropTypes.bool,
+    userLoading: PropTypes.bool,
     userById: PropTypes.object,
+    companiesListLoading: PropTypes.bool,
+    allCompanies: PropTypes.array,
+    physicalStoresListLoading: PropTypes.bool,
+    allPhysicalStores: PropTypes.array,
+    portalsListLoading: PropTypes.bool,
+    allPortals: PropTypes.array,
     setInstanceAccess: PropTypes.func,
   };
 
@@ -62,13 +68,32 @@ class InstanceAccess extends Component {
   };
 
   render() {
-    const { userById, loading } = this.props;
-    if (loading) return null;
+    const {
+      userById,
+      userLoading,
+      physicalStoresListLoading,
+      allPhysicalStores,
+      companiesListLoading,
+      allCompanies,
+      portalsListLoading,
+      allPortals,
+    } = this.props;
+    if (
+      userLoading ||
+      physicalStoresListLoading ||
+      companiesListLoading ||
+      portalsListLoading
+    ) {
+      return null;
+    }
 
     return (
       <Fragment>
         <InstanceSelection
           securityEntity={userById}
+          allPhysicalStores={allPhysicalStores}
+          allCompanies={allCompanies}
+          allPortals={allPortals}
           ref={is => {
             this.instanceSelection = is;
           }}
@@ -117,6 +142,33 @@ const formQuery = gql`
   }
 `;
 
+const physicalStoresListQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+    }
+  }
+`;
+
+const companiesListQuery = gql`
+  query allCompanies {
+    allCompanies {
+      _id
+      name
+    }
+  }
+`;
+
+const portalsListQuery = gql`
+  query allPortals {
+    allPortals {
+      _id
+      name
+    }
+  }
+`;
+
 export default flowRight(
   graphql(formMutation, {
     name: 'setInstanceAccess',
@@ -125,7 +177,16 @@ export default flowRight(
     },
   }),
   graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ userLoading: data.loading, ...data }),
     options: ({ userId }) => ({ variables: { _id: userId } }),
+  }),
+  graphql(physicalStoresListQuery, {
+    props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
+  }),
+  graphql(companiesListQuery, {
+    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
+  }),
+  graphql(portalsListQuery, {
+    props: ({ data }) => ({ portalsListLoading: data.loading, ...data }),
   })
 )(InstanceAccess);

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import { filter, flowRight } from 'lodash';
 
 import { Tree } from '/imports/ui/controls';
@@ -9,11 +7,8 @@ import { Tree } from '/imports/ui/controls';
 class InstanceSelection extends Component {
   static propTypes = {
     securityEntity: PropTypes.object,
-    companiesListLoading: PropTypes.bool,
     allCompanies: PropTypes.array,
-    physicalStoresListLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
-    portalsListLoading: PropTypes.bool,
     allPortals: PropTypes.array,
   };
 
@@ -66,16 +61,7 @@ class InstanceSelection extends Component {
   };
 
   render() {
-    const {
-      physicalStoresListLoading,
-      allPhysicalStores,
-      companiesListLoading,
-      allCompanies,
-      portalsListLoading,
-      allPortals,
-    } = this.props;
-    if (physicalStoresListLoading || companiesListLoading || portalsListLoading)
-      return null;
+    const { allPhysicalStores, allCompanies, allPortals } = this.props;
 
     const accessData = [
       {
@@ -119,41 +105,4 @@ class InstanceSelection extends Component {
   }
 }
 
-const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
-      _id
-      name
-    }
-  }
-`;
-
-const companiesListQuery = gql`
-  query allCompanies {
-    allCompanies {
-      _id
-      name
-    }
-  }
-`;
-
-const portalsListQuery = gql`
-  query allPortals {
-    allPortals {
-      _id
-      name
-    }
-  }
-`;
-
-export default flowRight(
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
-  }),
-  graphql(companiesListQuery, {
-    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
-  }),
-  graphql(portalsListQuery, {
-    props: ({ data }) => ({ portalsListLoading: data.loading, ...data }),
-  })
-)(InstanceSelection);
+export default flowRight()(InstanceSelection);

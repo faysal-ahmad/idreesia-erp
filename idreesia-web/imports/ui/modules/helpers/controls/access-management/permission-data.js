@@ -358,12 +358,26 @@ export const permissionsData = [
         key: 'module-portals-karkuns',
         children: [
           {
-            title: 'View karkuns',
+            title: 'View Karkuns',
             key: PermissionConstants.PORTALS_VIEW_KARKUNS,
           },
           {
             title: 'Manage Karkuns',
             key: PermissionConstants.PORTALS_MANAGE_KARKUNS,
+          },
+        ],
+      },
+      {
+        title: 'Visitors',
+        key: 'module-portals-visitors',
+        children: [
+          {
+            title: 'View Visitors',
+            key: PermissionConstants.PORTALS_VIEW_VISITORS,
+          },
+          {
+            title: 'Manage Visitors',
+            key: PermissionConstants.PORTALS_MANAGE_VISITORS,
           },
         ],
       },

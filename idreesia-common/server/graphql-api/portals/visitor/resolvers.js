@@ -18,8 +18,8 @@ export default {
       if (
         hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTAL_VIEW_VISITORS,
-          PermissionConstants.PORTAL_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_VIEW_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_VISITORS,
         ])
       ) {
         return {
@@ -35,8 +35,8 @@ export default {
       if (
         hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_VIEW_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_VISITORS,
         ])
       ) {
         return null;
@@ -69,7 +69,7 @@ export default {
       if (
         user &&
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
@@ -141,7 +141,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(
@@ -184,7 +184,7 @@ export default {
     setPortalVisitorImage(obj, { portalId, _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_VISITORS,
         ])
       ) {
         throw new Error(

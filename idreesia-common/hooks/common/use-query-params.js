@@ -1,6 +1,18 @@
 import { parse } from 'query-string';
+import {
+  DEFAULT_PAGE_INDEX,
+  DEFAULT_PAGE_SIZE,
+} from 'meteor/idreesia-common/constants/list-options';
 
-const useQueryParams = ({ history, location, paramNames = [] }) => {
+const useQueryParams = ({
+  history,
+  location,
+  paramNames = [],
+  paramDefaultValues = {
+    pageIndex: DEFAULT_PAGE_INDEX,
+    pageSize: DEFAULT_PAGE_SIZE,
+  },
+}) => {
   const queryString = location.search;
   const queryParams = parse(queryString);
 
@@ -9,9 +21,10 @@ const useQueryParams = ({ history, location, paramNames = [] }) => {
     paramNames.forEach(paramName => {
       let paramVal;
       if (newParams.hasOwnProperty(paramName)) {
-        paramVal = newParams[paramName] || '';
+        paramVal = newParams[paramName] || paramDefaultValues[paramName] || '';
       } else {
-        paramVal = queryParams[paramName] || '';
+        paramVal =
+          queryParams[paramName] || paramDefaultValues[paramName] || '';
       }
 
       paramVals.push(`${paramName}=${paramVal}`);

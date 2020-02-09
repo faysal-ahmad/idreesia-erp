@@ -7,6 +7,7 @@ const PAGED_PORTAL_VISITORS = gql`
       data {
         _id
         name
+        parentName
         cnicNumber
         contactNumber1
         contactNumber2

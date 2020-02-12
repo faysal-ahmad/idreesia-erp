@@ -14,6 +14,13 @@ export default class SubModulePaths {
     return `${SubModulePaths.karkunsPath(portalId)}/${karkunId}`;
   }
 
+  // ******************************************************************************
+  // Attendance Sheets
+  // ******************************************************************************
+  static attendanceSheetsPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/attendance-sheets`;
+  }
+
   // *************************************************************************************
   // Visitor Routes
   // *************************************************************************************

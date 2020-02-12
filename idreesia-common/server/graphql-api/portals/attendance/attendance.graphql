@@ -1,0 +1,30 @@
+extend type Query {
+  portalAttendanceById(portalId: String!, _id: String!): AttendanceType
+  pagedPortalAttendanceByKarkun(portalId: String!, queryString: String): PagedAttendanceType
+  portalAttendanceByMonth(
+    portalId: String!
+    month: String!
+    cityId: String
+    cityMehfilId: String
+  ): [AttendanceType]
+}
+
+extend type Mutation {
+  createPortalAttendances(
+    portalId: String!
+    month: String!
+  ): Int
+
+  updatePortalAttendance(
+    portalId: String!
+    _id: String!
+    attendanceDetails: String
+    presentCount: Int
+    lateCount: Int
+    absentCount: Int
+    percentage: Int
+  ): AttendanceType
+
+  deletePortalAttendances(portalId: String!, month: String!, ids: [String]!): Int
+  deleteAllPortalAttendances(portalId: String!, month: String!, cityId: String, cityMehfilId: String): Int
+}

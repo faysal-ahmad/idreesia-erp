@@ -25,20 +25,44 @@
   cursor: pointer;
 }
 
+.attendance-date-linear {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 5px;
+  padding: 0;
+  line-height: 22px;
+  text-align: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  -webkit-transition: background 0.3s ease;
+  transition: background 0.3s ease;
+}
+.attendance-date-linear:hover {
+  cursor: pointer;
+}
+
+.attendance-none {
+  color: #D9D9D9;
+  border-color: #D9D9D9;
+  font-weight: bold;
+}
+
 .attendance-present {
-  color: #a8daaa;
-  border-color: #a8daaa;
+  color: #00CC00;
+  border-color: #00CC00;
   font-weight: bold;
 }
 
 .attendance-late {
-  color: #F7C602;
-  border-color: #F7C602;
+  color: #FFA501;
+  border-color: #FFA501;
   font-weight: bold;
 }
 
 .attendance-absent {
-  color: #E86767;
-  border-color: #E86767;
+  color: #F50000;
+  border-color: #F50000;
   font-weight: bold;
 }

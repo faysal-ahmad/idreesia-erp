@@ -8,6 +8,7 @@ export { default as flowRight } from 'lodash/flowRight';
 export { default as forEach } from 'lodash/forEach';
 export { default as get } from 'lodash/get';
 export { default as groupBy } from 'lodash/groupBy';
+export { default as has } from 'lodash/has';
 export { default as isNil } from 'lodash/isNil';
 export { default as isString } from 'lodash/isString';
 export { default as isArray } from 'lodash/isArray';

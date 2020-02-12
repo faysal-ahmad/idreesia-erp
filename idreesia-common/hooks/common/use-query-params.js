@@ -1,4 +1,6 @@
 import { parse } from 'query-string';
+import { has } from 'meteor/idreesia-common/utilities/lodash';
+
 import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
@@ -15,6 +17,11 @@ const useQueryParams = ({
 }) => {
   const queryString = location.search;
   const queryParams = parse(queryString);
+  paramNames.forEach(paramName => {
+    if (!has(queryParams, paramName)) {
+      queryParams[paramName] = paramDefaultValues[paramName] || '';
+    }
+  });
 
   const setPageParams = newParams => {
     const paramVals = [];

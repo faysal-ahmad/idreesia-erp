@@ -96,6 +96,9 @@ import PortalKarkunDutyResolvers from './portals/karkun-duties/resolvers';
 import PortalVisitorSchema from './portals/visitor/visitor.graphql';
 import PortalVisitorResolvers from './portals/visitor/resolvers';
 
+import PortalAttendanceSchema from './portals/attendance/attendance.graphql';
+import PortalAttendanceResolvers from './portals/attendance/resolvers';
+
 /**
  * Schema and Resolvers for the Inventory module
  */
@@ -183,6 +186,7 @@ const typeDefs = [
   PortalKarkunSchema,
   PortalKarkunDutySchema,
   PortalVisitorSchema,
+  PortalAttendanceSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -235,6 +239,7 @@ const resolvers = merge(
   PortalKarkunResolvers,
   PortalKarkunDutyResolvers,
   PortalVisitorResolvers,
+  PortalAttendanceResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,

@@ -33,7 +33,11 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    pagedPortalAttendanceByKarkun(obj, { portalId, queryString }, { user }) {
+    pagedPortalAttendanceByKarkun(
+      obj,
+      { portalId, karkunId, queryString },
+      { user }
+    ) {
       if (
         hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
@@ -47,7 +51,7 @@ export default {
           totalResults: 0,
         };
       }
-      return getPagedAttendanceByKarkun(queryString);
+      return getPagedAttendanceByKarkun(karkunId, queryString);
     },
 
     portalAttendanceByMonth(

@@ -2,10 +2,10 @@ import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
 import { parse } from 'query-string';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 
-export function getPagedAttendanceByKarkun(queryString) {
+export function getPagedAttendanceByKarkun(karkunId, queryString) {
   const params = parse(queryString);
   const pipeline = [];
-  const { pageIndex = '0', pageSize = '20', karkunId } = params;
+  const { pageIndex = '0', pageSize = '20' } = params;
 
   pipeline.push({
     $match: {

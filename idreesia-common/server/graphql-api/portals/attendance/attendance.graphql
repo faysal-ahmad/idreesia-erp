@@ -1,6 +1,10 @@
 extend type Query {
   portalAttendanceById(portalId: String!, _id: String!): AttendanceType
-  pagedPortalAttendanceByKarkun(portalId: String!, queryString: String): PagedAttendanceType
+  pagedPortalAttendanceByKarkun(
+    portalId: String!
+    karkunId: String!
+    queryString: String
+  ): PagedAttendanceType
   portalAttendanceByMonth(
     portalId: String!
     month: String!

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
-
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 
@@ -13,23 +11,10 @@ import {
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
 
-const listQuery = gql`
-  query pagedOutstationAttendanceByKarkun($queryString: String) {
-    pagedOutstationAttendanceByKarkun(queryString: $queryString) {
-      totalResults
-      attendance {
-        _id
-        month
-        absentCount
-        presentCount
-        percentage
-      }
-    }
-  }
-`;
+import { PAGED_PORTAL_ATTENDANCE_BY_KARKUN } from '../gql';
 
-const getQueryString = (karkunId, pageIndex, pageSize) =>
-  `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+const getQueryString = (pageIndex, pageSize) =>
+  `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
 const columns = [
   {
@@ -47,24 +32,31 @@ const columns = [
     key: 'presentCount',
   },
   {
+    title: 'Late',
+    dataIndex: 'lateCount',
+    key: 'lateCount',
+  },
+  {
     title: 'Absent',
     dataIndex: 'absentCount',
     key: 'absentCount',
   },
   {
-    title: 'Percentage',
+    title: '%age',
     dataIndex: 'percentage',
     key: 'percentage',
     render: text => `${text}%`,
   },
 ];
 
-const AttendanceSheets = ({ karkunId }) => {
+const AttendanceSheets = ({ portalId, karkunId }) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(listQuery, {
+  const { data, loading } = useQuery(PAGED_PORTAL_ATTENDANCE_BY_KARKUN, {
     variables: {
-      queryString: getQueryString(karkunId, pageIndex, pageSize),
+      portalId,
+      karkunId,
+      queryString: getQueryString(pageIndex, pageSize),
     },
   });
 
@@ -79,13 +71,16 @@ const AttendanceSheets = ({ karkunId }) => {
   };
 
   if (loading) return null;
+  const {
+    pagedPortalAttendanceByKarkun: { attendance, totalResults },
+  } = data;
 
   return (
     <Table
       rowKey="_id"
       size="small"
       columns={columns}
-      dataSource={data.pagedOutstationAttendanceByKarkun.attendance}
+      dataSource={attendance}
       pagination={false}
       bordered
       footer={() => (
@@ -98,7 +93,7 @@ const AttendanceSheets = ({ karkunId }) => {
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={data.pagedOutstationAttendanceByKarkun.totalResults}
+          total={totalResults}
         />
       )}
     />
@@ -106,16 +101,11 @@ const AttendanceSheets = ({ karkunId }) => {
 };
 
 AttendanceSheets.propTypes = {
+  portalId: PropTypes.string,
   karkunId: PropTypes.string,
-  setPageParams: PropTypes.func,
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
-  loading: PropTypes.bool,
-  pagedOutstationAttendanceByKarkun: PropTypes.shape({
-    totalResults: PropTypes.number,
-    attendance: PropTypes.array,
-  }),
 };
 
 export default AttendanceSheets;

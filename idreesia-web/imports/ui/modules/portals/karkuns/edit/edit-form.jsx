@@ -8,6 +8,7 @@ import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './general-info';
 import ProfilePicture from './profile-picture';
 import DutyParticipation from './duty-participation';
+import AttendanceSheets from './attendance-sheets';
 
 const EditForm = props => {
   const { match } = props;
@@ -23,6 +24,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Duty Participation" key="3">
         <DutyParticipation portalId={portalId} karkunId={karkunId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Attendance Sheets" key="4">
+        <AttendanceSheets portalId={portalId} karkunId={karkunId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

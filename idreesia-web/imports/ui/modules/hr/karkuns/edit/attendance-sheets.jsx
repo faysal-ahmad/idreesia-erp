@@ -139,15 +139,9 @@ const AttendanceSheets = ({ karkunId }) => {
 
 AttendanceSheets.propTypes = {
   karkunId: PropTypes.string,
-  setPageParams: PropTypes.func,
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
-  loading: PropTypes.bool,
-  pagedAttendanceByKarkun: PropTypes.shape({
-    totalResults: PropTypes.number,
-    attendance: PropTypes.array,
-  }),
 };
 
 export default AttendanceSheets;

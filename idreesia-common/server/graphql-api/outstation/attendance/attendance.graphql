@@ -1,27 +1,12 @@
 extend type Query {
-  outstationAttendanceById(_id: String!): AttendanceType
-  pagedOutstationAttendanceByKarkun(queryString: String): PagedAttendanceType
+  pagedOutstationAttendanceByKarkun(
+    karkunId: String!
+    queryString: String
+  ): PagedAttendanceType
+
   outstationAttendanceByMonth(
     month: String!
-    categoryId: String
-    subCategoryId: String
+    cityId: String
+    cityMehfilId: String
   ): [AttendanceType]
-}
-
-extend type Mutation {
-  createOutstationAttendances(
-    month: String!
-  ): Int
-
-  updateOutstationAttendance(
-    _id: String!
-    attendanceDetails: String
-    presentCount: Int
-    lateCount: Int
-    absentCount: Int
-    percentage: Int
-  ): AttendanceType
-   
-  deleteOutstationAttendances(month: String!, ids: [String]!): Int
-  deleteAllOutstationAttendances(month: String!, categoryId: String, subCategoryId: String): Int
 }

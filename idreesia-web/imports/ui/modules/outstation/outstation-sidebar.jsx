@@ -33,6 +33,11 @@ class OutstationSidebar extends Component {
         history.push(paths.karkunsPath);
         break;
 
+      case 'attendance-sheets':
+        setActiveSubModuleName(SubModuleNames.attendanceSheets);
+        history.push(paths.attendanceSheetsPath);
+        break;
+
       default:
         break;
     }
@@ -49,6 +54,12 @@ class OutstationSidebar extends Component {
           <span>
             <Icon type="team" />
             Karkuns
+          </span>
+        </Menu.Item>
+        <Menu.Item key="attendance-sheets">
+          <span>
+            <Icon type="solution" />
+            Attendance Sheets
           </span>
         </Menu.Item>
         <Menu.SubMenu

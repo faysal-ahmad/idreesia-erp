@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -22,6 +21,8 @@ import {
   WithAllCityMehfils,
 } from '/imports/ui/modules/outstation/common/composers';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+
+import { CREATE_OUTSTATION_KARKUN, PAGED_OUTSTATION_KARKUNS } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -225,69 +226,14 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createOutstationKarkun(
-    $name: String!
-    $parentName: String
-    $cnicNumber: String
-    $contactNumber1: String
-    $contactNumber2: String
-    $emailAddress: String
-    $currentAddress: String
-    $permanentAddress: String
-    $cityId: String
-    $cityMehfilId: String
-    $bloodGroup: String
-    $educationalQualification: String
-    $meansOfEarning: String
-    $ehadDate: String
-    $referenceName: String
-  ) {
-    createOutstationKarkun(
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      emailAddress: $emailAddress
-      currentAddress: $currentAddress
-      permanentAddress: $permanentAddress
-      cityId: $cityId
-      cityMehfilId: $cityMehfilId
-      bloodGroup: $bloodGroup
-      educationalQualification: $educationalQualification
-      meansOfEarning: $meansOfEarning
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithAllCities(),
   WithAllCityMehfils(),
-  graphql(formMutation, {
+  graphql(CREATE_OUTSTATION_KARKUN, {
     name: 'createOutstationKarkun',
     options: {
-      refetchQueries: ['pagedOutstationKarkuns'],
+      refetchQueries: [{ query: PAGED_OUTSTATION_KARKUNS }],
     },
   }),
   WithBreadcrumbs(['Outstation', 'Karkuns', 'New'])

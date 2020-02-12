@@ -24,7 +24,9 @@ const AttendanceContainer = {
 
 export default class AttendanceList extends Component {
   static propTypes = {
+    readOnly: PropTypes.bool,
     setPageParams: PropTypes.func,
+    handleKarkunSelected: PropTypes.func,
     handleCreateMissingAttendances: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
@@ -33,11 +35,15 @@ export default class AttendanceList extends Component {
     cities: PropTypes.array,
     cityMehfils: PropTypes.array,
     month: PropTypes.string,
+    cityId: PropTypes.string,
+    cityMehfilId: PropTypes.string,
     attendance: PropTypes.array,
   };
 
   static defaultProps = {
+    reaOnly: false,
     setPageParams: noop,
+    handleKarkunSelected: noop,
     handleCreateMissingAttendances: noop,
     handleDeleteSelectedAttendances: noop,
     handleDeleteAllAttendances: noop,
@@ -75,9 +81,17 @@ export default class AttendanceList extends Component {
         key: 'karkun.name',
         fixed: 'left',
         width: 250,
-        render: (text, record) => (
-          <PersonName person={record.karkun} onPersonNameClicked={null} />
-        ),
+        render: (text, record) => {
+          const { handleKarkunSelected } = this.props;
+          return (
+            <PersonName
+              person={record.karkun}
+              onPersonNameClicked={() => {
+                handleKarkunSelected(record);
+              }}
+            />
+          );
+        },
       },
       {
         title: 'Attendance Details',
@@ -85,6 +99,7 @@ export default class AttendanceList extends Component {
         key: 'attendanceDetails',
         width: 1100,
         render: (text, record) => {
+          const { readOnly } = this.props;
           const { updatedAttendances } = this.state;
           let attendanceDetails = updatedAttendances[record._id];
           if (!attendanceDetails) {
@@ -101,12 +116,14 @@ export default class AttendanceList extends Component {
                 key={day}
                 className={this.getAttendanceStyle(val)}
                 onClick={() => {
-                  this.handleAttendanceDetailClicked(
-                    record,
-                    attendanceDetails,
-                    day,
-                    val
-                  );
+                  if (!readOnly) {
+                    this.handleAttendanceDetailClicked(
+                      record,
+                      attendanceDetails,
+                      day,
+                      val
+                    );
+                  }
                 }}
               >
                 {day}
@@ -247,7 +264,7 @@ export default class AttendanceList extends Component {
   };
 
   getCityMehfilSelector = () => {
-    const { cities, cityMehfils } = this.props;
+    const { cityId, cityMehfilId, cities, cityMehfils } = this.props;
     const citiesData = cities.map(city => {
       const mehfils = filter(
         cityMehfils,
@@ -269,6 +286,7 @@ export default class AttendanceList extends Component {
       <Cascader
         style={{ width: '300px' }}
         onChange={this.handleSelectionChange}
+        defaultValue={[cityId, cityMehfilId]}
         options={citiesData}
         expandTrigger="hover"
         changeOnSelect
@@ -279,9 +297,12 @@ export default class AttendanceList extends Component {
   getActionsMenu = () => {
     const { isEditing } = this.state;
     const {
+      readOnly,
       handleCreateMissingAttendances,
       handleDeleteAllAttendances,
     } = this.props;
+
+    if (readOnly) return null;
 
     if (isEditing) {
       return (
@@ -367,7 +388,7 @@ export default class AttendanceList extends Component {
   sortedAttendance = attendance => sortBy(attendance, 'karkun.name');
 
   render() {
-    const { attendance } = this.props;
+    const { attendance, readOnly } = this.props;
 
     return (
       <Table
@@ -375,7 +396,7 @@ export default class AttendanceList extends Component {
         size="small"
         title={this.getTableHeader}
         columns={this.getColumns()}
-        rowSelection={this.rowSelection}
+        rowSelection={readOnly ? null : this.rowSelection}
         dataSource={this.sortedAttendance(attendance)}
         pagination={false}
         scroll={{ x: 1000 }}

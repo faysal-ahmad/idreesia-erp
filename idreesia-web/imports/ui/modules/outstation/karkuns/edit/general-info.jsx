@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -22,6 +21,12 @@ import {
   WithAllCityMehfils,
 } from '/imports/ui/modules/outstation/common/composers';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+
+import {
+  OUTSTATION_KARKUN_BY_ID,
+  PAGED_OUTSTATION_KARKUNS,
+  UPDATE_OUTSTATION_KARKUN,
+} from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -264,105 +269,17 @@ class GeneralInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query outstationKarkunById($_id: String!) {
-    outstationKarkunById(_id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateOutstationKarkun(
-    $_id: String!
-    $name: String!
-    $parentName: String
-    $cnicNumber: String
-    $contactNumber1: String
-    $contactNumber2: String
-    $emailAddress: String
-    $currentAddress: String
-    $permanentAddress: String
-    $cityId: String
-    $cityMehfilId: String
-    $bloodGroup: String
-    $educationalQualification: String
-    $meansOfEarning: String
-    $ehadDate: String
-    $referenceName: String
-  ) {
-    updateOutstationKarkun(
-      _id: $_id
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      emailAddress: $emailAddress
-      currentAddress: $currentAddress
-      permanentAddress: $permanentAddress
-      cityId: $cityId
-      cityMehfilId: $cityMehfilId
-      bloodGroup: $bloodGroup
-      educationalQualification: $educationalQualification
-      meansOfEarning: $meansOfEarning
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithAllCities(),
   WithAllCityMehfils(),
-  graphql(formMutation, {
+  graphql(UPDATE_OUTSTATION_KARKUN, {
     name: 'updateOutstationKarkun',
     options: {
-      refetchQueries: ['pagedOutstationKarkuns'],
+      refetchQueries: [{ query: PAGED_OUTSTATION_KARKUNS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(OUTSTATION_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

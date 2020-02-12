@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 
@@ -13,42 +12,7 @@ import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstatio
 
 import ListFilter from './list-filter';
 
-const DELETE_OUTSTATION_KARKUN = gql`
-  mutation deleteOutstationKarkun($_id: String!) {
-    deleteOutstationKarkun(_id: $_id)
-  }
-`;
-
-const PAGED_DATA = gql`
-  query pagedOutstationKarkuns($queryString: String) {
-    pagedOutstationKarkuns(queryString: $queryString) {
-      totalResults
-      karkuns {
-        _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        imageId
-        duties {
-          _id
-          dutyId
-          shiftId
-          dutyName
-        }
-        city {
-          _id
-          name
-          country
-        }
-        cityMehfil {
-          _id
-          name
-        }
-      }
-    }
-  }
-`;
+import { DELETE_OUTSTATION_KARKUN, PAGED_OUTSTATION_KARKUNS } from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -68,7 +32,7 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const { data, loading, refetch } = useQuery(PAGED_DATA, {
+  const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_KARKUNS, {
     variables: {
       queryString,
     },

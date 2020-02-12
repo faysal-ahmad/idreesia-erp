@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -14,6 +13,12 @@ import {
   message,
 } from '/imports/ui/controls';
 import { WithAllMehfilDuties } from '/imports/ui/modules/outstation/common/composers';
+
+import {
+  CREATE_OUTSTATION_KARKUN_DUTY,
+  REMOVE_OUTSTATION_KARKUN_DUTY,
+  KARKUN_DUTIES_BY_KARKUN_ID,
+} from '../gql';
 
 const SelectStyle = {
   width: '300px',
@@ -166,54 +171,24 @@ class DutyParticipation extends Component {
   }
 }
 
-const listQuery = gql`
-  query karkunDutiesByKarkunId($karkunId: String!) {
-    karkunDutiesByKarkunId(karkunId: $karkunId) {
-      _id
-      dutyId
-      dutyName
-    }
-  }
-`;
-
-const createOutstationKarkunDutyMutation = gql`
-  mutation createOutstationKarkunDuty($karkunId: String!, $dutyId: String!) {
-    createOutstationKarkunDuty(karkunId: $karkunId, dutyId: $dutyId) {
-      _id
-      dutyId
-      dutyName
-    }
-  }
-`;
-
-const removeOutstationKarkunDutyMutation = gql`
-  mutation removeOutstationKarkunDuty($_id: String!) {
-    removeOutstationKarkunDuty(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(KARKUN_DUTIES_BY_KARKUN_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { karkunId } };
     },
   }),
-  graphql(createOutstationKarkunDutyMutation, {
+  graphql(CREATE_OUTSTATION_KARKUN_DUTY, {
     name: 'createOutstationKarkunDuty',
     options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
+      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
     },
   }),
-  graphql(removeOutstationKarkunDutyMutation, {
+  graphql(REMOVE_OUTSTATION_KARKUN_DUTY, {
     name: 'removeOutstationKarkunDuty',
     options: {
-      refetchQueries: [
-        'pagedOutstationKarkuns',
-        'karkunDutiesByKarkunId',
-        'allMehfilDuties',
-      ],
+      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
     },
   }),
   WithAllMehfilDuties()

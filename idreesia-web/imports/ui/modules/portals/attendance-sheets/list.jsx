@@ -179,6 +179,8 @@ const List = ({ history, location }) => {
   return (
     <AttendanceList
       month={month}
+      cityId={cityId}
+      cityMehfilId={cityMehfilId}
       cities={portalCities}
       cityMehfils={portalCityMehfils}
       attendance={portalAttendanceByMonth}

@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -10,6 +9,12 @@ import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
+
+import {
+  OUTSTATION_KARKUN_BY_ID,
+  PAGED_OUTSTATION_KARKUNS,
+  SET_OUTSTATION_KARKUN_PROFILE_IMAGE,
+} from '../gql';
 
 class ProfilePicture extends Component {
   static propTypes = {
@@ -55,32 +60,14 @@ class ProfilePicture extends Component {
   }
 }
 
-const formQuery = gql`
-  query outstationKarkunById($_id: String!) {
-    outstationKarkunById(_id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setOutstationKarkunProfileImage($_id: String!, $imageId: String!) {
-    setOutstationKarkunProfileImage(_id: $_id, imageId: $imageId) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(SET_OUTSTATION_KARKUN_PROFILE_IMAGE, {
     name: 'setOutstationKarkunProfileImage',
     options: {
-      refetchQueries: ['pagedOutstationKarkuns'],
+      refetchQueries: [{ query: PAGED_OUTSTATION_KARKUNS }],
     },
   }),
-  graphql(formQuery, {
+  graphql(OUTSTATION_KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

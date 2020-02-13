@@ -17,6 +17,9 @@ export { default as PersonName } from './person-name/person-name';
 export { default as KarkunsList } from './karkuns-list/karkuns-list';
 export { default as VisitorsList } from './visitors-list/visitors-list';
 export {
+  default as KarkunAttendancesList,
+} from './attendance-list/karkun-attendances-list';
+export {
   default as KarkunsAttendanceList,
 } from './attendance-list/karkuns-attendance-list';
 

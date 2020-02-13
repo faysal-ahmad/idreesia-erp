@@ -10,7 +10,7 @@ import { keys, values } from 'meteor/idreesia-common/utilities/lodash';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { message } from '/imports/ui/controls';
-import { AttendanceList } from '/imports/ui/modules/helpers/controls';
+import { KarkunsAttendanceList } from '/imports/ui/modules/helpers/controls';
 
 import {
   usePortal,
@@ -177,7 +177,7 @@ const List = ({ history, location }) => {
   };
 
   return (
-    <AttendanceList
+    <KarkunsAttendanceList
       month={month}
       cityId={cityId}
       cityMehfilId={cityMehfilId}

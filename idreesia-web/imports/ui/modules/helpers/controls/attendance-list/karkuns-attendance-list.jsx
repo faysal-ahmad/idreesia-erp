@@ -22,7 +22,7 @@ const AttendanceContainer = {
   alignItems: 'center',
 };
 
-export default class AttendanceList extends Component {
+export default class KarkunsAttendanceList extends Component {
   static propTypes = {
     readOnly: PropTypes.bool,
     setPageParams: PropTypes.func,

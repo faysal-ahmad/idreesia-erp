@@ -7,7 +7,7 @@ import moment from 'moment';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { AttendanceList } from '/imports/ui/modules/helpers/controls';
+import { KarkunsAttendanceList } from '/imports/ui/modules/helpers/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import {
@@ -52,7 +52,7 @@ const List = ({ history, location }) => {
   };
 
   return (
-    <AttendanceList
+    <KarkunsAttendanceList
       readOnly
       month={month}
       cityId={cityId}

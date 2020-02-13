@@ -16,7 +16,9 @@ export { default as RecordInfo } from './record-info/record-info';
 export { default as PersonName } from './person-name/person-name';
 export { default as KarkunsList } from './karkuns-list/karkuns-list';
 export { default as VisitorsList } from './visitors-list/visitors-list';
-export { default as AttendanceList } from './attendance-list/attendance-list';
+export {
+  default as KarkunsAttendanceList,
+} from './attendance-list/karkuns-attendance-list';
 
 export { default as InputFile } from './file/input-file';
 

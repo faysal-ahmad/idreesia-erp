@@ -33,6 +33,7 @@ class DutyParticipation extends Component {
     portalId: PropTypes.string,
     karkunId: PropTypes.string,
     karkunDutiesByKarkunId: PropTypes.array,
+    refetchKarkunDuties: PropTypes.func,
     allMehfilDuties: PropTypes.array,
     allMehfilDutiesLoading: PropTypes.bool,
     createPortalKarkunDuty: PropTypes.func,
@@ -108,6 +109,7 @@ class DutyParticipation extends Component {
     const {
       portalId,
       karkunId,
+      refetchKarkunDuties,
       karkunDutiesByKarkunId,
       createPortalKarkunDuty,
     } = this.props;
@@ -126,21 +128,33 @@ class DutyParticipation extends Component {
         karkunId,
         dutyId,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetchKarkunDuties();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   handleDeleteClicked = record => {
-    const { portalId, removePortalKarkunDuty } = this.props;
+    const {
+      portalId,
+      removePortalKarkunDuty,
+      refetchKarkunDuties,
+    } = this.props;
     removePortalKarkunDuty({
       variables: {
         portalId,
         _id: record._id,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetchKarkunDuties();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -177,22 +191,16 @@ class DutyParticipation extends Component {
 
 export default flowRight(
   graphql(KARKUN_DUTIES_BY_KARKUN_ID, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchKarkunDuties: data.refetch, ...data }),
     options: ({ portalId, karkunId }) => ({
       variables: { portalId, karkunId },
     }),
   }),
   graphql(CREATE_PORTAL_KARKUN_DUTY, {
     name: 'createPortalKarkunDuty',
-    options: {
-      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
-    },
   }),
   graphql(REMOVE_PORTAL_KARKUN_DUTY, {
     name: 'removePortalKarkunDuty',
-    options: {
-      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
-    },
   }),
   WithAllMehfilDuties()
 )(DutyParticipation);

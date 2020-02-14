@@ -32,6 +32,7 @@ class DutyParticipation extends Component {
 
     karkunId: PropTypes.string,
     karkunDutiesByKarkunId: PropTypes.array,
+    refetchKarkunDuties: PropTypes.func,
     allMehfilDuties: PropTypes.array,
     allMehfilDutiesLoading: PropTypes.bool,
     createOutstationKarkunDuty: PropTypes.func,
@@ -108,6 +109,7 @@ class DutyParticipation extends Component {
       karkunId,
       karkunDutiesByKarkunId,
       createOutstationKarkunDuty,
+      refetchKarkunDuties,
     } = this.props;
     const dutyId = this.state.selectedDutyId;
 
@@ -123,20 +125,28 @@ class DutyParticipation extends Component {
         karkunId,
         dutyId,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetchKarkunDuties();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   handleDeleteClicked = record => {
-    const { removeOutstationKarkunDuty } = this.props;
+    const { removeOutstationKarkunDuty, refetchKarkunDuties } = this.props;
     removeOutstationKarkunDuty({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetchKarkunDuties();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -173,7 +183,7 @@ class DutyParticipation extends Component {
 
 export default flowRight(
   graphql(KARKUN_DUTIES_BY_KARKUN_ID, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ refetchKarkunDuties: data.refetch, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { karkunId } };
@@ -181,15 +191,9 @@ export default flowRight(
   }),
   graphql(CREATE_OUTSTATION_KARKUN_DUTY, {
     name: 'createOutstationKarkunDuty',
-    options: {
-      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
-    },
   }),
   graphql(REMOVE_OUTSTATION_KARKUN_DUTY, {
     name: 'removeOutstationKarkunDuty',
-    options: {
-      refetchQueries: [{ query: KARKUN_DUTIES_BY_KARKUN_ID }],
-    },
   }),
   WithAllMehfilDuties()
 )(DutyParticipation);

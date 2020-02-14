@@ -13,6 +13,7 @@ const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
       attendance {
         _id
         month
+        attendanceDetails
         absentCount
         lateCount
         presentCount

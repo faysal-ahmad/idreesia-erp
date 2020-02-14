@@ -15,6 +15,7 @@ const PAGED_PORTAL_ATTENDANCE_BY_KARKUN = gql`
       attendance {
         _id
         month
+        attendanceDetails
         absentCount
         lateCount
         presentCount

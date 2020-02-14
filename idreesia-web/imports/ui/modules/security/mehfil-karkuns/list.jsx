@@ -23,8 +23,9 @@ export class List extends Component {
 
     mehfilLoading: PropTypes.bool,
     mehfilById: PropTypes.object,
-    karkunsLoading: PropTypes.bool,
+    mehfilKarkunsLoading: PropTypes.bool,
     mehfilKarkunsByMehfilId: PropTypes.array,
+    refetchMehfilKarkuns: PropTypes.func,
     handleAddMehfilKarkun: PropTypes.func,
     handleEditMehfilKarkun: PropTypes.func,
     handleRemoveMehfilKarkun: PropTypes.func,
@@ -72,8 +73,11 @@ export class List extends Component {
                 type="usergroup-delete"
                 className="list-actions-icon"
                 onClick={() => {
-                  const { handleRemoveMehfilKarkun } = this.props;
-                  handleRemoveMehfilKarkun(record._id);
+                  const {
+                    handleRemoveMehfilKarkun,
+                    refetchMehfilKarkuns,
+                  } = this.props;
+                  handleRemoveMehfilKarkun(record._id, refetchMehfilKarkuns);
                 }}
               />
             </Tooltip>
@@ -116,8 +120,8 @@ export class List extends Component {
   };
 
   onKarkunSelection = karkun => {
-    const { handleAddMehfilKarkun } = this.props;
-    handleAddMehfilKarkun(karkun._id);
+    const { handleAddMehfilKarkun, refetchMehfilKarkuns } = this.props;
+    handleAddMehfilKarkun(karkun._id, refetchMehfilKarkuns);
   };
 
   getTableHeader = () => {
@@ -184,10 +188,10 @@ export class List extends Component {
     const {
       mehfilLoading,
       mehfilById,
-      karkunsLoading,
+      mehfilKarkunsLoading,
       mehfilKarkunsByMehfilId,
     } = this.props;
-    if (mehfilLoading || karkunsLoading) return null;
+    if (mehfilLoading || mehfilKarkunsLoading) return null;
 
     const mehfilDate = moment(Number(mehfilById.mehfilDate));
     const isPastMehfil = moment().isAfter(mehfilDate);
@@ -215,7 +219,11 @@ export default flowRight(
     options: ({ mehfilId }) => ({ variables: { _id: mehfilId } }),
   }),
   graphql(MEHFIL_KARKUNS_BY_MEHFIL_ID, {
-    props: ({ data }) => ({ karkunsLoading: data.loading, ...data }),
+    props: ({ data }) => ({
+      mehfilKarkunsLoading: data.loading,
+      refetchMehfilKarkuns: data.refetch,
+      ...data,
+    }),
     options: ({ mehfilId, dutyName }) => ({
       variables: {
         mehfilId,

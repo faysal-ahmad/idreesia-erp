@@ -16,7 +16,6 @@ import {
   ADD_MEHFIL_KARKUN,
   SET_DUTY_DETAIL,
   REMOVE_MEHFIL_KARKUN,
-  MEHFIL_KARKUNS_BY_MEHFIL_ID,
 } from './gql';
 
 class ListContainer extends Component {
@@ -49,7 +48,7 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleAddMehfilKarkun = karkunId => {
+  handleAddMehfilKarkun = (karkunId, refetchQuery) => {
     const {
       match,
       addMehfilKarkun,
@@ -64,20 +63,28 @@ class ListContainer extends Component {
         karkunId,
         dutyName,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetchQuery();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
-  handleRemoveMehfilKarkun = mehfilKarkunId => {
+  handleRemoveMehfilKarkun = (mehfilKarkunId, refetchQuery) => {
     const { removeMehfilKarkun } = this.props;
     removeMehfilKarkun({
       variables: {
         _id: mehfilKarkunId,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetchQuery();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   handleViewMehfilCards = selectedRows => {
@@ -173,24 +180,9 @@ class ListContainer extends Component {
 }
 
 export default flowRight(
-  graphql(ADD_MEHFIL_KARKUN, {
-    name: 'addMehfilKarkun',
-    options: {
-      refetchQueries: [{ query: MEHFIL_KARKUNS_BY_MEHFIL_ID }],
-    },
-  }),
-  graphql(SET_DUTY_DETAIL, {
-    name: 'setDutyDetail',
-    options: {
-      refetchQueries: [{ query: MEHFIL_KARKUNS_BY_MEHFIL_ID }],
-    },
-  }),
-  graphql(REMOVE_MEHFIL_KARKUN, {
-    name: 'removeMehfilKarkun',
-    options: {
-      refetchQueries: [{ query: MEHFIL_KARKUNS_BY_MEHFIL_ID }],
-    },
-  }),
+  graphql(ADD_MEHFIL_KARKUN, { name: 'addMehfilKarkun' }),
+  graphql(SET_DUTY_DETAIL, { name: 'setDutyDetail' }),
+  graphql(REMOVE_MEHFIL_KARKUN, { name: 'removeMehfilKarkun' }),
   WithQueryParams(),
   WithBreadcrumbs(['Security', 'Mehfils', 'Karkun Duties'])
 )(ListContainer);

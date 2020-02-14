@@ -79,12 +79,6 @@ export default {
     },
 
     pagedSalariesByKarkun(obj, { queryString }, { user }) {
-      console.log(
-        '/hr/salary/resolvers.js/resolvers.js::pagedSalariesByKarkun',
-        queryString,
-        ' <---> user ',
-        user._id
-      );
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_EMPLOYEES,

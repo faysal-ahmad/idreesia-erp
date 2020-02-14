@@ -72,6 +72,14 @@ export default {
         );
       }
 
+      const existingMehfilKarkun = MehfilKarkuns.findOne({
+        mehfilId,
+        karkunId,
+        dutyName,
+      });
+
+      if (existingMehfilKarkun) return existingMehfilKarkun;
+
       const date = new Date();
       const mehfilKarkunId = MehfilKarkuns.insert({
         mehfilId,

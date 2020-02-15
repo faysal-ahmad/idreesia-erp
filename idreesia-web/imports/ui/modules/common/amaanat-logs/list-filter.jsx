@@ -11,11 +11,7 @@ import {
   Row,
   Tooltip,
 } from '/imports/ui/controls';
-import {
-  CascaderField,
-  SelectField,
-  DateField,
-} from '/imports/ui/modules/helpers/fields';
+import { CascaderField, DateField } from '/imports/ui/modules/helpers/fields';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
 
 const ContainerStyle = {
@@ -38,19 +34,16 @@ const ListFilter = props => {
       setPageParams,
       form: { validateFields },
     } = props;
-    validateFields(
-      (err, { cityIdMehfilId, hasPortion, startDate, endDate }) => {
-        if (err) return;
-        setPageParams({
-          cityId: cityIdMehfilId[0],
-          cityMehfilId: cityIdMehfilId[1],
-          hasPortion,
-          startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
-          endDate: endDate ? startDate.format(Formats.DATE_FORMAT) : null,
-          pageIndex: 0,
-        });
-      }
-    );
+    validateFields((err, { cityIdMehfilId, startDate, endDate }) => {
+      if (err) return;
+      setPageParams({
+        cityId: cityIdMehfilId[0],
+        cityMehfilId: cityIdMehfilId[1],
+        startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
+        endDate: endDate ? startDate.format(Formats.DATE_FORMAT) : null,
+        pageIndex: 0,
+      });
+    });
   };
 
   const handleReset = () => {
@@ -58,7 +51,6 @@ const ListFilter = props => {
     setPageParams({
       cityId: null,
       cityMehfilId: null,
-      hasPortion: null,
       month: null,
       pageIndex: 0,
     });
@@ -88,7 +80,6 @@ const ListFilter = props => {
     cityMehfilId,
     startDate,
     endDate,
-    hasPortion,
   } = props;
   const cityMehfilCascaderData = getCityMehfilCascaderData(cities, cityMehfils);
 
@@ -105,37 +96,6 @@ const ListFilter = props => {
             fieldLabel="City/Mehfil"
             fieldLayout={formItemLayout}
             initialValue={[cityId, cityMehfilId]}
-            getFieldDecorator={getFieldDecorator}
-          />
-          <SelectField
-            data={[
-              {
-                value: 'hasHadiaPortion',
-                text: 'Has Hadia Portion',
-              },
-              {
-                value: 'hasSadqaPortion',
-                text: 'Has Sadqa Portion',
-              },
-              {
-                value: 'hasZakaatPortion',
-                text: 'Has Zakaat Portion',
-              },
-              {
-                value: 'hasLangarPortion',
-                text: 'Has Langar Portion',
-              },
-              {
-                value: 'hasOtherPortion',
-                text: 'Has Other Portion',
-              },
-            ]}
-            getDataValue={({ value }) => value}
-            getDataText={({ text }) => text}
-            initialValue={hasPortion}
-            fieldName="hasPortion"
-            fieldLabel="Breakup"
-            fieldLayout={formItemLayout}
             getFieldDecorator={getFieldDecorator}
           />
           <DateField
@@ -178,7 +138,6 @@ ListFilter.propTypes = {
 
   cityId: PropTypes.string,
   cityMehfilId: PropTypes.string,
-  hasPortion: PropTypes.string,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
   setPageParams: PropTypes.func,

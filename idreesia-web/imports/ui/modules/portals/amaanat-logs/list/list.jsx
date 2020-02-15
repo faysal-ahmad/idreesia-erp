@@ -36,7 +36,6 @@ const List = ({ history, location }) => {
     paramNames: [
       'cityId',
       'cityMehfilId',
-      'hasPortion',
       'startDate',
       'endDate',
       'pageIndex',
@@ -67,7 +66,6 @@ const List = ({ history, location }) => {
   const {
     cityId,
     cityMehfilId,
-    hasPortion,
     startDate,
     endDate,
     pageIndex,
@@ -106,7 +104,6 @@ const List = ({ history, location }) => {
         cityMehfils={portalCityMehfils}
         cityId={cityId}
         cityMehfilId={cityMehfilId}
-        hasPortion={hasPortion}
         startDate={startDate}
         endDate={endDate}
         setPageParams={setPageParams}

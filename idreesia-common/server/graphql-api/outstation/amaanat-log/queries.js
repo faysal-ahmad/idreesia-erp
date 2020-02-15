@@ -12,7 +12,6 @@ export default function getAmaanatLogs(queryString) {
   const {
     cityId,
     cityMehfilId,
-    hasPortion,
     startDate,
     endDate,
     pageIndex = '0',
@@ -33,40 +32,6 @@ export default function getAmaanatLogs(queryString) {
         cityMehfilId: { $eq: cityMehfilId },
       },
     });
-  }
-
-  if (hasPortion) {
-    if (hasPortion === 'hasHadiaPortion') {
-      pipeline.push({
-        $match: {
-          hadiaPortion: { $exists: true, $ne: null },
-        },
-      });
-    } else if (hasPortion === 'hasSadqaPortion') {
-      pipeline.push({
-        $match: {
-          sadqaPortion: { $exists: true, $ne: null },
-        },
-      });
-    } else if (hasPortion === 'hasZakaatPortion') {
-      pipeline.push({
-        $match: {
-          zakaatPortion: { $exists: true, $ne: null },
-        },
-      });
-    } else if (hasPortion === 'hasLangarPortion') {
-      pipeline.push({
-        $match: {
-          langarPortion: { $exists: true, $ne: null },
-        },
-      });
-    } else if (hasPortion === 'hasOtherPortion') {
-      pipeline.push({
-        $match: {
-          otherPortion: { $exists: true, $ne: null },
-        },
-      });
-    }
   }
 
   if (startDate) {

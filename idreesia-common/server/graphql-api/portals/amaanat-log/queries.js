@@ -2,7 +2,7 @@ import moment from 'moment';
 import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
-import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
+import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/outstation';
 import { Formats } from 'meteor/idreesia-common/constants';
 
 export default function getAmaanatLogs(queryString) {
@@ -10,7 +10,8 @@ export default function getAmaanatLogs(queryString) {
   const pipeline = [];
 
   const {
-    fromCity,
+    cityId,
+    cityMehfilId,
     hasPortion,
     startDate,
     endDate,
@@ -18,10 +19,18 @@ export default function getAmaanatLogs(queryString) {
     pageSize = '20',
   } = params;
 
-  if (fromCity) {
+  if (cityId) {
     pipeline.push({
       $match: {
-        fromCity: { $eq: fromCity },
+        cityId: { $eq: cityId },
+      },
+    });
+  }
+
+  if (cityMehfilId) {
+    pipeline.push({
+      $match: {
+        cityMehfilId: { $eq: cityMehfilId },
       },
     });
   }
@@ -63,7 +72,7 @@ export default function getAmaanatLogs(queryString) {
   if (startDate) {
     pipeline.push({
       $match: {
-        receivedDate: {
+        sentDate: {
           $gte: moment(startDate, Formats.DATE_FORMAT)
             .startOf('day')
             .toDate(),
@@ -74,7 +83,7 @@ export default function getAmaanatLogs(queryString) {
   if (endDate) {
     pipeline.push({
       $match: {
-        receivedDate: {
+        sentDate: {
           $lte: moment(endDate, Formats.DATE_FORMAT)
             .endOf('day')
             .toDate(),
@@ -90,7 +99,7 @@ export default function getAmaanatLogs(queryString) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { receivedDate: -1 } },
+    { $sort: { sentDate: -1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

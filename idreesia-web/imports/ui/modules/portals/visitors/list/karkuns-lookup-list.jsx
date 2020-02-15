@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 
 import { Button } from '/imports/ui/controls';
-import { PersonName, KarkunsList } from '/imports/ui/modules/helpers/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { KarkunsList } from '/imports/ui/modules/common';
 
 import { PORTAL_KARKUNS_BY_VISITOR } from '../gql';
 

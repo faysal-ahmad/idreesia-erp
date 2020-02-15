@@ -10,39 +10,75 @@ import {
   Table,
   Tooltip,
 } from '/imports/ui/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-import { PersonName } from '../';
+const StatusStyle = {
+  fontSize: 20,
+};
 
-export default class KarkunsList extends Component {
+export default class VisitorsList extends Component {
   static propTypes = {
     showSelectionColumn: PropTypes.bool,
+    showStatusColumn: PropTypes.bool,
     showCnicColumn: PropTypes.bool,
     showPhoneNumbersColumn: PropTypes.bool,
-    showDutiesColumn: PropTypes.bool,
-    showMehfilCityColumn: PropTypes.bool,
+    showCityCountryColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
+    showStayHistoryAction: PropTypes.bool,
+    showLookupAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
+    handleStayHistoryAction: PropTypes.func,
+    handleLookupAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
     pagedData: PropTypes.shape({
       totalResults: PropTypes.number,
-      karkuns: PropTypes.array,
+      data: PropTypes.array,
     }),
   };
 
   static defaultProps = {
     handleSelectItem: noop,
     handleDeleteItem: noop,
+    handleStayHistoryAction: noop,
     listHeader: () => null,
   };
 
   state = {
     selectedRows: [],
+  };
+
+  statusColumn = {
+    title: '',
+    key: 'status',
+    render: (text, record) => {
+      if (record.criminalRecord) {
+        return (
+          <Icon
+            type="warning"
+            style={StatusStyle}
+            theme="twoTone"
+            twoToneColor="red"
+          />
+        );
+      } else if (record.otherNotes) {
+        return (
+          <Icon
+            type="warning"
+            style={StatusStyle}
+            theme="twoTone"
+            twoToneColor="orange"
+          />
+        );
+      }
+
+      return null;
+    },
   };
 
   nameColumn = {
@@ -78,62 +114,56 @@ export default class KarkunsList extends Component {
     },
   };
 
-  mehfilCityColumn = {
-    title: 'City / Mehfil',
-    key: 'cityMehfil',
+  cityCountryColumn = {
+    title: 'City / Country',
+    key: 'cityCountry',
     render: (text, record) => {
-      const { city, cityMehfil } = record;
-      const cityMehfilInfo = [];
-
-      if (cityMehfil) {
-        cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
+      if (record.city) {
+        return `${record.city}, ${record.country}`;
       }
-      if (city) {
-        cityMehfilInfo.push(
-          <Row key="2">{`${city.name}, ${city.country}`}</Row>
-        );
-      }
-
-      if (cityMehfilInfo.length === 0) return '';
-      return <>{cityMehfilInfo}</>;
-    },
-  };
-
-  dutiesColumn = {
-    title: 'Duties',
-    dataIndex: 'duties',
-    key: 'duties',
-    render: duties => {
-      let dutyNames = [];
-      if (duties.length > 0) {
-        dutyNames = duties.map(duty => {
-          const dutyName = duty.dutyName;
-          return <span>{dutyName}</span>;
-        });
-      }
-
-      if (dutyNames.length === 0) {
-        return null;
-      } else if (dutyNames.length === 1) {
-        return dutyNames[0];
-      }
-      return (
-        <>
-          {dutyNames.map((dutyName, index) => (
-            <Row key={index}>{dutyName}</Row>
-          ))}
-        </>
-      );
+      return record.country;
     },
   };
 
   actionsColumn = {
     key: 'action',
     render: (text, record) => {
-      const { showDeleteAction, handleDeleteItem } = this.props;
+      const {
+        showDeleteAction,
+        showStayHistoryAction,
+        showLookupAction,
+        handleDeleteItem,
+        handleStayHistoryAction,
+        handleLookupAction,
+      } = this.props;
+
+      const stayHistoryAction = showStayHistoryAction ? (
+        <Tooltip title="Stay History">
+          <Icon
+            type="history"
+            className="list-actions-icon"
+            onClick={() => {
+              handleStayHistoryAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
+      const lookupAction = showLookupAction ? (
+        <Tooltip title="Find in Karkuns">
+          <Icon
+            type="file-search"
+            className="list-actions-icon"
+            onClick={() => {
+              handleLookupAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
       const deleteAction = showDeleteAction ? (
         <Popconfirm
-          title="Are you sure you want to delete this karkun?"
+          title="Are you sure you want to delete this visitor?"
           onConfirm={() => {
             handleDeleteItem(record);
           }}
@@ -146,19 +176,31 @@ export default class KarkunsList extends Component {
         </Popconfirm>
       ) : null;
 
-      return <div className="list-actions-column">{deleteAction}</div>;
+      return (
+        <div className="list-actions-column">
+          {stayHistoryAction}
+          {lookupAction}
+          {deleteAction}
+        </div>
+      );
     },
   };
 
   getColumns = () => {
     const {
+      showStatusColumn,
       showCnicColumn,
       showPhoneNumbersColumn,
-      showMehfilCityColumn,
-      showDutiesColumn,
+      showCityCountryColumn,
       showDeleteAction,
+      showStayHistoryAction,
     } = this.props;
+
     const columns = [this.nameColumn];
+
+    if (showStatusColumn) {
+      columns.push(this.statusColumn);
+    }
 
     if (showCnicColumn) {
       columns.push(this.cnicColumn);
@@ -168,15 +210,11 @@ export default class KarkunsList extends Component {
       columns.push(this.phoneNumberColumn);
     }
 
-    if (showMehfilCityColumn) {
-      columns.push(this.mehfilCityColumn);
+    if (showCityCountryColumn) {
+      columns.push(this.cityCountryColumn);
     }
 
-    if (showDutiesColumn) {
-      columns.push(this.dutiesColumn);
-    }
-
-    if (showDeleteAction) {
+    if (showDeleteAction || showStayHistoryAction) {
       columns.push(this.actionsColumn);
     }
 
@@ -215,7 +253,7 @@ export default class KarkunsList extends Component {
       pageSize,
       listHeader,
       showSelectionColumn,
-      pagedData: { totalResults, karkuns },
+      pagedData: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
@@ -224,7 +262,7 @@ export default class KarkunsList extends Component {
     return (
       <Table
         rowKey="_id"
-        dataSource={karkuns}
+        dataSource={data}
         columns={this.getColumns()}
         title={listHeader}
         rowSelection={showSelectionColumn ? this.rowSelection : null}

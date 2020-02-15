@@ -12,16 +12,7 @@ export { default as TakePicture } from './picture/take-picture';
 export { default as UploadAttachment } from './upload/upload-attachment';
 export { default as AttachmentsList } from './attachments/attachments-list';
 export { default as RecordInfo } from './record-info/record-info';
-
 export { default as PersonName } from './person-name/person-name';
-export { default as KarkunsList } from './karkuns-list/karkuns-list';
-export { default as VisitorsList } from './visitors-list/visitors-list';
-export {
-  default as KarkunAttendancesList,
-} from './attendance-list/karkun-attendances-list';
-export {
-  default as KarkunsAttendanceList,
-} from './attendance-list/karkuns-attendance-list';
 
 export { default as InputFile } from './file/input-file';
 

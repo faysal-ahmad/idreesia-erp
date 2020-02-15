@@ -8,7 +8,7 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { Button } from '/imports/ui/controls';
-import { KarkunsList } from '/imports/ui/modules/helpers/controls';
+import { KarkunsList } from '/imports/ui/modules/common';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { usePortal } from '/imports/ui/modules/portals/common/hooks';
 

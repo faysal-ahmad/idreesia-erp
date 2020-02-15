@@ -81,6 +81,9 @@ import OutstationKarkunDutyResolvers from './outstation/karkun-duties/resolvers'
 import OutstationAttendanceSchema from './outstation/attendance/attendance.graphql';
 import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 
+import OutstationAmaanatLogSchema from './outstation/amaanat-log/amaanat-log.graphql';
+import OutstationAmaanatLogResolvers from './outstation/amaanat-log/resolvers';
+
 /**
  * Schema and Resolvers for the Portals module
  */
@@ -98,6 +101,9 @@ import PortalVisitorResolvers from './portals/visitor/resolvers';
 
 import PortalAttendanceSchema from './portals/attendance/attendance.graphql';
 import PortalAttendanceResolvers from './portals/attendance/resolvers';
+
+import PortalAmaanatLogSchema from './portals/amaanat-log/amaanat-log.graphql';
+import PortalAmaanatLogResolvers from './portals/amaanat-log/resolvers';
 
 /**
  * Schema and Resolvers for the Inventory module
@@ -147,9 +153,6 @@ import VoucherResolvers from './accounts/voucher/resolvers';
 import VoucherDetailSchema from './accounts/voucher-detail/voucher-detail.graphql';
 import VoucherDetailResolvers from './accounts/voucher-detail/resolvers';
 
-import AmaanatLogSchema from './accounts/amaanat-log/amaanat-log.graphql';
-import AmaanatLogResolvers from './accounts/amaanat-log/resolvers';
-
 import PaymentsSchema from './accounts/payments/payment.graphql';
 import PaymentsResolvers from './accounts/payments/resolvers';
 import PaymentsHistorySchema from './accounts/payments-history/payment-history.graphql';
@@ -181,12 +184,14 @@ const typeDefs = [
   OutstationKarkunSchema,
   OutstationKarkunDutySchema,
   OutstationAttendanceSchema,
+  OutstationAmaanatLogSchema,
 
   PortalSchema,
   PortalKarkunSchema,
   PortalKarkunDutySchema,
   PortalVisitorSchema,
   PortalAttendanceSchema,
+  PortalAmaanatLogSchema,
 
   CommonSchema,
   ItemCategorySchema,
@@ -203,7 +208,6 @@ const typeDefs = [
   VoucherSchema,
   VoucherDetailSchema,
   AccountMonthlyBalanceSchema,
-  AmaanatLogSchema,
   PaymentsSchema,
   PaymentsHistorySchema,
 ];
@@ -234,12 +238,14 @@ const resolvers = merge(
   OutstationKarkunResolvers,
   OutstationKarkunDutyResolvers,
   OutstationAttendanceResolvers,
+  OutstationAmaanatLogResolvers,
 
   PortalResolvers,
   PortalKarkunResolvers,
   PortalKarkunDutyResolvers,
   PortalVisitorResolvers,
   PortalAttendanceResolvers,
+  PortalAmaanatLogResolvers,
 
   CommonResolvers,
   ItemCategoryResolvers,
@@ -256,7 +262,6 @@ const resolvers = merge(
   VoucherResolvers,
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
-  AmaanatLogResolvers,
   PaymentsResolvers,
   PaymentsHistoryResolvers
 );

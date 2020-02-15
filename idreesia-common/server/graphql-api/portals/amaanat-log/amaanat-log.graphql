@@ -1,0 +1,37 @@
+extend type Query {
+  portalAmaanatLogById(portalId: String!, _id: String!): AmaanatLogType
+  pagedPortalAmaanatLogs(portalId: String!, queryString: String): PagedAmaanatLogType
+}
+
+extend type Mutation {
+  createPortalAmaanatLog(
+    portalId:String!
+    cityId: String!
+    cityMehfilId: String!
+    sentDate: String!
+    totalAmount: Float!
+    hadiaPortion: Float
+    sadqaPortion: Float
+    zakaatPortion: Float
+    langarPortion: Float
+    otherPortion: Float
+    otherPortionDescription: String
+  ): AmaanatLogType
+
+  updatePortalAmaanatLog(
+    portalId:String!
+    _id: String!
+    cityId: String!
+    cityMehfilId: String!
+    sentDate: String!
+    totalAmount: Float!
+    hadiaPortion: Float
+    sadqaPortion: Float
+    zakaatPortion: Float
+    langarPortion: Float
+    otherPortion: Float
+    otherPortionDescription: String
+  ): AmaanatLogType
+
+  removePortalAmaanatLog(portalId:String!, _id: String!): Int
+}

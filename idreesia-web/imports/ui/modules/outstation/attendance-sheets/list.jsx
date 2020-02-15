@@ -7,7 +7,7 @@ import moment from 'moment';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { KarkunsAttendanceList } from '/imports/ui/modules/helpers/controls';
+import { KarkunsAttendanceList } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import {

@@ -9,9 +9,6 @@ const Permissions = {
   ACCOUNTS_VIEW_VOUCHERS: 'accounts-view-vouchers',
   ACCOUNTS_MANAGE_VOUCHERS: 'accounts-manage-vouchers',
 
-  ACCOUNTS_VIEW_AMAANAT_LOGS: 'accounts-view-amaanat-logs',
-  ACCOUNTS_MANAGE_AMAANAT_LOGS: 'accounts-manage-amaanat-logs',
-
   ACCOUNTS_VIEW_PAYMENTS: 'accounts-view-payments',
   ACCOUNTS_MANAGE_PAYMENTS: 'accounts-manage-payments',
 
@@ -58,6 +55,9 @@ const Permissions = {
   OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
   OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
 
+  OUTSTATION_VIEW_AMAANAT_LOGS: 'outstation-view-amaanat-logs',
+  OUTSTATION_MANAGE_AMAANAT_LOGS: 'outstation-manage-amaanat-logs',
+
   // ****************************************************************************************
   // Portals Module
   // ****************************************************************************************
@@ -68,6 +68,9 @@ const Permissions = {
 
   PORTALS_VIEW_VISITORS: 'mehfil-portals-view-visitors',
   PORTALS_MANAGE_VISITORS: 'mehfil-portals-manage-visitors',
+
+  PORTALS_VIEW_AMAANAT_LOGS: 'mehfil-portals-view-amaanat-logs',
+  PORTALS_MANAGE_AMAANAT_LOGS: 'mehfil-portals-manage-amaanat-logs',
 
   // ****************************************************************************************
   // Security Module

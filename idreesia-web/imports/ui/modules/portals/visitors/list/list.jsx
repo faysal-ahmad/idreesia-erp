@@ -14,7 +14,7 @@ import {
   usePortal,
   usePortalCities,
 } from '/imports/ui/modules/portals/common/hooks';
-import { VisitorsList } from '/imports/ui/modules/helpers/controls';
+import { VisitorsList } from '/imports/ui/modules/common';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { CREATE_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';
 

@@ -13,8 +13,7 @@ import {
   Menu,
   Table,
 } from '/imports/ui/controls';
-
-import { PersonName } from '../';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 const AttendanceContainer = {
   display: 'flex',

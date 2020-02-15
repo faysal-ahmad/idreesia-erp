@@ -1,16 +1,20 @@
-import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
+import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/outstation';
+import {
+  hasInstanceAccess,
+  hasOnePermission,
+} from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import getAmaanatLogs from './queries';
 
 export default {
   Query: {
-    amaanatLogById(obj, { _id }, { user }) {
+    portalAmaanatLogById(obj, { portalId, _id }, { user }) {
       if (
+        hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
-          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_VIEW_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         return null;
@@ -19,11 +23,12 @@ export default {
       return AmaanatLogs.findOne({ _id });
     },
 
-    pagedAmaanatLogs(obj, { queryString }, { user }) {
+    pagedPortalAmaanatLogs(obj, { portalId, queryString }, { user }) {
       if (
+        hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
-          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_VIEW_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         return {
@@ -37,11 +42,13 @@ export default {
   },
 
   Mutation: {
-    createAmaanatLog(
+    createPortalAmaanatLog(
       obj,
       {
-        fromCity,
-        receivedDate,
+        portalId,
+        cityId,
+        cityMehfilId,
+        sentDate,
         totalAmount,
         hadiaPortion,
         sadqaPortion,
@@ -54,7 +61,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         throw new Error(
@@ -62,10 +69,17 @@ export default {
         );
       }
 
+      if (hasInstanceAccess(user._id, portalId) === false) {
+        throw new Error(
+          'You do not have permission to manage Amaanat Logs in this Mehfil Portal.'
+        );
+      }
+
       const date = new Date();
       const amaanatLogId = AmaanatLogs.insert({
-        fromCity,
-        receivedDate,
+        cityId,
+        cityMehfilId,
+        sentDate,
         totalAmount,
         hadiaPortion,
         sadqaPortion,
@@ -82,12 +96,14 @@ export default {
       return AmaanatLogs.findOne(amaanatLogId);
     },
 
-    updateAmaanatLog(
+    updatePortalAmaanatLog(
       obj,
       {
+        portalId,
         _id,
-        fromCity,
-        receivedDate,
+        cityId,
+        cityMehfilId,
+        sentDate,
         totalAmount,
         hadiaPortion,
         sadqaPortion,
@@ -100,11 +116,17 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         throw new Error(
           'You do not have permission to manage Amaanat Logs in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, portalId) === false) {
+        throw new Error(
+          'You do not have permission to manage Amaanat Logs in this Mehfil Portal.'
         );
       }
 
@@ -115,8 +137,9 @@ export default {
         },
         {
           $set: {
-            fromCity,
-            receivedDate,
+            cityId,
+            cityMehfilId,
+            sentDate,
             totalAmount,
             hadiaPortion,
             sadqaPortion,
@@ -133,14 +156,20 @@ export default {
       return AmaanatLogs.findOne(_id);
     },
 
-    removeAmaanatLog(obj, { _id }, { user }) {
+    removePortalAmaanatLog(obj, { portalId, _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         throw new Error(
           'You do not have permission to manage Amaanat Logs in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, portalId) === false) {
+        throw new Error(
+          'You do not have permission to manage Amaanat Logs in this Mehfil Portal.'
         );
       }
 

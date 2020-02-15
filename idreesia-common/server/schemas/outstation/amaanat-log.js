@@ -3,11 +3,13 @@ import SimpleSchema from 'simpl-schema';
 import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
-  fromCity: {
+  cityId: {
     type: String,
-    optional: true,
   },
-  receivedDate: {
+  cityMehfilId: {
+    type: String,
+  },
+  sentDate: {
     type: Date,
   },
   totalAmount: {

@@ -6,7 +6,7 @@ import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
-import { KarkunAttendancesList } from '/imports/ui/modules/helpers/controls';
+import { KarkunAttendancesList } from '/imports/ui/modules/common';
 
 import { PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN } from '../gql';
 

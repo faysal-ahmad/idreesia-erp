@@ -22,6 +22,19 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Amaanat Logs Routes
+  // *************************************************************************************
+  static amaanatLogsPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/amaanat-logs`;
+  }
+  static amaanatLogsNewFormPath(portalId = ':portalId') {
+    return `${SubModulePaths.amaanatLogsPath(portalId)}/new`;
+  }
+  static amaanatLogsEditFormPath(portalId = ':portalId', logId = ':logId') {
+    return `${SubModulePaths.amaanatLogsPath(portalId)}/${logId}`;
+  }
+
+  // *************************************************************************************
   // Visitor Routes
   // *************************************************************************************
   static visitorsPath(portalId = ':portalId') {

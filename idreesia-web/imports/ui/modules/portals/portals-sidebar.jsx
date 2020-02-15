@@ -32,6 +32,9 @@ class PortalsSidebar extends Component {
     } else if (key.startsWith('attendance-sheets')) {
       setActiveSubModuleName(SubModuleNames.attendanceSheets);
       history.push(paths.attendanceSheetsPath(portalId));
+    } else if (key.startsWith('amaanat-logs')) {
+      setActiveSubModuleName(SubModuleNames.amaanatLogs);
+      history.push(paths.amaanatLogsPath(portalId));
     }
   };
 
@@ -44,6 +47,9 @@ class PortalsSidebar extends Component {
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`attendance-sheets-${portalId}`}>
       Attendance Sheets
+    </Menu.Item>,
+    <Menu.Item parent-key={portalId} key={`amaanat-logs-${portalId}`}>
+      Amaanat Logs
     </Menu.Item>,
   ];
 

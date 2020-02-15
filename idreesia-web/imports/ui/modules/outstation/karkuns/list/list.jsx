@@ -7,7 +7,7 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { Button, Tooltip, message } from '/imports/ui/controls';
-import { KarkunsList } from '/imports/ui/modules/helpers/controls';
+import { KarkunsList } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import ListFilter from './list-filter';

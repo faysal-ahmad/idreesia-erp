@@ -32,9 +32,6 @@ class AccountsSidebar extends Component {
     } else if (key.startsWith('vouchers')) {
       setActiveSubModuleName(SubModuleNames.vouchers);
       history.push(paths.vouchersPath(companyId));
-    } else if (key === 'amaanat-logs') {
-      setActiveSubModuleName(SubModuleNames.amaanatLogs);
-      history.push(paths.amaanatLogsPath);
     } else if (key === 'payments') {
       setActiveSubModuleName(SubModuleNames.payments);
       history.push(paths.paymentsPath);
@@ -51,14 +48,6 @@ class AccountsSidebar extends Component {
         <span>
           <Icon type="dollar" />
           Payments
-        </span>
-      </Menu.Item>
-    );
-    subMenus.push(
-      <Menu.Item key="amaanat-logs">
-        <span>
-          <Icon type="bars" />
-          Amaanat Logs
         </span>
       </Menu.Item>
     );

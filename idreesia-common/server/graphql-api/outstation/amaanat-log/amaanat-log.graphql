@@ -1,0 +1,31 @@
+type AmaanatLogType {
+  _id: String
+  cityId: String
+  cityMehfilId: String
+  sentDate: String
+  totalAmount: Float
+  hadiaPortion: Float
+  sadqaPortion: Float
+  zakaatPortion: Float
+  langarPortion: Float
+  otherPortion: Float
+  otherPortionDescription: String
+
+  city: CityType
+  cityMehfil: CityMehfilType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedAmaanatLogType {
+  totalResults: Int
+  data: [AmaanatLogType]
+}
+
+extend type Query {
+  outstationAmaanatLogById(_id: String!): AmaanatLogType
+  pagedOutstationAmaanatLogs(queryString: String): PagedAmaanatLogType
+}

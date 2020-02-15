@@ -6,7 +6,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 export default {
   Query: {
     allCityMehfils() {
-      return CityMehfils.find({}, { sort: { cityId: 1 } }).fetch();
+      return CityMehfils.find({}, { sort: { name: 1 } }).fetch();
     },
 
     cityMehfilsByCityId(obj, { cityId }) {

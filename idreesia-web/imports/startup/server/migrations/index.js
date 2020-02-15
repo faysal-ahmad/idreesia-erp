@@ -22,6 +22,7 @@ import './18-create-security-indexes';
 import './19-update-users';
 import './20-create-account-payment-indexes';
 import './21-set-mehfil-duties';
+import './22-create-outstation-indexes';
 
 Migrations.config({
   log: true,

@@ -87,7 +87,12 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+      <Button
+        size="large"
+        type="primary"
+        icon="plus-circle-o"
+        onClick={handleNewClicked}
+      >
         New Amaanat Log
       </Button>
       <AmaanatLogsListFilter

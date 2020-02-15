@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { useParams } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,24 +11,21 @@ import {
   AmaanatLogsList,
   AmaanatLogsListFilter,
 } from '/imports/ui/modules/common';
-import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 import {
-  usePortal,
-  usePortalCities,
-  usePortalCityMehfils,
-} from '/imports/ui/modules/portals/common/hooks';
+  useAllCities,
+  useAllCityMehfils,
+} from '/imports/ui/modules/outstation/common/hooks';
 
-import { PAGED_PORTAL_AMAANAT_LOGS, REMOVE_PORTAL_AMAANAT_LOG } from '../gql';
+import {
+  PAGED_OUTSTATION_AMAANAT_LOGS,
+  REMOVE_OUTSTATION_AMAANAT_LOG,
+} from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
-  const { portalId } = useParams();
-  const { portal } = usePortal();
-  const { portalCities, portalCitiesLoading } = usePortalCities();
-  const {
-    portalCityMehfils,
-    portalCityMehfilsLoading,
-  } = usePortalCityMehfils();
+  const { allCities, allCitiesLoading } = useAllCities();
+  const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
   const { queryString, queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -44,26 +40,21 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const [removePortalAmaanatLog] = useMutation(REMOVE_PORTAL_AMAANAT_LOG);
-  const { data, loading, refetch } = useQuery(PAGED_PORTAL_AMAANAT_LOGS, {
+  const [removeOutstationAmaanatLog] = useMutation(
+    REMOVE_OUTSTATION_AMAANAT_LOG
+  );
+  const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_AMAANAT_LOGS, {
     variables: {
-      portalId,
       queryString,
     },
   });
 
   useEffect(() => {
-    if (portal) {
-      dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'Amaanat Logs', 'List'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Amaanat Logs', 'List']));
-    }
-  }, [location, portal]);
+    dispatch(setBreadcrumbs(['Mehfil Portal', 'Amaanat Logs', 'List']));
+  }, [location]);
 
-  if (loading || portalCitiesLoading || portalCityMehfilsLoading) return null;
-  const { pagedPortalAmaanatLogs } = data;
+  if (loading || allCitiesLoading || allCityMehfilsLoading) return null;
+  const { pagedOutstationAmaanatLogs } = data;
   const {
     cityId,
     cityMehfilId,
@@ -77,16 +68,16 @@ const List = ({ history, location }) => {
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   const handleNewClicked = () => {
-    history.push(paths.amaanatLogsNewFormPath(portalId));
+    history.push(paths.amaanatLogsNewFormPath);
   };
 
   const handleSelectItem = amaanatLog => {
-    history.push(paths.amaanatLogsEditFormPath(portalId, amaanatLog._id));
+    history.push(paths.amaanatLogsEditFormPath(amaanatLog._id));
   };
 
   const handleDeleteItem = amaanatLog => {
-    removePortalAmaanatLog({
-      variables: { portalId, _id: amaanatLog._id },
+    removeOutstationAmaanatLog({
+      variables: { _id: amaanatLog._id },
     })
       .then(() => {
         refetch();
@@ -102,8 +93,8 @@ const List = ({ history, location }) => {
         New Amaanat Log
       </Button>
       <AmaanatLogsListFilter
-        cities={portalCities}
-        cityMehfils={portalCityMehfils}
+        cities={allCities}
+        cityMehfils={allCityMehfils}
         cityId={cityId}
         cityMehfilId={cityMehfilId}
         hasPortion={hasPortion}
@@ -123,7 +114,7 @@ const List = ({ history, location }) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedPortalAmaanatLogs}
+      pagedData={pagedOutstationAmaanatLogs}
     />
   );
 };

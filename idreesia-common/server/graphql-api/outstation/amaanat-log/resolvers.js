@@ -50,4 +50,120 @@ export default {
       return getAmaanatLogs(queryString);
     },
   },
+
+  Mutation: {
+    createOutstationAmaanatLog(
+      obj,
+      {
+        cityId,
+        cityMehfilId,
+        sentDate,
+        totalAmount,
+        hadiaPortion,
+        sadqaPortion,
+        zakaatPortion,
+        langarPortion,
+        otherPortion,
+        otherPortionDescription,
+      },
+      { user }
+    ) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Amaanat Logs in the System.'
+        );
+      }
+
+      const date = new Date();
+      const amaanatLogId = AmaanatLogs.insert({
+        cityId,
+        cityMehfilId,
+        sentDate,
+        totalAmount,
+        hadiaPortion,
+        sadqaPortion,
+        zakaatPortion,
+        langarPortion,
+        otherPortion,
+        otherPortionDescription,
+        createdAt: date,
+        createdBy: user._id,
+        updatedAt: date,
+        updatedBy: user._id,
+      });
+
+      return AmaanatLogs.findOne(amaanatLogId);
+    },
+
+    updateOutstationAmaanatLog(
+      obj,
+      {
+        _id,
+        cityId,
+        cityMehfilId,
+        sentDate,
+        totalAmount,
+        hadiaPortion,
+        sadqaPortion,
+        zakaatPortion,
+        langarPortion,
+        otherPortion,
+        otherPortionDescription,
+      },
+      { user }
+    ) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Amaanat Logs in the System.'
+        );
+      }
+
+      const date = new Date();
+      AmaanatLogs.update(
+        {
+          _id: { $eq: _id },
+        },
+        {
+          $set: {
+            cityId,
+            cityMehfilId,
+            sentDate,
+            totalAmount,
+            hadiaPortion,
+            sadqaPortion,
+            zakaatPortion,
+            langarPortion,
+            otherPortion,
+            otherPortionDescription,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
+
+      return AmaanatLogs.findOne(_id);
+    },
+
+    removeOutstationAmaanatLog(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Amaanat Logs in the System.'
+        );
+      }
+
+      return AmaanatLogs.remove(_id);
+    },
+  },
 };

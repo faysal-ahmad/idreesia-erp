@@ -10,6 +10,11 @@ import {
   MehfilDutiesEditForm,
   MehfilDutiesList,
 } from './mehfil-duties';
+import {
+  AmaanatLogsList,
+  AmaanatLogsNewForm,
+  AmaanatLogsEditForm,
+} from './amaanat-logs';
 
 const OutstationRouter = () => (
   <Switch>
@@ -32,6 +37,13 @@ const OutstationRouter = () => (
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
+
+    <Route path={paths.amaanatLogsNewFormPath} component={AmaanatLogsNewForm} />
+    <Route
+      path={paths.amaanatLogsEditFormPath()}
+      component={AmaanatLogsEditForm}
+    />
+    <Route path={paths.amaanatLogsPath} component={AmaanatLogsList} />
   </Switch>
 );
 

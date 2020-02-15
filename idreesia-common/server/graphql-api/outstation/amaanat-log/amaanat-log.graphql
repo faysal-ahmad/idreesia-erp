@@ -29,3 +29,34 @@ extend type Query {
   outstationAmaanatLogById(_id: String!): AmaanatLogType
   pagedOutstationAmaanatLogs(queryString: String): PagedAmaanatLogType
 }
+
+extend type Mutation {
+  createOutstationAmaanatLog(
+    cityId: String!
+    cityMehfilId: String!
+    sentDate: String!
+    totalAmount: Float!
+    hadiaPortion: Float
+    sadqaPortion: Float
+    zakaatPortion: Float
+    langarPortion: Float
+    otherPortion: Float
+    otherPortionDescription: String
+  ): AmaanatLogType
+
+  updateOutstationAmaanatLog(
+    _id: String!
+    cityId: String!
+    cityMehfilId: String!
+    sentDate: String!
+    totalAmount: Float!
+    hadiaPortion: Float
+    sadqaPortion: Float
+    zakaatPortion: Float
+    langarPortion: Float
+    otherPortion: Float
+    otherPortionDescription: String
+  ): AmaanatLogType
+
+  removeOutstationAmaanatLog(_id: String!): Int
+}

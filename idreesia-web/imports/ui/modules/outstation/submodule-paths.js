@@ -25,6 +25,15 @@ export default class SubModulePaths {
     return `${SubModulePaths.karkunsPath}/${karkunId}`;
   }
 
+  // *************************************************************************************
+  // Amaanat Logs Routes
+  // *************************************************************************************
+  static amaanatLogsPath = `${ModulePaths.outstation}/amaanat-logs`;
+  static amaanatLogsNewFormPath = `${SubModulePaths.amaanatLogsPath}/new`;
+  static amaanatLogsEditFormPath(logId = ':logId') {
+    return `${SubModulePaths.amaanatLogsPath}/${logId}`;
+  }
+
   // ******************************************************************************
   // Attendance Sheets
   // ******************************************************************************

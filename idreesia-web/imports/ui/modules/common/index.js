@@ -1,4 +1,5 @@
 export { default as AmaanatLogsList } from './amaanat-logs/list';
+export { default as AmaanatLogsListFilter } from './amaanat-logs/list-filter';
 export { default as AmaanatLogsNewForm } from './amaanat-logs/new-form';
 export { default as AmaanatLogsEditForm } from './amaanat-logs/edit-form';
 

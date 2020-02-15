@@ -3,8 +3,11 @@ import {
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
+import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+
+import getCities from './queries';
 
 export default {
   CityType: {
@@ -18,17 +21,32 @@ export default {
     allCities() {
       return Cities.find({}, { sort: { name: 1 } }).fetch();
     },
+
+    pagedCities(obj, { queryString }) {
+      return getCities(queryString);
+    },
+
     cityById(obj, { _id }) {
       return Cities.findOne(_id);
     },
+
     citiesByPortalId(obj, { portalId }) {
       const portal = Portals.findOne(portalId);
       return Cities.find({ _id: { $in: portal.cityIds } }).fetch();
     },
+
+    distinctRegions() {
+      const distincFunction = Meteor.wrapAsync(
+        Cities.rawCollection().distinct,
+        Cities.rawCollection()
+      );
+
+      return compact(distincFunction('region'));
+    },
   },
 
   Mutation: {
-    createCity(obj, { name, country }, { user }) {
+    createCity(obj, { name, country, region }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -43,6 +61,7 @@ export default {
       const cityId = Cities.insert({
         name,
         country,
+        region,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -52,7 +71,7 @@ export default {
       return Cities.findOne(cityId);
     },
 
-    updateCity(obj, { _id, name, country }, { user }) {
+    updateCity(obj, { _id, name, country, region }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -68,6 +87,7 @@ export default {
         $set: {
           name,
           country,
+          region,
           updatedAt: date,
           updatedBy: user._id,
         },

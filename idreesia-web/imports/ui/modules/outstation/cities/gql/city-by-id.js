@@ -6,6 +6,7 @@ const CITY_BY_ID = gql`
       _id
       name
       country
+      region
       createdAt
       createdBy
       updatedAt

@@ -10,7 +10,7 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-import { ALL_CITIES, CREATE_CITY } from '../gql';
+import { PAGED_CITIES, ALL_CITIES, CREATE_CITY } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -28,12 +28,13 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createCity, history } = this.props;
-    form.validateFields((err, { name, country }) => {
+    form.validateFields((err, { name, region, country }) => {
       if (err) return;
 
       createCity({
         variables: {
           name,
+          region,
           country,
         },
       })
@@ -59,6 +60,11 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
+          fieldName="region"
+          fieldLabel="Region"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
           fieldName="country"
           fieldLabel="Country"
           initialValue="Pakistan"
@@ -77,7 +83,7 @@ export default flowRight(
   graphql(CREATE_CITY, {
     name: 'createCity',
     options: {
-      refetchQueries: [{ query: ALL_CITIES }],
+      refetchQueries: [{ query: PAGED_CITIES }, { query: ALL_CITIES }],
     },
   }),
   WithBreadcrumbs(['Outstation', 'Cities & Mehfils', 'New'])

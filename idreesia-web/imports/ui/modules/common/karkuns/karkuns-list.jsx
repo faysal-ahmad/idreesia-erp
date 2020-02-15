@@ -190,15 +190,7 @@ export default class KarkunsList extends Component {
     },
   };
 
-  onChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  onShowSizeChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -238,8 +230,8 @@ export default class KarkunsList extends Component {
             showTotal={(total, range) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
-            onChange={this.onChange}
-            onShowSizeChange={this.onShowSizeChange}
+            onChange={this.onPaginationChange}
+            onShowSizeChange={this.onPaginationChange}
             total={totalResults}
           />
         )}

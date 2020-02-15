@@ -1,29 +1,78 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { WithPortals } from 'meteor/idreesia-common/composers/portals';
-import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { find, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import {
+  Button,
+  Icon,
+  Pagination,
+  Table,
+  Tooltip,
+  message,
+} from '/imports/ui/controls';
+import {
+  useAllPortals,
+  useDistinctRegions,
+} from '/imports/ui/modules/outstation/common/hooks';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
-import { ALL_CITIES, REMOVE_CITY } from '../gql';
+import ListFilter from './list-filter';
+import { PAGED_CITIES, REMOVE_CITY } from '../gql';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const List = ({ history, location }) => {
+  const dispatch = useDispatch();
+  const [removeCity] = useMutation(REMOVE_CITY);
+  const { queryString, queryParams, setPageParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['portalId', 'region', 'pageIndex', 'pageSize'],
+  });
 
-    citiesLoading: PropTypes.bool,
-    allCities: PropTypes.array,
-    portalsLoading: PropTypes.bool,
-    allPortals: PropTypes.array,
-    removeCity: PropTypes.func,
+  const { allPortalsLoading, allPortals } = useAllPortals();
+  const { distinctRegionsLoading, distinctRegions } = useDistinctRegions();
+  const { data, loading, refetch } = useQuery(PAGED_CITIES, {
+    variables: {
+      queryString,
+    },
+  });
+
+  useEffect(() => {
+    dispatch(setBreadcrumbs(['Outstation', 'Cities & Mehfils', 'List']));
+  }, [location]);
+
+  const handleNewClicked = () => {
+    history.push(paths.citiesNewFormPath);
   };
 
-  columns = [
+  const handleDeleteClicked = record => {
+    removeCity({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const onPaginationChange = (pageIndex, pageSize) => {
+    setPageParams({
+      pageIndex: pageIndex - 1,
+      pageSize,
+    });
+  };
+
+  if (loading || allPortalsLoading || distinctRegionsLoading) return null;
+  const { pagedCities } = data;
+  const { region, portalId, pageIndex, pageSize } = queryParams;
+  const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
+  const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -31,6 +80,11 @@ class List extends Component {
       render: (text, record) => (
         <Link to={`${paths.citiesEditFormPath(record._id)}`}>{text}</Link>
       ),
+    },
+    {
+      title: 'Region',
+      dataIndex: 'region',
+      key: 'region',
     },
     {
       title: 'Country',
@@ -51,7 +105,6 @@ class List extends Component {
       title: 'In Portal',
       key: 'portal',
       render: (text, record) => {
-        const { allPortals } = this.props;
         const cityPortal = find(allPortals, portal => {
           const cityIds = portal.cityIds || [];
           return cityIds.indexOf(record._id) !== -1;
@@ -70,7 +123,7 @@ class List extends Component {
                 type="delete"
                 className="list-actions-icon"
                 onClick={() => {
-                  this.handleDeleteClicked(record);
+                  handleDeleteClicked(record);
                 }}
               />
             </Tooltip>
@@ -82,57 +135,59 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.citiesNewFormPath);
-  };
+  const getTableHeader = () => (
+    <div className="list-table-header">
+      <div>
+        <Button
+          size="large"
+          type="primary"
+          icon="plus-circle-o"
+          onClick={handleNewClicked}
+        >
+          New City
+        </Button>
+      </div>
+      <div className="list-table-header-section">
+        <ListFilter
+          distinctRegions={distinctRegions}
+          allPortals={allPortals}
+          region={region}
+          portalId={portalId}
+          setPageParams={setPageParams}
+          refreshData={refetch}
+        />
+      </div>
+    </div>
+  );
 
-  handleDeleteClicked = record => {
-    const { removeCity } = this.props;
-    removeCity({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={pagedCities.data}
+      columns={columns}
+      bordered
+      pagination={false}
+      title={getTableHeader}
+      footer={() => (
+        <Pagination
+          current={numPageIndex}
+          pageSize={numPageSize}
+          showSizeChanger
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`
+          }
+          onChange={onPaginationChange}
+          onShowSizeChange={onPaginationChange}
+          total={pagedCities.totalResults}
+        />
+      )}
+    />
+  );
+};
 
-  render() {
-    const { citiesLoading, portalsLoading, allCities } = this.props;
-    if (citiesLoading || portalsLoading) return null;
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allCities}
-        columns={this.columns}
-        pagination={{ defaultPageSize: 20 }}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon="plus-circle-o"
-            onClick={this.handleNewClicked}
-          >
-            New City
-          </Button>
-        )}
-      />
-    );
-  }
-}
-
-export default flowRight(
-  WithPortals(),
-  graphql(ALL_CITIES, {
-    props: ({ data }) => ({ citiesLoading: data.loading, ...data }),
-  }),
-  graphql(REMOVE_CITY, {
-    name: 'removeCity',
-    options: {
-      refetchQueries: ['allCities'],
-    },
-  }),
-  WithBreadcrumbs(['Outstation', 'Cities & Mehfils', 'List'])
-)(List);
+export default List;

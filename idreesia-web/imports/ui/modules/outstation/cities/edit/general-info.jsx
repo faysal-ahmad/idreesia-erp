@@ -10,7 +10,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
-import { CITY_BY_ID, UPDATE_CITY } from '../gql';
+import { ALL_CITIES, PAGED_CITIES, CITY_BY_ID, UPDATE_CITY } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -32,7 +32,7 @@ class GeneralInfo extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, cityById, updateCity } = this.props;
-    form.validateFields((err, { name, country }) => {
+    form.validateFields((err, { name, country, region }) => {
       if (err) return;
 
       updateCity({
@@ -40,6 +40,7 @@ class GeneralInfo extends Component {
           _id: cityById._id,
           name,
           country,
+          region,
         },
       })
         .then(() => {
@@ -68,6 +69,12 @@ class GeneralInfo extends Component {
             getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
+            fieldName="region"
+            fieldLabel="Region"
+            initialValue={cityById.region}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextField
             fieldName="country"
             fieldLabel="Country"
             initialValue={cityById.country}
@@ -88,7 +95,7 @@ export default flowRight(
   graphql(UPDATE_CITY, {
     name: 'updateCity',
     options: {
-      refetchQueries: ['allCities'],
+      refetchQueries: [{ query: PAGED_CITIES }, { query: ALL_CITIES }],
     },
   }),
   graphql(CITY_BY_ID, {

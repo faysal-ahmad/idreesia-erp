@@ -2,6 +2,7 @@ type CityType {
   _id: String
   name: String
   country: String
+  region: String
  
   mehfils: [CityMehfilType]
 
@@ -11,14 +12,22 @@ type CityType {
   updatedBy: String
 }
 
+type PagedCityType {
+  totalResults: Int
+  data: [CityType]
+}
+
 extend type Query {
   allCities: [CityType]
+  pagedCities(queryString: String): PagedCityType
   cityById(_id: String!): CityType
   citiesByPortalId(portalId: String!): [CityType]
+
+  distinctRegions: [String]
 }
 
 extend type Mutation {
-  createCity(name: String!, country: String!): CityType
-  updateCity(_id: String!, name: String!, country: String!): CityType
+  createCity(name: String!, country: String!, region: String): CityType
+  updateCity(_id: String!, name: String!, country: String!, region: String): CityType
   removeCity(_id: String!): Int
 }

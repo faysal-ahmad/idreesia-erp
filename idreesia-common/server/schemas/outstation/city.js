@@ -9,6 +9,10 @@ export default new SimpleSchema({
   country: {
     type: String,
   },
+  region: {
+    type: String,
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

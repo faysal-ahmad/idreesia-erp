@@ -6,6 +6,7 @@ const ALL_CITIES = gql`
       _id
       name
       country
+      region
       mehfils {
         _id
         name

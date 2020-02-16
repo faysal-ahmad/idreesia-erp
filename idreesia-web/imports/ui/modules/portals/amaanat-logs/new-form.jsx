@@ -5,13 +5,13 @@ import { useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { message } from '/imports/ui/controls';
-import { AmaanatLogsNewForm } from '/imports/ui/modules/common';
 import {
   usePortal,
   usePortalCities,
   usePortalCityMehfils,
-} from '/imports/ui/modules/portals/common/hooks';
+} from 'meteor/idreesia-common/hooks/portals';
+import { message } from '/imports/ui/controls';
+import { AmaanatLogsNewForm } from '/imports/ui/modules/common';
 
 import { PAGED_PORTAL_AMAANAT_LOGS, CREATE_PORTAL_AMAANAT_LOG } from './gql';
 
@@ -60,7 +60,6 @@ const NewForm = ({ history, location }) => {
     otherPortion,
     otherPortionDescription,
   }) => {
-    debugger;
     createPortalAmaanatLog({
       variables: {
         portalId,

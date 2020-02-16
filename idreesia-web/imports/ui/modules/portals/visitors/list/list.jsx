@@ -8,12 +8,12 @@ import moment from 'moment';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { find, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { Button, Drawer, message } from '/imports/ui/controls';
-import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import {
   usePortal,
   usePortalCities,
-} from '/imports/ui/modules/portals/common/hooks';
+} from 'meteor/idreesia-common/hooks/portals';
+import { Button, Drawer, message } from '/imports/ui/controls';
+import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { VisitorsList } from '/imports/ui/modules/common';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { CREATE_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';

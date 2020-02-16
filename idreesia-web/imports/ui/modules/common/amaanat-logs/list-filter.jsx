@@ -51,7 +51,8 @@ const ListFilter = props => {
     setPageParams({
       cityId: null,
       cityMehfilId: null,
-      month: null,
+      startDate: null,
+      endDate: null,
       pageIndex: 0,
     });
   };

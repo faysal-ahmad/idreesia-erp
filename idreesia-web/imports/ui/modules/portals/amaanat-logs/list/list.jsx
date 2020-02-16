@@ -7,17 +7,17 @@ import { useParams } from 'react-router-dom';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import {
+  usePortal,
+  usePortalCities,
+  usePortalCityMehfils,
+} from 'meteor/idreesia-common/hooks/portals';
 import { Button, message } from '/imports/ui/controls';
 import {
   AmaanatLogsList,
   AmaanatLogsListFilter,
 } from '/imports/ui/modules/common';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
-import {
-  usePortal,
-  usePortalCities,
-  usePortalCityMehfils,
-} from '/imports/ui/modules/portals/common/hooks';
 
 import { PAGED_PORTAL_AMAANAT_LOGS, REMOVE_PORTAL_AMAANAT_LOG } from '../gql';
 

@@ -4,12 +4,12 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { message } from '/imports/ui/controls';
-import { AmaanatLogsNewForm } from '/imports/ui/modules/common';
 import {
   useAllCities,
   useAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/hooks';
+} from 'meteor/idreesia-common/hooks/outstation';
+import { message } from '/imports/ui/controls';
+import { AmaanatLogsNewForm } from '/imports/ui/modules/common';
 
 import {
   PAGED_OUTSTATION_AMAANAT_LOGS,
@@ -52,7 +52,6 @@ const NewForm = ({ history, location }) => {
     otherPortion,
     otherPortionDescription,
   }) => {
-    debugger;
     createOutstationAmaanatLog({
       variables: {
         cityId: cityIdMehfilId[0],

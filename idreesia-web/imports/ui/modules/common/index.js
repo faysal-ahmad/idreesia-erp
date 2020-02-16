@@ -3,7 +3,9 @@ export { default as AmaanatLogsListFilter } from './amaanat-logs/list-filter';
 export { default as AmaanatLogsNewForm } from './amaanat-logs/new-form';
 export { default as AmaanatLogsEditForm } from './amaanat-logs/edit-form';
 
-export { default as KarkunsList } from './karkuns/karkuns-list';
+export { default as KarkunsList } from './karkuns/list';
+export { default as KarkunsListFilter } from './karkuns/list-filter';
+
 export { default as VisitorsList } from './visitors/visitors-list';
 export {
   default as KarkunAttendancesList,

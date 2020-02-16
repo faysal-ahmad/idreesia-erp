@@ -7,12 +7,16 @@ import { useParams } from 'react-router-dom';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { useAllMehfilDuties } from 'meteor/idreesia-common/hooks/outstation';
+import {
+  usePortal,
+  usePortalCities,
+  usePortalCityMehfils,
+} from 'meteor/idreesia-common/hooks/portals';
 import { Button } from '/imports/ui/controls';
-import { KarkunsList } from '/imports/ui/modules/common';
+import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
-import { usePortal } from '/imports/ui/modules/portals/common/hooks';
 
-import ListFilter from './list-filter';
 import { PAGED_PORTAL_KARKUNS } from '../gql';
 
 const List = ({ history, location }) => {
@@ -29,11 +33,19 @@ const List = ({ history, location }) => {
       'phoneNumber',
       'bloodGroup',
       'dutyId',
+      'cityId',
+      'cityMehfilId',
       'pageIndex',
       'pageSize',
     ],
   });
 
+  const { allMehfilDuties, allMehfilDutiesLoading } = useAllMehfilDuties();
+  const { portalCities, portalCitiesLoading } = usePortalCities();
+  const {
+    portalCityMehfils,
+    portalCityMehfilsLoading,
+  } = usePortalCityMehfils();
   const { data, loading, refetch } = useQuery(PAGED_PORTAL_KARKUNS, {
     variables: {
       portalId,
@@ -67,11 +79,42 @@ const List = ({ history, location }) => {
     phoneNumber,
     bloodGroup,
     dutyId,
+    cityId,
+    cityMehfilId,
     pageIndex,
     pageSize,
   } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+
+  const getListFilter = () => {
+    if (
+      allMehfilDutiesLoading ||
+      portalCitiesLoading ||
+      portalCityMehfilsLoading
+    ) {
+      return null;
+    }
+
+    return (
+      <KarkunsListFilter
+        showMehfilDutyFilter
+        showCityMehfilFilter
+        mehfilDuties={allMehfilDuties}
+        cities={portalCities}
+        cityMehfils={portalCityMehfils}
+        name={name}
+        cnicNumber={cnicNumber}
+        phoneNumber={phoneNumber}
+        bloodGroup={bloodGroup}
+        dutyId={dutyId}
+        cityId={cityId}
+        cityMehfilId={cityMehfilId}
+        setPageParams={setPageParams}
+        refreshData={refetch}
+      />
+    );
+  };
 
   const getTableHeader = () => (
     <div className="list-table-header">
@@ -85,15 +128,7 @@ const List = ({ history, location }) => {
           New Karkun
         </Button>
       </div>
-      <ListFilter
-        name={name}
-        cnicNumber={cnicNumber}
-        phoneNumber={phoneNumber}
-        bloodGroup={bloodGroup}
-        dutyId={dutyId}
-        setPageParams={setPageParams}
-        refreshData={refetch}
-      />
+      {getListFilter()}
     </div>
   );
 

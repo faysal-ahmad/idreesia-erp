@@ -9,14 +9,13 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { keys, values } from 'meteor/idreesia-common/utilities/lodash';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { message } from '/imports/ui/controls';
-import { KarkunsAttendanceList } from '/imports/ui/modules/common';
-
 import {
   usePortal,
   usePortalCities,
   usePortalCityMehfils,
-} from '/imports/ui/modules/portals/common/hooks';
+} from 'meteor/idreesia-common/hooks/portals';
+import { message } from '/imports/ui/controls';
+import { KarkunsAttendanceList } from '/imports/ui/modules/common';
 
 import {
   CREATE_PORTAL_ATTENDANCES,

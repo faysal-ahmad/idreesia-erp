@@ -6,11 +6,15 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import {
+  useAllCities,
+  useAllCityMehfils,
+  useAllMehfilDuties,
+  useDistinctRegions,
+} from 'meteor/idreesia-common/hooks/outstation';
 import { Button, Tooltip, message } from '/imports/ui/controls';
-import { KarkunsList } from '/imports/ui/modules/common';
+import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
-
-import ListFilter from './list-filter';
 
 import { DELETE_OUTSTATION_KARKUN, PAGED_OUTSTATION_KARKUNS } from '../gql';
 
@@ -27,11 +31,18 @@ const List = ({ history, location }) => {
       'phoneNumber',
       'bloodGroup',
       'dutyId',
+      'cityId',
+      'cityMehfilId',
+      'region',
       'pageIndex',
       'pageSize',
     ],
   });
 
+  const { allMehfilDuties, allMehfilDutiesLoading } = useAllMehfilDuties();
+  const { allCities, allCitiesLoading } = useAllCities();
+  const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
+  const { distinctRegions, distinctRegionsLoading } = useDistinctRegions();
   const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_KARKUNS, {
     variables: {
       queryString,
@@ -81,11 +92,47 @@ const List = ({ history, location }) => {
     phoneNumber,
     bloodGroup,
     dutyId,
+    cityId,
+    cityMehfilId,
+    region,
     pageIndex,
     pageSize,
   } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+
+  const getListFilter = () => {
+    if (
+      allMehfilDutiesLoading ||
+      allCitiesLoading ||
+      allCityMehfilsLoading ||
+      distinctRegionsLoading
+    ) {
+      return null;
+    }
+
+    return (
+      <KarkunsListFilter
+        showMehfilDutyFilter
+        showCityMehfilFilter
+        showRegionFilter
+        mehfilDuties={allMehfilDuties}
+        cities={allCities}
+        cityMehfils={allCityMehfils}
+        regions={distinctRegions}
+        name={name}
+        cnicNumber={cnicNumber}
+        phoneNumber={phoneNumber}
+        bloodGroup={bloodGroup}
+        dutyId={dutyId}
+        cityId={cityId}
+        cityMehfilId={cityMehfilId}
+        region={region}
+        setPageParams={setPageParams}
+        refreshData={refetch}
+      />
+    );
+  };
 
   const getTableHeader = () => (
     <div className="list-table-header">
@@ -100,15 +147,7 @@ const List = ({ history, location }) => {
         </Button>
       </div>
       <div className="list-table-header-section">
-        <ListFilter
-          name={name}
-          cnicNumber={cnicNumber}
-          phoneNumber={phoneNumber}
-          bloodGroup={bloodGroup}
-          dutyId={dutyId}
-          setPageParams={setPageParams}
-          refreshData={refetch}
-        />
+        {getListFilter()}
         &nbsp;&nbsp;
         <Tooltip title="Download Selected Data">
           <Button icon="download" size="large" onClick={handleExportSelected} />

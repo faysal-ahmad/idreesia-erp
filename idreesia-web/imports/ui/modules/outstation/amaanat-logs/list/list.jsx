@@ -6,16 +6,16 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import {
+  useAllCities,
+  useAllCityMehfils,
+} from 'meteor/idreesia-common/hooks/outstation';
 import { Button, message } from '/imports/ui/controls';
 import {
   AmaanatLogsList,
   AmaanatLogsListFilter,
 } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
-import {
-  useAllCities,
-  useAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/hooks';
 
 import {
   PAGED_OUTSTATION_AMAANAT_LOGS,
@@ -49,7 +49,7 @@ const List = ({ history, location }) => {
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Mehfil Portal', 'Amaanat Logs', 'List']));
+    dispatch(setBreadcrumbs(['Outstation', 'Amaanat Logs', 'List']));
   }, [location]);
 
   if (loading || allCitiesLoading || allCityMehfilsLoading) return null;

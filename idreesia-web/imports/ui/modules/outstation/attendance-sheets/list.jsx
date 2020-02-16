@@ -7,13 +7,13 @@ import moment from 'moment';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { KarkunsAttendanceList } from '/imports/ui/modules/common';
-import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
-
 import {
   useAllCities,
   useAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/hooks';
+} from 'meteor/idreesia-common/hooks/outstation';
+import { KarkunsAttendanceList } from '/imports/ui/modules/common';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
+
 import { OUTSTATION_ATTENDANCE_BY_MONTH } from './gql';
 
 const List = ({ history, location }) => {

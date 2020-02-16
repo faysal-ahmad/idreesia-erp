@@ -11,7 +11,7 @@ import {
   usePortal,
   usePortalCities,
   usePortalCityMehfils,
-} from '/imports/ui/modules/portals/common/hooks';
+} from 'meteor/idreesia-common/hooks/portals';
 
 import {
   PAGED_PORTAL_AMAANAT_LOGS,

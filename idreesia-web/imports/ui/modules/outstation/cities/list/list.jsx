@@ -8,6 +8,10 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { find, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import {
+  useAllPortals,
+  useDistinctRegions,
+} from 'meteor/idreesia-common/hooks/outstation';
+import {
   Button,
   Icon,
   Pagination,
@@ -15,10 +19,6 @@ import {
   Tooltip,
   message,
 } from '/imports/ui/controls';
-import {
-  useAllPortals,
-  useDistinctRegions,
-} from '/imports/ui/modules/outstation/common/hooks';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import ListFilter from './list-filter';

@@ -1,18 +1,17 @@
 import gql from 'graphql-tag';
 
-const CREATE_MESSAGE = gql`
-  mutation createMessage(
-    $source: String!
+const UPDATE_OUTSTATION_MESSAGE = gql`
+  mutation updateOutstationMessage(
+    $_id: String!
     $messageBody: String!
-    $karkunFilter: KarkunFilterInput
+    $karkunFilter: KarkunFilter
   ) {
-    createMessage(
-      source: $source
+    updateOutstationMessage(
+      _id: $_id
       messageBody: $messageBody
       karkunFilter: $karkunFilter
     ) {
       _id
-      source
       messageBody
       karkunFilter {
         dutyId
@@ -34,4 +33,4 @@ const CREATE_MESSAGE = gql`
   }
 `;
 
-export default CREATE_MESSAGE;
+export default UPDATE_OUTSTATION_MESSAGE;

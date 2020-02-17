@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
 
-import { MessageSource } from 'meteor/idreesia-common/constants/communication';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import {
   useAllCities,
@@ -21,15 +20,15 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
 
-import { PAGED_MESSAGES, CREATE_MESSAGE } from './gql';
+import { PAGED_OUTSTATION_MESSAGES, CREATE_OUTSTATION_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
 
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const [showPreview, setShowPreview] = useState(false);
   const [karkunFilter, setKarkunFilter] = useState(null);
-  const [createMessage] = useMutation(CREATE_MESSAGE, {
-    refetchQueries: [{ query: PAGED_MESSAGES }],
+  const [createOutstationMessage] = useMutation(CREATE_OUTSTATION_MESSAGE, {
+    refetchQueries: [{ query: PAGED_OUTSTATION_MESSAGES }],
   });
 
   const { allMehfilDuties, allMehfilDutiesLoading } = useAllMehfilDuties();
@@ -81,9 +80,8 @@ const NewForm = ({ form, history, location }) => {
     validateFields((err, { messageBody, dutyId, cityIdMehfilId, region }) => {
       if (err) return;
 
-      createMessage({
+      createOutstationMessage({
         variables: {
-          source: MessageSource.OUTSTATION,
           messageBody,
           karkunFilter: {
             dutyId,

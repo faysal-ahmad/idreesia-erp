@@ -37,21 +37,7 @@ type KarkunType {
   updatedBy: String
 }
 
-type KarkunFilterType {
-  name: String
-  cnicNumber: String
-  phoneNumber: String
-  bloodGroup: String
-  isEmployee: Boolean
-  jobId: String
-  dutyId: String
-  dutyShiftId: String
-  cityId: String
-  cityMehfilId: String
-  region: String
-}
-
-input KarkunFilterInput {
+input KarkunFilter {
   name: String
   cnicNumber: String
   phoneNumber: String

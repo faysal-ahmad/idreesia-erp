@@ -3,14 +3,11 @@ import { merge } from 'meteor/idreesia-common/utilities/lodash';
 /**
  * Common Schema and Resolvers
  */
-import AttachmentSchema from './common/attachments/attachment.graphql';
-import AttachmentResolvers from './common/attachments/resolvers';
+import AttachmentSchema from './common/attachment/attachment.graphql';
+import AttachmentResolvers from './common/attachment/resolvers';
 
-/**
- * Communication Schema and Resolvers
- */
-import MessageSchema from './communication/message/message.graphql';
-import MessageResolvers from './communication/message/resolvers';
+import MessageSchema from './common/message/message.graphql';
+import MessageResolvers from './common/message/resolvers';
 
 /**
  * Schema and Resolvers for the Admin module
@@ -90,6 +87,9 @@ import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 import OutstationAmaanatLogSchema from './outstation/amaanat-log/amaanat-log.graphql';
 import OutstationAmaanatLogResolvers from './outstation/amaanat-log/resolvers';
 
+import OutstationMessageSchema from './outstation/message/message.graphql';
+import OutstationMessageResolvers from './outstation/message/resolvers';
+
 /**
  * Schema and Resolvers for the Portals module
  */
@@ -166,10 +166,10 @@ import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
 
 const typeDefs = [
   AttachmentSchema,
+  MessageSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
-  MessageSchema,
 
   MehfilSchema,
   MehfilKarkunSchema,
@@ -192,6 +192,7 @@ const typeDefs = [
   OutstationKarkunDutySchema,
   OutstationAttendanceSchema,
   OutstationAmaanatLogSchema,
+  OutstationMessageSchema,
 
   PortalSchema,
   PortalKarkunSchema,
@@ -221,10 +222,10 @@ const typeDefs = [
 
 const resolvers = merge(
   AttachmentResolvers,
+  MessageResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
-  MessageResolvers,
 
   MehfilResolvers,
   MehfilKarkunResolvers,
@@ -247,6 +248,7 @@ const resolvers = merge(
   OutstationKarkunDutyResolvers,
   OutstationAttendanceResolvers,
   OutstationAmaanatLogResolvers,
+  OutstationMessageResolvers,
 
   PortalResolvers,
   PortalKarkunResolvers,

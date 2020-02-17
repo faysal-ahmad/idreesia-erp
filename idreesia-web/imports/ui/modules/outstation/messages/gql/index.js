@@ -1,6 +1,18 @@
-export { default as APPROVE_MESSAGE } from './approve-message';
-export { default as CREATE_MESSAGE } from './create-message';
-export { default as DELETE_MESSAGE } from './delete-message';
-export { default as MESSAGE_BY_ID } from './message-by-id';
-export { default as PAGED_MESSAGES } from './paged-messages';
-export { default as UPDATE_MESSAGE } from './update-message';
+export {
+  default as APPROVE_OUTSTATION_MESSAGE,
+} from './approve-outstation-message';
+export {
+  default as CREATE_OUTSTATION_MESSAGE,
+} from './create-outstation-message';
+export {
+  default as DELETE_OUTSTATION_MESSAGE,
+} from './delete-outstation-message';
+export {
+  default as OUTSTATION_MESSAGE_BY_ID,
+} from './outstation-message-by-id';
+export {
+  default as PAGED_OUTSTATION_MESSAGES,
+} from './paged-outstation-messages';
+export {
+  default as UPDATE_OUTSTATION_MESSAGE,
+} from './update-outstation-message';

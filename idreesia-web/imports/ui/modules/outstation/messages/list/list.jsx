@@ -23,7 +23,11 @@ import {
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import ListFilter from './list-filter';
-import { PAGED_MESSAGES, APPROVE_MESSAGE, DELETE_MESSAGE } from '../gql';
+import {
+  PAGED_OUTSTATION_MESSAGES,
+  APPROVE_OUTSTATION_MESSAGE,
+  DELETE_OUTSTATION_MESSAGE,
+} from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -33,9 +37,9 @@ const List = ({ history, location }) => {
     paramNames: ['startDate', 'endDate', 'pageIndex', 'pageSize'],
   });
 
-  const [deleteMessage] = useMutation(DELETE_MESSAGE);
-  const [approveMessage] = useMutation(APPROVE_MESSAGE);
-  const { data, loading, refetch } = useQuery(PAGED_MESSAGES, {
+  const [deleteOutstationMessage] = useMutation(DELETE_OUTSTATION_MESSAGE);
+  const [approveOutstationMessage] = useMutation(APPROVE_OUTSTATION_MESSAGE);
+  const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_MESSAGES, {
     variables: {
       queryString,
     },
@@ -50,7 +54,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteItem = _message => {
-    deleteMessage({
+    deleteOutstationMessage({
       variables: { _id: _message._id },
     })
       .then(() => {
@@ -62,7 +66,7 @@ const List = ({ history, location }) => {
   };
 
   const handleApproveItem = _message => {
-    approveMessage({
+    approveOutstationMessage({
       variables: { _id: _message._id },
     })
       .then(() => {
@@ -81,7 +85,7 @@ const List = ({ history, location }) => {
   };
 
   if (loading) return null;
-  const { pagedMessages } = data;
+  const { pagedOutstationMessages } = data;
   const { startDate, endDate, pageIndex, pageSize } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
@@ -179,7 +183,7 @@ const List = ({ history, location }) => {
   return (
     <Table
       rowKey="_id"
-      dataSource={pagedMessages.data}
+      dataSource={pagedOutstationMessages.data}
       columns={columns}
       bordered
       pagination={false}
@@ -194,7 +198,7 @@ const List = ({ history, location }) => {
           }
           onChange={onPaginationChange}
           onShowSizeChange={onPaginationChange}
-          total={pagedMessages.totalResults}
+          total={pagedOutstationMessages.totalResults}
         />
       )}
     />

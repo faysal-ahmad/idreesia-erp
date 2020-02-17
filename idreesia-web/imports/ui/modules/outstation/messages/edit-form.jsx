@@ -21,7 +21,11 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
 
-import { MESSAGE_BY_ID, PAGED_MESSAGES, UPDATE_MESSAGE } from './gql';
+import {
+  OUTSTATION_MESSAGE_BY_ID,
+  PAGED_OUTSTATION_MESSAGES,
+  UPDATE_OUTSTATION_MESSAGE,
+} from './gql';
 import KarkunsPreview from './karkuns-preview';
 
 const EditForm = ({ form, history, location }) => {
@@ -29,10 +33,10 @@ const EditForm = ({ form, history, location }) => {
   const { messageId } = useParams();
   const [showPreview, setShowPreview] = useState(false);
   const [karkunFilter, setKarkunFilter] = useState(null);
-  const [updateMessage] = useMutation(UPDATE_MESSAGE, {
-    refetchQueries: [{ query: PAGED_MESSAGES }],
+  const [updateOutstationMessage] = useMutation(UPDATE_OUTSTATION_MESSAGE, {
+    refetchQueries: [{ query: PAGED_OUTSTATION_MESSAGES }],
   });
-  const { data, loading } = useQuery(MESSAGE_BY_ID, {
+  const { data, loading } = useQuery(OUTSTATION_MESSAGE_BY_ID, {
     variables: {
       _id: messageId,
     },
@@ -88,7 +92,7 @@ const EditForm = ({ form, history, location }) => {
     validateFields((err, { messageBody, dutyId, cityIdMehfilId, region }) => {
       if (err) return;
 
-      updateMessage({
+      updateOutstationMessage({
         variables: {
           _id: messageId,
           messageBody,
@@ -110,7 +114,7 @@ const EditForm = ({ form, history, location }) => {
   };
 
   const {
-    messageById: { messageBody, karkunFilter: _karkunFilter },
+    outstationMessageById: { messageBody, karkunFilter: _karkunFilter },
   } = data;
 
   return (

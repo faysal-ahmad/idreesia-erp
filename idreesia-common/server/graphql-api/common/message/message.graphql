@@ -1,0 +1,46 @@
+type KarkunFilterType {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+}
+
+type MessageType {
+  _id: String
+  source: String
+  messageBody: String
+  karkunFilter: KarkunFilterType
+  status: String
+  sentDate: String
+  karkunIds: [String]
+  visitorIds: [String]
+
+  karkunCount: Int
+  visitorCount: Int
+
+  approvedOn: String
+  approvedBy: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedMessageType {
+  totalResults: Int
+  data: [MessageType]
+}
+
+input MessageFilter {
+  pageIndex: String
+  pageSize: String
+  startDate: String
+  endDate: String
+}

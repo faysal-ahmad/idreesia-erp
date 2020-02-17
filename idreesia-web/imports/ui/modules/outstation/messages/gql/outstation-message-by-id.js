@@ -1,10 +1,9 @@
 import gql from 'graphql-tag';
 
-const MESSAGE_BY_ID = gql`
-  query messageById($_id: String!) {
-    messageById(_id: $_id) {
+const OUTSTATION_MESSAGE_BY_ID = gql`
+  query outstationMessageById($_id: String!) {
+    outstationMessageById(_id: $_id) {
       _id
-      source
       messageBody
       karkunFilter {
         dutyId
@@ -26,4 +25,4 @@ const MESSAGE_BY_ID = gql`
   }
 `;
 
-export default MESSAGE_BY_ID;
+export default OUTSTATION_MESSAGE_BY_ID;

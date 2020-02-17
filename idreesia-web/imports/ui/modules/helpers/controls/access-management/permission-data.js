@@ -338,12 +338,44 @@ export const permissionsData = [
         key: 'module-outstation-karkuns',
         children: [
           {
-            title: 'View karkuns',
+            title: 'View Karkuns',
             key: PermissionConstants.OUTSTATION_VIEW_KARKUNS,
           },
           {
             title: 'Manage Karkuns',
             key: PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+          },
+        ],
+      },
+      {
+        title: 'Amaanat Logs',
+        key: 'module-outstation-amaanat-logs',
+        children: [
+          {
+            title: 'View Amaanat Logs',
+            key: PermissionConstants.OUTSTATION_VIEW_AMAANAT_LOGS,
+          },
+          {
+            title: 'Manage Amaanat Logs',
+            key: PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+          },
+        ],
+      },
+      {
+        title: 'Messages',
+        key: 'module-outstation-messages',
+        children: [
+          {
+            title: 'View Messages',
+            key: PermissionConstants.OUTSTATION_VIEW_MESSAGES,
+          },
+          {
+            title: 'Manage Messages',
+            key: PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
+          },
+          {
+            title: 'Approve Messages',
+            key: PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
           },
         ],
       },

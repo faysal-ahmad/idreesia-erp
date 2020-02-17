@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const PAGED_OUTSTATION_KARKUNS = gql`
-  query pagedOutstationKarkunsByFilter($filter: KarkunFilterInput) {
+  query pagedOutstationKarkunsByFilter($filter: KarkunFilter) {
     pagedOutstationKarkunsByFilter(filter: $filter) {
       totalResults
       karkuns {

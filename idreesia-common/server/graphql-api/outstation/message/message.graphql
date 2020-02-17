@@ -1,6 +1,6 @@
 extend type Query {
   outstationMessageById(_id: String!): MessageType
-  pagedOutstationMessages(filtet: MessageFilter): PagedMessageType
+  pagedOutstationMessages(filter: MessageFilter): PagedMessageType
 }
 
 extend type Mutation {

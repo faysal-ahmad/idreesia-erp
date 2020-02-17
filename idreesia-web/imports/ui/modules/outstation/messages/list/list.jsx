@@ -31,7 +31,7 @@ import {
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: ['startDate', 'endDate', 'pageIndex', 'pageSize'],
@@ -41,7 +41,7 @@ const List = ({ history, location }) => {
   const [approveOutstationMessage] = useMutation(APPROVE_OUTSTATION_MESSAGE);
   const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_MESSAGES, {
     variables: {
-      queryString,
+      filter: queryParams,
     },
   });
 

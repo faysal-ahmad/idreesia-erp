@@ -56,6 +56,7 @@ export const worker = (job, callback) => {
           karkunIds,
           visitorIds,
           status: MessageStatus.COMPLETED,
+          sentDate: new Date(),
         },
       });
     })

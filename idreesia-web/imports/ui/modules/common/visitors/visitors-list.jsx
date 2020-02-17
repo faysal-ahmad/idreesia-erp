@@ -127,6 +127,7 @@ export default class VisitorsList extends Component {
 
   actionsColumn = {
     key: 'action',
+    width: 80,
     render: (text, record) => {
       const {
         showDeleteAction,

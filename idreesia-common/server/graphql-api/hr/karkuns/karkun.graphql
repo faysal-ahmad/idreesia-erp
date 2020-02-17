@@ -49,6 +49,8 @@ input KarkunFilter {
   cityId: String
   cityMehfilId: String
   region: String
+  pageIndex: String
+  pageSize: String
 }
 
 type PagedKarkunType {

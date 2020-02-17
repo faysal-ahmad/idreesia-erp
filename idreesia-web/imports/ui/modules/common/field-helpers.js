@@ -3,7 +3,6 @@ import React from 'react';
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Form, Row } from '/imports/ui/controls';
 import {
-  AutoCompleteField,
   CascaderField,
   InputCnicField,
   InputTextField,
@@ -148,13 +147,15 @@ export function getCityMehfilFilterField(
 
 export function getRegionFilterField(fieldValue, getFieldDecorator, regions) {
   return (
-    <AutoCompleteField
+    <SelectField
       fieldName="region"
       fieldLabel="Region"
-      fieldLayout={formItemLayout}
-      dataSource={regions}
-      initialValue={fieldValue}
       required={false}
+      data={regions}
+      getDataValue={item => item}
+      getDataText={item => item}
+      fieldLayout={formItemLayout}
+      initialValue={fieldValue}
       getFieldDecorator={getFieldDecorator}
     />
   );

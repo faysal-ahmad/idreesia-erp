@@ -188,14 +188,14 @@ const List = ({ history, location }) => {
         onClose={handleStayListClose}
         visible={showStayList}
       >
-        showStayList ? (
-        <VisitorStaysList
-          showNewButton={false}
-          showDutyColumn={false}
-          showActionsColumn={false}
-          visitorId={visitorIdForStayList}
-        />
-        ) : null
+        {showStayList ? (
+          <VisitorStaysList
+            showNewButton={false}
+            showDutyColumn={false}
+            showActionsColumn={false}
+            visitorId={visitorIdForStayList}
+          />
+        ) : null}
       </Drawer>
       <Drawer
         title="Karkuns Lookup"

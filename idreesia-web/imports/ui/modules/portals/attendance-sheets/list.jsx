@@ -87,6 +87,7 @@ const List = ({ history, location }) => {
       },
     })
       .then(response => {
+        refetch();
         message.success(
           `${response.data.createPortalAttendances} missing attendance records have been created.`,
           5
@@ -107,6 +108,7 @@ const List = ({ history, location }) => {
       },
     })
       .then(() => {
+        refetch();
         message.success('Selected attendance records have been deleted.', 5);
       })
       .catch(error => {
@@ -125,6 +127,7 @@ const List = ({ history, location }) => {
         },
       })
         .then(() => {
+          refetch();
           message.success(
             'All attendance records for the selected city/mehfil in the month have been deleted.',
             5

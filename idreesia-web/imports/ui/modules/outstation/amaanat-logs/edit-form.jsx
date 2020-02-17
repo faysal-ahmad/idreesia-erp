@@ -82,7 +82,7 @@ const EditForm = ({ history, location }) => {
 
   return (
     <AmaanatLogsEditForm
-      amaanatLog={data.portalAmaanatLogById}
+      amaanatLog={data.outstationAmaanatLogById}
       cities={allCities}
       cityMehfils={allCityMehfils}
       handleSubmit={handleSubmit}

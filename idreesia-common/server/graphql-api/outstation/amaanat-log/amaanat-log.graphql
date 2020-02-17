@@ -26,13 +26,13 @@ type PagedAmaanatLogType {
 }
 
 input AmaanatLogFilter {
-  pageIndex: String
-  pageSize: String
   startDate: String
   endDate: String
   cityId: String
   cityMehfilId: String
   region: String
+  pageIndex: String
+  pageSize: String
 }
 
 extend type Query {

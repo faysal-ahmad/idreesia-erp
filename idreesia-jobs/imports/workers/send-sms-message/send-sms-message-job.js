@@ -55,7 +55,7 @@ export const worker = (job, callback) => {
         $set: {
           karkunIds,
           visitorIds,
-          status: MessageStatus.SENT,
+          status: MessageStatus.COMPLETED,
         },
       });
     })

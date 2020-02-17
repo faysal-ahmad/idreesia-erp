@@ -5,6 +5,8 @@ import {
   MessageSource,
   MessageStatus,
 } from 'meteor/idreesia-common/constants/communication';
+import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
+import { JobTypes } from 'meteor/idreesia-common/constants';
 
 import { getMessages } from './queries';
 
@@ -141,6 +143,10 @@ export default {
           },
         }
       );
+
+      const params = { messageId: _id };
+      const options = { priority: 'normal', retry: 10 };
+      createJob({ type: JobTypes.SEND_SMS_MESSAGE, params, options });
 
       return Messages.findOne(_id);
     },

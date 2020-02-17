@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
@@ -30,6 +30,7 @@ const sidebarsMap = {
 };
 
 const SidebarContent = props => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const activeModuleName = useSelector(state => state.activeModuleName);
   const { history } = props;
   const ModuleSidebar = sidebarsMap[activeModuleName];
@@ -43,8 +44,19 @@ const SidebarContent = props => {
     );
   }
 
+  const handleCollapse = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
-    <Layout.Sider width={220} style={{ background: '#fff' }}>
+    <Layout.Sider
+      width={220}
+      style={{ background: '#fff' }}
+      collapsible
+      collapsed={sidebarCollapsed}
+      collapsedWidth={0}
+      onCollapse={handleCollapse}
+    >
       {sidebar}
     </Layout.Sider>
   );

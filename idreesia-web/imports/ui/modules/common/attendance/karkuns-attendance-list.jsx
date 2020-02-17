@@ -79,7 +79,7 @@ export default class KarkunsAttendanceList extends Component {
         dataIndex: 'karkun.name',
         key: 'karkun.name',
         fixed: 'left',
-        width: 250,
+        width: 220,
         render: (text, record) => {
           const { handleKarkunSelected } = this.props;
           return (

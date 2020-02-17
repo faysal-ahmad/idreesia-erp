@@ -36,7 +36,7 @@ const KarkunsPreview = ({ filter }) => {
   return (
     <KarkunsList
       showSelectionColumn={false}
-      showCnicColumn
+      showCnicColumn={false}
       showPhoneNumbersColumn
       showMehfilCityColumn
       showDutiesColumn

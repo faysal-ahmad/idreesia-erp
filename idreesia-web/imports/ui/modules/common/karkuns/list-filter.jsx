@@ -12,7 +12,7 @@ import {
   getCityMehfilFilterField,
   getRegionFilterField,
   getFormButtons,
-} from './helpers';
+} from '../field-helpers';
 
 const ContainerStyle = {
   width: '500px',

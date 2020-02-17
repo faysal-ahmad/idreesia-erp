@@ -15,6 +15,7 @@ import {
   AmaanatLogsNewForm,
   AmaanatLogsEditForm,
 } from './amaanat-logs';
+import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 
 const OutstationRouter = () => (
   <Switch>
@@ -44,6 +45,10 @@ const OutstationRouter = () => (
       component={AmaanatLogsEditForm}
     />
     <Route path={paths.amaanatLogsPath} component={AmaanatLogsList} />
+
+    <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
+    <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />
+    <Route path={paths.messagesPath} component={MessagesList} />
   </Switch>
 );
 

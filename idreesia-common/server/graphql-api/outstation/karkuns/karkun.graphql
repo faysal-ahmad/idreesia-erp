@@ -1,6 +1,7 @@
 extend type Query {
   outstationKarkunById(_id: String!): KarkunType
   pagedOutstationKarkuns(queryString: String): PagedKarkunType
+  pagedOutstationKarkunsByFilter(filter: KarkunFilterInput): PagedKarkunType
 }
 
 extend type Mutation {

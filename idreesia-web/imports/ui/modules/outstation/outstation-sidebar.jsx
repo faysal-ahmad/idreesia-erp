@@ -43,6 +43,11 @@ class OutstationSidebar extends Component {
         history.push(paths.amaanatLogsPath);
         break;
 
+      case 'messages':
+        setActiveSubModuleName(SubModuleNames.messages);
+        history.push(paths.messagesPath);
+        break;
+
       default:
         break;
     }
@@ -71,6 +76,12 @@ class OutstationSidebar extends Component {
           <span>
             <Icon type="red-envelope" />
             Amaanat Logs
+          </span>
+        </Menu.Item>
+        <Menu.Item key="messages">
+          <span>
+            <Icon type="message" />
+            Messages
           </span>
         </Menu.Item>
         <Menu.SubMenu

@@ -20,7 +20,7 @@ const bloodGroupValueConversion = {
   Oplus: 'O+',
 };
 
-function getKarkunsByFilter(params) {
+export function getKarkunsByFilter(params) {
   const pipeline = [];
 
   const {

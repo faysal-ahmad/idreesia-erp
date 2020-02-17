@@ -31,6 +31,13 @@ const Permissions = {
   ADMIN_MANAGE_PORTALS: 'admin-manage-portals',
 
   // ****************************************************************************************
+  // Communication Module
+  // ****************************************************************************************
+  COMM_VIEW_MESSAGES: 'communication-view-messages',
+  COMM_MANAGE_MESSAGES: 'communication-manage-messages',
+  COMM_APPROVE_MESSAGES: 'communication-approve-messages',
+
+  // ****************************************************************************************
   // HR Module
   // ****************************************************************************************
   HR_MANAGE_SETUP_DATA: 'hr-manage-setup-data',

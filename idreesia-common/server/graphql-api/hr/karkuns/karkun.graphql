@@ -37,6 +37,34 @@ type KarkunType {
   updatedBy: String
 }
 
+type KarkunFilterType {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+}
+
+input KarkunFilterInput {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+}
+
 type PagedKarkunType {
   totalResults: Int
   karkuns: [KarkunType]

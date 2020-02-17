@@ -14,8 +14,7 @@ const bloodGroupValueConversion = {
   Oplus: 'O+',
 };
 
-export function getOutstationKarkuns(queryString) {
-  const params = parse(queryString);
+export function getOutstationKarkunsByParams(params) {
   const pipeline = [];
 
   const {
@@ -128,4 +127,9 @@ export function getOutstationKarkuns(queryString) {
     karkuns: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
+}
+
+export function getOutstationKarkunsByQueryString(queryString) {
+  const params = parse(queryString);
+  return getOutstationKarkunsByParams(params);
 }

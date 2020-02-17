@@ -7,6 +7,12 @@ import AttachmentSchema from './common/attachments/attachment.graphql';
 import AttachmentResolvers from './common/attachments/resolvers';
 
 /**
+ * Communication Schema and Resolvers
+ */
+import MessageSchema from './communication/message/message.graphql';
+import MessageResolvers from './communication/message/resolvers';
+
+/**
  * Schema and Resolvers for the Admin module
  */
 import AdminJobSchema from './admin/admin-job/admin-job.graphql';
@@ -163,6 +169,7 @@ const typeDefs = [
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
+  MessageSchema,
 
   MehfilSchema,
   MehfilKarkunSchema,
@@ -217,6 +224,7 @@ const resolvers = merge(
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
+  MessageResolvers,
 
   MehfilResolvers,
   MehfilKarkunResolvers,

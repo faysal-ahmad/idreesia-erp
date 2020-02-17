@@ -7,7 +7,10 @@ import {
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
 
-import { getOutstationKarkuns } from './queries';
+import {
+  getOutstationKarkunsByParams,
+  getOutstationKarkunsByQueryString,
+} from './queries';
 
 export default {
   Query: {
@@ -16,7 +19,11 @@ export default {
     },
 
     pagedOutstationKarkuns(obj, { queryString }) {
-      return getOutstationKarkuns(queryString);
+      return getOutstationKarkunsByQueryString(queryString);
+    },
+
+    pagedOutstationKarkunsByFilter(obj, { filter }) {
+      return getOutstationKarkunsByParams(filter);
     },
   },
 

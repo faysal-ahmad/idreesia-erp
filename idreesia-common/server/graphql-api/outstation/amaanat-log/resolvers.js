@@ -34,7 +34,7 @@ export default {
       return AmaanatLogs.findOne({ _id });
     },
 
-    pagedOutstationAmaanatLogs(obj, { queryString }, { user }) {
+    pagedOutstationAmaanatLogs(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_VIEW_AMAANAT_LOGS,
@@ -47,7 +47,7 @@ export default {
         };
       }
 
-      return getAmaanatLogs(queryString);
+      return getAmaanatLogs(filter);
     },
   },
 

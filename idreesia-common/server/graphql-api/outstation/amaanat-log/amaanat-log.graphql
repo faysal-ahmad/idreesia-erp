@@ -25,9 +25,19 @@ type PagedAmaanatLogType {
   data: [AmaanatLogType]
 }
 
+input AmaanatLogFilter {
+  pageIndex: String
+  pageSize: String
+  startDate: String
+  endDate: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+}
+
 extend type Query {
   outstationAmaanatLogById(_id: String!): AmaanatLogType
-  pagedOutstationAmaanatLogs(queryString: String): PagedAmaanatLogType
+  pagedOutstationAmaanatLogs(filter: AmaanatLogFilter): PagedAmaanatLogType
 }
 
 extend type Mutation {

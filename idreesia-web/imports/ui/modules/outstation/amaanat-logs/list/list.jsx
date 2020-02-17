@@ -26,7 +26,7 @@ const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const { allCities, allCitiesLoading } = useAllCities();
   const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: [
@@ -44,7 +44,7 @@ const List = ({ history, location }) => {
   );
   const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_AMAANAT_LOGS, {
     variables: {
-      queryString,
+      filter: queryParams,
     },
   });
 

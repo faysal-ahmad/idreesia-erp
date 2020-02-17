@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 const PAGED_OUTSTATION_AMAANAT_LOGS = gql`
-  query pagedOutstationAmaanatLogs($queryString: String) {
-    pagedOutstationAmaanatLogs(queryString: $queryString) {
+  query pagedOutstationAmaanatLogs($filter: AmaanatLogFilter) {
+    pagedOutstationAmaanatLogs(filter: $filter) {
       totalResults
       data {
         _id

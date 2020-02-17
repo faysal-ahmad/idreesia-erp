@@ -1,12 +1,10 @@
 import moment from 'moment';
-import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/outstation';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-export default function getAmaanatLogs(queryString) {
-  const params = parse(queryString);
+export default function getAmaanatLogs(filter) {
   const pipeline = [];
 
   const {
@@ -16,7 +14,7 @@ export default function getAmaanatLogs(queryString) {
     endDate,
     pageIndex = '0',
     pageSize = '20',
-  } = params;
+  } = filter;
 
   if (cityId) {
     pipeline.push({

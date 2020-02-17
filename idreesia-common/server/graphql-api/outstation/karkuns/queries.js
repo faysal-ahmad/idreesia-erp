@@ -1,5 +1,3 @@
-import { parse } from 'query-string';
-
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 
@@ -14,7 +12,7 @@ const bloodGroupValueConversion = {
   Oplus: 'O+',
 };
 
-export function getOutstationKarkunsByParams(params) {
+function buildPipeline(params) {
   const pipeline = [];
 
   const {
@@ -25,8 +23,6 @@ export function getOutstationKarkunsByParams(params) {
     dutyId,
     cityId,
     cityMehfilId,
-    pageIndex = '0',
-    pageSize = '20',
   } = params;
 
   if (name) {
@@ -108,6 +104,12 @@ export function getOutstationKarkunsByParams(params) {
     });
   }
 
+  return pipeline;
+}
+
+export function getOutstationKarkuns(params) {
+  const { pageIndex = '0', pageSize = '20' } = params;
+  const pipeline = buildPipeline(params);
   const countingPipeline = pipeline.concat({
     $count: 'total',
   });
@@ -129,7 +131,7 @@ export function getOutstationKarkunsByParams(params) {
   }));
 }
 
-export function getOutstationKarkunsByQueryString(queryString) {
-  const params = parse(queryString);
-  return getOutstationKarkunsByParams(params);
+export function getOutstationKarkunsWithoutPagination(params) {
+  const pipeline = buildPipeline(params);
+  return Karkuns.aggregate(pipeline).toArray();
 }

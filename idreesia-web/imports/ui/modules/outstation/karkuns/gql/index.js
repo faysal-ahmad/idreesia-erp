@@ -3,9 +3,6 @@ export {
   default as PAGED_OUTSTATION_KARKUNS,
 } from './paged-outstation-karkuns';
 export {
-  default as PAGED_OUTSTATION_KARKUNS_BY_FILTER,
-} from './paged-outstation-karkuns-by-filter';
-export {
   default as SET_OUTSTATION_KARKUN_PROFILE_IMAGE,
 } from './set-outstation-karkun-profile-image';
 export {

@@ -21,7 +21,7 @@ export const worker = (job, callback) => {
 export default Jobs.processJobs(
   JobTypes.CLEANUP_JOB,
   {
-    pollInterval: 500,
+    pollInterval: 60 * 1000,
     concurrency: 1,
     workTimeout: 10 * 1000,
   },

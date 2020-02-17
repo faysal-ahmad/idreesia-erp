@@ -22,7 +22,7 @@ const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const karkunsList = useRef(null);
   const [deleteOutstationKarkun] = useMutation(DELETE_OUTSTATION_KARKUN);
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: [
@@ -45,7 +45,7 @@ const List = ({ history, location }) => {
   const { distinctRegions, distinctRegionsLoading } = useDistinctRegions();
   const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_KARKUNS, {
     variables: {
-      queryString,
+      filter: queryParams,
     },
   });
 

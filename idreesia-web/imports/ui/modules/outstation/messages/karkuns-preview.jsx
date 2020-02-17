@@ -4,20 +4,20 @@ import { useQuery } from '@apollo/react-hooks';
 
 import { KarkunsList } from '/imports/ui/modules/common';
 
-import { PAGED_OUTSTATION_KARKUNS_BY_FILTER } from '../karkuns/gql';
+import { PAGED_OUTSTATION_KARKUNS } from '../karkuns/gql';
 
 const KarkunsPreview = ({ filter }) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const { data, loading } = filter
-    ? useQuery(PAGED_OUTSTATION_KARKUNS_BY_FILTER, {
+    ? useQuery(PAGED_OUTSTATION_KARKUNS, {
         variables: {
           filter,
         },
       })
     : {
         data: {
-          pagedOutstationKarkunsByFilter: { karkuns: [], totalResults: 0 },
+          pagedOutstationKarkuns: { karkuns: [], totalResults: 0 },
         },
         loading: false,
       };
@@ -43,7 +43,7 @@ const KarkunsPreview = ({ filter }) => {
       showDeleteAction={false}
       pageIndex={pageIndex}
       pageSize={pageSize}
-      pagedData={data.pagedOutstationKarkunsByFilter}
+      pagedData={data.pagedOutstationKarkuns}
       setPageParams={setPageParams}
     />
   );

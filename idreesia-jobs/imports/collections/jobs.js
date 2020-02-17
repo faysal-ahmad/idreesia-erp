@@ -4,6 +4,7 @@ import { JobTypes } from 'meteor/idreesia-common/constants';
 import {
   CleanupJob,
   SendEmailsJob,
+  SendSmsMessageJob,
   AccountsImportJob,
   VouchersImportJob,
   AccountsCalculationJob,
@@ -12,6 +13,7 @@ import {
 const JobModels = {
   [JobTypes.CLEANUP_JOB]: CleanupJob,
   [JobTypes.SEND_EMAILS]: SendEmailsJob,
+  [JobTypes.SEND_SMS_MESSAGE]: SendSmsMessageJob,
   [JobTypes.ACCOUNTS_IMPORT]: AccountsImportJob,
   [JobTypes.VOUCHERS_IMPORT]: VouchersImportJob,
   [JobTypes.ACCOUNTS_CALCULATION]: AccountsCalculationJob,

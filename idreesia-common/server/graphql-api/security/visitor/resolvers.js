@@ -5,10 +5,10 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 
 import { getVisitors } from './queries';
 import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
-import { createAttachment } from '../../common/attachments/utilities';
 import { processCsvData } from './helpers';
 
 export default {

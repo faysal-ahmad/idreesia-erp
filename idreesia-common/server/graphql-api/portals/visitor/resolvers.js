@@ -4,13 +4,13 @@ import {
   hasOnePermission,
 } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-
-import { getPortalVisitors } from './queries';
-import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachments/utilities';
+import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 import {
   checkCnicNotInUse,
   checkContactNotInUse,
 } from 'meteor/idreesia-common/server/graphql-api/security/visitor/utilities';
+
+import { getPortalVisitors } from './queries';
 
 export default {
   Query: {

@@ -1,11 +1,42 @@
-import { parse } from 'query-string';
-import { Messages } from 'meteor/idreesia-common/server/collections/communication';
-import { get } from 'meteor/idreesia-common/utilities/lodash';
+import moment from 'moment';
 
-export function getMessages(queryString) {
-  const params = parse(queryString);
-  const pipeline = [];
-  const { pageIndex = '0', pageSize = '20' } = params;
+import { get } from 'meteor/idreesia-common/utilities/lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
+import { MessageSource } from 'meteor/idreesia-common/constants/communication';
+import { Messages } from 'meteor/idreesia-common/server/collections/communication';
+
+export function getMessages(filter) {
+  const { startDate, endDate, pageIndex = '0', pageSize = '20' } = filter;
+  const pipeline = [
+    {
+      $match: {
+        source: { $eq: MessageSource.OUTSTATION },
+      },
+    },
+  ];
+
+  if (startDate) {
+    pipeline.push({
+      $match: {
+        sentDate: {
+          $gte: moment(startDate, Formats.DATE_FORMAT)
+            .startOf('day')
+            .toDate(),
+        },
+      },
+    });
+  }
+  if (endDate) {
+    pipeline.push({
+      $match: {
+        sentDate: {
+          $lte: moment(endDate, Formats.DATE_FORMAT)
+            .endOf('day')
+            .toDate(),
+        },
+      },
+    });
+  }
 
   const countingPipeline = pipeline.concat({
     $count: 'total',

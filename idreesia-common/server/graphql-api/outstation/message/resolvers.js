@@ -10,7 +10,7 @@ import { getMessages } from './queries';
 
 export default {
   Query: {
-    outstaionMessageById(obj, { _id }, { user }) {
+    outstationMessageById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_VIEW_MESSAGES,
@@ -46,7 +46,7 @@ export default {
   },
 
   Mutation: {
-    createOustationMessage(obj, { messageBody, karkunFilter }, { user }) {
+    createOutstationMessage(obj, { messageBody, karkunFilter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
@@ -116,7 +116,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    approveMessage(obj, { _id }, { user }) {
+    approveOutstationMessage(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
@@ -145,7 +145,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    deleteMessage(obj, { _id }, { user }) {
+    deleteOutstationMessage(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_DELETE_DATA,

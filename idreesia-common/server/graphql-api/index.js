@@ -63,6 +63,9 @@ import AttendanceResolvers from './hr/attendance/resolvers';
 import SalarySchema from './hr/salary/salary.graphql';
 import SalaryResolvers from './hr/salary/resolvers';
 
+import HrMessageSchema from './hr/message/message.graphql';
+import HrMessageResolvers from './hr/message/resolvers';
+
 import SharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
 import SharedResidenceResolvers from './hr/shared-residence/resolvers';
 
@@ -184,6 +187,7 @@ const typeDefs = [
   KarkunDutySchema,
   AttendanceSchema,
   SalarySchema,
+  HrMessageSchema,
   SharedResidenceSchema,
 
   CitySchema,
@@ -240,6 +244,7 @@ const resolvers = merge(
   KarkunDutyResolvers,
   AttendanceResolvers,
   SalaryResolvers,
+  HrMessageResolvers,
   SharedResidenceResolvers,
 
   CityResolvers,

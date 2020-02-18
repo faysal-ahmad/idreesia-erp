@@ -43,7 +43,7 @@ const KarkunsPreview = ({ filter }) => {
       showDeleteAction={false}
       pageIndex={pageIndex}
       pageSize={pageSize}
-      pagedData={data.pagedOutstationKarkuns}
+      pagedData={data.pagedKarkuns}
       setPageParams={setPageParams}
     />
   );

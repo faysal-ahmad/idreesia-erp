@@ -93,7 +93,7 @@ const EditForm = ({ form, history, location }) => {
           initialValue={messageBody}
           getFieldDecorator={getFieldDecorator}
         />
-        <Divider>Karkuns Selection Criteria</Divider>
+        <Divider>Karkuns Filter Criteria</Divider>
         <SelectField
           fieldName="dutyId"
           fieldLabel="Duty"

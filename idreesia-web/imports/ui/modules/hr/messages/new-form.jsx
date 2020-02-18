@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useAllMSDuties } from 'meteor/idreesia-common/hooks/outstation';
+import { useAllMSDuties } from 'meteor/idreesia-common/hooks/hr';
 import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
   InputTextAreaField,
@@ -76,7 +76,7 @@ const NewForm = ({ form, history, location }) => {
           requiredMessage="Please input the message to send."
           getFieldDecorator={getFieldDecorator}
         />
-        <Divider>Karkuns Selection Criteria</Divider>
+        <Divider>Karkuns Filter Criteria</Divider>
         <SelectField
           fieldName="dutyId"
           fieldLabel="Duty"

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -11,26 +10,7 @@ import {
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
 
-const listQuery = gql`
-  query pagedSalariesByKarkun($queryString: String) {
-    pagedSalariesByKarkun(queryString: $queryString) {
-      totalResults
-      salaries {
-        _id
-        month
-        salary
-        rashanMadad
-        openingLoan
-        loanDeduction
-        newLoan
-        closingLoan
-        otherDeduction
-        arrears
-        netPayment
-      }
-    }
-  }
-`;
+import { PAGED_SALARIES_BY_KARKUN } from '../gql';
 
 const columns = [
   {
@@ -98,7 +78,7 @@ const getQueryString = (karkunId, pageIndex, pageSize) =>
 const SalarySheets = ({ karkunId }) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(listQuery, {
+  const { data, loading } = useQuery(PAGED_SALARIES_BY_KARKUN, {
     variables: {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },

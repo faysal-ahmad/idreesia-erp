@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -17,6 +16,8 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+
+import { KARKUN_BY_ID, UPDATE_KARKUN } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -241,99 +242,15 @@ class GeneralInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      bloodGroup
-      sharedResidenceId
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateKarkun(
-    $_id: String!
-    $name: String!
-    $parentName: String
-    $cnicNumber: String
-    $contactNumber1: String
-    $contactNumber2: String
-    $emailAddress: String
-    $currentAddress: String
-    $permanentAddress: String
-    $bloodGroup: String
-    $sharedResidenceId: String
-    $educationalQualification: String
-    $meansOfEarning: String
-    $ehadDate: String
-    $referenceName: String
-  ) {
-    updateKarkun(
-      _id: $_id
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      emailAddress: $emailAddress
-      currentAddress: $currentAddress
-      permanentAddress: $permanentAddress
-      bloodGroup: $bloodGroup
-      sharedResidenceId: $sharedResidenceId
-      educationalQualification: $educationalQualification
-      meansOfEarning: $meansOfEarning
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      bloodGroup
-      sharedResidenceId
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(UPDATE_KARKUN, {
     name: 'updateKarkun',
     options: {
       refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
     },
   }),
-  graphql(formQuery, {
+  graphql(KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

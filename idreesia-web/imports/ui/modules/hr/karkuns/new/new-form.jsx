@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -17,6 +16,8 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+
+import { CREATE_KARKUN } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -210,61 +211,9 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createKarkun(
-    $name: String!
-    $parentName: String
-    $cnicNumber: String
-    $contactNumber1: String
-    $contactNumber2: String
-    $emailAddress: String
-    $currentAddress: String
-    $permanentAddress: String
-    $bloodGroup: String
-    $sharedResidenceId: String
-    $educationalQualification: String
-    $meansOfEarning: String
-    $ehadDate: String
-    $referenceName: String
-  ) {
-    createKarkun(
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      emailAddress: $emailAddress
-      currentAddress: $currentAddress
-      permanentAddress: $permanentAddress
-      bloodGroup: $bloodGroup
-      sharedResidenceId: $sharedResidenceId
-      educationalQualification: $educationalQualification
-      meansOfEarning: $meansOfEarning
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      bloodGroup
-      sharedResidenceId
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      referenceName
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(CREATE_KARKUN, {
     name: 'createKarkun',
     options: {
       refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],

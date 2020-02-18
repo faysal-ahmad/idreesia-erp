@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -18,6 +17,8 @@ import {
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
+
+import { PAGED_KARKUNS, DELETE_KARKUN } from '../gql';
 
 class List extends Component {
   static propTypes = {
@@ -377,48 +378,14 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query pagedKarkuns($queryString: String) {
-    pagedKarkuns(queryString: $queryString) {
-      totalResults
-      karkuns {
-        _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        imageId
-        job {
-          _id
-          name
-        }
-        duties {
-          _id
-          dutyId
-          shiftId
-          dutyName
-          shiftName
-          role
-        }
-      }
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation deleteKarkun($_id: String!) {
-    deleteKarkun(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(DELETE_KARKUN, {
     name: 'deleteKarkun',
     options: {
       refetchQueries: ['pagedKarkuns'],
     },
   }),
-  graphql(listQuery, {
+  graphql(PAGED_KARKUNS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({
       name,

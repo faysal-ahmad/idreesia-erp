@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/react-hooks';
 
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 
@@ -13,35 +12,7 @@ import {
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
 
-const listQuery = gql`
-  query pagedAttendanceByKarkun($queryString: String) {
-    pagedAttendanceByKarkun(queryString: $queryString) {
-      totalResults
-      attendance {
-        _id
-        dutyId
-        shiftId
-        jobId
-        month
-        absentCount
-        presentCount
-        percentage
-        job {
-          _id
-          name
-        }
-        duty {
-          _id
-          name
-        }
-        shift {
-          _id
-          name
-        }
-      }
-    }
-  }
-`;
+import { PAGED_ATTENDANCE_BY_KARKUN } from '../gql';
 
 const getQueryString = (karkunId, pageIndex, pageSize) =>
   `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
@@ -94,7 +65,7 @@ const columns = [
 const AttendanceSheets = ({ karkunId }) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(listQuery, {
+  const { data, loading } = useQuery(PAGED_ATTENDANCE_BY_KARKUN, {
     variables: {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },

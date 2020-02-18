@@ -7,13 +7,13 @@ import {
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
 import { Tabs } from '/imports/ui/controls';
-import GeneralInfo from './edit/general-info';
-import ProfilePicture from './edit/profile-picture';
-import DutyParticipation from './edit/duty-participations';
-import AttendanceSheets from './edit/attendance-sheets';
-import AttachmentsList from './edit/attachments-list';
-import EmploymentInfo from './edit/employment-info';
-import SalarySheets from './edit/salary-sheets';
+import GeneralInfo from './general-info';
+import ProfilePicture from './profile-picture';
+import DutyParticipation from './duty-participations';
+import AttendanceSheets from './attendance-sheets';
+import AttachmentsList from './attachments-list';
+import EmploymentInfo from './employment-info';
+import SalarySheets from './salary-sheets';
 
 const EditForm = props => {
   const { match, queryParams } = props;

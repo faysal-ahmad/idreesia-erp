@@ -1,11 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { message } from "/imports/ui/controls";
-import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
+import { message } from '/imports/ui/controls';
+import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
+
+import {
+  KARKUN_BY_ID,
+  ADD_KARKUN_ATTACHMENT,
+  REMOVE_KARKUN_ATTACHMENT,
+} from '../gql';
 
 class AttachmentsList extends Component {
   static propTypes = {
@@ -58,60 +63,18 @@ class AttachmentsList extends Component {
   }
 }
 
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      attachments {
-        _id
-        name
-        description
-        mimeType
-      }
-    }
-  }
-`;
-
-const addAttachmentMutation = gql`
-  mutation addKarkunAttachment($_id: String!, $attachmentId: String!) {
-    addKarkunAttachment(_id: $_id, attachmentId: $attachmentId) {
-      _id
-      attachments {
-        _id
-        name
-        description
-        mimeType
-      }
-    }
-  }
-`;
-
-const removeAttachmentMutation = gql`
-  mutation removeKarkunAttachment($_id: String!, $attachmentId: String!) {
-    removeKarkunAttachment(_id: $_id, attachmentId: $attachmentId) {
-      _id
-      attachments {
-        _id
-        name
-        description
-        mimeType
-      }
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formQuery, {
+  graphql(KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
     },
   }),
-  graphql(addAttachmentMutation, {
-    name: "addKarkunAttachment",
+  graphql(ADD_KARKUN_ATTACHMENT, {
+    name: 'addKarkunAttachment',
   }),
-  graphql(removeAttachmentMutation, {
-    name: "removeKarkunAttachment",
+  graphql(REMOVE_KARKUN_ATTACHMENT, {
+    name: 'removeKarkunAttachment',
   })
 )(AttachmentsList);

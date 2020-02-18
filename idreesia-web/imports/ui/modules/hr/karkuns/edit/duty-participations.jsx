@@ -1,7 +1,6 @@
 /* eslint "no-script-url": "off" */
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -20,7 +19,14 @@ import {
   WithAllDutyShifts,
   WithAllDutyLocations,
 } from '/imports/ui/modules/hr/common/composers';
+
 import DutyForm from './duty-form';
+import {
+  KARKUN_DUTIES_BY_KARKUN_ID,
+  CREATE_KARKUN_DUTY,
+  UPDATE_KARKUN_DUTY,
+  REMOVE_KARKUN_DUTY,
+} from '../gql';
 
 class DutyParticipation extends Component {
   static propTypes = {
@@ -254,110 +260,27 @@ class DutyParticipation extends Component {
   }
 }
 
-const listQuery = gql`
-  query karkunDutiesByKarkunId($karkunId: String!) {
-    karkunDutiesByKarkunId(karkunId: $karkunId) {
-      _id
-      dutyId
-      dutyName
-      shiftId
-      shiftName
-      locationName
-      role
-      daysOfWeek
-    }
-  }
-`;
-
-const createKarkunDutyMutation = gql`
-  mutation createKarkunDuty(
-    $karkunId: String!
-    $dutyId: String!
-    $shiftId: String
-    $locationId: String
-    $role: String
-    $daysOfWeek: [String]
-  ) {
-    createKarkunDuty(
-      karkunId: $karkunId
-      dutyId: $dutyId
-      shiftId: $shiftId
-      locationId: $locationId
-      role: $role
-      daysOfWeek: $daysOfWeek
-    ) {
-      _id
-      dutyId
-      dutyName
-      shiftId
-      shiftName
-      locationId
-      locationName
-      role
-      daysOfWeek
-    }
-  }
-`;
-
-const updateKarkunDutyMutation = gql`
-  mutation updateKarkunDuty(
-    $_id: String!
-    $karkunId: String!
-    $dutyId: String!
-    $shiftId: String
-    $locationId: String
-    $role: String
-    $daysOfWeek: [String]
-  ) {
-    updateKarkunDuty(
-      _id: $_id
-      karkunId: $karkunId
-      dutyId: $dutyId
-      shiftId: $shiftId
-      locationId: $locationId
-      role: $role
-      daysOfWeek: $daysOfWeek
-    ) {
-      _id
-      dutyId
-      dutyName
-      shiftId
-      shiftName
-      locationId
-      locationName
-      role
-      daysOfWeek
-    }
-  }
-`;
-
-const removeKarkunDutyMutation = gql`
-  mutation removeKarkunDuty($_id: String!) {
-    removeKarkunDuty(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(KARKUN_DUTIES_BY_KARKUN_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { karkunId } };
     },
   }),
-  graphql(createKarkunDutyMutation, {
+  graphql(CREATE_KARKUN_DUTY, {
     name: 'createKarkunDuty',
     options: {
       refetchQueries: ['karkunDutiesByKarkunId'],
     },
   }),
-  graphql(updateKarkunDutyMutation, {
+  graphql(UPDATE_KARKUN_DUTY, {
     name: 'updateKarkunDuty',
     options: {
       refetchQueries: ['karkunDutiesByKarkunId'],
     },
   }),
-  graphql(removeKarkunDutyMutation, {
+  graphql(REMOVE_KARKUN_DUTY, {
     name: 'removeKarkunDuty',
     options: {
       refetchQueries: ['pagedKarkuns', 'karkunDutiesByKarkunId', 'allMSDuties'],

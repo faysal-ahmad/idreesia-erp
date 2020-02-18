@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -10,6 +9,8 @@ import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
+
+import { KARKUN_BY_ID, SET_KARKUN_PROFILE_IMAGE } from '../gql';
 
 class ProfilePicture extends Component {
   static propTypes = {
@@ -55,32 +56,14 @@ class ProfilePicture extends Component {
   }
 }
 
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setKarkunProfileImage($_id: String!, $imageId: String!) {
-    setKarkunProfileImage(_id: $_id, imageId: $imageId) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(SET_KARKUN_PROFILE_IMAGE, {
     name: 'setKarkunProfileImage',
     options: {
       refetchQueries: ['pagedKarkuns'],
     },
   }),
-  graphql(formQuery, {
+  graphql(KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

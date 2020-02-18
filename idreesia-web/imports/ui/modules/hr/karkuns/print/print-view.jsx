@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
 import Barcode from 'react-barcode';
@@ -10,6 +9,8 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Divider, Row } from '/imports/ui/controls';
 import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
+
+import { KARKUN_BY_ID } from '../gql';
 
 const barcodeOptions = {
   width: 1,
@@ -152,38 +153,8 @@ class PrintView extends Component {
   }
 }
 
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      imageId
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      job {
-        _id
-        name
-      }
-      duties {
-        _id
-        dutyName
-        shiftName
-        locationName
-      }
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formQuery, {
+  graphql(KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -12,8 +11,9 @@ import {
   SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-
 import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
+
+import { KARKUN_BY_ID, SET_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
 class EmploymentInfo extends Component {
   static propTypes = {
@@ -114,51 +114,15 @@ class EmploymentInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
-      _id
-      isEmployee
-      jobId
-      employmentStartDate
-      employmentEndDate
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setKarkunEmploymentInfo(
-    $_id: String!
-    $isEmployee: Boolean!
-    $jobId: String
-    $employmentStartDate: String
-    $employmentEndDate: String
-  ) {
-    setKarkunEmploymentInfo(
-      _id: $_id
-      isEmployee: $isEmployee
-      jobId: $jobId
-      employmentStartDate: $employmentStartDate
-      employmentEndDate: $employmentEndDate
-    ) {
-      _id
-      isEmployee
-      jobId
-      employmentStartDate
-      employmentEndDate
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(SET_KARKUN_EMPLOYMENT_INFO, {
     name: 'setKarkunEmploymentInfo',
     options: {
       refetchQueries: ['pagedKarkuns', 'allJobs'],
     },
   }),
-  graphql(formQuery, {
+  graphql(KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

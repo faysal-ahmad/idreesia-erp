@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -20,6 +18,11 @@ import {
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
+import {
+  WithAllJobs,
+  WithAllMSDuties,
+  WithAllDutyShifts,
+} from '/imports/ui/modules/hr/common/composers';
 
 const ContainerStyle = {
   width: '500px',
@@ -256,43 +259,9 @@ class ListFilter extends Component {
   }
 }
 
-const allJobsListQuery = gql`
-  query allJobs {
-    allJobs {
-      _id
-      name
-    }
-  }
-`;
-
-const allMSDutiesListQuery = gql`
-  query allMSDuties {
-    allMSDuties {
-      _id
-      name
-    }
-  }
-`;
-
-const allDutyShiftsListQuery = gql`
-  query allDutyShifts {
-    allDutyShifts {
-      _id
-      name
-      dutyId
-    }
-  }
-`;
-
 export default flowRight(
   Form.create({ name: 'karkunsListFilter' }),
-  graphql(allJobsListQuery, {
-    props: ({ data }) => ({ allJobsLoading: data.loading, ...data }),
-  }),
-  graphql(allMSDutiesListQuery, {
-    props: ({ data }) => ({ allMSDutiesLoading: data.loading, ...data }),
-  }),
-  graphql(allDutyShiftsListQuery, {
-    props: ({ data }) => ({ allDutyShiftsLoading: data.loading, ...data }),
-  })
+  WithAllJobs(),
+  WithAllMSDuties(),
+  WithAllDutyShifts()
 )(ListFilter);

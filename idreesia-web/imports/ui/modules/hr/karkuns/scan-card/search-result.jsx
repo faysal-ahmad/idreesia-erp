@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -9,6 +8,8 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Col, Spin, message } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+
+import { ATTENDANCE_BY_BARCODE_ID } from '../gql';
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -95,42 +96,8 @@ SearchResult.propTypes = {
   attendanceByBarcodeId: PropTypes.object,
 };
 
-const formQuery = gql`
-  query attendanceByBarcodeId($barcodeId: String!) {
-    attendanceByBarcodeId(barcodeId: $barcodeId) {
-      _id
-      karkunId
-      dutyId
-      shiftId
-      month
-      absentCount
-      presentCount
-      percentage
-      karkun {
-        _id
-        name
-        cnicNumber
-        contactNumber1
-        imageId
-      }
-      duty {
-        _id
-        name
-      }
-      shift {
-        _id
-        name
-      }
-      job {
-        _id
-        name
-      }
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formQuery, {
+  graphql(ATTENDANCE_BY_BARCODE_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ barcode }) => ({ variables: { barcodeId: barcode } }),
   })

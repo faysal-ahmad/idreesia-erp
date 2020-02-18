@@ -30,7 +30,7 @@ class List extends Component {
     bloodGroup: PropTypes.string,
     jobId: PropTypes.string,
     dutyId: PropTypes.string,
-    shiftId: PropTypes.string,
+    dutyShiftId: PropTypes.string,
     showVolunteers: PropTypes.string,
     showEmployees: PropTypes.string,
     setPageParams: PropTypes.func,
@@ -255,7 +255,7 @@ class List extends Component {
       bloodGroup,
       jobId,
       dutyId,
-      shiftId,
+      dutyShiftId,
       showVolunteers,
       showEmployees,
       setPageParams,
@@ -302,7 +302,7 @@ class List extends Component {
           bloodGroup={bloodGroup}
           jobId={jobId}
           dutyId={dutyId}
-          shiftId={shiftId}
+          dutyShiftId={dutyShiftId}
           showVolunteers={showVolunteers}
           showEmployees={showEmployees}
           setPageParams={setPageParams}
@@ -394,7 +394,7 @@ export default flowRight(
       bloodGroup,
       jobId,
       dutyId,
-      shiftId,
+      dutyShiftId,
       showVolunteers,
       showEmployees,
       predefinedFilterName,
@@ -402,13 +402,20 @@ export default flowRight(
       pageSize,
     }) => ({
       variables: {
-        queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
-          ''}&phoneNumber=${phoneNumber || ''}&bloodGroup=${bloodGroup ||
-          ''}&jobId=${jobId || ''}&dutyId=${dutyId || ''}&shiftId=${shiftId ||
-          ''}&showVolunteers=${showVolunteers ||
-          'true'}&showEmployees=${showEmployees ||
-          'true'}&predefinedFilterName=${predefinedFilterName ||
-          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+        filter: {
+          name,
+          cnicNumber,
+          phoneNumber,
+          bloodGroup,
+          jobId,
+          dutyId,
+          dutyShiftId,
+          showVolunteers,
+          showEmployees,
+          predefinedFilterName,
+          pageIndex: pageIndex.toString(),
+          pageSize: pageSize.toString(),
+        },
       },
     }),
   })

@@ -58,8 +58,8 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    pagedKarkuns(obj, { queryString }) {
-      return getKarkuns(queryString);
+    pagedKarkuns(obj, { filter }) {
+      return getKarkuns(filter);
     },
   },
 

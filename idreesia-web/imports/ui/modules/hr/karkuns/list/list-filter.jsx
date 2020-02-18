@@ -52,7 +52,7 @@ class ListFilter extends Component {
     bloodGroup: PropTypes.string,
     jobId: PropTypes.string,
     dutyId: PropTypes.string,
-    shiftId: PropTypes.string,
+    dutyShiftId: PropTypes.string,
     showVolunteers: PropTypes.string,
     showEmployees: PropTypes.string,
     setPageParams: PropTypes.func,
@@ -75,7 +75,7 @@ class ListFilter extends Component {
       bloodGroup: null,
       jobId: null,
       dutyId: null,
-      shiftId: null,
+      dutyShiftId: null,
       karkunType: ['volunteers', 'employees'],
     });
   };
@@ -105,7 +105,7 @@ class ListFilter extends Component {
           bloodGroup,
           jobId,
           dutyId: dutyIdShiftId[0],
-          shiftId: dutyIdShiftId[1],
+          dutyShiftId: dutyIdShiftId[1],
           karkunType,
         });
       }
@@ -139,7 +139,7 @@ class ListFilter extends Component {
       bloodGroup,
       jobId,
       dutyId,
-      shiftId,
+      dutyShiftId,
       allJobs,
       allMSDuties,
       allDutyShifts,
@@ -237,7 +237,7 @@ class ListFilter extends Component {
               fieldName="dutyIdShiftId"
               fieldLabel="Duty/Shift"
               fieldLayout={formItemLayout}
-              initialValue={[dutyId, shiftId]}
+              initialValue={[dutyId, dutyShiftId]}
               required={false}
               getFieldDecorator={getFieldDecorator}
             />

@@ -11,7 +11,7 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-import List from './list/list';
+import List from './list';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -29,7 +29,7 @@ class ListContainer extends Component {
       bloodGroup,
       jobId,
       dutyId,
-      shiftId,
+      dutyShiftId,
       karkunType,
       pageIndex,
       pageSize,
@@ -75,9 +75,10 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('dutyId')) dutyIdVal = dutyId || '';
     else dutyIdVal = queryParams.dutyId || '';
 
-    let shiftIdVal;
-    if (newParams.hasOwnProperty('shiftId')) shiftIdVal = shiftId || '';
-    else shiftIdVal = queryParams.shiftId || '';
+    let dutyShiftIdVal;
+    if (newParams.hasOwnProperty('dutyShiftId'))
+      dutyShiftIdVal = dutyShiftId || '';
+    else dutyShiftIdVal = queryParams.dutyShiftId || '';
 
     let pageIndexVal;
     if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
@@ -87,7 +88,7 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&shiftId=${shiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&dutyShiftId=${dutyShiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -122,7 +123,7 @@ class ListContainer extends Component {
         bloodGroup,
         jobId,
         dutyId,
-        shiftId,
+        dutyShiftId,
         showVolunteers,
         showEmployees,
       },
@@ -141,7 +142,7 @@ class ListContainer extends Component {
         bloodGroup={bloodGroup}
         jobId={jobId}
         dutyId={dutyId}
-        shiftId={shiftId}
+        dutyShiftId={dutyShiftId}
         showVolunteers={showVolunteers || 'true'}
         showEmployees={showEmployees || 'true'}
         setPageParams={this.setPageParams}

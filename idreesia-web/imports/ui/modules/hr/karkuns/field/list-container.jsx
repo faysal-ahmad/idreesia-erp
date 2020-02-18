@@ -18,7 +18,7 @@ export default class ListContainer extends Component {
     bloodGroup: null,
     jobId: null,
     dutyId: null,
-    shiftId: null,
+    dutyShiftId: null,
     karkunType: ['volunteers', 'employees'],
   };
 
@@ -37,7 +37,7 @@ export default class ListContainer extends Component {
       bloodGroup,
       jobId,
       dutyId,
-      shiftId,
+      dutyShiftId,
       karkunType,
     } = this.state;
 
@@ -56,7 +56,7 @@ export default class ListContainer extends Component {
         bloodGroup={bloodGroup}
         jobId={jobId}
         dutyId={dutyId}
-        shiftId={shiftId}
+        dutyShiftId={dutyShiftId}
         showVolunteers={showVolunteers}
         showEmployees={showEmployees}
         setPageParams={this.setPageParams}

@@ -1,1 +1,1 @@
-export { default as useAllMSDuties } from './use-all-mehfil-duties';
+export { default as useAllMSDuties } from './use-all-ms-duties';

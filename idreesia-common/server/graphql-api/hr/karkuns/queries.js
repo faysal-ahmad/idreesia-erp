@@ -1,5 +1,3 @@
-import { parse } from 'query-string';
-
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import {
@@ -30,7 +28,7 @@ export function getKarkunsByFilter(params) {
     bloodGroup,
     jobId,
     dutyId,
-    shiftId,
+    dutyShiftId,
     showVolunteers,
     showEmployees,
     pageIndex = '0',
@@ -126,12 +124,12 @@ export function getKarkunsByFilter(params) {
       },
     });
 
-    if (shiftId) {
+    if (dutyShiftId) {
       pipeline.push({
         $match: {
           duties: {
             $elemMatch: {
-              shiftId: { $eq: shiftId },
+              shiftId: { $eq: dutyShiftId },
             },
           },
         },
@@ -241,8 +239,7 @@ function getKarkunsByPredefinedFilter(params) {
   }));
 }
 
-export function getKarkuns(queryString) {
-  const params = parse(queryString);
+export function getKarkuns(params) {
   const { predefinedFilterName } = params;
 
   if (predefinedFilterName) {

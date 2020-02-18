@@ -49,6 +49,9 @@ input KarkunFilter {
   cityId: String
   cityMehfilId: String
   region: String
+  predefinedFilterName: String
+  showVolunteers: String
+  showEmployees: String
   pageIndex: String
   pageSize: String
 }
@@ -60,7 +63,7 @@ type PagedKarkunType {
 
 extend type Query {
   karkunById(_id: String!): KarkunType
-  pagedKarkuns(queryString: String): PagedKarkunType
+  pagedKarkuns(filter: KarkunFilter): PagedKarkunType
 }
 
 extend type Mutation {

@@ -50,6 +50,11 @@ class HRSidebar extends Component {
         history.push(paths.karkunsPath);
         break;
 
+      case 'messages':
+        setActiveSubModuleName(SubModuleNames.messages);
+        history.push(paths.messagesPath);
+        break;
+
       case 'shared-residencs':
         setActiveSubModuleName(SubModuleNames.sharedResidences);
         history.push(paths.sharedResidencesPath);
@@ -83,6 +88,12 @@ class HRSidebar extends Component {
           <span>
             <Icon type="solution" />
             Attendance Sheets
+          </span>
+        </Menu.Item>
+        <Menu.Item key="messages">
+          <span>
+            <Icon type="message" />
+            Messages
           </span>
         </Menu.Item>
         <Menu.Item key="shared-residencs">

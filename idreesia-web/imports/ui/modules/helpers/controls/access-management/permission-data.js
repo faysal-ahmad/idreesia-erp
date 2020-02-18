@@ -194,6 +194,24 @@ export const permissionsData = [
         ],
       },
       {
+        title: 'Messages',
+        key: 'module-hr-messages',
+        children: [
+          {
+            title: 'View Messages',
+            key: PermissionConstants.HR_VIEW_MESSAGES,
+          },
+          {
+            title: 'Manage Messages',
+            key: PermissionConstants.HR_MANAGE_MESSAGES,
+          },
+          {
+            title: 'Approve Messages',
+            key: PermissionConstants.HR_APPROVE_MESSAGES,
+          },
+        ],
+      },
+      {
         title: 'Shared Residences',
         key: 'module-hr-shared-residences',
         children: [

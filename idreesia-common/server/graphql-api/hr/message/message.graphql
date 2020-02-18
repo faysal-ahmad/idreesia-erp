@@ -1,0 +1,20 @@
+extend type Query {
+  hrMessageById(_id: String!): MessageType
+  pagedHrMessages(filter: MessageFilter): PagedMessageType
+}
+
+extend type Mutation {
+  createHrMessage(
+    messageBody: String!
+    karkunFilter: KarkunFilter
+  ): MessageType
+
+  updateHrMessage(
+    _id: String!
+    messageBody: String!
+    karkunFilter: KarkunFilter
+  ): MessageType
+
+  approveHrMessage(_id: String!): MessageType
+  deleteHrMessage(_id: String!): Int
+}

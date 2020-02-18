@@ -45,6 +45,15 @@ export default class SubModulePaths {
   static salarySheetsSalaryReceiptsPath = `${SubModulePaths.salarySheetsPath}/salary-receipts`;
   static salarySheetsRashanReceiptsPath = `${SubModulePaths.salarySheetsPath}/rashan-receipts`;
 
+  // *************************************************************************************
+  // Messages Routes
+  // *************************************************************************************
+  static messagesPath = `${ModulePaths.hr}/messages`;
+  static messagesNewFormPath = `${SubModulePaths.messagesPath}/new`;
+  static messagesEditFormPath(messageId = ':messageId') {
+    return `${SubModulePaths.messagesPath}/${messageId}`;
+  }
+
   // ******************************************************************************
   // Shared Residences
   // ******************************************************************************

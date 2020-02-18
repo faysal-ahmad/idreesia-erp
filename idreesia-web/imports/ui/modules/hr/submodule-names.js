@@ -6,6 +6,7 @@ const SubModuleNames = {
   sharedResidences: 'Shared Residences',
   attendanceSheets: 'Attendance Sheets',
   salarySheets: 'Salary Sheets',
+  messages: 'Messages',
 };
 
 export default SubModuleNames;

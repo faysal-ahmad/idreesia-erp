@@ -51,6 +51,7 @@ export default {
     },
 
     currentUser(obj, {}, { user }) {
+      if (!user) return null;
       const _user = findOneUser(user._id);
       if (_user.username !== 'erp-admin') return _user;
 
@@ -192,6 +193,30 @@ export default {
 
       Meteor.users.update(userId, { $set: { instances } });
       return findOneUser(userId);
+    },
+
+    updateLoginTime(obj, {}, { user }) {
+      if (user) {
+        Meteor.users.update(user._id, {
+          $set: {
+            lastLoggedInAt: new Date(),
+          },
+        });
+      }
+
+      return 1;
+    },
+
+    updateLastActiveTime(obj, {}, { user }) {
+      if (user) {
+        Meteor.users.update(user._id, {
+          $set: {
+            lastActiveAt: new Date(),
+          },
+        });
+      }
+
+      return 1;
     },
   },
 };

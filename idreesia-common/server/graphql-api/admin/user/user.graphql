@@ -52,4 +52,7 @@ extend type Mutation {
     userId: String!
     instances: [String]!
   ): UserType
+
+  updateLoginTime: Int
+  updateLastActiveTime: Int
 }

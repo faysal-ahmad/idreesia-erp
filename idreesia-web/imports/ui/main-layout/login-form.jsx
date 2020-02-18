@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
+import { useMutation } from '@apollo/react-hooks';
 
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import { Button, Form, Icon, Input, message } from './antd-controls';
+import { UPDATE_LOGIN_TIME } from './gql';
 
 const loginFormButtonStyle = {
   width: '100%',
@@ -12,6 +14,7 @@ const loginFormButtonStyle = {
 
 const LoginForm = ({ history, location, form }) => {
   const dispatch = useDispatch();
+  const [updateLoginTime] = useMutation(UPDATE_LOGIN_TIME);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -22,6 +25,7 @@ const LoginForm = ({ history, location, form }) => {
           if (!error) {
             history.push(location.pathname);
             dispatch(setLoggedInUserId(Meteor.userId()));
+            updateLoginTime();
           } else {
             message.error(error.message, 5);
           }
@@ -39,6 +43,7 @@ const LoginForm = ({ history, location, form }) => {
       if (!error) {
         history.push(location.pathname);
         dispatch(setLoggedInUserId(Meteor.userId()));
+        updateLoginTime();
       } else {
         message.error(error.message, 5);
       }

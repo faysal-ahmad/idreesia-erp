@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
+import { useMutation } from '@apollo/react-hooks';
 
 import {
   kebabCase,
@@ -11,6 +12,7 @@ import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
 import { setActiveModuleName } from 'meteor/idreesia-common/action-creators';
 import { Layout, Menu } from './antd-controls';
 import UserMenu from './user-menu';
+import { UPDATE_LAST_ACTIVE_TIME } from './gql';
 
 const ContainerStyle = {
   display: 'flex',
@@ -47,9 +49,17 @@ const isModuleAccessible = (user, moduleName) => {
 
 const HeaderContent = ({ history, location, user }) => {
   const dispatch = useDispatch();
-  const { pathname } = location;
+  const [updateLastActiveTime] = useMutation(UPDATE_LAST_ACTIVE_TIME);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      updateLastActiveTime();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const { pathname } = location;
     if (pathname !== '/') {
       const moduleNames = keys(modulePathsMapping);
       forEach(moduleNames, moduleName => {
@@ -72,6 +82,7 @@ const HeaderContent = ({ history, location, user }) => {
   const selectedMenuItemKey = [];
 
   if (user) {
+    const { pathname } = location;
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName, index) => {
       const isAccessible = isModuleAccessible(user, moduleName);

@@ -6,9 +6,9 @@ import 'antd/lib/form/style/css';
 import 'antd/lib/icon/style/css';
 import 'antd/lib/input/style/css';
 import 'antd/lib/layout/style/css';
+import 'antd/lib/menu/style/css';
 import 'antd/lib/message/style/css';
 import 'antd/lib/modal/style/css';
-import 'antd/lib/menu/style/css';
 
 export { default as Avatar } from 'antd/lib/avatar';
 export { default as Breadcrumb } from 'antd/lib/breadcrumb';

@@ -18,7 +18,7 @@ const bloodGroupValueConversion = {
   Oplus: 'O+',
 };
 
-export function getKarkunsByFilter(params) {
+function buildPipeline(params) {
   const pipeline = [];
 
   const {
@@ -31,8 +31,6 @@ export function getKarkunsByFilter(params) {
     dutyShiftId,
     showVolunteers,
     showEmployees,
-    pageIndex = '0',
-    pageSize = '20',
   } = params;
 
   if (name) {
@@ -136,6 +134,18 @@ export function getKarkunsByFilter(params) {
       });
     }
   }
+
+  return pipeline;
+}
+
+export function getKarkunsWithoutPagination(params) {
+  const pipeline = buildPipeline(params);
+  return Karkuns.aggregate(pipeline).toArray();
+}
+
+export function getKarkunsByFilter(params) {
+  const pipeline = buildPipeline(params);
+  const { pageIndex = '0', pageSize = '20' } = params;
 
   const countingPipeline = pipeline.concat({
     $count: 'total',

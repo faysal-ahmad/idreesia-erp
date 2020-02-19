@@ -8,9 +8,11 @@ import {
 
 import Jobs from '/imports/collections/jobs';
 import sendSmsMessage from './send-sms-message';
+import getHrMessageRecepients from './get-hr-message-recepients';
 import getOutstationMessageRecepients from './get-outstation-message-recepients';
 
 const MessageRecepientsEvaluator = {
+  [MessageSource.HR]: getHrMessageRecepients,
   [MessageSource.OUTSTATION]: getOutstationMessageRecepients,
 };
 
@@ -34,23 +36,36 @@ export const worker = (job, callback) => {
 
   const karkunIds = [];
   const visitorIds = [];
+  const phoneNumbers = [];
 
   const getMessageRecepients = MessageRecepientsEvaluator[message.source];
   return getMessageRecepients(message)
     .then(({ karkuns, visitors }) => {
-      const karkunPromises = karkuns.map(({ _id, contactNumber1 }) => {
-        karkunIds.push(_id);
-        return sendSmsMessage(contactNumber1, message.messageBody);
+      karkuns.forEach(({ _id, contactNumber1 }) => {
+        if (contactNumber1) {
+          karkunIds.push(_id);
+          phoneNumbers.push(contactNumber1);
+        }
       });
 
-      const visitorPromises = visitors.map(({ _id, contactNumber1 }) => {
-        visitorIds.push(_id);
-        return sendSmsMessage(contactNumber1, message.messageBody);
+      visitors.forEach(({ _id, contactNumber1 }) => {
+        if (contactNumber1) {
+          visitorIds.push(_id);
+          phoneNumbers.push(contactNumber1);
+        }
       });
 
-      return Promise.all(karkunPromises.concat(visitorPromises));
+      return phoneNumbers.reduce(
+        (p, phoneNumber) =>
+          p.then(() => sendSmsMessage(phoneNumber, message.messageBody)),
+        Promise.resolve()
+      );
     })
     .then(() => {
+      console.log(
+        `--> Finished sending ${phoneNumbers.length} SMS Messages`,
+        job.data
+      );
       Messages.update(messageId, {
         $set: {
           karkunIds,

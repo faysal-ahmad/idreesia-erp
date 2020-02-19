@@ -8,6 +8,7 @@ import GeneralInfo from './general-info';
 import Picture from './picture';
 import Notes from './notes';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
+import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 
 const EditForm = props => {
   const visitorId = get(props, ['match', 'params', 'visitorId'], null);
@@ -27,6 +28,14 @@ const EditForm = props => {
           visitorId={visitorId}
           showNewButton
           showDutyColumn
+          showActionsColumn
+          {...props}
+        />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Mulakaat History" key="5">
+        <VisitorMulakaatsList
+          visitorId={visitorId}
+          showNewButton
           showActionsColumn
           {...props}
         />

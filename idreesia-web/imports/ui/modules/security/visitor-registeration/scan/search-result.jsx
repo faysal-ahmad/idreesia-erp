@@ -6,8 +6,9 @@ import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Row, Col, Spin, Icon } from '/imports/ui/controls';
+import { Col, Icon, Row, Spin, Tabs } from '/imports/ui/controls';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
+import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -122,13 +123,24 @@ const SearchResult = props => {
         <SearchResultRow label="City" text={city} dataStyle={dataStyle} />
         <SearchResultRow label="Country" text={country} dataStyle={dataStyle} />
       </Col>
-      <Col order={2}>
-        <VisitorStaysList
-          visitorId={_id}
-          showDutyColumn
-          showNewButton
-          showActionsColumn
-        />
+      <Col order={2} span={16}>
+        <Tabs defaultActiveKey="1">
+          <Tabs.TabPane tab="Stay History" key="1">
+            <VisitorStaysList
+              visitorId={_id}
+              showDutyColumn
+              showNewButton
+              showActionsColumn
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Mulakaat History" key="2">
+            <VisitorMulakaatsList
+              visitorId={_id}
+              showNewButton
+              showActionsColumn
+            />
+          </Tabs.TabPane>
+        </Tabs>
       </Col>
     </Row>
   );

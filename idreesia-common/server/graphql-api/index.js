@@ -36,6 +36,9 @@ import VisitorResolvers from './security/visitor/resolvers';
 import VisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
 import VisitorStayResolvers from './security/visitor-stay/resolvers';
 
+import VisitorMulakaatSchema from './security/visitor-mulakaat/visitor-mulakaat.graphql';
+import VisitorMulakaatResolvers from './security/visitor-mulakaat/resolvers';
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -178,6 +181,7 @@ const typeDefs = [
   MehfilKarkunSchema,
   VisitorSchema,
   VisitorStaySchema,
+  VisitorMulakaatSchema,
 
   DutyShiftSchema,
   DutySchema,
@@ -235,6 +239,7 @@ const resolvers = merge(
   MehfilKarkunResolvers,
   VisitorResolvers,
   VisitorStayResolvers,
+  VisitorMulakaatResolvers,
 
   DutyShiftResolvers,
   DutyResolvers,

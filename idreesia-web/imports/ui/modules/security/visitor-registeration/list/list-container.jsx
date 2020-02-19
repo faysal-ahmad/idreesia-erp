@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
@@ -7,6 +7,7 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
+import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -25,6 +26,8 @@ class ListContainer extends Component {
     additionalInfo: '',
     showStayList: false,
     visitorIdForStayList: null,
+    showMulakaatList: false,
+    visitorIdForMulakaatList: null,
   };
 
   setPageParams = pageParams => {
@@ -58,14 +61,34 @@ class ListContainer extends Component {
     });
   };
 
+  handleShowMulakaatList = visitor => {
+    this.setState({
+      showMulakaatList: true,
+      visitorIdForMulakaatList: visitor._id,
+    });
+  };
+
   handleStayListClose = () => {
     this.setState({
       showStayList: false,
+      visitorIdForStayList: null,
+    });
+  };
+
+  handleMulakaatListClose = () => {
+    this.setState({
+      showMulakaatList: false,
+      visitorIdForMulakaatList: null,
     });
   };
 
   render() {
-    const { showStayList, visitorIdForStayList } = this.state;
+    const {
+      showStayList,
+      visitorIdForStayList,
+      showMulakaatList,
+      visitorIdForMulakaatList,
+    } = this.state;
     const {
       pageIndex,
       pageSize,
@@ -76,7 +99,7 @@ class ListContainer extends Component {
     } = this.state;
 
     return (
-      <Fragment>
+      <>
         <List
           pageIndex={pageIndex}
           pageSize={pageSize}
@@ -87,6 +110,7 @@ class ListContainer extends Component {
           setPageParams={this.setPageParams}
           handleItemSelected={this.handleItemSelected}
           handleShowStayList={this.handleShowStayList}
+          handleShowMulakaatList={this.handleShowMulakaatList}
           showNewButton
           handleNewClicked={this.handleNewClicked}
           handleUploadClicked={this.handleUploadClicked}
@@ -104,7 +128,19 @@ class ListContainer extends Component {
             visitorId={visitorIdForStayList}
           />
         </Drawer>
-      </Fragment>
+        <Drawer
+          title="Mulakaat History"
+          width={400}
+          onClose={this.handleMulakaatListClose}
+          visible={showMulakaatList}
+        >
+          <VisitorMulakaatsList
+            showNewButton
+            showActionsColumn
+            visitorId={visitorIdForMulakaatList}
+          />
+        </Drawer>
+      </>
     );
   }
 }

@@ -1,0 +1,39 @@
+type VisitorMulakaatType {
+  _id: String
+  visitorId: String
+  mulakaatDate: String
+
+  visitor: VisitorType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVisitorMulakaatType {
+  totalResults: Int
+  data: [VisitorMulakaatType]
+}
+
+input VisitorMulakaatFilter {
+  visitorId: String
+  startDate: String
+  endDate: String
+  pageIndex: String
+  pageSize: String
+}
+
+extend type Query {
+  visitorMulakaatById(_id: String!): VisitorMulakaatType
+  pagedVisitorMulakaats(filter: VisitorMulakaatFilter): PagedVisitorMulakaatType
+}
+
+extend type Mutation {
+  createVisitorMulakaat(
+    visitorId: String!
+    mulakaatDate: String!
+  ): VisitorMulakaatType
+
+  deleteVisitorMulakaat(_id: String!): Int
+}

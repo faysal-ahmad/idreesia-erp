@@ -40,6 +40,7 @@ class List extends Component {
     setPageParams: PropTypes.func,
     handleItemSelected: PropTypes.func,
     handleShowStayList: PropTypes.func,
+    handleShowMulakaatList: PropTypes.func,
     showNewButton: PropTypes.bool,
     handleNewClicked: PropTypes.func,
     handleUploadClicked: PropTypes.func,
@@ -140,6 +141,15 @@ class List extends Component {
             }}
           />
         </Tooltip>
+        <Tooltip title="Mulakaat History">
+          <Icon
+            type="thunderbolt"
+            className="list-actions-icon"
+            onClick={() => {
+              this.handleMulakaatHistoryClicked(record);
+            }}
+          />
+        </Tooltip>
         <Popconfirm
           title="Are you sure you want to delete this visitor registration?"
           onConfirm={() => {
@@ -208,6 +218,11 @@ class List extends Component {
   handleStayHistoryClicked = visitor => {
     const { handleShowStayList } = this.props;
     if (handleShowStayList) handleShowStayList(visitor);
+  };
+
+  handleMulakaatHistoryClicked = visitor => {
+    const { handleShowMulakaatList } = this.props;
+    if (handleShowMulakaatList) handleShowMulakaatList(visitor);
   };
 
   handleDownloadSelectedAsCSV = () => {

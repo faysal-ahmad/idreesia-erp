@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -11,17 +10,19 @@ import {
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
 
+import { SECURITY_VISITOR_BY_ID, SET_SECURITY_VISITOR_IMAGE } from '../gql';
+
 class Picture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     visitorId: PropTypes.string,
-    visitorById: PropTypes.object,
-    setVisitorImage: PropTypes.func,
+    securityVisitorById: PropTypes.object,
+    setSecurityVisitorImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { visitorId, setVisitorImage } = this.props;
-    setVisitorImage({
+    const { visitorId, setSecurityVisitorImage } = this.props;
+    setSecurityVisitorImage({
       variables: {
         _id: visitorId,
         imageId,
@@ -32,9 +33,9 @@ class Picture extends Component {
   };
 
   render() {
-    const { loading, visitorById } = this.props;
+    const { loading, securityVisitorById } = this.props;
     if (loading) return null;
-    const url = getDownloadUrl(visitorById.imageId);
+    const url = getDownloadUrl(securityVisitorById.imageId);
 
     return (
       <Fragment>
@@ -55,32 +56,14 @@ class Picture extends Component {
   }
 }
 
-const formQuery = gql`
-  query visitorById($_id: String!) {
-    visitorById(_id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setVisitorImage($_id: String!, $imageId: String!) {
-    setVisitorImage(_id: $_id, imageId: $imageId) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
-    name: 'setVisitorImage',
+  graphql(SET_SECURITY_VISITOR_IMAGE, {
+    name: 'setSecurityVisitorImage',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedSecurityVisitors'],
     },
   }),
-  graphql(formQuery, {
+  graphql(SECURITY_VISITOR_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { visitorId } = match.params;

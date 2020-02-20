@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -21,12 +20,14 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
+import { CREATE_SECURITY_VISITOR } from '../gql';
+
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createVisitor: PropTypes.func,
+    createSecurityVisitor: PropTypes.func,
 
     distinctCitiesLoading: PropTypes.bool,
     distinctCities: PropTypes.array,
@@ -46,7 +47,7 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createVisitor, history } = this.props;
+    const { form, createSecurityVisitor, history } = this.props;
     form.validateFields(
       (
         err,
@@ -85,7 +86,7 @@ class NewForm extends Component {
           return;
         }
 
-        createVisitor({
+        createSecurityVisitor({
           variables: {
             name,
             parentName,
@@ -99,7 +100,7 @@ class NewForm extends Component {
             country,
           },
         })
-          .then(({ data: { createVisitor: newVisitor } }) => {
+          .then(({ data: { createSecurityVisitor: newVisitor } }) => {
             history.push(
               `${paths.visitorRegistrationEditFormPath(newVisitor._id)}`
             );
@@ -210,52 +211,12 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createVisitor(
-    $name: String!
-    $parentName: String!
-    $cnicNumber: String!
-    $ehadDate: String!
-    $referenceName: String!
-    $contactNumber1: String
-    $contactNumber2: String
-    $address: String
-    $city: String
-    $country: String
-  ) {
-    createVisitor(
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      address: $address
-      city: $city
-      country: $country
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      address
-      city
-      country
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
-    name: 'createVisitor',
+  graphql(CREATE_SECURITY_VISITOR, {
+    name: 'createSecurityVisitor',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedSecurityVisitors'],
     },
   }),
   WithDistinctCities(),

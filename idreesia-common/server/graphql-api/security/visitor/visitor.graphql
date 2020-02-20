@@ -1,15 +1,15 @@
 extend type Query {
-  pagedVisitors(queryString: String): PagedVisitorType
-  visitorById(_id: String!): VisitorType
-  visitorByCnic(cnicNumbers: [String]!): VisitorType
-  visitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
+  pagedSecurityVisitors(queryString: String): PagedVisitorType
+  securityVisitorById(_id: String!): VisitorType
+  securityVisitorByCnic(cnicNumbers: [String]!): VisitorType
+  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
 
   distinctCities: [String]
   distinctCountries: [String]
 }
 
 extend type Mutation {
-  createVisitor(
+  createSecurityVisitor(
     name: String!
     parentName: String!
     cnicNumber: String
@@ -23,7 +23,7 @@ extend type Mutation {
     imageData: String
   ): VisitorType
 
-  updateVisitor(
+  updateSecurityVisitor(
     _id: String!
     name: String!
     parentName: String!
@@ -37,18 +37,18 @@ extend type Mutation {
     country: String
   ): VisitorType
 
-  deleteVisitor(_id: String!): Int
+  deleteSecurityVisitor(_id: String!): Int
 
-  importCsvData(
-    csvData: String!
-  ): String
-
-  setVisitorImage(_id: String!, imageId: String!): VisitorType
-  updateNotes(
+  setSecurityVisitorImage(_id: String!, imageId: String!): VisitorType
+  updateSecurityVisitorNotes(
     _id: String!
     criminalRecord: String
     otherNotes: String
   ): VisitorType
+
+  importSecurityVisitorsCsvData(
+    csvData: String!
+  ): String
 
   fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
 }

@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -23,6 +22,8 @@ import {
 } from 'meteor/idreesia-common/composers/security';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
+import { UPDATE_SECURITY_VISITOR, SECURITY_VISITOR_BY_ID } from '../gql';
+
 class GeneralInfo extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -32,8 +33,8 @@ class GeneralInfo extends Component {
 
     formDataLoading: PropTypes.bool,
     visitorId: PropTypes.string,
-    visitorById: PropTypes.object,
-    updateVisitor: PropTypes.func,
+    securityVisitorById: PropTypes.object,
+    updateSecurityVisitor: PropTypes.func,
 
     distinctCitiesLoading: PropTypes.bool,
     distinctCities: PropTypes.array,
@@ -48,7 +49,12 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, visitorById, updateVisitor } = this.props;
+    const {
+      form,
+      history,
+      securityVisitorById,
+      updateSecurityVisitor,
+    } = this.props;
     form.validateFields(
       (
         err,
@@ -87,9 +93,9 @@ class GeneralInfo extends Component {
           return;
         }
 
-        updateVisitor({
+        updateSecurityVisitor({
           variables: {
-            _id: visitorById._id,
+            _id: securityVisitorById._id,
             name,
             parentName,
             cnicNumber,
@@ -122,7 +128,7 @@ class GeneralInfo extends Component {
   render() {
     const {
       formDataLoading,
-      visitorById,
+      securityVisitorById,
       distinctCities,
       distinctCitiesLoading,
       distinctCountries,
@@ -139,7 +145,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
-            initialValue={visitorById.name}
+            initialValue={securityVisitorById.name}
             required
             requiredMessage="Please input the first name for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -148,7 +154,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="parentName"
             fieldLabel="S/O"
-            initialValue={visitorById.parentName}
+            initialValue={securityVisitorById.parentName}
             required
             requiredMessage="Please input the parent name for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -158,7 +164,7 @@ class GeneralInfo extends Component {
             fieldName="city"
             fieldLabel="City"
             dataSource={distinctCities}
-            initialValue={visitorById.city}
+            initialValue={securityVisitorById.city}
             required
             requiredMessage="Please input the city for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -168,7 +174,7 @@ class GeneralInfo extends Component {
             fieldName="country"
             fieldLabel="Country"
             dataSource={distinctCountries}
-            initialValue={visitorById.country}
+            initialValue={securityVisitorById.country}
             required
             requiredMessage="Please input the country for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -177,7 +183,7 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="address"
             fieldLabel="Address"
-            initialValue={visitorById.address}
+            initialValue={securityVisitorById.address}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -188,7 +194,7 @@ class GeneralInfo extends Component {
             fieldName="ehadDate"
             fieldLabel="Ehad Duration"
             required
-            initialValue={moment(Number(visitorById.ehadDate))}
+            initialValue={moment(Number(securityVisitorById.ehadDate))}
             requiredMessage="Please specify the Ehad duration for the visitor."
             getFieldDecorator={getFieldDecorator}
           />
@@ -196,7 +202,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="referenceName"
             fieldLabel="R/O"
-            initialValue={visitorById.referenceName}
+            initialValue={securityVisitorById.referenceName}
             required
             requiredMessage="Please input the referene name for the visitor."
             getFieldDecorator={getFieldDecorator}
@@ -205,106 +211,42 @@ class GeneralInfo extends Component {
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={visitorById.cnicNumber || ''}
+            initialValue={securityVisitorById.cnicNumber || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={visitorById.contactNumber1 || ''}
+            initialValue={securityVisitorById.contactNumber1 || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={visitorById.contactNumber2}
+            initialValue={securityVisitorById.contactNumber2}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
-        <RecordInfo record={visitorById} />
+        <RecordInfo record={securityVisitorById} />
       </Fragment>
     );
   }
 }
 
-const formQuery = gql`
-  query visitorById($_id: String!) {
-    visitorById(_id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      address
-      city
-      country
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateVisitor(
-    $_id: String!
-    $name: String!
-    $parentName: String!
-    $cnicNumber: String!
-    $ehadDate: String!
-    $referenceName: String!
-    $contactNumber1: String
-    $contactNumber2: String
-    $address: String
-    $city: String
-    $country: String
-  ) {
-    updateVisitor(
-      _id: $_id
-      name: $name
-      parentName: $parentName
-      cnicNumber: $cnicNumber
-      ehadDate: $ehadDate
-      referenceName: $referenceName
-      contactNumber1: $contactNumber1
-      contactNumber2: $contactNumber2
-      address: $address
-      city: $city
-      country: $country
-    ) {
-      _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      address
-      city
-      country
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
-    name: 'updateVisitor',
+  graphql(UPDATE_SECURITY_VISITOR, {
+    name: 'updateSecurityVisitor',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedSecurityVisitors'],
     },
   }),
-  graphql(formQuery, {
+  graphql(SECURITY_VISITOR_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { visitorId } = match.params;

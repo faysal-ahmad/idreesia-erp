@@ -1,15 +1,16 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import { flowRight } from "lodash";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { graphql } from 'react-apollo';
+import { flowRight } from 'lodash';
 
-import { Form, message } from "/imports/ui/controls";
+import { Form, message } from '/imports/ui/controls';
 import {
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
-import { SecuritySubModulePaths as paths } from "/imports/ui/modules/security";
+} from '/imports/ui/modules/helpers/fields';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+
+import { SECURITY_VISITOR_BY_ID, UPDATE_SECURITY_VISITOR_NOTES } from '../gql';
 
 class Notes extends Component {
   static propTypes = {
@@ -20,8 +21,8 @@ class Notes extends Component {
 
     loading: PropTypes.bool,
     visitorId: PropTypes.string,
-    visitorById: PropTypes.object,
-    updateNotes: PropTypes.func,
+    securityVisitorById: PropTypes.object,
+    updateSecurityVisitorNotes: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -31,13 +32,18 @@ class Notes extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, visitorById, updateNotes } = this.props;
+    const {
+      form,
+      history,
+      securityVisitorById,
+      updateSecurityVisitorNotes,
+    } = this.props;
     form.validateFields((err, { criminalRecord, otherNotes }) => {
       if (err) return;
 
-      updateNotes({
+      updateSecurityVisitorNotes({
         variables: {
-          _id: visitorById._id,
+          _id: securityVisitorById._id,
           criminalRecord,
           otherNotes,
         },
@@ -52,7 +58,7 @@ class Notes extends Component {
   };
 
   render() {
-    const { loading, visitorById } = this.props;
+    const { loading, securityVisitorById } = this.props;
     const { getFieldDecorator } = this.props.form;
     if (loading) return null;
 
@@ -61,7 +67,7 @@ class Notes extends Component {
         <InputTextAreaField
           fieldName="criminalRecord"
           fieldLabel="Criminal Record"
-          initialValue={visitorById.criminalRecord}
+          initialValue={securityVisitorById.criminalRecord}
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -69,7 +75,7 @@ class Notes extends Component {
         <InputTextAreaField
           fieldName="otherNotes"
           fieldLabel="Other Notes"
-          initialValue={visitorById.otherNotes}
+          initialValue={securityVisitorById.otherNotes}
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
@@ -80,43 +86,15 @@ class Notes extends Component {
   }
 }
 
-const formQuery = gql`
-  query visitorById($_id: String!) {
-    visitorById(_id: $_id) {
-      _id
-      criminalRecord
-      otherNotes
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateNotes(
-    $_id: String!
-    $criminalRecord: String
-    $otherNotes: String
-  ) {
-    updateNotes(
-      _id: $_id
-      criminalRecord: $criminalRecord
-      otherNotes: $otherNotes
-    ) {
-      _id
-      criminalRecord
-      otherNotes
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
-    name: "updateNotes",
+  graphql(UPDATE_SECURITY_VISITOR_NOTES, {
+    name: 'updateSecurityVisitorNotes',
     options: {
-      refetchQueries: ["pagedVisitors"],
+      refetchQueries: ['pagedSecurityVisitors'],
     },
   }),
-  graphql(formQuery, {
+  graphql(SECURITY_VISITOR_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { visitorId } = match.params;

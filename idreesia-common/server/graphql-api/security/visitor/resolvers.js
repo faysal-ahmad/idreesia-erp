@@ -12,7 +12,7 @@ import { processCsvData } from './helpers';
 
 export default {
   Query: {
-    pagedVisitors(obj, { queryString }, { user }) {
+    pagedSecurityVisitors(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -28,7 +28,7 @@ export default {
       return getVisitors(queryString);
     },
 
-    visitorById(obj, { _id }, { user }) {
+    securityVisitorById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -41,7 +41,7 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    visitorByCnic(obj, { cnicNumbers }, { user }) {
+    securityVisitorByCnic(obj, { cnicNumbers }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -60,7 +60,11 @@ export default {
       return null;
     },
 
-    visitorByCnicOrContactNumber(obj, { cnicNumber, contactNumber }, { user }) {
+    securityVisitorByCnicOrContactNumber(
+      obj,
+      { cnicNumber, contactNumber },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -112,7 +116,7 @@ export default {
   },
 
   Mutation: {
-    createVisitor(
+    createSecurityVisitor(
       obj,
       {
         name,
@@ -179,7 +183,7 @@ export default {
       return Visitors.findOne(visitorId);
     },
 
-    updateVisitor(
+    updateSecurityVisitor(
       obj,
       {
         _id,
@@ -233,7 +237,7 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    deleteVisitor(obj, { _id }, { user }) {
+    deleteSecurityVisitor(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -247,22 +251,7 @@ export default {
       return Visitors.remove(_id);
     },
 
-    importCsvData(obj, { csvData }, { user }) {
-      if (
-        user &&
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
-      return processCsvData(csvData, new Date(), user);
-    },
-
-    setVisitorImage(obj, { _id, imageId }, { user }) {
+    setSecurityVisitorImage(obj, { _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -285,7 +274,11 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    updateNotes(obj, { _id, criminalRecord, otherNotes }, { user }) {
+    updateSecurityVisitorNotes(
+      obj,
+      { _id, criminalRecord, otherNotes },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -307,6 +300,21 @@ export default {
       });
 
       return Visitors.findOne(_id);
+    },
+
+    importSecurityVisitorsCsvData(obj, { csvData }, { user }) {
+      if (
+        user &&
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      return processCsvData(csvData, new Date(), user);
     },
 
     fixCitySpelling(obj, { existingSpelling, newSpelling }, { user }) {

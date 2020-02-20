@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -18,6 +17,8 @@ import {
 
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import ListFilter from './list-filter';
+
+import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
 
 const StatusStyle = {
   fontSize: 20,
@@ -46,9 +47,9 @@ class List extends Component {
     handleUploadClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
 
-    deleteVisitor: PropTypes.func,
+    deleteSecurityVisitor: PropTypes.func,
     loading: PropTypes.bool,
-    pagedVisitors: PropTypes.shape({
+    pagedSecurityVisitors: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
@@ -205,8 +206,8 @@ class List extends Component {
   };
 
   handleDeleteClicked = record => {
-    const { deleteVisitor } = this.props;
-    deleteVisitor({
+    const { deleteSecurityVisitor } = this.props;
+    deleteSecurityVisitor({
       variables: {
         _id: record._id,
       },
@@ -326,7 +327,7 @@ class List extends Component {
     const {
       pageIndex,
       pageSize,
-      pagedVisitors: { totalResults, data },
+      pagedSecurityVisitors: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
@@ -360,40 +361,14 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query pagedVisitors($queryString: String) {
-    pagedVisitors(queryString: $queryString) {
-      totalResults
-      data {
-        _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        city
-        country
-        imageId
-        criminalRecord
-        otherNotes
-      }
-    }
-  }
-`;
-
-const deleteMutation = gql`
-  mutation deleteVisitor($_id: String!) {
-    deleteVisitor(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(deleteMutation, {
-    name: 'deleteVisitor',
+  graphql(DELETE_SECURITY_VISITOR, {
+    name: 'deleteSecurityVisitor',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedSecurityVisitors'],
     },
   }),
-  graphql(listQuery, {
+  graphql(PAGED_SECURITY_VISITORS, {
     props: ({ data }) => ({ ...data }),
     options: ({
       name,

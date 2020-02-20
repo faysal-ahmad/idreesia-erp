@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -9,6 +8,8 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Icon, Row, Spin, Tabs } from '/imports/ui/controls';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
+
+import { SECURITY_VISITOR_BY_CNIC } from '../gql';
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -52,11 +53,11 @@ SearchResultRow.propTypes = {
 };
 
 const SearchResult = props => {
-  const { cnicNumbers, loading, visitorByCnic } = props;
+  const { cnicNumbers, loading, securityVisitorByCnic } = props;
   if (cnicNumbers.length === 0) return null;
   if (loading) return <Spin size="large" />;
 
-  if (!visitorByCnic) {
+  if (!securityVisitorByCnic) {
     return (
       <Row type="flex" justify="start" align="middle" gutter={16}>
         <Col>
@@ -89,7 +90,7 @@ const SearchResult = props => {
     imageId,
     criminalRecord,
     otherNotes,
-  } = visitorByCnic;
+  } = securityVisitorByCnic;
 
   const url = getDownloadUrl(imageId);
   const image = url ? <img src={url} style={{ width: '250px' }} /> : null;
@@ -149,30 +150,11 @@ const SearchResult = props => {
 SearchResult.propTypes = {
   loading: PropTypes.bool,
   cnicNumbers: PropTypes.array,
-  visitorByCnic: PropTypes.object,
+  securityVisitorByCnic: PropTypes.object,
 };
 
-const formQuery = gql`
-  query visitorByCnic($cnicNumbers: [String]!) {
-    visitorByCnic(cnicNumbers: $cnicNumbers) {
-      _id
-      name
-      cnicNumber
-      parentName
-      ehadDate
-      referenceName
-      contactNumber1
-      city
-      country
-      imageId
-      criminalRecord
-      otherNotes
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formQuery, {
+  graphql(SECURITY_VISITOR_BY_CNIC, {
     props: ({ data }) => ({ ...data }),
     options: ({ cnicNumbers }) => ({
       variables: { cnicNumbers },

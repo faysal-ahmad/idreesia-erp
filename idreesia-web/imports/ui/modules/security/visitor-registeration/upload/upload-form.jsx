@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -11,6 +10,8 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
+import { IMPORT_SECURITY_VISITORS_CSV_DATA } from '../gql';
+
 class UploadForm extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -18,7 +19,7 @@ class UploadForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    importCsvData: PropTypes.func,
+    importSecurityVisitorsCsvData: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -28,11 +29,11 @@ class UploadForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, importCsvData, history } = this.props;
+    const { form, importSecurityVisitorsCsvData, history } = this.props;
     form.validateFields((err, { csv }) => {
       if (err) return;
 
-      importCsvData({
+      importSecurityVisitorsCsvData({
         variables: {
           csvData: csv,
         },
@@ -71,18 +72,12 @@ class UploadForm extends Component {
   }
 }
 
-const importCsvDataMutation = gql`
-  mutation importCsvData($csvData: String!) {
-    importCsvData(csvData: $csvData)
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(importCsvDataMutation, {
-    name: 'importCsvData',
+  graphql(IMPORT_SECURITY_VISITORS_CSV_DATA, {
+    name: 'importSecurityVisitorsCsvData',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedSecurityVisitors'],
     },
   }),
   WithBreadcrumbs(['Security', 'Visitor Registration', 'Upload'])

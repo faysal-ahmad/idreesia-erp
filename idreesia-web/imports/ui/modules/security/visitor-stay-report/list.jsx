@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
@@ -21,6 +20,12 @@ import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 import ListFilter from './list-filter';
 import FixSpelling from './fix-spelling';
 import ViewForm from '../visitor-stays/view-form';
+
+import {
+  FIX_CITY_SPELLING,
+  FIX_NAME_SPELLING,
+  PAGED_VISITOR_STAYS,
+} from './gql';
 
 const StatusStyle = {
   fontSize: 20,
@@ -411,55 +416,8 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query pagedVisitorStays($queryString: String!) {
-    pagedVisitorStays(queryString: $queryString) {
-      totalResults
-      data {
-        _id
-        visitorId
-        fromDate
-        toDate
-        numOfDays
-        stayReason
-        stayAllowedBy
-        refVisitor {
-          _id
-          name
-          cnicNumber
-          contactNumber1
-          contactNumber2
-          city
-          country
-          imageId
-          criminalRecord
-          otherNotes
-        }
-      }
-    }
-  }
-`;
-
-const formCitySpellingMutation = gql`
-  mutation fixCitySpelling($existingSpelling: String!, $newSpelling: String!) {
-    fixCitySpelling(
-      existingSpelling: $existingSpelling
-      newSpelling: $newSpelling
-    )
-  }
-`;
-
-const formNameSpellingMutation = gql`
-  mutation fixNameSpelling($existingSpelling: String!, $newSpelling: String!) {
-    fixNameSpelling(
-      existingSpelling: $existingSpelling
-      newSpelling: $newSpelling
-    )
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(PAGED_VISITOR_STAYS, {
     props: ({ data }) => ({ ...data }),
     options: ({ queryString }) => ({
       variables: {
@@ -467,16 +425,16 @@ export default flowRight(
       },
     }),
   }),
-  graphql(formCitySpellingMutation, {
+  graphql(FIX_CITY_SPELLING, {
     name: 'fixCitySpelling',
     options: {
-      refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
+      refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
     },
   }),
-  graphql(formNameSpellingMutation, {
+  graphql(FIX_NAME_SPELLING, {
     name: 'fixNameSpelling',
     options: {
-      refetchQueries: ['pagedVisitors', 'pagedVisitorStays'],
+      refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
     },
   })
 )(List);

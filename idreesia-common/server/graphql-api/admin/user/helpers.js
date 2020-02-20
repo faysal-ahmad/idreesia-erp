@@ -8,6 +8,8 @@ export function mapUser(user) {
     displayName: user.displayName,
     karkunId: user.karkunId,
     locked: user.locked,
+    lastLoggedInAt: user.lastLoggedInAt,
+    lastActiveAt: user.lastActiveAt,
     permissions: user.permissions,
     instances: user.instances,
   };

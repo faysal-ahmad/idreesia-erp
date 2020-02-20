@@ -6,10 +6,10 @@ type UserType {
   karkunId: String
   displayName: String
   locked: Boolean
-  permissions: [String]
-  instances: [String]
   lastLoggedInAt: String
   lastActiveAt: String
+  permissions: [String]
+  instances: [String]
 
   karkun: KarkunType
 }

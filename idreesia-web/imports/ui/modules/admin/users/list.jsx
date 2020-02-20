@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import moment from 'moment';
 
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
   DEFAULT_PAGE_INDEX_INT,
@@ -25,6 +27,7 @@ const listQuery = gql`
         email
         displayName
         locked
+        lastActiveAt
         karkun {
           _id
           name
@@ -44,7 +47,7 @@ const columns = [
     render: (text, record) => (record.locked ? <Icon type="lock" /> : null),
   },
   {
-    title: 'User name',
+    title: 'User Name',
     dataIndex: 'username',
     key: 'username',
     render: (text, record) => (
@@ -57,12 +60,21 @@ const columns = [
     key: 'email',
   },
   {
-    title: 'Display name',
+    title: 'Display Name',
     dataIndex: 'displayName',
     key: 'displayName',
   },
   {
-    title: 'Karkun name',
+    title: 'Last Active',
+    dataIndex: 'lastActiveAt',
+    key: 'lastActiveAt',
+    render: text => {
+      if (!text) return '';
+      return moment(Number(text)).format(Formats.DATE_TIME_FORMAT);
+    },
+  },
+  {
+    title: 'Karkun Name',
     key: 'karkun.name',
     render: (text, record) =>
       record.karkun ? (

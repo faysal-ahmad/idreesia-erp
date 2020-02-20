@@ -7,6 +7,8 @@ export { default as KarkunsList } from './karkuns/list';
 export { default as KarkunsListFilter } from './karkuns/list-filter';
 
 export { default as VisitorsList } from './visitors/visitors-list';
+export { default as VisitorsNewForm } from './visitors/new-form';
+
 export {
   default as KarkunAttendancesList,
 } from './attendance/karkun-attendances-list';

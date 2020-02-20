@@ -1,5 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
-
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
@@ -148,7 +146,6 @@ export default {
       if (cnicNumber) checkCnicNotInUse(cnicNumber);
       if (contactNumber1) checkContactNotInUse(contactNumber1);
       if (contactNumber2) checkContactNotInUse(contactNumber2);
-      const guestUser = Accounts.findUserByUsername('erp-guest');
 
       let imageId = null;
       if (imageData) {
@@ -156,7 +153,7 @@ export default {
           {
             data: imageData,
           },
-          { user: user || guestUser }
+          { user }
         );
       }
 
@@ -175,9 +172,9 @@ export default {
         country,
         imageId,
         createdAt: date,
-        createdBy: user ? user._id : guestUser._id,
+        createdBy: user._id,
         updatedAt: date,
-        updatedBy: user ? user._id : guestUser._id,
+        updatedBy: user._id,
       });
 
       return Visitors.findOne(visitorId);

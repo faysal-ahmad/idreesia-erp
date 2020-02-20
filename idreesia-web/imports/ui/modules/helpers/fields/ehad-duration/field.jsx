@@ -30,7 +30,7 @@ export default class Field extends Component {
   };
 
   static defaultProps = {
-    initialValue: moment().startOf('month'),
+    initialValue: moment().startOf('day'),
     fieldLayout: formItemLayout,
   };
 

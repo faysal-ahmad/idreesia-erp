@@ -1,28 +1,27 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useDispatch } from 'react-redux';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+
 import {
   Button,
+  Drawer,
   Dropdown,
   Icon,
   Menu,
-  Pagination,
-  Popconfirm,
-  Table,
-  Tooltip,
   message,
 } from '/imports/ui/controls';
+import { VisitorsList } from '/imports/ui/modules/common';
+import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
+import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import ListFilter from './list-filter';
-
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
-
-const StatusStyle = {
-  fontSize: 20,
-};
 
 const ButtonGroupStyle = {
   display: 'flex',
@@ -30,204 +29,95 @@ const ButtonGroupStyle = {
   alignItems: 'center',
 };
 
-class List extends Component {
-  static propTypes = {
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    name: PropTypes.string,
-    cnicNumber: PropTypes.string,
-    phoneNumber: PropTypes.string,
-    additionalInfo: PropTypes.string,
-    setPageParams: PropTypes.func,
-    handleItemSelected: PropTypes.func,
-    handleShowStayList: PropTypes.func,
-    handleShowMulakaatList: PropTypes.func,
-    showNewButton: PropTypes.bool,
-    handleNewClicked: PropTypes.func,
-    handleUploadClicked: PropTypes.func,
-    handleScanClicked: PropTypes.func,
+const List = ({ history, location }) => {
+  const dispatch = useDispatch();
+  const visitorsList = useRef(null);
+  const [showStayList, setShowStayList] = useState(false);
+  const [showMulakaatList, setShowMulakaatList] = useState(false);
+  const [visitorIdForList, setVisitorIdForList] = useState(null);
+  const { queryString, queryParams, setPageParams } = useQueryParams({
+    history,
+    location,
+    paramNames: [
+      'name',
+      'cnicNumber',
+      'phoneNumber',
+      'additionalInfo',
+      'pageIndex',
+      'pageSize',
+    ],
+  });
 
-    deleteSecurityVisitor: PropTypes.func,
-    loading: PropTypes.bool,
-    pagedSecurityVisitors: PropTypes.shape({
-      totalResults: PropTypes.number,
-      data: PropTypes.array,
-    }),
+  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
+  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
+    variables: { queryString },
+  });
+
+  useEffect(() => {
+    dispatch(setBreadcrumbs(['Security', 'Visitor Registration', 'List']));
+  }, [location]);
+
+  const {
+    name,
+    cnicNumber,
+    phoneNumber,
+    additionalInfo,
+    pageIndex,
+    pageSize,
+  } = queryParams;
+
+  const handleSelectItem = visitor => {
+    history.push(paths.visitorRegistrationEditFormPath(visitor._id));
   };
 
-  state = {
-    selectedRows: [],
-  };
-
-  statusColumn = {
-    title: '',
-    key: 'status',
-    render: (text, record) => {
-      if (record.criminalRecord) {
-        return (
-          <Icon
-            type="warning"
-            style={StatusStyle}
-            theme="twoTone"
-            twoToneColor="red"
-          />
-        );
-      } else if (record.otherNotes) {
-        return (
-          <Icon
-            type="warning"
-            style={StatusStyle}
-            theme="twoTone"
-            twoToneColor="orange"
-          />
-        );
-      }
-
-      return null;
-    },
-  };
-
-  nameColumn = {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text, record) => (
-      <VisitorName
-        visitor={record}
-        onVisitorNameClicked={this.props.handleItemSelected}
-      />
-    ),
-  };
-
-  cnicColumn = {
-    title: 'CNIC Number',
-    dataIndex: 'cnicNumber',
-    key: 'cnicNumber',
-  };
-
-  phoneNumberColumn = {
-    title: 'Phone Number',
-    key: 'phoneNumber',
-    render: (text, record) => {
-      const numbers = [];
-      if (record.contactNumber1) numbers.push(record.contactNumber1);
-      if (record.contactNumber2) numbers.push(record.contactNumber2);
-
-      if (numbers.length === 0) return '';
-      return numbers.join(', ');
-    },
-  };
-
-  cityCountryColumn = {
-    title: 'City / Country',
-    key: 'cityCountry',
-    render: (text, record) => {
-      if (record.city) {
-        return `${record.city}, ${record.country}`;
-      }
-      return record.country;
-    },
-  };
-
-  actionsColumn = {
-    key: 'action',
-    render: (text, record) => (
-      <div className="list-actions-column">
-        <Tooltip title="Stay History">
-          <Icon
-            type="history"
-            className="list-actions-icon"
-            onClick={() => {
-              this.handleStayHistoryClicked(record);
-            }}
-          />
-        </Tooltip>
-        <Tooltip title="Mulakaat History">
-          <Icon
-            type="thunderbolt"
-            className="list-actions-icon"
-            onClick={() => {
-              this.handleMulakaatHistoryClicked(record);
-            }}
-          />
-        </Tooltip>
-        <Popconfirm
-          title="Are you sure you want to delete this visitor registration?"
-          onConfirm={() => {
-            this.handleDeleteClicked(record);
-          }}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
-      </div>
-    ),
-  };
-
-  getColumns = () => [
-    this.statusColumn,
-    this.nameColumn,
-    this.cnicColumn,
-    this.phoneNumberColumn,
-    this.cityCountryColumn,
-    this.actionsColumn,
-  ];
-
-  rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      this.setState({
-        selectedRows,
-      });
-    },
-  };
-
-  onSelect = visitor => {
-    const { handleItemSelected } = this.props;
-    handleItemSelected(visitor);
-  };
-
-  onChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  onShowSizeChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  handleDeleteClicked = record => {
-    const { deleteSecurityVisitor } = this.props;
+  const handleDeleteItem = record => {
     deleteSecurityVisitor({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
-  handleStayHistoryClicked = visitor => {
-    const { handleShowStayList } = this.props;
-    if (handleShowStayList) handleShowStayList(visitor);
+  const handleNewClicked = () => {
+    history.push(paths.visitorRegistrationNewFormPath);
   };
 
-  handleMulakaatHistoryClicked = visitor => {
-    const { handleShowMulakaatList } = this.props;
-    if (handleShowMulakaatList) handleShowMulakaatList(visitor);
+  const handleUploadClicked = () => {
+    history.push(paths.visitorRegistrationUploadFormPath);
   };
 
-  handleDownloadSelectedAsCSV = () => {
-    const { selectedRows } = this.state;
+  const handleScanClicked = () => {
+    history.push(paths.visitorRegistrationPath);
+  };
+
+  const handleStayHistoryAction = visitor => {
+    setShowStayList(true);
+    setVisitorIdForList(visitor._id);
+  };
+
+  const handleMulakaatHistoryAction = visitor => {
+    setShowMulakaatList(true);
+    setVisitorIdForList(visitor._id);
+  };
+
+  const handleStayListClose = () => {
+    setShowStayList(false);
+    setVisitorIdForList(null);
+  };
+
+  const handleMulakaatListClose = () => {
+    setShowMulakaatList(false);
+    setVisitorIdForList(null);
+  };
+
+  const handleDownloadSelectedAsCSV = () => {
+    const selectedRows = visitorsList.current.getSelectedRows();
     if (selectedRows.length === 0) return;
 
     const reportArgs = selectedRows.map(row => row._id);
@@ -237,21 +127,19 @@ class List extends Component {
     window.open(url, '_blank');
   };
 
-  handleDownloadAllAsCSV = () => {
+  const handleDownloadAllAsCSV = () => {
     const url = `${window.location.origin}/generate-report?reportName=Visitors&reportArgs=all`;
     window.open(url, '_blank');
   };
 
-  getActionsMenu = () => {
-    const { handleUploadClicked } = this.props;
-
+  const getActionsMenu = () => {
     const menu = (
       <Menu>
-        <Menu.Item key="1" onClick={this.handleDownloadSelectedAsCSV}>
+        <Menu.Item key="1" onClick={handleDownloadSelectedAsCSV}>
           <Icon type="download" />
           Download Selected
         </Menu.Item>
-        <Menu.Item key="2" onClick={this.handleDownloadAllAsCSV}>
+        <Menu.Item key="2" onClick={handleDownloadAllAsCSV}>
           <Icon type="upload" />
           Download All
         </Menu.Item>
@@ -270,21 +158,9 @@ class List extends Component {
     );
   };
 
-  getTableHeader = () => {
-    const {
-      name,
-      cnicNumber,
-      phoneNumber,
-      additionalInfo,
-      setPageParams,
-      showNewButton,
-      handleNewClicked,
-      handleScanClicked,
-    } = this.props;
-
-    let newButton = null;
-    if (showNewButton) {
-      newButton = (
+  const getTableHeader = () => (
+    <div className="list-table-header">
+      <div style={ButtonGroupStyle}>
         <Button
           type="primary"
           icon="plus-circle-o"
@@ -293,97 +169,89 @@ class List extends Component {
         >
           New Visitor Registration
         </Button>
-      );
-    }
-
-    return (
-      <div className="list-table-header">
-        <div style={ButtonGroupStyle}>
-          {newButton}
-          &nbsp;
-          <Button icon="scan" size="large" onClick={handleScanClicked}>
-            Scan CNIC
-          </Button>
-        </div>
-        <div className="list-table-header-section">
-          <ListFilter
-            name={name}
-            cnicNumber={cnicNumber}
-            phoneNumber={phoneNumber}
-            additionalInfo={additionalInfo}
-            setPageParams={setPageParams}
-          />
-          &nbsp;&nbsp;
-          {this.getActionsMenu()}
-        </div>
+        &nbsp;
+        <Button icon="scan" size="large" onClick={handleScanClicked}>
+          Scan CNIC
+        </Button>
       </div>
-    );
-  };
+      <div className="list-table-header-section">
+        <ListFilter
+          name={name}
+          cnicNumber={cnicNumber}
+          phoneNumber={phoneNumber}
+          additionalInfo={additionalInfo}
+          setPageParams={setPageParams}
+        />
+        &nbsp;&nbsp;
+        {getActionsMenu()}
+      </div>
+    </div>
+  );
 
-  render() {
-    const { loading } = this.props;
-    if (loading) return null;
+  // if (loading) return null;
+  const pagedSecurityVisitors = data
+    ? data.pagedSecurityVisitors
+    : {
+        data: [],
+        totalResults: 0,
+      };
+  const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
+  const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
-    const {
-      pageIndex,
-      pageSize,
-      pagedSecurityVisitors: { totalResults, data },
-    } = this.props;
-
-    const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-    const numPageSize = pageSize || 20;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={data}
-        columns={this.getColumns()}
-        title={this.getTableHeader}
-        rowSelection={this.rowSelection}
-        bordered
-        size="small"
-        pagination={false}
-        footer={() => (
-          <Pagination
-            current={numPageIndex}
-            pageSize={numPageSize}
-            showSizeChanger
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
-            onChange={this.onChange}
-            onShowSizeChange={this.onShowSizeChange}
-            total={totalResults}
-          />
-        )}
+  return (
+    <>
+      <VisitorsList
+        ref={visitorsList}
+        showSelectionColumn
+        showStatusColumn
+        showCnicColumn
+        showPhoneNumbersColumn
+        showCityCountryColumn
+        showStayHistoryAction
+        showMulakaatHistoryAction
+        showLookupAction={false}
+        showDeleteAction
+        listHeader={getTableHeader}
+        handleSelectItem={handleSelectItem}
+        handleDeleteItem={handleDeleteItem}
+        handleStayHistoryAction={handleStayHistoryAction}
+        handleMulakaatHistoryAction={handleMulakaatHistoryAction}
+        setPageParams={setPageParams}
+        pageIndex={numPageIndex}
+        pageSize={numPageSize}
+        pagedData={pagedSecurityVisitors}
       />
-    );
-  }
-}
+      <Drawer
+        title="Stay History"
+        width={600}
+        onClose={handleStayListClose}
+        visible={showStayList}
+      >
+        <VisitorStaysList
+          showNewButton
+          showActionsColumn
+          visitorId={visitorIdForList}
+        />
+      </Drawer>
+      <Drawer
+        title="Mulakaat History"
+        width={400}
+        onClose={handleMulakaatListClose}
+        visible={showMulakaatList}
+      >
+        <VisitorMulakaatsList
+          showNewButton
+          showActionsColumn
+          visitorId={visitorIdForList}
+        />
+      </Drawer>
+    </>
+  );
+};
 
-export default flowRight(
-  graphql(DELETE_SECURITY_VISITOR, {
-    name: 'deleteSecurityVisitor',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors'],
-    },
-  }),
-  graphql(PAGED_SECURITY_VISITORS, {
-    props: ({ data }) => ({ ...data }),
-    options: ({
-      name,
-      cnicNumber,
-      phoneNumber,
-      additionalInfo,
-      pageIndex,
-      pageSize,
-    }) => ({
-      variables: {
-        queryString: `?name=${name || ''}&cnicNumber=${cnicNumber ||
-          ''}&phoneNumber=${phoneNumber ||
-          ''}&additionalInfo=${additionalInfo ||
-          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
-      },
-    }),
-  })
-)(List);
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default List;

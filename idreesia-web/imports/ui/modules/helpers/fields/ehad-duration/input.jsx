@@ -45,7 +45,7 @@ export default class CustomInput extends Component {
     const { onChange } = this.props;
     const months = this.monthSelect.current.props.value;
     const totalMonths = years * 12 + months;
-    const newValue = moment().startOf('month');
+    const newValue = moment().startOf('day');
     newValue.subtract(totalMonths, 'months');
     onChange(newValue);
   };
@@ -54,14 +54,14 @@ export default class CustomInput extends Component {
     const { onChange } = this.props;
     const years = this.yearSelect.current.props.value;
     const totalMonths = years * 12 + months;
-    const newValue = moment().startOf('month');
+    const newValue = moment().startOf('day');
     newValue.subtract(totalMonths, 'months');
     onChange(newValue);
   };
 
   render() {
     const { value } = this.props;
-    const currentDate = moment().startOf('month');
+    const currentDate = moment().startOf('day');
     const diffInMonths = currentDate.diff(value, 'months');
     const yearValue =
       diffInMonths < 12 ? 0 : (diffInMonths - (diffInMonths % 12)) / 12;

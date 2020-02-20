@@ -25,12 +25,14 @@ export default class VisitorsList extends Component {
     showCityCountryColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
     showStayHistoryAction: PropTypes.bool,
+    showMulakaatHistoryAction: PropTypes.bool,
     showLookupAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
     handleStayHistoryAction: PropTypes.func,
+    handleMulakaatHistoryAction: PropTypes.func,
     handleLookupAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
@@ -43,9 +45,16 @@ export default class VisitorsList extends Component {
   };
 
   static defaultProps = {
+    showDeleteAction: false,
+    showStayHistoryAction: false,
+    showMulakaatHistoryAction: false,
+    showLookupAction: false,
+
     handleSelectItem: noop,
     handleDeleteItem: noop,
     handleStayHistoryAction: noop,
+    handleMulakaatHistoryAction: noop,
+    handleLookupAction: noop,
     listHeader: () => null,
   };
 
@@ -132,9 +141,11 @@ export default class VisitorsList extends Component {
       const {
         showDeleteAction,
         showStayHistoryAction,
+        showMulakaatHistoryAction,
         showLookupAction,
         handleDeleteItem,
         handleStayHistoryAction,
+        handleMulakaatHistoryAction,
         handleLookupAction,
       } = this.props;
 
@@ -145,6 +156,18 @@ export default class VisitorsList extends Component {
             className="list-actions-icon"
             onClick={() => {
               handleStayHistoryAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
+      const mulakaatHistoryAction = showMulakaatHistoryAction ? (
+        <Tooltip title="Mulakaat History">
+          <Icon
+            type="thunderbolt"
+            className="list-actions-icon"
+            onClick={() => {
+              handleMulakaatHistoryAction(record);
             }}
           />
         </Tooltip>
@@ -180,6 +203,7 @@ export default class VisitorsList extends Component {
       return (
         <div className="list-actions-column">
           {stayHistoryAction}
+          {mulakaatHistoryAction}
           {lookupAction}
           {deleteAction}
         </div>
@@ -195,13 +219,16 @@ export default class VisitorsList extends Component {
       showCityCountryColumn,
       showDeleteAction,
       showStayHistoryAction,
+      showMulakaatHistoryAction,
+      showLookupAction,
     } = this.props;
 
-    const columns = [this.nameColumn];
-
+    const columns = [];
     if (showStatusColumn) {
       columns.push(this.statusColumn);
     }
+
+    columns.push(this.nameColumn);
 
     if (showCnicColumn) {
       columns.push(this.cnicColumn);
@@ -215,7 +242,12 @@ export default class VisitorsList extends Component {
       columns.push(this.cityCountryColumn);
     }
 
-    if (showDeleteAction || showStayHistoryAction) {
+    if (
+      showDeleteAction ||
+      showStayHistoryAction ||
+      showMulakaatHistoryAction ||
+      showLookupAction
+    ) {
       columns.push(this.actionsColumn);
     }
 

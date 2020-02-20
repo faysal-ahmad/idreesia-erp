@@ -12,3 +12,6 @@ export {
 export {
   default as SET_SECURITY_VISITOR_IMAGE,
 } from './set-security-visitor-image';
+export {
+  default as IMPORT_SECURITY_VISITORS_CSV_DATA,
+} from './import-security-visitors-csv-data';

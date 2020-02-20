@@ -2,7 +2,6 @@ import moment from 'moment';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { VisitorMulakaats } from 'meteor/idreesia-common/server/collections/security';
-import { Formats } from 'meteor/idreesia-common/constants';
 import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
@@ -31,7 +30,7 @@ export async function getVisitorMulakaats(params) {
     pipeline.push({
       $match: {
         mulakaatDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT)
+          $gte: moment(startDate)
             .startOf('day')
             .toDate(),
         },
@@ -42,7 +41,7 @@ export async function getVisitorMulakaats(params) {
     pipeline.push({
       $match: {
         mulakaatDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT)
+          $lte: moment(endDate)
             .endOf('day')
             .toDate(),
         },

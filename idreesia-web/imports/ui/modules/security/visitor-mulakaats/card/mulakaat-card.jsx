@@ -69,7 +69,12 @@ export default class MulakaatCard extends Component {
               const historyDate = moment(Number(history.mulakaatDate)).format(
                 'DD MMM, YYYY'
               );
-              return <li>{historyDate}</li>;
+              return (
+                <li>
+                  {historyDate}
+                  {history.cancelledDate ? ' - Cancelled' : ''}
+                </li>
+              );
             })}
           </ul>
         </div>

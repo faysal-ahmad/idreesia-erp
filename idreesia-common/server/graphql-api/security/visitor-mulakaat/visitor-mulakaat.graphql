@@ -2,6 +2,7 @@ type VisitorMulakaatType {
   _id: String
   visitorId: String
   mulakaatDate: String
+  cancelledDate: String
 
   visitor: VisitorType
 
@@ -35,5 +36,7 @@ extend type Mutation {
     mulakaatDate: String!
   ): VisitorMulakaatType
 
+  cancelMulakaats(mulakaatDate: String!): Int
+  cancelVisitorMulakaat(_id: String!): VisitorMulakaatType
   deleteVisitorMulakaat(_id: String!): Int
 }

@@ -62,7 +62,7 @@ export default {
       const mMulakaatDate = moment(mulakaatDate);
       // Before creating, ensure that there isn't already another record created
       // for the week of this date for this visitor.
-      const weekDate = mMulakaatDate.startOf('isoWeek');
+      const weekDate = mMulakaatDate.clone().startOf('isoWeek');
       const weekDates = [weekDate.toDate()];
       for (let i = 1; i < 7; i++) {
         weekDate.add(1, 'day');
@@ -72,6 +72,7 @@ export default {
       const existingMulakaat = VisitorMulakaats.findOne({
         visitorId,
         mulakaatDate: { $in: weekDates },
+        cancelledDate: { $exists: false },
       });
 
       if (existingMulakaat) {
@@ -89,6 +90,57 @@ export default {
       });
 
       return VisitorMulakaats.findOne(visitorMulakaatId);
+    },
+
+    cancelMulakaats(obj, { mulakaatDate }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      const date = new Date();
+      const mMulakaatDate = moment(mulakaatDate);
+      return VisitorMulakaats.update(
+        {
+          mulakaatDate: mMulakaatDate.startOf('day').toDate(),
+        },
+        {
+          $set: {
+            cancelledDate: date,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
+    },
+
+    cancelVisitorMulakaat(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_VISITORS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      const date = new Date();
+      VisitorMulakaats.update(_id, {
+        $set: {
+          cancelledDate: date,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return VisitorMulakaats.findOne(_id);
     },
 
     deleteVisitorMulakaat(obj, { _id }, { user }) {

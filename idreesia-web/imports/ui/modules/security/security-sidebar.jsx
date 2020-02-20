@@ -52,6 +52,11 @@ class SecuritySidebar extends Component {
         history.push(paths.teamVisitReportPath);
         break;
 
+      case 'mulakaat-report':
+        setActiveSubModuleName(SubModuleNames.mulakaatReport);
+        history.push(paths.mulakaatReportPath);
+        break;
+
       default:
         break;
     }
@@ -116,6 +121,9 @@ class SecuritySidebar extends Component {
             </Menu.Item>
             <Menu.Item key="team-visit-report">
               <span>Team Visit Report</span>
+            </Menu.Item>
+            <Menu.Item key="mulakaat-report">
+              <span>Mulakaat Report</span>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu.SubMenu>

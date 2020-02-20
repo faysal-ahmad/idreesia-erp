@@ -91,7 +91,7 @@ export default flowRight(
         filter: {
           visitorId,
           pageIndex: '0',
-          pageSize: '4',
+          pageSize: '6',
         },
       },
     }),

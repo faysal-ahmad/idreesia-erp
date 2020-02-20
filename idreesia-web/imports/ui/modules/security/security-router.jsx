@@ -17,6 +17,7 @@ import {
 import { VisitorCardVerificationForm } from './visitor-stays';
 import { VisitorStayReport } from './visitor-stay-report';
 import { TeamVisitReport } from './team-visit-report';
+import { MulakaatReport } from './mulakaat-report';
 
 const SecurityRouter = () => (
   <Switch>
@@ -63,6 +64,7 @@ const SecurityRouter = () => (
 
     <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
     <Route path={paths.teamVisitReportPath} component={TeamVisitReport} />
+    <Route path={paths.mulakaatReportPath} component={MulakaatReport} />
   </Switch>
 );
 

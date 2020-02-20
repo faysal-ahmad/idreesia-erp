@@ -9,4 +9,8 @@ export default new SimpleSchema({
   mulakaatDate: {
     type: Date,
   },
+  cancelledDate: {
+    type: Date,
+    optional: true,
+  },
 }).extend(identifiable);

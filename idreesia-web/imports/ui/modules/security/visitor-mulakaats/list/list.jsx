@@ -18,6 +18,7 @@ import {
 import CardContainer from '../card/card-container';
 import {
   CREATE_VISITOR_MULAKAAT,
+  CANCEL_VISITOR_MULAKAAT,
   DELETE_VISITOR_MULAKAAT,
   PAGED_VISITOR_MULAKAATS,
 } from '../gql';
@@ -30,6 +31,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
   const [selectedMulakaatDate, setSelectedMulakaatDate] = useState(moment());
 
   const [createVisitorMulakaat] = useMutation(CREATE_VISITOR_MULAKAAT);
+  const [cancelVisitorMulakaat] = useMutation(CANCEL_VISITOR_MULAKAAT);
   const [deleteVisitorMulakaat] = useMutation(DELETE_VISITOR_MULAKAAT);
   const { data, loading, refetch } = useQuery(PAGED_VISITOR_MULAKAATS, {
     variables: {
@@ -51,6 +53,20 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
       variables: {
         visitorId,
         mulakaatDate: selectedMulakaatDate,
+      },
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  const handleCancelClicked = ({ _id }) => {
+    cancelVisitorMulakaat({
+      variables: {
+        _id,
       },
     })
       .then(() => {
@@ -102,31 +118,52 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
       columns.push({
         key: 'action',
         width: 100,
-        render: (text, record) => (
-          <div className="list-actions-column">
-            <Tooltip title="Mulakaat Card">
-              <Icon
-                type="solution"
-                className="list-actions-icon"
-                onClick={() => {
-                  handleCardClicked(record);
-                }}
-              />
-            </Tooltip>
-            <Popconfirm
-              title="Are you sure you want to delete this mulakaat entry?"
-              onConfirm={() => {
-                handleDeleteClicked(record);
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip title="Delete">
-                <Icon type="delete" className="list-actions-icon" />
+        render: (text, record) => {
+          if (record.cancelledDate) {
+            const title = `Cancelled on ${moment(
+              Number(record.cancelledDate)
+            ).format('DD MMM, YYYY')}`;
+            return <Tooltip title={title}>Cancelled</Tooltip>;
+          }
+
+          return (
+            <div className="list-actions-column">
+              <Tooltip title="Mulakaat Card">
+                <Icon
+                  type="solution"
+                  className="list-actions-icon"
+                  onClick={() => {
+                    handleCardClicked(record);
+                  }}
+                />
               </Tooltip>
-            </Popconfirm>
-          </div>
-        ),
+              <Popconfirm
+                title="Are you sure you want to cancel this mulakaat entry?"
+                onConfirm={() => {
+                  handleCancelClicked(record);
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Tooltip title="Cancel">
+                  <Icon type="stop" className="list-actions-icon" />
+                </Tooltip>
+              </Popconfirm>
+              <Popconfirm
+                title="Are you sure you want to delete this mulakaat entry?"
+                onConfirm={() => {
+                  handleDeleteClicked(record);
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Tooltip title="Delete">
+                  <Icon type="delete" className="list-actions-icon" />
+                </Tooltip>
+              </Popconfirm>
+            </div>
+          );
+        },
       });
     }
 

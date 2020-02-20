@@ -6,6 +6,7 @@ const CREATE_VISITOR_MULAKAAT = gql`
       _id
       visitorId
       mulakaatDate
+      cancelledDate
     }
   }
 `;

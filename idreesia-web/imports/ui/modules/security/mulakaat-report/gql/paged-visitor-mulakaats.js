@@ -9,6 +9,15 @@ const PAGED_VISITOR_MULAKAATS = gql`
         visitorId
         mulakaatDate
         cancelledDate
+        visitor {
+          _id
+          name
+          cnicNumber
+          contactNumber1
+          city
+          country
+          imageId
+        }
       }
     }
   }

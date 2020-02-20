@@ -61,14 +61,21 @@ export default {
 
       const mMulakaatDate = moment(mulakaatDate);
       // Before creating, ensure that there isn't already another record created
-      // for this date for this visitor.
+      // for the week of this date for this visitor.
+      const weekDate = mMulakaatDate.startOf('isoWeek');
+      const weekDates = [weekDate.toDate()];
+      for (let i = 1; i < 7; i++) {
+        weekDate.add(1, 'day');
+        weekDates.push(weekDate.toDate());
+      }
+
       const existingMulakaat = VisitorMulakaats.findOne({
         visitorId,
-        mulakaatDate: mMulakaatDate.startOf('day').toDate(),
+        mulakaatDate: { $in: weekDates },
       });
 
       if (existingMulakaat) {
-        throw new Error('Visitor already has a mulakaat for this date.');
+        throw new Error('Visitor already has a mulakaat for this week.');
       }
 
       const date = new Date();

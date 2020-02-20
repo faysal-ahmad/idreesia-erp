@@ -6,7 +6,7 @@ import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-class SecuritySidebar extends Component {
+class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -132,5 +132,5 @@ class SecuritySidebar extends Component {
   }
 }
 
-const SecuritySidebarContainer = WithActiveModule()(SecuritySidebar);
-export default SecuritySidebarContainer;
+const SidebarContainer = WithActiveModule()(Sidebar);
+export default SidebarContainer;

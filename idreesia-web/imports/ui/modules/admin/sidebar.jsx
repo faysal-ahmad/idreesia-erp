@@ -6,7 +6,7 @@ import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-class AdminSidebar extends Component {
+class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -75,5 +75,5 @@ class AdminSidebar extends Component {
   }
 }
 
-const AdminSidebarContainer = WithActiveModule()(AdminSidebar);
-export default AdminSidebarContainer;
+const SidebarContainer = WithActiveModule()(Sidebar);
+export default SidebarContainer;

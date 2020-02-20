@@ -12,7 +12,7 @@ import {
   PaymentReceipts,
 } from './payments';
 
-const AccountsRouter = () => (
+const Router = () => (
   <Switch>
     <Route
       path={paths.accountHeadsEditFormPath(':companyId')}
@@ -39,4 +39,4 @@ const AccountsRouter = () => (
   </Switch>
 );
 
-export default AccountsRouter;
+export default Router;

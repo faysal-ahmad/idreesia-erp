@@ -19,7 +19,7 @@ import { VisitorStayReport } from './visitor-stay-report';
 import { TeamVisitReport } from './team-visit-report';
 import { MulakaatReport } from './mulakaat-report';
 
-const SecurityRouter = () => (
+const Router = () => (
   <Switch>
     <Route path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
     <Route path={paths.mehfilsKarkunCardsPath()} component={MehfilCards} />
@@ -68,4 +68,4 @@ const SecurityRouter = () => (
   </Switch>
 );
 
-export default SecurityRouter;
+export default Router;

@@ -17,7 +17,7 @@ import {
 } from './amaanat-logs';
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 
-const OutstationRouter = () => (
+const Router = () => (
   <Switch>
     <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
     <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />
@@ -52,4 +52,4 @@ const OutstationRouter = () => (
   </Switch>
 );
 
-export default OutstationRouter;
+export default Router;

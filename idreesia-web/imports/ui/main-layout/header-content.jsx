@@ -27,6 +27,7 @@ const modulePathsMapping = {
   [ModuleNames.accounts]: ModulePaths.accounts,
   [ModuleNames.hr]: ModulePaths.hr,
   [ModuleNames.inventory]: ModulePaths.inventory,
+  [ModuleNames.telephoneRoom]: ModulePaths.telephoneRoom,
   [ModuleNames.security]: ModulePaths.security,
   [ModuleNames.outstation]: ModulePaths.outstation,
   [ModuleNames.portals]: ModulePaths.portals,

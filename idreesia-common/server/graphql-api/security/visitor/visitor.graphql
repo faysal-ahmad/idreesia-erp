@@ -1,32 +1,3 @@
-type VisitorType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  ehadDate: String
-  referenceName: String
-  contactNumber1: String
-  contactNumber2: String
-  address: String
-  city: String
-  country: String
-  imageId: String
-  criminalRecord: String
-  otherNotes: String
-
-  image: Attachment
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-type PagedVisitorType {
-  totalResults: Int
-  data: [VisitorType]
-}
-
 extend type Query {
   pagedVisitors(queryString: String): PagedVisitorType
   visitorById(_id: String!): VisitorType

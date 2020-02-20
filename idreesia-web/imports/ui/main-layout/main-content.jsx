@@ -7,25 +7,26 @@ import { Layout } from './antd-controls';
 
 const routersMap = {
   [ModuleNames.admin]: React.lazy(() =>
-    import('/imports/ui/modules/admin/admin-router')
+    import('/imports/ui/modules/admin/router')
   ),
   [ModuleNames.inventory]: React.lazy(() =>
-    import('/imports/ui/modules/inventory/inventory-router')
+    import('/imports/ui/modules/inventory/router')
   ),
-  [ModuleNames.hr]: React.lazy(() =>
-    import('/imports/ui/modules/hr/hr-router')
-  ),
+  [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/router')),
   [ModuleNames.accounts]: React.lazy(() =>
-    import('/imports/ui/modules/accounts/accounts-router')
+    import('/imports/ui/modules/accounts/router')
+  ),
+  [ModuleNames.telephoneRoom]: React.lazy(() =>
+    import('/imports/ui/modules/telephoneRoom/router')
   ),
   [ModuleNames.security]: React.lazy(() =>
-    import('/imports/ui/modules/security/security-router')
+    import('/imports/ui/modules/security/router')
   ),
   [ModuleNames.outstation]: React.lazy(() =>
-    import('/imports/ui/modules/outstation/outstation-router')
+    import('/imports/ui/modules/outstation/router')
   ),
   [ModuleNames.portals]: React.lazy(() =>
-    import('/imports/ui/modules/portals/portals-router')
+    import('/imports/ui/modules/portals/router')
   ),
 };
 

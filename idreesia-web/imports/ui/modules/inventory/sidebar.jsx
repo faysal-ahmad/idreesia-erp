@@ -9,7 +9,7 @@ import { Menu, Icon } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-class InventorySidebar extends Component {
+class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -194,10 +194,10 @@ const listQuery = gql`
   }
 `;
 
-const InventorySidebarContainer = flowRight(
+const SidebarContainer = flowRight(
   WithActiveModule(),
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   })
-)(InventorySidebar);
-export default InventorySidebarContainer;
+)(Sidebar);
+export default SidebarContainer;

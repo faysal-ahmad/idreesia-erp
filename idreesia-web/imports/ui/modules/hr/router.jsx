@@ -33,7 +33,7 @@ import {
   SharedResidencesList,
 } from './shared-residences';
 
-const HRRouter = () => (
+const Router = () => (
   <Switch>
     <Route path={paths.jobsNewFormPath} component={JobsNewForm} />
     <Route path={paths.jobsEditFormPath()} component={JobsEditForm} />
@@ -95,4 +95,4 @@ const HRRouter = () => (
   </Switch>
 );
 
-export default HRRouter;
+export default Router;

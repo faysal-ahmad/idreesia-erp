@@ -7,25 +7,26 @@ import { Layout } from './antd-controls';
 
 const sidebarsMap = {
   [ModuleNames.admin]: React.lazy(() =>
-    import('/imports/ui/modules/admin/admin-sidebar')
+    import('/imports/ui/modules/admin/sidebar')
   ),
   [ModuleNames.inventory]: React.lazy(() =>
-    import('/imports/ui/modules/inventory/inventory-sidebar')
+    import('/imports/ui/modules/inventory/sidebar')
   ),
-  [ModuleNames.hr]: React.lazy(() =>
-    import('/imports/ui/modules/hr/hr-sidebar')
-  ),
+  [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/sidebar')),
   [ModuleNames.accounts]: React.lazy(() =>
-    import('/imports/ui/modules/accounts/accounts-sidebar')
+    import('/imports/ui/modules/accounts/sidebar')
+  ),
+  [ModuleNames.telephoneRoom]: React.lazy(() =>
+    import('/imports/ui/modules/telephoneRoom/sidebar')
   ),
   [ModuleNames.security]: React.lazy(() =>
-    import('/imports/ui/modules/security/security-sidebar')
+    import('/imports/ui/modules/security/sidebar')
   ),
   [ModuleNames.outstation]: React.lazy(() =>
-    import('/imports/ui/modules/outstation/outstation-sidebar')
+    import('/imports/ui/modules/outstation/sidebar')
   ),
   [ModuleNames.portals]: React.lazy(() =>
-    import('/imports/ui/modules/portals/portals-sidebar')
+    import('/imports/ui/modules/portals/sidebar')
   ),
 };
 

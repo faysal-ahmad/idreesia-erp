@@ -40,7 +40,7 @@ import {
   StockAdjustmentsList,
 } from './stock-adjustments';
 
-const InventoryRouter = () => (
+const Router = () => (
   <Switch>
     <Route path={paths.issuanceReportPath()} component={IssuanceReport} />
     <Route path={paths.purchasingReportPath()} component={PurchasingReport} />
@@ -118,4 +118,4 @@ const InventoryRouter = () => (
   </Switch>
 );
 
-export default InventoryRouter;
+export default Router;

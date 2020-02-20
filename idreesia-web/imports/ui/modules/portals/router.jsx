@@ -11,7 +11,7 @@ import {
   AmaanatLogsEditForm,
 } from './amaanat-logs';
 
-const PortalsRouter = () => (
+const Router = () => (
   <Switch>
     <Route path={paths.karkunsNewFormPath()} component={KarkunsNewForm} />
     <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
@@ -38,4 +38,4 @@ const PortalsRouter = () => (
   </Switch>
 );
 
-export default PortalsRouter;
+export default Router;

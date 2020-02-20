@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu, Icon } from '/imports/ui/controls';
+import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-const { SubMenu } = Menu;
-
-class HRSidebar extends Component {
+class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -20,29 +18,14 @@ class HRSidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case 'jobs':
-        setActiveSubModuleName(SubModuleNames.jobs);
-        history.push(paths.jobsPath);
+      case 'mehfil-duties':
+        setActiveSubModuleName(SubModuleNames.mehfilDuties);
+        history.push(paths.mehfilDutiesPath);
         break;
 
-      case 'ms-duties':
-        setActiveSubModuleName(SubModuleNames.msDuties);
-        history.push(paths.msDutiesPath);
-        break;
-
-      case 'attendance-sheets':
-        setActiveSubModuleName(SubModuleNames.attendanceSheets);
-        history.push(paths.attendanceSheetsPath);
-        break;
-
-      case 'salary-sheets':
-        setActiveSubModuleName(SubModuleNames.salarySheets);
-        history.push(paths.salarySheetsPath);
-        break;
-
-      case 'duty-locations':
-        setActiveSubModuleName(SubModuleNames.dutyLocations);
-        history.push(paths.dutyLocationsPath);
+      case 'cities':
+        setActiveSubModuleName(SubModuleNames.cities);
+        history.push(paths.citiesPath);
         break;
 
       case 'karkuns':
@@ -50,14 +33,19 @@ class HRSidebar extends Component {
         history.push(paths.karkunsPath);
         break;
 
+      case 'attendance-sheets':
+        setActiveSubModuleName(SubModuleNames.attendanceSheets);
+        history.push(paths.attendanceSheetsPath);
+        break;
+
+      case 'amaanat-logs':
+        setActiveSubModuleName(SubModuleNames.amaanatLogs);
+        history.push(paths.amaanatLogsPath);
+        break;
+
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
-        break;
-
-      case 'shared-residencs':
-        setActiveSubModuleName(SubModuleNames.sharedResidences);
-        history.push(paths.sharedResidencesPath);
         break;
 
       default:
@@ -78,16 +66,16 @@ class HRSidebar extends Component {
             Karkuns
           </span>
         </Menu.Item>
-        <Menu.Item key="salary-sheets">
-          <span>
-            <Icon type="dollar" />
-            Salary Sheets
-          </span>
-        </Menu.Item>
         <Menu.Item key="attendance-sheets">
           <span>
             <Icon type="solution" />
             Attendance Sheets
+          </span>
+        </Menu.Item>
+        <Menu.Item key="amaanat-logs">
+          <span>
+            <Icon type="red-envelope" />
+            Amaanat Logs
           </span>
         </Menu.Item>
         <Menu.Item key="messages">
@@ -96,13 +84,7 @@ class HRSidebar extends Component {
             Messages
           </span>
         </Menu.Item>
-        <Menu.Item key="shared-residencs">
-          <span>
-            <Icon type="home" />
-            Shared Residences
-          </span>
-        </Menu.Item>
-        <SubMenu
+        <Menu.SubMenu
           key="setup"
           title={
             <span>
@@ -111,14 +93,13 @@ class HRSidebar extends Component {
             </span>
           }
         >
-          <Menu.Item key="jobs">Jobs</Menu.Item>
-          <Menu.Item key="ms-duties">Duties &amp; Shifts</Menu.Item>
-          <Menu.Item key="duty-locations">Duty Locations</Menu.Item>
-        </SubMenu>
+          <Menu.Item key="cities">Cities &amp; Mehfils</Menu.Item>
+          <Menu.Item key="mehfil-duties">Mehfil Duties</Menu.Item>
+        </Menu.SubMenu>
       </Menu>
     );
   }
 }
 
-const HRSidebarContainer = WithActiveModule()(HRSidebar);
-export default HRSidebarContainer;
+const SidebarContainer = WithActiveModule()(Sidebar);
+export default SidebarContainer;

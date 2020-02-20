@@ -9,6 +9,9 @@ import AttachmentResolvers from './common/attachment/resolvers';
 import MessageSchema from './common/message/message.graphql';
 import MessageResolvers from './common/message/resolvers';
 
+import VisitorSchema from './common/visitor/visitor.graphql';
+import VisitorResolvers from './common/visitor/resolvers';
+
 /**
  * Schema and Resolvers for the Admin module
  */
@@ -30,8 +33,8 @@ import MehfilResolvers from './security/mehfil/resolvers';
 import MehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun.graphql';
 import MehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
 
-import VisitorSchema from './security/visitor/visitor.graphql';
-import VisitorResolvers from './security/visitor/resolvers';
+import SecurityVisitorSchema from './security/visitor/visitor.graphql';
+import SecurityVisitorResolvers from './security/visitor/resolvers';
 
 import VisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
 import VisitorStayResolvers from './security/visitor-stay/resolvers';
@@ -173,13 +176,14 @@ import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
 const typeDefs = [
   AttachmentSchema,
   MessageSchema,
+  VisitorSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
 
   MehfilSchema,
   MehfilKarkunSchema,
-  VisitorSchema,
+  SecurityVisitorSchema,
   VisitorStaySchema,
   VisitorMulakaatSchema,
 
@@ -231,13 +235,14 @@ const typeDefs = [
 const resolvers = merge(
   AttachmentResolvers,
   MessageResolvers,
+  VisitorResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
 
   MehfilResolvers,
   MehfilKarkunResolvers,
-  VisitorResolvers,
+  SecurityVisitorResolvers,
   VisitorStayResolvers,
   VisitorMulakaatResolvers,
 

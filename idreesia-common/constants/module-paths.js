@@ -6,6 +6,7 @@ const ModulePaths = {
   security: '/security',
   outstation: '/outstation',
   portals: '/portals',
+  telephoneRoom: '/telephoneRoom',
 };
 
 export default ModulePaths;

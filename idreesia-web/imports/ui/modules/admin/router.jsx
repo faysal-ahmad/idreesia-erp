@@ -26,7 +26,7 @@ import {
 } from './companies';
 import { PortalsNewForm, PortalsEditForm, PortalsList } from './portals';
 
-const AdminRouter = () => (
+const Router = () => (
   <Switch>
     <Route
       path={paths.adminJobsNewAccountsImportPath}
@@ -70,4 +70,4 @@ const AdminRouter = () => (
   </Switch>
 );
 
-export default AdminRouter;
+export default Router;

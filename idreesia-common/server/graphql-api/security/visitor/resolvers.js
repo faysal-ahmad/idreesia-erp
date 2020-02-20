@@ -2,7 +2,6 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
@@ -12,17 +11,6 @@ import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
 import { processCsvData } from './helpers';
 
 export default {
-  VisitorType: {
-    image: visitorType => {
-      const { imageId } = visitorType;
-      if (imageId) {
-        return Attachments.findOne({ _id: { $eq: imageId } });
-      }
-
-      return null;
-    },
-  },
-
   Query: {
     pagedVisitors(obj, { queryString }, { user }) {
       if (

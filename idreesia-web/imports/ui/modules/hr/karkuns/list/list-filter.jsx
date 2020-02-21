@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from '/imports/ui/controls';
 import {
-  CheckboxField,
+  CheckboxGroupField,
   InputCnicField,
   InputTextField,
   CascaderField,
@@ -170,7 +170,7 @@ class ListFilter extends Component {
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal">
-            <CheckboxField
+            <CheckboxGroupField
               fieldName="karkunType"
               fieldLabel="Karkun Type"
               fieldLayout={formItemLayout}

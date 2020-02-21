@@ -2,9 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { Button, Collapse, Form, Icon, Row, Tooltip } from '/imports/ui/controls';
+import {
+  Button,
+  Collapse,
+  Form,
+  Icon,
+  Row,
+  Tooltip,
+} from '/imports/ui/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { CheckboxField, DateField } from '/imports/ui/modules/helpers/fields';
+import {
+  CheckboxGroupField,
+  DateField,
+} from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
   width: '500px',
@@ -85,7 +95,7 @@ class ListFilter extends Component {
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
-            <CheckboxField
+            <CheckboxGroupField
               fieldName="approvalStatus"
               fieldLabel="Status"
               fieldLayout={formItemLayout}

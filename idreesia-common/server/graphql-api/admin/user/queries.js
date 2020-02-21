@@ -1,4 +1,4 @@
-import { parse } from 'query-string';
+import moment from 'moment';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { mapUser } from './helpers';
 
@@ -11,11 +11,58 @@ function aggregate(pipelines, options) {
   );
 }
 
-export function getUsers(queryString) {
-  const params = parse(queryString);
+export function getUsers(params) {
   const pipeline = [];
+  const {
+    showLocked,
+    showUnlocked,
+    showActive,
+    showInactive,
+    pageIndex = '0',
+    pageSize = '20',
+  } = params;
 
-  const { pageIndex = '0', pageSize = '20' } = params;
+  if (showLocked === 'true' && showUnlocked === 'false') {
+    pipeline.push({
+      $match: {
+        locked: { $eq: true },
+      },
+    });
+  } else if (showLocked === 'false' && showUnlocked === 'true') {
+    pipeline.push({
+      $match: {
+        $or: [{ locked: { $exists: false } }, { locked: { $eq: false } }],
+      },
+    });
+  } else if (showLocked === 'false' && showUnlocked === 'false') {
+    return {
+      data: [],
+      totalResults: 0,
+    };
+  }
+
+  const now = moment().subtract(3, 'minutes');
+  if (showActive === 'true' && showInactive === 'false') {
+    pipeline.push({
+      $match: {
+        lastActiveAt: { $gte: now.toDate() },
+      },
+    });
+  } else if (showActive === 'false' && showInactive === 'true') {
+    pipeline.push({
+      $match: {
+        $or: [
+          { lastActiveAt: { $exists: false } },
+          { lastActiveAt: { $lt: now.toDate() } },
+        ],
+      },
+    });
+  } else if (showActive === 'false' && showInactive === 'false') {
+    return {
+      data: [],
+      totalResults: 0,
+    };
+  }
 
   const countingPipeline = pipeline.concat({
     $count: 'total',

@@ -10,16 +10,22 @@ const useQueryParams = ({
   history,
   location,
   paramNames = [],
-  paramDefaultValues = {
-    pageIndex: DEFAULT_PAGE_INDEX,
-    pageSize: DEFAULT_PAGE_SIZE,
-  },
+  paramDefaultValues = {},
 }) => {
   const queryString = location.search;
   const queryParams = parse(queryString);
+  const _paramDefaultValues = Object.assign(
+    {},
+    {
+      pageIndex: DEFAULT_PAGE_INDEX,
+      pageSize: DEFAULT_PAGE_SIZE,
+    },
+    paramDefaultValues
+  );
+
   paramNames.forEach(paramName => {
     if (!has(queryParams, paramName)) {
-      queryParams[paramName] = paramDefaultValues[paramName] || '';
+      queryParams[paramName] = _paramDefaultValues[paramName] || '';
     }
   });
 
@@ -28,10 +34,10 @@ const useQueryParams = ({
     paramNames.forEach(paramName => {
       let paramVal;
       if (newParams.hasOwnProperty(paramName)) {
-        paramVal = newParams[paramName] || paramDefaultValues[paramName] || '';
+        paramVal = newParams[paramName] || _paramDefaultValues[paramName] || '';
       } else {
         paramVal =
-          queryParams[paramName] || paramDefaultValues[paramName] || '';
+          queryParams[paramName] || _paramDefaultValues[paramName] || '';
       }
 
       paramVals.push(`${paramName}=${paramVal}`);

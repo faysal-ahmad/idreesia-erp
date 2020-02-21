@@ -15,7 +15,7 @@ export default {
   },
 
   Query: {
-    pagedUsers(obj, { queryString }, { user }) {
+    pagedUsers(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
@@ -28,7 +28,7 @@ export default {
         };
       }
 
-      return getUsers(queryString);
+      return getUsers(filter);
     },
 
     userById(obj, { _id }, { user }) {

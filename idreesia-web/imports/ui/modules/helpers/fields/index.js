@@ -17,6 +17,7 @@ export { default as AutoCompleteField } from './auto-complete-field';
 export { default as BarcodeField } from './barcode-field';
 export { default as CascaderField } from './cascader-field';
 export { default as CheckboxField } from './checkbox-field';
+export { default as CheckboxGroupField } from './checkbox-group-field';
 export { default as DateField } from './date-field';
 export { default as InputCnicField } from './input-cnic-field';
 export { default as InputMobileField } from './input-mobile-field';

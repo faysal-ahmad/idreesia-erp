@@ -13,7 +13,7 @@ import {
 } from '/imports/ui/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
-  CheckboxField,
+  CheckboxGroupField,
   DateField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
@@ -112,7 +112,7 @@ class ListFilter extends Component {
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
-            <CheckboxField
+            <CheckboxGroupField
               fieldName="approvalStatus"
               fieldLabel="Status"
               fieldLayout={formItemLayout}

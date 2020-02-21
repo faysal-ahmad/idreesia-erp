@@ -6,7 +6,6 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   FormButtonsSaveCancel,
@@ -24,7 +23,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.accountsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {
@@ -43,7 +42,7 @@ class NewForm extends Component {
           },
         })
           .then(() => {
-            history.push(paths.accountsPath);
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);

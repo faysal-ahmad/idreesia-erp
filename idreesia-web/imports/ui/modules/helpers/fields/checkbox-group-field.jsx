@@ -16,13 +16,19 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class CheckboxField extends Component {
+export default class CheckboxGroupField extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
-    initialValue: PropTypes.bool,
+    initialValue: PropTypes.array,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string,
+        value: PropTypes.string,
+      })
+    ),
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
@@ -40,6 +46,7 @@ export default class CheckboxField extends Component {
       requiredMessage,
       getFieldDecorator,
       initialValue,
+      options,
     } = this.props;
     const rules = [
       {
@@ -48,11 +55,9 @@ export default class CheckboxField extends Component {
       },
     ];
 
-    return getFieldDecorator(fieldName, {
-      valuePropName: 'checked',
-      initialValue,
-      rules,
-    })(<Checkbox />);
+    return getFieldDecorator(fieldName, { initialValue, rules })(
+      <Checkbox.Group options={options} />
+    );
   }
 
   render() {

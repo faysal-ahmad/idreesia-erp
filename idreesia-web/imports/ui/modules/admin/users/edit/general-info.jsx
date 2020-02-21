@@ -5,7 +5,6 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
   SwitchField,
@@ -27,7 +26,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.accountsPath);
+    history.goBack();
   };
 
   handleSubmit = e => {

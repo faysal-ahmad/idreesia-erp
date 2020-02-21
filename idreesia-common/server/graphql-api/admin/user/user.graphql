@@ -19,8 +19,17 @@ type PagedUserType {
   data: [UserType]
 }
 
+input UserFilter {
+  showLocked: String
+  showUnlocked: String
+  showActive: String
+  showInactive: String
+  pageIndex: String
+  pageSize: String
+}
+
 extend type Query {
-  pagedUsers(queryString: String): PagedUserType
+  pagedUsers(filter: UserFilter): PagedUserType
   userById(_id: String): UserType
   currentUser: UserType
   userNames(ids: [String]): [String]

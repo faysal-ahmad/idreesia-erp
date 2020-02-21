@@ -9,6 +9,7 @@ import {
   getPhoneNumberFilterField,
   getBloodGroupFilterField,
   getLastTarteebFilterField,
+  getAttendanceFilterField,
   getMehfilDutyFilterField,
   getCityMehfilFilterField,
   getRegionFilterField,
@@ -29,6 +30,7 @@ const ListFilter = ({
   phoneNumber,
   bloodGroup,
   lastTarteeb,
+  attendance,
   dutyId,
   cityId,
   cityMehfilId,
@@ -39,6 +41,7 @@ const ListFilter = ({
   showPhoneNumberFilter,
   showBloodGroupFilter,
   showLastTarteebFilter,
+  showAttendanceFilter,
   showMehfilDutyFilter,
   showCityMehfilFilter,
   showRegionFilter,
@@ -57,6 +60,7 @@ const ListFilter = ({
       phoneNumber: null,
       bloodGroup: null,
       lastTarteeb: null,
+      attendance: null,
       jobId: null,
       dutyId: null,
       dutyShiftId: null,
@@ -110,6 +114,9 @@ const ListFilter = ({
           {showLastTarteebFilter
             ? getLastTarteebFilterField(lastTarteeb, getFieldDecorator)
             : null}
+          {showAttendanceFilter
+            ? getAttendanceFilterField(attendance, getFieldDecorator)
+            : null}
           {showMehfilDutyFilter
             ? getMehfilDutyFilterField(dutyId, getFieldDecorator, mehfilDuties)
             : null}
@@ -138,6 +145,7 @@ ListFilter.propTypes = {
   phoneNumber: PropTypes.string,
   bloodGroup: PropTypes.string,
   lastTarteeb: PropTypes.string,
+  attendance: PropTypes.string,
   isEmployee: PropTypes.bool,
   jobId: PropTypes.string,
   dutyId: PropTypes.string,
@@ -154,6 +162,7 @@ ListFilter.propTypes = {
   showPhoneNumberFilter: PropTypes.bool,
   showBloodGroupFilter: PropTypes.bool,
   showLastTarteebFilter: PropTypes.bool,
+  showAttendanceFilter: PropTypes.bool,
   showMehfilDutyFilter: PropTypes.bool,
   showDutyShiftFilter: PropTypes.bool,
   showCityMehfilFilter: PropTypes.bool,
@@ -173,6 +182,7 @@ ListFilter.defaultProps = {
   showPhoneNumberFilter: true,
   showBloodGroupFilter: true,
   showLastTarteebFilter: true,
+  showAttendanceFilter: false,
   showMehfilDutyFilter: false,
   showDutyShiftFilter: false,
   showCityMehfilFilter: false,

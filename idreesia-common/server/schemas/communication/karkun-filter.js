@@ -21,6 +21,10 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  attendance: {
+    type: String,
+    optional: true,
+  },
   isEmployee: {
     type: Boolean,
     optional: true,

@@ -31,6 +31,7 @@ const List = ({ history, location }) => {
       'phoneNumber',
       'bloodGroup',
       'lastTarteeb',
+      'attendance',
       'dutyId',
       'cityId',
       'cityMehfilId',
@@ -93,6 +94,7 @@ const List = ({ history, location }) => {
     phoneNumber,
     bloodGroup,
     lastTarteeb,
+    attendance,
     dutyId,
     cityId,
     cityMehfilId,
@@ -115,6 +117,7 @@ const List = ({ history, location }) => {
 
     return (
       <KarkunsListFilter
+        showAttendanceFilter
         showMehfilDutyFilter
         showCityMehfilFilter
         showRegionFilter
@@ -127,6 +130,7 @@ const List = ({ history, location }) => {
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
         lastTarteeb={lastTarteeb}
+        attendance={attendance}
         dutyId={dutyId}
         cityId={cityId}
         cityMehfilId={cityMehfilId}

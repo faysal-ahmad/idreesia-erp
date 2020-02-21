@@ -44,6 +44,7 @@ input KarkunFilter {
   phoneNumber: String
   bloodGroup: String
   lastTarteeb: String
+  attendance: String
   isEmployee: Boolean
   jobId: String
   dutyId: String

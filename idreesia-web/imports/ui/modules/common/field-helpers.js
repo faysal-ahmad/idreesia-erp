@@ -7,6 +7,7 @@ import {
   InputCnicField,
   InputTextField,
   SelectField,
+  AttendanceFilterField,
   LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -99,6 +100,19 @@ export function getBloodGroupFilterField(fieldValue, getFieldDecorator) {
       ]}
       getDataValue={({ value }) => value}
       getDataText={({ label }) => label}
+      fieldLayout={formItemLayout}
+      initialValue={fieldValue}
+      getFieldDecorator={getFieldDecorator}
+    />
+  );
+}
+
+export function getAttendanceFilterField(fieldValue, getFieldDecorator) {
+  return (
+    <AttendanceFilterField
+      fieldName="attendance"
+      fieldLabel="Attendance"
+      required={false}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
       getFieldDecorator={getFieldDecorator}

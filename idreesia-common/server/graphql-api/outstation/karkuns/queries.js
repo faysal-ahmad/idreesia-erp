@@ -22,6 +22,7 @@ function buildPipeline(params) {
     phoneNumber,
     bloodGroup,
     lastTarteeb,
+    attendance,
     dutyId,
     cityId,
     cityMehfilId,
@@ -77,6 +78,57 @@ function buildPipeline(params) {
             { lastTarteebDate: { $exists: false } },
             { lastTarteebDate: { $lte: moment(date).toDate() } },
           ],
+        },
+      });
+    }
+  }
+
+  if (attendance) {
+    const { criteria, percentage } = JSON.parse(attendance);
+    if (percentage) {
+      const month = moment()
+        .subtract(1, 'month')
+        .startOf('month');
+
+      const criteriaCondition =
+        criteria === 'less-than'
+          ? {
+              $lte: ['$percentage', percentage],
+            }
+          : {
+              $gte: ['$percentage', percentage],
+            };
+
+      pipeline.push({
+        $lookup: {
+          from: 'hr-attendances',
+          let: { karkun_id: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ['$karkunId', '$$karkun_id'],
+                    },
+                    {
+                      $eq: ['$month', month.format('MM-YYYY')],
+                    },
+                    criteriaCondition,
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'attendances',
+        },
+      });
+
+      pipeline.push({
+        $match: {
+          $expr: {
+            $gte: [{ $size: '$attendances' }, 1],
+          },
         },
       });
     }

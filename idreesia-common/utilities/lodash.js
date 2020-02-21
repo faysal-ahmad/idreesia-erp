@@ -23,6 +23,7 @@ export { default as reduce } from 'lodash/reduce';
 export { default as reverse } from 'lodash/reverse';
 export { default as round } from 'lodash/round';
 export { default as sortBy } from 'lodash/sortBy';
+export { default as startCase } from 'lodash/startCase';
 export { default as toInteger } from 'lodash/toInteger';
 export { default as toSafeInteger } from 'lodash/toSafeInteger';
 export { default as toString } from 'lodash/toString';

@@ -6,6 +6,9 @@ export {
 } from './form-btns-save-cancel-extra';
 
 export { default as EhadDurationField } from './ehad-duration/field';
+export {
+  default as EhadDurationFilterField,
+} from './ehad-duration-filter/field';
 export { default as AttendanceDetailField } from './attendance-detail-field';
 export { default as AutoCompleteField } from './auto-complete-field';
 export { default as BarcodeField } from './barcode-field';

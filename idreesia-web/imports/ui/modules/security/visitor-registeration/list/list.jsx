@@ -42,6 +42,7 @@ const List = ({ history, location }) => {
       'name',
       'cnicNumber',
       'phoneNumber',
+      'ehadDuration',
       'additionalInfo',
       'pageIndex',
       'pageSize',
@@ -61,6 +62,7 @@ const List = ({ history, location }) => {
     name,
     cnicNumber,
     phoneNumber,
+    ehadDuration,
     additionalInfo,
     pageIndex,
     pageSize,
@@ -167,7 +169,7 @@ const List = ({ history, location }) => {
           size="large"
           onClick={handleNewClicked}
         >
-          New Visitor Registration
+          New Visitor
         </Button>
         &nbsp;
         <Button icon="scan" size="large" onClick={handleScanClicked}>
@@ -179,6 +181,7 @@ const List = ({ history, location }) => {
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
+          ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
           setPageParams={setPageParams}
         />

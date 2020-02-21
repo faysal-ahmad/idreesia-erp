@@ -7,6 +7,7 @@ import {
   InputMobileField,
   InputTextField,
   SelectField,
+  EhadDurationFilterField,
 } from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
@@ -28,6 +29,7 @@ class ListFilter extends Component {
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
+    ehadDuration: PropTypes.string,
     additionalInfo: PropTypes.string,
     setPageParams: PropTypes.func,
   };
@@ -36,6 +38,7 @@ class ListFilter extends Component {
     cnicNumber: '',
     phoneNumber: '',
     additionalInfo: null,
+    ehadDuration: null,
     filterCriteria: {},
   };
 
@@ -47,6 +50,7 @@ class ListFilter extends Component {
       name: '',
       cnicNumber: '',
       phoneNumber: '',
+      ehadDuration: '',
       additionalInfo: null,
     });
   };
@@ -55,13 +59,17 @@ class ListFilter extends Component {
     const { form, setPageParams } = this.props;
 
     form.validateFields(
-      (err, { name, cnicNumber, phoneNumber, additionalInfo }) => {
+      (
+        err,
+        { name, cnicNumber, phoneNumber, ehadDuration, additionalInfo }
+      ) => {
         if (err) return;
         setPageParams({
           pageIndex: 0,
           name,
           cnicNumber,
           phoneNumber,
+          ehadDuration,
           additionalInfo,
         });
       }
@@ -70,7 +78,13 @@ class ListFilter extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { name, cnicNumber, phoneNumber, additionalInfo } = this.props;
+    const {
+      name,
+      cnicNumber,
+      phoneNumber,
+      ehadDuration,
+      additionalInfo,
+    } = this.props;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -99,6 +113,14 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={phoneNumber}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <EhadDurationFilterField
+              fieldName="ehadDuration"
+              fieldLabel="Ehad Duration"
+              required={false}
+              fieldLayout={formItemLayout}
+              initialValue={ehadDuration}
               getFieldDecorator={getFieldDecorator}
             />
             <SelectField

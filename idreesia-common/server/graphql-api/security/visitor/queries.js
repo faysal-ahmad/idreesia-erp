@@ -1,4 +1,5 @@
 import { parse } from 'query-string';
+import moment from 'moment';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
@@ -7,10 +8,12 @@ export function getVisitors(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
+  console.log(params);
   const {
     name,
     cnicNumber,
     phoneNumber,
+    ehadDuration,
     additionalInfo,
     pageIndex = '0',
     pageSize = '20',
@@ -36,6 +39,23 @@ export function getVisitors(queryString) {
         $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
       },
     });
+  }
+
+  if (ehadDuration) {
+    const { scale, duration } = JSON.parse(ehadDuration);
+    if (duration) {
+      const date = moment()
+        .startOf('day')
+        .subtract(duration, scale);
+
+      pipeline.push({
+        $match: {
+          ehadDate: {
+            $gte: moment(date).toDate(),
+          },
+        },
+      });
+    }
   }
 
   if (additionalInfo) {

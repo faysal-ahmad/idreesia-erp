@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import {
@@ -26,6 +27,7 @@ function buildPipeline(params) {
     cnicNumber,
     phoneNumber,
     bloodGroup,
+    lastTarteeb,
     jobId,
     dutyId,
     dutyShiftId,
@@ -93,6 +95,24 @@ function buildPipeline(params) {
         bloodGroup: { $eq: convertedBloodGroupValue },
       },
     });
+  }
+
+  if (lastTarteeb) {
+    const { scale, duration } = JSON.parse(lastTarteeb);
+    if (duration) {
+      const date = moment()
+        .startOf('day')
+        .subtract(duration, scale);
+
+      pipeline.push({
+        $match: {
+          $or: [
+            { lastTarteebDate: { $exists: false } },
+            { lastTarteebDate: { $lte: moment(date).toDate() } },
+          ],
+        },
+      });
+    }
   }
 
   if (jobId) {

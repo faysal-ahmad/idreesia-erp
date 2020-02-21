@@ -15,7 +15,7 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    pagedPortalKarkuns(obj, { portalId, queryString }, { user }) {
+    pagedPortalKarkuns(obj, { portalId, filter }, { user }) {
       if (hasInstanceAccess(user._id, portalId) === false) {
         return {
           karkuns: [],
@@ -23,7 +23,7 @@ export default {
         };
       }
 
-      return getPortalKarkuns(portalId, queryString);
+      return getPortalKarkuns(portalId, filter);
     },
 
     portalKarkunsByVisitor(

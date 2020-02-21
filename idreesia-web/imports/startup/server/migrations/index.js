@@ -26,6 +26,7 @@ import './22-create-outstation-indexes';
 import './23-create-communication-indexes';
 import './24-create-security-indexes';
 import './25-create-security-indexes';
+import './26-create-hr-indexes';
 
 Migrations.config({
   log: true,

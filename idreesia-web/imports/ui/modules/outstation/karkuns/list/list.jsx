@@ -30,6 +30,7 @@ const List = ({ history, location }) => {
       'cnicNumber',
       'phoneNumber',
       'bloodGroup',
+      'lastTarteeb',
       'dutyId',
       'cityId',
       'cityMehfilId',
@@ -91,6 +92,7 @@ const List = ({ history, location }) => {
     cnicNumber,
     phoneNumber,
     bloodGroup,
+    lastTarteeb,
     dutyId,
     cityId,
     cityMehfilId,
@@ -124,6 +126,7 @@ const List = ({ history, location }) => {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
+        lastTarteeb={lastTarteeb}
         dutyId={dutyId}
         cityId={cityId}
         cityMehfilId={cityMehfilId}

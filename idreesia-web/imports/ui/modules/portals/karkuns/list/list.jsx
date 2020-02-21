@@ -24,7 +24,7 @@ const List = ({ history, location }) => {
   const karkunsList = useRef(null);
   const { portalId } = useParams();
   const { portal } = usePortal();
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: [
@@ -32,6 +32,7 @@ const List = ({ history, location }) => {
       'cnicNumber',
       'phoneNumber',
       'bloodGroup',
+      'lastTarteeb',
       'dutyId',
       'cityId',
       'cityMehfilId',
@@ -49,7 +50,7 @@ const List = ({ history, location }) => {
   const { data, loading, refetch } = useQuery(PAGED_PORTAL_KARKUNS, {
     variables: {
       portalId,
-      queryString,
+      filter: queryParams,
     },
   });
 
@@ -78,6 +79,7 @@ const List = ({ history, location }) => {
     cnicNumber,
     phoneNumber,
     bloodGroup,
+    lastTarteeb,
     dutyId,
     cityId,
     cityMehfilId,
@@ -107,6 +109,7 @@ const List = ({ history, location }) => {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
+        lastTarteeb={lastTarteeb}
         dutyId={dutyId}
         cityId={cityId}
         cityMehfilId={cityMehfilId}

@@ -10,6 +10,7 @@ const PAGED_KARKUNS = gql`
         cnicNumber
         contactNumber1
         contactNumber2
+        lastTarteebDate
         imageId
         job {
           _id

@@ -28,6 +28,7 @@ class List extends Component {
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
     bloodGroup: PropTypes.string,
+    lastTarteeb: PropTypes.string,
     jobId: PropTypes.string,
     dutyId: PropTypes.string,
     dutyShiftId: PropTypes.string,
@@ -253,6 +254,7 @@ class List extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      lastTarteeb,
       jobId,
       dutyId,
       dutyShiftId,
@@ -300,6 +302,7 @@ class List extends Component {
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
           bloodGroup={bloodGroup}
+          lastTarteeb={lastTarteeb}
           jobId={jobId}
           dutyId={dutyId}
           dutyShiftId={dutyShiftId}
@@ -392,6 +395,7 @@ export default flowRight(
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      lastTarteeb,
       jobId,
       dutyId,
       dutyShiftId,
@@ -407,6 +411,7 @@ export default flowRight(
           cnicNumber,
           phoneNumber,
           bloodGroup,
+          lastTarteeb,
           jobId,
           dutyId,
           dutyShiftId,

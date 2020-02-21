@@ -16,6 +16,7 @@ import {
   InputTextField,
   CascaderField,
   SelectField,
+  LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 import {
@@ -50,6 +51,7 @@ class ListFilter extends Component {
     cnicNumber: PropTypes.string,
     phoneNumber: PropTypes.string,
     bloodGroup: PropTypes.string,
+    lastTarteeb: PropTypes.string,
     jobId: PropTypes.string,
     dutyId: PropTypes.string,
     dutyShiftId: PropTypes.string,
@@ -61,7 +63,6 @@ class ListFilter extends Component {
 
   static defaultProps = {
     cnicNumber: '',
-    filterCriteria: {},
   };
 
   handleReset = () => {
@@ -73,6 +74,7 @@ class ListFilter extends Component {
       cnicNumber: null,
       phoneNumber: null,
       bloodGroup: null,
+      lastTarteeb: null,
       jobId: null,
       dutyId: null,
       dutyShiftId: null,
@@ -91,6 +93,7 @@ class ListFilter extends Component {
           cnicNumber,
           phoneNumber,
           bloodGroup,
+          lastTarteeb,
           jobId,
           dutyIdShiftId,
           karkunType,
@@ -103,6 +106,7 @@ class ListFilter extends Component {
           cnicNumber,
           phoneNumber,
           bloodGroup,
+          lastTarteeb,
           jobId,
           dutyId: dutyIdShiftId[0],
           dutyShiftId: dutyIdShiftId[1],
@@ -137,6 +141,7 @@ class ListFilter extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      lastTarteeb,
       jobId,
       dutyId,
       dutyShiftId,
@@ -219,6 +224,14 @@ class ListFilter extends Component {
               getDataText={({ label }) => label}
               fieldLayout={formItemLayout}
               initialValue={bloodGroup}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <LastTarteebFilterField
+              fieldName="lastTarteeb"
+              fieldLabel="Last Tarteeb"
+              required={false}
+              fieldLayout={formItemLayout}
+              initialValue={lastTarteeb}
               getFieldDecorator={getFieldDecorator}
             />
             <SelectField

@@ -1,4 +1,4 @@
-import { parse } from 'query-string';
+import moment from 'moment';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
@@ -15,9 +15,8 @@ const bloodGroupValueConversion = {
   Oplus: 'O+',
 };
 
-export function getPortalKarkuns(portalId, queryString) {
+export function getPortalKarkuns(portalId, params) {
   const portal = Portals.findOne(portalId);
-  const params = parse(queryString);
   const pipeline = [];
 
   const {
@@ -25,6 +24,7 @@ export function getPortalKarkuns(portalId, queryString) {
     cnicNumber,
     phoneNumber,
     bloodGroup,
+    lastTarteeb,
     dutyId,
     cityId,
     cityMehfilId,
@@ -73,6 +73,24 @@ export function getPortalKarkuns(portalId, queryString) {
         bloodGroup: { $eq: convertedBloodGroupValue },
       },
     });
+  }
+
+  if (lastTarteeb) {
+    const { scale, duration } = JSON.parse(lastTarteeb);
+    if (duration) {
+      const date = moment()
+        .startOf('day')
+        .subtract(duration, scale);
+
+      pipeline.push({
+        $match: {
+          $or: [
+            { lastTarteebDate: { $exists: false } },
+            { lastTarteebDate: { $lte: moment(date).toDate() } },
+          ],
+        },
+      });
+    }
   }
 
   if (cityId) {

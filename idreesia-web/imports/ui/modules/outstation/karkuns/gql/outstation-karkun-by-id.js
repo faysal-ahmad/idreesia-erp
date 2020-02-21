@@ -18,6 +18,7 @@ const OUTSTATION_KARKUN_BY_ID = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      lastTarteebDate
       referenceName
       imageId
       createdAt

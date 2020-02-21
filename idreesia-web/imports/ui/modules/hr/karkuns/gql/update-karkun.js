@@ -16,6 +16,7 @@ const UPDATE_KARKUN = gql`
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
+    $lastTarteebDate: String
     $referenceName: String
   ) {
     updateKarkun(
@@ -33,6 +34,7 @@ const UPDATE_KARKUN = gql`
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
+      lastTarteebDate: $lastTarteebDate
       referenceName: $referenceName
     ) {
       _id
@@ -49,6 +51,7 @@ const UPDATE_KARKUN = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      lastTarteebDate
       referenceName
       createdAt
       createdBy

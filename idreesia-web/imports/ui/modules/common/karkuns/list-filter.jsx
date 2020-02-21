@@ -8,6 +8,7 @@ import {
   getCnicNumberFilterField,
   getPhoneNumberFilterField,
   getBloodGroupFilterField,
+  getLastTarteebFilterField,
   getMehfilDutyFilterField,
   getCityMehfilFilterField,
   getRegionFilterField,
@@ -27,6 +28,7 @@ const ListFilter = ({
   cnicNumber,
   phoneNumber,
   bloodGroup,
+  lastTarteeb,
   dutyId,
   cityId,
   cityMehfilId,
@@ -36,6 +38,7 @@ const ListFilter = ({
   showCnicFilter,
   showPhoneNumberFilter,
   showBloodGroupFilter,
+  showLastTarteebFilter,
   showMehfilDutyFilter,
   showCityMehfilFilter,
   showRegionFilter,
@@ -53,6 +56,7 @@ const ListFilter = ({
       cnicNumber: null,
       phoneNumber: null,
       bloodGroup: null,
+      lastTarteeb: null,
       jobId: null,
       dutyId: null,
       dutyShiftId: null,
@@ -103,6 +107,9 @@ const ListFilter = ({
           {showBloodGroupFilter
             ? getBloodGroupFilterField(bloodGroup, getFieldDecorator)
             : null}
+          {showLastTarteebFilter
+            ? getLastTarteebFilterField(lastTarteeb, getFieldDecorator)
+            : null}
           {showMehfilDutyFilter
             ? getMehfilDutyFilterField(dutyId, getFieldDecorator, mehfilDuties)
             : null}
@@ -130,6 +137,7 @@ ListFilter.propTypes = {
   cnicNumber: PropTypes.string,
   phoneNumber: PropTypes.string,
   bloodGroup: PropTypes.string,
+  lastTarteeb: PropTypes.string,
   isEmployee: PropTypes.bool,
   jobId: PropTypes.string,
   dutyId: PropTypes.string,
@@ -145,6 +153,7 @@ ListFilter.propTypes = {
   showCnicFilter: PropTypes.bool,
   showPhoneNumberFilter: PropTypes.bool,
   showBloodGroupFilter: PropTypes.bool,
+  showLastTarteebFilter: PropTypes.bool,
   showMehfilDutyFilter: PropTypes.bool,
   showDutyShiftFilter: PropTypes.bool,
   showCityMehfilFilter: PropTypes.bool,
@@ -163,6 +172,7 @@ ListFilter.defaultProps = {
   showCnicFilter: true,
   showPhoneNumberFilter: true,
   showBloodGroupFilter: true,
+  showLastTarteebFilter: true,
   showMehfilDutyFilter: false,
   showDutyShiftFilter: false,
   showCityMehfilFilter: false,

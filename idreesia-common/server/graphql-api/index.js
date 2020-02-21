@@ -12,6 +12,9 @@ import MessageResolvers from './common/message/resolvers';
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 
+import KarkunSchema from './common/karkun/karkun.graphql';
+import KarkunResolvers from './common/karkun/resolvers';
+
 /**
  * Schema and Resolvers for the Admin module
  */
@@ -57,8 +60,8 @@ import DutyLocationResolvers from './hr/duty-location/resolvers';
 import JobSchema from './hr/job/job.graphql';
 import JobResolvers from './hr/job/resolvers';
 
-import KarkunSchema from './hr/karkuns/karkun.graphql';
-import KarkunResolvers from './hr/karkuns/resolvers';
+import HRKarkunSchema from './hr/karkun/karkun.graphql';
+import HRKarkunResolvers from './hr/karkun/resolvers';
 
 import KarkunDutySchema from './hr/karkun-duties/karkun-duty.graphql';
 import KarkunDutyResolvers from './hr/karkun-duties/resolvers';
@@ -177,6 +180,7 @@ const typeDefs = [
   AttachmentSchema,
   MessageSchema,
   VisitorSchema,
+  KarkunSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
@@ -191,7 +195,7 @@ const typeDefs = [
   DutySchema,
   DutyLocationSchema,
   JobSchema,
-  KarkunSchema,
+  HRKarkunSchema,
   KarkunDutySchema,
   AttendanceSchema,
   SalarySchema,
@@ -236,6 +240,7 @@ const resolvers = merge(
   AttachmentResolvers,
   MessageResolvers,
   VisitorResolvers,
+  KarkunResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
@@ -250,7 +255,7 @@ const resolvers = merge(
   DutyResolvers,
   DutyLocationResolvers,
   JobResolvers,
-  KarkunResolvers,
+  HRKarkunResolvers,
   KarkunDutyResolvers,
   AttendanceResolvers,
   SalaryResolvers,

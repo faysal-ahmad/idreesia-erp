@@ -27,6 +27,7 @@ class ListContainer extends Component {
       cnicNumber,
       phoneNumber,
       bloodGroup,
+      lastTarteeb,
       jobId,
       dutyId,
       dutyShiftId,
@@ -67,6 +68,11 @@ class ListContainer extends Component {
       bloodGroupVal = bloodGroup || '';
     else bloodGroupVal = queryParams.bloodGroup || '';
 
+    let lastTarteebVal;
+    if (newParams.hasOwnProperty('lastTarteeb'))
+      lastTarteebVal = lastTarteeb || '';
+    else lastTarteebVal = queryParams.lastTarteeb || '';
+
     let jobIdVal;
     if (newParams.hasOwnProperty('jobId')) jobIdVal = jobId || '';
     else jobIdVal = queryParams.jobId || '';
@@ -88,7 +94,7 @@ class ListContainer extends Component {
     if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
-    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&dutyShiftId=${dutyShiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
+    const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&lastTarteeb=${lastTarteebVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&dutyShiftId=${dutyShiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
@@ -121,6 +127,7 @@ class ListContainer extends Component {
         cnicNumber,
         phoneNumber,
         bloodGroup,
+        lastTarteeb,
         jobId,
         dutyId,
         dutyShiftId,
@@ -140,6 +147,7 @@ class ListContainer extends Component {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         bloodGroup={bloodGroup}
+        lastTarteeb={lastTarteeb}
         jobId={jobId}
         dutyId={dutyId}
         dutyShiftId={dutyShiftId}

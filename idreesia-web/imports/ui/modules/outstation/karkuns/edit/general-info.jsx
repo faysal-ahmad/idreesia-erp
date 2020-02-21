@@ -7,6 +7,7 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
   CascaderField,
+  DateField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -75,6 +76,7 @@ class GeneralInfo extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          lastTarteebDate,
           referenceName,
         }
       ) => {
@@ -97,6 +99,9 @@ class GeneralInfo extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            lastTarteebDate: lastTarteebDate
+              ? lastTarteebDate.startOf('day')
+              : null,
             referenceName,
           },
         })
@@ -167,6 +172,17 @@ class GeneralInfo extends Component {
               outstationKarkunById.ehadDate
                 ? moment(Number(outstationKarkunById.ehadDate))
                 : moment()
+            }
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <DateField
+            fieldName="lastTarteebDate"
+            fieldLabel="Last Tarteeb"
+            initialValue={
+              outstationKarkunById.lastTarteebDate
+                ? moment(Number(outstationKarkunById.lastTarteebDate))
+                : null
             }
             getFieldDecorator={getFieldDecorator}
           />

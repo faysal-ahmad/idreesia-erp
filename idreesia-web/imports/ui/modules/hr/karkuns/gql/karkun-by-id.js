@@ -18,6 +18,7 @@ const KARKUN_BY_ID = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      lastTarteebDate
       referenceName
       isEmployee
       jobId

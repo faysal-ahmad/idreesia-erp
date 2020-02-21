@@ -1,0 +1,64 @@
+type KarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  emailAddress: String
+  currentAddress: String
+  permanentAddress: String
+  cityId: String
+  cityMehfilId: String
+  bloodGroup: String
+  sharedResidenceId: String
+  educationalQualification: String
+  meansOfEarning: String
+  ehadDate: String
+  lastTarteebDate: String
+  referenceName: String
+  imageId: String
+  attachmentIds: [String]
+
+  isEmployee: Boolean
+  jobId: String
+  employmentStartDate: String
+  employmentEndDate: String
+
+  job: JobType
+  duties: [KarkunDutyType]
+  attachments: [Attachment]
+  image: Attachment
+  city: CityType
+  cityMehfil: CityMehfilType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+input KarkunFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  lastTarteeb: String
+  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+  predefinedFilterName: String
+  showVolunteers: String
+  showEmployees: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedKarkunType {
+  totalResults: Int
+  karkuns: [KarkunType]
+}

@@ -7,6 +7,7 @@ import {
   InputCnicField,
   InputTextField,
   SelectField,
+  LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
 
 const formItemLayout = {
@@ -98,6 +99,19 @@ export function getBloodGroupFilterField(fieldValue, getFieldDecorator) {
       ]}
       getDataValue={({ value }) => value}
       getDataText={({ label }) => label}
+      fieldLayout={formItemLayout}
+      initialValue={fieldValue}
+      getFieldDecorator={getFieldDecorator}
+    />
+  );
+}
+
+export function getLastTarteebFilterField(fieldValue, getFieldDecorator) {
+  return (
+    <LastTarteebFilterField
+      fieldName="lastTarteeb"
+      fieldLabel="Last Tarteeb"
+      required={false}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
       getFieldDecorator={getFieldDecorator}

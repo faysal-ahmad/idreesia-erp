@@ -8,6 +8,7 @@ import { Form, message } from '/imports/ui/controls';
 import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
+  DateField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -54,6 +55,7 @@ class NewForm extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          lastTarteebDate,
           referenceName,
         }
       ) => {
@@ -74,6 +76,9 @@ class NewForm extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            lastTarteebDate: lastTarteebDate
+              ? lastTarteebDate.startOf('day')
+              : null,
             referenceName,
           },
         })
@@ -117,6 +122,11 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <DateField
+          fieldName="lastTarteebDate"
+          fieldLabel="Last Tarteeb"
+          getFieldDecorator={getFieldDecorator}
+        />
         <InputTextField
           fieldName="referenceName"
           fieldLabel="R/O"

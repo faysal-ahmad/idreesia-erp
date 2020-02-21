@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 const PAGED_PORTAL_KARKUNS = gql`
-  query pagedPortalKarkuns($portalId: String!, $queryString: String) {
-    pagedPortalKarkuns(portalId: $portalId, queryString: $queryString) {
+  query pagedPortalKarkuns($portalId: String!, $filter: KarkunFilter) {
+    pagedPortalKarkuns(portalId: $portalId, filter: $filter) {
       totalResults
       karkuns {
         _id

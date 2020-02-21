@@ -68,6 +68,10 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
+  lastTarteebDate: {
+    type: Date,
+    optional: true,
+  },
   referenceName: {
     type: String,
     optional: true,

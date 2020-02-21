@@ -1,6 +1,6 @@
 extend type Query {
   portalKarkunById(portalId: String!, _id: String!): KarkunType
-  pagedPortalKarkuns(portalId: String!, queryString: String): PagedKarkunType
+  pagedPortalKarkuns(portalId: String!, filter: KarkunFilter): PagedKarkunType
   portalKarkunsByVisitor(portalId: String!, visitorName: String!, visitorCnic: String, visitorPhone: String): PagedKarkunType
 }
 

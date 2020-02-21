@@ -9,6 +9,7 @@ import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstatio
 import {
   CascaderField,
   EhadDurationField,
+  DateField,
   InputCnicField,
   InputMobileField,
   InputTextField,
@@ -62,6 +63,7 @@ class NewForm extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          lastTarteebDate,
           referenceName,
         }
       ) => {
@@ -83,6 +85,9 @@ class NewForm extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            lastTarteebDate: lastTarteebDate
+              ? lastTarteebDate.startOf('day')
+              : null,
             referenceName,
           },
         })
@@ -139,6 +144,12 @@ class NewForm extends Component {
         <EhadDurationField
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <DateField
+          fieldName="lastTarteebDate"
+          fieldLabel="Last Tarteeb"
           getFieldDecorator={getFieldDecorator}
         />
 

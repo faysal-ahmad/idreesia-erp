@@ -16,6 +16,7 @@ import {
   CascaderField,
   InputTextAreaField,
   SelectField,
+  LastTarteebFilterField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
@@ -60,11 +61,13 @@ const NewForm = ({ form, history, location }) => {
   };
 
   const handlePeviewKarkuns = () => {
+    const lastTarteeb = form.getFieldValue('lastTarteeb');
     const dutyId = form.getFieldValue('dutyId');
     const cityIdMehfilId = form.getFieldValue('cityIdMehfilId');
     const region = form.getFieldValue('region');
 
     const filter = {
+      lastTarteeb,
       dutyId,
       cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
       cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
@@ -77,27 +80,30 @@ const NewForm = ({ form, history, location }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    validateFields((err, { messageBody, dutyId, cityIdMehfilId, region }) => {
-      if (err) return;
+    validateFields(
+      (err, { messageBody, lastTarteeb, dutyId, cityIdMehfilId, region }) => {
+        if (err) return;
 
-      createOutstationMessage({
-        variables: {
-          messageBody,
-          karkunFilter: {
-            dutyId,
-            cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
-            cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
-            region,
+        createOutstationMessage({
+          variables: {
+            messageBody,
+            karkunFilter: {
+              lastTarteeb,
+              dutyId,
+              cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
+              cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
+              region,
+            },
           },
-        },
-      })
-        .then(() => {
-          history.goBack();
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.goBack();
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   return (
@@ -111,6 +117,11 @@ const NewForm = ({ form, history, location }) => {
           getFieldDecorator={getFieldDecorator}
         />
         <Divider>Karkuns Selection Criteria</Divider>
+        <LastTarteebFilterField
+          fieldName="lastTarteeb"
+          fieldLabel="Last Tarteeb"
+          getFieldDecorator={getFieldDecorator}
+        />
         <SelectField
           fieldName="dutyId"
           fieldLabel="Duty"

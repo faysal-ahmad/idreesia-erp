@@ -17,6 +17,10 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  lastTarteeb: {
+    type: String,
+    optional: true,
+  },
   isEmployee: {
     type: Boolean,
     optional: true,

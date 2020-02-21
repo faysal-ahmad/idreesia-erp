@@ -3,6 +3,7 @@ type KarkunFilterType {
   cnicNumber: String
   phoneNumber: String
   bloodGroup: String
+  lastTarteeb: String
   isEmployee: Boolean
   jobId: String
   dutyId: String

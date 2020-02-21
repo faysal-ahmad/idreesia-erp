@@ -13,6 +13,7 @@ const CREATE_OUTSTATION_MESSAGE = gql`
       source
       messageBody
       karkunFilter {
+        lastTarteeb
         dutyId
         cityId
         cityMehfilId

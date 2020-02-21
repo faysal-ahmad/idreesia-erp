@@ -6,7 +6,7 @@ import {
   MessageSource,
 } from 'meteor/idreesia-common/constants/communication';
 import { approvable, identifiable, timestamps } from '../common';
-import { KarkunFilter } from '../hr';
+import KarkunFilter from './karkun-filter';
 
 export default new SimpleSchema({
   messageBody: {

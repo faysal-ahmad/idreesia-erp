@@ -6,6 +6,7 @@ const OUTSTATION_MESSAGE_BY_ID = gql`
       _id
       messageBody
       karkunFilter {
+        lastTarteeb
         dutyId
         cityId
         cityMehfilId

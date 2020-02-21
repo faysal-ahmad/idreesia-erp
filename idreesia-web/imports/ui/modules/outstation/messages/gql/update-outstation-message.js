@@ -14,6 +14,7 @@ const UPDATE_OUTSTATION_MESSAGE = gql`
       _id
       messageBody
       karkunFilter {
+        lastTarteeb
         dutyId
         cityId
         cityMehfilId

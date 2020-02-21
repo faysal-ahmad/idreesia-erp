@@ -15,7 +15,7 @@ class StayCardContainer extends Component {
     visitorId: PropTypes.string,
     visitorStayId: PropTypes.string,
     visitorLoading: PropTypes.bool,
-    visitorById: PropTypes.object,
+    securityVisitorById: PropTypes.object,
     visitorStayLoading: PropTypes.bool,
     visitorStayById: PropTypes.object,
     onCloseCard: PropTypes.func,
@@ -27,18 +27,18 @@ class StayCardContainer extends Component {
   }
 
   getCardMarkup() {
-    const { cardType, visitorById, visitorStayById } = this.props;
+    const { cardType, securityVisitorById, visitorStayById } = this.props;
     const card =
       cardType === 'stay-card' ? (
         <StayCard
           ref={this.cardRef}
-          visitor={visitorById}
+          visitor={securityVisitorById}
           visitorStay={visitorStayById}
         />
       ) : (
         <DutyCard
           ref={this.cardRef}
-          visitor={visitorById}
+          visitor={securityVisitorById}
           visitorStay={visitorStayById}
         />
       );
@@ -77,8 +77,8 @@ class StayCardContainer extends Component {
 }
 
 const formQueryVisitor = gql`
-  query visitorById($_id: String!) {
-    visitorById(_id: $_id) {
+  query securityVisitorById($_id: String!) {
+    securityVisitorById(_id: $_id) {
       _id
       name
       parentName

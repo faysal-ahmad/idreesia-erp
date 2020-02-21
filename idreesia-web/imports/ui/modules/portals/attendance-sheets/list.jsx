@@ -154,7 +154,7 @@ const List = ({ history, location }) => {
       });
 
       const total = presentCount + lateCount + absentCount;
-      const percentage = ((presentCount + lateCount) / total) * 100;
+      const percentage = Math.round(((presentCount + lateCount) / total) * 100);
 
       return updatePortalAttendance({
         variables: {

@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Collapse, Form, Row, Button } from '/imports/ui/controls';
+import {
+  Button,
+  Collapse,
+  Form,
+  Icon,
+  Row,
+  Tooltip,
+} from '/imports/ui/controls';
 import {
   InputCnicField,
   InputMobileField,
@@ -32,6 +39,7 @@ class ListFilter extends Component {
     ehadDuration: PropTypes.string,
     additionalInfo: PropTypes.string,
     setPageParams: PropTypes.func,
+    refreshData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -39,7 +47,6 @@ class ListFilter extends Component {
     phoneNumber: '',
     additionalInfo: null,
     ehadDuration: null,
-    filterCriteria: {},
   };
 
   handleReset = () => {
@@ -76,6 +83,22 @@ class ListFilter extends Component {
     );
   };
 
+  refreshButton = () => {
+    const { refreshData } = this.props;
+    if (!refreshData) return null;
+    return (
+      <Tooltip title="Reload Data">
+        <Icon
+          type="sync"
+          onClick={event => {
+            event.stopPropagation();
+            refreshData();
+          }}
+        />
+      </Tooltip>
+    );
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
@@ -88,7 +111,7 @@ class ListFilter extends Component {
 
     return (
       <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1">
+        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal">
             <InputTextField
               fieldName="name"

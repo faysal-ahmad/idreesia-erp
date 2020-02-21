@@ -80,7 +80,7 @@ const ListFilter = ({
           type="sync"
           onClick={event => {
             event.stopPropagation();
-            if (refreshData) refreshData();
+            refreshData();
           }}
         />
       </Tooltip>

@@ -184,6 +184,7 @@ const List = ({ history, location }) => {
           ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
           setPageParams={setPageParams}
+          refreshData={refetch}
         />
         &nbsp;&nbsp;
         {getActionsMenu()}

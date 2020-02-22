@@ -46,9 +46,31 @@ class List extends Component {
       key: 'name',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Start Year',
+      dataIndex: 'mehfilStartYear',
+      key: 'mehfilStartYear',
+    },
+    {
+      title: 'Timings',
+      dataIndex: 'timingDetails',
+      key: 'timingDetails',
+    },
+    {
+      title: 'Karkuns',
+      dataIndex: 'karkunCount',
+      key: 'karkunCount',
+    },
+    {
+      title: 'LCD',
+      dataIndex: 'lcdAvailability',
+      key: 'lcdAvailability',
+      render: text => (text ? 'Yes' : 'No'),
+    },
+    {
+      title: 'Tablet',
+      dataIndex: 'tabAvailability',
+      key: 'tabAvailability',
+      render: text => (text ? 'Yes' : 'No'),
     },
     {
       key: 'action',
@@ -83,7 +105,7 @@ class List extends Component {
     });
   };
 
-  handleNewMehfilSave = ({ name, address }) => {
+  handleNewMehfilSave = values => {
     const { createCityMehfil, cityId } = this.props;
     this.setState({
       showNewForm: false,
@@ -91,9 +113,8 @@ class List extends Component {
 
     createCityMehfil({
       variables: {
-        name,
         cityId,
-        address,
+        ...values,
       },
     }).catch(error => {
       message.error(error.message, 5);
@@ -113,7 +134,7 @@ class List extends Component {
     });
   };
 
-  handleEditMehfilSave = ({ _id, cityId, name, address }) => {
+  handleEditMehfilSave = values => {
     const { updateCityMehfil } = this.props;
     this.setState({
       showEditForm: false,
@@ -121,12 +142,7 @@ class List extends Component {
     });
 
     updateCityMehfil({
-      variables: {
-        _id,
-        cityId,
-        name,
-        address,
-      },
+      variables: values,
     }).catch(error => {
       message.error(error.message, 5);
     });

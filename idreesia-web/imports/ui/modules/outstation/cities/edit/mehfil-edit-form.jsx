@@ -5,6 +5,7 @@ import { Form } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
+  SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -20,16 +21,34 @@ class EditForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, cityMehfil, handleSave } = this.props;
-    form.validateFields((err, { name, address }) => {
-      if (err) return;
+    form.validateFields(
+      (
+        err,
+        {
+          name,
+          address,
+          mehfilStartYear,
+          timingDetails,
+          lcdAvailability,
+          tabAvailability,
+          otherMehfilDetails,
+        }
+      ) => {
+        if (err) return;
 
-      handleSave({
-        _id: cityMehfil._id,
-        cityId: cityMehfil.cityId,
-        name,
-        address,
-      });
-    });
+        handleSave({
+          _id: cityMehfil._id,
+          cityId: cityMehfil.cityId,
+          name,
+          address,
+          mehfilStartYear,
+          timingDetails,
+          lcdAvailability,
+          tabAvailability,
+          otherMehfilDetails,
+        });
+      }
+    );
   };
 
   render() {
@@ -53,7 +72,37 @@ class EditForm extends Component {
             initialValue={cityMehfil.address}
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <InputTextField
+            fieldName="mehfilStartYear"
+            fieldLabel="Start Year"
+            initialValue={cityMehfil.mehfilStartYear}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextAreaField
+            fieldName="timingDetails"
+            fieldLabel="Timings"
+            initialValue={cityMehfil.timingDetails}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SwitchField
+            fieldName="lcdAvailability"
+            fieldLabel="LCD Available"
+            initialValue={cityMehfil.lcdAvailability}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SwitchField
+            fieldName="tabAvailability"
+            fieldLabel="Tablet Available"
+            initialValue={cityMehfil.tabAvailability}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <InputTextAreaField
+            fieldName="otherMehfilDetails"
+            fieldLabel="Other Details"
+            initialValue={cityMehfil.otherMehfilDetails}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <FormButtonsSaveCancel handleCancel={this.props.handleCancel} />
         </Form>
       </Fragment>
     );

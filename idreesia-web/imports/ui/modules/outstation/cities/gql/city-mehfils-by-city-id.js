@@ -7,6 +7,12 @@ const CITY_MEHFILS_BY_CITY_ID = gql`
       cityId
       name
       address
+      karkunCount
+      mehfilStartYear
+      timingDetails
+      lcdAvailability
+      tabAvailability
+      otherMehfilDetails
     }
   }
 `;

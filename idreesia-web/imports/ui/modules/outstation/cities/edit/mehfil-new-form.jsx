@@ -5,6 +5,7 @@ import { Form } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
+  SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -18,14 +19,32 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleSave } = this.props;
-    form.validateFields((err, { name, address }) => {
-      if (err) return;
+    form.validateFields(
+      (
+        err,
+        {
+          name,
+          address,
+          mehfilStartYear,
+          timingDetails,
+          lcdAvailability,
+          tabAvailability,
+          otherMehfilDetails,
+        }
+      ) => {
+        if (err) return;
 
-      handleSave({
-        name,
-        address,
-      });
-    });
+        handleSave({
+          name,
+          address,
+          mehfilStartYear,
+          timingDetails,
+          lcdAvailability,
+          tabAvailability,
+          otherMehfilDetails,
+        });
+      }
+    );
   };
 
   render() {
@@ -43,6 +62,31 @@ class NewForm extends Component {
         <InputTextAreaField
           fieldName="address"
           fieldLabel="Address"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextField
+          fieldName="mehfilStartYear"
+          fieldLabel="Start Year"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextAreaField
+          fieldName="timingDetails"
+          fieldLabel="Timings"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SwitchField
+          fieldName="lcdAvailability"
+          fieldLabel="LCD Available"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SwitchField
+          fieldName="tabAvailability"
+          fieldLabel="Tablet Available"
+          getFieldDecorator={getFieldDecorator}
+        />
+        <InputTextAreaField
+          fieldName="otherMehfilDetails"
+          fieldLabel="Other Details"
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel handleCancel={this.props.handleCancel} />

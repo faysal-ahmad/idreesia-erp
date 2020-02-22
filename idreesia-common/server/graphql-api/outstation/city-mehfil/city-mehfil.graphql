@@ -3,7 +3,14 @@ type CityMehfilType {
   cityId: String
   name: String
   address: String
+  mehfilStartYear: String
+  timingDetails: String
+  lcdAvailability: Boolean
+  tabAvailability: Boolean
+  otherMehfilDetails: String
 
+  karkunCount: Int
+  
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -22,12 +29,22 @@ extend type Mutation {
     name: String!
     cityId: String!
     address: String
+    mehfilStartYear: String
+    timingDetails: String
+    lcdAvailability: Boolean
+    tabAvailability: Boolean
+    otherMehfilDetails: String
   ): CityMehfilType
   updateCityMehfil(
     _id: String!
     name: String!
     cityId: String!
     address: String
+    mehfilStartYear: String
+    timingDetails: String
+    lcdAvailability: Boolean
+    tabAvailability: Boolean
+    otherMehfilDetails: String
   ): CityMehfilType
   removeCityMehfil(_id: String!): Int
 }

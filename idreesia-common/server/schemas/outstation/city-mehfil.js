@@ -14,6 +14,26 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  mehfilStartYear: {
+    type: String,
+    optional: true,
+  },
+  timingDetails: {
+    type: String,
+    optional: true,
+  },
+  lcdAvailability: {
+    type: Boolean,
+    optional: true,
+  },
+  tabAvailability: {
+    type: Boolean,
+    optional: true,
+  },
+  otherMehfilDetails: {
+    type: String,
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

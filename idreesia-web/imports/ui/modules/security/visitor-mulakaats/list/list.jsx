@@ -23,12 +23,24 @@ import {
   PAGED_VISITOR_MULAKAATS,
 } from '../gql';
 
+const getMulakaatDefaultDate = () => {
+  const date = moment();
+  // If the time is after 1pm, switch to tomorrow's date
+  if (date.hour() > 13) {
+    date.add(1, 'day');
+  }
+
+  return date;
+};
+
 const List = ({ visitorId, showNewButton, showActionsColumn }) => {
   const [showCard, setShowCard] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [visitorMulakaatId, setVisitorMulakaatId] = useState(null);
-  const [selectedMulakaatDate, setSelectedMulakaatDate] = useState(moment());
+  const [selectedMulakaatDate, setSelectedMulakaatDate] = useState(
+    getMulakaatDefaultDate()
+  );
 
   const [createVisitorMulakaat] = useMutation(CREATE_VISITOR_MULAKAAT);
   const [cancelVisitorMulakaat] = useMutation(CANCEL_VISITOR_MULAKAAT);

@@ -25,6 +25,7 @@ input UserFilter {
   showActive: String
   showInactive: String
   moduleAccess: String
+  portalAccess: String
   pageIndex: String
   pageSize: String
 }

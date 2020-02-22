@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
@@ -30,13 +31,16 @@ const buttonItemLayout = {
 };
 
 const ListFilter = props => {
+  const { allPortals, allPortalsLoading } = useAllPortals();
+  if (allPortalsLoading) return null;
+
   const handleSubmit = e => {
     e.preventDefault();
     const {
       setPageParams,
       form: { validateFields },
     } = props;
-    validateFields((err, { status, moduleAccess }) => {
+    validateFields((err, { status, moduleAccess, portalAccess }) => {
       if (err) return;
       setPageParams({
         showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
@@ -44,6 +48,7 @@ const ListFilter = props => {
         showActive: status.indexOf('active') !== -1 ? 'true' : 'false',
         showInactive: status.indexOf('inactive') !== -1 ? 'true' : 'false',
         moduleAccess,
+        portalAccess,
         pageIndex: '0',
       });
     });
@@ -57,6 +62,7 @@ const ListFilter = props => {
       showActive: 'true',
       showInactive: 'true',
       moduleAccess: '',
+      portalAccess: '',
       pageIndex: '0',
     });
   };
@@ -85,6 +91,7 @@ const ListFilter = props => {
     showActive,
     showInactive,
     moduleAccess,
+    portalAccess,
   } = props;
 
   const status = [];
@@ -97,6 +104,11 @@ const ListFilter = props => {
   const moduleNamesData = moduleNames.map(name => ({
     value: name,
     text: name,
+  }));
+
+  const portalsData = allPortals.map(portal => ({
+    value: portal._id,
+    text: portal.name,
   }));
 
   return (
@@ -126,6 +138,16 @@ const ListFilter = props => {
             fieldLayout={formItemLayout}
             getFieldDecorator={getFieldDecorator}
           />
+          <SelectField
+            data={portalsData}
+            getDataValue={({ value }) => value}
+            getDataText={({ text }) => text}
+            initialValue={portalAccess}
+            fieldName="portalAccess"
+            fieldLabel="Portal Access"
+            fieldLayout={formItemLayout}
+            getFieldDecorator={getFieldDecorator}
+          />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">
               <Button type="default" onClick={handleReset}>
@@ -150,6 +172,7 @@ ListFilter.propTypes = {
   showActive: PropTypes.string,
   showInactive: PropTypes.string,
   moduleAccess: PropTypes.string,
+  portalAccess: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 };

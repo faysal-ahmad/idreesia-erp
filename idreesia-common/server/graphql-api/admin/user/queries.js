@@ -19,6 +19,7 @@ export function getUsers(params) {
     showActive,
     showInactive,
     moduleAccess,
+    portalAccess,
     pageIndex = '0',
     pageSize = '20',
   } = params;
@@ -71,6 +72,16 @@ export function getUsers(params) {
       $match: {
         permissions: {
           $elemMatch: { $regex: `^${lcModuleName}` },
+        },
+      },
+    });
+  }
+
+  if (portalAccess) {
+    pipeline.push({
+      $match: {
+        instances: {
+          $elemMatch: { $eq: portalAccess },
         },
       },
     });

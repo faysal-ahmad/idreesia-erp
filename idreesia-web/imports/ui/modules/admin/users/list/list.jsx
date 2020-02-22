@@ -72,6 +72,7 @@ const List = ({ history, location }) => {
       'showActive',
       'showInactive',
       'moduleAccess',
+      'portalAccess',
       'pageIndex',
       'pageSize',
     ],
@@ -113,6 +114,7 @@ const List = ({ history, location }) => {
     showActive,
     showInactive,
     moduleAccess,
+    portalAccess,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -135,6 +137,7 @@ const List = ({ history, location }) => {
         showActive={showActive}
         showInactive={showInactive}
         moduleAccess={moduleAccess}
+        portalAccess={portalAccess}
         setPageParams={setPageParams}
         refreshData={refetch}
       />

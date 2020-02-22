@@ -1,11 +1,11 @@
 const ModuleNames = {
   admin: 'Admin',
   accounts: 'Accounts',
-  inventory: 'Inventory',
   hr: 'HR',
-  security: 'Security',
+  inventory: 'Inventory',
   outstation: 'Outstation',
   portals: 'Mehfil Portals',
+  security: 'Security',
   telephoneRoom: 'Telephone Room',
 };
 

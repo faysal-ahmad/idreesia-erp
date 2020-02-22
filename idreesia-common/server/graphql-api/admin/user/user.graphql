@@ -24,6 +24,7 @@ input UserFilter {
   showUnlocked: String
   showActive: String
   showInactive: String
+  moduleAccess: String
   pageIndex: String
   pageSize: String
 }

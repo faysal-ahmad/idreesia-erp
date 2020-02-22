@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Collapse,
@@ -9,7 +11,10 @@ import {
   Row,
   Tooltip,
 } from '/imports/ui/controls';
-import { CheckboxGroupField } from '/imports/ui/modules/helpers/fields';
+import {
+  CheckboxGroupField,
+  SelectField,
+} from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
   width: '500px',
@@ -31,13 +36,14 @@ const ListFilter = props => {
       setPageParams,
       form: { validateFields },
     } = props;
-    validateFields((err, { status }) => {
+    validateFields((err, { status, moduleAccess }) => {
       if (err) return;
       setPageParams({
         showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
         showUnlocked: status.indexOf('unlocked') !== -1 ? 'true' : 'false',
         showActive: status.indexOf('active') !== -1 ? 'true' : 'false',
         showInactive: status.indexOf('inactive') !== -1 ? 'true' : 'false',
+        moduleAccess,
         pageIndex: '0',
       });
     });
@@ -50,6 +56,7 @@ const ListFilter = props => {
       showUnlocked: 'true',
       showActive: 'true',
       showInactive: 'true',
+      moduleAccess: '',
       pageIndex: '0',
     });
   };
@@ -77,6 +84,7 @@ const ListFilter = props => {
     showUnlocked,
     showActive,
     showInactive,
+    moduleAccess,
   } = props;
 
   const status = [];
@@ -84,6 +92,12 @@ const ListFilter = props => {
   if (showUnlocked === 'true') status.push('unlocked');
   if (showActive === 'true') status.push('active');
   if (showInactive === 'true') status.push('inactive');
+
+  const moduleNames = values(ModuleNames);
+  const moduleNamesData = moduleNames.map(name => ({
+    value: name,
+    text: name,
+  }));
 
   return (
     <Collapse style={ContainerStyle}>
@@ -100,6 +114,16 @@ const ListFilter = props => {
               { label: 'Currently Inactive', value: 'inactive' },
             ]}
             initialValue={status}
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SelectField
+            data={moduleNamesData}
+            getDataValue={({ value }) => value}
+            getDataText={({ text }) => text}
+            initialValue={moduleAccess}
+            fieldName="moduleAccess"
+            fieldLabel="Module Access"
+            fieldLayout={formItemLayout}
             getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
@@ -125,6 +149,7 @@ ListFilter.propTypes = {
   showUnlocked: PropTypes.string,
   showActive: PropTypes.string,
   showInactive: PropTypes.string,
+  moduleAccess: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 };

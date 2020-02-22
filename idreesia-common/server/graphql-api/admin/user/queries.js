@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get } from 'meteor/idreesia-common/utilities/lodash';
+import { get, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import { mapUser } from './helpers';
 
 const wrapAsync = Meteor.wrapAsync ? Meteor.wrapAsync : Meteor._wrapAsync;
@@ -18,6 +18,7 @@ export function getUsers(params) {
     showUnlocked,
     showActive,
     showInactive,
+    moduleAccess,
     pageIndex = '0',
     pageSize = '20',
   } = params;
@@ -62,6 +63,17 @@ export function getUsers(params) {
       data: [],
       totalResults: 0,
     };
+  }
+
+  if (moduleAccess) {
+    const lcModuleName = kebabCase(moduleAccess);
+    pipeline.push({
+      $match: {
+        permissions: {
+          $elemMatch: { $regex: `^${lcModuleName}` },
+        },
+      },
+    });
   }
 
   const countingPipeline = pipeline.concat({

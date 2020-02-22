@@ -71,6 +71,7 @@ const List = ({ history, location }) => {
       'showUnlocked',
       'showActive',
       'showInactive',
+      'moduleAccess',
       'pageIndex',
       'pageSize',
     ],
@@ -111,6 +112,7 @@ const List = ({ history, location }) => {
     showUnlocked,
     showActive,
     showInactive,
+    moduleAccess,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -132,6 +134,7 @@ const List = ({ history, location }) => {
         showUnlocked={showUnlocked}
         showActive={showActive}
         showInactive={showInactive}
+        moduleAccess={moduleAccess}
         setPageParams={setPageParams}
         refreshData={refetch}
       />

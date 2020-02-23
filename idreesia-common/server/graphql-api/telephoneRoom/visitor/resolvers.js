@@ -1,21 +1,15 @@
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
+import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 
-import { getPortalVisitors } from './queries';
-
 export default {
   Query: {
-    pagedPortalVisitors(obj, { portalId, queryString }, { user }) {
+    pagedTelephoneRoomVisitors(obj, { queryString }, { user }) {
       if (
-        hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_VISITORS,
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.TR_VIEW_VISITORS,
+          PermissionConstants.TR_MANAGE_VISITORS,
         ])
       ) {
         return {
@@ -24,15 +18,14 @@ export default {
         };
       }
 
-      return getPortalVisitors(portalId, queryString);
+      return Visitors.searchVisitors(queryString);
     },
 
-    portalVisitorById(obj, { portalId, _id }, { user }) {
+    telephoneRoomVisitorById(obj, { _id }, { user }) {
       if (
-        hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_VISITORS,
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.TR_VIEW_VISITORS,
+          PermissionConstants.TR_MANAGE_VISITORS,
         ])
       ) {
         return null;
@@ -40,13 +33,31 @@ export default {
 
       return Visitors.findOne(_id);
     },
+
+    telephoneRoomVisitorByCnic(obj, { cnicNumbers }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.TR_VIEW_VISITORS,
+          PermissionConstants.TR_MANAGE_VISITORS,
+        ])
+      ) {
+        return null;
+      }
+
+      if (cnicNumbers.length > 0) {
+        return Visitors.findOne({
+          cnicNumber: { $in: cnicNumbers },
+        });
+      }
+
+      return null;
+    },
   },
 
   Mutation: {
-    createPortalVisitor(
+    createTelephoneRoomVisitor(
       obj,
       {
-        portalId,
         name,
         parentName,
         cnicNumber,
@@ -64,18 +75,10 @@ export default {
     ) {
       if (
         user &&
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
-        ])
+        !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
       ) {
         throw new Error(
           'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Visitors in this Mehfil Portal.'
         );
       }
 
@@ -116,10 +119,9 @@ export default {
       return Visitors.findOne(visitorId);
     },
 
-    updatePortalVisitor(
+    updateTelephoneRoomVisitor(
       obj,
       {
-        portalId,
         _id,
         name,
         parentName,
@@ -136,18 +138,10 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
-        ])
+        !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
       ) {
         throw new Error(
           'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Visitors in this Mehfil Portal.'
         );
       }
 
@@ -177,20 +171,22 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    setPortalVisitorImage(obj, { portalId, _id, imageId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
-        ])
-      ) {
+    deleteTelephoneRoomVisitor(obj, { _id }, { user }) {
+      if (!hasOnePermission(user._id, [PermissionConstants.TR_DELETE_DATA])) {
         throw new Error(
-          'You do not have permission to manage Visitors in the System.'
+          'You do not have permission to delete Visitors in the System.'
         );
       }
 
-      if (hasInstanceAccess(user._id, portalId) === false) {
+      return Visitors.remove(_id);
+    },
+
+    setTelephoneRoomVisitorImage(obj, { _id, imageId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
+      ) {
         throw new Error(
-          'You do not have permission to manage Visitors in this Mehfil Portal.'
+          'You do not have permission to manage Visitors in the System.'
         );
       }
 

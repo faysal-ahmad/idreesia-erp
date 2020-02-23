@@ -3,9 +3,6 @@ extend type Query {
   securityVisitorById(_id: String!): VisitorType
   securityVisitorByCnic(cnicNumbers: [String]!): VisitorType
   securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
-
-  distinctCities: [String]
-  distinctCountries: [String]
 }
 
 extend type Mutation {
@@ -49,6 +46,4 @@ extend type Mutation {
   importSecurityVisitorsCsvData(
     csvData: String!
   ): String
-
-  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
 }

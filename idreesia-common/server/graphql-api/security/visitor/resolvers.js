@@ -1,11 +1,8 @@
-import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 
-import { getVisitors } from './queries';
-import { checkCnicNotInUse, checkContactNotInUse } from './utilities';
 import { processCsvData } from './helpers';
 
 export default {
@@ -23,7 +20,7 @@ export default {
         };
       }
 
-      return getVisitors(queryString);
+      return Visitors.searchVisitors(queryString);
     },
 
     securityVisitorById(obj, { _id }, { user }) {
@@ -93,24 +90,6 @@ export default {
 
       return visitor;
     },
-
-    distinctCities() {
-      const distincFunction = Meteor.wrapAsync(
-        Visitors.rawCollection().distinct,
-        Visitors.rawCollection()
-      );
-
-      return compact(distincFunction('city'));
-    },
-
-    distinctCountries() {
-      const distincFunction = Meteor.wrapAsync(
-        Visitors.rawCollection().distinct,
-        Visitors.rawCollection()
-      );
-
-      return compact(distincFunction('country'));
-    },
   },
 
   Mutation: {
@@ -143,9 +122,9 @@ export default {
         );
       }
 
-      if (cnicNumber) checkCnicNotInUse(cnicNumber);
-      if (contactNumber1) checkContactNotInUse(contactNumber1);
-      if (contactNumber2) checkContactNotInUse(contactNumber2);
+      if (cnicNumber) Visitors.checkCnicNotInUse(cnicNumber);
+      if (contactNumber1) Visitors.checkContactNotInUse(contactNumber1);
+      if (contactNumber2) Visitors.checkContactNotInUse(contactNumber2);
 
       let imageId = null;
       if (imageData) {
@@ -208,9 +187,9 @@ export default {
         );
       }
 
-      if (cnicNumber) checkCnicNotInUse(cnicNumber, _id);
-      if (contactNumber1) checkContactNotInUse(contactNumber1, _id);
-      if (contactNumber2) checkContactNotInUse(contactNumber2, _id);
+      if (cnicNumber) Visitors.checkCnicNotInUse(cnicNumber, _id);
+      if (contactNumber1) Visitors.checkContactNotInUse(contactNumber1, _id);
+      if (contactNumber2) Visitors.checkContactNotInUse(contactNumber2, _id);
 
       const date = new Date();
       Visitors.update(_id, {
@@ -236,12 +215,10 @@ export default {
 
     deleteSecurityVisitor(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
+        !hasOnePermission(user._id, [PermissionConstants.SECURITY_DELETE_DATA])
       ) {
         throw new Error(
-          'You do not have permission to manage Visitors in the System.'
+          'You do not have permission to delete Visitors in the System.'
         );
       }
 
@@ -312,35 +289,6 @@ export default {
       }
 
       return processCsvData(csvData, new Date(), user);
-    },
-
-    fixCitySpelling(obj, { existingSpelling, newSpelling }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
-      const date = new Date();
-      const count = Visitors.update(
-        {
-          city: { $eq: existingSpelling },
-        },
-        {
-          $set: {
-            city: newSpelling,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        },
-        { multi: true }
-      );
-
-      return count;
     },
   },
 };

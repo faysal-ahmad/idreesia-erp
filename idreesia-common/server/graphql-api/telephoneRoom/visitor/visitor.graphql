@@ -1,0 +1,38 @@
+extend type Query {
+  pagedTelephoneRoomVisitors(queryString: String): PagedVisitorType
+  telephoneRoomVisitorById(_id: String!): VisitorType
+  telephoneRoomVisitorByCnic(cnicNumbers: [String]!): VisitorType
+}
+
+extend type Mutation {
+  createTelephoneRoomVisitor(
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+    imageData: String
+  ): VisitorType
+
+  updateTelephoneRoomVisitor(
+    _id: String!
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+  ): VisitorType
+
+  deleteTelephoneRoomVisitor(_id: String!): Int
+  setTelephoneRoomVisitorImage(_id: String!, imageId: String!): VisitorType
+}

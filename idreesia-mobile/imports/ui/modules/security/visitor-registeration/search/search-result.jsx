@@ -18,7 +18,7 @@ import {
 
 import StayHistory from './stay-history';
 import SearchResultRow from './search-result-row';
-import VISITOR_BY_CNIC_OR_CONTACT_NUMBER from '../gql/visitor-by-cnic-or-contact-number';
+import SECURITY_VISITOR_BY_CNIC_OR_CONTACT_NUMBER from '../gql/security-visitor-by-cnic-or-contact-number';
 
 const IconStyle = { fontSize: 50, margin: 0, color: 'red' };
 const TabContainerStyle = {
@@ -36,19 +36,22 @@ const tabs = [
 ];
 
 const SearchResult = ({ cnicNumber, contactNumber }) => {
-  const { data, loading } = useQuery(VISITOR_BY_CNIC_OR_CONTACT_NUMBER, {
-    variables: {
-      cnicNumber,
-      contactNumber,
-    },
-  });
+  const { data, loading } = useQuery(
+    SECURITY_VISITOR_BY_CNIC_OR_CONTACT_NUMBER,
+    {
+      variables: {
+        cnicNumber,
+        contactNumber,
+      },
+    }
+  );
 
   if (!cnicNumber && !contactNumber) return null;
   if (loading) {
     return <ActivityIndicator text="Loading..." />;
   }
 
-  const { visitorByCnicOrContactNumber: visitor } = data;
+  const { securityVisitorByCnicOrContactNumber: visitor } = data;
   if (!visitor) {
     return (
       <Result

@@ -1,11 +1,11 @@
 import gql from 'graphql-tag';
 
-const VISITOR_BY_CNIC_OR_CONTACT_NUMBER = gql`
-  query visitorByCnicOrContactNumber(
+const SECURITY_VISITOR_BY_CNIC_OR_CONTACT_NUMBER = gql`
+  query securityVisitorByCnicOrContactNumber(
     $cnicNumber: String
     $contactNumber: String
   ) {
-    visitorByCnicOrContactNumber(
+    securityVisitorByCnicOrContactNumber(
       cnicNumber: $cnicNumber
       contactNumber: $contactNumber
     ) {
@@ -24,4 +24,4 @@ const VISITOR_BY_CNIC_OR_CONTACT_NUMBER = gql`
   }
 `;
 
-export default VISITOR_BY_CNIC_OR_CONTACT_NUMBER;
+export default SECURITY_VISITOR_BY_CNIC_OR_CONTACT_NUMBER;

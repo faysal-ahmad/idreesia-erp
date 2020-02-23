@@ -3,7 +3,6 @@ import moment from 'moment';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
-import { isCnicInUse, isContactNumberInUse } from './utilities';
 
 const NAME_COLUMN = 'Name';
 const PARENT_NAME_COLUMN = 'S/O';
@@ -24,8 +23,8 @@ function processJsonRecord(jsonRecord, date, user) {
     const referenceName = jsonRecord[REFERENCE_COLUMN];
 
     if (!cnicNumber && !phoneNumber) return false;
-    if (cnicNumber && isCnicInUse(cnicNumber)) return false;
-    if (phoneNumber && isContactNumberInUse(phoneNumber)) return false;
+    if (cnicNumber && Visitors.isCnicInUse(cnicNumber)) return false;
+    if (phoneNumber && Visitors.isContactNumberInUse(phoneNumber)) return false;
 
     const ehadDurationYears = toInteger(ehadDuration);
     const ehadDate = moment()

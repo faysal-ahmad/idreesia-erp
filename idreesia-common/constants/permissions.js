@@ -111,10 +111,13 @@ const Permissions = {
   // ****************************************************************************************
   // Inventory Module
   // ****************************************************************************************
+  IN_DELETE_DATA: 'inventory-delete-data',
   IN_MANAGE_SETUP_DATA: 'inventory-manage-setup-data',
+
   IN_VIEW_STOCK_ITEMS: 'inventory-view-stock-items',
   IN_MANAGE_STOCK_ITEMS: 'inventory-manage-stock-items',
 
+  IN_VIEW_STOCK_ADJUSTMENTS: 'inventory-view-stock-adjustments',
   IN_MANAGE_STOCK_ADJUSTMENTS: 'inventory-manage-stock-adjustments',
   IN_APPROVE_STOCK_ADJUSTMENTS: 'inventory-approve-stock-adjustments',
 

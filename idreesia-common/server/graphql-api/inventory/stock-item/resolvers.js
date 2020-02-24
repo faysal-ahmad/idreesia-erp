@@ -222,9 +222,7 @@ export default {
     },
 
     removeStockItem(obj, { _id, physicalStoreId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
+      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
         );

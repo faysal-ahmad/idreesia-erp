@@ -289,12 +289,7 @@ export default {
     },
 
     removeIssuanceForm(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
+      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in the System.'
         );

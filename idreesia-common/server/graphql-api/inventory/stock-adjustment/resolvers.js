@@ -47,8 +47,7 @@ export default {
       if (
         hasInstanceAccess(user._id, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.IN_VIEW_STOCK_ITEMS,
-          PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -63,8 +62,7 @@ export default {
       if (
         hasInstanceAccess(user._id, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.IN_VIEW_STOCK_ITEMS,
-          PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -81,8 +79,7 @@ export default {
     stockAdjustmentById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.IN_VIEW_STOCK_ITEMS,
-          PermissionConstants.IN_MANAGE_STOCK_ITEMS,
+          PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -265,12 +262,7 @@ export default {
     },
 
     removeStockAdjustment(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
+      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in the System.'
         );

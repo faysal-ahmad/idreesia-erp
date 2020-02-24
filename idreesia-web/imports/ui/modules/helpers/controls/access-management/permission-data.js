@@ -154,12 +154,12 @@ export const permissionsData = [
     key: 'module-hr',
     children: [
       {
-        title: 'Manage Setup Data',
-        key: PermissionConstants.HR_MANAGE_SETUP_DATA,
-      },
-      {
         title: 'Delete Data',
         key: PermissionConstants.HR_DELETE_DATA,
+      },
+      {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.HR_MANAGE_SETUP_DATA,
       },
       {
         title: 'Karkuns',
@@ -228,47 +228,13 @@ export const permissionsData = [
     ],
   },
   {
-    title: 'Security',
-    key: 'module-security',
-    children: [
-      {
-        title: 'Mehfils',
-        key: 'module-security-mehfils',
-        children: [
-          {
-            title: 'View Mehfils',
-            key: PermissionConstants.SECURITY_VIEW_MEHFILS,
-          },
-          {
-            title: 'Manage Mehfils',
-            key: PermissionConstants.SECURITY_MANAGE_MEHFILS,
-          },
-        ],
-      },
-      {
-        title: 'Karkun Verification',
-        key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
-      },
-      {
-        title: 'Visitor Registration',
-        key: 'module-security-visitor-registration',
-        children: [
-          {
-            title: 'View Visitors',
-            key: PermissionConstants.SECURITY_VIEW_VISITORS,
-          },
-          {
-            title: 'Manage Visitors',
-            key: PermissionConstants.SECURITY_MANAGE_VISITORS,
-          },
-        ],
-      },
-    ],
-  },
-  {
     title: 'Inventory',
     key: 'module-inventory',
     children: [
+      {
+        title: 'Delete Data',
+        key: PermissionConstants.IN_DELETE_DATA,
+      },
       {
         title: 'Manage Setup Data',
         key: PermissionConstants.IN_MANAGE_SETUP_DATA,
@@ -328,6 +294,10 @@ export const permissionsData = [
         key: 'module-inventory-stock-adjustments',
         children: [
           {
+            title: 'View Stock Adjustments',
+            key: PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
+          },
+          {
             title: 'Manage Stock Adjustments',
             key: PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           },
@@ -344,12 +314,12 @@ export const permissionsData = [
     key: 'module-outstation',
     children: [
       {
-        title: 'Manage Setup Data',
-        key: PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-      },
-      {
         title: 'Delete Data',
         key: PermissionConstants.OUTSTATION_DELETE_DATA,
+      },
+      {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
       },
       {
         title: 'Karkuns',
@@ -428,6 +398,76 @@ export const permissionsData = [
           {
             title: 'Manage Visitors',
             key: PermissionConstants.PORTALS_MANAGE_VISITORS,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Security',
+    key: 'module-security',
+    children: [
+      {
+        title: 'Delete Data',
+        key: PermissionConstants.SECURITY_DELETE_DATA,
+      },
+      {
+        title: 'Mehfils',
+        key: 'module-security-mehfils',
+        children: [
+          {
+            title: 'View Mehfils',
+            key: PermissionConstants.SECURITY_VIEW_MEHFILS,
+          },
+          {
+            title: 'Manage Mehfils',
+            key: PermissionConstants.SECURITY_MANAGE_MEHFILS,
+          },
+        ],
+      },
+      {
+        title: 'Karkun Verification',
+        key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
+      },
+      {
+        title: 'Visitor Registration',
+        key: 'module-security-visitor-registration',
+        children: [
+          {
+            title: 'View Visitors',
+            key: PermissionConstants.SECURITY_VIEW_VISITORS,
+          },
+          {
+            title: 'Manage Visitors',
+            key: PermissionConstants.SECURITY_MANAGE_VISITORS,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Telephone Room',
+    key: 'module-telephone-room',
+    children: [
+      {
+        title: 'Delete Data',
+        key: PermissionConstants.TR_DELETE_DATA,
+      },
+      {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.TR_MANAGE_SETUP_DATA,
+      },
+      {
+        title: 'Visitors',
+        key: 'module-telephone-room-visitors',
+        children: [
+          {
+            title: 'View Visitors',
+            key: PermissionConstants.TR_VIEW_VISITORS,
+          },
+          {
+            title: 'Manage Visitors',
+            key: PermissionConstants.TR_MANAGE_VISITORS,
           },
         ],
       },

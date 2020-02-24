@@ -371,12 +371,7 @@ export default {
     },
 
     removePurchaseForm(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
+      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in the System.'
         );

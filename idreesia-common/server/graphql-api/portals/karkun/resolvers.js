@@ -7,7 +7,7 @@ import {
 } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getPortalKarkuns, getPortalKarkunsByVisitor } from './queries';
+import { getPortalKarkuns } from './queries';
 
 export default {
   Query: {
@@ -25,26 +25,6 @@ export default {
       }
 
       return getPortalKarkuns(portalId, filter);
-    },
-
-    portalKarkunsByVisitor(
-      obj,
-      { portalId, visitorName, visitorCnic, visitorPhone },
-      { user }
-    ) {
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        return {
-          karkuns: [],
-          totalResults: 0,
-        };
-      }
-
-      return getPortalKarkunsByVisitor(
-        portalId,
-        visitorName,
-        visitorCnic,
-        visitorPhone
-      );
     },
   },
 

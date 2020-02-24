@@ -194,20 +194,23 @@ export default class VisitorsList extends Component {
 
       const createAction =
         showKarkunCreateAction && !record.karkunId ? (
-          <Tooltip title="Create Karkun">
-            <Icon
-              type="plus-circle"
-              className="list-actions-icon"
-              onClick={() => {
-                handleKarkunCreateAction(record);
-              }}
-            />
-          </Tooltip>
+          <Popconfirm
+            title="Are you sure you want to create a Karkun from this item?"
+            onConfirm={() => {
+              handleKarkunCreateAction(record);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Create Karkun">
+              <Icon type="plus-circle" className="list-actions-icon" />
+            </Tooltip>
+          </Popconfirm>
         ) : null;
 
       const deleteAction = showDeleteAction ? (
         <Popconfirm
-          title="Are you sure you want to delete this visitor?"
+          title="Are you sure you want to delete this item?"
           onConfirm={() => {
             handleDeleteItem(record);
           }}

@@ -2,8 +2,8 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
-import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from './karkuns';
-import { VisitorsNewForm, VisitorsEditForm, VisitorsList } from './visitors';
+import { KarkunsEditForm, KarkunsList } from './karkuns';
+import { MembersNewForm, MembersEditForm, MembersList } from './members';
 import { AttendanceSheetsList } from './attendance-sheets';
 import {
   AmaanatLogsList,
@@ -13,7 +13,6 @@ import {
 
 const Router = () => (
   <Switch>
-    <Route path={paths.karkunsNewFormPath()} component={KarkunsNewForm} />
     <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath()} component={KarkunsList} />
 
@@ -32,9 +31,9 @@ const Router = () => (
     />
     <Route path={paths.amaanatLogsPath()} component={AmaanatLogsList} />
 
-    <Route path={paths.visitorsNewFormPath()} component={VisitorsNewForm} />
-    <Route path={paths.visitorsEditFormPath()} component={VisitorsEditForm} />
-    <Route path={paths.visitorsPath()} component={VisitorsList} />
+    <Route path={paths.membersNewFormPath()} component={MembersNewForm} />
+    <Route path={paths.membersEditFormPath()} component={MembersEditForm} />
+    <Route path={paths.membersPath()} component={MembersList} />
   </Switch>
 );
 

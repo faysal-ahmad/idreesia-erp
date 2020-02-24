@@ -26,9 +26,9 @@ class Sidebar extends Component {
     if (key.startsWith('karkuns')) {
       setActiveSubModuleName(SubModuleNames.karkuns);
       history.push(paths.karkunsPath(portalId));
-    } else if (key.startsWith('visitors')) {
-      setActiveSubModuleName(SubModuleNames.visitors);
-      history.push(paths.visitorsPath(portalId));
+    } else if (key.startsWith('members')) {
+      setActiveSubModuleName(SubModuleNames.members);
+      history.push(paths.membersPath(portalId));
     } else if (key.startsWith('attendance-sheets')) {
       setActiveSubModuleName(SubModuleNames.attendanceSheets);
       history.push(paths.attendanceSheetsPath(portalId));
@@ -42,8 +42,8 @@ class Sidebar extends Component {
     <Menu.Item parent-key={portalId} key={`karkuns-${portalId}`}>
       Karkuns
     </Menu.Item>,
-    <Menu.Item parent-key={portalId} key={`visitors-${portalId}`}>
-      Visitors
+    <Menu.Item parent-key={portalId} key={`members-${portalId}`}>
+      Members
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`attendance-sheets-${portalId}`}>
       Attendance Sheets

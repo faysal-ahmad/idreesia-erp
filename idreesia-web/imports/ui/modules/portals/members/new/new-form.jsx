@@ -70,14 +70,14 @@ class NewForm extends Component {
             cnicNumber: {
               errors: [
                 new Error(
-                  'Please input the CNIC or Mobile Number for the visitor'
+                  'Please input the CNIC or Mobile Number for the member'
                 ),
               ],
             },
             contactNumber1: {
               errors: [
                 new Error(
-                  'Please input the CNIC or Mobile Number for the visitor'
+                  'Please input the CNIC or Mobile Number for the member'
                 ),
               ],
             },
@@ -106,10 +106,8 @@ class NewForm extends Component {
             country: visitorCity.country,
           },
         })
-          .then(({ data: { createVisitor: newVisitor } }) => {
-            history.push(
-              `${paths.visitorRegistrationEditFormPath(newVisitor._id)}`
-            );
+          .then(({ data: { createPortalVisitor: newVisitor } }) => {
+            history.push(`${paths.membersEditFormPath(newVisitor._id)}`);
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -135,7 +133,7 @@ class NewForm extends Component {
           fieldName="name"
           fieldLabel="Name"
           required
-          requiredMessage="Please input the name for the visitor."
+          requiredMessage="Please input the name for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -143,7 +141,7 @@ class NewForm extends Component {
           fieldName="parentName"
           fieldLabel="S/O"
           required
-          requiredMessage="Please input the parent name for the visitor."
+          requiredMessage="Please input the parent name for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -156,7 +154,7 @@ class NewForm extends Component {
           fieldName="cityCountry"
           fieldLabel="City / Country"
           required
-          requiredMessage="Please select a city for the visitor."
+          requiredMessage="Please select a city for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -173,7 +171,7 @@ class NewForm extends Component {
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
           required
-          requiredMessage="Please specify the Ehad duration for the visitor."
+          requiredMessage="Please specify the Ehad duration for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -181,21 +179,21 @@ class NewForm extends Component {
           fieldName="referenceName"
           fieldLabel="R/O"
           required
-          requiredMessage="Please input the reference name for the visitor."
+          requiredMessage="Please input the reference name for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          requiredMessage="Please input the CNIC for the visitor."
+          requiredMessage="Please input the CNIC for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
-          requiredMessage="Please input the mobile number for the visitor."
+          requiredMessage="Please input the mobile number for the member."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -224,8 +222,8 @@ export default flowRight(
   }),
   WithDynamicBreadcrumbs(({ portal }) => {
     if (portal) {
-      return `Mehfil Portal, ${portal.name}, Visitors, New`;
+      return `Mehfil Portal, ${portal.name}, Members, New`;
     }
-    return `Mehfil Portal, Visitors, New`;
+    return `Mehfil Portal, Members, New`;
   })
 )(NewForm);

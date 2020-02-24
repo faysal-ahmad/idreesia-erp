@@ -7,22 +7,8 @@ extend type Query {
 extend type Mutation {
   createPortalKarkun(
     portalId: String!
-    name: String!
-    parentName: String
-    cnicNumber: String
-    contactNumber1: String
-    contactNumber2: String
-    emailAddress: String
-    currentAddress: String
+    memberId: String!
     cityId: String
-    cityMehfilId: String
-    permanentAddress: String
-    bloodGroup: String
-    educationalQualification: String
-    meansOfEarning: String
-    ehadDate: String
-    referenceName: String
-    imageId: String
   ): KarkunType
 
   updatePortalKarkun(

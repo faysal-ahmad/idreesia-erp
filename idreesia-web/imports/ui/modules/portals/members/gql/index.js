@@ -5,7 +5,3 @@ export { default as PORTAL_VISITOR_BY_ID } from './portal-visitor-by-id';
 export {
   default as SET_PORTAL_VISITOR_IMAGE,
 } from './set-portal-visitor-image';
-
-export {
-  default as PORTAL_KARKUNS_BY_VISITOR,
-} from './portal-karkuns-by-visitor';

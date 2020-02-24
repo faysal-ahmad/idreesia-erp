@@ -13,7 +13,6 @@ import {
   usePortalCities,
   usePortalCityMehfils,
 } from 'meteor/idreesia-common/hooks/portals';
-import { Button } from '/imports/ui/controls';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
@@ -63,10 +62,6 @@ const List = ({ history, location }) => {
       dispatch(setBreadcrumbs(['Mehfil Portal', 'Karkuns', 'List']));
     }
   }, [location, portal]);
-
-  const handleNewClicked = () => {
-    history.push(paths.karkunsNewFormPath(portalId));
-  };
 
   const handleSelectItem = karkun => {
     history.push(paths.karkunsEditFormPath(portalId, karkun._id));
@@ -121,16 +116,7 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <div>
-        <Button
-          size="large"
-          type="primary"
-          icon="plus-circle-o"
-          onClick={handleNewClicked}
-        >
-          New Karkun
-        </Button>
-      </div>
+      <div />
       {getListFilter()}
     </div>
   );

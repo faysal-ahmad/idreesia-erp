@@ -1,4 +1,5 @@
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import {
   hasInstanceAccess,
@@ -48,29 +49,7 @@ export default {
   },
 
   Mutation: {
-    createPortalKarkun(
-      obj,
-      {
-        portalId,
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
-        cityId,
-        cityMehfilId,
-        bloodGroup,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        referenceName,
-        imageId,
-      },
-      { user }
-    ) {
+    createPortalKarkun(obj, { portalId, memberId, cityId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.PORTAL_MANAGE_KARKUNS])
       ) {
@@ -85,9 +64,11 @@ export default {
         );
       }
 
-      if (cnicNumber) {
+      const member = Visitors.findOne(memberId);
+
+      if (member.cnicNumber) {
         const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber },
+          cnicNumber: { $eq: member.cnicNumber },
         });
         if (existingKarkun) {
           throw new Error(
@@ -100,8 +81,8 @@ export default {
       let updateImageId = null;
       // If an imageId is passed when creating a karkun, then clone that image
       // and use the id of the newly cloned image as imageId for this karkun
-      if (imageId) {
-        const image = Attachments.findOne(imageId);
+      if (member.imageId) {
+        const image = Attachments.findOne(member.imageId);
         updateImageId = Attachments.insert({
           name: image.name,
           description: image.description,
@@ -115,26 +96,25 @@ export default {
       }
 
       const karkunId = Karkuns.insert({
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
+        name: member.name,
+        parentName: member.parentName,
+        cnicNumber: member.cnicNumber,
+        contactNumber1: member.contactNumber1,
+        contactNumber2: member.contactNumber2,
         cityId,
-        cityMehfilId,
-        bloodGroup,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        referenceName,
+        ehadDate: member.ehadDate,
+        referenceName: member.referenceName,
         imageId: updateImageId,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
         updatedBy: user._id,
+      });
+
+      Visitors.update(memberId, {
+        $set: {
+          karkunId,
+        },
       });
 
       return Karkuns.findOne(karkunId);

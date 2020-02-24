@@ -16,6 +16,7 @@ const PAGED_PORTAL_VISITORS = gql`
         ehadDate
         referenceName
         imageId
+        karkunId
       }
     }
   }

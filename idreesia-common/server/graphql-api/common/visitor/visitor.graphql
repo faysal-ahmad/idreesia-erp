@@ -11,6 +11,7 @@ type VisitorType {
   city: String
   country: String
   imageId: String
+  karkunId: String
   criminalRecord: String
   otherNotes: String
 

@@ -17,17 +17,17 @@ class Picture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     portalId: PropTypes.string,
-    visitorId: PropTypes.string,
+    memberId: PropTypes.string,
     portalVisitorById: PropTypes.object,
     setPortalVisitorImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { portalId, visitorId, setPortalVisitorImage } = this.props;
+    const { portalId, memberId, setPortalVisitorImage } = this.props;
     setPortalVisitorImage({
       variables: {
         portalId,
-        _id: visitorId,
+        _id: memberId,
         imageId,
       },
     }).catch(error => {
@@ -67,8 +67,8 @@ export default flowRight(
   }),
   graphql(PORTAL_VISITOR_BY_ID, {
     props: ({ data }) => ({ ...data }),
-    options: ({ portalId, visitorId }) => ({
-      variables: { portalId, _id: visitorId },
+    options: ({ portalId, memberId }) => ({
+      variables: { portalId, _id: memberId },
     }),
   })
 )(Picture);

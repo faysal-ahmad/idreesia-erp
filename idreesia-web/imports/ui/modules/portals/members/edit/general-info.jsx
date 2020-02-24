@@ -16,7 +16,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
-import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
 import {
   PORTAL_VISITOR_BY_ID,
@@ -32,7 +32,7 @@ class GeneralInfo extends Component {
     form: PropTypes.object,
 
     portalId: PropTypes.string,
-    visitorId: PropTypes.string,
+    memberId: PropTypes.string,
     portalVisitorById: PropTypes.object,
     formDataLoading: PropTypes.bool,
     portalCities: PropTypes.array,
@@ -42,7 +42,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(`${paths.visitorRegistrationPath}`);
+    history.push(`${paths.membersRegistrationPath}`);
   };
 
   handleSubmit = e => {
@@ -76,14 +76,14 @@ class GeneralInfo extends Component {
             cnicNumber: {
               errors: [
                 new Error(
-                  'Please input the CNIC or Mobile Number for the visitor'
+                  'Please input the CNIC or Mobile Number for the member'
                 ),
               ],
             },
             contactNumber1: {
               errors: [
                 new Error(
-                  'Please input the CNIC or Mobile Number for the visitor'
+                  'Please input the CNIC or Mobile Number for the member'
                 ),
               ],
             },
@@ -114,7 +114,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.push(`${paths.visitorRegistrationPath}`);
+            history.push(`${paths.membersRegistrationPath}`);
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -146,7 +146,7 @@ class GeneralInfo extends Component {
             fieldLabel="Name"
             initialValue={portalVisitorById.name}
             required
-            requiredMessage="Please input the first name for the visitor."
+            requiredMessage="Please input the first name for the member."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -155,7 +155,7 @@ class GeneralInfo extends Component {
             fieldLabel="S/O"
             initialValue={portalVisitorById.parentName}
             required
-            requiredMessage="Please input the parent name for the visitor."
+            requiredMessage="Please input the parent name for the member."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -168,7 +168,7 @@ class GeneralInfo extends Component {
             fieldName="cityCountry"
             fieldLabel="City / Country"
             required
-            requiredMessage="Please select a city for the visitor."
+            requiredMessage="Please select a city for the member."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -187,7 +187,7 @@ class GeneralInfo extends Component {
             fieldLabel="Ehad Duration"
             required
             initialValue={moment(Number(portalVisitorById.ehadDate))}
-            requiredMessage="Please specify the Ehad duration for the visitor."
+            requiredMessage="Please specify the Ehad duration for the member."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -196,7 +196,7 @@ class GeneralInfo extends Component {
             fieldLabel="R/O"
             initialValue={portalVisitorById.referenceName}
             required
-            requiredMessage="Please input the referene name for the visitor."
+            requiredMessage="Please input the referene name for the member."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -204,7 +204,7 @@ class GeneralInfo extends Component {
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
             initialValue={portalVisitorById.cnicNumber || ''}
-            requiredMessage="Please input the CNIC for the visitor."
+            requiredMessage="Please input the CNIC for the member."
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -242,8 +242,8 @@ export default flowRight(
   }),
   graphql(PORTAL_VISITOR_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ portalId, visitorId }) => ({
-      variables: { portalId, _id: visitorId },
+    options: ({ portalId, memberId }) => ({
+      variables: { portalId, _id: memberId },
     }),
   })
 )(GeneralInfo);

@@ -7,9 +7,6 @@ export default class SubModulePaths {
   static karkunsPath(portalId = ':portalId') {
     return `${ModulePaths.portals}/${portalId}/karkuns`;
   }
-  static karkunsNewFormPath(portalId = ':portalId') {
-    return `${SubModulePaths.karkunsPath(portalId)}/new`;
-  }
   static karkunsEditFormPath(portalId = ':portalId', karkunId = ':karkunId') {
     return `${SubModulePaths.karkunsPath(portalId)}/${karkunId}`;
   }
@@ -35,18 +32,15 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
-  // Visitor Routes
+  // Members Routes
   // *************************************************************************************
-  static visitorsPath(portalId = ':portalId') {
-    return `${ModulePaths.portals}/${portalId}/visitors`;
+  static membersPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/members`;
   }
-  static visitorsNewFormPath(portalId = ':portalId') {
-    return `${SubModulePaths.visitorsPath(portalId)}/new`;
+  static membersNewFormPath(portalId = ':portalId') {
+    return `${SubModulePaths.membersPath(portalId)}/new`;
   }
-  static visitorsEditFormPath(
-    portalId = ':portalId',
-    visitorId = ':visitorId'
-  ) {
-    return `${SubModulePaths.visitorsPath(portalId)}/${visitorId}`;
+  static membersEditFormPath(portalId = ':portalId', memberId = ':memberId') {
+    return `${SubModulePaths.membersPath(portalId)}/${memberId}`;
   }
 }

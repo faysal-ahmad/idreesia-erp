@@ -1,6 +1,6 @@
 const SubModuleNames = {
   karkuns: 'Karkuns',
-  visitors: 'Visitors',
+  members: 'Members',
   attendanceSheets: 'Attendance Sheets',
   amaanatLogs: 'Amaanat Logs',
 };

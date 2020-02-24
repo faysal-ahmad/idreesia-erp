@@ -26,14 +26,16 @@ export default class VisitorsList extends Component {
     showDeleteAction: PropTypes.bool,
     showStayHistoryAction: PropTypes.bool,
     showMulakaatHistoryAction: PropTypes.bool,
-    showLookupAction: PropTypes.bool,
+    showKarkunLinkAction: PropTypes.bool,
+    showKarkunCreateAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
     handleStayHistoryAction: PropTypes.func,
     handleMulakaatHistoryAction: PropTypes.func,
-    handleLookupAction: PropTypes.func,
+    handleKarkunLinkAction: PropTypes.func,
+    handleKarkunCreateAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
     pageIndex: PropTypes.number,
@@ -48,13 +50,15 @@ export default class VisitorsList extends Component {
     showDeleteAction: false,
     showStayHistoryAction: false,
     showMulakaatHistoryAction: false,
-    showLookupAction: false,
+    showKarkunLinkAction: false,
+    showKarkunCreateAction: false,
 
     handleSelectItem: noop,
     handleDeleteItem: noop,
     handleStayHistoryAction: noop,
     handleMulakaatHistoryAction: noop,
-    handleLookupAction: noop,
+    handleKarkunLinkAction: noop,
+    handleKarkunCreateAction: noop,
     listHeader: () => null,
   };
 
@@ -142,11 +146,13 @@ export default class VisitorsList extends Component {
         showDeleteAction,
         showStayHistoryAction,
         showMulakaatHistoryAction,
-        showLookupAction,
+        showKarkunLinkAction,
+        showKarkunCreateAction,
         handleDeleteItem,
         handleStayHistoryAction,
         handleMulakaatHistoryAction,
-        handleLookupAction,
+        handleKarkunLinkAction,
+        handleKarkunCreateAction,
       } = this.props;
 
       const stayHistoryAction = showStayHistoryAction ? (
@@ -173,17 +179,31 @@ export default class VisitorsList extends Component {
         </Tooltip>
       ) : null;
 
-      const lookupAction = showLookupAction ? (
-        <Tooltip title="Find in Karkuns">
-          <Icon
-            type="file-search"
-            className="list-actions-icon"
-            onClick={() => {
-              handleLookupAction(record);
-            }}
-          />
-        </Tooltip>
-      ) : null;
+      const linkAction =
+        showKarkunLinkAction && record.karkunId ? (
+          <Tooltip title="Show in Karkuns">
+            <Icon
+              type="link"
+              className="list-actions-icon"
+              onClick={() => {
+                handleKarkunLinkAction(record);
+              }}
+            />
+          </Tooltip>
+        ) : null;
+
+      const createAction =
+        showKarkunCreateAction && !record.karkunId ? (
+          <Tooltip title="Create Karkun">
+            <Icon
+              type="plus-circle"
+              className="list-actions-icon"
+              onClick={() => {
+                handleKarkunCreateAction(record);
+              }}
+            />
+          </Tooltip>
+        ) : null;
 
       const deleteAction = showDeleteAction ? (
         <Popconfirm
@@ -204,7 +224,8 @@ export default class VisitorsList extends Component {
         <div className="list-actions-column">
           {stayHistoryAction}
           {mulakaatHistoryAction}
-          {lookupAction}
+          {linkAction}
+          {createAction}
           {deleteAction}
         </div>
       );
@@ -220,7 +241,8 @@ export default class VisitorsList extends Component {
       showDeleteAction,
       showStayHistoryAction,
       showMulakaatHistoryAction,
-      showLookupAction,
+      showKarkunLinkAction,
+      showKarkunCreateAction,
     } = this.props;
 
     const columns = [];
@@ -246,7 +268,8 @@ export default class VisitorsList extends Component {
       showDeleteAction ||
       showStayHistoryAction ||
       showMulakaatHistoryAction ||
-      showLookupAction
+      showKarkunLinkAction ||
+      showKarkunCreateAction
     ) {
       columns.push(this.actionsColumn);
     }
@@ -262,15 +285,7 @@ export default class VisitorsList extends Component {
     },
   };
 
-  onChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  onShowSizeChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -310,8 +325,8 @@ export default class VisitorsList extends Component {
             showTotal={(total, range) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
-            onChange={this.onChange}
-            onShowSizeChange={this.onShowSizeChange}
+            onChange={this.onPaginationChange}
+            onShowSizeChange={this.onPaginationChange}
             total={totalResults}
           />
         )}

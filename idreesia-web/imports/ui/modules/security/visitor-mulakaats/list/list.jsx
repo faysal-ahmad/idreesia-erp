@@ -25,8 +25,8 @@ import {
 
 const getMulakaatDefaultDate = () => {
   const date = moment();
-  // If the time is after 1pm, switch to tomorrow's date
-  if (date.hour() > 13) {
+  // If the time is after 2pm, switch to tomorrow's date
+  if (date.hour() >= 14) {
     date.add(1, 'day');
   }
 

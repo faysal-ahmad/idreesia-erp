@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
@@ -11,17 +10,22 @@ import {
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
 
+import {
+  TELEPHONE_ROOM_VISITOR_BY_ID,
+  SET_TELEPHONE_ROOM_VISITOR_IMAGE,
+} from '../gql';
+
 class Picture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     visitorId: PropTypes.string,
-    visitorById: PropTypes.object,
-    setVisitorImage: PropTypes.func,
+    telephoneRoomVisitorById: PropTypes.object,
+    setTelephoneRoomVisitorImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { visitorId, setVisitorImage } = this.props;
-    setVisitorImage({
+    const { visitorId, setTelephoneRoomVisitorImage } = this.props;
+    setTelephoneRoomVisitorImage({
       variables: {
         _id: visitorId,
         imageId,
@@ -32,9 +36,9 @@ class Picture extends Component {
   };
 
   render() {
-    const { loading, visitorById } = this.props;
+    const { loading, telephoneRoomVisitorById } = this.props;
     if (loading) return null;
-    const url = getDownloadUrl(visitorById.imageId);
+    const url = getDownloadUrl(telephoneRoomVisitorById.imageId);
 
     return (
       <Fragment>
@@ -55,32 +59,14 @@ class Picture extends Component {
   }
 }
 
-const formQuery = gql`
-  query visitorById($_id: String!) {
-    visitorById(_id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setVisitorImage($_id: String!, $imageId: String!) {
-    setVisitorImage(_id: $_id, imageId: $imageId) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
-    name: 'setVisitorImage',
+  graphql(SET_TELEPHONE_ROOM_VISITOR_IMAGE, {
+    name: 'setTelephoneRoomVisitorImage',
     options: {
-      refetchQueries: ['pagedVisitors'],
+      refetchQueries: ['pagedTelephoneRoomVisitors'],
     },
   }),
-  graphql(formQuery, {
+  graphql(TELEPHONE_ROOM_VISITOR_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { visitorId } = match.params;

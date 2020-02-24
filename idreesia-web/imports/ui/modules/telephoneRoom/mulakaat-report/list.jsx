@@ -14,8 +14,8 @@ import {
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 
 import {
-  CANCEL_SECURITY_VISITOR_MULAKAATS,
-  PAGED_SECURITY_VISITOR_MULAKAATS,
+  CANCEL_TELEPHONE_ROOM_VISITOR_MULAKAATS,
+  PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS,
 } from './gql';
 
 const List = () => {
@@ -23,11 +23,11 @@ const List = () => {
   const [pageSize, setPageSize] = useState(20);
   const [selectedDate, setSelectedDate] = useState(moment().startOf('day'));
 
-  const [cancelSecurityVisitorMulakaats] = useMutation(
-    CANCEL_SECURITY_VISITOR_MULAKAATS
+  const [cancelTelephoneRoomVisitorMulakaats] = useMutation(
+    CANCEL_TELEPHONE_ROOM_VISITOR_MULAKAATS
   );
   const { data, loading, refetch } = useQuery(
-    PAGED_SECURITY_VISITOR_MULAKAATS,
+    PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS,
     {
       variables: {
         filter: {
@@ -44,7 +44,7 @@ const List = () => {
     Modal.confirm({
       title: 'Are you sure you want to cancel all Mulakaats for this day?',
       onOk() {
-        cancelSecurityVisitorMulakaats({
+        cancelTelephoneRoomVisitorMulakaats({
           variables: { mulakaatDate: selectedDate },
         })
           .then(() => {
@@ -153,14 +153,14 @@ const List = () => {
   );
 
   if (loading) return null;
-  const { pagedSecurityVisitorMulakaats } = data;
+  const { pagedTelephoneRoomVisitorMulakaats } = data;
   const numPageIndex = pageIndex ? pageIndex + 1 : 1;
   const numPageSize = pageSize || 20;
 
   return (
     <Table
       rowKey="_id"
-      dataSource={pagedSecurityVisitorMulakaats.data}
+      dataSource={pagedTelephoneRoomVisitorMulakaats.data}
       columns={getColumns()}
       title={getTableHeader}
       bordered
@@ -176,7 +176,7 @@ const List = () => {
           }
           onChange={onPaginationChange}
           onShowSizeChange={onPaginationChange}
-          total={pagedSecurityVisitorMulakaats.totalResults}
+          total={pagedTelephoneRoomVisitorMulakaats.totalResults}
         />
       )}
     />

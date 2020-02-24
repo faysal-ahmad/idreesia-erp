@@ -96,7 +96,7 @@ class VisitorMulakaats extends AggregatableCollection {
       weekDates.push(weekDate.toDate());
     }
 
-    const existingMulakaat = VisitorMulakaats.findOne({
+    const existingMulakaat = this.findOne({
       visitorId,
       mulakaatDate: { $in: weekDates },
       cancelledDate: { $exists: false },

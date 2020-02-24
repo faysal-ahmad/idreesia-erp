@@ -9,4 +9,9 @@ export default class SubModulePaths {
   static visitorsEditFormPath(visitorId = ':visitorId') {
     return `${SubModulePaths.visitorsPath}/${visitorId}`;
   }
+
+  // *************************************************************************************
+  // Report Routes
+  // *************************************************************************************
+  static mulakaatReportPath = `${ModulePaths.telephoneRoom}/mulakaat-report`;
 }

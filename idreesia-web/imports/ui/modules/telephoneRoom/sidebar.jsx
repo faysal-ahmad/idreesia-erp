@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu } from '/imports/ui/controls';
+import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -22,6 +22,11 @@ class Sidebar extends Component {
         history.push(paths.visitorsPath);
         break;
 
+      case 'mulakaat-report':
+        setActiveSubModuleName(SubModuleNames.mulakaatReport);
+        history.push(paths.mulakaatReportPath);
+        break;
+
       default:
         break;
     }
@@ -34,7 +39,25 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
-        <Menu.Item key="visitors">Visitors</Menu.Item>
+        <Menu.Item key="visitors">
+          <span>
+            <Icon type="idcard" />
+            Visitors
+          </span>
+        </Menu.Item>
+        <Menu.SubMenu
+          key="telephone-room-reports"
+          title={
+            <span>
+              <Icon type="book" />
+              Reports
+            </span>
+          }
+        >
+          <Menu.Item key="mulakaat-report">
+            <span>Mulakaat Report</span>
+          </Menu.Item>
+        </Menu.SubMenu>
       </Menu>
     );
   }

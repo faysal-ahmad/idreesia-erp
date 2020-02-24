@@ -107,25 +107,26 @@ class Sidebar extends Component {
               Card Verification
             </span>
           </Menu.Item>
-          <Menu.SubMenu
-            key="security-reports"
-            title={
-              <span>
-                <Icon type="book" />
-                Reports
-              </span>
-            }
-          >
-            <Menu.Item key="visitor-stay-report">
-              <span>Visitor Stay Report</span>
-            </Menu.Item>
-            <Menu.Item key="team-visit-report">
-              <span>Team Visit Report</span>
-            </Menu.Item>
-            <Menu.Item key="mulakaat-report">
-              <span>Mulakaat Report</span>
-            </Menu.Item>
-          </Menu.SubMenu>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="security-reports" title="Reports">
+          <Menu.Item key="visitor-stay-report">
+            <span>
+              <Icon type="book" />
+              Visitor Stay Report
+            </span>
+          </Menu.Item>
+          <Menu.Item key="team-visit-report">
+            <span>
+              <Icon type="book" />
+              Team Visit Report
+            </span>
+          </Menu.Item>
+          <Menu.Item key="mulakaat-report">
+            <span>
+              <Icon type="book" />
+              Mulakaat Report
+            </span>
+          </Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

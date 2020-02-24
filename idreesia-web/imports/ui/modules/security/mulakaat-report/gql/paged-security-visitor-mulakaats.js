@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PAGED_VISITOR_MULAKAATS = gql`
-  query pagedVisitorMulakaats($filter: VisitorMulakaatFilter) {
-    pagedVisitorMulakaats(filter: $filter) {
+const PAGED_SECURITY_VISITOR_MULAKAATS = gql`
+  query pagedSecurityVisitorMulakaats($filter: VisitorMulakaatFilter) {
+    pagedSecurityVisitorMulakaats(filter: $filter) {
       totalResults
       data {
         _id
@@ -23,4 +23,4 @@ const PAGED_VISITOR_MULAKAATS = gql`
   }
 `;
 
-export default PAGED_VISITOR_MULAKAATS;
+export default PAGED_SECURITY_VISITOR_MULAKAATS;

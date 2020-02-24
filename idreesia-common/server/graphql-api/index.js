@@ -9,11 +9,14 @@ import AttachmentResolvers from './common/attachment/resolvers';
 import MessageSchema from './common/message/message.graphql';
 import MessageResolvers from './common/message/resolvers';
 
+import KarkunSchema from './common/karkun/karkun.graphql';
+import KarkunResolvers from './common/karkun/resolvers';
+
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 
-import KarkunSchema from './common/karkun/karkun.graphql';
-import KarkunResolvers from './common/karkun/resolvers';
+import VisitorMulakaatSchema from './common/visitor-mulakaat/visitor-mulakaat.graphql';
+import VisitorMulakaatResolvers from './common/visitor-mulakaat/resolvers';
 
 /**
  * Schema and Resolvers for the Admin module
@@ -42,8 +45,14 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 import VisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
 import VisitorStayResolvers from './security/visitor-stay/resolvers';
 
-import VisitorMulakaatSchema from './security/visitor-mulakaat/visitor-mulakaat.graphql';
-import VisitorMulakaatResolvers from './security/visitor-mulakaat/resolvers';
+import SecurityVisitorMulakaatSchema from './security/visitor-mulakaat/visitor-mulakaat.graphql';
+import SecurityVisitorMulakaatResolvers from './security/visitor-mulakaat/resolvers';
+
+/**
+ * Schema and Resolvers for the Telephone Room module
+ */
+import TelephoneRoomVisitorSchema from './telephoneRoom/visitor/visitor.graphql';
+import TelephoneRoomVisitorResolvers from './telephoneRoom/visitor/resolvers';
 
 /**
  * Schema and Resolvers for the HR module
@@ -179,8 +188,9 @@ import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
 const typeDefs = [
   AttachmentSchema,
   MessageSchema,
-  VisitorSchema,
   KarkunSchema,
+  VisitorSchema,
+  VisitorMulakaatSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
@@ -189,7 +199,9 @@ const typeDefs = [
   MehfilKarkunSchema,
   SecurityVisitorSchema,
   VisitorStaySchema,
-  VisitorMulakaatSchema,
+  SecurityVisitorMulakaatSchema,
+
+  TelephoneRoomVisitorSchema,
 
   DutyShiftSchema,
   DutySchema,
@@ -239,8 +251,9 @@ const typeDefs = [
 const resolvers = merge(
   AttachmentResolvers,
   MessageResolvers,
-  VisitorResolvers,
   KarkunResolvers,
+  VisitorResolvers,
+  VisitorMulakaatResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
@@ -249,7 +262,9 @@ const resolvers = merge(
   MehfilKarkunResolvers,
   SecurityVisitorResolvers,
   VisitorStayResolvers,
-  VisitorMulakaatResolvers,
+  SecurityVisitorMulakaatResolvers,
+
+  TelephoneRoomVisitorResolvers,
 
   DutyShiftResolvers,
   DutyResolvers,

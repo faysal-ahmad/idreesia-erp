@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const VISITOR_MULAKAAT_BY_ID = gql`
-  query visitorMulakaatById($_id: String!) {
-    visitorMulakaatById(_id: $_id) {
+const SECURITY_VISITOR_MULAKAAT_BY_ID = gql`
+  query securityVisitorMulakaatById($_id: String!) {
+    securityVisitorMulakaatById(_id: $_id) {
       _id
       mulakaatDate
       visitor {
@@ -17,4 +17,4 @@ const VISITOR_MULAKAAT_BY_ID = gql`
   }
 `;
 
-export default VISITOR_MULAKAAT_BY_ID;
+export default SECURITY_VISITOR_MULAKAAT_BY_ID;

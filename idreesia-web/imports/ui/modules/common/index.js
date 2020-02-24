@@ -6,8 +6,13 @@ export { default as AmaanatLogsEditForm } from './amaanat-logs/edit-form';
 export { default as KarkunsList } from './karkuns/list';
 export { default as KarkunsListFilter } from './karkuns/list-filter';
 
-export { default as VisitorsList } from './visitors/visitors-list';
+export { default as VisitorsList } from './visitors/list';
+export { default as VisitorsListFilter } from './visitors/list-filter';
 export { default as VisitorsNewForm } from './visitors/new-form';
+export { default as VisitorsGeneralInfo } from './visitors/general-info';
+export {
+  default as VisitorMulakaatCard,
+} from './visitor-mulakaats/mulakaat-card';
 
 export {
   default as KarkunAttendancesList,

@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithDistinctCities,
-  WithDistinctCountries,
-} from 'meteor/idreesia-common/composers/security';
+  useDistinctCities,
+  useDistinctCountries,
+} from 'meteor/idreesia-common/hooks/security';
 import { Divider, Form } from '/imports/ui/controls';
 import {
   AutoCompleteField,
@@ -17,34 +16,15 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    form: PropTypes.object,
+const NewForm = ({ form, handleSubmit, handleCancel }) => {
+  const { distinctCities, distinctCitiesLoading } = useDistinctCities();
+  const {
+    distinctCountries,
+    distinctCountriesLoading,
+  } = useDistinctCountries();
 
-    distinctCitiesLoading: PropTypes.bool,
-    distinctCities: PropTypes.array,
-    distinctCountriesLoading: PropTypes.bool,
-    distinctCountries: PropTypes.array,
-
-    handleSubmit: PropTypes.func,
-    handleCancel: PropTypes.func,
-  };
-
-  state = {
-    cnicRequired: true,
-    mobileRequired: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
-
-  handleSubmit = e => {
+  const _handleSubmit = e => {
     e.preventDefault();
-    const { form, handleSubmit } = this.props;
     form.validateFields((err, values) => {
       if (err) return;
       const { cnicNumber, contactNumber1 } = values;
@@ -71,107 +51,101 @@ class NewForm extends Component {
     });
   };
 
-  render() {
-    const {
-      form,
-      distinctCities,
-      distinctCitiesLoading,
-      distinctCountries,
-      distinctCountriesLoading,
-    } = this.props;
-    if (distinctCitiesLoading || distinctCountriesLoading) return null;
+  if (distinctCitiesLoading || distinctCountriesLoading) return null;
+  const { getFieldDecorator } = form;
 
-    const { getFieldDecorator } = form;
+  return (
+    <Form layout="horizontal" onSubmit={_handleSubmit}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        required
+        requiredMessage="Please input the name for the visitor."
+        getFieldDecorator={getFieldDecorator}
+      />
 
-    return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input the name for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <InputTextField
+        fieldName="parentName"
+        fieldLabel="S/O"
+        required
+        requiredMessage="Please input the parent name for the visitor."
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <InputTextField
-          fieldName="parentName"
-          fieldLabel="S/O"
-          required
-          requiredMessage="Please input the parent name for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <AutoCompleteField
+        fieldName="city"
+        fieldLabel="City"
+        dataSource={distinctCities}
+        required
+        requiredMessage="Please input the city for the visitor."
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <AutoCompleteField
-          fieldName="city"
-          fieldLabel="City"
-          dataSource={distinctCities}
-          required
-          requiredMessage="Please input the city for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <AutoCompleteField
+        fieldName="country"
+        fieldLabel="Country"
+        dataSource={distinctCountries}
+        initialValue="Pakistan"
+        required
+        requiredMessage="Please input the country for the visitor."
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <AutoCompleteField
-          fieldName="country"
-          fieldLabel="Country"
-          dataSource={distinctCountries}
-          initialValue="Pakistan"
-          required
-          requiredMessage="Please input the country for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <InputTextAreaField
+        fieldName="address"
+        fieldLabel="Address"
+        required={false}
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+      <Divider />
 
-        <Divider />
+      <EhadDurationField
+        fieldName="ehadDate"
+        fieldLabel="Ehad Duration"
+        required
+        requiredMessage="Please specify the Ehad duration for the visitor."
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <EhadDurationField
-          fieldName="ehadDate"
-          fieldLabel="Ehad Duration"
-          required
-          requiredMessage="Please specify the Ehad duration for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <InputTextField
+        fieldName="referenceName"
+        fieldLabel="R/O"
+        required
+        requiredMessage="Please input the reference name for the visitor."
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <InputTextField
-          fieldName="referenceName"
-          fieldLabel="R/O"
-          required
-          requiredMessage="Please input the reference name for the visitor."
-          getFieldDecorator={getFieldDecorator}
-        />
+      <InputCnicField
+        fieldName="cnicNumber"
+        fieldLabel="CNIC Number"
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <InputCnicField
-          fieldName="cnicNumber"
-          fieldLabel="CNIC Number"
-          getFieldDecorator={getFieldDecorator}
-        />
+      <InputMobileField
+        fieldName="contactNumber1"
+        fieldLabel="Mobile Number"
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <InputMobileField
-          fieldName="contactNumber1"
-          fieldLabel="Mobile Number"
-          getFieldDecorator={getFieldDecorator}
-        />
+      <InputTextField
+        fieldName="contactNumber2"
+        fieldLabel="Home Number"
+        required={false}
+        getFieldDecorator={getFieldDecorator}
+      />
 
-        <InputTextField
-          fieldName="contactNumber2"
-          fieldLabel="Home Number"
-          required={false}
-          getFieldDecorator={getFieldDecorator}
-        />
+      <FormButtonsSaveCancel handleCancel={handleCancel} />
+    </Form>
+  );
+};
 
-        <FormButtonsSaveCancel handleCancel={this.props.handleCancel} />
-      </Form>
-    );
-  }
-}
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  form: PropTypes.object,
+  handleSubmit: PropTypes.func,
+  handleCancel: PropTypes.func,
+};
 
-export default flowRight(
-  Form.create(),
-  WithDistinctCities(),
-  WithDistinctCountries()
-)(NewForm);
+export default Form.create()(NewForm);

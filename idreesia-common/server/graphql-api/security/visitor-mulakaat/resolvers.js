@@ -1,23 +1,11 @@
 import moment from 'moment';
-import {
-  Visitors,
-  VisitorMulakaats,
-} from 'meteor/idreesia-common/server/collections/security';
+import { VisitorMulakaats } from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import { getVisitorMulakaats } from './queries';
-
 export default {
-  VisitorMulakaatType: {
-    visitor: visitorMulakaat =>
-      Visitors.findOne({
-        _id: { $eq: visitorMulakaat.visitorId },
-      }),
-  },
-
   Query: {
-    pagedVisitorMulakaats(obj, { filter }, { user }) {
+    pagedSecurityVisitorMulakaats(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -30,10 +18,10 @@ export default {
         };
       }
 
-      return getVisitorMulakaats(filter);
+      return VisitorMulakaats.getPagedData(filter);
     },
 
-    visitorMulakaatById(obj, { _id }, { user }) {
+    securityVisitorMulakaatById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -48,7 +36,7 @@ export default {
   },
 
   Mutation: {
-    createVisitorMulakaat(obj, { visitorId, mulakaatDate }, { user }) {
+    createSecurityVisitorMulakaat(obj, { visitorId, mulakaatDate }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -59,26 +47,13 @@ export default {
         );
       }
 
-      const mMulakaatDate = moment(mulakaatDate);
       // Before creating, ensure that there isn't already another record created
       // for the week of this date for this visitor.
-      const weekDate = mMulakaatDate.clone().startOf('isoWeek');
-      const weekDates = [weekDate.toDate()];
-      for (let i = 1; i < 7; i++) {
-        weekDate.add(1, 'day');
-        weekDates.push(weekDate.toDate());
-      }
-
-      const existingMulakaat = VisitorMulakaats.findOne({
-        visitorId,
-        mulakaatDate: { $in: weekDates },
-        cancelledDate: { $exists: false },
-      });
-
-      if (existingMulakaat) {
+      if (!VisitorMulakaats.isMulakaatAllowed(visitorId, mulakaatDate)) {
         throw new Error('Visitor already has a mulakaat for this week.');
       }
 
+      const mMulakaatDate = moment(mulakaatDate);
       const date = new Date();
       const visitorMulakaatId = VisitorMulakaats.insert({
         visitorId,
@@ -92,7 +67,7 @@ export default {
       return VisitorMulakaats.findOne(visitorMulakaatId);
     },
 
-    cancelMulakaats(obj, { mulakaatDate }, { user }) {
+    cancelSecurityVisitorMulakaats(obj, { mulakaatDate }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -120,7 +95,7 @@ export default {
       );
     },
 
-    cancelVisitorMulakaat(obj, { _id }, { user }) {
+    cancelSecurityVisitorMulakaat(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -143,12 +118,12 @@ export default {
       return VisitorMulakaats.findOne(_id);
     },
 
-    deleteVisitorMulakaat(obj, { _id }, { user }) {
+    deleteSecurityVisitorMulakaat(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.SECURITY_DELETE_DATA])
       ) {
         throw new Error(
-          'You do not have permission to manage Visitors in the System.'
+          'You do not have permission to delete Visitors in the System.'
         );
       }
 

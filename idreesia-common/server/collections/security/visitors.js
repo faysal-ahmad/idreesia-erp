@@ -107,8 +107,8 @@ class Visitors extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const visitors = Visitors.aggregate(resultsPipeline).toArray();
-    const totalResults = Visitors.aggregate(countingPipeline).toArray();
+    const visitors = this.aggregate(resultsPipeline).toArray();
+    const totalResults = this.aggregate(countingPipeline).toArray();
 
     return Promise.all([visitors, totalResults]).then(results => ({
       data: results[0],

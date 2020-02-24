@@ -1,42 +1,15 @@
-type VisitorMulakaatType {
-  _id: String
-  visitorId: String
-  mulakaatDate: String
-  cancelledDate: String
-
-  visitor: VisitorType
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-type PagedVisitorMulakaatType {
-  totalResults: Int
-  data: [VisitorMulakaatType]
-}
-
-input VisitorMulakaatFilter {
-  visitorId: String
-  startDate: String
-  endDate: String
-  pageIndex: String
-  pageSize: String
-}
-
 extend type Query {
-  visitorMulakaatById(_id: String!): VisitorMulakaatType
-  pagedVisitorMulakaats(filter: VisitorMulakaatFilter): PagedVisitorMulakaatType
+  telephoneRoomVisitorMulakaatById(_id: String!): VisitorMulakaatType
+  pagedTelephoneRoomVisitorMulakaats(filter: VisitorMulakaatFilter): PagedVisitorMulakaatType
 }
 
 extend type Mutation {
-  createVisitorMulakaat(
+  createTelephoneRoomVisitorMulakaat(
     visitorId: String!
     mulakaatDate: String!
   ): VisitorMulakaatType
 
-  cancelMulakaats(mulakaatDate: String!): Int
-  cancelVisitorMulakaat(_id: String!): VisitorMulakaatType
-  deleteVisitorMulakaat(_id: String!): Int
+  cancelTelephoneRoomVisitorMulakaats(mulakaatDate: String!): Int
+  cancelTelephoneRoomVisitorMulakaat(_id: String!): VisitorMulakaatType
+  deleteTelephoneRoomVisitorMulakaat(_id: String!): Int
 }

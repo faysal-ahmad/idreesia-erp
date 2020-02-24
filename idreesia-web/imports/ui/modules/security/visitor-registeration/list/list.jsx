@@ -15,12 +15,11 @@ import {
   Menu,
   message,
 } from '/imports/ui/controls';
-import { VisitorsList } from '/imports/ui/modules/common';
+import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import ListFilter from './list-filter';
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
 
 const ButtonGroupStyle = {
@@ -177,12 +176,13 @@ const List = ({ history, location }) => {
         </Button>
       </div>
       <div className="list-table-header-section">
-        <ListFilter
+        <VisitorsListFilter
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
           ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
+          showAdditionalInfoFilter
           setPageParams={setPageParams}
           refreshData={refetch}
         />
@@ -192,7 +192,6 @@ const List = ({ history, location }) => {
     </div>
   );
 
-  // if (loading) return null;
   const pagedSecurityVisitors = data
     ? data.pagedSecurityVisitors
     : {

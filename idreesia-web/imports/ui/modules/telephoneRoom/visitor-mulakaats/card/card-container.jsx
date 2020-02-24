@@ -7,8 +7,8 @@ import { Button, Icon } from '/imports/ui/controls';
 import { VisitorMulakaatCard } from '/imports/ui/modules/common';
 
 import {
-  SECURITY_VISITOR_MULAKAAT_BY_ID,
-  PAGED_SECURITY_VISITOR_MULAKAATS,
+  TELEPHONE_ROOM_VISITOR_MULAKAAT_BY_ID,
+  PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS,
 } from '../gql';
 
 const MulakaatCardContainer = ({
@@ -18,15 +18,15 @@ const MulakaatCardContainer = ({
 }) => {
   const cardRef = useRef();
   const {
-    data: { securityVisitorMulakaatById },
-    loading: securityVisitorMulakaatByIdLoading,
-  } = useQuery(SECURITY_VISITOR_MULAKAAT_BY_ID, {
+    data: { telephoneRoomVisitorMulakaatById },
+    loading: telephoneRoomVisitorMulakaatByIdLoading,
+  } = useQuery(TELEPHONE_ROOM_VISITOR_MULAKAAT_BY_ID, {
     variables: { _id: visitorMulakaatId },
   });
   const {
-    data: { pagedSecurityVisitorMulakaats },
-    loading: pagedSecurityVisitorMulakaatsLoading,
-  } = useQuery(PAGED_SECURITY_VISITOR_MULAKAATS, {
+    data: { pagedTelephoneRoomVisitorMulakaats },
+    loading: pagedTelephoneRoomVisitorMulakaatsLoading,
+  } = useQuery(PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS, {
     variables: {
       filter: {
         visitorId,
@@ -37,8 +37,8 @@ const MulakaatCardContainer = ({
   });
 
   if (
-    securityVisitorMulakaatByIdLoading ||
-    pagedSecurityVisitorMulakaatsLoading
+    telephoneRoomVisitorMulakaatByIdLoading ||
+    pagedTelephoneRoomVisitorMulakaatsLoading
   ) {
     return null;
   }
@@ -47,8 +47,8 @@ const MulakaatCardContainer = ({
     <>
       <VisitorMulakaatCard
         ref={cardRef}
-        visitorMulakaat={securityVisitorMulakaatById}
-        visitorMulakaatHistory={pagedSecurityVisitorMulakaats.data}
+        visitorMulakaat={telephoneRoomVisitorMulakaatById}
+        visitorMulakaatHistory={pagedTelephoneRoomVisitorMulakaats.data}
       />
       <div style={{ paddingTop: '5px' }}>
         <ReactToPrint

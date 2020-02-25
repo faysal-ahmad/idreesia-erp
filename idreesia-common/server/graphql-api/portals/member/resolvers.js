@@ -107,6 +107,7 @@ export default {
         city,
         country,
         imageId,
+        dataSource: `portal-${portalId}`,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

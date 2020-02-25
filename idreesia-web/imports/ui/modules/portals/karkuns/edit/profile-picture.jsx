@@ -61,9 +61,11 @@ class ProfilePicture extends Component {
 export default flowRight(
   graphql(SET_PORTAL_KARKUN_PROFILE_IMAGE, {
     name: 'setPortalKarkunProfileImage',
-    options: {
-      refetchQueries: [{ query: PAGED_PORTAL_KARKUNS }],
-    },
+    options: ({ portalId }) => ({
+      refetchQueries: [
+        { query: PAGED_PORTAL_KARKUNS, variables: { portalId, filter: {} } },
+      ],
+    }),
   }),
   graphql(PORTAL_KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),

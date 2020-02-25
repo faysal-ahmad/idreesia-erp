@@ -51,6 +51,10 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  dataSource: {
+    type: String,
+    optional: true,
+  },
   karkunId: {
     type: String,
     optional: true,

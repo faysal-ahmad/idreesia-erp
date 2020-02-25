@@ -292,15 +292,16 @@ export default flowRight(
   WithPortalCityMehfils(),
   graphql(UPDATE_PORTAL_KARKUN, {
     name: 'updatePortalKarkun',
-    options: {
-      refetchQueries: [{ query: PAGED_PORTAL_KARKUNS }],
-    },
+    options: ({ portalId }) => ({
+      refetchQueries: [
+        { query: PAGED_PORTAL_KARKUNS, variables: { portalId, filter: {} } },
+      ],
+    }),
   }),
   graphql(PORTAL_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { portalId, karkunId } = match.params;
-      return { variables: { portalId, _id: karkunId } };
-    },
+    options: ({ portalId, karkunId }) => ({
+      variables: { portalId, _id: karkunId },
+    }),
   })
 )(GeneralInfo);

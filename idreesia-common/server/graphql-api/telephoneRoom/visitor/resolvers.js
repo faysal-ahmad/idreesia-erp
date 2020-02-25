@@ -110,6 +110,7 @@ export default {
         city,
         country,
         imageId,
+        dataSource: 'telephone-room',
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

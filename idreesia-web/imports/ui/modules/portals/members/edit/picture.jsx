@@ -61,9 +61,11 @@ class Picture extends Component {
 export default flowRight(
   graphql(SET_PORTAL_MEMBER_IMAGE, {
     name: 'setPortalMemberImage',
-    options: {
-      refetchQueries: [{ query: PAGED_PORTAL_MEMBERS }],
-    },
+    options: ({ portalId }) => ({
+      refetchQueries: [
+        { query: PAGED_PORTAL_MEMBERS, variables: { portalId } },
+      ],
+    }),
   }),
   graphql(PORTAL_MEMBER_BY_ID, {
     props: ({ data }) => ({ ...data }),

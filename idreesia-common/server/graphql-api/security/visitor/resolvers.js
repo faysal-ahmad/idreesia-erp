@@ -150,6 +150,7 @@ export default {
         city,
         country,
         imageId,
+        dataSource: 'security',
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

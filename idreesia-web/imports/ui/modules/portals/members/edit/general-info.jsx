@@ -97,7 +97,6 @@ class GeneralInfo extends Component {
           city => city._id === cityCountry
         );
 
-        debugger;
         updatePortalMember({
           variables: {
             portalId,
@@ -115,7 +114,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.push(`${paths.membersPath(portalId)}`);
+            history.push(paths.membersPath(portalId));
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -237,9 +236,11 @@ export default flowRight(
   WithPortalCities(),
   graphql(UPDATE_PORTAL_MEMBER, {
     name: 'updatePortalMember',
-    options: {
-      refetchQueries: [{ query: PAGED_PORTAL_MEMBERS }],
-    },
+    options: ({ portalId }) => ({
+      refetchQueries: [
+        { query: PAGED_PORTAL_MEMBERS, variables: { portalId } },
+      ],
+    }),
   }),
   graphql(PORTAL_MEMBER_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),

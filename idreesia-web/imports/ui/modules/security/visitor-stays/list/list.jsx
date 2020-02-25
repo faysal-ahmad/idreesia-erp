@@ -164,15 +164,7 @@ class List extends Component {
     return columns;
   };
 
-  onChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize,
-    });
-  };
-
-  onShowSizeChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -348,8 +340,8 @@ class List extends Component {
               showTotal={(total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`
               }
-              onChange={this.onChange}
-              onShowSizeChange={this.onShowSizeChange}
+              onChange={this.onPaginationChange}
+              onShowSizeChange={this.onPaginationChange}
               total={totalResults}
             />
           )}

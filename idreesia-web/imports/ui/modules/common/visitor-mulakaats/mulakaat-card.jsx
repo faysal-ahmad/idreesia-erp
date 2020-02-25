@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Card } from '/imports/ui/controls';
-import { filter } from 'meteor/idreesia-common/utilities/lodash';
+import { filter, memoize } from 'meteor/idreesia-common/utilities/lodash';
 
 const HeadStyle = {
   color: 'black',
@@ -23,6 +23,11 @@ const FooterStyle = {
   paddingTop: '4px',
 };
 
+const getFilteredMulakaatHistory = memoize(
+  (visitorMulakaatHistory, visitorMulakaatId) =>
+    filter(visitorMulakaatHistory, history => history._id !== visitorMulakaatId)
+);
+
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MulakaatCard extends Component {
   static propTypes = {
@@ -37,10 +42,22 @@ export default class MulakaatCard extends Component {
       'DD MMM, YYYY'
     );
 
-    const filteredMulakaatHistory = filter(
+    const filteredMulakaatHistory = getFilteredMulakaatHistory(
       visitorMulakaatHistory,
-      history => history._id !== visitorMulakaat._id
+      visitorMulakaat._id
     );
+
+    const historyNodes = filteredMulakaatHistory.map(history => {
+      const historyDate = moment(Number(history.mulakaatDate)).format(
+        'DD MMM, YYYY'
+      );
+      return (
+        <li key={history._id}>
+          {historyDate}
+          {history.cancelledDate ? ' - Cancelled' : ''}
+        </li>
+      );
+    });
 
     return (
       <Card
@@ -64,19 +81,7 @@ export default class MulakaatCard extends Component {
         </div>
         <h2 className="stay_card_section">Mulakaat History</h2>
         <div className="stay_card_item">
-          <ul>
-            {filteredMulakaatHistory.map(history => {
-              const historyDate = moment(Number(history.mulakaatDate)).format(
-                'DD MMM, YYYY'
-              );
-              return (
-                <li>
-                  {historyDate}
-                  {history.cancelledDate ? ' - Cancelled' : ''}
-                </li>
-              );
-            })}
-          </ul>
+          <ul>{historyNodes}</ul>
         </div>
         <div style={FooterStyle}>
           381 A-Block, Shah Rukn-e-Alam Colony, Multan

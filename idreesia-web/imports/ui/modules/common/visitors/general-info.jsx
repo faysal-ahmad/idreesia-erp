@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import {
   useDistinctCities,
@@ -111,7 +112,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="Ehad Duration"
           required
           requiredMessage="Please specify the Ehad duration for the visitor."
-          initialValue={visitor.ehadDate}
+          initialValue={moment(Number(visitor.ehadDate))}
           getFieldDecorator={getFieldDecorator}
         />
 

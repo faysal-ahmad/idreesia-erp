@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import InputMask from "react-input-mask";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import InputMask from 'react-input-mask';
 
-import { Input, Form } from "/imports/ui/controls";
+import { Input, Form } from '/imports/ui/controls';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -24,7 +24,7 @@ export default class InputMobileField extends Component {
     fieldLabel: PropTypes.string,
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
-    initialValue: PropTypes.any,
+    initialValue: PropTypes.string,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
@@ -32,7 +32,7 @@ export default class InputMobileField extends Component {
   };
 
   static defaultProps = {
-    initialValue: "",
+    initialValue: '',
     required: false,
     fieldLayout: formItemLayout,
   };
@@ -52,17 +52,20 @@ export default class InputMobileField extends Component {
       const rules = [
         {
           required,
-          message: required ? requiredMessage : "",
+          message: required ? requiredMessage : '',
           // pattern: /^[0-9+]{4}-[0-9+]{7}$/,
         },
       ];
 
-      return getFieldDecorator(fieldName, { initialValue, rules })(
-        <InputMask mask="9999-9999999" placeholder={placeholder} />
-      );
+      return getFieldDecorator(fieldName, {
+        initialValue: initialValue || '',
+        rules,
+      })(<InputMask mask="9999-9999999" placeholder={placeholder} />);
     }
 
-    return getFieldDecorator(fieldName, { initialValue })(<Input disabled />);
+    return getFieldDecorator(fieldName, { initialValue: initialValue || '' })(
+      <Input disabled />
+    );
   }
 
   render() {

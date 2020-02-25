@@ -54,6 +54,9 @@ import SecurityVisitorMulakaatResolvers from './security/visitor-mulakaat/resolv
 import TelephoneRoomVisitorSchema from './telephoneRoom/visitor/visitor.graphql';
 import TelephoneRoomVisitorResolvers from './telephoneRoom/visitor/resolvers';
 
+import TelephoneRoomVisitorMulakaatSchema from './telephoneRoom/visitor-mulakaat/visitor-mulakaat.graphql';
+import TelephoneRoomVisitorMulakaatResolvers from './telephoneRoom/visitor-mulakaat/resolvers';
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -202,6 +205,7 @@ const typeDefs = [
   SecurityVisitorMulakaatSchema,
 
   TelephoneRoomVisitorSchema,
+  TelephoneRoomVisitorMulakaatSchema,
 
   DutyShiftSchema,
   DutySchema,
@@ -265,6 +269,7 @@ const resolvers = merge(
   SecurityVisitorMulakaatResolvers,
 
   TelephoneRoomVisitorResolvers,
+  TelephoneRoomVisitorMulakaatResolvers,
 
   DutyShiftResolvers,
   DutyResolvers,

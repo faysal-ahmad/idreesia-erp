@@ -17,14 +17,16 @@ const MulakaatCardContainer = ({
   onCloseCard,
 }) => {
   const cardRef = useRef();
+
   const {
-    data: { securityVisitorMulakaatById },
+    data: securityVisitorMulakaatByIdData,
     loading: securityVisitorMulakaatByIdLoading,
   } = useQuery(SECURITY_VISITOR_MULAKAAT_BY_ID, {
     variables: { _id: visitorMulakaatId },
   });
+
   const {
-    data: { pagedSecurityVisitorMulakaats },
+    data: pagedSecurityVisitorMulakaatsData,
     loading: pagedSecurityVisitorMulakaatsLoading,
   } = useQuery(PAGED_SECURITY_VISITOR_MULAKAATS, {
     variables: {
@@ -43,6 +45,8 @@ const MulakaatCardContainer = ({
     return null;
   }
 
+  const { securityVisitorMulakaatById } = securityVisitorMulakaatByIdData;
+  const { pagedSecurityVisitorMulakaats } = pagedSecurityVisitorMulakaatsData;
   return (
     <>
       <VisitorMulakaatCard

@@ -76,9 +76,13 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
         mulakaatDate: selectedMulakaatDate,
       },
     })
-      .then(() => {
-        refetch();
-      })
+      .then(
+        ({ data: { createSecurityVisitorMulakaat: newVisitorMulakaat } }) => {
+          refetch();
+          setShowCard(true);
+          setVisitorMulakaatId(newVisitorMulakaat._id);
+        }
+      )
       .catch(error => {
         message.error(error.message, 5);
       });

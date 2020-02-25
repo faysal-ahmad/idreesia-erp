@@ -83,8 +83,6 @@ const List = ({ history, location }) => {
     history.push(paths.visitorsNewFormPath);
   };
 
-  const handleScanClicked = () => {};
-
   const handleMulakaatHistoryAction = visitor => {
     setShowMulakaatList(true);
     setVisitorIdForList(visitor._id);
@@ -105,10 +103,6 @@ const List = ({ history, location }) => {
           onClick={handleNewClicked}
         >
           New Visitor
-        </Button>
-        &nbsp;
-        <Button icon="scan" size="large" onClick={handleScanClicked}>
-          Scan CNIC
         </Button>
       </div>
       <div className="list-table-header-section">

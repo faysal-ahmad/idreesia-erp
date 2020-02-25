@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import InputMask from "react-input-mask";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import InputMask from 'react-input-mask';
 
-import { Input, Form } from "/imports/ui/controls";
+import { Input, Form } from '/imports/ui/controls';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -32,7 +32,7 @@ export default class InputCnicField extends Component {
   };
 
   static defaultProps = {
-    initialValue: "",
+    initialValue: '',
     required: false,
     fieldLayout: formItemLayout,
   };
@@ -52,17 +52,20 @@ export default class InputCnicField extends Component {
       const rules = [
         {
           required,
-          message: required ? requiredMessage : "",
+          message: required ? requiredMessage : '',
           // pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
         },
       ];
 
-      return getFieldDecorator(fieldName, { initialValue, rules })(
-        <InputMask mask="99999-9999999-9" placeholder={placeholder} />
-      );
+      return getFieldDecorator(fieldName, {
+        initialValue: initialValue || '',
+        rules,
+      })(<InputMask mask="99999-9999999-9" placeholder={placeholder} />);
     }
 
-    return getFieldDecorator(fieldName, { initialValue })(<Input disabled />);
+    return getFieldDecorator(fieldName, { initialValue: initialValue || '' })(
+      <Input disabled />
+    );
   }
 
   render() {

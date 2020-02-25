@@ -27,6 +27,7 @@ import './23-create-communication-indexes';
 import './24-create-security-indexes';
 import './25-create-security-indexes';
 import './26-create-hr-indexes';
+import './27-create-security-indexes';
 
 Migrations.config({
   log: true,

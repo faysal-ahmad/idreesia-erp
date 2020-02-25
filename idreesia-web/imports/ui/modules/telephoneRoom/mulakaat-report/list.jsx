@@ -142,6 +142,17 @@ const List = () => {
       <div>
         <Button
           size="large"
+          type="secondary"
+          icon="sync"
+          onClick={() => {
+            refetch();
+          }}
+        >
+          Reload
+        </Button>
+        &nbsp;&nbsp;
+        <Button
+          size="large"
           type="primary"
           icon="delete"
           onClick={handleCancelMulakaats}

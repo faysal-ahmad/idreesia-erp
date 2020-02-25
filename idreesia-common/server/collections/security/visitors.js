@@ -22,6 +22,7 @@ class Visitors extends AggregatableCollection {
       name,
       cnicNumber,
       phoneNumber,
+      city,
       ehadDuration,
       additionalInfo,
       pageIndex = '0',
@@ -49,6 +50,14 @@ class Visitors extends AggregatableCollection {
             { contactNumber1: phoneNumber },
             { contactNumber2: phoneNumber },
           ],
+        },
+      });
+    }
+
+    if (city) {
+      pipeline.push({
+        $match: {
+          city: { $eq: city },
         },
       });
     }

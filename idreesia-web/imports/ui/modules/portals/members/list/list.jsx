@@ -32,6 +32,7 @@ const List = ({ history, location }) => {
       'cnicNumber',
       'phoneNumber',
       'city',
+      'ehadDuration',
       'pageIndex',
       'pageSize',
     ],
@@ -95,6 +96,7 @@ const List = ({ history, location }) => {
     cnicNumber,
     phoneNumber,
     city,
+    ehadDuration,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -117,6 +119,7 @@ const List = ({ history, location }) => {
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         city={city}
+        ehadDuration={ehadDuration}
         setPageParams={setPageParams}
         refreshData={refetch}
       />

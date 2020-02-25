@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
@@ -41,6 +42,7 @@ const List = ({ history, location }) => {
       'name',
       'cnicNumber',
       'phoneNumber',
+      'city',
       'ehadDuration',
       'additionalInfo',
       'pageIndex',
@@ -49,6 +51,7 @@ const List = ({ history, location }) => {
   });
 
   const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
+  const { distinctCities } = useDistinctCities();
   const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
     variables: { queryString },
   });
@@ -61,6 +64,7 @@ const List = ({ history, location }) => {
     name,
     cnicNumber,
     phoneNumber,
+    city,
     ehadDuration,
     additionalInfo,
     pageIndex,
@@ -180,9 +184,11 @@ const List = ({ history, location }) => {
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
+          city={city}
           ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
           showAdditionalInfoFilter
+          distinctCities={distinctCities}
           setPageParams={setPageParams}
           refreshData={refetch}
         />

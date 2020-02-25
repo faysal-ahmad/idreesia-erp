@@ -37,9 +37,11 @@ const ListFilter = ({
   name,
   cnicNumber,
   phoneNumber,
+  city,
   ehadDuration,
   additionalInfo,
   showAdditionalInfoFilter,
+  distinctCities,
 }) => {
   const handleReset = () => {
     form.resetFields();
@@ -48,6 +50,7 @@ const ListFilter = ({
       name: '',
       cnicNumber: '',
       phoneNumber: '',
+      city: '',
       ehadDuration: '',
       additionalInfo: null,
     });
@@ -61,6 +64,7 @@ const ListFilter = ({
         name: values.name,
         cnicNumber: values.cnicNumber,
         phoneNumber: values.phoneNumber,
+        city: values.city,
         ehadDuration: values.ehadDuration,
         additionalInfo: values.additionalInfo,
       });
@@ -138,6 +142,16 @@ const ListFilter = ({
             initialValue={phoneNumber}
             getFieldDecorator={getFieldDecorator}
           />
+          <SelectField
+            data={distinctCities}
+            getDataValue={cityName => cityName}
+            getDataText={cityName => cityName}
+            initialValue={city}
+            fieldName="city"
+            fieldLabel="City"
+            fieldLayout={formItemLayout}
+            getFieldDecorator={getFieldDecorator}
+          />
           <EhadDurationFilterField
             fieldName="ehadDuration"
             fieldLabel="Ehad Duration"
@@ -171,8 +185,10 @@ ListFilter.propTypes = {
   name: PropTypes.string,
   cnicNumber: PropTypes.string,
   phoneNumber: PropTypes.string,
+  city: PropTypes.string,
   ehadDuration: PropTypes.string,
   additionalInfo: PropTypes.string,
+  distinctCities: PropTypes.array,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 };
@@ -181,8 +197,10 @@ ListFilter.defaultProps = {
   showAdditionalInfoFilter: false,
   cnicNumber: '',
   phoneNumber: '',
+  city: '',
   additionalInfo: null,
   ehadDuration: null,
+  distinctCities: [],
 };
 
 export default Form.create({ name: 'visitorsListFilter' })(ListFilter);

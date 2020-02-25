@@ -1,10 +1,10 @@
 extend type Query {
-  portalVisitorById(portalId: String!, _id: String!): VisitorType
-  pagedPortalVisitors(portalId: String!, queryString: String): PagedVisitorType
+  portalMemberById(portalId: String!, _id: String!): VisitorType
+  pagedPortalMembers(portalId: String!, queryString: String): PagedVisitorType
 }
 
 extend type Mutation {
-  createPortalVisitor(
+  createPortalMember(
     portalId: String!
     name: String!
     parentName: String!
@@ -19,7 +19,7 @@ extend type Mutation {
     imageData: String
   ): VisitorType
 
-  updatePortalVisitor(
+  updatePortalMember(
     portalId: String!
     _id: String!
     name: String!
@@ -34,5 +34,5 @@ extend type Mutation {
     country: String
   ): VisitorType
 
-  setPortalVisitorImage(portalId: String!, _id: String!, imageId: String!): VisitorType
+  setPortalMemberImage(portalId: String!, _id: String!, imageId: String!): VisitorType
 }

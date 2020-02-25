@@ -6,16 +6,16 @@ import {
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 
-import { getPortalVisitors } from './queries';
+import { getPortalMembers } from './queries';
 
 export default {
   Query: {
-    pagedPortalVisitors(obj, { portalId, queryString }, { user }) {
+    pagedPortalMembers(obj, { portalId, queryString }, { user }) {
       if (
         hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_VISITORS,
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_VIEW_MEMBERS,
+          PermissionConstants.PORTALS_MANAGE_MEMBERS,
         ])
       ) {
         return {
@@ -24,15 +24,15 @@ export default {
         };
       }
 
-      return getPortalVisitors(portalId, queryString);
+      return getPortalMembers(portalId, queryString);
     },
 
-    portalVisitorById(obj, { portalId, _id }, { user }) {
+    portalMemberById(obj, { portalId, _id }, { user }) {
       if (
         hasInstanceAccess(user._id, portalId) === false ||
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_VISITORS,
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_VIEW_MEMBERS,
+          PermissionConstants.PORTALS_MANAGE_MEMBERS,
         ])
       ) {
         return null;
@@ -43,7 +43,7 @@ export default {
   },
 
   Mutation: {
-    createPortalVisitor(
+    createPortalMember(
       obj,
       {
         portalId,
@@ -65,17 +65,17 @@ export default {
       if (
         user &&
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_MEMBERS,
         ])
       ) {
         throw new Error(
-          'You do not have permission to manage Visitors in the System.'
+          'You do not have permission to manage Members in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, portalId) === false) {
         throw new Error(
-          'You do not have permission to manage Visitors in this Mehfil Portal.'
+          'You do not have permission to manage Members in this Mehfil Portal.'
         );
       }
 
@@ -116,7 +116,7 @@ export default {
       return Visitors.findOne(visitorId);
     },
 
-    updatePortalVisitor(
+    updatePortalMember(
       obj,
       {
         portalId,
@@ -137,17 +137,17 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_MEMBERS,
         ])
       ) {
         throw new Error(
-          'You do not have permission to manage Visitors in the System.'
+          'You do not have permission to manage Members in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, portalId) === false) {
         throw new Error(
-          'You do not have permission to manage Visitors in this Mehfil Portal.'
+          'You do not have permission to manage Members in this Mehfil Portal.'
         );
       }
 
@@ -177,20 +177,20 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    setPortalVisitorImage(obj, { portalId, _id, imageId }, { user }) {
+    setPortalMemberImage(obj, { portalId, _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_VISITORS,
+          PermissionConstants.PORTALS_MANAGE_MEMBERS,
         ])
       ) {
         throw new Error(
-          'You do not have permission to manage Visitors in the System.'
+          'You do not have permission to manage Members in the System.'
         );
       }
 
       if (hasInstanceAccess(user._id, portalId) === false) {
         throw new Error(
-          'You do not have permission to manage Visitors in this Mehfil Portal.'
+          'You do not have permission to manage Members in this Mehfil Portal.'
         );
       }
 

@@ -19,9 +19,9 @@ import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
 import {
-  PORTAL_VISITOR_BY_ID,
-  UPDATE_PORTAL_VISITOR,
-  PAGED_PORTAL_VISITORS,
+  PORTAL_MEMBER_BY_ID,
+  UPDATE_PORTAL_MEMBER,
+  PAGED_PORTAL_MEMBERS,
 } from '../gql';
 
 class GeneralInfo extends Component {
@@ -33,16 +33,16 @@ class GeneralInfo extends Component {
 
     portalId: PropTypes.string,
     memberId: PropTypes.string,
-    portalVisitorById: PropTypes.object,
+    portalMemberById: PropTypes.object,
     formDataLoading: PropTypes.bool,
     portalCities: PropTypes.array,
     portalCitiesLoading: PropTypes.bool,
-    updatePortalVisitor: PropTypes.func,
+    updatePortalMember: PropTypes.func,
   };
 
   handleCancel = () => {
-    const { history } = this.props;
-    history.push(`${paths.membersRegistrationPath}`);
+    const { history, portalId } = this.props;
+    history.push(`${paths.membersPath(portalId)}`);
   };
 
   handleSubmit = e => {
@@ -51,9 +51,9 @@ class GeneralInfo extends Component {
       form,
       history,
       portalId,
-      portalVisitorById,
+      portalMemberById,
       portalCities,
-      updatePortalVisitor,
+      updatePortalMember,
     } = this.props;
     form.validateFields(
       (
@@ -97,10 +97,11 @@ class GeneralInfo extends Component {
           city => city._id === cityCountry
         );
 
-        updatePortalVisitor({
+        debugger;
+        updatePortalMember({
           variables: {
             portalId,
-            _id: portalVisitorById._id,
+            _id: portalMemberById._id,
             name,
             parentName,
             cnicNumber,
@@ -114,7 +115,7 @@ class GeneralInfo extends Component {
           },
         })
           .then(() => {
-            history.push(`${paths.membersRegistrationPath}`);
+            history.push(`${paths.membersPath(portalId)}`);
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -125,7 +126,7 @@ class GeneralInfo extends Component {
 
   render() {
     const {
-      portalVisitorById,
+      portalMemberById,
       formDataLoading,
       portalCities,
       portalCitiesLoading,
@@ -135,7 +136,7 @@ class GeneralInfo extends Component {
     const { getFieldDecorator } = this.props.form;
     const visitorCity = find(
       portalCities,
-      city => city.name === portalVisitorById.city
+      city => city.name === portalMemberById.city
     );
 
     return (
@@ -144,7 +145,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
-            initialValue={portalVisitorById.name}
+            initialValue={portalMemberById.name}
             required
             requiredMessage="Please input the first name for the member."
             getFieldDecorator={getFieldDecorator}
@@ -153,7 +154,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="parentName"
             fieldLabel="S/O"
-            initialValue={portalVisitorById.parentName}
+            initialValue={portalMemberById.parentName}
             required
             requiredMessage="Please input the parent name for the member."
             getFieldDecorator={getFieldDecorator}
@@ -175,7 +176,7 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="address"
             fieldLabel="Address"
-            initialValue={portalVisitorById.address}
+            initialValue={portalMemberById.address}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -186,7 +187,7 @@ class GeneralInfo extends Component {
             fieldName="ehadDate"
             fieldLabel="Ehad Duration"
             required
-            initialValue={moment(Number(portalVisitorById.ehadDate))}
+            initialValue={moment(Number(portalMemberById.ehadDate))}
             requiredMessage="Please specify the Ehad duration for the member."
             getFieldDecorator={getFieldDecorator}
           />
@@ -194,7 +195,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="referenceName"
             fieldLabel="R/O"
-            initialValue={portalVisitorById.referenceName}
+            initialValue={portalMemberById.referenceName}
             required
             requiredMessage="Please input the referene name for the member."
             getFieldDecorator={getFieldDecorator}
@@ -203,7 +204,7 @@ class GeneralInfo extends Component {
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={portalVisitorById.cnicNumber || ''}
+            initialValue={portalMemberById.cnicNumber || ''}
             requiredMessage="Please input the CNIC for the member."
             getFieldDecorator={getFieldDecorator}
           />
@@ -211,21 +212,21 @@ class GeneralInfo extends Component {
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={portalVisitorById.contactNumber1 || ''}
+            initialValue={portalMemberById.contactNumber1 || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={portalVisitorById.contactNumber2}
+            initialValue={portalMemberById.contactNumber2}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
-        <RecordInfo record={portalVisitorById} />
+        <RecordInfo record={portalMemberById} />
       </Fragment>
     );
   }
@@ -234,13 +235,13 @@ class GeneralInfo extends Component {
 export default flowRight(
   Form.create(),
   WithPortalCities(),
-  graphql(UPDATE_PORTAL_VISITOR, {
-    name: 'updatePortalVisitor',
+  graphql(UPDATE_PORTAL_MEMBER, {
+    name: 'updatePortalMember',
     options: {
-      refetchQueries: [{ query: PAGED_PORTAL_VISITORS }],
+      refetchQueries: [{ query: PAGED_PORTAL_MEMBERS }],
     },
   }),
-  graphql(PORTAL_VISITOR_BY_ID, {
+  graphql(PORTAL_MEMBER_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ portalId, memberId }) => ({
       variables: { portalId, _id: memberId },

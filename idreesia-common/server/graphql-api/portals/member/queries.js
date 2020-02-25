@@ -6,7 +6,7 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 
-export function getPortalVisitors(portalId, queryString) {
+export function getPortalMembers(portalId, queryString) {
   const portal = Portals.findOne(portalId);
   const cities = Cities.find({ _id: { $in: portal.cityIds } });
   const cityNames = cities.map(city => city.name);

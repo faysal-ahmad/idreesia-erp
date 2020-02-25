@@ -388,16 +388,16 @@ export const permissionsData = [
         ],
       },
       {
-        title: 'Visitors',
-        key: 'module-portals-visitors',
+        title: 'Members',
+        key: 'module-portals-members',
         children: [
           {
-            title: 'View Visitors',
-            key: PermissionConstants.PORTALS_VIEW_VISITORS,
+            title: 'View Members',
+            key: PermissionConstants.PORTALS_VIEW_MEMBERS,
           },
           {
-            title: 'Manage Visitors',
-            key: PermissionConstants.PORTALS_MANAGE_VISITORS,
+            title: 'Manage Members',
+            key: PermissionConstants.PORTALS_MANAGE_MEMBERS,
           },
         ],
       },

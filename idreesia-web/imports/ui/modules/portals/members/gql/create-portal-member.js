@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-const CREATE_PORTAL_VISITOR = gql`
-  mutation createPortalVisitor(
+const CREATE_PORTAL_MEMBER = gql`
+  mutation createPortalMember(
     $portalId: String!
     $name: String!
     $parentName: String!
@@ -14,7 +14,7 @@ const CREATE_PORTAL_VISITOR = gql`
     $city: String
     $country: String
   ) {
-    createPortalVisitor(
+    createPortalMember(
       portalId: $portalId
       name: $name
       parentName: $parentName
@@ -42,4 +42,4 @@ const CREATE_PORTAL_VISITOR = gql`
   }
 `;
 
-export default CREATE_PORTAL_VISITOR;
+export default CREATE_PORTAL_MEMBER;

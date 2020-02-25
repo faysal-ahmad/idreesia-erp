@@ -8,9 +8,9 @@ import { Row, Col, message } from '/imports/ui/controls';
 import { TakePicture } from '/imports/ui/modules/helpers/controls';
 
 import {
-  PORTAL_VISITOR_BY_ID,
-  PAGED_PORTAL_VISITORS,
-  SET_PORTAL_VISITOR_IMAGE,
+  PORTAL_MEMBER_BY_ID,
+  PAGED_PORTAL_MEMBERS,
+  SET_PORTAL_MEMBER_IMAGE,
 } from '../gql';
 
 class Picture extends Component {
@@ -18,13 +18,13 @@ class Picture extends Component {
     loading: PropTypes.bool,
     portalId: PropTypes.string,
     memberId: PropTypes.string,
-    portalVisitorById: PropTypes.object,
-    setPortalVisitorImage: PropTypes.func,
+    portalMemberById: PropTypes.object,
+    setPortalMemberImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { portalId, memberId, setPortalVisitorImage } = this.props;
-    setPortalVisitorImage({
+    const { portalId, memberId, setPortalMemberImage } = this.props;
+    setPortalMemberImage({
       variables: {
         portalId,
         _id: memberId,
@@ -36,9 +36,9 @@ class Picture extends Component {
   };
 
   render() {
-    const { loading, portalVisitorById } = this.props;
+    const { loading, portalMemberById } = this.props;
     if (loading) return null;
-    const url = getDownloadUrl(portalVisitorById.imageId);
+    const url = getDownloadUrl(portalMemberById.imageId);
 
     return (
       <Fragment>
@@ -59,13 +59,13 @@ class Picture extends Component {
 }
 
 export default flowRight(
-  graphql(SET_PORTAL_VISITOR_IMAGE, {
-    name: 'setPortalVisitorImage',
+  graphql(SET_PORTAL_MEMBER_IMAGE, {
+    name: 'setPortalMemberImage',
     options: {
-      refetchQueries: [{ query: PAGED_PORTAL_VISITORS }],
+      refetchQueries: [{ query: PAGED_PORTAL_MEMBERS }],
     },
   }),
-  graphql(PORTAL_VISITOR_BY_ID, {
+  graphql(PORTAL_MEMBER_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ portalId, memberId }) => ({
       variables: { portalId, _id: memberId },

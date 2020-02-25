@@ -20,14 +20,14 @@ import {
 } from '/imports/ui/modules/portals/common/composers';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
-import { CREATE_PORTAL_VISITOR, PAGED_PORTAL_VISITORS } from '../gql';
+import { CREATE_PORTAL_MEMBER, PAGED_PORTAL_MEMBERS } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createPortalVisitor: PropTypes.func,
+    createPortalMember: PropTypes.func,
 
     portal: PropTypes.object,
     portalLoading: PropTypes.bool,
@@ -44,7 +44,7 @@ class NewForm extends Component {
     e.preventDefault();
     const {
       form,
-      createPortalVisitor,
+      createPortalMember,
       history,
       portal,
       portalCities,
@@ -91,7 +91,7 @@ class NewForm extends Component {
           city => city._id === cityCountry
         );
 
-        createPortalVisitor({
+        createPortalMember({
           variables: {
             portalId: portal._id,
             name,
@@ -106,8 +106,8 @@ class NewForm extends Component {
             country: visitorCity.country,
           },
         })
-          .then(({ data: { createPortalVisitor: newVisitor } }) => {
-            history.push(`${paths.membersEditFormPath(newVisitor._id)}`);
+          .then(({ data: { createPortalMember: newMember } }) => {
+            history.push(paths.membersEditFormPath(portal._id, newMember._id));
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -214,10 +214,10 @@ export default flowRight(
   Form.create(),
   WithPortal(),
   WithPortalCities(),
-  graphql(CREATE_PORTAL_VISITOR, {
-    name: 'createPortalVisitor',
+  graphql(CREATE_PORTAL_MEMBER, {
+    name: 'createPortalMember',
     options: {
-      refetchQueries: [{ query: PAGED_PORTAL_VISITORS }],
+      refetchQueries: [{ query: PAGED_PORTAL_MEMBERS }],
     },
   }),
   WithDynamicBreadcrumbs(({ portal }) => {

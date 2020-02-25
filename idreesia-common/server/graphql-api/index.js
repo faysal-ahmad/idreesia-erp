@@ -126,8 +126,8 @@ import PortalKarkunResolvers from './portals/karkun/resolvers';
 import PortalKarkunDutySchema from './portals/karkun-duties/karkun-duty.graphql';
 import PortalKarkunDutyResolvers from './portals/karkun-duties/resolvers';
 
-import PortalVisitorSchema from './portals/visitor/visitor.graphql';
-import PortalVisitorResolvers from './portals/visitor/resolvers';
+import PortalMemberSchema from './portals/member/member.graphql';
+import PortalMemberResolvers from './portals/member/resolvers';
 
 import PortalAttendanceSchema from './portals/attendance/attendance.graphql';
 import PortalAttendanceResolvers from './portals/attendance/resolvers';
@@ -229,7 +229,7 @@ const typeDefs = [
   PortalSchema,
   PortalKarkunSchema,
   PortalKarkunDutySchema,
-  PortalVisitorSchema,
+  PortalMemberSchema,
   PortalAttendanceSchema,
   PortalAmaanatLogSchema,
 
@@ -293,7 +293,7 @@ const resolvers = merge(
   PortalResolvers,
   PortalKarkunResolvers,
   PortalKarkunDutyResolvers,
-  PortalVisitorResolvers,
+  PortalMemberResolvers,
   PortalAttendanceResolvers,
   PortalAmaanatLogResolvers,
 

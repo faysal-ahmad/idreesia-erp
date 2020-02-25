@@ -17,7 +17,7 @@ import { VisitorsList } from '/imports/ui/modules/common';
 import { CREATE_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';
 
 import ListFilter from './list-filter';
-import { PAGED_PORTAL_VISITORS } from '../gql';
+import { PAGED_PORTAL_MEMBERS } from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const List = ({ history, location }) => {
   });
 
   const [createPortalKarkun] = useMutation(CREATE_PORTAL_KARKUN);
-  const { data, loading, refetch } = useQuery(PAGED_PORTAL_VISITORS, {
+  const { data, loading, refetch } = useQuery(PAGED_PORTAL_MEMBERS, {
     variables: {
       portalId,
       queryString,
@@ -90,7 +90,7 @@ const List = ({ history, location }) => {
   };
 
   if (loading) return null;
-  const { pagedPortalVisitors } = data;
+  const { pagedPortalMembers } = data;
   const {
     name,
     cnicNumber,
@@ -141,7 +141,7 @@ const List = ({ history, location }) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedPortalVisitors}
+      pagedData={pagedPortalMembers}
     />
   );
 };

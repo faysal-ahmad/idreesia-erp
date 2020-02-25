@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-const UPDATE_PORTAL_VISITOR = gql`
-  mutation updatePortalVisitor(
+const UPDATE_PORTAL_MEMBER = gql`
+  mutation updatePortalMember(
     $portalId: String!
     $_id: String!
     $name: String!
@@ -15,7 +15,7 @@ const UPDATE_PORTAL_VISITOR = gql`
     $city: String
     $country: String
   ) {
-    updatePortalVisitor(
+    updatePortalMember(
       portalId: $portalId
       _id: $_id
       name: $name
@@ -44,4 +44,4 @@ const UPDATE_PORTAL_VISITOR = gql`
   }
 `;
 
-export default UPDATE_PORTAL_VISITOR;
+export default UPDATE_PORTAL_MEMBER;

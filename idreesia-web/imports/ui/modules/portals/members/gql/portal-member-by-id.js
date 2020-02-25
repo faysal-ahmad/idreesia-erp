@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PORTAL_VISITOR_BY_ID = gql`
-  query portalVisitorById($portalId: String!, $_id: String!) {
-    portalVisitorById(portalId: $portalId, _id: $_id) {
+const PORTAL_MEMBER_BY_ID = gql`
+  query portalMemberById($portalId: String!, $_id: String!) {
+    portalMemberById(portalId: $portalId, _id: $_id) {
       _id
       name
       parentName
@@ -23,4 +23,4 @@ const PORTAL_VISITOR_BY_ID = gql`
   }
 `;
 
-export default PORTAL_VISITOR_BY_ID;
+export default PORTAL_MEMBER_BY_ID;

@@ -90,8 +90,8 @@ const Permissions = {
   PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',
   PORTALS_MANAGE_KARKUNS: 'mehfil-portals-manage-karkuns',
 
-  PORTALS_VIEW_VISITORS: 'mehfil-portals-view-visitors',
-  PORTALS_MANAGE_VISITORS: 'mehfil-portals-manage-visitors',
+  PORTALS_VIEW_MEMBERS: 'mehfil-portals-view-members',
+  PORTALS_MANAGE_MEMBERS: 'mehfil-portals-manage-members',
 
   PORTALS_VIEW_AMAANAT_LOGS: 'mehfil-portals-view-amaanat-logs',
   PORTALS_MANAGE_AMAANAT_LOGS: 'mehfil-portals-manage-amaanat-logs',

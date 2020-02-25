@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PAGED_PORTAL_VISITORS = gql`
-  query pagedPortalVisitors($portalId: String!, $queryString: String) {
-    pagedPortalVisitors(portalId: $portalId, queryString: $queryString) {
+const PAGED_PORTAL_MEMBERS = gql`
+  query pagedPortalMembers($portalId: String!, $queryString: String) {
+    pagedPortalMembers(portalId: $portalId, queryString: $queryString) {
       totalResults
       data {
         _id
@@ -22,4 +22,4 @@ const PAGED_PORTAL_VISITORS = gql`
   }
 `;
 
-export default PAGED_PORTAL_VISITORS;
+export default PAGED_PORTAL_MEMBERS;

@@ -119,6 +119,7 @@ export default {
         educationalQualification,
         meansOfEarning,
         ehadDate,
+        lastTarteebDate,
         referenceName,
       },
       { user }
@@ -165,6 +166,7 @@ export default {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          lastTarteebDate,
           referenceName,
           updatedAt: date,
           updatedBy: user._id,

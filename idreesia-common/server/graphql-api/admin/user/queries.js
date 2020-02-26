@@ -33,7 +33,7 @@ export function getUsers(params) {
   } else if (showLocked === 'false' && showUnlocked === 'true') {
     pipeline.push({
       $match: {
-        $or: [{ locked: { $exists: false } }, { locked: { $eq: false } }],
+        locked: { $ne: true },
       },
     });
   } else if (showLocked === 'false' && showUnlocked === 'false') {

@@ -10,6 +10,7 @@ const USER_BY_ID = gql`
       locked
       instances
       permissions
+      karkunId
       karkun {
         _id
         name

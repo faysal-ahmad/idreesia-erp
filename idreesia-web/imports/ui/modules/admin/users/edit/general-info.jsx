@@ -7,6 +7,7 @@ import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   SwitchField,
+  KarkunSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -33,36 +34,55 @@ class GeneralInfo extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, userById, updateUser } = this.props;
-    form.validateFields((err, { password, email, displayName, locked }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { password, email, displayName, locked, karkun }) => {
+        if (err) return;
 
-      if (email && !email.includes('@gmail.com')) {
-        message.error('This is not a valid Google Email.', 5);
-        return;
-      }
+        if (email && !email.includes('@gmail.com')) {
+          message.error('This is not a valid Google Email.', 5);
+          return;
+        }
 
-      updateUser({
-        variables: {
-          userId: userById._id,
-          password,
-          email,
-          displayName,
-          locked,
-        },
-      })
-        .then(() => {
-          history.goBack();
+        updateUser({
+          variables: {
+            userId: userById._id,
+            password,
+            email,
+            displayName,
+            locked,
+            karkunId: karkun ? karkun._id : userById.karkunId,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.goBack();
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   render() {
     const { loading, userById } = this.props;
     const { getFieldDecorator } = this.props.form;
     if (loading) return null;
+
+    const karkunField = userById.karkunId ? (
+      <InputTextField
+        fieldName="karkunName"
+        fieldLabel="Karkun Name"
+        disabled
+        initialValue={userById.karkun ? userById.karkun.name : ''}
+        getFieldDecorator={getFieldDecorator}
+      />
+    ) : (
+      <KarkunSelectionInputField
+        fieldName="karkun"
+        fieldLabel="Karkun Name"
+        getFieldDecorator={getFieldDecorator}
+      />
+    );
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -102,13 +122,7 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <InputTextField
-          fieldName="karkunName"
-          fieldLabel="Karkun Name"
-          disabled
-          initialValue={userById.karkun ? userById.karkun.name : ''}
-          getFieldDecorator={getFieldDecorator}
-        />
+        {karkunField}
 
         <FormButtonsSaveCancel handleCancel={this.handleCancel} />
       </Form>

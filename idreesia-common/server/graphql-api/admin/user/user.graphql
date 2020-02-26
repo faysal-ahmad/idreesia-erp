@@ -52,6 +52,7 @@ extend type Mutation {
     email: String
     displayName: String
     locked: Boolean
+    karkunId: String
   ): UserType
 
   setPermissions(

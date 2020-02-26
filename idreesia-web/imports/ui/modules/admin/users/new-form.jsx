@@ -7,10 +7,10 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
+  KarkunSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 import { CREATE_USER, PAGED_USERS } from './gql';
 
 class NewForm extends Component {
@@ -108,7 +108,7 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <KarkunField
+        <KarkunSelectionInputField
           fieldName="karkun"
           fieldLabel="Karkun Name"
           getFieldDecorator={getFieldDecorator}

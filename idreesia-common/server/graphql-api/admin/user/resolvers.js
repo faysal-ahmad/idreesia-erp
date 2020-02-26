@@ -142,7 +142,7 @@ export default {
 
     updateUser(
       obj,
-      { userId, password, email, displayName, locked },
+      { userId, password, email, displayName, locked, karkunId },
       { user }
     ) {
       if (
@@ -165,6 +165,7 @@ export default {
             'emails.0.address': email,
             displayName,
             locked,
+            karkunId,
           },
         });
       } else {
@@ -175,6 +176,7 @@ export default {
           $set: {
             displayName,
             locked,
+            karkunId,
           },
         });
       }

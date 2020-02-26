@@ -51,9 +51,9 @@ const List = ({ history, location }) => {
   });
 
   const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
-  const { distinctCities, distinctCitiesRefetch } = useDistinctCities({
-    fetchPolicy: 'cache-first',
-  });
+  const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
+    'cache-first'
+  );
   const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
     variables: { queryString },
   });

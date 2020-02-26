@@ -7,7 +7,7 @@ const QUERY = gql`
   }
 `;
 
-const useDistinctCities = ({ fetchPolicy = 'no-cache' }) => {
+const useDistinctCities = (fetchPolicy = 'no-cache') => {
   const { data, loading, refetch } = useQuery(QUERY, {
     fetchPolicy,
   });

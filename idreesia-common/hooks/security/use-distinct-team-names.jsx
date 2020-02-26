@@ -7,7 +7,7 @@ const QUERY = gql`
   }
 `;
 
-const useDistinctTeamNames = ({ fetchPolicy = 'no-cache' }) => {
+const useDistinctTeamNames = (fetchPolicy = 'no-cache') => {
   const { data, loading, refetch } = useQuery(QUERY, {
     fetchPolicy,
   });

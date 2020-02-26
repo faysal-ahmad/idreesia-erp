@@ -39,8 +39,8 @@ extend type Query {
 
 extend type Mutation {
   createUser(
-    userName: String!
-    password: String!
+    userName: String
+    password: String
     email: String
     displayName: String
     karkunId: String

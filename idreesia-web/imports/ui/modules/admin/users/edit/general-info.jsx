@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -10,6 +9,8 @@ import {
   SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+
+import { USER_BY_ID, PAGED_USERS, UPDATE_USER } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -115,59 +116,15 @@ class GeneralInfo extends Component {
   }
 }
 
-const formQuery = gql`
-  query userById($_id: String!) {
-    userById(_id: $_id) {
-      _id
-      username
-      email
-      displayName
-      locked
-      karkun {
-        _id
-        name
-      }
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateUser(
-    $userId: String!
-    $password: String
-    $email: String
-    $displayName: String
-    $locked: Boolean
-  ) {
-    updateUser(
-      userId: $userId
-      password: $password
-      email: $email
-      displayName: $displayName
-      locked: $locked
-    ) {
-      _id
-      username
-      email
-      displayName
-      locked
-      karkun {
-        _id
-        name
-      }
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(UPDATE_USER, {
     name: 'updateUser',
     options: {
-      refetchQueries: ['pagedUsers'],
+      refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
     },
   }),
-  graphql(formQuery, {
+  graphql(USER_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ userId }) => ({ variables: { _id: userId } }),
   })

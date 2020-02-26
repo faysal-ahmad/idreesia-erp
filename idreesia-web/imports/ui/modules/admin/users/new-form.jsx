@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,6 +11,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { CREATE_USER, PAGED_USERS } from './gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -29,31 +29,53 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createUser, history } = this.props;
-    form.validateFields((err, { karkun, userName, password, email }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { karkun, userName, password, email, displayName }) => {
+        if (err) return;
 
-      if ((userName && password) || (email && email.includes('@gmail.com'))) {
-        createUser({
-          variables: {
-            karkunId: karkun ? karkun._id : null,
-            userName,
-            password,
-            email,
-          },
-        })
-          .then(() => {
-            history.goBack();
+        if ((userName && password) || (email && email.includes('@gmail.com'))) {
+          createUser({
+            variables: {
+              karkunId: karkun ? karkun._id : null,
+              userName,
+              password,
+              email,
+              displayName,
+            },
           })
-          .catch(error => {
-            message.error(error.message, 5);
+            .then(() => {
+              history.goBack();
+            })
+            .catch(error => {
+              message.error(error.message, 5);
+            });
+        } else {
+          form.setFields({
+            userName: {
+              errors: [
+                new Error(
+                  'Either user name and password, or google email is required to create an account.'
+                ),
+              ],
+            },
+            password: {
+              errors: [
+                new Error(
+                  'Either user name and password, or google email is required to create an account.'
+                ),
+              ],
+            },
+            email: {
+              errors: [
+                new Error(
+                  'Either user name and password, or google email is required to create an account.'
+                ),
+              ],
+            },
           });
-      } else {
-        message.error(
-          'Either User name and password, or Google Email is required to create an account.',
-          5
-        );
+        }
       }
-    });
+    );
   };
 
   render() {
@@ -98,30 +120,12 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createUser(
-    $karkunId: String!
-    $userName: String
-    $password: String
-    $email: String
-  ) {
-    createUser(
-      karkunId: $karkunId
-      userName: $userName
-      password: $password
-      email: $email
-    ) {
-      _id
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(CREATE_USER, {
     name: 'createUser',
     options: {
-      refetchQueries: ['pagedUsers'],
+      refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
     },
   }),
   WithBreadcrumbs(['Admin', 'Users', 'New'])

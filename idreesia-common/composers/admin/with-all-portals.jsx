@@ -4,9 +4,9 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 export default () => WrappedComponent => {
-  const WithPortals = props => <WrappedComponent {...props} />;
+  const WithAllPortals = props => <WrappedComponent {...props} />;
 
-  WithPortals.propTypes = {
+  WithAllPortals.propTypes = {
     portalsLoading: PropTypes.bool,
     allPortals: PropTypes.array,
   };
@@ -23,5 +23,5 @@ export default () => WrappedComponent => {
 
   return graphql(portalsListQuery, {
     props: ({ data }) => ({ portalsLoading: data.loading, ...data }),
-  })(WithPortals);
+  })(WithAllPortals);
 };

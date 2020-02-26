@@ -1,11 +1,18 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { flowRight } from 'lodash';
 
+import {
+  WithAllCompanies,
+  WithAllPortals,
+  WithAllPhysicalStores,
+} from 'meteor/idreesia-common/composers/admin';
+
 import { Button, Row, message } from '/imports/ui/controls';
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
+
+import { USER_BY_ID, SET_INSTANCE_ACCESS } from '../gql';
 
 class InstanceAccess extends Component {
   static propTypes = {
@@ -16,11 +23,11 @@ class InstanceAccess extends Component {
     userId: PropTypes.string,
     userLoading: PropTypes.bool,
     userById: PropTypes.object,
-    companiesListLoading: PropTypes.bool,
+    allCompaniesLoading: PropTypes.bool,
     allCompanies: PropTypes.array,
-    physicalStoresListLoading: PropTypes.bool,
+    allPhysicalStoresLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
-    portalsListLoading: PropTypes.bool,
+    allPortalsLoading: PropTypes.bool,
     allPortals: PropTypes.array,
     setInstanceAccess: PropTypes.func,
   };
@@ -71,18 +78,18 @@ class InstanceAccess extends Component {
     const {
       userById,
       userLoading,
-      physicalStoresListLoading,
+      allPhysicalStoresLoading,
       allPhysicalStores,
-      companiesListLoading,
+      allCompaniesLoading,
       allCompanies,
-      portalsListLoading,
+      allPortalsLoading,
       allPortals,
     } = this.props;
     if (
       userLoading ||
-      physicalStoresListLoading ||
-      companiesListLoading ||
-      portalsListLoading
+      allPhysicalStoresLoading ||
+      allCompaniesLoading ||
+      allPortalsLoading
     ) {
       return null;
     }
@@ -124,69 +131,18 @@ class InstanceAccess extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation setInstanceAccess($userId: String!, $instances: [String]!) {
-    setInstanceAccess(userId: $userId, instances: $instances) {
-      _id
-      instances
-    }
-  }
-`;
-
-const formQuery = gql`
-  query userById($_id: String!) {
-    userById(_id: $_id) {
-      _id
-      instances
-    }
-  }
-`;
-
-const physicalStoresListQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
-      _id
-      name
-    }
-  }
-`;
-
-const companiesListQuery = gql`
-  query allCompanies {
-    allCompanies {
-      _id
-      name
-    }
-  }
-`;
-
-const portalsListQuery = gql`
-  query allPortals {
-    allPortals {
-      _id
-      name
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  WithAllCompanies(),
+  WithAllPhysicalStores(),
+  WithAllPortals(),
+  graphql(SET_INSTANCE_ACCESS, {
     name: 'setInstanceAccess',
     options: {
       refetchQueries: ['pagedUser'],
     },
   }),
-  graphql(formQuery, {
+  graphql(USER_BY_ID, {
     props: ({ data }) => ({ userLoading: data.loading, ...data }),
     options: ({ userId }) => ({ variables: { _id: userId } }),
-  }),
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
-  }),
-  graphql(companiesListQuery, {
-    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
-  }),
-  graphql(portalsListQuery, {
-    props: ({ data }) => ({ portalsListLoading: data.loading, ...data }),
   })
 )(InstanceAccess);

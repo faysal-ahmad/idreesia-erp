@@ -34,6 +34,7 @@ export default {
     userById(obj, { _id }, { user }) {
       if (
         !_id ||
+        !user ||
         !hasOnePermission(user._id, [
           PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
           PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
@@ -102,23 +103,39 @@ export default {
         }
       }
 
-      const existingUser = Meteor.users.findOne({ karkunId });
-      if (existingUser) {
-        throw new Error(`This karkun already has a user account.`);
+      if (karkunId) {
+        const existingUser = Meteor.users.findOne({ karkunId });
+        if (existingUser) {
+          throw new Error(`This karkun already has a user account.`);
+        }
       }
 
-      const newUserId = Accounts.createUser({
-        username: userName,
-        email,
-        password,
-      });
+      let newUserId = null;
+      if (userName && password) {
+        newUserId = Accounts.createUser({
+          username: userName,
+          password,
+        });
 
-      Meteor.users.update(newUserId, {
-        $set: {
-          displayName,
-          karkunId,
-        },
-      });
+        Meteor.users.update(newUserId, {
+          $set: {
+            email,
+            displayName,
+            karkunId,
+          },
+        });
+      } else if (email) {
+        newUserId = Accounts.createUser({
+          email,
+        });
+
+        Meteor.users.update(newUserId, {
+          $set: {
+            displayName,
+            karkunId,
+          },
+        });
+      }
 
       return findOneUser(newUserId);
     },

@@ -1,11 +1,12 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Row, message } from '/imports/ui/controls';
 import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
+
+import { USER_BY_ID, SET_PERMISSIONS } from '../gql';
 
 class Permissions extends Component {
   static propTypes = {
@@ -81,32 +82,14 @@ class Permissions extends Component {
   }
 }
 
-const formQuery = gql`
-  query userById($_id: String!) {
-    userById(_id: $_id) {
-      _id
-      permissions
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setPermissions($userId: String!, $permissions: [String]!) {
-    setPermissions(userId: $userId, permissions: $permissions) {
-      _id
-      permissions
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(SET_PERMISSIONS, {
     name: 'setPermissions',
     options: {
       refetchQueries: ['pagedUsers'],
     },
   }),
-  graphql(formQuery, {
+  graphql(USER_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ userId }) => ({ variables: { _id: userId } }),
   })

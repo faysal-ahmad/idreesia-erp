@@ -18,7 +18,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createAccount: PropTypes.func,
+    createUser: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -28,12 +28,12 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createAccount, history } = this.props;
+    const { form, createUser, history } = this.props;
     form.validateFields((err, { karkun, userName, password, email }) => {
       if (err) return;
 
       if ((userName && password) || (email && email.includes('@gmail.com'))) {
-        createAccount({
+        createUser({
           variables: {
             karkunId: karkun ? karkun._id : null,
             userName,
@@ -99,13 +99,13 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createAccount(
+  mutation createUser(
     $karkunId: String!
     $userName: String
     $password: String
     $email: String
   ) {
-    createAccount(
+    createUser(
       karkunId: $karkunId
       userName: $userName
       password: $password
@@ -119,7 +119,7 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'createAccount',
+    name: 'createUser',
     options: {
       refetchQueries: ['pagedUsers'],
     },

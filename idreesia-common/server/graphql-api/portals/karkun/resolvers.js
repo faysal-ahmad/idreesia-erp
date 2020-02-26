@@ -12,12 +12,27 @@ import { getPortalKarkuns } from './queries';
 export default {
   Query: {
     portalKarkunById(obj, { portalId, _id }, { user }) {
-      if (hasInstanceAccess(user._id, portalId) === false) return null;
+      if (
+        hasInstanceAccess(user._id, portalId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_VIEW_KARKUNS,
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
+      ) {
+        return null;
+      }
+
       return Karkuns.findOne(_id);
     },
 
     pagedPortalKarkuns(obj, { portalId, filter }, { user }) {
-      if (hasInstanceAccess(user._id, portalId) === false) {
+      if (
+        hasInstanceAccess(user._id, portalId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_VIEW_KARKUNS,
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
+      ) {
         return {
           karkuns: [],
           totalResults: 0,
@@ -31,7 +46,9 @@ export default {
   Mutation: {
     createPortalKarkun(obj, { portalId, memberId, cityId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTAL_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Karkuns in the System.'
@@ -125,7 +142,9 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTAL_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Karkuns in the System.'
@@ -178,7 +197,9 @@ export default {
 
     setPortalKarkunProfileImage(obj, { portalId, _id, imageId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTAL_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Karkuns in the System.'

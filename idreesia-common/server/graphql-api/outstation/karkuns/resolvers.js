@@ -11,11 +11,32 @@ import { getOutstationKarkuns } from './queries';
 
 export default {
   Query: {
-    outstationKarkunById(obj, { _id }) {
+    outstationKarkunById(obj, { _id }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_VIEW_KARKUNS,
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+        ])
+      ) {
+        return null;
+      }
+
       return Karkuns.findOne(_id);
     },
 
-    pagedOutstationKarkuns(obj, { filter }) {
+    pagedOutstationKarkuns(obj, { filter }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_VIEW_KARKUNS,
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+        ])
+      ) {
+        return {
+          karkuns: [],
+          totalResults: 0,
+        };
+      }
+
       return getOutstationKarkuns(filter);
     },
   },

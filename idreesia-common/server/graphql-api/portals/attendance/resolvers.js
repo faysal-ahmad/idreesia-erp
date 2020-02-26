@@ -175,7 +175,7 @@ export default {
 
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
           PermissionConstants.PORTALS_DELETE_DATA,
         ])
       ) {

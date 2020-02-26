@@ -401,6 +401,20 @@ export const permissionsData = [
           },
         ],
       },
+      {
+        title: 'Amaanat Logs',
+        key: 'module-portals-amaanat-logs',
+        children: [
+          {
+            title: 'View Amaanat Logs',
+            key: PermissionConstants.PORTALS_VIEW_AMAANAT_LOGS,
+          },
+          {
+            title: 'Manage Amaanat Logs',
+            key: PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
+          },
+        ],
+      },
     ],
   },
   {
@@ -410,6 +424,10 @@ export const permissionsData = [
       {
         title: 'Delete Data',
         key: PermissionConstants.SECURITY_DELETE_DATA,
+      },
+      {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.SECURITY_MANAGE_SETUP_DATA,
       },
       {
         title: 'Mehfils',

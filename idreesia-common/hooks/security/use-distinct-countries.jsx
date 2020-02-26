@@ -7,14 +7,15 @@ const QUERY = gql`
   }
 `;
 
-const useDistinctCountries = () => {
-  const { data, loading } = useQuery(QUERY, {
-    fetchPolicy: 'no-cache',
+const useDistinctCountries = ({ fetchPolicy = 'no-cache' }) => {
+  const { data, loading, refetch } = useQuery(QUERY, {
+    fetchPolicy,
   });
 
   return {
     distinctCountries: data ? data.distinctCountries : null,
     distinctCountriesLoading: loading,
+    distinctCountriesRefetch: refetch,
   };
 };
 

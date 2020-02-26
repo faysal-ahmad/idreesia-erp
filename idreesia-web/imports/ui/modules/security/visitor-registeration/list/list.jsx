@@ -51,7 +51,9 @@ const List = ({ history, location }) => {
   });
 
   const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
-  const { distinctCities } = useDistinctCities();
+  const { distinctCities, distinctCitiesRefetch } = useDistinctCities({
+    fetchPolicy: 'cache-first',
+  });
   const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
     variables: { queryString },
   });
@@ -70,6 +72,11 @@ const List = ({ history, location }) => {
     pageIndex,
     pageSize,
   } = queryParams;
+
+  const refreshData = () => {
+    refetch();
+    distinctCitiesRefetch();
+  };
 
   const handleSelectItem = visitor => {
     history.push(paths.visitorRegistrationEditFormPath(visitor._id));
@@ -188,9 +195,9 @@ const List = ({ history, location }) => {
           ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
           showAdditionalInfoFilter
-          distinctCities={distinctCities}
+          distinctCities={distinctCities || []}
           setPageParams={setPageParams}
-          refreshData={refetch}
+          refreshData={refreshData}
         />
         &nbsp;&nbsp;
         {getActionsMenu()}

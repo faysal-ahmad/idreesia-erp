@@ -7,14 +7,15 @@ const QUERY = gql`
   }
 `;
 
-const useDistinctStayAllowedBy = () => {
-  const { data, loading } = useQuery(QUERY, {
-    fetchPolicy: 'no-cache',
+const useDistinctStayAllowedBy = ({ fetchPolicy = 'no-cache' }) => {
+  const { data, loading, refetch } = useQuery(QUERY, {
+    fetchPolicy,
   });
 
   return {
     distinctStayAllowedBy: data ? data.distinctStayAllowedBy : null,
     distinctStayAllowedByLoading: loading,
+    distinctStayAllowedByRefetch: refetch,
   };
 };
 

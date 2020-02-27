@@ -55,7 +55,7 @@ const List = ({ history, location }) => {
     'cache-first'
   );
   const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
-    variables: { queryParams },
+    variables: { filter: queryParams },
   });
 
   useEffect(() => {
@@ -181,7 +181,7 @@ const List = ({ history, location }) => {
         >
           New Visitor
         </Button>
-        &nbsp;
+        &nbsp;&nbsp;
         <Button icon="scan" size="large" onClick={handleScanClicked}>
           Scan CNIC
         </Button>

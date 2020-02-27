@@ -6,6 +6,7 @@ export default class SubModulePaths {
   // *************************************************************************************
   static visitorsPath = `${ModulePaths.telephoneRoom}/visitors`;
   static visitorsNewFormPath = `${SubModulePaths.visitorsPath}/new`;
+  static visitorsScanFormPath = `${SubModulePaths.visitorsPath}/scan`;
   static visitorsEditFormPath(visitorId = ':visitorId') {
     return `${SubModulePaths.visitorsPath}/${visitorId}`;
   }

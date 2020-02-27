@@ -48,7 +48,7 @@ const List = ({ history, location }) => {
   );
   const { distinctCities } = useDistinctCities();
   const { data, refetch } = useQuery(PAGED_TELEPHONE_ROOM_VISITORS, {
-    variables: { queryParams },
+    variables: { filter: queryParams },
   });
 
   useEffect(() => {
@@ -87,6 +87,10 @@ const List = ({ history, location }) => {
     history.push(paths.visitorsNewFormPath);
   };
 
+  const handleScanClicked = () => {
+    history.push(paths.visitorsScanFormPath);
+  };
+
   const handleMulakaatHistoryAction = visitor => {
     setShowMulakaatList(true);
     setVisitorIdForList(visitor._id);
@@ -107,6 +111,10 @@ const List = ({ history, location }) => {
           onClick={handleNewClicked}
         >
           New Visitor
+        </Button>
+        &nbsp;&nbsp;
+        <Button icon="scan" size="large" onClick={handleScanClicked}>
+          Scan CNIC
         </Button>
       </div>
       <div className="list-table-header-section">

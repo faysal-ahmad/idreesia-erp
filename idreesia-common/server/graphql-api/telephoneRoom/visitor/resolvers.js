@@ -34,7 +34,11 @@ export default {
       return Visitors.findOne(_id);
     },
 
-    telephoneRoomVisitorByCnic(obj, { cnicNumbers }, { user }) {
+    telephoneRoomVisitorsByCnic(
+      obj,
+      { cnicNumbers, partialCnicNumber },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.TR_VIEW_VISITORS,
@@ -45,9 +49,15 @@ export default {
       }
 
       if (cnicNumbers.length > 0) {
-        return Visitors.findOne({
+        return Visitors.find({
           cnicNumber: { $in: cnicNumbers },
-        });
+        }).fetch();
+      }
+
+      if (partialCnicNumber) {
+        return Visitors.find({
+          cnicNumber: { $regex: new RegExp(`-${partialCnicNumber}-`, 'i') },
+        }).fetch();
       }
 
       return null;

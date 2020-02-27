@@ -5,10 +5,10 @@ import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Col, Icon, Row, Spin, Tabs } from '/imports/ui/controls';
+import { Col, Divider, Icon, Row, Spin, Tabs } from '/imports/ui/controls';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 
-import { TELEPHONE_ROOM_VISITOR_BY_CNIC } from '../gql';
+import { TELEPHONE_ROOM_VISITORS_BY_CNIC } from '../gql';
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -21,6 +21,11 @@ const DataStyle = {
 
 const NoRecordFoundStyle = {
   color: 'orange',
+  fontSize: 36,
+};
+
+const RecordFoundStyle = {
+  color: 'green',
   fontSize: 36,
 };
 
@@ -41,31 +46,7 @@ SearchResultRow.propTypes = {
   dataStyle: PropTypes.object,
 };
 
-const SearchResult = props => {
-  const { cnicNumbers, loading, telephoneRoomVisitorByCnic } = props;
-  if (cnicNumbers.length === 0) return null;
-  if (loading) return <Spin size="large" />;
-
-  if (!telephoneRoomVisitorByCnic) {
-    return (
-      <Row type="flex" justify="start" align="middle" gutter={16}>
-        <Col>
-          <Icon
-            style={NoRecordFoundStyle}
-            type="exclamation-circle"
-            theme="twoTone"
-            twoToneColor={NoRecordFoundStyle.color}
-          />
-        </Col>
-        <Col>
-          <div style={NoRecordFoundStyle}>
-            {'No records found against scanned CNIC.'}
-          </div>
-        </Col>
-      </Row>
-    );
-  }
-
+const SearchResult = ({ visitor }) => {
   const {
     _id,
     name,
@@ -77,7 +58,7 @@ const SearchResult = props => {
     city,
     country,
     imageId,
-  } = telephoneRoomVisitorByCnic;
+  } = visitor;
 
   const url = getDownloadUrl(imageId);
   const image = url ? <img src={url} style={{ width: '250px' }} /> : null;
@@ -123,17 +104,81 @@ const SearchResult = props => {
 };
 
 SearchResult.propTypes = {
+  visitor: PropTypes.object,
+};
+
+const SearchResults = props => {
+  const {
+    cnicNumbers,
+    partialCnicNumber,
+    loading,
+    telephoneRoomVisitorsByCnic: visitors,
+  } = props;
+
+  if (cnicNumbers.length === 0 && !partialCnicNumber) return null;
+  if (loading) return <Spin size="large" />;
+
+  if (visitors.length === 0) {
+    return (
+      <Row type="flex" justify="start" align="middle" gutter={16}>
+        <Col>
+          <Icon
+            style={NoRecordFoundStyle}
+            type="exclamation-circle"
+            theme="twoTone"
+            twoToneColor={NoRecordFoundStyle.color}
+          />
+        </Col>
+        <Col>
+          <div style={NoRecordFoundStyle}>
+            {'No records found against CNIC.'}
+          </div>
+        </Col>
+      </Row>
+    );
+  }
+
+  const resultNodes = [
+    <Row type="flex" justify="center" align="middle" gutter={16}>
+      <Col>
+        <Icon
+          style={RecordFoundStyle}
+          type="check-circle"
+          theme="twoTone"
+          twoToneColor={RecordFoundStyle.color}
+        />
+      </Col>
+      <Col>
+        <div style={RecordFoundStyle}>
+          {visitors.length === 1
+            ? '1 record found against CNIC.'
+            : `${visitors.length} records found against CNIC.`}
+        </div>
+      </Col>
+    </Row>,
+  ];
+
+  visitors.forEach(visitor => {
+    resultNodes.push(<Divider />);
+    resultNodes.push(<SearchResult key={visitor._id} visitor={visitor} />);
+  });
+
+  return resultNodes;
+};
+
+SearchResults.propTypes = {
   loading: PropTypes.bool,
   cnicNumbers: PropTypes.array,
-  telephoneRoomVisitorByCnic: PropTypes.object,
+  partialCnicNumber: PropTypes.string,
+  telephoneRoomVisitorsByCnic: PropTypes.array,
 };
 
 export default flowRight(
-  graphql(TELEPHONE_ROOM_VISITOR_BY_CNIC, {
+  graphql(TELEPHONE_ROOM_VISITORS_BY_CNIC, {
     props: ({ data }) => ({ ...data }),
-    options: ({ cnicNumbers }) => ({
-      variables: { cnicNumbers },
+    options: ({ cnicNumbers, partialCnicNumber }) => ({
+      variables: { cnicNumbers, partialCnicNumber },
       fetchPolicy: 'network-only',
     }),
   })
-)(SearchResult);
+)(SearchResults);

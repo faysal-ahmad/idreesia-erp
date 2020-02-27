@@ -14,8 +14,8 @@ export {
   default as TELEPHONE_ROOM_VISITOR_BY_ID,
 } from './telephone-room-visitor-by-id';
 export {
-  default as TELEPHONE_ROOM_VISITOR_BY_CNIC,
-} from './telephone-room-visitor-by-cnic';
+  default as TELEPHONE_ROOM_VISITORS_BY_CNIC,
+} from './telephone-room-visitors-by-cnic';
 export {
   default as SET_TELEPHONE_ROOM_VISITOR_IMAGE,
 } from './set-telephone-room-visitor-image';

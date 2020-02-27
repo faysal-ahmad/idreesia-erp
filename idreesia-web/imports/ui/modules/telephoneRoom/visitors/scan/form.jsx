@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider, Input, Row, Col } from '/imports/ui/controls';
 import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
-import SearchResult from './search-result';
+import SearchResults from './search-results';
 
 class Form extends Component {
   static propTypes = {
@@ -14,6 +14,7 @@ class Form extends Component {
 
   state = {
     cnicNumbers: [],
+    partialCnicNumber: null,
   };
 
   handleList = () => {
@@ -27,10 +28,13 @@ class Form extends Component {
   };
 
   render() {
-    const { cnicNumbers } = this.state;
+    const { cnicNumbers, partialCnicNumber } = this.state;
     const searchResults =
-      cnicNumbers.length > 0 ? (
-        <SearchResult cnicNumbers={cnicNumbers} />
+      cnicNumbers.length > 0 || partialCnicNumber ? (
+        <SearchResults
+          cnicNumbers={cnicNumbers}
+          partialCnicNumber={partialCnicNumber}
+        />
       ) : null;
     return (
       <Fragment>
@@ -51,11 +55,9 @@ class Form extends Component {
                 <Button
                   icon="search"
                   onClick={() => {
-                    if (this.manualCnic.value) {
-                      this.setState({
-                        cnicNumbers: [this.manualCnic.value],
-                      });
-                    }
+                    this.setState({
+                      partialCnicNumber: this.manualCnic.state.value,
+                    });
                   }}
                 />
               </Col>
@@ -83,7 +85,7 @@ class Form extends Component {
         <Row>
           <Divider />
         </Row>
-        <Row>{searchResults}</Row>
+        {searchResults}
       </Fragment>
     );
   }

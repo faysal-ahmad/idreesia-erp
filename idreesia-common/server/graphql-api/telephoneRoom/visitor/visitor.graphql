@@ -1,7 +1,7 @@
 extend type Query {
   pagedTelephoneRoomVisitors(filter: VisitorFilter): PagedVisitorType
   telephoneRoomVisitorById(_id: String!): VisitorType
-  telephoneRoomVisitorByCnic(cnicNumbers: [String]!): VisitorType
+  telephoneRoomVisitorsByCnic(cnicNumbers: [String], partialCnicNumber: String): [VisitorType]
 }
 
 extend type Mutation {

@@ -1,10 +1,10 @@
 extend type Query {
-  karkunById(_id: String!): KarkunType
-  pagedKarkuns(filter: KarkunFilter): PagedKarkunType
+  hrKarkunById(_id: String!): KarkunType
+  pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
 }
 
 extend type Mutation {
-  createKarkun(
+  createHrKarkun(
     name: String!
     parentName: String
     cnicNumber: String
@@ -20,11 +20,12 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     ehadDate: String
+    birthDate: String
     lastTarteebDate: String
     referenceName: String
   ): KarkunType
 
-  updateKarkun(
+  updateHrKarkun(
     _id: String!
     name: String!
     parentName: String
@@ -41,13 +42,14 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     ehadDate: String
+    birthDate: String
     lastTarteebDate: String
     referenceName: String
   ): KarkunType
 
-  deleteKarkun(_id: String!): Int
+  deleteHrKarkun(_id: String!): Int
 
-  setKarkunEmploymentInfo(
+  setHrKarkunEmploymentInfo(
     _id: String!
     isEmployee: Boolean!
     jobId: String
@@ -55,7 +57,7 @@ extend type Mutation {
     employmentEndDate: String
   ): KarkunType
 
-  setKarkunProfileImage(_id: String!, imageId: String!): KarkunType
-  addKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
-  removeKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  setHrKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  addHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  removeHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
 }

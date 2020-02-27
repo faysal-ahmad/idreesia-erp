@@ -6,7 +6,7 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useAllMSDuties } from 'meteor/idreesia-common/hooks/hr';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 
-import { PAGED_MS_KARKUNS } from './gql';
+import { PAGED_HR_KARKUNS } from './gql';
 
 const List = ({ handleSelectItem }) => {
   const [name, setName] = useState(null);
@@ -25,7 +25,7 @@ const List = ({ handleSelectItem }) => {
   };
 
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { data, loading, refetch } = useQuery(PAGED_MS_KARKUNS, {
+  const { data, loading, refetch } = useQuery(PAGED_HR_KARKUNS, {
     variables: {
       filter: {
         name,
@@ -38,7 +38,7 @@ const List = ({ handleSelectItem }) => {
   });
 
   if (loading) return null;
-  const { pagedKarkuns } = data;
+  const { pagedHrKarkuns } = data;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -82,7 +82,7 @@ const List = ({ handleSelectItem }) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedKarkuns}
+      pagedData={pagedHrKarkuns}
     />
   );
 };

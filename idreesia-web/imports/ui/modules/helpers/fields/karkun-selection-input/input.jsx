@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { Tabs, Drawer, Icon, Input } from '/imports/ui/controls';
-import MSKarkunsList from './ms-karkuns-list';
+import HRKarkunsList from './hr-karkuns-list';
 import OutstationKarkunsList from './outstation-karkuns-list';
 
 const ContainerStyle = {
@@ -55,7 +55,7 @@ export default class CustomInput extends Component {
     const containersNode = (
       <Tabs>
         <Tabs.TabPane tab="MS Karkuns" key="1">
-          <MSKarkunsList handleSelectItem={this.setSelectedValue} />
+          <HRKarkunsList handleSelectItem={this.setSelectedValue} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Outstation Karkuns" key="2">
           <OutstationKarkunsList handleSelectItem={this.setSelectedValue} />

@@ -18,7 +18,7 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
 
-import { PAGED_KARKUNS, DELETE_KARKUN } from '../gql';
+import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
 
 class List extends Component {
   static propTypes = {
@@ -47,10 +47,10 @@ class List extends Component {
     handleNewClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
 
-    deleteKarkun: PropTypes.func,
+    deleteHrKarkun: PropTypes.func,
     loading: PropTypes.bool,
     refetchListQuery: PropTypes.func,
-    pagedKarkuns: PropTypes.shape({
+    pagedHrKarkuns: PropTypes.shape({
       totalResults: PropTypes.number,
       karkuns: PropTypes.array,
     }),
@@ -227,8 +227,8 @@ class List extends Component {
   };
 
   handleDeleteClicked = record => {
-    const { deleteKarkun } = this.props;
-    deleteKarkun({
+    const { deleteHrKarkun } = this.props;
+    deleteHrKarkun({
       variables: {
         _id: record._id,
       },
@@ -347,7 +347,7 @@ class List extends Component {
     const {
       pageIndex,
       pageSize,
-      pagedKarkuns: { totalResults, karkuns },
+      pagedHrKarkuns: { totalResults, karkuns },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
@@ -382,13 +382,13 @@ class List extends Component {
 }
 
 export default flowRight(
-  graphql(DELETE_KARKUN, {
-    name: 'deleteKarkun',
+  graphql(DELETE_HR_KARKUN, {
+    name: 'deleteHrKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns'],
+      refetchQueries: ['pagedHrKarkuns'],
     },
   }),
-  graphql(PAGED_KARKUNS, {
+  graphql(PAGED_HR_KARKUNS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({
       name,

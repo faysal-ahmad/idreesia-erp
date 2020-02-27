@@ -6,6 +6,7 @@ import moment from 'moment';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
+  AgeField,
   DateField,
   EhadDurationField,
   InputCnicField,
@@ -18,7 +19,7 @@ import {
 import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
 
-import { KARKUN_BY_ID, UPDATE_KARKUN } from '../gql';
+import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -29,10 +30,10 @@ class GeneralInfo extends Component {
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
+    hrKarkunById: PropTypes.object,
     allSharedResidencesLoading: PropTypes.bool,
     allSharedResidences: PropTypes.array,
-    updateKarkun: PropTypes.func,
+    updateHrKarkun: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -42,7 +43,7 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, karkunById, updateKarkun } = this.props;
+    const { form, history, karkunId, updateHrKarkun } = this.props;
     form.validateFields(
       (
         err,
@@ -60,15 +61,16 @@ class GeneralInfo extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          birthDate,
           lastTarteebDate,
           referenceName,
         }
       ) => {
         if (err) return;
 
-        updateKarkun({
+        updateHrKarkun({
           variables: {
-            _id: karkunById._id,
+            _id: karkunId,
             name,
             parentName,
             cnicNumber,
@@ -82,6 +84,7 @@ class GeneralInfo extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            birthDate,
             lastTarteebDate: lastTarteebDate
               ? lastTarteebDate.startOf('day')
               : null,
@@ -101,7 +104,7 @@ class GeneralInfo extends Component {
   render() {
     const {
       formDataLoading,
-      karkunById,
+      hrKarkunById,
       allSharedResidencesLoading,
       allSharedResidences,
       form: { getFieldDecorator },
@@ -114,7 +117,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
-            initialValue={karkunById.name}
+            initialValue={hrKarkunById.name}
             required
             requiredMessage="Please input the name for the karkun."
             getFieldDecorator={getFieldDecorator}
@@ -123,7 +126,14 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="parentName"
             fieldLabel="S/O"
-            initialValue={karkunById.parentName}
+            initialValue={hrKarkunById.parentName}
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <AgeField
+            fieldName="birthDate"
+            fieldLabel="Age (years)"
+            initialValue={hrKarkunById.birthDate}
             getFieldDecorator={getFieldDecorator}
           />
 
@@ -131,8 +141,8 @@ class GeneralInfo extends Component {
             fieldName="ehadDate"
             fieldLabel="Ehad Duration"
             initialValue={
-              karkunById.ehadDate
-                ? moment(Number(karkunById.ehadDate))
+              hrKarkunById.ehadDate
+                ? moment(Number(hrKarkunById.ehadDate))
                 : moment()
             }
             getFieldDecorator={getFieldDecorator}
@@ -142,8 +152,8 @@ class GeneralInfo extends Component {
             fieldName="lastTarteebDate"
             fieldLabel="Last Tarteeb"
             initialValue={
-              karkunById.lastTarteebDate
-                ? moment(Number(karkunById.lastTarteebDate))
+              hrKarkunById.lastTarteebDate
+                ? moment(Number(hrKarkunById.lastTarteebDate))
                 : null
             }
             getFieldDecorator={getFieldDecorator}
@@ -152,21 +162,21 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="referenceName"
             fieldLabel="R/O"
-            initialValue={karkunById.referenceName}
+            initialValue={hrKarkunById.referenceName}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputCnicField
             fieldName="cnicNumber"
             fieldLabel="CNIC Number"
-            initialValue={karkunById.cnicNumber || ''}
+            initialValue={hrKarkunById.cnicNumber || ''}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={karkunById.contactNumber1 || ''}
+            initialValue={hrKarkunById.contactNumber1 || ''}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -174,7 +184,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={karkunById.contactNumber2}
+            initialValue={hrKarkunById.contactNumber2}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -195,14 +205,14 @@ class GeneralInfo extends Component {
             ]}
             getDataValue={({ value }) => value}
             getDataText={({ label }) => label}
-            initialValue={karkunById.bloodGroup}
+            initialValue={hrKarkunById.bloodGroup}
             getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
             fieldName="emailAddress"
             fieldLabel="Email"
-            initialValue={karkunById.emailAddress}
+            initialValue={hrKarkunById.emailAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -211,7 +221,7 @@ class GeneralInfo extends Component {
             fieldName="sharedResidenceId"
             fieldLabel="Shared Residence"
             required={false}
-            initialValue={karkunById.sharedResidenceId}
+            initialValue={hrKarkunById.sharedResidenceId}
             data={allSharedResidences}
             getDataValue={({ _id }) => _id}
             getDataText={({ name, address }) => `${name} - ${address}`}
@@ -221,7 +231,7 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
-            initialValue={karkunById.currentAddress}
+            initialValue={hrKarkunById.currentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -229,7 +239,7 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="permanentAddress"
             fieldLabel="Permanent Address"
-            initialValue={karkunById.permanentAddress}
+            initialValue={hrKarkunById.permanentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -237,7 +247,7 @@ class GeneralInfo extends Component {
           <InputTextField
             fieldName="educationalQualification"
             fieldLabel="Education"
-            initialValue={karkunById.educationalQualification}
+            initialValue={hrKarkunById.educationalQualification}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
@@ -245,14 +255,14 @@ class GeneralInfo extends Component {
           <InputTextAreaField
             fieldName="meansOfEarning"
             fieldLabel="Means of Earning"
-            initialValue={karkunById.meansOfEarning}
+            initialValue={hrKarkunById.meansOfEarning}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel handleCancel={this.handleCancel} />
         </Form>
-        <RecordInfo record={karkunById} />
+        <RecordInfo record={hrKarkunById} />
       </Fragment>
     );
   }
@@ -260,13 +270,13 @@ class GeneralInfo extends Component {
 
 export default flowRight(
   Form.create(),
-  graphql(UPDATE_KARKUN, {
-    name: 'updateKarkun',
+  graphql(UPDATE_HR_KARKUN, {
+    name: 'updateHrKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedHrKarkuns', 'pagedSharedResidences'],
     },
   }),
-  graphql(KARKUN_BY_ID, {
+  graphql(HR_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

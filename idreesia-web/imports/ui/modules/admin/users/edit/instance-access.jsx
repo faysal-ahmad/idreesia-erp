@@ -33,11 +33,11 @@ class InstanceAccess extends Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { karkunById } = nextProps;
-    if (karkunById && !prevState.initDone) {
+    const { userById } = nextProps;
+    if (userById && !prevState.initDone) {
       return {
         initDone: true,
-        checkedKeys: karkunById.user.instances,
+        checkedKeys: userById.instances,
       };
     }
 

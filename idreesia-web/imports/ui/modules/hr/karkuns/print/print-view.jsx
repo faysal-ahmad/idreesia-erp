@@ -10,7 +10,7 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Divider, Row } from '/imports/ui/controls';
 import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
 
-import { KARKUN_BY_ID } from '../gql';
+import { HR_KARKUN_BY_ID } from '../gql';
 
 const barcodeOptions = {
   width: 1,
@@ -31,7 +31,7 @@ class PrintView extends Component {
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
+    hrKarkunById: PropTypes.object,
   };
 
   constructor(props) {
@@ -49,8 +49,8 @@ class PrintView extends Component {
   };
 
   getImageColumn = () => {
-    const { karkunById } = this.props;
-    const url = getDownloadUrl(karkunById.imageId);
+    const { hrKarkunById } = this.props;
+    const url = getDownloadUrl(hrKarkunById.imageId);
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} />
@@ -84,11 +84,14 @@ class PrintView extends Component {
   };
 
   render() {
-    const { history, formDataLoading, karkunById } = this.props;
+    const { history, formDataLoading, hrKarkunById } = this.props;
     if (formDataLoading) return null;
 
     const imageColumn = this.getImageColumn();
-    const jobDetails = this.getJobDetails(karkunById.job, karkunById.duties);
+    const jobDetails = this.getJobDetails(
+      hrKarkunById.job,
+      hrKarkunById.duties
+    );
     const timestamp = moment().format('DD MMM, YYYY');
 
     return (
@@ -115,17 +118,20 @@ class PrintView extends Component {
         <div className="karkun-print-view" ref={this.printViewRef}>
           <Row type="flex" justify="start" gutter={40}>
             <Col order={2}>
-              <Barcode value={karkunById._id} {...barcodeOptions} />
+              <Barcode value={hrKarkunById._id} {...barcodeOptions} />
               <DisplayItem label="Generated On" value={timestamp} />
-              <DisplayItem label="Name" value={karkunById.name} />
-              <DisplayItem label="S/O" value={karkunById.parentName} />
-              <DisplayItem label="CNIC" value={karkunById.cnicNumber} />
-              <DisplayItem label="Phone" value={karkunById.contactNumber1} />
-              <DisplayItem label="Email" value={karkunById.emailAddress} />
-              <DisplayItem label="Blood Group" value={karkunById.bloodGroup} />
+              <DisplayItem label="Name" value={hrKarkunById.name} />
+              <DisplayItem label="S/O" value={hrKarkunById.parentName} />
+              <DisplayItem label="CNIC" value={hrKarkunById.cnicNumber} />
+              <DisplayItem label="Phone" value={hrKarkunById.contactNumber1} />
+              <DisplayItem label="Email" value={hrKarkunById.emailAddress} />
+              <DisplayItem
+                label="Blood Group"
+                value={hrKarkunById.bloodGroup}
+              />
               <DisplayItem
                 label="Education"
-                value={karkunById.educationalQualification}
+                value={hrKarkunById.educationalQualification}
               />
             </Col>
             {imageColumn}
@@ -134,15 +140,15 @@ class PrintView extends Component {
             <Col order={1}>
               <DisplayItem
                 label="Means of Earning"
-                value={karkunById.meansOfEarning}
+                value={hrKarkunById.meansOfEarning}
               />
               <DisplayItem
                 label="Current Address"
-                value={karkunById.currentAddress}
+                value={hrKarkunById.currentAddress}
               />
               <DisplayItem
                 label="Permanent Address"
-                value={karkunById.permanentAddress}
+                value={hrKarkunById.permanentAddress}
               />
             </Col>
           </Row>
@@ -154,7 +160,7 @@ class PrintView extends Component {
 }
 
 export default flowRight(
-  graphql(KARKUN_BY_ID, {
+  graphql(HR_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

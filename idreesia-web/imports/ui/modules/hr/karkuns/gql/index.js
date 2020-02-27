@@ -1,19 +1,21 @@
-export { default as PAGED_KARKUNS } from './paged-karkuns';
-export { default as CREATE_KARKUN } from './create-karkun';
-export { default as UPDATE_KARKUN } from './update-karkun';
-export { default as DELETE_KARKUN } from './delete-karkun';
-export { default as KARKUN_BY_ID } from './karkun-by-id';
+export { default as PAGED_HR_KARKUNS } from './paged-hr-karkuns';
+export { default as CREATE_HR_KARKUN } from './create-hr-karkun';
+export { default as UPDATE_HR_KARKUN } from './update-hr-karkun';
+export { default as DELETE_HR_KARKUN } from './delete-hr-karkun';
+export { default as HR_KARKUN_BY_ID } from './hr-karkun-by-id';
 export {
-  default as SET_KARKUN_PROFILE_IMAGE,
-} from './set-karkun-profile-image';
+  default as SET_HR_KARKUN_PROFILE_IMAGE,
+} from './set-hr-karkun-profile-image';
 export {
-  default as SET_KARKUN_EMPLOYMENT_INFO,
-} from './set-karkun-empoyment-info';
+  default as SET_HR_KARKUN_EMPLOYMENT_INFO,
+} from './set-hr-karkun-empoyment-info';
 
-export { default as ADD_KARKUN_ATTACHMENT } from './add-karkun-attachment';
 export {
-  default as REMOVE_KARKUN_ATTACHMENT,
-} from './remove-karkun-attachment';
+  default as ADD_HR_KARKUN_ATTACHMENT,
+} from './add-hr-karkun-attachment';
+export {
+  default as REMOVE_HR_KARKUN_ATTACHMENT,
+} from './remove-hr-karkun-attachment';
 
 export {
   default as ATTENDANCE_BY_BARCODE_ID,

@@ -283,7 +283,11 @@ export default flowRight(
   graphql(REMOVE_KARKUN_DUTY, {
     name: 'removeKarkunDuty',
     options: {
-      refetchQueries: ['pagedKarkuns', 'karkunDutiesByKarkunId', 'allMSDuties'],
+      refetchQueries: [
+        'pagedHrKarkuns',
+        'karkunDutiesByKarkunId',
+        'allMSDuties',
+      ],
     },
   }),
   WithAllMSDuties(),

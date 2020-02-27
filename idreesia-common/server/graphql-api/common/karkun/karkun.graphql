@@ -15,6 +15,7 @@ type KarkunType {
   educationalQualification: String
   meansOfEarning: String
   ehadDate: String
+  birthDate: String
   lastTarteebDate: String
   referenceName: String
   imageId: String

@@ -1,8 +1,7 @@
 import gql from 'graphql-tag';
 
-const UPDATE_KARKUN = gql`
-  mutation updateKarkun(
-    $_id: String!
+const CREATE_HR_KARKUN = gql`
+  mutation createHrKarkun(
     $name: String!
     $parentName: String
     $cnicNumber: String
@@ -16,11 +15,11 @@ const UPDATE_KARKUN = gql`
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
+    $birthDate: String
     $lastTarteebDate: String
     $referenceName: String
   ) {
-    updateKarkun(
-      _id: $_id
+    createHrKarkun(
       name: $name
       parentName: $parentName
       cnicNumber: $cnicNumber
@@ -34,6 +33,7 @@ const UPDATE_KARKUN = gql`
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
+      birthDate: $birthDate
       lastTarteebDate: $lastTarteebDate
       referenceName: $referenceName
     ) {
@@ -51,14 +51,11 @@ const UPDATE_KARKUN = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      birthDate
       lastTarteebDate
       referenceName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
     }
   }
 `;
 
-export default UPDATE_KARKUN;
+export default CREATE_HR_KARKUN;

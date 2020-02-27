@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const KARKUN_BY_ID = gql`
-  query karkunById($_id: String!) {
-    karkunById(_id: $_id) {
+const HR_KARKUN_BY_ID = gql`
+  query hrKarkunById($_id: String!) {
+    hrKarkunById(_id: $_id) {
       _id
       name
       parentName
@@ -18,6 +18,7 @@ const KARKUN_BY_ID = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      birthDate
       lastTarteebDate
       referenceName
       isEmployee
@@ -48,4 +49,4 @@ const KARKUN_BY_ID = gql`
   }
 `;
 
-export default KARKUN_BY_ID;
+export default HR_KARKUN_BY_ID;

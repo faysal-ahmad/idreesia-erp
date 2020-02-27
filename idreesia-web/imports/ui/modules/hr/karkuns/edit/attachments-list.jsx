@@ -7,9 +7,9 @@ import { message } from '/imports/ui/controls';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
 import {
-  KARKUN_BY_ID,
-  ADD_KARKUN_ATTACHMENT,
-  REMOVE_KARKUN_ATTACHMENT,
+  HR_KARKUN_BY_ID,
+  ADD_HR_KARKUN_ATTACHMENT,
+  REMOVE_HR_KARKUN_ATTACHMENT,
 } from '../gql';
 
 class AttachmentsList extends Component {
@@ -20,16 +20,16 @@ class AttachmentsList extends Component {
 
     loading: PropTypes.bool,
     karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
-    addKarkunAttachment: PropTypes.func,
-    removeKarkunAttachment: PropTypes.func,
+    hrKarkunById: PropTypes.object,
+    addHrKarkunAttachment: PropTypes.func,
+    removeHrKarkunAttachment: PropTypes.func,
   };
 
   handleAttachmentAdded = attachmentId => {
-    const { addKarkunAttachment, karkunById } = this.props;
-    addKarkunAttachment({
+    const { addHrKarkunAttachment, karkunId } = this.props;
+    addHrKarkunAttachment({
       variables: {
-        _id: karkunById._id,
+        _id: karkunId,
         attachmentId,
       },
     }).catch(error => {
@@ -38,10 +38,10 @@ class AttachmentsList extends Component {
   };
 
   handleAttachmentRemoved = attachmentId => {
-    const { removeKarkunAttachment, karkunById } = this.props;
-    removeKarkunAttachment({
+    const { removeHrKarkunAttachment, karkunId } = this.props;
+    removeHrKarkunAttachment({
       variables: {
-        _id: karkunById._id,
+        _id: karkunId,
         attachmentId,
       },
     }).catch(error => {
@@ -50,12 +50,12 @@ class AttachmentsList extends Component {
   };
 
   render() {
-    const { karkunById, loading } = this.props;
+    const { hrKarkunById, loading } = this.props;
     if (loading) return null;
 
     return (
       <AttachmentsListControl
-        attachments={karkunById.attachments}
+        attachments={hrKarkunById.attachments}
         handleAttachmentAdded={this.handleAttachmentAdded}
         handleAttachmentRemoved={this.handleAttachmentRemoved}
       />
@@ -64,17 +64,17 @@ class AttachmentsList extends Component {
 }
 
 export default flowRight(
-  graphql(KARKUN_BY_ID, {
+  graphql(HR_KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
     },
   }),
-  graphql(ADD_KARKUN_ATTACHMENT, {
-    name: 'addKarkunAttachment',
+  graphql(ADD_HR_KARKUN_ATTACHMENT, {
+    name: 'addHrKarkunAttachment',
   }),
-  graphql(REMOVE_KARKUN_ATTACHMENT, {
-    name: 'removeKarkunAttachment',
+  graphql(REMOVE_HR_KARKUN_ATTACHMENT, {
+    name: 'removeHrKarkunAttachment',
   })
 )(AttachmentsList);

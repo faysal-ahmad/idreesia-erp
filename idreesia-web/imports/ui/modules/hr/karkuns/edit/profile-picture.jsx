@@ -10,19 +10,19 @@ import {
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
 
-import { KARKUN_BY_ID, SET_KARKUN_PROFILE_IMAGE } from '../gql';
+import { HR_KARKUN_BY_ID, SET_HR_KARKUN_PROFILE_IMAGE } from '../gql';
 
 class ProfilePicture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
     karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
-    setKarkunProfileImage: PropTypes.func,
+    hrKarkunById: PropTypes.object,
+    setHrKarkunProfileImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { karkunId, setKarkunProfileImage } = this.props;
-    setKarkunProfileImage({
+    const { karkunId, setHrKarkunProfileImage } = this.props;
+    setHrKarkunProfileImage({
       variables: {
         _id: karkunId,
         imageId,
@@ -33,9 +33,9 @@ class ProfilePicture extends Component {
   };
 
   render() {
-    const { loading, karkunById } = this.props;
+    const { loading, hrKarkunById } = this.props;
     if (loading) return null;
-    const url = getDownloadUrl(karkunById.imageId);
+    const url = getDownloadUrl(hrKarkunById.imageId);
 
     return (
       <Fragment>
@@ -57,13 +57,13 @@ class ProfilePicture extends Component {
 }
 
 export default flowRight(
-  graphql(SET_KARKUN_PROFILE_IMAGE, {
-    name: 'setKarkunProfileImage',
+  graphql(SET_HR_KARKUN_PROFILE_IMAGE, {
+    name: 'setHrKarkunProfileImage',
     options: {
-      refetchQueries: ['pagedKarkuns'],
+      refetchQueries: ['pagedHrKarkuns'],
     },
   }),
-  graphql(KARKUN_BY_ID, {
+  graphql(HR_KARKUN_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

@@ -11,17 +11,17 @@ import { getKarkuns } from './queries';
 
 export default {
   Query: {
-    karkunById(obj, { _id }) {
+    hrKarkunById(obj, { _id }) {
       return Karkuns.findOne(_id);
     },
 
-    pagedKarkuns(obj, { filter }) {
+    pagedHrKarkuns(obj, { filter }) {
       return getKarkuns(filter);
     },
   },
 
   Mutation: {
-    createKarkun(
+    createHrKarkun(
       obj,
       {
         name,
@@ -39,6 +39,7 @@ export default {
         educationalQualification,
         meansOfEarning,
         ehadDate,
+        birthDate,
         lastTarteebDate,
         referenceName,
       },
@@ -83,6 +84,7 @@ export default {
         educationalQualification,
         meansOfEarning,
         ehadDate,
+        birthDate,
         lastTarteebDate,
         referenceName,
         createdAt: date,
@@ -94,7 +96,7 @@ export default {
       return Karkuns.findOne(karkunId);
     },
 
-    updateKarkun(
+    updateHrKarkun(
       obj,
       {
         _id,
@@ -113,6 +115,7 @@ export default {
         educationalQualification,
         meansOfEarning,
         ehadDate,
+        birthDate,
         lastTarteebDate,
         referenceName,
       },
@@ -158,6 +161,7 @@ export default {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          birthDate,
           lastTarteebDate,
           referenceName,
           updatedAt: date,
@@ -168,7 +172,7 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    deleteKarkun(obj, { _id }, { user }) {
+    deleteHrKarkun(obj, { _id }, { user }) {
       if (!hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to delete Karkuns in the System.'
@@ -182,7 +186,7 @@ export default {
       return 0;
     },
 
-    setKarkunEmploymentInfo(
+    setHrKarkunEmploymentInfo(
       obj,
       { _id, isEmployee, jobId, employmentStartDate, employmentEndDate },
       { user }
@@ -210,7 +214,7 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    setKarkunProfileImage(obj, { _id, imageId }, { user }) {
+    setHrKarkunProfileImage(obj, { _id, imageId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
@@ -238,7 +242,7 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    addKarkunAttachment(obj, { _id, attachmentId }, { user }) {
+    addHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
@@ -261,7 +265,7 @@ export default {
       return Karkuns.findOne(_id);
     },
 
-    removeKarkunAttachment(obj, { _id, attachmentId }, { user }) {
+    removeHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {

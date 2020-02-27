@@ -1,14 +1,14 @@
 import gql from 'graphql-tag';
 
-const SET_KARKUN_EMPLOYMENT_INFO = gql`
-  mutation setKarkunEmploymentInfo(
+const SET_HR_KARKUN_EMPLOYMENT_INFO = gql`
+  mutation setHrKarkunEmploymentInfo(
     $_id: String!
     $isEmployee: Boolean!
     $jobId: String
     $employmentStartDate: String
     $employmentEndDate: String
   ) {
-    setKarkunEmploymentInfo(
+    setHrKarkunEmploymentInfo(
       _id: $_id
       isEmployee: $isEmployee
       jobId: $jobId
@@ -23,4 +23,4 @@ const SET_KARKUN_EMPLOYMENT_INFO = gql`
     }
   }
 `;
-export default SET_KARKUN_EMPLOYMENT_INFO;
+export default SET_HR_KARKUN_EMPLOYMENT_INFO;

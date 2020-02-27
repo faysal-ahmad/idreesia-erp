@@ -13,7 +13,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
 
-import { KARKUN_BY_ID, SET_KARKUN_EMPLOYMENT_INFO } from '../gql';
+import { HR_KARKUN_BY_ID, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
 class EmploymentInfo extends Component {
   static propTypes = {
@@ -24,10 +24,10 @@ class EmploymentInfo extends Component {
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
-    karkunById: PropTypes.object,
+    hrKarkunById: PropTypes.object,
     allJobs: PropTypes.array,
     allJobsLoading: PropTypes.bool,
-    setKarkunEmploymentInfo: PropTypes.func,
+    setHrKarkunEmploymentInfo: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -37,14 +37,14 @@ class EmploymentInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, karkunById, setKarkunEmploymentInfo } = this.props;
+    const { form, history, karkunId, setHrKarkunEmploymentInfo } = this.props;
     form.validateFields(
       (err, { isEmployee, jobId, employmentStartDate, employmentEndDate }) => {
         if (err) return;
 
-        setKarkunEmploymentInfo({
+        setHrKarkunEmploymentInfo({
           variables: {
-            _id: karkunById._id,
+            _id: karkunId,
             isEmployee,
             jobId,
             employmentStartDate,
@@ -62,7 +62,12 @@ class EmploymentInfo extends Component {
   };
 
   render() {
-    const { formDataLoading, allJobsLoading, karkunById, allJobs } = this.props;
+    const {
+      formDataLoading,
+      allJobsLoading,
+      hrKarkunById,
+      allJobs,
+    } = this.props;
     const { getFieldDecorator } = this.props.form;
     if (formDataLoading || allJobsLoading) return null;
 
@@ -71,7 +76,7 @@ class EmploymentInfo extends Component {
         <SwitchField
           fieldName="isEmployee"
           fieldLabel="Is Employee"
-          initialValue={karkunById.isEmployee || false}
+          initialValue={hrKarkunById.isEmployee || false}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -82,7 +87,7 @@ class EmploymentInfo extends Component {
           data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
-          initialValue={karkunById.jobId}
+          initialValue={hrKarkunById.jobId}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -90,8 +95,8 @@ class EmploymentInfo extends Component {
           fieldName="employmentStartDate"
           fieldLabel="Start Date"
           initialValue={
-            karkunById.employmentStartDate
-              ? moment(Number(karkunById.employmentStartDate))
+            hrKarkunById.employmentStartDate
+              ? moment(Number(hrKarkunById.employmentStartDate))
               : null
           }
           getFieldDecorator={getFieldDecorator}
@@ -101,8 +106,8 @@ class EmploymentInfo extends Component {
           fieldName="employmentEndDate"
           fieldLabel="End Date"
           initialValue={
-            karkunById.employmentEndDate
-              ? moment(Number(karkunById.employmentEndDate))
+            hrKarkunById.employmentEndDate
+              ? moment(Number(hrKarkunById.employmentEndDate))
               : null
           }
           getFieldDecorator={getFieldDecorator}
@@ -116,13 +121,13 @@ class EmploymentInfo extends Component {
 
 export default flowRight(
   Form.create(),
-  graphql(SET_KARKUN_EMPLOYMENT_INFO, {
-    name: 'setKarkunEmploymentInfo',
+  graphql(SET_HR_KARKUN_EMPLOYMENT_INFO, {
+    name: 'setHrKarkunEmploymentInfo',
     options: {
-      refetchQueries: ['pagedKarkuns', 'allJobs'],
+      refetchQueries: ['pagedHrKarkuns', 'allJobs'],
     },
   }),
-  graphql(KARKUN_BY_ID, {
+  graphql(HR_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { karkunId } = match.params;

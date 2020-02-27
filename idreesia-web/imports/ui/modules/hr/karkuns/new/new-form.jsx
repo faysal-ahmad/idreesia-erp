@@ -8,6 +8,7 @@ import { Form, message } from '/imports/ui/controls';
 import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
+  AgeField,
   DateField,
   EhadDurationField,
   InputCnicField,
@@ -18,14 +19,14 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-import { CREATE_KARKUN } from '../gql';
+import { CREATE_HR_KARKUN } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createKarkun: PropTypes.func,
+    createHrKarkun: PropTypes.func,
     allSharedResidencesLoading: PropTypes.bool,
     allSharedResidences: PropTypes.array,
   };
@@ -37,7 +38,7 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createKarkun, history } = this.props;
+    const { form, createHrKarkun, history } = this.props;
     form.validateFields(
       (
         err,
@@ -55,13 +56,14 @@ class NewForm extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          birthDate,
           lastTarteebDate,
           referenceName,
         }
       ) => {
         if (err) return;
 
-        createKarkun({
+        createHrKarkun({
           variables: {
             name,
             parentName,
@@ -76,13 +78,14 @@ class NewForm extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            birthDate,
             lastTarteebDate: lastTarteebDate
               ? lastTarteebDate.startOf('day')
               : null,
             referenceName,
           },
         })
-          .then(({ data: { createKarkun: newKarkun } }) => {
+          .then(({ data: { createHrKarkun: newKarkun } }) => {
             history.push(`${paths.karkunsPath}/${newKarkun._id}`);
           })
           .catch(error => {
@@ -113,6 +116,12 @@ class NewForm extends Component {
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <AgeField
+          fieldName="birthDate"
+          fieldLabel="Age (years)"
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -223,10 +232,10 @@ class NewForm extends Component {
 
 export default flowRight(
   Form.create(),
-  graphql(CREATE_KARKUN, {
-    name: 'createKarkun',
+  graphql(CREATE_HR_KARKUN, {
+    name: 'createHrKarkun',
     options: {
-      refetchQueries: ['pagedKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedHrKarkuns', 'pagedSharedResidences'],
     },
   }),
   WithAllSharedResidences(),

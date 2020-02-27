@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Visitor as VisitorSchema } from 'meteor/idreesia-common/server/schemas/security';
@@ -74,7 +75,7 @@ class Visitors extends AggregatableCollection {
       pipeline.push({
         $match: {
           ehadDate: {
-            $eq: moment(ehadDate)
+            $eq: moment(ehadDate, Formats.DATE_FORMAT)
               .startOf('day')
               .toDate(),
           },

@@ -21,6 +21,7 @@ input VisitorMulakaatFilter {
   visitorId: String
   startDate: String
   endDate: String
+  mulakaatDate: String
   pageIndex: String
   pageSize: String
 }

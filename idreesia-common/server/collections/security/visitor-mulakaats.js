@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import { Formats } from 'meteor/idreesia-common/constants';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { VisitorMulakaat as VisitorMulakaatSchema } from 'meteor/idreesia-common/server/schemas/security';
@@ -23,6 +23,7 @@ class VisitorMulakaats extends AggregatableCollection {
 
     const {
       visitorId,
+      mulakaatDate,
       startDate,
       endDate,
       pageIndex = DEFAULT_PAGE_INDEX,
@@ -33,6 +34,18 @@ class VisitorMulakaats extends AggregatableCollection {
       pipeline.push({
         $match: {
           visitorId: { $eq: visitorId },
+        },
+      });
+    }
+
+    if (mulakaatDate) {
+      pipeline.push({
+        $match: {
+          mulakaatDate: {
+            $eq: moment(mulakaatDate, Formats.DATE_FORMAT)
+              .startOf('day')
+              .toDate(),
+          },
         },
       });
     }

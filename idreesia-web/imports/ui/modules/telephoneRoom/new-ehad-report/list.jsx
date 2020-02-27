@@ -1,47 +1,68 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
+import { useDispatch } from 'react-redux';
 import moment from 'moment';
+
+import { Formats } from 'meteor/idreesia-common/constants';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Button, DatePicker, Pagination, Table } from '/imports/ui/controls';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 
 import { PAGED_TELEPHONE_ROOM_VISITORS } from './gql';
 
-const List = () => {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const [selectedDate, setSelectedDate] = useState(moment().startOf('day'));
-
-  const { data, loading, refetch } = useQuery(PAGED_TELEPHONE_ROOM_VISITORS, {
-    variables: {
-      filter: {
-        ehadDate: selectedDate,
-        dataSource: 'telephone-room',
-        pageIndex: pageIndex.toString(),
-        pageSize: pageSize.toString(),
-      },
+const List = ({ history, location }) => {
+  const dispatch = useDispatch();
+  const { queryParams, setPageParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['ehadDate', 'dataSource', 'pageIndex', 'pageSize'],
+    paramDefaultValues: {
+      ehadDate: moment().format(Formats.DATE_FORMAT),
+      dataSource: 'telephone-room',
     },
   });
 
+  useEffect(() => {
+    dispatch(setBreadcrumbs(['Telephone Room', 'New Ehad Report']));
+  }, [location]);
+
+  const { data, loading, refetch } = useQuery(PAGED_TELEPHONE_ROOM_VISITORS, {
+    variables: {
+      filter: queryParams,
+    },
+  });
+
+  const { ehadDate, pageIndex, pageSize } = queryParams;
+
   const onPaginationChange = (index, size) => {
-    setPageIndex(index - 1);
-    setPageSize(size);
+    setPageParams({
+      pageIndex: index - 1,
+      pageSize: size,
+    });
   };
 
   const handleDayChange = value => {
-    setSelectedDate(value);
-    refetch();
+    setPageParams({
+      ehadDate: value.format(Formats.DATE_FORMAT),
+    });
   };
 
   const handleDayGoBack = () => {
-    setSelectedDate(selectedDate.clone().subtract(1, 'day'));
-    refetch();
+    const mEhadDate = moment(ehadDate, Formats.DATE_FORMAT);
+    setPageParams({
+      ehadDate: mEhadDate.subtract(1, 'day').format(Formats.DATE_FORMAT),
+    });
   };
 
   const handleDayGoForward = () => {
-    setSelectedDate(selectedDate.clone().add(1, 'day'));
-    refetch();
+    const mEhadDate = moment(ehadDate, Formats.DATE_FORMAT);
+    setPageParams({
+      ehadDate: mEhadDate.add(1, 'day').format(Formats.DATE_FORMAT),
+    });
   };
 
   const getColumns = () => {
@@ -80,7 +101,7 @@ const List = () => {
           allowClear={false}
           format="DD MMM, YYYY"
           onChange={handleDayChange}
-          value={selectedDate}
+          value={moment(ehadDate, Formats.DATE_FORMAT)}
         />
         &nbsp;&nbsp;
         <Button
@@ -90,13 +111,25 @@ const List = () => {
           onClick={handleDayGoForward}
         />
       </div>
+      <div>
+        <Button
+          size="large"
+          type="secondary"
+          icon="sync"
+          onClick={() => {
+            refetch();
+          }}
+        >
+          Reload
+        </Button>
+      </div>
     </div>
   );
 
   if (loading) return null;
   const { pagedTelephoneRoomVisitors } = data;
-  const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-  const numPageSize = pageSize || 20;
+  const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
+  const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
     <Table

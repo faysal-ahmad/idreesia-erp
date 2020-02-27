@@ -1,5 +1,5 @@
 extend type Query {
-  pagedTelephoneRoomVisitors(queryString: String): PagedVisitorType
+  pagedTelephoneRoomVisitors(filter: VisitorFilter): PagedVisitorType
   telephoneRoomVisitorById(_id: String!): VisitorType
   telephoneRoomVisitorByCnic(cnicNumbers: [String]!): VisitorType
 }

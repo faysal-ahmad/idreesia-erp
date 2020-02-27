@@ -1,4 +1,3 @@
-import { parse } from 'query-string';
 import moment from 'moment';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
@@ -14,8 +13,7 @@ class Visitors extends AggregatableCollection {
   // **************************************************************
   // Query Functions
   // **************************************************************
-  searchVisitors(queryString) {
-    const params = parse(queryString);
+  searchVisitors(params = {}) {
     const pipeline = [];
 
     const {
@@ -24,10 +22,20 @@ class Visitors extends AggregatableCollection {
       phoneNumber,
       city,
       ehadDuration,
+      ehadDate,
       additionalInfo,
+      dataSource,
       pageIndex = '0',
       pageSize = '20',
     } = params;
+
+    if (dataSource) {
+      pipeline.push({
+        $match: {
+          dataSource: { $eq: dataSource },
+        },
+      });
+    }
 
     if (name) {
       pipeline.push({
@@ -58,6 +66,18 @@ class Visitors extends AggregatableCollection {
       pipeline.push({
         $match: {
           city: { $eq: city },
+        },
+      });
+    }
+
+    if (ehadDate) {
+      pipeline.push({
+        $match: {
+          ehadDate: {
+            $eq: moment(ehadDate)
+              .startOf('day')
+              .toDate(),
+          },
         },
       });
     }

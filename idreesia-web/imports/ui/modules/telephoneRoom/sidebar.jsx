@@ -22,6 +22,11 @@ class Sidebar extends Component {
         history.push(paths.visitorsPath);
         break;
 
+      case 'new-ehad-report':
+        setActiveSubModuleName(SubModuleNames.newEhadReport);
+        history.push(paths.newEhadReportPath);
+        break;
+
       case 'mulakaat-report':
         setActiveSubModuleName(SubModuleNames.mulakaatReport);
         history.push(paths.mulakaatReportPath);
@@ -56,6 +61,9 @@ class Sidebar extends Component {
         >
           <Menu.Item key="mulakaat-report">
             <span>Mulakaat Report</span>
+          </Menu.Item>
+          <Menu.Item key="new-ehad-report">
+            <span>New Ehad Report</span>
           </Menu.Item>
         </Menu.SubMenu>
       </Menu>

@@ -29,7 +29,7 @@ const List = ({ history, location }) => {
   const visitorsList = useRef(null);
   const [showMulakaatList, setShowMulakaatList] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState(null);
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: [
@@ -48,7 +48,7 @@ const List = ({ history, location }) => {
   );
   const { distinctCities } = useDistinctCities();
   const { data, refetch } = useQuery(PAGED_TELEPHONE_ROOM_VISITORS, {
-    variables: { queryString },
+    variables: { queryParams },
   });
 
   useEffect(() => {

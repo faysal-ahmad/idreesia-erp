@@ -29,6 +29,19 @@ type PagedVisitorType {
   data: [VisitorType]
 }
 
+input VisitorFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  pageIndex: String
+  pageSize: String
+}
+
 extend type Query {
   distinctCities: [String]
   distinctCountries: [String]

@@ -7,7 +7,7 @@ import { processCsvData } from './helpers';
 
 export default {
   Query: {
-    pagedSecurityVisitors(obj, { queryString }, { user }) {
+    pagedSecurityVisitors(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_VIEW_VISITORS,
@@ -20,7 +20,7 @@ export default {
         };
       }
 
-      return Visitors.searchVisitors(queryString);
+      return Visitors.searchVisitors(filter);
     },
 
     securityVisitorById(obj, { _id }, { user }) {

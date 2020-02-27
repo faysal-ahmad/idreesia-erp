@@ -5,7 +5,7 @@ import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/comm
 
 export default {
   Query: {
-    pagedTelephoneRoomVisitors(obj, { queryString }, { user }) {
+    pagedTelephoneRoomVisitors(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.TR_VIEW_VISITORS,
@@ -18,7 +18,7 @@ export default {
         };
       }
 
-      return Visitors.searchVisitors(queryString);
+      return Visitors.searchVisitors(filter);
     },
 
     telephoneRoomVisitorById(obj, { _id }, { user }) {

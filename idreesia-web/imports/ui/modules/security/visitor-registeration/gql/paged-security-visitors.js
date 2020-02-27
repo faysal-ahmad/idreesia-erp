@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 const PAGED_SECURITY_VISITORS = gql`
-  query pagedSecurityVisitors($queryString: String) {
-    pagedSecurityVisitors(queryString: $queryString) {
+  query pagedSecurityVisitors($filter: VisitorFilter) {
+    pagedSecurityVisitors(filter: $filter) {
       totalResults
       data {
         _id

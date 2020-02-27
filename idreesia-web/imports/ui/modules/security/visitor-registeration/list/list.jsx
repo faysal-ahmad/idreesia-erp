@@ -35,7 +35,7 @@ const List = ({ history, location }) => {
   const [showStayList, setShowStayList] = useState(false);
   const [showMulakaatList, setShowMulakaatList] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState(null);
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: [
@@ -55,7 +55,7 @@ const List = ({ history, location }) => {
     'cache-first'
   );
   const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
-    variables: { queryString },
+    variables: { queryParams },
   });
 
   useEffect(() => {

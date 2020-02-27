@@ -17,6 +17,7 @@ const UPDATE_OUTSTATION_KARKUN = gql`
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
+    $birthDate: String
     $lastTarteebDate: String
     $referenceName: String
   ) {
@@ -36,6 +37,7 @@ const UPDATE_OUTSTATION_KARKUN = gql`
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
+      birthDate: $birthDate
       lastTarteebDate: $lastTarteebDate
       referenceName: $referenceName
     ) {
@@ -54,6 +56,7 @@ const UPDATE_OUTSTATION_KARKUN = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      birthDate
       lastTarteebDate
       referenceName
       createdAt

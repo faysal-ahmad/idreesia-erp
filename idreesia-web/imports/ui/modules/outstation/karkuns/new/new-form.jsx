@@ -7,6 +7,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 import {
+  AgeField,
   CascaderField,
   EhadDurationField,
   DateField,
@@ -63,6 +64,7 @@ class NewForm extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          birthDate,
           lastTarteebDate,
           referenceName,
         }
@@ -85,6 +87,7 @@ class NewForm extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            birthDate,
             lastTarteebDate: lastTarteebDate
               ? lastTarteebDate.startOf('day')
               : null,
@@ -138,6 +141,12 @@ class NewForm extends Component {
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <AgeField
+          fieldName="birthDate"
+          fieldLabel="Age (years)"
           getFieldDecorator={getFieldDecorator}
         />
 

@@ -6,6 +6,7 @@ import moment from 'moment';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
+  AgeField,
   CascaderField,
   DateField,
   EhadDurationField,
@@ -76,6 +77,7 @@ class GeneralInfo extends Component {
           educationalQualification,
           meansOfEarning,
           ehadDate,
+          birthDate,
           lastTarteebDate,
           referenceName,
         }
@@ -99,6 +101,7 @@ class GeneralInfo extends Component {
             educationalQualification,
             meansOfEarning,
             ehadDate,
+            birthDate,
             lastTarteebDate: lastTarteebDate
               ? lastTarteebDate.startOf('day')
               : null,
@@ -162,6 +165,13 @@ class GeneralInfo extends Component {
             fieldName="parentName"
             fieldLabel="S/O"
             initialValue={outstationKarkunById.parentName}
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <AgeField
+            fieldName="birthDate"
+            fieldLabel="Age (years)"
+            initialValue={outstationKarkunById.birthDate}
             getFieldDecorator={getFieldDecorator}
           />
 

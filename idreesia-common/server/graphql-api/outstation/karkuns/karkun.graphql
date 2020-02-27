@@ -19,6 +19,7 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     ehadDate: String
+    birthDate: String
     lastTarteebDate: String
     referenceName: String
   ): KarkunType
@@ -39,6 +40,7 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     ehadDate: String
+    birthDate: String
     lastTarteebDate: String
     referenceName: String
   ): KarkunType

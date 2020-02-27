@@ -6,6 +6,7 @@ import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Divider, Form, message } from '/imports/ui/controls';
 import {
+  AgeField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -57,6 +58,7 @@ class NewForm extends Component {
           parentName,
           cnicNumber,
           ehadDate,
+          birthDate,
           referenceName,
           contactNumber1,
           contactNumber2,
@@ -98,6 +100,7 @@ class NewForm extends Component {
             parentName,
             cnicNumber,
             ehadDate,
+            birthDate,
             referenceName,
             contactNumber1,
             contactNumber2,
@@ -142,6 +145,12 @@ class NewForm extends Component {
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the member."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <AgeField
+          fieldName="birthDate"
+          fieldLabel="Age (years)"
           getFieldDecorator={getFieldDecorator}
         />
 

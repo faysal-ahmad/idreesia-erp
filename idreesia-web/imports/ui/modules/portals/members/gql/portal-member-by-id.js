@@ -8,6 +8,7 @@ const PORTAL_MEMBER_BY_ID = gql`
       parentName
       cnicNumber
       ehadDate
+      birthDate
       referenceName
       contactNumber1
       contactNumber2

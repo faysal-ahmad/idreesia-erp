@@ -8,6 +8,7 @@ import {
 } from 'meteor/idreesia-common/hooks/security';
 import { Divider, Form } from '/imports/ui/controls';
 import {
+  AgeField,
   AutoCompleteField,
   EhadDurationField,
   InputCnicField,
@@ -35,14 +36,14 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           cnicNumber: {
             errors: [
               new Error(
-                'Please input the CNIC or Mobile Number for the visitor'
+                'Please input the CNIC or Mobile Number for the person'
               ),
             ],
           },
           contactNumber1: {
             errors: [
               new Error(
-                'Please input the CNIC or Mobile Number for the visitor'
+                'Please input the CNIC or Mobile Number for the person'
               ),
             ],
           },
@@ -63,7 +64,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldName="name"
           fieldLabel="Name"
           required
-          requiredMessage="Please input the name for the visitor."
+          requiredMessage="Please input the name for the person."
           initialValue={visitor.name}
           getFieldDecorator={getFieldDecorator}
         />
@@ -72,8 +73,15 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldName="parentName"
           fieldLabel="S/O"
           required
-          requiredMessage="Please input the parent name for the visitor."
+          requiredMessage="Please input the parent name for the person."
           initialValue={visitor.parentName}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <AgeField
+          fieldName="birthDate"
+          fieldLabel="Age (years)"
+          initialValue={visitor.birthDate}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -82,7 +90,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="City"
           dataSource={distinctCities}
           required
-          requiredMessage="Please input the city for the visitor."
+          requiredMessage="Please input the city for the person."
           initialValue={visitor.city}
           getFieldDecorator={getFieldDecorator}
         />
@@ -92,7 +100,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="Country"
           dataSource={distinctCountries}
           required
-          requiredMessage="Please input the country for the visitor."
+          requiredMessage="Please input the country for the person."
           initialValue={visitor.country}
           getFieldDecorator={getFieldDecorator}
         />
@@ -111,7 +119,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
           required
-          requiredMessage="Please specify the Ehad duration for the visitor."
+          requiredMessage="Please specify the Ehad duration for the person."
           initialValue={moment(Number(visitor.ehadDate))}
           getFieldDecorator={getFieldDecorator}
         />
@@ -120,7 +128,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldName="referenceName"
           fieldLabel="R/O"
           required
-          requiredMessage="Please input the reference name for the visitor."
+          requiredMessage="Please input the reference name for the person."
           initialValue={visitor.referenceName}
           getFieldDecorator={getFieldDecorator}
         />

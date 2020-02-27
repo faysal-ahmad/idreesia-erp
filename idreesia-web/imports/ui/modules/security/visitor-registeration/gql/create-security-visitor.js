@@ -6,6 +6,7 @@ const CREATE_SECURITY_VISITOR = gql`
     $parentName: String!
     $cnicNumber: String!
     $ehadDate: String!
+    $birthDate: String
     $referenceName: String!
     $contactNumber1: String
     $contactNumber2: String
@@ -18,6 +19,7 @@ const CREATE_SECURITY_VISITOR = gql`
       parentName: $parentName
       cnicNumber: $cnicNumber
       ehadDate: $ehadDate
+      birthDate: $birthDate
       referenceName: $referenceName
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
@@ -30,6 +32,7 @@ const CREATE_SECURITY_VISITOR = gql`
       parentName
       cnicNumber
       ehadDate
+      birthDate
       referenceName
       contactNumber1
       contactNumber2

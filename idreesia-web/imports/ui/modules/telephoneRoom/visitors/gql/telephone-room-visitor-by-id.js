@@ -8,14 +8,13 @@ const TELEPHONE_ROOM_VISITOR_BY_ID = gql`
       parentName
       cnicNumber
       ehadDate
+      birthDate
       referenceName
       contactNumber1
       contactNumber2
       address
       city
       country
-      criminalRecord
-      otherNotes
       imageId
       createdAt
       createdBy

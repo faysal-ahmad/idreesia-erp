@@ -13,8 +13,6 @@ const PAGED_TELEPHONE_ROOM_VISITORS = gql`
         city
         country
         imageId
-        criminalRecord
-        otherNotes
       }
     }
   }

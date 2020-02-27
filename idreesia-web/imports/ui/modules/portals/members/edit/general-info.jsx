@@ -6,6 +6,7 @@ import { find, flowRight } from 'lodash';
 
 import { Divider, Form, message } from '/imports/ui/controls';
 import {
+  AgeField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -63,6 +64,7 @@ class GeneralInfo extends Component {
           parentName,
           cnicNumber,
           ehadDate,
+          birthDate,
           referenceName,
           contactNumber1,
           contactNumber2,
@@ -105,6 +107,7 @@ class GeneralInfo extends Component {
             parentName,
             cnicNumber,
             ehadDate,
+            birthDate,
             referenceName,
             contactNumber1,
             contactNumber2,
@@ -156,6 +159,13 @@ class GeneralInfo extends Component {
             initialValue={portalMemberById.parentName}
             required
             requiredMessage="Please input the parent name for the member."
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <AgeField
+            fieldName="birthDate"
+            fieldLabel="Age (years)"
+            initialValue={portalMemberById.birthDate}
             getFieldDecorator={getFieldDecorator}
           />
 

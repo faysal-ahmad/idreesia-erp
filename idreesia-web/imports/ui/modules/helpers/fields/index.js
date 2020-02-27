@@ -5,6 +5,7 @@ export {
   default as FormButtonsSaveCancelExtra,
 } from './form-btns-save-cancel-extra';
 
+export { default as AgeField } from './age/field';
 export { default as AttendanceFilterField } from './attendance-filter/field';
 export { default as EhadDurationField } from './ehad-duration/field';
 export {

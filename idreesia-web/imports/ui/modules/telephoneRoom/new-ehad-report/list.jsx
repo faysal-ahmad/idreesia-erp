@@ -10,7 +10,8 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Button, DatePicker, Pagination, Table } from '/imports/ui/controls';
-import { VisitorName } from '/imports/ui/modules/security/common/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
 
 import { PAGED_TELEPHONE_ROOM_VISITORS } from './gql';
 
@@ -37,6 +38,10 @@ const List = ({ history, location }) => {
   });
 
   const { ehadDate, pageIndex, pageSize } = queryParams;
+
+  const handlePersonSelect = visitor => {
+    history.push(paths.visitorsEditFormPath(visitor._id));
+  };
 
   const onPaginationChange = (index, size) => {
     setPageParams({
@@ -70,7 +75,12 @@ const List = ({ history, location }) => {
       {
         title: 'Name',
         key: 'name',
-        render: (text, record) => <VisitorName visitor={record} />,
+        render: (text, record) => (
+          <PersonName
+            person={record}
+            onPersonNameClicked={handlePersonSelect}
+          />
+        ),
       },
       {
         title: 'Mobile No.',

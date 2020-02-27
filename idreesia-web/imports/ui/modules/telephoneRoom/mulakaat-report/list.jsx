@@ -17,7 +17,8 @@ import {
   Table,
   message,
 } from '/imports/ui/controls';
-import { VisitorName } from '/imports/ui/modules/security/common/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
 
 import {
   CANCEL_TELEPHONE_ROOM_VISITOR_MULAKAATS,
@@ -69,6 +70,10 @@ const List = ({ history, location }) => {
 
   const { mulakaatDate, pageIndex, pageSize } = queryParams;
 
+  const handlePersonSelect = visitor => {
+    history.push(paths.visitorsEditFormPath(visitor._id));
+  };
+
   const onPaginationChange = (index, size) => {
     setPageParams({
       pageIndex: index - 1,
@@ -103,7 +108,12 @@ const List = ({ history, location }) => {
       {
         title: 'Name',
         key: 'visitor.name',
-        render: (text, record) => <VisitorName visitor={record.visitor} />,
+        render: (text, record) => (
+          <PersonName
+            person={record.visitor}
+            onPersonNameClicked={handlePersonSelect}
+          />
+        ),
       },
       {
         title: 'CNIC Number',

@@ -8,6 +8,7 @@ const SECURITY_VISITOR_BY_CNIC = gql`
       cnicNumber
       parentName
       ehadDate
+      birthDate
       referenceName
       contactNumber1
       city

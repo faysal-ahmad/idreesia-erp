@@ -8,13 +8,12 @@ const TELEPHONE_ROOM_VISITOR_BY_CNIC = gql`
       cnicNumber
       parentName
       ehadDate
+      birthDate
       referenceName
       contactNumber1
       city
       country
       imageId
-      criminalRecord
-      otherNotes
     }
   }
 `;

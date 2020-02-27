@@ -11,6 +11,7 @@ extend type Mutation {
     parentName: String!
     cnicNumber: String
     ehadDate: String!
+    birthDate: String
     referenceName: String!
     contactNumber1: String
     contactNumber2: String
@@ -26,6 +27,7 @@ extend type Mutation {
     parentName: String!
     cnicNumber: String
     ehadDate: String!
+    birthDate: String
     referenceName: String!
     contactNumber1: String
     contactNumber2: String

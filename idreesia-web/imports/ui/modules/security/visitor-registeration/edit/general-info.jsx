@@ -32,6 +32,7 @@ class GeneralInfo extends Component {
     parentName,
     cnicNumber,
     ehadDate,
+    birthDate,
     referenceName,
     contactNumber1,
     contactNumber2,
@@ -39,7 +40,7 @@ class GeneralInfo extends Component {
     city,
     country,
   }) => {
-    const { securityVisitorById, updateSecurityVisitor } = this.props;
+    const { history, securityVisitorById, updateSecurityVisitor } = this.props;
     updateSecurityVisitor({
       variables: {
         _id: securityVisitorById._id,
@@ -47,6 +48,7 @@ class GeneralInfo extends Component {
         parentName,
         cnicNumber,
         ehadDate,
+        birthDate,
         referenceName,
         contactNumber1,
         contactNumber2,

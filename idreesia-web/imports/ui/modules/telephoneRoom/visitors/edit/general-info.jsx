@@ -5,7 +5,6 @@ import { flowRight } from 'lodash';
 
 import { message } from '/imports/ui/controls';
 import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
-import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
 
 import {
   UPDATE_TELEPHONE_ROOM_VISITOR,
@@ -27,7 +26,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(`${paths.visitorRegistrationPath}`);
+    history.goBack();
   };
 
   handleSubmit = ({
@@ -35,6 +34,7 @@ class GeneralInfo extends Component {
     parentName,
     cnicNumber,
     ehadDate,
+    birthDate,
     referenceName,
     contactNumber1,
     contactNumber2,
@@ -42,7 +42,11 @@ class GeneralInfo extends Component {
     city,
     country,
   }) => {
-    const { telephoneRoomVisitorById, updateTelephoneRoomVisitor } = this.props;
+    const {
+      history,
+      telephoneRoomVisitorById,
+      updateTelephoneRoomVisitor,
+    } = this.props;
     updateTelephoneRoomVisitor({
       variables: {
         _id: telephoneRoomVisitorById._id,
@@ -50,6 +54,7 @@ class GeneralInfo extends Component {
         parentName,
         cnicNumber,
         ehadDate,
+        birthDate,
         referenceName,
         contactNumber1,
         contactNumber2,
@@ -59,7 +64,7 @@ class GeneralInfo extends Component {
       },
     })
       .then(() => {
-        history.push(`${paths.visitorsPath}`);
+        history.goBack();
       })
       .catch(error => {
         message.error(error.message, 5);

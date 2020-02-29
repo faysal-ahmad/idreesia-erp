@@ -322,6 +322,20 @@ export const permissionsData = [
         key: PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
       },
       {
+        title: 'Members',
+        key: 'module-outstation-members',
+        children: [
+          {
+            title: 'View Members',
+            key: PermissionConstants.OUTSTATION_VIEW_MEMBERS,
+          },
+          {
+            title: 'Manage Members',
+            key: PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
+          },
+        ],
+      },
+      {
         title: 'Karkuns',
         key: 'module-outstation-karkuns',
         children: [

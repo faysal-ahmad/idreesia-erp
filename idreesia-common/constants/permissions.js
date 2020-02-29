@@ -72,6 +72,9 @@ const Permissions = {
   OUTSTATION_MANAGE_SETUP_DATA: 'outstation-manage-setup-data',
   OUTSTATION_DELETE_DATA: 'outstation-delete-data',
 
+  OUTSTATION_VIEW_MEMBERS: 'outstation-view-members',
+  OUTSTATION_MANAGE_MEMBERS: 'outstation-manage-members',
+
   OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
   OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
 

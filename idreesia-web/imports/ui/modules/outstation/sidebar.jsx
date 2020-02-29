@@ -28,6 +28,11 @@ class Sidebar extends Component {
         history.push(paths.citiesPath);
         break;
 
+      case 'members':
+        setActiveSubModuleName(SubModuleNames.members);
+        history.push(paths.membersPath);
+        break;
+
       case 'karkuns':
         setActiveSubModuleName(SubModuleNames.karkuns);
         history.push(paths.karkunsPath);
@@ -64,6 +69,12 @@ class Sidebar extends Component {
           <span>
             <Icon type="team" />
             Karkuns
+          </span>
+        </Menu.Item>
+        <Menu.Item key="members">
+          <span>
+            <Icon type="team" />
+            Members
           </span>
         </Menu.Item>
         <Menu.Item key="attendance-sheets">

@@ -17,6 +17,15 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Members Routes
+  // *************************************************************************************
+  static membersPath = `${ModulePaths.outstation}/members`;
+  static membersNewFormPath = `${SubModulePaths.membersPath}/new`;
+  static membersEditFormPath(memberId = ':memberId') {
+    return `${SubModulePaths.membersPath}/${memberId}`;
+  }
+
+  // *************************************************************************************
   // Karkun Routes
   // *************************************************************************************
   static karkunsPath = `${ModulePaths.outstation}/karkuns`;

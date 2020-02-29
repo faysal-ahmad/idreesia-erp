@@ -1,4 +1,5 @@
 const SubModuleNames = {
+  members: 'Members',
   karkuns: 'Karkuns',
   cities: 'Cities & Mehfils',
   attendanceSheets: 'Attendance Sheets',

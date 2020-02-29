@@ -1,0 +1,39 @@
+extend type Query {
+  outstationMemberById(_id: String!): VisitorType
+  pagedOutstationMembers(filter: VisitorFilter): PagedVisitorType
+}
+
+extend type Mutation {
+  createOutstationMember(
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    birthDate: String
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+    imageData: String
+  ): VisitorType
+
+  updateOutstationMember(
+    _id: String!
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    birthDate: String
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+  ): VisitorType
+
+  deleteOutstationMember(_id: String!): Int
+  setOutstationMemberImage(_id: String!, imageId: String!): VisitorType
+}

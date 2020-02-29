@@ -4,26 +4,6 @@ extend type Query {
 }
 
 extend type Mutation {
-  createOutstationKarkun(
-    name: String!
-    parentName: String
-    cnicNumber: String
-    contactNumber1: String
-    contactNumber2: String
-    emailAddress: String
-    currentAddress: String
-    cityId: String
-    cityMehfilId: String
-    permanentAddress: String
-    bloodGroup: String
-    educationalQualification: String
-    meansOfEarning: String
-    ehadDate: String
-    birthDate: String
-    lastTarteebDate: String
-    referenceName: String
-  ): KarkunType
-
   updateOutstationKarkun(
     _id: String!
     name: String!

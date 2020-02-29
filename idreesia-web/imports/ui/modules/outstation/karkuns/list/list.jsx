@@ -55,10 +55,6 @@ const List = ({ history, location }) => {
     dispatch(setBreadcrumbs(['Outstation', 'Karkuns', 'List']));
   }, [location]);
 
-  const handleNewClicked = () => {
-    history.push(paths.karkunsNewFormPath);
-  };
-
   const handleDeleteItem = record => {
     deleteOutstationKarkun({
       variables: {
@@ -143,16 +139,7 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <div>
-        <Button
-          size="large"
-          type="primary"
-          icon="plus-circle-o"
-          onClick={handleNewClicked}
-        >
-          New Karkun
-        </Button>
-      </div>
+      <div />
       <div className="list-table-header-section">
         {getListFilter()}
         &nbsp;&nbsp;

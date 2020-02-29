@@ -6,9 +6,6 @@ export {
   default as SET_OUTSTATION_KARKUN_PROFILE_IMAGE,
 } from './set-outstation-karkun-profile-image';
 export {
-  default as CREATE_OUTSTATION_KARKUN,
-} from './create-outstation-karkun';
-export {
   default as UPDATE_OUTSTATION_KARKUN,
 } from './update-outstation-karkun';
 export {

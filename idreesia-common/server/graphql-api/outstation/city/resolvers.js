@@ -7,8 +7,6 @@ import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-import getCities from './queries';
-
 export default {
   CityType: {
     mehfils: cityType =>
@@ -22,8 +20,8 @@ export default {
       return Cities.find({}, { sort: { name: 1 } }).fetch();
     },
 
-    pagedCities(obj, { queryString }) {
-      return getCities(queryString);
+    pagedCities(obj, { filter }) {
+      return Cities.searchCities(filter);
     },
 
     cityById(obj, { _id }) {
@@ -55,6 +53,11 @@ export default {
         throw new Error(
           'You do not have permission to manage City Setup Data in the System.'
         );
+      }
+
+      const existingCity = Cities.findOne({ name, country });
+      if (existingCity) {
+        throw new Error('A City with this name already exists.');
       }
 
       const date = new Date();
@@ -99,11 +102,17 @@ export default {
     removeCity(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+          PermissionConstants.OUTSTATION_DELETE_DATA,
         ])
       ) {
         throw new Error(
-          'You do not have permission to manage City Setup Data in the System.'
+          'You do not have permission to delete City in the System.'
+        );
+      }
+
+      if (!Cities.canSafelyDeleteCity(_id)) {
+        throw new Error(
+          'This City cannot be deleted as there is currently data associated with it.'
         );
       }
 

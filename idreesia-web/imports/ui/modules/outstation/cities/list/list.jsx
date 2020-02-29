@@ -27,7 +27,7 @@ import { PAGED_CITIES, REMOVE_CITY } from '../gql';
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const [removeCity] = useMutation(REMOVE_CITY);
-  const { queryString, queryParams, setPageParams } = useQueryParams({
+  const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: ['portalId', 'region', 'pageIndex', 'pageSize'],
@@ -37,7 +37,7 @@ const List = ({ history, location }) => {
   const { distinctRegionsLoading, distinctRegions } = useDistinctRegions();
   const { data, loading, refetch } = useQuery(PAGED_CITIES, {
     variables: {
-      queryString,
+      filter: queryParams,
     },
   });
 
@@ -115,23 +115,17 @@ const List = ({ history, location }) => {
     },
     {
       key: 'action',
-      render: (text, record) => {
-        if (record.usedCount === 0) {
-          return (
-            <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
-                className="list-actions-icon"
-                onClick={() => {
-                  handleDeleteClicked(record);
-                }}
-              />
-            </Tooltip>
-          );
-        }
-
-        return null;
-      },
+      render: (text, record) => (
+        <Tooltip key="delete" title="Delete">
+          <Icon
+            type="delete"
+            className="list-actions-icon"
+            onClick={() => {
+              handleDeleteClicked(record);
+            }}
+          />
+        </Tooltip>
+      ),
     },
   ];
 

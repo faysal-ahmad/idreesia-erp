@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 const PAGED_CITIES = gql`
-  query pagedCities($queryString: String) {
-    pagedCities(queryString: $queryString) {
+  query pagedCities($filter: CityFilter) {
+    pagedCities(filter: $filter) {
       totalResults
       data {
         _id

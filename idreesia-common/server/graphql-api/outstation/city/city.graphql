@@ -17,9 +17,16 @@ type PagedCityType {
   data: [CityType]
 }
 
+input CityFilter {
+  region: String
+  portalId: String
+  pageIndex: String
+  pageSize: String
+}
+
 extend type Query {
   allCities: [CityType]
-  pagedCities(queryString: String): PagedCityType
+  pagedCities(filter: CityFilter): PagedCityType
   cityById(_id: String!): CityType
   citiesByPortalId(portalId: String!): [CityType]
 

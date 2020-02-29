@@ -54,7 +54,7 @@ const ListFilter = ({
   const handleReset = () => {
     form.resetFields();
     setPageParams({
-      pageIndex: 0,
+      pageIndex: '0',
       name: null,
       cnicNumber: null,
       phoneNumber: null,
@@ -74,7 +74,7 @@ const ListFilter = ({
     form.validateFields((err, values) => {
       if (err) return;
       setPageParams({
-        pageIndex: 0,
+        pageIndex: '0',
         ...values,
       });
     });

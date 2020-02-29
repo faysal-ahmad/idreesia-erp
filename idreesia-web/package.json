@@ -19,6 +19,7 @@
     "file-saver": "^2.0.2",
     "googleapis": "^45.0.0",
     "graphql": "^14.6.0",
+    "indexof": "^0.0.1",
     "lodash": "^4.17.15",
     "meteor-babel": "^7.8.2",
     "meteor-node-stubs": "^1.0.0",

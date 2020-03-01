@@ -9,6 +9,8 @@ const PAGED_SECURITY_VISITOR_MULAKAATS = gql`
         visitorId
         mulakaatDate
         cancelledDate
+        cancelledByName
+        createdByName
         visitor {
           _id
           name

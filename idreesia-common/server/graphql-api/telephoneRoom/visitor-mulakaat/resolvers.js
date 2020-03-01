@@ -87,6 +87,7 @@ export default {
         {
           $set: {
             cancelledDate: date,
+            cancelledBy: user._id,
             updatedAt: date,
             updatedBy: user._id,
           },
@@ -108,6 +109,7 @@ export default {
       VisitorMulakaats.update(_id, {
         $set: {
           cancelledDate: date,
+          cancelledBy: user._id,
           updatedAt: date,
           updatedBy: user._id,
         },

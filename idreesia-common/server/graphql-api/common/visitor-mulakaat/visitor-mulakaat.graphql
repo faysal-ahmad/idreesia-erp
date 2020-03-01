@@ -3,8 +3,11 @@ type VisitorMulakaatType {
   visitorId: String
   mulakaatDate: String
   cancelledDate: String
+  cancelledBy: String
 
   visitor: VisitorType
+  createdByName: String
+  cancelledByName: String
 
   createdAt: String
   createdBy: String

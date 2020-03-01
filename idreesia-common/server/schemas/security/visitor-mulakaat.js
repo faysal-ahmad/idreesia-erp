@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
-import { identifiable } from '../common';
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   visitorId: {
@@ -13,4 +13,10 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
-}).extend(identifiable);
+  cancelledBy: {
+    type: String,
+    optional: true,
+  },
+})
+  .extend(identifiable)
+  .extend(timestamps);

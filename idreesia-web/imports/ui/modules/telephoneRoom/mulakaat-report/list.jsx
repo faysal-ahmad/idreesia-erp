@@ -12,9 +12,11 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   DatePicker,
+  Icon,
   Modal,
   Pagination,
   Table,
+  Tooltip,
   message,
 } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
@@ -136,9 +138,34 @@ const List = ({ history, location }) => {
       },
       {
         key: 'cancelled',
+        width: 80,
         render: (text, record) => {
-          const { cancelledDate } = record;
-          return cancelledDate ? 'Cancelled' : '';
+          const { cancelledDate, cancelledByName, createdByName } = record;
+          if (cancelledDate) {
+            return (
+              <Tooltip
+                title={
+                  cancelledByName
+                    ? `Cancelled by ${cancelledByName}`
+                    : 'Cancelled'
+                }
+              >
+                Cancelled
+              </Tooltip>
+            );
+          }
+
+          if (createdByName) {
+            return (
+              <div className="list-actions-column">
+                <Tooltip title={`Created by ${createdByName}`}>
+                  <Icon type="info-circle" className="list-actions-icon" />
+                </Tooltip>
+              </div>
+            );
+          }
+
+          return null;
         },
       },
     ];

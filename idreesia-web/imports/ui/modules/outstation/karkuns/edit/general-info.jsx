@@ -171,7 +171,11 @@ class GeneralInfo extends Component {
           <AgeField
             fieldName="birthDate"
             fieldLabel="Age (years)"
-            initialValue={outstationKarkunById.birthDate}
+            initialValue={
+              outstationKarkunById.birthDate
+                ? moment(Number(outstationKarkunById.birthDate))
+                : null
+            }
             getFieldDecorator={getFieldDecorator}
           />
 

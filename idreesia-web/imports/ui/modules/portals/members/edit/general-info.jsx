@@ -165,7 +165,11 @@ class GeneralInfo extends Component {
           <AgeField
             fieldName="birthDate"
             fieldLabel="Age (years)"
-            initialValue={portalMemberById.birthDate}
+            initialValue={
+              portalMemberById.birthDate
+                ? moment(Number(portalMemberById.birthDate))
+                : null
+            }
             getFieldDecorator={getFieldDecorator}
           />
 

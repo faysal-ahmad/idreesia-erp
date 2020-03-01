@@ -103,10 +103,7 @@ const List = ({ history, location }) => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: text => {
-        debugger;
-        return MessageStatusDescription[text];
-      },
+      render: text => MessageStatusDescription[text],
     },
     {
       title: 'Sent Date',

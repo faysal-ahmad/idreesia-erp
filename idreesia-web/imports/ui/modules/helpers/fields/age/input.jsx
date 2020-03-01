@@ -20,9 +20,9 @@ export default class CustomInput extends Component {
 
   render() {
     const { value } = this.props;
-    const mValue = moment(Number(value));
     const currentDate = moment().startOf('day');
-    const diffInYears = value ? currentDate.diff(mValue, 'years') : 0;
+    const diffInYears =
+      value && value.isValid() ? currentDate.diff(value, 'years') : 0;
 
     return <InputNumber value={diffInYears} onChange={this.handleChange} />;
   }

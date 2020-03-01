@@ -81,7 +81,9 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
-          initialValue={visitor.birthDate}
+          initialValue={
+            visitor.birthDate ? moment(Number(visitor.birthDate)) : null
+          }
           getFieldDecorator={getFieldDecorator}
         />
 

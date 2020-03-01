@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 
 const bloodGroupValueConversion = {
   'A-': 'A-',
@@ -15,6 +16,7 @@ const bloodGroupValueConversion = {
 
 function buildPipeline(params) {
   const pipeline = [];
+  const multanCity = Cities.findOne({ name: 'Multan', country: 'Pakistan' });
 
   const {
     name,
@@ -134,7 +136,7 @@ function buildPipeline(params) {
     }
   }
 
-  if (cityId) {
+  if (cityId && cityId !== multanCity._id) {
     pipeline.push({
       $match: {
         cityId: { $eq: cityId },
@@ -143,7 +145,7 @@ function buildPipeline(params) {
   } else {
     pipeline.push({
       $match: {
-        cityId: { $exists: true },
+        cityId: { $ne: multanCity._id },
       },
     });
   }

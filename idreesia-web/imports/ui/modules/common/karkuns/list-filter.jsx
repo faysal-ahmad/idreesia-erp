@@ -75,6 +75,8 @@ const ListFilter = ({
       if (err) return;
       setPageParams({
         pageIndex: '0',
+        cityId: values.cityIdMehfilId[0],
+        cityMehfilId: values.cityIdMehfilId[1],
         ...values,
       });
     });

@@ -6,6 +6,7 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { message } from '/imports/ui/controls';
 import { VisitorsNewForm } from '/imports/ui/modules/common';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
 
 import { CREATE_TELEPHONE_ROOM_VISITOR } from '../gql';
 
@@ -51,8 +52,8 @@ class NewForm extends Component {
         country,
       },
     })
-      .then(() => {
-        history.goBack();
+      .then(({ data: { createTelephoneRoomVisitor: newVisitor } }) => {
+        history.push(`${paths.visitorsEditFormPath(newVisitor._id)}`);
       })
       .catch(error => {
         message.error(error.message, 5);

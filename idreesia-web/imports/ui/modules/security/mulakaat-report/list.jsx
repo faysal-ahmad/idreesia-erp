@@ -152,7 +152,7 @@ const List = () => {
           allowClear={false}
           format="DD MMM, YYYY"
           onChange={handleDayChange}
-          value={mulakaatDate}
+          value={moment(mulakaatDate, Formats.DATE_FORMAT)}
         />
         &nbsp;&nbsp;
         <Button

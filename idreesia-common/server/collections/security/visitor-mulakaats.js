@@ -101,17 +101,17 @@ class VisitorMulakaats extends AggregatableCollection {
   isMulakaatAllowed(visitorId, mulakaatDate) {
     const mMulakaatDate = moment(mulakaatDate);
     // Before creating, ensure that there isn't already another record created
-    // for the week of this date for this visitor.
-    const weekDate = mMulakaatDate.clone().startOf('isoWeek');
-    const weekDates = [weekDate.toDate()];
+    // for last 7 days for this visitor.
+    const date = mMulakaatDate.clone().startOf('day');
+    const dates = [date.toDate()];
     for (let i = 1; i < 7; i++) {
-      weekDate.add(1, 'day');
-      weekDates.push(weekDate.toDate());
+      date.subtract(1, 'day');
+      dates.push(date.toDate());
     }
 
     const existingMulakaat = this.findOne({
       visitorId,
-      mulakaatDate: { $in: weekDates },
+      mulakaatDate: { $in: dates },
       cancelledDate: { $exists: false },
     });
 

@@ -28,6 +28,7 @@ import './24-create-security-indexes';
 import './25-create-security-indexes';
 import './26-create-hr-indexes';
 import './27-create-security-indexes';
+import './28-create-visitors-against-ms-karkuns';
 
 Migrations.config({
   log: true,

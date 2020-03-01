@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useDispatch } from 'react-redux';
 import moment from 'moment';
+
+import { Formats } from 'meteor/idreesia-common/constants';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
   Button,
@@ -19,9 +25,15 @@ import {
 } from './gql';
 
 const List = () => {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const [selectedDate, setSelectedDate] = useState(moment().startOf('day'));
+  const dispatch = useDispatch();
+  const { queryParams, setPageParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['mulakaatDate', 'pageIndex', 'pageSize'],
+    paramDefaultValues: {
+      mulakaatDate: moment().format(Formats.DATE_FORMAT),
+    },
+  });
 
   const [cancelSecurityVisitorMulakaats] = useMutation(
     CANCEL_SECURITY_VISITOR_MULAKAATS
@@ -30,22 +42,22 @@ const List = () => {
     PAGED_SECURITY_VISITOR_MULAKAATS,
     {
       variables: {
-        filter: {
-          startDate: selectedDate,
-          endDate: selectedDate,
-          pageIndex: pageIndex.toString(),
-          pageSize: pageSize.toString(),
-        },
+        filter: queryParams,
       },
     }
   );
 
+  useEffect(() => {
+    dispatch(setBreadcrumbs(['Security', 'Mulakaat Report']));
+  }, [location]);
+
   const handleCancelMulakaats = () => {
+    const _mulakaatDate = moment(queryParams.mulakaatDate, Formats.DATE_FORMAT);
     Modal.confirm({
       title: 'Are you sure you want to cancel all Mulakaats for this day?',
       onOk() {
         cancelSecurityVisitorMulakaats({
-          variables: { mulakaatDate: selectedDate },
+          variables: { mulakaatDate: _mulakaatDate },
         })
           .then(() => {
             refetch();
@@ -58,24 +70,35 @@ const List = () => {
     });
   };
 
+  const { mulakaatDate, pageIndex, pageSize } = queryParams;
+
   const onPaginationChange = (index, size) => {
-    setPageIndex(index - 1);
-    setPageSize(size);
+    setPageParams({
+      pageIndex: index - 1,
+      pageSize: size,
+    });
   };
 
   const handleDayChange = value => {
-    setSelectedDate(value);
-    refetch();
+    setPageParams({
+      mulakaatDate: value.format(Formats.DATE_FORMAT),
+    });
   };
 
   const handleDayGoBack = () => {
-    setSelectedDate(selectedDate.clone().subtract(1, 'day'));
-    refetch();
+    const mMulakaatDate = moment(mulakaatDate, Formats.DATE_FORMAT);
+    setPageParams({
+      mulakaatDate: mMulakaatDate
+        .subtract(1, 'day')
+        .format(Formats.DATE_FORMAT),
+    });
   };
 
   const handleDayGoForward = () => {
-    setSelectedDate(selectedDate.clone().add(1, 'day'));
-    refetch();
+    const mMulakaatDate = moment(mulakaatDate, Formats.DATE_FORMAT);
+    setPageParams({
+      mulakaatDate: mMulakaatDate.add(1, 'day').format(Formats.DATE_FORMAT),
+    });
   };
 
   const getColumns = () => {
@@ -129,7 +152,7 @@ const List = () => {
           allowClear={false}
           format="DD MMM, YYYY"
           onChange={handleDayChange}
-          value={selectedDate}
+          value={mulakaatDate}
         />
         &nbsp;&nbsp;
         <Button
@@ -154,8 +177,8 @@ const List = () => {
 
   if (loading) return null;
   const { pagedSecurityVisitorMulakaats } = data;
-  const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-  const numPageSize = pageSize || 20;
+  const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
+  const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
     <Table

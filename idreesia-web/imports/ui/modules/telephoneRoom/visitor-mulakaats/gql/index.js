@@ -12,4 +12,4 @@ export {
 } from './delete-telephone-room-visitor-mulakaat';
 export {
   default as TELEPHONE_ROOM_VISITOR_MULAKAAT_BY_ID,
-} from './security-telephone-room-mulakaat-by-id';
+} from './telephone-room-visitor-mulakaat-by-id';

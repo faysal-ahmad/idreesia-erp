@@ -51,11 +51,12 @@ const List = ({ history, location }) => {
   }, [location]);
 
   const handleCancelMulakaats = () => {
+    const _mulakaatDate = moment(queryParams.mulakaatDate, Formats.DATE_FORMAT);
     Modal.confirm({
       title: 'Are you sure you want to cancel all Mulakaats for this day?',
       onOk() {
         cancelTelephoneRoomVisitorMulakaats({
-          variables: { mulakaatDate: queryParams.mulakaatDate },
+          variables: { mulakaatDate: _mulakaatDate },
         })
           .then(() => {
             refetch();

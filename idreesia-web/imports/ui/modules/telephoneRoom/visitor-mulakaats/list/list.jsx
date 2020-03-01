@@ -17,10 +17,10 @@ import {
 
 import CardContainer from '../card/card-container';
 import {
-  CREATE_SECURITY_VISITOR_MULAKAAT,
-  CANCEL_SECURITY_VISITOR_MULAKAAT,
-  DELETE_SECURITY_VISITOR_MULAKAAT,
-  PAGED_SECURITY_VISITOR_MULAKAATS,
+  CREATE_TELEPHONE_ROOM_VISITOR_MULAKAAT,
+  CANCEL_TELEPHONE_ROOM_VISITOR_MULAKAAT,
+  DELETE_TELEPHONE_ROOM_VISITOR_MULAKAAT,
+  PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS,
 } from '../gql';
 
 const getMulakaatDefaultDate = () => {
@@ -42,17 +42,17 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
     getMulakaatDefaultDate()
   );
 
-  const [createSecurityVisitorMulakaat] = useMutation(
-    CREATE_SECURITY_VISITOR_MULAKAAT
+  const [createTelephoneRoomVisitorMulakaat] = useMutation(
+    CREATE_TELEPHONE_ROOM_VISITOR_MULAKAAT
   );
-  const [cancelSecurityVisitorMulakaat] = useMutation(
-    CANCEL_SECURITY_VISITOR_MULAKAAT
+  const [cancelTelephoneRoomVisitorMulakaat] = useMutation(
+    CANCEL_TELEPHONE_ROOM_VISITOR_MULAKAAT
   );
-  const [deleteSecurityVisitorMulakaat] = useMutation(
-    DELETE_SECURITY_VISITOR_MULAKAAT
+  const [deleteTelephoneRoomVisitorMulakaat] = useMutation(
+    DELETE_TELEPHONE_ROOM_VISITOR_MULAKAAT
   );
   const { data, loading, refetch } = useQuery(
-    PAGED_SECURITY_VISITOR_MULAKAATS,
+    PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS,
     {
       variables: {
         filter: {
@@ -70,7 +70,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
   };
 
   const handleNewClicked = () => {
-    createSecurityVisitorMulakaat({
+    createTelephoneRoomVisitorMulakaat({
       variables: {
         visitorId,
         mulakaatDate: selectedMulakaatDate,
@@ -85,7 +85,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
   };
 
   const handleCancelClicked = ({ _id }) => {
-    cancelSecurityVisitorMulakaat({
+    cancelTelephoneRoomVisitorMulakaat({
       variables: {
         _id,
       },
@@ -99,7 +99,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
   };
 
   const handleDeleteClicked = ({ _id }) => {
-    deleteSecurityVisitorMulakaat({
+    deleteTelephoneRoomVisitorMulakaat({
       variables: {
         _id,
       },
@@ -221,7 +221,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
   };
 
   if (loading) return null;
-  const { pagedSecurityVisitorMulakaats } = data;
+  const { pagedTelephoneRoomVisitorMulakaats } = data;
   const numPageIndex = pageIndex ? pageIndex + 1 : 1;
   const numPageSize = pageSize || 10;
 
@@ -240,7 +240,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
     <>
       <Table
         rowKey="_id"
-        dataSource={pagedSecurityVisitorMulakaats.data}
+        dataSource={pagedTelephoneRoomVisitorMulakaats.data}
         columns={getColumns()}
         title={getTableHeader}
         bordered
@@ -256,7 +256,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
             }
             onChange={onPaginationChange}
             onShowSizeChange={onPaginationChange}
-            total={pagedSecurityVisitorMulakaats.totalResults}
+            total={pagedTelephoneRoomVisitorMulakaats.totalResults}
           />
         )}
       />

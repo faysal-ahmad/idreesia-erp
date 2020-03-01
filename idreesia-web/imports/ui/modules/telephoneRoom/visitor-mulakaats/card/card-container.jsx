@@ -18,13 +18,13 @@ const MulakaatCardContainer = ({
 }) => {
   const cardRef = useRef();
   const {
-    data: { telephoneRoomVisitorMulakaatById },
+    data: telephoneRoomVisitorMulakaatByIdData,
     loading: telephoneRoomVisitorMulakaatByIdLoading,
   } = useQuery(TELEPHONE_ROOM_VISITOR_MULAKAAT_BY_ID, {
     variables: { _id: visitorMulakaatId },
   });
   const {
-    data: { pagedTelephoneRoomVisitorMulakaats },
+    data: pagedTelephoneRoomVisitorMulakaatsData,
     loading: pagedTelephoneRoomVisitorMulakaatsLoading,
   } = useQuery(PAGED_TELEPHONE_ROOM_VISITOR_MULAKAATS, {
     variables: {
@@ -43,6 +43,12 @@ const MulakaatCardContainer = ({
     return null;
   }
 
+  const {
+    telephoneRoomVisitorMulakaatById,
+  } = telephoneRoomVisitorMulakaatByIdData;
+  const {
+    pagedTelephoneRoomVisitorMulakaats,
+  } = pagedTelephoneRoomVisitorMulakaatsData;
   return (
     <>
       <VisitorMulakaatCard

@@ -40,22 +40,30 @@ Migrations.add({
     const date = new Date();
     const msKarkuns = Karkuns.find({ cityId: multanCity._id }).fetch();
     msKarkuns.forEach(karkun => {
-      let updateImageId = null;
-      if (karkun.imageId) {
-        const image = Attachments.findOne(karkun.imageId);
-        updateImageId = Attachments.insert({
-          name: image.name,
-          description: image.description,
-          mimeType: image.mimeType,
-          data: image.data,
-          createdAt: date,
-          createdBy: user._id,
-          updatedAt: date,
-          updatedBy: user._id,
-        });
-      }
+      if (
+        karkun.parentName &&
+        karkun.cnicNumber &&
+        karkun.contactNumber1 &&
+        karkun.ehadDate &&
+        karkun.referenceName &&
+        !Visitors.isCnicInUse(karkun.cnicNumber) &&
+        !Visitors.isContactNumberInUse(karkun.contactNumber1)
+      ) {
+        let updateImageId = null;
+        if (karkun.imageId) {
+          const image = Attachments.findOne(karkun.imageId);
+          updateImageId = Attachments.insert({
+            name: image.name,
+            description: image.description,
+            mimeType: image.mimeType,
+            data: image.data,
+            createdAt: date,
+            createdBy: user._id,
+            updatedAt: date,
+            updatedBy: user._id,
+          });
+        }
 
-      if (karkun.parentName && karkun.ehadDate && karkun.referenceName) {
         Visitors.insert({
           karkunId: karkun._id,
           name: karkun.name,

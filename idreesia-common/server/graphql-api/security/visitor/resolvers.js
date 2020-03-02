@@ -2,6 +2,7 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
+import { DataSource } from 'meteor/idreesia-common/constants/security';
 
 import { processCsvData } from './helpers';
 
@@ -152,7 +153,7 @@ export default {
         city,
         country,
         imageId,
-        dataSource: 'security',
+        dataSource: DataSource.SECURITY,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

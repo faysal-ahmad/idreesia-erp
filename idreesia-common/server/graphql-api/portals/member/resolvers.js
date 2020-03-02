@@ -5,6 +5,7 @@ import {
 } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
+import { DataSource } from 'meteor/idreesia-common/constants/security';
 
 import { getPortalMembers } from './queries';
 
@@ -109,7 +110,7 @@ export default {
         city,
         country,
         imageId,
-        dataSource: `portal-${portalId}`,
+        dataSource: `${DataSource.PORTAL}-${portalId}`,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

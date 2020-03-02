@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { DataSource } from 'meteor/idreesia-common/constants/security';
+
 import {
   Button,
   Collapse,
@@ -40,7 +42,9 @@ const ListFilter = ({
   city,
   ehadDuration,
   additionalInfo,
+  dataSource,
   showAdditionalInfoFilter,
+  showDataSourceFilter,
   distinctCities,
 }) => {
   const handleReset = () => {
@@ -52,7 +56,8 @@ const ListFilter = ({
       phoneNumber: '',
       city: '',
       ehadDuration: '',
-      additionalInfo: null,
+      additionalInfo: '',
+      dataSource: '',
     });
   };
 
@@ -67,6 +72,7 @@ const ListFilter = ({
         city: values.city,
         ehadDuration: values.ehadDuration,
         additionalInfo: values.additionalInfo,
+        dataSource: values.dataSource,
       });
     });
   };
@@ -113,6 +119,38 @@ const ListFilter = ({
       getFieldDecorator={getFieldDecorator}
     />
   ) : null;
+
+  const dataSourceFilter = showDataSourceFilter ? (
+    <SelectField
+      fieldName="dataSource"
+      fieldLabel="Data Source"
+      required={false}
+      data={[
+        {
+          label: 'Security',
+          value: DataSource.SECURITY,
+        },
+        {
+          label: 'Outstation',
+          value: DataSource.OUTSTATION,
+        },
+        {
+          label: 'Telephone Room',
+          value: DataSource.TELEPHONE_ROOM,
+        },
+        {
+          label: 'Portals',
+          value: DataSource.PORTAL,
+        },
+      ]}
+      getDataValue={({ value }) => value}
+      getDataText={({ label }) => label}
+      initialValue={dataSource}
+      fieldLayout={formItemLayout}
+      getFieldDecorator={getFieldDecorator}
+    />
+  ) : null;
+
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
@@ -161,6 +199,7 @@ const ListFilter = ({
             getFieldDecorator={getFieldDecorator}
           />
           {additionalInfoFilter}
+          {dataSourceFilter}
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">
               <Button type="default" onClick={handleReset}>
@@ -181,6 +220,7 @@ const ListFilter = ({
 ListFilter.propTypes = {
   form: PropTypes.object,
   showAdditionalInfoFilter: PropTypes.bool,
+  showDataSourceFilter: PropTypes.bool,
 
   name: PropTypes.string,
   cnicNumber: PropTypes.string,
@@ -188,6 +228,7 @@ ListFilter.propTypes = {
   city: PropTypes.string,
   ehadDuration: PropTypes.string,
   additionalInfo: PropTypes.string,
+  dataSource: PropTypes.string,
   distinctCities: PropTypes.array,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
@@ -195,6 +236,7 @@ ListFilter.propTypes = {
 
 ListFilter.defaultProps = {
   showAdditionalInfoFilter: false,
+  showDataSourceFilter: false,
   cnicNumber: '',
   phoneNumber: '',
   city: '',

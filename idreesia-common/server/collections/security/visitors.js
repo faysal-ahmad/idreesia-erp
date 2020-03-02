@@ -33,7 +33,7 @@ class Visitors extends AggregatableCollection {
     if (dataSource) {
       pipeline.push({
         $match: {
-          dataSource: { $eq: dataSource },
+          dataSource: { $regex: new RegExp(`^${dataSource}`, 'i') },
         },
       });
     }

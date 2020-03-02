@@ -45,6 +45,7 @@ const List = ({ history, location }) => {
       'city',
       'ehadDuration',
       'additionalInfo',
+      'dataSource',
       'pageIndex',
       'pageSize',
     ],
@@ -69,6 +70,7 @@ const List = ({ history, location }) => {
     city,
     ehadDuration,
     additionalInfo,
+    dataSource,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -194,7 +196,9 @@ const List = ({ history, location }) => {
           city={city}
           ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
+          dataSource={dataSource}
           showAdditionalInfoFilter
+          showDataSourceFilter
           distinctCities={distinctCities || []}
           setPageParams={setPageParams}
           refreshData={refreshData}

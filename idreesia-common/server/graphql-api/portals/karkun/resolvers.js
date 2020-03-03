@@ -138,7 +138,6 @@ export default {
         meansOfEarning,
         ehadDate,
         birthDate,
-        lastTarteebDate,
         referenceName,
       },
       { user }
@@ -188,8 +187,42 @@ export default {
           meansOfEarning,
           ehadDate,
           birthDate,
-          lastTarteebDate,
           referenceName,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Karkuns.findOne(_id);
+    },
+
+    setPortalKarkunWazaifAndRaabta(
+      obj,
+      { portalId, _id, lastTarteebDate, mehfilRaabta, msRaabta },
+      { user }
+    ) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Karkuns in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, portalId) === false) {
+        throw new Error(
+          'You do not have permission to manage Karkuns in this Mehfil Portal.'
+        );
+      }
+
+      const date = new Date();
+      Karkuns.update(_id, {
+        $set: {
+          lastTarteebDate,
+          mehfilRaabta,
+          msRaabta,
           updatedAt: date,
           updatedBy: user._id,
         },

@@ -20,6 +20,8 @@ const PORTAL_KARKUN_BY_ID = gql`
       ehadDate
       birthDate
       lastTarteebDate
+      mehfilRaabta
+      msRaabta
       referenceName
       imageId
       createdAt

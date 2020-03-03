@@ -19,7 +19,6 @@ const UPDATE_PORTAL_KARKUN = gql`
     $meansOfEarning: String
     $ehadDate: String
     $birthDate: String
-    $lastTarteebDate: String
     $referenceName: String
   ) {
     updatePortalKarkun(
@@ -40,7 +39,6 @@ const UPDATE_PORTAL_KARKUN = gql`
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
       birthDate: $birthDate
-      lastTarteebDate: $lastTarteebDate
       referenceName: $referenceName
     ) {
       _id
@@ -60,6 +58,8 @@ const UPDATE_PORTAL_KARKUN = gql`
       ehadDate
       birthDate
       lastTarteebDate
+      mehfilRaabta
+      msRaabta
       referenceName
       createdAt
       createdBy

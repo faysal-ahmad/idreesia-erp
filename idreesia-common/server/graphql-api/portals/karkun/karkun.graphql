@@ -28,8 +28,15 @@ extend type Mutation {
     meansOfEarning: String
     ehadDate: String
     birthDate: String
-    lastTarteebDate: String
     referenceName: String
+  ): KarkunType
+
+  setPortalKarkunWazaifAndRaabta(
+    portalId: String!
+    _id: String!
+    lastTarteebDate: String
+    mehfilRaabta: String
+    msRaabta: String
   ): KarkunType
 
   setPortalKarkunProfileImage(portalId: String!, _id: String!, imageId: String!): KarkunType

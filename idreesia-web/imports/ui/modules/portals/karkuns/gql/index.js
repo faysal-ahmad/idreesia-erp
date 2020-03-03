@@ -6,6 +6,10 @@ export {
   default as SET_PORTAL_KARKUN_PROFILE_IMAGE,
 } from './set-portal-karkun-profile-image';
 export {
+  default as SET_PORTAL_KARKUN_WAZAIF_AND_RAABTA,
+} from './set-portal-karkun-wazaif-and-raabta';
+
+export {
   default as PAGED_PORTAL_ATTENDANCE_BY_KARKUN,
 } from './paged-portal-attendance-by-karkun';
 

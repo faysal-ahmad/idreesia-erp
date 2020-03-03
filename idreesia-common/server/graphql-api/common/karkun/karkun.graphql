@@ -17,6 +17,8 @@ type KarkunType {
   ehadDate: String
   birthDate: String
   lastTarteebDate: String
+  mehfilRaabta: String
+  msRaabta: String
   referenceName: String
   imageId: String
   attachmentIds: [String]

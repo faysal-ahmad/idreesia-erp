@@ -9,6 +9,9 @@ export {
 export {
   default as SET_HR_KARKUN_EMPLOYMENT_INFO,
 } from './set-hr-karkun-empoyment-info';
+export {
+  default as SET_HR_KARKUN_WAZAIF_AND_RAABTA,
+} from './set-hr-karkun-wazaif-and-raabta';
 
 export {
   default as ADD_HR_KARKUN_ATTACHMENT,

@@ -4,9 +4,9 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/controls';
-import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
+import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 
-import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
+import { HR_KARKUN_BY_ID, SET_HR_KARKUN_WAZAIF_AND_RAABTA } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -18,7 +18,7 @@ class GeneralInfo extends Component {
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
     hrKarkunById: PropTypes.object,
-    updateHrKarkun: PropTypes.func,
+    setHrKarkunWazaifAndRaabta: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -26,46 +26,16 @@ class GeneralInfo extends Component {
     history.goBack();
   };
 
-  handleSubmit = ({
-    name,
-    parentName,
-    cnicNumber,
-    contactNumber1,
-    contactNumber2,
-    emailAddress,
-    currentAddress,
-    permanentAddress,
-    bloodGroup,
-    sharedResidenceId,
-    educationalQualification,
-    meansOfEarning,
-    ehadDate,
-    birthDate,
-    lastTarteebDate,
-    referenceName,
-  }) => {
-    const { history, karkunId, updateHrKarkun } = this.props;
-    updateHrKarkun({
+  handleSubmit = ({ lastTarteebDate, mehfilRaabta, msRaabta }) => {
+    const { history, karkunId, setHrKarkunWazaifAndRaabta } = this.props;
+    setHrKarkunWazaifAndRaabta({
       variables: {
         _id: karkunId,
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
-        bloodGroup: bloodGroup || null,
-        sharedResidenceId: sharedResidenceId || null,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        birthDate,
         lastTarteebDate: lastTarteebDate
           ? lastTarteebDate.startOf('day')
           : null,
-        referenceName,
+        mehfilRaabta,
+        msRaabta,
       },
     })
       .then(() => {
@@ -81,21 +51,20 @@ class GeneralInfo extends Component {
     if (formDataLoading) return null;
 
     return (
-      <KarkunsGeneralInfo
+      <KarkunsWazaifAndRaabta
         karkun={hrKarkunById}
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
-        showSharedResidencesField
       />
     );
   }
 }
 
 export default flowRight(
-  graphql(UPDATE_HR_KARKUN, {
-    name: 'updateHrKarkun',
+  graphql(SET_HR_KARKUN_WAZAIF_AND_RAABTA, {
+    name: 'setHrKarkunWazaifAndRaabta',
     options: {
-      refetchQueries: ['pagedHrKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedHrKarkuns'],
     },
   }),
   graphql(HR_KARKUN_BY_ID, {

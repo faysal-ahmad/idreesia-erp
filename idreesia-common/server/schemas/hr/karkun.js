@@ -76,6 +76,14 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
+  mehfilRaabta: {
+    type: String,
+    optional: true,
+  },
+  msRaabta: {
+    type: String,
+    optional: true,
+  },
   referenceName: {
     type: String,
     optional: true,

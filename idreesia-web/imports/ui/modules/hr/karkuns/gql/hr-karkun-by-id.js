@@ -20,6 +20,8 @@ const HR_KARKUN_BY_ID = gql`
       ehadDate
       birthDate
       lastTarteebDate
+      mehfilRaabta
+      msRaabta
       referenceName
       isEmployee
       jobId

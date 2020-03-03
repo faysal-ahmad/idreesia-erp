@@ -109,12 +109,12 @@ class List extends Component {
       let dutyNames = [];
 
       if (record.job) {
-        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=6`;
+        const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=7`;
         jobName = [<Link to={jobTabLink}>{record.job.name}</Link>];
       }
 
       if (duties.length > 0) {
-        const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=3`;
+        const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=4`;
         dutyNames = duties.map(duty => {
           let dutyName = duty.dutyName;
           if (duty.shiftName) {

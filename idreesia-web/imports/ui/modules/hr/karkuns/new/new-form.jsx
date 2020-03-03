@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
+import { Divider, Form, message } from '/imports/ui/controls';
 import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
@@ -62,35 +62,53 @@ class NewForm extends Component {
         }
       ) => {
         if (err) return;
-
-        createHrKarkun({
-          variables: {
-            name,
-            parentName,
-            cnicNumber,
-            contactNumber1,
-            contactNumber2,
-            emailAddress,
-            currentAddress,
-            permanentAddress,
-            bloodGroup,
-            sharedResidenceId,
-            educationalQualification,
-            meansOfEarning,
-            ehadDate,
-            birthDate,
-            lastTarteebDate: lastTarteebDate
-              ? lastTarteebDate.startOf('day')
-              : null,
-            referenceName,
-          },
-        })
-          .then(({ data: { createHrKarkun: newKarkun } }) => {
-            history.push(`${paths.karkunsPath}/${newKarkun._id}`);
-          })
-          .catch(error => {
-            message.error(error.message, 5);
+        if (!cnicNumber && !contactNumber1) {
+          form.setFields({
+            cnicNumber: {
+              errors: [
+                new Error(
+                  'Please input the CNIC or Mobile Number for the karkun'
+                ),
+              ],
+            },
+            contactNumber1: {
+              errors: [
+                new Error(
+                  'Please input the CNIC or Mobile Number for the karkun'
+                ),
+              ],
+            },
           });
+        } else {
+          createHrKarkun({
+            variables: {
+              name,
+              parentName,
+              cnicNumber,
+              contactNumber1,
+              contactNumber2,
+              emailAddress,
+              currentAddress,
+              permanentAddress,
+              bloodGroup,
+              sharedResidenceId,
+              educationalQualification,
+              meansOfEarning,
+              ehadDate,
+              birthDate,
+              lastTarteebDate: lastTarteebDate
+                ? lastTarteebDate.startOf('day')
+                : null,
+              referenceName,
+            },
+          })
+            .then(({ data: { createHrKarkun: newKarkun } }) => {
+              history.push(`${paths.karkunsPath}/${newKarkun._id}`);
+            })
+            .catch(error => {
+              message.error(error.message, 5);
+            });
+        }
       }
     );
   };
@@ -116,6 +134,8 @@ class NewForm extends Component {
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
+          required
+          requiredMessage="Please input the parent name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -128,17 +148,16 @@ class NewForm extends Component {
         <EhadDurationField
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
+          required
+          requiredMessage="Please specify the Ehad duration for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
-        <DateField
-          fieldName="lastTarteebDate"
-          fieldLabel="Last Tarteeb"
-          getFieldDecorator={getFieldDecorator}
-        />
         <InputTextField
           fieldName="referenceName"
           fieldLabel="R/O"
+          required
+          requiredMessage="Please input the reference name for the karkun."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -151,7 +170,14 @@ class NewForm extends Component {
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
-          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <Divider />
+
+        <DateField
+          fieldName="lastTarteebDate"
+          fieldLabel="Last Tarteeb"
           getFieldDecorator={getFieldDecorator}
         />
 

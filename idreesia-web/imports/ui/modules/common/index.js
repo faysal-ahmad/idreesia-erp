@@ -5,6 +5,8 @@ export { default as AmaanatLogsEditForm } from './amaanat-logs/edit-form';
 
 export { default as KarkunsList } from './karkuns/list';
 export { default as KarkunsListFilter } from './karkuns/list-filter';
+export { default as KarkunsGeneralInfo } from './karkuns/general-info';
+export { default as KarkunsWazaifAndRaabta } from './karkuns/wazaif-and-raabta';
 
 export { default as VisitorsList } from './visitors/list';
 export { default as VisitorsListFilter } from './visitors/list-filter';

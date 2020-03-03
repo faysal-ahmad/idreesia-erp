@@ -19,7 +19,7 @@ import {
   LastTarteebFilterField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 import { PAGED_OUTSTATION_MESSAGES, CREATE_OUTSTATION_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';

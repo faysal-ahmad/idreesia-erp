@@ -2,10 +2,10 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { useAllSharedResidences } from 'meteor/idreesia-common/hooks/hr';
 import { Divider, Form } from '/imports/ui/controls';
 import {
   AgeField,
+  CascaderField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -15,19 +15,19 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 const GeneralInfo = ({
   karkun,
   form,
   handleSubmit,
   handleCancel,
+  cities,
+  cityMehfils,
+  sharedResidences,
+  showCityMehfilField,
   showSharedResidencesField,
 }) => {
-  const {
-    allSharedResidences,
-    allSharedResidencesLoading,
-  } = useAllSharedResidences();
-
   const _handleSubmit = e => {
     e.preventDefault();
     form.validateFields((err, values) => {
@@ -56,9 +56,7 @@ const GeneralInfo = ({
     });
   };
 
-  if (allSharedResidencesLoading) return null;
   const { getFieldDecorator } = form;
-
   return (
     <Fragment>
       <Form layout="horizontal" onSubmit={_handleSubmit}>
@@ -123,6 +121,18 @@ const GeneralInfo = ({
           getFieldDecorator={getFieldDecorator}
         />
 
+        {showCityMehfilField ? (
+          <CascaderField
+            data={getCityMehfilCascaderData(cities, cityMehfils)}
+            fieldName="cityIdMehfilId"
+            fieldLabel="City/Mehfil"
+            initialValue={[karkun.cityId, karkun.cityMehfilId]}
+            required
+            requiredMessage="Please select a city/mehfil from the list."
+            getFieldDecorator={getFieldDecorator}
+          />
+        ) : null}
+
         <Divider />
 
         <InputTextField
@@ -167,7 +177,7 @@ const GeneralInfo = ({
             fieldLabel="Shared Residence"
             required={false}
             initialValue={karkun.sharedResidenceId}
-            data={allSharedResidences}
+            data={sharedResidences}
             getDataValue={({ _id }) => _id}
             getDataText={({ name, address }) => `${name} - ${address}`}
             getFieldDecorator={getFieldDecorator}
@@ -218,10 +228,19 @@ GeneralInfo.propTypes = {
   karkun: PropTypes.object,
   handleSubmit: PropTypes.func,
   handleCancel: PropTypes.func,
+
+  cities: PropTypes.array,
+  cityMehfils: PropTypes.array,
+  sharedResidences: PropTypes.array,
+  showCityMehfilField: PropTypes.bool,
   showSharedResidencesField: PropTypes.bool,
 };
 
 GeneralInfo.defaultProps = {
+  cities: [],
+  cityMehfils: [],
+  sharedResidences: [],
+  showCityMehfilField: false,
   showSharedResidencesField: false,
 };
 

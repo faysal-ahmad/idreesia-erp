@@ -21,11 +21,17 @@ extend type Mutation {
     meansOfEarning: String
     ehadDate: String
     birthDate: String
-    lastTarteebDate: String
     referenceName: String
   ): KarkunType
 
   deleteOutstationKarkun(_id: String!): Int
+
+  setOutstationKarkunWazaifAndRaabta(
+    _id: String!
+    lastTarteebDate: String
+    mehfilRaabta: String
+    msRaabta: String
+  ): KarkunType
 
   setOutstationKarkunProfileImage(_id: String!, imageId: String!): KarkunType
 }

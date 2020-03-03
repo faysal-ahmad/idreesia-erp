@@ -5,6 +5,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/controls';
 import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
+import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 
 import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 
@@ -15,6 +16,8 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
+    allSharedResidencesLoading: PropTypes.bool,
+    allSharedResidences: PropTypes.array,
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
     hrKarkunById: PropTypes.object,
@@ -77,8 +80,13 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { formDataLoading, hrKarkunById } = this.props;
-    if (formDataLoading) return null;
+    const {
+      formDataLoading,
+      allSharedResidencesLoading,
+      hrKarkunById,
+      allSharedResidences,
+    } = this.props;
+    if (formDataLoading || allSharedResidencesLoading) return null;
 
     return (
       <KarkunsGeneralInfo
@@ -86,12 +94,14 @@ class GeneralInfo extends Component {
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
         showSharedResidencesField
+        sharedResidences={allSharedResidences}
       />
     );
   }
 }
 
 export default flowRight(
+  WithAllSharedResidences(),
   graphql(UPDATE_HR_KARKUN, {
     name: 'updateHrKarkun',
     options: {

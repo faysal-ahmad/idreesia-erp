@@ -6,7 +6,10 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/controls';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 
-import { HR_KARKUN_BY_ID, SET_HR_KARKUN_WAZAIF_AND_RAABTA } from '../gql';
+import {
+  OUTSTATION_KARKUN_BY_ID,
+  SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA,
+} from '../gql';
 
 class WazaifAndRaabta extends Component {
   static propTypes = {
@@ -17,8 +20,8 @@ class WazaifAndRaabta extends Component {
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
-    hrKarkunById: PropTypes.object,
-    setHrKarkunWazaifAndRaabta: PropTypes.func,
+    outstationKarkunById: PropTypes.object,
+    setOutstationKarkunWazaifAndRaabta: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -27,8 +30,12 @@ class WazaifAndRaabta extends Component {
   };
 
   handleSubmit = ({ lastTarteebDate, mehfilRaabta, msRaabta }) => {
-    const { history, karkunId, setHrKarkunWazaifAndRaabta } = this.props;
-    setHrKarkunWazaifAndRaabta({
+    const {
+      history,
+      karkunId,
+      setOutstationKarkunWazaifAndRaabta,
+    } = this.props;
+    setOutstationKarkunWazaifAndRaabta({
       variables: {
         _id: karkunId,
         lastTarteebDate: lastTarteebDate
@@ -47,12 +54,12 @@ class WazaifAndRaabta extends Component {
   };
 
   render() {
-    const { formDataLoading, hrKarkunById } = this.props;
+    const { formDataLoading, outstationKarkunById } = this.props;
     if (formDataLoading) return null;
 
     return (
       <KarkunsWazaifAndRaabta
-        karkun={hrKarkunById}
+        karkun={outstationKarkunById}
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
       />
@@ -61,13 +68,13 @@ class WazaifAndRaabta extends Component {
 }
 
 export default flowRight(
-  graphql(SET_HR_KARKUN_WAZAIF_AND_RAABTA, {
-    name: 'setHrKarkunWazaifAndRaabta',
+  graphql(SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA, {
+    name: 'setOutstationKarkunWazaifAndRaabta',
     options: {
-      refetchQueries: ['pagedHrKarkuns'],
+      refetchQueries: ['pagedOutstationKarkuns'],
     },
   }),
-  graphql(HR_KARKUN_BY_ID, {
+  graphql(OUTSTATION_KARKUN_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
   })

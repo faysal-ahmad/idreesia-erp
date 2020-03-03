@@ -6,6 +6,10 @@ export {
   default as SET_OUTSTATION_KARKUN_PROFILE_IMAGE,
 } from './set-outstation-karkun-profile-image';
 export {
+  default as SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA,
+} from './set-outstation-karkun-wazaif-and-raabta';
+
+export {
   default as UPDATE_OUTSTATION_KARKUN,
 } from './update-outstation-karkun';
 export {

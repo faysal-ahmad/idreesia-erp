@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from '/imports/ui/controls';
 import { CascaderField, DateField } from '/imports/ui/modules/helpers/fields';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 const ContainerStyle = {
   width: '500px',

@@ -102,8 +102,8 @@ import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
 import OutstationMemberSchema from './outstation/member/member.graphql';
 import OutstationMemberResolvers from './outstation/member/resolvers';
 
-import OutstationKarkunSchema from './outstation/karkuns/karkun.graphql';
-import OutstationKarkunResolvers from './outstation/karkuns/resolvers';
+import OutstationKarkunSchema from './outstation/karkun/karkun.graphql';
+import OutstationKarkunResolvers from './outstation/karkun/resolvers';
 
 import OutstationKarkunDutySchema from './outstation/karkun-duties/karkun-duty.graphql';
 import OutstationKarkunDutyResolvers from './outstation/karkun-duties/resolvers';

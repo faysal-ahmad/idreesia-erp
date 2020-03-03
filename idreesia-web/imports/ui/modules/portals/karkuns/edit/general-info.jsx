@@ -22,7 +22,7 @@ import {
   WithPortalCities,
   WithPortalCityMehfils,
 } from '/imports/ui/modules/portals/common/composers';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 import {
   PORTAL_KARKUN_BY_ID,

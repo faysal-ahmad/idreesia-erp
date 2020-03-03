@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from '/imports/ui/controls';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/outstation/common/utilities';
+import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 import {
   CascaderField,

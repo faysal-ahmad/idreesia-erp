@@ -18,7 +18,6 @@ const UPDATE_OUTSTATION_KARKUN = gql`
     $meansOfEarning: String
     $ehadDate: String
     $birthDate: String
-    $lastTarteebDate: String
     $referenceName: String
   ) {
     updateOutstationKarkun(
@@ -38,7 +37,6 @@ const UPDATE_OUTSTATION_KARKUN = gql`
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
       birthDate: $birthDate
-      lastTarteebDate: $lastTarteebDate
       referenceName: $referenceName
     ) {
       _id
@@ -57,7 +55,6 @@ const UPDATE_OUTSTATION_KARKUN = gql`
       meansOfEarning
       ehadDate
       birthDate
-      lastTarteebDate
       referenceName
       createdAt
       createdBy

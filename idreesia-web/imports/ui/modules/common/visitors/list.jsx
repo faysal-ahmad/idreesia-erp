@@ -291,8 +291,8 @@ export default class VisitorsList extends Component {
   onPaginationChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize,
+      pageIndex: (pageIndex - 1).toString(),
+      pageSize: pageSize.toString(),
     });
   };
 

@@ -75,8 +75,8 @@ const ListFilter = ({
       if (err) return;
       setPageParams({
         pageIndex: '0',
-        cityId: values.cityIdMehfilId[0],
-        cityMehfilId: values.cityIdMehfilId[1],
+        cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
+        cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
         ...values,
       });
     });

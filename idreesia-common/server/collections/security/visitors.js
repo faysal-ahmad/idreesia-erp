@@ -3,12 +3,98 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Visitor as VisitorSchema } from 'meteor/idreesia-common/server/schemas/security';
+import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 
 class Visitors extends AggregatableCollection {
   constructor(name = 'security-visitors', options = {}) {
     const visitors = super(name, options);
     visitors.attachSchema(VisitorSchema);
     return visitors;
+  }
+
+  // **************************************************************
+  // Create/Update Methods
+  // **************************************************************
+  createVisitor(values, user) {
+    const {
+      cnicNumber,
+      contactNumber1,
+      contactNumber2,
+      dataSource,
+      imageData,
+    } = values;
+    if (cnicNumber) this.checkCnicNotInUse(cnicNumber);
+    if (contactNumber1) this.checkContactNotInUse(contactNumber1);
+    if (contactNumber2) this.checkContactNotInUse(contactNumber2);
+    if (!dataSource) {
+      throw new Error('Data Source is required to create a visitor.');
+    }
+
+    let imageId = null;
+    if (imageData) {
+      imageId = createAttachment(
+        {
+          data: imageData,
+        },
+        { user }
+      );
+    }
+
+    const date = new Date();
+    const valuesToInsert = Object.assign({}, values, {
+      imageId,
+      createdAt: date,
+      createdBy: user._id,
+      updatedAt: date,
+      updatedBy: user._id,
+    });
+
+    delete valuesToInsert.imageData;
+    const visitorId = this.insert(valuesToInsert);
+    return this.findOne(visitorId);
+  }
+
+  updateVisitor(values, user) {
+    const { _id, cnicNumber, contactNumber1, contactNumber2 } = values;
+    if (cnicNumber) this.checkCnicNotInUse(cnicNumber, _id);
+    if (contactNumber1) this.checkContactNotInUse(contactNumber1, _id);
+    if (contactNumber2) this.checkContactNotInUse(contactNumber2, _id);
+
+    const date = new Date();
+    const valuesToInsert = Object.assign({}, values, {
+      updatedAt: date,
+      updatedBy: user._id,
+    });
+
+    delete valuesToInsert._id;
+    this.update(_id, { $set: valuesToInsert });
+    return this.findOne(_id);
+  }
+
+  // **************************************************************
+  // Custom Finder Methods
+  // **************************************************************
+  findByCnicOrContactNumber(cnicNumber, contactNumber) {
+    let visitor = null;
+
+    if (cnicNumber) {
+      visitor = this.findOne({
+        cnicNumber: { $eq: cnicNumber },
+      });
+    }
+
+    if (visitor) return visitor;
+
+    if (contactNumber) {
+      visitor = this.findOne({
+        $or: [
+          { contactNumber1: contactNumber },
+          { contactNumber2: contactNumber },
+        ],
+      });
+    }
+
+    return visitor;
   }
 
   // **************************************************************

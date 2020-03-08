@@ -118,30 +118,7 @@ export default {
       return Karkuns.findOne(karkunId);
     },
 
-    updatePortalKarkun(
-      obj,
-      {
-        portalId,
-        _id,
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
-        cityId,
-        cityMehfilId,
-        bloodGroup,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        birthDate,
-        referenceName,
-      },
-      { user }
-    ) {
+    updatePortalKarkun(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.PORTALS_MANAGE_KARKUNS,
@@ -152,48 +129,14 @@ export default {
         );
       }
 
+      const { portalId } = values;
       if (hasInstanceAccess(user._id, portalId) === false) {
         throw new Error(
           'You do not have permission to manage Karkuns in this Mehfil Portal.'
         );
       }
 
-      if (cnicNumber) {
-        const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber },
-        });
-        if (existingKarkun && existingKarkun._id !== _id) {
-          throw new Error(
-            `This CNIC number is already set for ${existingKarkun.name}.`
-          );
-        }
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          name,
-          parentName,
-          cnicNumber,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          currentAddress,
-          permanentAddress,
-          cityId,
-          cityMehfilId,
-          bloodGroup,
-          educationalQualification,
-          meansOfEarning,
-          ehadDate,
-          birthDate,
-          referenceName,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
 
     setPortalKarkunWazaifAndRaabta(

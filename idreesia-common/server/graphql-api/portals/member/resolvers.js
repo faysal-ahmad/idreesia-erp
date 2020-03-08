@@ -4,7 +4,6 @@ import {
   hasOnePermission,
 } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 import { DataSource } from 'meteor/idreesia-common/constants/security';
 
 import { getPortalMembers } from './queries';
@@ -81,22 +80,7 @@ export default {
         );
       }
 
-      if (cnicNumber) Visitors.checkCnicNotInUse(cnicNumber);
-      if (contactNumber1) Visitors.checkContactNotInUse(contactNumber1);
-      if (contactNumber2) Visitors.checkContactNotInUse(contactNumber2);
-
-      let imageId = null;
-      if (imageData) {
-        imageId = createAttachment(
-          {
-            data: imageData,
-          },
-          { user }
-        );
-      }
-
-      const date = new Date();
-      const visitorId = Visitors.insert({
+      return Visitors.createVisitor({
         name,
         parentName,
         cnicNumber,
@@ -109,15 +93,9 @@ export default {
         address,
         city,
         country,
-        imageId,
+        imageData,
         dataSource: `${DataSource.PORTAL}-${portalId}`,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
       });
-
-      return Visitors.findOne(visitorId);
     },
 
     updatePortalMember(
@@ -156,13 +134,9 @@ export default {
         );
       }
 
-      if (cnicNumber) Visitors.checkCnicNotInUse(cnicNumber, _id);
-      if (contactNumber1) Visitors.checkContactNotInUse(contactNumber1, _id);
-      if (contactNumber2) Visitors.checkContactNotInUse(contactNumber2, _id);
-
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
+      return Visitors.updateVisitor(
+        {
+          _id,
           name,
           parentName,
           cnicNumber,
@@ -175,12 +149,9 @@ export default {
           address,
           city,
           country,
-          updatedAt: date,
-          updatedBy: user._id,
         },
-      });
-
-      return Visitors.findOne(_id);
+        user
+      );
     },
 
     setPortalMemberImage(obj, { portalId, _id, imageId }, { user }) {

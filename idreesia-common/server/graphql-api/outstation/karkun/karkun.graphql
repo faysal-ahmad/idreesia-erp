@@ -4,6 +4,21 @@ extend type Query {
 }
 
 extend type Mutation {
+  importOutstationKarkun(
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    cityId: String
+    cityMehfilId: String
+    ehadDate: String
+    birthDate: String
+    referenceName: String
+    lastTarteebDate: String
+    mehfilRaabta: String
+    msRaabta: String
+  ): String
+
   updateOutstationKarkun(
     _id: String!
     name: String!

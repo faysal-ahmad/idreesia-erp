@@ -1,4 +1,6 @@
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -6,6 +8,7 @@ import {
   canDeleteKarkun,
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
+import { DataSource } from 'meteor/idreesia-common/constants/security';
 
 import { getOutstationKarkuns } from './queries';
 
@@ -42,26 +45,21 @@ export default {
   },
 
   Mutation: {
-    updateOutstationKarkun(
+    importOutstationKarkun(
       obj,
       {
-        _id,
         name,
         parentName,
         cnicNumber,
         contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
         cityId,
         cityMehfilId,
-        bloodGroup,
-        educationalQualification,
-        meansOfEarning,
         ehadDate,
         birthDate,
         referenceName,
+        lastTarteebDate,
+        mehfilRaabta,
+        msRaabta,
       },
       { user }
     ) {
@@ -75,42 +73,75 @@ export default {
         );
       }
 
-      if (cnicNumber) {
-        const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber },
-        });
-        if (existingKarkun && existingKarkun._id !== _id) {
-          throw new Error(
-            `This CNIC number is already set for ${existingKarkun.name}.`
-          );
+      // Do we have an existing karkun corresponding to the passed values
+      // Use cnic and contact number to lookup existing karkun.
+      const existingKarkun = Karkuns.findByCnicOrContactNumber(
+        cnicNumber,
+        contactNumber1
+      );
+
+      if (!existingKarkun) {
+        // Create a karkun from using the passed values
+        const newKarkun = Karkuns.createKarkun(
+          {
+            name,
+            parentName,
+            cnicNumber,
+            contactNumber1,
+            cityId,
+            cityMehfilId,
+            ehadDate,
+            birthDate,
+            referenceName,
+            lastTarteebDate,
+            mehfilRaabta,
+            msRaabta,
+          },
+          user
+        );
+
+        // Check if we already have an existing visitor coresponding to these values
+        // Create a new visitor corresponding to this karkun if one is not found
+        const existingVisitor = Visitors.findByCnicOrContactNumber(
+          cnicNumber,
+          contactNumber1
+        );
+
+        if (!existingVisitor) {
+          const city = Cities.findOne(cityId);
+          Visitors.createVisitor({
+            name,
+            parentName,
+            cnicNumber,
+            contactNumber1,
+            city: city.name,
+            country: city.country,
+            ehadDate,
+            birthDate,
+            referenceName,
+            karkunId: newKarkun._id,
+            dataSource: DataSource.OUTSTATION,
+          });
         }
+
+        return 'New karkun created.';
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          name,
-          parentName,
-          cnicNumber,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          currentAddress,
-          permanentAddress,
-          cityId,
-          cityMehfilId,
-          bloodGroup,
-          educationalQualification,
-          meansOfEarning,
-          ehadDate,
-          birthDate,
-          referenceName,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
+      return 'Karkun already exists. Ignored.';
+    },
 
-      return Karkuns.findOne(_id);
+    updateOutstationKarkun(obj, values, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Karkuns in the System.'
+        );
+      }
+
+      return Karkuns.updateKarkun(values, user);
     },
 
     deleteOutstationKarkun(obj, { _id }, { user }) {

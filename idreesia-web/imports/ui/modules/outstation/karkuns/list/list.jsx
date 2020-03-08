@@ -12,7 +12,7 @@ import {
   useAllMehfilDuties,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Button, Tooltip, message } from '/imports/ui/controls';
+import { Button, Dropdown, Icon, Menu, message } from '/imports/ui/controls';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -78,8 +78,12 @@ const List = ({ history, location }) => {
     window.open(url, '_blank');
   };
 
+  const handleUploadClicked = () => {
+    history.push(paths.karkunsUploadFormPath);
+  };
+
   const handleSelectItem = karkun => {
-    history.push(`${paths.karkunsPath}/${karkun._id}`);
+    history.push(paths.karkunsEditFormPath(karkun._id));
   };
 
   if (loading) return null;
@@ -137,15 +141,35 @@ const List = ({ history, location }) => {
     );
   };
 
+  const getActionsMenu = () => {
+    const menu = (
+      <Menu>
+        <Menu.Item key="1" onClick={handleExportSelected}>
+          <Icon type="download" />
+          Download Selected
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={handleUploadClicked}>
+          <Icon type="upload" />
+          Upload CSV Data
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <Button icon="setting" size="large" />
+      </Dropdown>
+    );
+  };
+
   const getTableHeader = () => (
     <div className="list-table-header">
       <div />
       <div className="list-table-header-section">
         {getListFilter()}
         &nbsp;&nbsp;
-        <Tooltip title="Download Selected Data">
-          <Button icon="download" size="large" onClick={handleExportSelected} />
-        </Tooltip>
+        {getActionsMenu()}
       </div>
     </div>
   );

@@ -21,29 +21,7 @@ export default {
   },
 
   Mutation: {
-    createHrKarkun(
-      obj,
-      {
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
-        cityId,
-        cityMehfilId,
-        bloodGroup,
-        sharedResidenceId,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        birthDate,
-        referenceName,
-      },
-      { user }
-    ) {
+    createHrKarkun(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_KARKUNS,
@@ -55,69 +33,10 @@ export default {
         );
       }
 
-      if (cnicNumber) {
-        const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber },
-        });
-        if (existingKarkun) {
-          throw new Error(
-            `This CNIC number is already set for ${existingKarkun.name}.`
-          );
-        }
-      }
-
-      const date = new Date();
-      const karkunId = Karkuns.insert({
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
-        cityId,
-        cityMehfilId,
-        bloodGroup,
-        sharedResidenceId,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        birthDate,
-        referenceName,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
-
-      return Karkuns.findOne(karkunId);
+      return Karkuns.createKarkun(values, user);
     },
 
-    updateHrKarkun(
-      obj,
-      {
-        _id,
-        name,
-        parentName,
-        cnicNumber,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        currentAddress,
-        permanentAddress,
-        cityId,
-        cityMehfilId,
-        bloodGroup,
-        sharedResidenceId,
-        educationalQualification,
-        meansOfEarning,
-        ehadDate,
-        birthDate,
-        referenceName,
-      },
-      { user }
-    ) {
+    updateHrKarkun(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_KARKUNS,
@@ -129,43 +48,7 @@ export default {
         );
       }
 
-      if (cnicNumber) {
-        const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber },
-        });
-        if (existingKarkun && existingKarkun._id !== _id) {
-          throw new Error(
-            `This CNIC number is already set for ${existingKarkun.name}.`
-          );
-        }
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          name,
-          parentName,
-          cnicNumber,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          currentAddress,
-          permanentAddress,
-          cityId,
-          cityMehfilId,
-          bloodGroup,
-          sharedResidenceId,
-          educationalQualification,
-          meansOfEarning,
-          ehadDate,
-          birthDate,
-          referenceName,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
 
     deleteHrKarkun(obj, { _id }, { user }) {
@@ -182,11 +65,7 @@ export default {
       return 0;
     },
 
-    setHrKarkunWazaifAndRaabta(
-      obj,
-      { _id, lastTarteebDate, mehfilRaabta, msRaabta },
-      { user }
-    ) {
+    setHrKarkunWazaifAndRaabta(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
@@ -195,25 +74,10 @@ export default {
         );
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          lastTarteebDate,
-          mehfilRaabta,
-          msRaabta,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
 
-    setHrKarkunEmploymentInfo(
-      obj,
-      { _id, isEmployee, jobId, employmentStartDate, employmentEndDate },
-      { user }
-    ) {
+    setHrKarkunEmploymentInfo(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
       ) {
@@ -222,19 +86,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          isEmployee,
-          jobId,
-          employmentStartDate,
-          employmentEndDate,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
 
     setHrKarkunProfileImage(obj, { _id, imageId }, { user }) {

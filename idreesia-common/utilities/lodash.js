@@ -19,6 +19,7 @@ export { default as map } from 'lodash/map';
 export { default as memoize } from 'lodash/memoize';
 export { default as merge } from 'lodash/merge';
 export { default as noop } from 'lodash/noop';
+export { default as omit } from 'lodash/omit';
 export { default as reduce } from 'lodash/reduce';
 export { default as reverse } from 'lodash/reverse';
 export { default as round } from 'lodash/round';

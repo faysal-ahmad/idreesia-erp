@@ -19,9 +19,6 @@ class Cities extends AggregatableCollection {
     const pipeline = [];
 
     const { region, portalId, pageIndex = '0', pageSize = '20' } = params;
-    const countingPipeline = pipeline.concat({
-      $count: 'total',
-    });
 
     if (region) {
       pipeline.push({
@@ -47,6 +44,10 @@ class Cities extends AggregatableCollection {
       { $skip: nPageIndex * nPageSize },
       { $limit: nPageSize },
     ]);
+
+    const countingPipeline = pipeline.concat({
+      $count: 'total',
+    });
 
     const cities = this.aggregate(resultsPipeline).toArray();
     const totalResults = this.aggregate(countingPipeline).toArray();

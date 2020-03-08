@@ -12,6 +12,12 @@ class Cities extends AggregatableCollection {
     return cities;
   }
 
+  getMultanCity() {
+    return this.findOne({
+      name: 'Multan',
+      country: 'Pakistan',
+    });
+  }
   // **************************************************************
   // Query Functions
   // **************************************************************

@@ -1,4 +1,5 @@
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -33,7 +34,14 @@ export default {
         );
       }
 
-      return Karkuns.createKarkun(values, user);
+      const multanCity = Cities.getMultanCity();
+      return Karkuns.createKarkun(
+        {
+          cityId: multanCity._id,
+          ...values,
+        },
+        user
+      );
     },
 
     updateHrKarkun(obj, values, { user }) {

@@ -225,9 +225,11 @@ export default flowRight(
   WithPortalCities(),
   graphql(CREATE_PORTAL_MEMBER, {
     name: 'createPortalMember',
-    options: {
-      refetchQueries: [{ query: PAGED_PORTAL_MEMBERS }],
-    },
+    options: ({ portalId }) => ({
+      refetchQueries: [
+        { query: PAGED_PORTAL_MEMBERS, variables: { portalId } },
+      ],
+    }),
   }),
   WithDynamicBreadcrumbs(({ portal }) => {
     if (portal) {

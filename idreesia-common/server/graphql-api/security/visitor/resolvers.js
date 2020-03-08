@@ -104,22 +104,25 @@ export default {
         );
       }
 
-      return Visitors.createVisitor({
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageData,
-        dataSource: DataSource.SECURITY,
-      });
+      return Visitors.createVisitor(
+        {
+          name,
+          parentName,
+          cnicNumber,
+          ehadDate,
+          birthDate,
+          referenceName,
+          contactNumber1,
+          contactNumber2,
+          emailAddress,
+          address,
+          city,
+          country,
+          imageData,
+          dataSource: DataSource.SECURITY,
+        },
+        user
+      );
     },
 
     updateSecurityVisitor(

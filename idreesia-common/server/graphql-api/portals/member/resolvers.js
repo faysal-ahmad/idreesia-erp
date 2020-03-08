@@ -80,22 +80,25 @@ export default {
         );
       }
 
-      return Visitors.createVisitor({
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageData,
-        dataSource: `${DataSource.PORTAL}-${portalId}`,
-      });
+      return Visitors.createVisitor(
+        {
+          name,
+          parentName,
+          cnicNumber,
+          ehadDate,
+          birthDate,
+          referenceName,
+          contactNumber1,
+          contactNumber2,
+          emailAddress,
+          address,
+          city,
+          country,
+          imageData,
+          dataSource: `${DataSource.PORTAL}-${portalId}`,
+        },
+        user
+      );
     },
 
     updatePortalMember(

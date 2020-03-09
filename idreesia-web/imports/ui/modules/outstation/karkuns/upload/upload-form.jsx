@@ -174,7 +174,6 @@ class UploadForm extends Component {
           },
         })
           .then(({ data: { importOutstationKarkun: importMessage } }) => {
-            debugger;
             record.imported = true;
             record.importMessage = importMessage;
           })

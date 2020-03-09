@@ -15,6 +15,8 @@ const ReportGenerators = {
   PurchaseForms: exportPurchaseForms,
   Karkuns: exportKarkuns,
   Visitors: exportVisitors,
+  OutstationKarkuns: exportKarkuns,
+  OutstationMembers: exportVisitors,
 };
 
 Meteor.startup(() => {

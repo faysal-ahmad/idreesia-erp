@@ -2,7 +2,12 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
-import { MembersNewForm, MembersEditForm, MembersList } from './members';
+import {
+  MembersNewForm,
+  MembersUploadForm,
+  MembersEditForm,
+  MembersList,
+} from './members';
 import { KarkunsEditForm, KarkunsUploadForm, KarkunsList } from './karkuns';
 import { AttendanceSheetsList } from './attendance-sheets';
 import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
@@ -34,6 +39,7 @@ const Router = () => (
     />
     <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
 
+    <Route path={paths.membersUploadFormPath} component={MembersUploadForm} />
     <Route path={paths.membersNewFormPath} component={MembersNewForm} />
     <Route path={paths.membersEditFormPath()} component={MembersEditForm} />
     <Route path={paths.membersPath} component={MembersList} />

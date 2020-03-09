@@ -1,4 +1,5 @@
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants/security';
@@ -36,6 +37,58 @@ export default {
   },
 
   Mutation: {
+    importOutstationMember(
+      obj,
+      {
+        name,
+        parentName,
+        cnicNumber,
+        contactNumber1,
+        cityId,
+        ehadDate,
+        birthDate,
+        referenceName,
+      },
+      { user }
+    ) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Members in the System.'
+        );
+      }
+
+      // Check if we already have an existing visitor coresponding to these values
+      // Create a new visitor corresponding to this member if one is not found
+      const existingVisitor = Visitors.findByCnicOrContactNumber(
+        cnicNumber,
+        contactNumber1
+      );
+
+      if (!existingVisitor) {
+        const city = Cities.findOne(cityId);
+        Visitors.createVisitor({
+          name,
+          parentName,
+          cnicNumber,
+          contactNumber1,
+          city: city.name,
+          country: city.country,
+          ehadDate,
+          birthDate,
+          referenceName,
+          dataSource: DataSource.OUTSTATION,
+        });
+
+        return 'New member created.';
+      }
+
+      return 'Member already exists. Ignored.';
+    },
+
     createOutstationMember(
       obj,
       {

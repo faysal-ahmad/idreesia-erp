@@ -21,6 +21,7 @@ export default class SubModulePaths {
   // *************************************************************************************
   static membersPath = `${ModulePaths.outstation}/members`;
   static membersNewFormPath = `${SubModulePaths.membersPath}/new`;
+  static membersUploadFormPath = `${SubModulePaths.membersPath}/upload`;
   static membersEditFormPath(memberId = ':memberId') {
     return `${SubModulePaths.membersPath}/${memberId}`;
   }

@@ -8,7 +8,7 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Button, message } from '/imports/ui/controls';
+import { Button, Dropdown, Icon, Menu, message } from '/imports/ui/controls';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -79,6 +79,45 @@ const List = ({ history, location }) => {
     history.push(paths.membersNewFormPath);
   };
 
+  const handleExportSelected = () => {
+    const selectedRows = visitorsList.current.getSelectedRows();
+    if (selectedRows.length === 0) return;
+
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=OutstationMembers&reportArgs=${reportArgs.join(
+      ','
+    )}`;
+    window.open(url, '_blank');
+  };
+
+  const handleUploadClicked = () => {
+    history.push(paths.membersUploadFormPath);
+  };
+
+  const getActionsMenu = () => {
+    const menu = (
+      <Menu>
+        <Menu.Item key="1" onClick={handleExportSelected}>
+          <Icon type="download" />
+          Download Selected
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="3" onClick={handleUploadClicked}>
+          <Icon type="upload" />
+          Upload CSV Data
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <Button icon="setting" size="large" />
+      </Dropdown>
+    );
+  };
+
   const getTableHeader = () => (
     <div className="list-table-header">
       <div style={ButtonGroupStyle}>
@@ -103,6 +142,8 @@ const List = ({ history, location }) => {
           setPageParams={setPageParams}
           refreshData={refetch}
         />
+        &nbsp;&nbsp;
+        {getActionsMenu()}
       </div>
     </div>
   );

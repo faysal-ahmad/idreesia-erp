@@ -5,6 +5,9 @@ export {
   default as DELETE_OUTSTATION_MEMBER,
 } from './delete-outstation-member';
 export {
+  default as IMPORT_OUTSTATION_MEMBER,
+} from './import-outstation-member';
+export {
   default as PAGED_OUTSTATION_MEMBERS,
 } from './paged-outstation-members';
 export {

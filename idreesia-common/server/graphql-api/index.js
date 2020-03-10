@@ -51,11 +51,11 @@ import SecurityVisitorMulakaatResolvers from './security/visitor-mulakaat/resolv
 /**
  * Schema and Resolvers for the Telephone Room module
  */
-import TelephoneRoomVisitorSchema from './telephoneRoom/visitor/visitor.graphql';
-import TelephoneRoomVisitorResolvers from './telephoneRoom/visitor/resolvers';
+import TelephoneRoomVisitorSchema from './telephone-room/visitor/visitor.graphql';
+import TelephoneRoomVisitorResolvers from './telephone-room/visitor/resolvers';
 
-import TelephoneRoomVisitorMulakaatSchema from './telephoneRoom/visitor-mulakaat/visitor-mulakaat.graphql';
-import TelephoneRoomVisitorMulakaatResolvers from './telephoneRoom/visitor-mulakaat/resolvers';
+import TelephoneRoomVisitorMulakaatSchema from './telephone-room/visitor-mulakaat/visitor-mulakaat.graphql';
+import TelephoneRoomVisitorMulakaatResolvers from './telephone-room/visitor-mulakaat/resolvers';
 
 /**
  * Schema and Resolvers for the HR module

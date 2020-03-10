@@ -20,7 +20,7 @@ import {
   message,
 } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
-import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephone-room';
 
 import {
   CANCEL_TELEPHONE_ROOM_VISITOR_MULAKAATS,

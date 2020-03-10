@@ -11,7 +11,7 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Button, DatePicker, Pagination, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
-import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephone-room';
 
 import { PAGED_TELEPHONE_ROOM_VISITORS } from './gql';
 

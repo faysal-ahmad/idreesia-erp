@@ -11,7 +11,7 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Drawer, message } from '/imports/ui/controls';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
-import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephone-room';
 
 import {
   PAGED_TELEPHONE_ROOM_VISITORS,

@@ -6,7 +6,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './general-info';
 import Picture from './picture';
-import { VisitorMulakaatsList } from '/imports/ui/modules/telephoneRoom/visitor-mulakaats';
+import { VisitorMulakaatsList } from '/imports/ui/modules/telephone-room/visitor-mulakaats';
 
 const EditForm = props => {
   const visitorId = get(props, ['match', 'params', 'visitorId'], null);

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider, Input, Row, Col } from '/imports/ui/controls';
-import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephoneRoom';
+import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephone-room';
 import SearchResults from './search-results';
 
 class Form extends Component {

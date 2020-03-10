@@ -17,7 +17,7 @@ const sidebarsMap = {
     import('/imports/ui/modules/accounts/sidebar')
   ),
   [ModuleNames.telephoneRoom]: React.lazy(() =>
-    import('/imports/ui/modules/telephoneRoom/sidebar')
+    import('/imports/ui/modules/telephone-room/sidebar')
   ),
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/sidebar')

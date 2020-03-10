@@ -6,7 +6,8 @@ const ModulePaths = {
   security: '/security',
   outstation: '/outstation',
   portals: '/portals',
-  telephoneRoom: '/telephoneRoom',
+  telephoneRoom: '/telephone-room',
+  wazaif: '/wazaif-management',
 };
 
 export default ModulePaths;

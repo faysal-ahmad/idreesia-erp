@@ -17,7 +17,7 @@ const routersMap = {
     import('/imports/ui/modules/accounts/router')
   ),
   [ModuleNames.telephoneRoom]: React.lazy(() =>
-    import('/imports/ui/modules/telephoneRoom/router')
+    import('/imports/ui/modules/telephone-room/router')
   ),
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/router')

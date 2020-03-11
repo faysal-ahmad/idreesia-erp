@@ -9,6 +9,7 @@ const PAGED_WAZAIF = gql`
         name
         revisionNumber
         revisionDate
+        imageIds
         images {
           _id
           name

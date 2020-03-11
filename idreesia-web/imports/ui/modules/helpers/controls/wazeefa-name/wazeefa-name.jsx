@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { Avatar, Modal } from '/imports/ui/controls';
 
 import WazeefaPreview from './wazeefa-preview';
@@ -48,6 +49,13 @@ const WazeefaName = ({ wazeefa, onWazeefaNameClicked }) => {
     );
   }
 
+  const getSortedImages = () => {
+    const { imageIds, images } = wazeefa;
+    return (imageIds || []).map(imageId =>
+      find(images, ({ _id }) => _id === imageId)
+    );
+  };
+
   return (
     <>
       <div style={NameDivStyle}>
@@ -61,7 +69,7 @@ const WazeefaName = ({ wazeefa, onWazeefaNameClicked }) => {
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
-        <WazeefaPreview images={wazeefa.images} />
+        <WazeefaPreview images={getSortedImages()} />
       </Modal>
     </>
   );
@@ -71,6 +79,7 @@ WazeefaName.propTypes = {
   onWazeefaNameClicked: PropTypes.func,
   wazeefa: PropTypes.shape({
     name: PropTypes.string.isRequired,
+    imageIds: PropTypes.array,
     images: PropTypes.array,
   }),
 };

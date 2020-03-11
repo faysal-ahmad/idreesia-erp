@@ -7,7 +7,7 @@ const ModuleNames = {
   portals: 'Mehfil Portals',
   security: 'Security',
   telephoneRoom: 'Telephone Room',
-  wazaif: 'Wazaif',
+  wazaifManagement: 'Wazaif Management',
 };
 
 export default ModuleNames;

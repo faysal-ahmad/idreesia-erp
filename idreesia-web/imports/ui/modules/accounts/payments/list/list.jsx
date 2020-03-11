@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
 import numeral from 'numeral';
-import ListFilter from './list-filter';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Icon,
@@ -14,6 +14,8 @@ import {
   Modal,
   message,
 } from '/imports/ui/controls';
+
+import ListFilter from './list-filter';
 import { REMOVE_PAYMENT, PAGED_PAYMENTS } from '../gql';
 
 const { confirm } = Modal;

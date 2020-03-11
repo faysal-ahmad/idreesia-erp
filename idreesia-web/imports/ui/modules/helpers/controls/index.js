@@ -13,6 +13,7 @@ export { default as UploadAttachment } from './upload/upload-attachment';
 export { default as AttachmentsList } from './attachments/attachments-list';
 export { default as RecordInfo } from './record-info/record-info';
 export { default as PersonName } from './person-name/person-name';
+export { default as WazeefaName } from './wazeefa-name/wazeefa-name';
 
 export { default as InputFile } from './file/input-file';
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
   InputTextAreaField,

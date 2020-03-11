@@ -505,4 +505,32 @@ export const permissionsData = [
       },
     ],
   },
+  {
+    title: 'Wazaif Management',
+    key: 'module-wazaif-management',
+    children: [
+      {
+        title: 'Delete Data',
+        key: PermissionConstants.WM_DELETE_DATA,
+      },
+      {
+        title: 'Manage Setup Data',
+        key: PermissionConstants.WM_MANAGE_SETUP_DATA,
+      },
+      {
+        title: 'Wazaif',
+        key: 'module-wazaif-management-wazaif',
+        children: [
+          {
+            title: 'View Wazaif',
+            key: PermissionConstants.WM_VIEW_WAZAIF,
+          },
+          {
+            title: 'Manage Wazaif',
+            key: PermissionConstants.WM_MANAGE_WAZAIF,
+          },
+        ],
+      },
+    ],
+  },
 ];

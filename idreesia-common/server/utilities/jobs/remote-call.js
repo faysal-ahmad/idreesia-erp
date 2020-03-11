@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDP } from 'meteor/ddp-client';
-import { toString } from 'lodash';
+import { toString } from 'meteor/idreesia-common/utilities/lodash';
 
 export const remoteCall = (methodName, args = {}, callback) => {
   if (Meteor.isClient) return;

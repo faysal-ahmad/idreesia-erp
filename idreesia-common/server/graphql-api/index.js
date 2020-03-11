@@ -191,6 +191,12 @@ import PaymentsResolvers from './accounts/payments/resolvers';
 import PaymentsHistorySchema from './accounts/payments-history/payment-history.graphql';
 import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
 
+/**
+ * Schema and Resolvers for the Wazaif Management module
+ */
+import WazeefaSchema from './wazaif-management/wazeefa/wazeefa.graphql';
+import WazeefaResolvers from './wazaif-management/wazeefa/resolvers';
+
 const typeDefs = [
   AttachmentSchema,
   MessageSchema,
@@ -254,6 +260,8 @@ const typeDefs = [
   AccountMonthlyBalanceSchema,
   PaymentsSchema,
   PaymentsHistorySchema,
+
+  WazeefaSchema,
 ];
 
 const resolvers = merge(
@@ -318,7 +326,9 @@ const resolvers = merge(
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
   PaymentsResolvers,
-  PaymentsHistoryResolvers
+  PaymentsHistoryResolvers,
+
+  WazeefaResolvers
 );
 
 export { typeDefs, resolvers };

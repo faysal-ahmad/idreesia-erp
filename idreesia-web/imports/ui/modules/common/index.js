@@ -16,6 +16,8 @@ export {
   default as VisitorMulakaatCard,
 } from './visitor-mulakaats/mulakaat-card';
 
+export { default as WazaifList } from './wazaif/list';
+
 export {
   default as KarkunAttendancesList,
 } from './attendance/karkun-attendances-list';

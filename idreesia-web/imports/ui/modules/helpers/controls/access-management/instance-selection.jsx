@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { filter, flowRight } from 'lodash';
 
+import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Tree } from '/imports/ui/controls';
 
 class InstanceSelection extends Component {

@@ -132,6 +132,15 @@ const Permissions = {
   IN_VIEW_PURCHASE_FORMS: 'inventory-view-purchase-forms',
   IN_MANAGE_PURCHASE_FORMS: 'inventory-manage-purchase-forms',
   IN_APPROVE_PURCHASE_FORMS: 'inventory-approve-purchase-forms',
+
+  // ****************************************************************************************
+  // Wazaif Management Module
+  // ****************************************************************************************
+  WM_DELETE_DATA: 'wazaif-management-delete-data',
+  WM_MANAGE_SETUP_DATA: 'wazaif-management-manage-setup-data',
+
+  WM_VIEW_WAZAIF: 'wazaif-management-view-wazaif',
+  WM_MANAGE_WAZAIF: 'wazaif-management-manage-wazaif',
 };
 
 export default Permissions;

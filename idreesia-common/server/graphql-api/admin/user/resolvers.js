@@ -1,4 +1,4 @@
-import { compact, values } from 'lodash';
+import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';

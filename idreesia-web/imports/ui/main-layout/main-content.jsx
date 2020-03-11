@@ -16,6 +16,9 @@ const routersMap = {
   [ModuleNames.accounts]: React.lazy(() =>
     import('/imports/ui/modules/accounts/router')
   ),
+  [ModuleNames.wazaifManagement]: React.lazy(() =>
+    import('/imports/ui/modules/wazaif-management/router')
+  ),
   [ModuleNames.telephoneRoom]: React.lazy(() =>
     import('/imports/ui/modules/telephone-room/router')
   ),

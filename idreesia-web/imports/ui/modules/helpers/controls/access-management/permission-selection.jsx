@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { filter } from 'lodash';
 
+import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import { Tree } from '/imports/ui/controls';
 import { permissionsData } from './permission-data';
 

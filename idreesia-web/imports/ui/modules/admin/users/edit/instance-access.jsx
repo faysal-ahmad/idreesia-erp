@@ -1,8 +1,8 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { flowRight } from 'lodash';
 
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithAllCompanies,
   WithAllPortals,

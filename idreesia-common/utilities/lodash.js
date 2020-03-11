@@ -29,3 +29,4 @@ export { default as toInteger } from 'lodash/toInteger';
 export { default as toSafeInteger } from 'lodash/toSafeInteger';
 export { default as toString } from 'lodash/toString';
 export { default as values } from 'lodash/values';
+export { default as without } from 'lodash/without';

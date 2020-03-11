@@ -9,7 +9,9 @@ export default {
   Mutation: {
     createPortalKarkunDuty(obj, { portalId, karkunId, dutyId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTAL_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Portal Karkun Duties in the System.'
@@ -32,7 +34,9 @@ export default {
 
     removePortalKarkunDuty(obj, { portalId, _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTAL_MANAGE_KARKUNS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Portal Karkun Duties in the System.'

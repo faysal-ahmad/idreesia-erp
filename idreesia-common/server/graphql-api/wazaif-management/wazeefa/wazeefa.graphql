@@ -19,6 +19,7 @@ type PagedWazeefaType {
 }
 
 input WazaifFilter {
+  name: String
   pageIndex: String
   pageSize: String
 }

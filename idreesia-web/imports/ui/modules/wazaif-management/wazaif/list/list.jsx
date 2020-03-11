@@ -8,7 +8,7 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Button, message } from '/imports/ui/controls';
-import { WazaifList } from '/imports/ui/modules/common';
+import { WazaifList, WazaifListFilter } from '/imports/ui/modules/common';
 import { WazaifManagementSubModulePaths as paths } from '/imports/ui/modules/wazaif-management';
 
 import { PAGED_WAZAIF, DELETE_WAZEEFA } from '../gql';
@@ -25,7 +25,7 @@ const List = ({ history, location }) => {
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: ['pageIndex', 'pageSize'],
+    paramNames: ['name', 'pageIndex', 'pageSize'],
   });
 
   const [deleteWzeefa] = useMutation(DELETE_WAZEEFA);
@@ -37,7 +37,7 @@ const List = ({ history, location }) => {
     dispatch(setBreadcrumbs(['Wazaif Management', 'Wazaif', 'List']));
   }, [location]);
 
-  const { pageIndex, pageSize } = queryParams;
+  const { name, pageIndex, pageSize } = queryParams;
 
   const handleSelectItem = wazeefa => {
     history.push(paths.wazaifEditFormPath(wazeefa._id));
@@ -72,6 +72,13 @@ const List = ({ history, location }) => {
         >
           New Wazeefa
         </Button>
+      </div>
+      <div className="list-table-header-section">
+        <WazaifListFilter
+          name={name}
+          setPageParams={setPageParams}
+          refreshData={refetch}
+        />
       </div>
     </div>
   );

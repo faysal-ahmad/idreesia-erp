@@ -15,7 +15,15 @@ class Wazaif extends AggregatableCollection {
   searchWazaif(params = {}) {
     const pipeline = [];
 
-    const { pageIndex = '0', pageSize = '20' } = params;
+    const { name, pageIndex = '0', pageSize = '20' } = params;
+
+    if (name) {
+      pipeline.push({
+        $match: {
+          name: { $eq: name },
+        },
+      });
+    }
 
     const countingPipeline = pipeline.concat({
       $count: 'total',

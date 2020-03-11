@@ -17,6 +17,7 @@ export {
 } from './visitor-mulakaats/mulakaat-card';
 
 export { default as WazaifList } from './wazaif/list';
+export { default as WazaifListFilter } from './wazaif/list-filter';
 
 export {
   default as KarkunAttendancesList,

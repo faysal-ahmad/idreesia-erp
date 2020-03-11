@@ -11,6 +11,8 @@ import {
   DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { WazaifManagementSubModulePaths as paths } from '/imports/ui/modules/wazaif-management';
+
 import { UPDATE_WAZEEFA, WAZEEFA_BY_ID } from '../gql';
 
 class GeneralInfo extends Component {
@@ -28,7 +30,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.goBack();
+    history.push(paths.wazaifPath);
   };
 
   handleSubmit = e => {
@@ -46,7 +48,7 @@ class GeneralInfo extends Component {
         },
       })
         .then(() => {
-          history.goBack();
+          history.push(paths.wazaifPath);
         })
         .catch(error => {
           message.error(error.message, 5);

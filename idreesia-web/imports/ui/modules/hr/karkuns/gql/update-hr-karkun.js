@@ -12,6 +12,8 @@ const UPDATE_HR_KARKUN = gql`
     $currentAddress: String
     $permanentAddress: String
     $bloodGroup: String
+    $cityId: String
+    $cityMehfilId: String
     $sharedResidenceId: String
     $educationalQualification: String
     $meansOfEarning: String
@@ -29,6 +31,8 @@ const UPDATE_HR_KARKUN = gql`
       emailAddress: $emailAddress
       currentAddress: $currentAddress
       permanentAddress: $permanentAddress
+      cityId: $cityId
+      cityMehfilId: $cityMehfilId
       bloodGroup: $bloodGroup
       sharedResidenceId: $sharedResidenceId
       educationalQualification: $educationalQualification
@@ -46,6 +50,8 @@ const UPDATE_HR_KARKUN = gql`
       emailAddress
       currentAddress
       permanentAddress
+      cityId
+      cityMehfilId
       bloodGroup
       sharedResidenceId
       educationalQualification

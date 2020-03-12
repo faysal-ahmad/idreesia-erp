@@ -6,6 +6,10 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/controls';
 import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
 import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
+import {
+  WithAllCities,
+  WithAllCityMehfils,
+} from '/imports/ui/modules/outstation/common/composers';
 
 import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 
@@ -16,11 +20,15 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    allSharedResidencesLoading: PropTypes.bool,
-    allSharedResidences: PropTypes.array,
-    formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
+    allCities: PropTypes.array,
+    allCitiesLoading: PropTypes.bool,
+    allCityMehfils: PropTypes.array,
+    allCityMehfilsLoading: PropTypes.bool,
+    allSharedResidences: PropTypes.array,
+    allSharedResidencesLoading: PropTypes.bool,
     hrKarkunById: PropTypes.object,
+    formDataLoading: PropTypes.bool,
     updateHrKarkun: PropTypes.func,
   };
 
@@ -38,13 +46,13 @@ class GeneralInfo extends Component {
     emailAddress,
     currentAddress,
     permanentAddress,
+    cityIdMehfilId,
     bloodGroup,
     sharedResidenceId,
     educationalQualification,
     meansOfEarning,
     ehadDate,
     birthDate,
-    lastTarteebDate,
     referenceName,
   }) => {
     const { history, karkunId, updateHrKarkun } = this.props;
@@ -59,15 +67,14 @@ class GeneralInfo extends Component {
         emailAddress,
         currentAddress,
         permanentAddress,
+        cityId: cityIdMehfilId[0],
+        cityMehfilId: cityIdMehfilId[1],
         bloodGroup: bloodGroup || null,
         sharedResidenceId: sharedResidenceId || null,
         educationalQualification,
         meansOfEarning,
         ehadDate,
         birthDate,
-        lastTarteebDate: lastTarteebDate
-          ? lastTarteebDate.startOf('day')
-          : null,
         referenceName,
       },
     })
@@ -81,19 +88,32 @@ class GeneralInfo extends Component {
 
   render() {
     const {
-      formDataLoading,
-      allSharedResidencesLoading,
-      hrKarkunById,
+      allCities,
+      allCitiesLoading,
+      allCityMehfils,
+      allCityMehfilsLoading,
       allSharedResidences,
+      allSharedResidencesLoading,
+      formDataLoading,
+      hrKarkunById,
     } = this.props;
-    if (formDataLoading || allSharedResidencesLoading) return null;
+    if (
+      formDataLoading ||
+      allCitiesLoading ||
+      allCityMehfilsLoading ||
+      allSharedResidencesLoading
+    )
+      return null;
 
     return (
       <KarkunsGeneralInfo
         karkun={hrKarkunById}
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
+        showCityMehfilField
         showSharedResidencesField
+        cities={allCities}
+        cityMehfils={allCityMehfils}
         sharedResidences={allSharedResidences}
       />
     );
@@ -101,6 +121,8 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
+  WithAllCities(),
+  WithAllCityMehfils(),
   WithAllSharedResidences(),
   graphql(UPDATE_HR_KARKUN, {
     name: 'updateHrKarkun',

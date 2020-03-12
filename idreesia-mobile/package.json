@@ -14,10 +14,11 @@
     "antd-mobile": "^2.3.1",
     "apollo-boost": "^0.4.4",
     "apollo-server-express": "^2.9.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "csvtojson": "^2.0.10",
+    "dataloader": "^2.0.0",
     "express": "^4.17.1",
     "fastclick": "^1.0.6",
     "googleapis": "^45.0.0",
@@ -40,8 +41,9 @@
     "react-webcam": "^5.0.0",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "request": "^2.88.0",
-    "simpl-schema": "^1.5.5"
+    "request": "^2.88.2",
+    "simpl-schema": "^1.5.7",
+    "xlsx": "^0.15.5"
   },
   "meteor": {
     "mainModule": {

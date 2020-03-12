@@ -1,5 +1,5 @@
 import { keys } from 'meteor/idreesia-common/utilities/lodash';
-import { getKarkunsWithoutPagination } from 'meteor/idreesia-common/server/graphql-api/hr/karkuns/queries';
+import { getKarkunsWithoutPagination } from 'meteor/idreesia-common/server/graphql-api/hr/karkun/queries';
 
 export default function getHrMessageRecepients(message) {
   const { karkunFilter } = message;

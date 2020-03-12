@@ -1,4 +1,4 @@
-FROM node:8.15.1
+FROM node:12.16.1
 EXPOSE 3000
 ENV TZ=Asia/Karachi
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

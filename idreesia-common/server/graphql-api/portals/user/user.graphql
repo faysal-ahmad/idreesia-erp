@@ -1,0 +1,26 @@
+extend type Query {
+  pagedPortalUsers(portalId: String!, filter: UserFilter): PagedUserType
+  portalUserById(portalId: String!, _id: String!): UserType
+}
+
+extend type Mutation {
+  createPortalUser(
+    portalId: String!
+    userName: String!
+    password: String!
+    karkunId: String!
+  ): UserType
+
+  updatePortalUser(
+    portalId: String!
+    userId: String!
+    password: String
+    locked: Boolean
+  ): UserType
+
+  setPortalUserPermissions(
+    portalId: String!
+    userId: String!
+    permissions: [String]!
+  ): UserType
+}

@@ -10,6 +10,7 @@ import {
   AmaanatLogsNewForm,
   AmaanatLogsEditForm,
 } from './amaanat-logs';
+import { UsersList, UsersNewForm, UsersEditForm } from './users';
 
 const Router = () => (
   <Switch>
@@ -34,6 +35,10 @@ const Router = () => (
     <Route path={paths.membersNewFormPath()} component={MembersNewForm} />
     <Route path={paths.membersEditFormPath()} component={MembersEditForm} />
     <Route path={paths.membersPath()} component={MembersList} />
+
+    <Route path={paths.usersNewFormPath()} component={UsersNewForm} />
+    <Route path={paths.usersEditFormPath()} component={UsersEditForm} />
+    <Route path={paths.usersPath()} component={UsersList} />
   </Switch>
 );
 

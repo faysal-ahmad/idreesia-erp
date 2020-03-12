@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PAGED_OUTSTATION_KARKUNS = gql`
-  query pagedOutstationKarkuns($filter: KarkunFilter) {
-    pagedOutstationKarkuns(filter: $filter) {
+const PAGED_PORTAL_KARKUNS = gql`
+  query pagedPortalKarkuns($portalId: String!, $filter: KarkunFilter) {
+    pagedPortalKarkuns(portalId: $portalId, filter: $filter) {
       totalResults
       karkuns {
         _id
@@ -30,4 +30,4 @@ const PAGED_OUTSTATION_KARKUNS = gql`
   }
 `;
 
-export default PAGED_OUTSTATION_KARKUNS;
+export default PAGED_PORTAL_KARKUNS;

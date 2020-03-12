@@ -2,8 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { Tabs, Drawer, Icon, Input } from '/imports/ui/controls';
-import HRKarkunsList from './hr-karkuns-list';
+import MSKarkunsList from './ms-karkuns-list';
 import OutstationKarkunsList from './outstation-karkuns-list';
+import PortalKarkunsList from './portal-karkuns-list';
 
 const ContainerStyle = {
   display: 'flex',
@@ -19,7 +20,11 @@ export default class CustomInput extends Component {
     disabled: PropTypes.bool,
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
-    predefinedFilterName: PropTypes.string,
+
+    portalId: PropTypes.string,
+    showMsKarkunsList: PropTypes.bool,
+    showOutstationKarkunsList: PropTypes.bool,
+    showPortalKarkunsList: PropTypes.bool,
   };
 
   state = {
@@ -50,18 +55,43 @@ export default class CustomInput extends Component {
   };
 
   render() {
-    const { placeholder, value } = this.props;
+    const {
+      placeholder,
+      value,
+      portalId,
+      showMsKarkunsList,
+      showOutstationKarkunsList,
+      showPortalKarkunsList,
+    } = this.props;
 
-    const containersNode = (
-      <Tabs>
+    const containersNode = [];
+
+    if (showMsKarkunsList) {
+      containersNode.push(
         <Tabs.TabPane tab="MS Karkuns" key="1">
-          <HRKarkunsList handleSelectItem={this.setSelectedValue} />
+          <MSKarkunsList handleSelectItem={this.setSelectedValue} />
         </Tabs.TabPane>
+      );
+    }
+
+    if (showOutstationKarkunsList) {
+      containersNode.push(
         <Tabs.TabPane tab="Outstation Karkuns" key="2">
           <OutstationKarkunsList handleSelectItem={this.setSelectedValue} />
         </Tabs.TabPane>
-      </Tabs>
-    );
+      );
+    }
+
+    if (showPortalKarkunsList) {
+      containersNode.push(
+        <Tabs.TabPane tab="Portal Karkuns" key="3">
+          <PortalKarkunsList
+            portalId={portalId}
+            handleSelectItem={this.setSelectedValue}
+          />
+        </Tabs.TabPane>
+      );
+    }
 
     return (
       <Fragment>
@@ -71,7 +101,7 @@ export default class CustomInput extends Component {
           onClose={this.handleClose}
           visible={this.state.showSelectionForm}
         >
-          {containersNode}
+          <Tabs>{containersNode}</Tabs>
         </Drawer>
         <div style={ContainerStyle}>
           <Input

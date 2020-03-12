@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { get, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
-import { mapUser } from './helpers';
+
+const Users = Meteor.users;
 
 const wrapAsync = Meteor.wrapAsync ? Meteor.wrapAsync : Meteor._wrapAsync;
 function aggregate(pipelines, options) {
@@ -11,7 +12,25 @@ function aggregate(pipelines, options) {
   );
 }
 
-export function getUsers(params) {
+const mapUser = user => ({
+  _id: user._id,
+  username: user.username,
+  email: get(user, 'emails.0.address', null),
+  displayName: user.displayName,
+  karkunId: user.karkunId,
+  locked: user.locked,
+  lastLoggedInAt: user.lastLoggedInAt,
+  lastActiveAt: user.lastActiveAt,
+  permissions: user.permissions || [],
+  instances: user.instances || [],
+});
+
+Users.findOneUser = userId => {
+  const user = Meteor.users.findOne(userId);
+  return mapUser(user);
+};
+
+Users.searchUsers = params => {
   const pipeline = [];
   const {
     showLocked,
@@ -106,4 +125,6 @@ export function getUsers(params) {
     totalResults: get(results[1], ['0', 'total'], 0),
     data: results[0].map(user => mapUser(user)),
   }));
-}
+};
+
+export default Users;

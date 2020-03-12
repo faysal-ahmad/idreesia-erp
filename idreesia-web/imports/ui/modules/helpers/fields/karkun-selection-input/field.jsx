@@ -1,23 +1,14 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import { Form } from "/imports/ui/controls";
-import Input from "./input";
+import { Form } from '/imports/ui/controls';
+import Input from './input';
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
 
-/**
- * fieldName: Name of the property in which the form field value would be saved.
- * fieldLabel: Label to display before the form field.
- * placeholder: Placeholder text to show in the form field.
- * fieldLayout: Layout settings for the form field.
- * initialValue: Initial value for the form field.
- * required: Whether a value is required for this field.
- * requiredMessage: Message to show if the value is not entered.
- */
 export default class Field extends Component {
   static propTypes = {
     fieldName: PropTypes.string,
@@ -25,16 +16,23 @@ export default class Field extends Component {
     placeholder: PropTypes.string,
     fieldLayout: PropTypes.object,
     initialValue: PropTypes.object,
-    predefinedFilterName: PropTypes.string,
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     disabled: PropTypes.bool,
     getFieldDecorator: PropTypes.func,
+
+    portalId: PropTypes.string,
+    showMsKarkunsList: PropTypes.bool,
+    showOutstationKarkunsList: PropTypes.bool,
+    showPortalKarkunsList: PropTypes.bool,
   };
 
   static defaultProps = {
     initialValue: null,
     fieldLayout: formItemLayout,
+    showMsKarkunsList: false,
+    showOutstationKarkunsList: false,
+    showPortalKarkunsList: false,
   };
 
   getField() {
@@ -46,7 +44,10 @@ export default class Field extends Component {
       requiredMessage,
       getFieldDecorator,
       initialValue,
-      predefinedFilterName,
+      portalId,
+      showMsKarkunsList,
+      showOutstationKarkunsList,
+      showPortalKarkunsList,
     } = this.props;
 
     const rules = [
@@ -63,7 +64,10 @@ export default class Field extends Component {
       <Input
         placeholder={placeholder}
         disabled={disabled}
-        predefinedFilterName={predefinedFilterName}
+        portalId={portalId}
+        showMsKarkunsList={showMsKarkunsList}
+        showOutstationKarkunsList={showOutstationKarkunsList}
+        showPortalKarkunsList={showPortalKarkunsList}
       />
     );
   }

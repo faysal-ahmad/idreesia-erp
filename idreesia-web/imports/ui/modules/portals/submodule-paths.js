@@ -43,4 +43,17 @@ export default class SubModulePaths {
   static membersEditFormPath(portalId = ':portalId', memberId = ':memberId') {
     return `${SubModulePaths.membersPath(portalId)}/${memberId}`;
   }
+
+  // *************************************************************************************
+  // Users Routes
+  // *************************************************************************************
+  static usersPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/users`;
+  }
+  static usersNewFormPath(portalId = ':portalId') {
+    return `${SubModulePaths.usersPath(portalId)}/new`;
+  }
+  static usersEditFormPath(portalId = ':portalId', userId = ':userId') {
+    return `${SubModulePaths.usersPath(portalId)}/${userId}`;
+  }
 }

@@ -123,6 +123,9 @@ import OutstationMessageResolvers from './outstation/message/resolvers';
 import PortalSchema from './portals/portal/portal.graphql';
 import PortalResolvers from './portals/portal/resolvers';
 
+import PortalUserSchema from './portals/user/user.graphql';
+import PortalUserResolvers from './portals/user/resolvers';
+
 import PortalKarkunSchema from './portals/karkun/karkun.graphql';
 import PortalKarkunResolvers from './portals/karkun/resolvers';
 
@@ -237,6 +240,7 @@ const typeDefs = [
   OutstationMessageSchema,
 
   PortalSchema,
+  PortalUserSchema,
   PortalKarkunSchema,
   PortalKarkunDutySchema,
   PortalMemberSchema,
@@ -304,6 +308,7 @@ const resolvers = merge(
   OutstationMessageResolvers,
 
   PortalResolvers,
+  PortalUserResolvers,
   PortalKarkunResolvers,
   PortalKarkunDutyResolvers,
   PortalMemberResolvers,

@@ -5,8 +5,13 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Row, message } from '/imports/ui/controls';
 import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
+import { portalPermissions } from '/imports/ui/modules/helpers/controls/access-management/portal-permissions';
 
-import { USER_BY_ID, SET_PERMISSIONS } from '../gql';
+import {
+  PORTAL_USER_BY_ID,
+  PAGED_PORTAL_USERS,
+  SET_PORTAL_USER_PERMISSIONS,
+} from '../gql';
 
 class Permissions extends Component {
   static propTypes = {
@@ -14,10 +19,11 @@ class Permissions extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    loading: PropTypes.bool,
+    portalId: PropTypes.string,
     userId: PropTypes.string,
-    userById: PropTypes.object,
-    setPermissions: PropTypes.func,
+    loading: PropTypes.bool,
+    portalUserById: PropTypes.object,
+    setPortalUserPermissions: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -27,12 +33,13 @@ class Permissions extends Component {
 
   handleSave = e => {
     e.preventDefault();
-    const { history, userById, setPermissions } = this.props;
+    const { history, portalId, userId, setPortalUserPermissions } = this.props;
     const permissions = this.permissionSelection.getSelectedPermissions();
 
-    setPermissions({
+    setPortalUserPermissions({
       variables: {
-        userId: userById._id,
+        portalId,
+        userId,
         permissions,
       },
     })
@@ -45,16 +52,17 @@ class Permissions extends Component {
   };
 
   render() {
-    const { userById, loading } = this.props;
+    const { portalUserById, loading } = this.props;
     if (loading) return null;
 
     return (
       <Fragment>
         <PermissionSelection
-          securityEntity={userById}
           ref={ps => {
             this.permissionSelection = ps;
           }}
+          permissions={portalPermissions}
+          securityEntity={portalUserById}
         />
         <br />
         <br />
@@ -83,14 +91,18 @@ class Permissions extends Component {
 }
 
 export default flowRight(
-  graphql(SET_PERMISSIONS, {
-    name: 'setPermissions',
-    options: {
-      refetchQueries: ['pagedUsers'],
-    },
+  graphql(SET_PORTAL_USER_PERMISSIONS, {
+    name: 'setPortalUserPermissions',
+    options: ({ portalId }) => ({
+      refetchQueries: [
+        { query: PAGED_PORTAL_USERS, variables: { portalId, filter: {} } },
+      ],
+    }),
   }),
-  graphql(USER_BY_ID, {
+  graphql(PORTAL_USER_BY_ID, {
     props: ({ data }) => ({ ...data }),
-    options: ({ userId }) => ({ variables: { _id: userId } }),
+    options: ({ portalId, userId }) => ({
+      variables: { portalId, _id: userId },
+    }),
   })
 )(Permissions);

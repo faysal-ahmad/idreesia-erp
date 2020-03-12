@@ -35,6 +35,9 @@ class Sidebar extends Component {
     } else if (key.startsWith('amaanat-logs')) {
       setActiveSubModuleName(SubModuleNames.amaanatLogs);
       history.push(paths.amaanatLogsPath(portalId));
+    } else if (key.startsWith('user-accounts')) {
+      setActiveSubModuleName(SubModuleNames.users);
+      history.push(paths.usersPath(portalId));
     }
   };
 
@@ -51,6 +54,11 @@ class Sidebar extends Component {
     <Menu.Item parent-key={portalId} key={`amaanat-logs-${portalId}`}>
       Amaanat Logs
     </Menu.Item>,
+    <Menu.SubMenu key={`administration-${portalId}`} title="Administration">
+      <Menu.Item parent-key={portalId} key={`user-accounts-${portalId}`}>
+        User Accounts
+      </Menu.Item>
+    </Menu.SubMenu>,
   ];
 
   render() {

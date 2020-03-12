@@ -3,6 +3,7 @@ const SubModuleNames = {
   members: 'Members',
   attendanceSheets: 'Attendance Sheets',
   amaanatLogs: 'Amaanat Logs',
+  users: 'Users',
 };
 
 export default SubModuleNames;

@@ -1,10 +1,8 @@
 import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
+import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-
-import { getUsers } from './queries';
-import { findOneUser, mapUser } from './helpers';
 
 export default {
   UserType: {
@@ -28,7 +26,7 @@ export default {
         };
       }
 
-      return getUsers(filter);
+      return Users.searchUsers(filter);
     },
 
     userById(obj, { _id }, { user }) {
@@ -43,22 +41,22 @@ export default {
         return null;
       }
 
-      const _user = findOneUser(_id);
-      if (_user.username !== 'erp-admin') return _user;
+      const _user = Users.findOneUser(_id);
+      if (_user.username === 'erp-admin') {
+        _user.permissions = values(PermissionConstants);
+      }
 
-      const adminUser = mapUser(_user);
-      adminUser.permissions = values(PermissionConstants);
-      return adminUser;
+      return _user;
     },
 
     currentUser(obj, {}, { user }) {
       if (!user) return null;
-      const _user = findOneUser(user._id);
-      if (_user.username !== 'erp-admin') return _user;
+      const _user = Users.findOneUser(user._id);
+      if (_user.username === 'erp-admin') {
+        _user.permissions = values(PermissionConstants);
+      }
 
-      const adminUser = mapUser(_user);
-      adminUser.permissions = values(PermissionConstants);
-      return adminUser;
+      return _user;
     },
 
     userNames(obj, { ids }) {
@@ -67,7 +65,7 @@ export default {
 
       const idsToSearch = compact(ids);
       idsToSearch.forEach(_id => {
-        const user = Meteor.users.findOne(_id);
+        const user = Users.findOne(_id);
         if (user.karkunId) {
           const karkun = Karkuns.findOne(user.karkunId);
           names.push(karkun.name);
@@ -104,7 +102,7 @@ export default {
       }
 
       if (karkunId) {
-        const existingUser = Meteor.users.findOne({ karkunId });
+        const existingUser = Users.findOne({ karkunId });
         if (existingUser) {
           throw new Error(`This karkun already has a user account.`);
         }
@@ -117,7 +115,7 @@ export default {
           password,
         });
 
-        Meteor.users.update(newUserId, {
+        Users.update(newUserId, {
           $set: {
             email,
             displayName,
@@ -129,7 +127,7 @@ export default {
           email,
         });
 
-        Meteor.users.update(newUserId, {
+        Users.update(newUserId, {
           $set: {
             displayName,
             karkunId,
@@ -137,7 +135,7 @@ export default {
         });
       }
 
-      return findOneUser(newUserId);
+      return Users.findOneUser(newUserId);
     },
 
     updateUser(
@@ -160,7 +158,7 @@ export default {
       }
 
       if (email) {
-        Meteor.users.update(userId, {
+        Users.update(userId, {
           $set: {
             'emails.0.address': email,
             displayName,
@@ -169,7 +167,7 @@ export default {
           },
         });
       } else {
-        Meteor.users.update(userId, {
+        Users.update(userId, {
           $unset: {
             emails: '',
           },
@@ -181,7 +179,7 @@ export default {
         });
       }
 
-      return findOneUser(userId);
+      return Users.findOneUser(userId);
     },
 
     setPermissions(obj, { userId, permissions }, { user }) {
@@ -195,8 +193,8 @@ export default {
         );
       }
 
-      Meteor.users.update(userId, { $set: { permissions } });
-      return findOneUser(userId);
+      Users.update(userId, { $set: { permissions } });
+      return Users.findOneUser(userId);
     },
 
     setInstanceAccess(obj, { userId, instances }, { user }) {
@@ -210,13 +208,13 @@ export default {
         );
       }
 
-      Meteor.users.update(userId, { $set: { instances } });
-      return findOneUser(userId);
+      Users.update(userId, { $set: { instances } });
+      return Users.findOneUser(userId);
     },
 
     updateLoginTime(obj, {}, { user }) {
       if (user) {
-        Meteor.users.update(user._id, {
+        Users.update(user._id, {
           $set: {
             lastLoggedInAt: new Date(),
           },
@@ -228,7 +226,7 @@ export default {
 
     updateLastActiveTime(obj, {}, { user }) {
       if (user) {
-        Meteor.users.update(user._id, {
+        Users.update(user._id, {
           $set: {
             lastActiveAt: new Date(),
           },

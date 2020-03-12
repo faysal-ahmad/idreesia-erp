@@ -80,6 +80,8 @@ class GeneralInfo extends Component {
       <KarkunSelectionInputField
         fieldName="karkun"
         fieldLabel="Karkun Name"
+        showMsKarkunsList
+        showOutstationKarkunsList
         getFieldDecorator={getFieldDecorator}
       />
     );

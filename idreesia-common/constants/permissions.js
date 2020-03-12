@@ -90,6 +90,9 @@ const Permissions = {
   // ****************************************************************************************
   PORTALS_DELETE_DATA: 'mehfil-portals-delete-data',
 
+  PORTALS_VIEW_USERS_AND_GROUPS: 'mehfil-portals-view-users-and-groups',
+  PORTALS_MANAGE_USERS_AND_GROUPS: 'mehfil-portals-manage-users-and-groups',
+
   PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',
   PORTALS_MANAGE_KARKUNS: 'mehfil-portals-manage-karkuns',
 

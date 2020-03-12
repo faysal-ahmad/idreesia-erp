@@ -3,11 +3,16 @@ import PropTypes from 'prop-types';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import { Tree } from '/imports/ui/controls';
-import { permissionsData } from './permission-data';
+import { allModulePermissions } from './all-module-permissions';
 
 export default class PermissionSelection extends Component {
   static propTypes = {
+    permissions: PropTypes.array,
     securityEntity: PropTypes.object,
+  };
+
+  static defaultProps = {
+    permissions: allModulePermissions,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -59,6 +64,7 @@ export default class PermissionSelection extends Component {
   };
 
   render() {
+    const { permissions } = this.props;
     return (
       <Tree
         checkable
@@ -68,7 +74,7 @@ export default class PermissionSelection extends Component {
         onCheck={this.onCheck}
         checkedKeys={this.state.checkedKeys}
       >
-        {this.renderTreeNodes(permissionsData)}
+        {this.renderTreeNodes(permissions)}
       </Tree>
     );
   }

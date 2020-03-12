@@ -160,6 +160,7 @@ const List = ({ history, location }) => {
   return (
     <VisitorsList
       ref={visitorsList}
+      showSelectionColumn
       showCnicColumn
       showPhoneNumbersColumn
       showCityCountryColumn

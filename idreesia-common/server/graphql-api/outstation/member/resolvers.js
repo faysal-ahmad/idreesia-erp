@@ -70,18 +70,21 @@ export default {
 
       if (!existingVisitor) {
         const city = Cities.findOne(cityId);
-        Visitors.createVisitor({
-          name,
-          parentName,
-          cnicNumber,
-          contactNumber1,
-          city: city.name,
-          country: city.country,
-          ehadDate,
-          birthDate,
-          referenceName,
-          dataSource: DataSource.OUTSTATION,
-        });
+        Visitors.createVisitor(
+          {
+            name,
+            parentName,
+            cnicNumber,
+            contactNumber1,
+            city: city.name,
+            country: city.country,
+            ehadDate,
+            birthDate,
+            referenceName,
+            dataSource: DataSource.OUTSTATION,
+          },
+          user
+        );
 
         return 'New member created.';
       }
@@ -89,25 +92,7 @@ export default {
       return 'Member already exists. Ignored.';
     },
 
-    createOutstationMember(
-      obj,
-      {
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageData,
-      },
-      { user }
-    ) {
+    createOutstationMember(obj, values, { user }) {
       if (
         user &&
         !hasOnePermission(user._id, [
@@ -121,44 +106,14 @@ export default {
 
       return Visitors.createVisitor(
         {
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-          imageData,
+          ...values,
           dataSource: DataSource.OUTSTATION,
         },
         user
       );
     },
 
-    updateOutstationMember(
-      obj,
-      {
-        _id,
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-      },
-      { user }
-    ) {
+    updateOutstationMember(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
@@ -169,24 +124,7 @@ export default {
         );
       }
 
-      return Visitors.updateVisitor(
-        {
-          _id,
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-        },
-        user
-      );
+      return Visitors.updateVisitor(values, user);
     },
 
     deleteOutstationMember(obj, { _id }, { user }) {
@@ -203,7 +141,7 @@ export default {
       return Visitors.remove(_id);
     },
 
-    setOutstationMemberImage(obj, { _id, imageId }, { user }) {
+    setOutstationMemberImage(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
@@ -214,16 +152,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Visitors.findOne(_id);
+      return Visitors.updateVisitor(values, user);
     },
   },
 };

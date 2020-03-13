@@ -1,7 +1,6 @@
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
 import { DataSource } from 'meteor/idreesia-common/constants/security';
 
 export default {
@@ -66,25 +65,7 @@ export default {
   },
 
   Mutation: {
-    createTelephoneRoomVisitor(
-      obj,
-      {
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageData,
-      },
-      { user }
-    ) {
+    createTelephoneRoomVisitor(obj, values, { user }) {
       if (
         user &&
         !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
@@ -94,64 +75,16 @@ export default {
         );
       }
 
-      if (cnicNumber) Visitors.checkCnicNotInUse(cnicNumber);
-      if (contactNumber1) Visitors.checkContactNotInUse(contactNumber1);
-      if (contactNumber2) Visitors.checkContactNotInUse(contactNumber2);
-
-      let imageId = null;
-      if (imageData) {
-        imageId = createAttachment(
-          {
-            data: imageData,
-          },
-          { user }
-        );
-      }
-
-      const date = new Date();
-      const visitorId = Visitors.insert({
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageId,
-        dataSource: DataSource.TELEPHONE_ROOM,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
-
-      return Visitors.findOne(visitorId);
+      return Visitors.createVisitor(
+        {
+          ...values,
+          dataSource: DataSource.TELEPHONE_ROOM,
+        },
+        user
+      );
     },
 
-    updateTelephoneRoomVisitor(
-      obj,
-      {
-        _id,
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-      },
-      { user }
-    ) {
+    updateTelephoneRoomVisitor(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
       ) {
@@ -160,31 +93,7 @@ export default {
         );
       }
 
-      if (cnicNumber) Visitors.checkCnicNotInUse(cnicNumber, _id);
-      if (contactNumber1) Visitors.checkContactNotInUse(contactNumber1, _id);
-      if (contactNumber2) Visitors.checkContactNotInUse(contactNumber2, _id);
-
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Visitors.findOne(_id);
+      return Visitors.updateVisitor(values, user);
     },
 
     deleteTelephoneRoomVisitor(obj, { _id }, { user }) {
@@ -197,7 +106,7 @@ export default {
       return Visitors.remove(_id);
     },
 
-    setTelephoneRoomVisitorImage(obj, { _id, imageId }, { user }) {
+    setTelephoneRoomVisitorImage(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
       ) {
@@ -206,16 +115,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Visitors.findOne(_id);
+      return Visitors.updateVisitor(values, user);
     },
   },
 };

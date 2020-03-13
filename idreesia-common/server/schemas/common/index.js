@@ -1,5 +1,9 @@
-export { default as approvable } from "./approvable";
-export { default as identifiable } from "./identifiable";
-export { default as timestamps } from "./timestamps";
-export { default as Attachment } from "./attachment";
-export { default as Configuration } from "./configuration";
+export { default as approvable } from './approvable';
+export { default as auditable } from './auditable';
+export { default as deletable } from './deletable';
+export { default as identifiable } from './identifiable';
+export { default as timestamps } from './timestamps';
+
+export { default as Attachment } from './attachment';
+export { default as AuditLog } from './audit-log';
+export { default as Configuration } from './configuration';

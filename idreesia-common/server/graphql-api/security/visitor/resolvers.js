@@ -74,25 +74,7 @@ export default {
   },
 
   Mutation: {
-    createSecurityVisitor(
-      obj,
-      {
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageData,
-      },
-      { user }
-    ) {
+    createSecurityVisitor(obj, values, { user }) {
       if (
         user &&
         !hasOnePermission(user._id, [
@@ -106,44 +88,14 @@ export default {
 
       return Visitors.createVisitor(
         {
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-          imageData,
+          ...values,
           dataSource: DataSource.SECURITY,
         },
         user
       );
     },
 
-    updateSecurityVisitor(
-      obj,
-      {
-        _id,
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-      },
-      { user }
-    ) {
+    updateSecurityVisitor(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -154,24 +106,7 @@ export default {
         );
       }
 
-      return Visitors.updateVisitor(
-        {
-          _id,
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-        },
-        user
-      );
+      return Visitors.updateVisitor(values, user);
     },
 
     deleteSecurityVisitor(obj, { _id }, { user }) {
@@ -186,7 +121,7 @@ export default {
       return Visitors.remove(_id);
     },
 
-    setSecurityVisitorImage(obj, { _id, imageId }, { user }) {
+    setSecurityVisitorImage(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -197,23 +132,10 @@ export default {
         );
       }
 
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Visitors.findOne(_id);
+      return Visitors.updateVisitor(values, user);
     },
 
-    updateSecurityVisitorNotes(
-      obj,
-      { _id, criminalRecord, otherNotes },
-      { user }
-    ) {
+    updateSecurityVisitorNotes(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.SECURITY_MANAGE_VISITORS,
@@ -224,17 +146,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
-          criminalRecord,
-          otherNotes,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Visitors.findOne(_id);
+      return Visitors.updateVisitor(values, user);
     },
 
     importSecurityVisitorsCsvData(obj, { csvData }, { user }) {

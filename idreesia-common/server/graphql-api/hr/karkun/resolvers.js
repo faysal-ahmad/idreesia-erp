@@ -1,6 +1,5 @@
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import {
@@ -97,7 +96,7 @@ export default {
       return Karkuns.updateKarkun(values, user);
     },
 
-    setHrKarkunProfileImage(obj, { _id, imageId }, { user }) {
+    setHrKarkunProfileImage(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
       ) {
@@ -106,23 +105,7 @@ export default {
         );
       }
 
-      // If the user already has another image attached, then remove that attachment
-      // since it will now become orphaned.
-      const existingKarkun = Karkuns.findOne(_id);
-      if (existingKarkun.imageId) {
-        Attachments.remove(existingKarkun.imageId);
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
 
     addHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
@@ -134,18 +117,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $addToSet: {
-          attachmentIds: attachmentId,
-        },
-        $set: {
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.addAttachment({ _id, attachmentId }, user);
     },
 
     removeHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
@@ -157,19 +129,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $pull: {
-          attachmentIds: attachmentId,
-        },
-        $set: {
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      Attachments.remove(attachmentId);
-      return Karkuns.findOne(_id);
+      return Karkuns.removeAttachment({ _id, attachmentId }, user);
     },
   },
 };

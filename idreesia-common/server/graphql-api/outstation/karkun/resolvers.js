@@ -1,7 +1,6 @@
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import {
@@ -162,11 +161,7 @@ export default {
       return 0;
     },
 
-    setOutstationKarkunWazaifAndRaabta(
-      obj,
-      { _id, lastTarteebDate, mehfilRaabta, msRaabta },
-      { user }
-    ) {
+    setOutstationKarkunWazaifAndRaabta(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
@@ -177,21 +172,10 @@ export default {
         );
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          lastTarteebDate,
-          mehfilRaabta,
-          msRaabta,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
 
-    setOutstationKarkunProfileImage(obj, { _id, imageId }, { user }) {
+    setOutstationKarkunProfileImage(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
@@ -202,23 +186,7 @@ export default {
         );
       }
 
-      // If the user already has another image attached, then remove that attachment
-      // since it will now become orphaned.
-      const existingKarkun = Karkuns.findOne(_id);
-      if (existingKarkun.imageId) {
-        Attachments.remove(existingKarkun.imageId);
-      }
-
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(values, user);
     },
   },
 };

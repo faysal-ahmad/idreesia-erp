@@ -92,22 +92,21 @@ export default {
         });
       }
 
-      const karkunId = Karkuns.insert({
-        name: member.name,
-        parentName: member.parentName,
-        cnicNumber: member.cnicNumber,
-        contactNumber1: member.contactNumber1,
-        contactNumber2: member.contactNumber2,
-        cityId,
-        ehadDate: member.ehadDate,
-        birthDate: member.birthDate,
-        referenceName: member.referenceName,
-        imageId: updateImageId,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
+      const karkunId = Karkuns.createKarkun(
+        {
+          name: member.name,
+          parentName: member.parentName,
+          cnicNumber: member.cnicNumber,
+          contactNumber1: member.contactNumber1,
+          contactNumber2: member.contactNumber2,
+          cityId,
+          ehadDate: member.ehadDate,
+          birthDate: member.birthDate,
+          referenceName: member.referenceName,
+          imageId: updateImageId,
+        },
+        user
+      );
 
       Visitors.update(memberId, {
         $set: {
@@ -160,18 +159,10 @@ export default {
         );
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          lastTarteebDate,
-          mehfilRaabta,
-          msRaabta,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun(
+        { _id, lastTarteebDate, mehfilRaabta, msRaabta },
+        user
+      );
     },
 
     setPortalKarkunProfileImage(obj, { portalId, _id, imageId }, { user }) {
@@ -198,16 +189,7 @@ export default {
         Attachments.remove(existingKarkun.imageId);
       }
 
-      const date = new Date();
-      Karkuns.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Karkuns.findOne(_id);
+      return Karkuns.updateKarkun({ _id, imageId }, user);
     },
   },
 };

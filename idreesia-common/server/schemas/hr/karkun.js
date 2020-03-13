@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
-import { identifiable, timestamps } from '../common';
+import { auditable, deletable, identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   // Points to login account if one exists for this karkun
@@ -118,5 +118,7 @@ export default new SimpleSchema({
     optional: true,
   },
 })
+  .extend(auditable)
+  .extend(deletable)
   .extend(identifiable)
   .extend(timestamps);

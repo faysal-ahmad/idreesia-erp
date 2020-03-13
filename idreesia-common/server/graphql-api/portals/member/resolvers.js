@@ -174,16 +174,7 @@ export default {
         );
       }
 
-      const date = new Date();
-      Visitors.update(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
-        },
-      });
-
-      return Visitors.findOne(_id);
+      return Visitors.updateVisitor({ _id, imageId }, user);
     },
   },
 };

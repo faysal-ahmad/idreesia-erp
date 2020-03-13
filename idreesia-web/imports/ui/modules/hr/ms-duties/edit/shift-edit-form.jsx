@@ -39,7 +39,7 @@ class EditForm extends Component {
 
   render() {
     const { dutyShift } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -72,7 +72,10 @@ class EditForm extends Component {
             initialValue={dutyShift.attendanceSheet}
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
       </Fragment>
     );

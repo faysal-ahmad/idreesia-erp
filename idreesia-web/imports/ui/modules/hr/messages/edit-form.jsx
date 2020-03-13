@@ -38,7 +38,7 @@ const EditForm = ({ form, history, location }) => {
 
   if (loading || allMSDutiesLoading) return null;
 
-  const { getFieldDecorator, validateFields } = form;
+  const { getFieldDecorator, validateFields, isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -108,6 +108,7 @@ const EditForm = ({ form, history, location }) => {
           extraText="Preview Karkuns"
           handleCancel={handleCancel}
           handleExtra={handlePeviewKarkuns}
+          isFieldsTouched={isFieldsTouched}
         />
       </Form>
       <Drawer

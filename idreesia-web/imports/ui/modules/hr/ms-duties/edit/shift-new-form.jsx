@@ -33,7 +33,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -59,7 +59,10 @@ class NewForm extends Component {
           fieldLabel="Attendance Sheet"
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.props.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.props.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

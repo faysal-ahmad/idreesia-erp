@@ -16,6 +16,7 @@ const FormButtonsSaveCancelExtra = ({
   handleExtra,
   handleCancel,
   itemLayout,
+  isFieldsTouched,
 }) => (
   <Form.Item {...itemLayout}>
     <Row type="flex" justify="space-between">
@@ -34,7 +35,13 @@ const FormButtonsSaveCancelExtra = ({
           Cancel
         </Button>
         &nbsp;
-        <Button size="large" type="primary" icon="save" htmlType="submit">
+        <Button
+          size="large"
+          type="primary"
+          icon="save"
+          htmlType="submit"
+          disabled={isFieldsTouched && !isFieldsTouched()}
+        >
           Save
         </Button>
       </Col>
@@ -47,6 +54,7 @@ FormButtonsSaveCancelExtra.propTypes = {
   handleExtra: PropTypes.func,
   handleCancel: PropTypes.func,
   itemLayout: PropTypes.object,
+  isFieldsTouched: PropTypes.func,
 };
 
 FormButtonsSaveCancelExtra.defaultProps = {

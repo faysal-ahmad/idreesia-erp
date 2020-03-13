@@ -60,7 +60,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, portalUserById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -95,7 +95,10 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

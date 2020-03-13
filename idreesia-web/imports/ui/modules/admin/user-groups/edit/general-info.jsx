@@ -53,7 +53,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, userGroupById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -72,7 +72,10 @@ class GeneralInfo extends Component {
           initialValue={userGroupById.description}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

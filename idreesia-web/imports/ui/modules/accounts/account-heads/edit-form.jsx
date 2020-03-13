@@ -87,7 +87,7 @@ class EditForm extends Component {
   render() {
     const { accountHeadByIdLoading, accountHeadById } = this.props;
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, isFieldsTouched },
     } = this.props;
     if (accountHeadByIdLoading) return null;
 
@@ -121,7 +121,10 @@ class EditForm extends Component {
           initialValue={accountHeadById.startingBalance}
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

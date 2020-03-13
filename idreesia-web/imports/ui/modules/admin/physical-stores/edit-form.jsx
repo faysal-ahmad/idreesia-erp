@@ -60,7 +60,7 @@ class EditForm extends Component {
   render() {
     const { loading, physicalStoreById } = this.props;
     if (loading) return null;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -79,7 +79,10 @@ class EditForm extends Component {
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

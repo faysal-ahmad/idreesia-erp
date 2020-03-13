@@ -56,7 +56,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     const { allCompanies } = this.props;
 
     return (
@@ -76,7 +76,10 @@ class NewForm extends Component {
           fieldLabel="Starting Month"
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

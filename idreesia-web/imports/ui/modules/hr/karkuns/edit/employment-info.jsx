@@ -68,7 +68,7 @@ class EmploymentInfo extends Component {
       hrKarkunById,
       allJobs,
     } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (formDataLoading || allJobsLoading) return null;
 
     return (
@@ -113,7 +113,10 @@ class EmploymentInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

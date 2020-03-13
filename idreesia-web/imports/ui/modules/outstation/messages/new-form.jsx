@@ -50,7 +50,7 @@ const NewForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { getFieldDecorator, validateFields } = form;
+  const { getFieldDecorator, validateFields, isFieldsTouched } = form;
   const cityMehfilCascaderData = getCityMehfilCascaderData(
     allCities,
     allCityMehfils
@@ -147,6 +147,7 @@ const NewForm = ({ form, history, location }) => {
           extraText="Preview Karkuns"
           handleCancel={handleCancel}
           handleExtra={handlePeviewKarkuns}
+          isFieldsTouched={isFieldsTouched}
         />
       </Form>
       <Drawer

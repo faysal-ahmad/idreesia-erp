@@ -59,7 +59,7 @@ class Notes extends Component {
 
   render() {
     const { loading, securityVisitorById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -80,7 +80,10 @@ class Notes extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

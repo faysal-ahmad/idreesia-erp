@@ -54,7 +54,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, cityById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -82,7 +82,10 @@ class GeneralInfo extends Component {
             requiredMessage="Please input a name for the country."
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
         <RecordInfo record={cityById} />
       </Fragment>

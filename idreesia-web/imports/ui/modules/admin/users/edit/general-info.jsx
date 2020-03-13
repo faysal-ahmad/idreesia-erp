@@ -65,7 +65,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, userById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     const karkunField = userById.karkunId ? (
@@ -126,7 +126,10 @@ class GeneralInfo extends Component {
 
         {karkunField}
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

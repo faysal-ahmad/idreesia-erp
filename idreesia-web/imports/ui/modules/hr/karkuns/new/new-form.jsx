@@ -117,7 +117,7 @@ class NewForm extends Component {
     const {
       allSharedResidences,
       allSharedResidencesLoading,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, isFieldsTouched },
     } = this.props;
     if (allSharedResidencesLoading) return null;
 
@@ -250,7 +250,10 @@ class NewForm extends Component {
           required={false}
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

@@ -19,7 +19,7 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
     });
   };
 
-  const { getFieldDecorator } = form;
+  const { getFieldDecorator, isFieldsTouched } = form;
 
   return (
     <Fragment>
@@ -51,7 +51,10 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
       <RecordInfo record={karkun} />
     </Fragment>

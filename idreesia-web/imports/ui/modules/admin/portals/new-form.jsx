@@ -51,7 +51,7 @@ class NewForm extends Component {
 
   render() {
     const { allCities, allCitiesLoading } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (allCitiesLoading) return null;
 
     return (
@@ -72,7 +72,10 @@ class NewForm extends Component {
           fieldLabel="Cities"
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

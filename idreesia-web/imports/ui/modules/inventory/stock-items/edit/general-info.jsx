@@ -72,7 +72,7 @@ class EditForm extends Component {
       stockItemById,
       itemCategoriesByPhysicalStoreId,
     } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading || itemCategoriesLoading) return null;
 
     return (
@@ -128,7 +128,10 @@ class EditForm extends Component {
             initialValue={stockItemById.minStockLevel}
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
         <RecordInfo record={stockItemById} />
       </Fragment>

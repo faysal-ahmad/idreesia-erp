@@ -30,7 +30,7 @@ const EditForm = ({ form, match, history }) => {
 
   if (loading) return null;
   const { paymentById } = data;
-  const { getFieldDecorator } = form;
+  const { getFieldDecorator, isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -164,7 +164,10 @@ const EditForm = ({ form, match, history }) => {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
       <RecordInfo record={paymentById} />
     </Fragment>

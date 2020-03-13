@@ -57,7 +57,7 @@ class EditForm extends Component {
   render() {
     const { loading, portalById, allCities, allCitiesLoading } = this.props;
     if (loading || allCitiesLoading) return null;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -79,7 +79,10 @@ class EditForm extends Component {
           initialValue={portalById.cityIds}
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

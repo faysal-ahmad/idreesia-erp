@@ -135,7 +135,7 @@ class GeneralInfo extends Component {
     } = this.props;
     if (formDataLoading || portalCitiesLoading) return null;
 
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     const visitorCity = find(
       portalCities,
       city => city.name === portalMemberById.city
@@ -237,7 +237,10 @@ class GeneralInfo extends Component {
             getFieldDecorator={getFieldDecorator}
           />
 
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
         <RecordInfo record={portalMemberById} />
       </Fragment>

@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { flowRight } from "lodash";
-import { graphql } from "react-apollo";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import { graphql } from 'react-apollo';
+import moment from 'moment';
 
-import { Formats } from "meteor/idreesia-common/constants";
-import { Form, message } from "/imports/ui/controls";
-import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
+import { Formats } from 'meteor/idreesia-common/constants';
+import { Form, message } from '/imports/ui/controls';
+import { WithCompanyId } from '/imports/ui/modules/accounts/common/composers';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
-} from "/imports/ui/modules/helpers/fields";
+} from '/imports/ui/modules/helpers/fields';
 
 class VoucherInfo extends Component {
   static propTypes = {
@@ -57,7 +57,7 @@ class VoucherInfo extends Component {
 
   render() {
     const { form, formDataLoading, voucherById } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, isFieldsTouched } = form;
     if (formDataLoading) return null;
 
     return (
@@ -65,9 +65,7 @@ class VoucherInfo extends Component {
         <InputTextField
           fieldName="voucherNumber"
           fieldLabel="Voucher Number"
-          initialValue={`${voucherById.voucherType} - ${
-            voucherById.voucherNumber
-          }`}
+          initialValue={`${voucherById.voucherType} - ${voucherById.voucherNumber}`}
           readOnly
           getFieldDecorator={getFieldDecorator}
         />
@@ -88,7 +86,10 @@ class VoucherInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }
@@ -124,9 +125,9 @@ export default flowRight(
   Form.create(),
   WithCompanyId(),
   graphql(formMutation, {
-    name: "updateVoucher",
+    name: 'updateVoucher',
     options: {
-      refetchQueries: ["pagedVouchers"],
+      refetchQueries: ['pagedVouchers'],
     },
   }),
   graphql(formQuery, {

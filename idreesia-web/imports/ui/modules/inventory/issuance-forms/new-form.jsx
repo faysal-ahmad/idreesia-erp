@@ -115,7 +115,7 @@ class NewForm extends Component {
     const { locationsLoading, locationsByPhysicalStoreId } = this.props;
     if (locationsLoading) return null;
 
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
@@ -177,7 +177,10 @@ class NewForm extends Component {
           {this.getItemsField()}
         </Form.Item>
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

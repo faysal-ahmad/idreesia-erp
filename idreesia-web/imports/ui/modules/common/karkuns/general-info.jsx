@@ -56,7 +56,7 @@ const GeneralInfo = ({
     });
   };
 
-  const { getFieldDecorator } = form;
+  const { getFieldDecorator, isFieldsTouched } = form;
   return (
     <Fragment>
       <Form layout="horizontal" onSubmit={_handleSubmit}>
@@ -216,7 +216,10 @@ const GeneralInfo = ({
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
       <RecordInfo record={karkun} />
     </Fragment>

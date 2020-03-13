@@ -78,7 +78,7 @@ const NewForm = ({ form, history }) => {
     );
   };
 
-  const { getFieldDecorator } = form;
+  const { getFieldDecorator, isFieldsTouched } = form;
 
   return (
     <Form layout="horizontal" onSubmit={handleSubmit}>
@@ -152,7 +152,10 @@ const NewForm = ({ form, history }) => {
         getFieldDecorator={getFieldDecorator}
       />
 
-      <FormButtonsSaveCancel handleCancel={handleCancel} />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
     </Form>
   );
 };

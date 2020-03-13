@@ -87,7 +87,7 @@ class EditForm extends Component {
     const { formDataLoading, stockAdjustmentById } = this.props;
     if (formDataLoading) return null;
 
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -153,7 +153,10 @@ class EditForm extends Component {
             getFieldDecorator={getFieldDecorator}
           />
 
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
         <RecordInfo record={stockAdjustmentById} />
       </Fragment>

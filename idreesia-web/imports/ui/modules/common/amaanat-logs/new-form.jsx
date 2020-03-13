@@ -31,7 +31,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     const { cities, cityMehfils } = this.props;
     const cityMehfilCascaderData = getCityMehfilCascaderData(
       cities,
@@ -108,7 +108,10 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.props.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.props.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

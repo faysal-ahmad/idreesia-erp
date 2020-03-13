@@ -26,7 +26,7 @@ class EditForm extends Component {
 
   render() {
     const { form, onCancel } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -36,7 +36,10 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={onCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={onCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

@@ -93,7 +93,7 @@ class EditForm extends Component {
       allDutyShifts,
       distinctStayAllowedBy,
       distinctTeamNames,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, isFieldsTouched },
     } = this.props;
 
     if (
@@ -160,7 +160,10 @@ class EditForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSubmit text="Update Stay" />
+        <FormButtonsSubmit
+          text="Update Stay"
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

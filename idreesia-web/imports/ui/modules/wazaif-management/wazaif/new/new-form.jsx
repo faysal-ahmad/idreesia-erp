@@ -52,7 +52,7 @@ class NewForm extends Component {
 
   render() {
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, isFieldsTouched },
     } = this.props;
 
     return (
@@ -78,7 +78,10 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

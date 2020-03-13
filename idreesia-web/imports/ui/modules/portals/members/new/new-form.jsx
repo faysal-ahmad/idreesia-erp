@@ -128,7 +128,7 @@ class NewForm extends Component {
     } = this.props;
     if (portalLoading || portalCitiesLoading) return null;
 
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -213,7 +213,10 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

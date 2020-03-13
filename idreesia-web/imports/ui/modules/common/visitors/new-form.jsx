@@ -53,7 +53,7 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
   };
 
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
-  const { getFieldDecorator } = form;
+  const { getFieldDecorator, isFieldsTouched } = form;
 
   return (
     <Form layout="horizontal" onSubmit={_handleSubmit}>
@@ -142,7 +142,10 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         getFieldDecorator={getFieldDecorator}
       />
 
-      <FormButtonsSaveCancel handleCancel={handleCancel} />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
     </Form>
   );
 };

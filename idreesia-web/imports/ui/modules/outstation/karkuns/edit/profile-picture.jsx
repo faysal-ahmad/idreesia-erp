@@ -5,10 +5,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Row, Col, message } from '/imports/ui/controls';
-import {
-  TakePicture,
-  UploadAttachment,
-} from '/imports/ui/modules/helpers/controls';
+import { TakePicture } from '/imports/ui/modules/helpers/controls';
 
 import {
   OUTSTATION_KARKUN_BY_ID,
@@ -51,7 +48,6 @@ class ProfilePicture extends Component {
         <br />
         <Row>
           <Col span={16}>
-            <UploadAttachment onUploadFinish={this.updateImageId} />
             <TakePicture onPictureTaken={this.updateImageId} />
           </Col>
         </Row>

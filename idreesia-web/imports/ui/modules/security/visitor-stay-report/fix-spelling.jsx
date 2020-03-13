@@ -28,7 +28,7 @@ class FixSpelling extends Component {
 
   render() {
     const { existingSpelling, form, onCancel } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -47,7 +47,10 @@ class FixSpelling extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={onCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={onCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

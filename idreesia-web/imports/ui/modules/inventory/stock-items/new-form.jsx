@@ -84,7 +84,7 @@ class NewForm extends Component {
       itemCategoriesLoading,
       itemCategoriesByPhysicalStoreId,
     } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (itemCategoriesLoading) return null;
 
     return (
@@ -140,7 +140,10 @@ class NewForm extends Component {
           fieldLabel="Min Stock Level"
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

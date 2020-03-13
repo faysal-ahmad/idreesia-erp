@@ -58,7 +58,7 @@ class GeneralInfo extends Component {
 
   render() {
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, isFieldsTouched },
       formDataLoading,
       wazeefaById,
     } = this.props;
@@ -93,7 +93,10 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

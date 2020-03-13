@@ -53,7 +53,7 @@ class EditForm extends Component {
 
   render() {
     const { cityMehfil } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -102,7 +102,10 @@ class EditForm extends Component {
             initialValue={cityMehfil.otherMehfilDetails}
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.props.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.props.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
       </Fragment>
     );

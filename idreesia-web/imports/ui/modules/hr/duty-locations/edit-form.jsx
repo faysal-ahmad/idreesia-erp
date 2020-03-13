@@ -53,7 +53,7 @@ class EditForm extends Component {
 
   render() {
     const { loading, dutyLocationById } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -67,7 +67,10 @@ class EditForm extends Component {
             requiredMessage="Please input a name for the duty location."
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
         <RecordInfo record={dutyLocationById} />
       </Fragment>

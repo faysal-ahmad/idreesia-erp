@@ -63,7 +63,7 @@ class NewForm extends Component {
 
   render() {
     const { companyLoading, form } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, isFieldsTouched } = form;
     if (companyLoading) return null;
 
     return (
@@ -107,7 +107,10 @@ class NewForm extends Component {
           fieldLabel="Description"
           getFieldDecorator={getFieldDecorator}
         />
-        <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+        <FormButtonsSaveCancel
+          handleCancel={this.handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
       </Form>
     );
   }

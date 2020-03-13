@@ -80,7 +80,7 @@ class EditForm extends Component {
     } = this.props;
     if (loading || locationsLoading) return null;
 
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -107,7 +107,10 @@ class EditForm extends Component {
             initialValue={locationById.description}
             getFieldDecorator={getFieldDecorator}
           />
-          <FormButtonsSaveCancel handleCancel={this.handleCancel} />
+          <FormButtonsSaveCancel
+            handleCancel={this.handleCancel}
+            isFieldsTouched={isFieldsTouched}
+          />
         </Form>
         <RecordInfo record={locationById} />
       </Fragment>

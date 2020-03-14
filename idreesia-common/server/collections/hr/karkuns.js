@@ -168,6 +168,7 @@ class Karkuns extends AggregatableCollection {
   }
 
   isValueChanged(key, newValue, existingKarkun) {
+    if (!existingKarkun[key] && !newValue) return false;
     let isChanged;
 
     switch (key) {

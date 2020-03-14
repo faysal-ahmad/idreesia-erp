@@ -12,8 +12,8 @@ const ListStyle = {
   backgroundColor: '#F0F2F5',
 };
 
-const AuditInfo = ({ record, formDataLoading, userNames }) => {
-  if (formDataLoading || !userNames || userNames.length === 0) return null;
+const AuditInfo = ({ record, userNamesLoading, userNames }) => {
+  if (userNamesLoading || !userNames || userNames.length === 0) return null;
   const { createdAt, updatedAt, approvedOn } = record;
 
   const strCreatedAt = createdAt
@@ -63,19 +63,19 @@ AuditInfo.propTypes = {
     approvedOn: PropTypes.string,
     approvedBy: PropTypes.string,
   }),
-  formDataLoading: PropTypes.bool,
+  userNamesLoading: PropTypes.bool,
   userNames: PropTypes.array,
 };
 
-const formQuery = gql`
+const userNamesQuery = gql`
   query userNames($ids: [String]) {
     userNames(ids: $ids)
   }
 `;
 
 export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
+  graphql(userNamesQuery, {
+    props: ({ data }) => ({ userNamesLoading: data.loading, ...data }),
     options: ({ record }) => ({
       variables: {
         ids: [record.createdBy, record.updatedBy, record.approvedBy],

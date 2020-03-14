@@ -34,13 +34,17 @@ class AuditLogs extends AggregatableCollection {
     const _auditValues = [];
 
     forOwn(auditValues, (value, key) => {
-      _auditValues.push(
-        JSON.stringify({
-          fieldName: key,
-          changedFrom: existingEntity ? existingEntity[key] : null,
-          changedTo: value,
-        })
-      );
+      const changedFrom = existingEntity ? existingEntity[key] : null;
+
+      if (changedFrom || value) {
+        _auditValues.push(
+          JSON.stringify({
+            fieldName: key,
+            changedFrom,
+            changedTo: value,
+          })
+        );
+      }
     });
 
     return _auditValues;

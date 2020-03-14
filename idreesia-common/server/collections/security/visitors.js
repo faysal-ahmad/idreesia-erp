@@ -116,6 +116,7 @@ class Visitors extends AggregatableCollection {
   }
 
   isValueChanged(key, newValue, existingVisitor) {
+    if (!existingVisitor[key] && !newValue) return false;
     let isChanged;
 
     switch (key) {

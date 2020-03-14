@@ -6,6 +6,10 @@ import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -71,59 +75,88 @@ class Sidebar extends Component {
       >
         <Menu.SubMenu
           key="mehfil-management"
-          title={<span>Mehfil Management</span>}
+          title={
+            <span>
+              <Icon type="build" style={IconStyle} />
+              Mehfil Management
+            </span>
+          }
         >
           <Menu.Item key="mehfils">
             <span>
-              <Icon type="flag" />
+              <Icon type="flag" style={IconStyle} />
               Mehfils
             </span>
           </Menu.Item>
           <Menu.Item key="mehfil-card-verification">
             <span>
-              <Icon type="barcode" />
+              <Icon type="barcode" style={IconStyle} />
               Scan Karkun Card
             </span>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu key="karkuns" title={<span>Karkuns</span>}>
+        <Menu.SubMenu
+          key="karkuns"
+          title={
+            <span>
+              <Icon type="build" style={IconStyle} />
+              Karkuns
+            </span>
+          }
+        >
           <Menu.Item key="karkun-card-verification">
             <span>
-              <Icon type="barcode" />
+              <Icon type="barcode" style={IconStyle} />
               Card Verification
             </span>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu key="visitors" title={<span>Visitors</span>}>
+        <Menu.SubMenu
+          key="visitors"
+          title={
+            <span>
+              <Icon type="build" style={IconStyle} />
+              Visitors
+            </span>
+          }
+        >
           <Menu.Item key="visitor-registration">
             <span>
-              <Icon type="idcard" />
+              <Icon type="idcard" style={IconStyle} />
               Registration
             </span>
           </Menu.Item>
           <Menu.Item key="visitor-card-verification">
             <span>
-              <Icon type="barcode" />
+              <Icon type="barcode" style={IconStyle} />
               Card Verification
             </span>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu key="security-reports" title="Reports">
+        <Menu.SubMenu
+          key="security-reports"
+          title={
+            <span>
+              <Icon type="build" style={IconStyle} />
+              Reports
+            </span>
+          }
+        >
           <Menu.Item key="visitor-stay-report">
             <span>
-              <Icon type="book" />
+              <Icon type="book" style={IconStyle} />
               Visitor Stay Report
             </span>
           </Menu.Item>
           <Menu.Item key="team-visit-report">
             <span>
-              <Icon type="book" />
+              <Icon type="book" style={IconStyle} />
               Team Visit Report
             </span>
           </Menu.Item>
           <Menu.Item key="mulakaat-report">
             <span>
-              <Icon type="book" />
+              <Icon type="book" style={IconStyle} />
               Mulakaat Report
             </span>
           </Menu.Item>

@@ -9,6 +9,10 @@ import { Menu, Icon } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -43,20 +47,43 @@ class Sidebar extends Component {
 
   getMenuItemsForPortal = portalId => [
     <Menu.Item parent-key={portalId} key={`karkuns-${portalId}`}>
-      Karkuns
+      <span>
+        <Icon type="team" style={IconStyle} />
+        Karkuns
+      </span>
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`members-${portalId}`}>
-      Members
+      <span>
+        <Icon type="team" style={IconStyle} />
+        Members
+      </span>
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`attendance-sheets-${portalId}`}>
-      Attendance Sheets
+      <span>
+        <Icon type="solution" style={IconStyle} />
+        Attendance Sheets
+      </span>
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`amaanat-logs-${portalId}`}>
-      Amaanat Logs
+      <span>
+        <Icon type="red-envelope" style={IconStyle} />
+        Amaanat Logs
+      </span>
     </Menu.Item>,
-    <Menu.SubMenu key={`administration-${portalId}`} title="Administration">
+    <Menu.SubMenu
+      key={`administration-${portalId}`}
+      title={
+        <span>
+          <Icon type="tool" style={IconStyle} />
+          Administration
+        </span>
+      }
+    >
       <Menu.Item parent-key={portalId} key={`user-accounts-${portalId}`}>
-        User Accounts
+        <span>
+          <Icon type="unlock" style={IconStyle} />
+          User Accounts
+        </span>
       </Menu.Item>
     </Menu.SubMenu>,
   ];
@@ -75,7 +102,7 @@ class Sidebar extends Component {
             key={portal._id}
             title={
               <span>
-                <Icon type="shop" />
+                <Icon type="shop" style={IconStyle} />
                 {portal.name}
               </span>
             }

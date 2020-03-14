@@ -6,6 +6,10 @@ import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -46,7 +50,7 @@ class Sidebar extends Component {
       >
         <Menu.Item key="visitors">
           <span>
-            <Icon type="idcard" />
+            <Icon type="idcard" style={IconStyle} />
             Visitors
           </span>
         </Menu.Item>
@@ -54,7 +58,7 @@ class Sidebar extends Component {
           key="telephone-room-reports"
           title={
             <span>
-              <Icon type="book" />
+              <Icon type="book" style={IconStyle} />
               Reports
             </span>
           }

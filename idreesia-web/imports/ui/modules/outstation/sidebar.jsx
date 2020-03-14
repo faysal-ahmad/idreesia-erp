@@ -6,6 +6,10 @@ import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -67,31 +71,31 @@ class Sidebar extends Component {
       >
         <Menu.Item key="karkuns">
           <span>
-            <Icon type="team" />
+            <Icon type="team" style={IconStyle} />
             Karkuns
           </span>
         </Menu.Item>
         <Menu.Item key="members">
           <span>
-            <Icon type="team" />
+            <Icon type="team" style={IconStyle} />
             Members
           </span>
         </Menu.Item>
         <Menu.Item key="attendance-sheets">
           <span>
-            <Icon type="solution" />
+            <Icon type="solution" style={IconStyle} />
             Attendance Sheets
           </span>
         </Menu.Item>
         <Menu.Item key="amaanat-logs">
           <span>
-            <Icon type="red-envelope" />
+            <Icon type="red-envelope" style={IconStyle} />
             Amaanat Logs
           </span>
         </Menu.Item>
         <Menu.Item key="messages">
           <span>
-            <Icon type="message" />
+            <Icon type="message" style={IconStyle} />
             Messages
           </span>
         </Menu.Item>
@@ -99,13 +103,23 @@ class Sidebar extends Component {
           key="setup"
           title={
             <span>
-              <Icon type="laptop" />
+              <Icon type="laptop" style={IconStyle} />
               Setup
             </span>
           }
         >
-          <Menu.Item key="cities">Cities &amp; Mehfils</Menu.Item>
-          <Menu.Item key="mehfil-duties">Mehfil Duties</Menu.Item>
+          <Menu.Item key="cities">
+            <span>
+              <Icon type="environment" style={IconStyle} />
+              Cities &amp; Mehfils
+            </span>
+          </Menu.Item>
+          <Menu.Item key="mehfil-duties">
+            <span>
+              <Icon type="tags" style={IconStyle} />
+              Mehfil Duties
+            </span>
+          </Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

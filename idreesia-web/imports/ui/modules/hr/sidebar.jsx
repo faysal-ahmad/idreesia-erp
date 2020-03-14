@@ -8,6 +8,10 @@ import { default as paths } from './submodule-paths';
 
 const { SubMenu } = Menu;
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -74,39 +78,45 @@ class Sidebar extends Component {
       >
         <Menu.Item key="karkuns">
           <span>
-            <Icon type="team" />
+            <Icon type="team" style={IconStyle} />
             Karkuns
           </span>
         </Menu.Item>
         <Menu.Item key="salary-sheets">
           <span>
-            <Icon type="dollar" />
+            <Icon type="dollar" style={IconStyle} />
             Salary Sheets
           </span>
         </Menu.Item>
         <Menu.Item key="attendance-sheets">
           <span>
-            <Icon type="solution" />
+            <Icon type="solution" style={IconStyle} />
             Attendance Sheets
           </span>
         </Menu.Item>
         <Menu.Item key="messages">
           <span>
-            <Icon type="message" />
+            <Icon type="message" style={IconStyle} />
             Messages
           </span>
         </Menu.Item>
         <Menu.Item key="shared-residencs">
           <span>
-            <Icon type="home" />
+            <Icon type="home" style={IconStyle} />
             Shared Residences
+          </span>
+        </Menu.Item>
+        <Menu.Item key="audit-logs">
+          <span>
+            <Icon type="audit" style={IconStyle} />
+            Audit Logs
           </span>
         </Menu.Item>
         <SubMenu
           key="setup"
           title={
             <span>
-              <Icon type="laptop" />
+              <Icon type="laptop" style={IconStyle} />
               Setup
             </span>
           }

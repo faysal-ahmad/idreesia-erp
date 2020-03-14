@@ -9,6 +9,10 @@ import { Menu, Icon } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -68,7 +72,7 @@ class Sidebar extends Component {
           key={physicalStore._id}
           title={
             <span>
-              <Icon type="appstore" />
+              <Icon type="appstore" style={IconStyle} />
               {physicalStore.name}
             </span>
           }
@@ -78,7 +82,7 @@ class Sidebar extends Component {
             key={`stock-items-${physicalStore._id}`}
           >
             <span>
-              <Icon type="reconciliation" />
+              <Icon type="reconciliation" style={IconStyle} />
               Stock Items
             </span>
           </Menu.Item>
@@ -87,7 +91,7 @@ class Sidebar extends Component {
             key={`status-dashboard-${physicalStore._id}`}
           >
             <span>
-              <Icon type="pie-chart" />
+              <Icon type="pie-chart" style={IconStyle} />
               Status Dashboard
             </span>
           </Menu.Item>
@@ -95,7 +99,7 @@ class Sidebar extends Component {
             key={`forms-${physicalStore._id}`}
             title={
               <span>
-                <Icon type="form" />
+                <Icon type="folder-open" style={IconStyle} />
                 Data Entry
               </span>
             }
@@ -104,26 +108,35 @@ class Sidebar extends Component {
               parent-key={physicalStore._id}
               key={`issuance-forms-${physicalStore._id}`}
             >
-              Issuance Forms
+              <span>
+                <Icon type="form" style={IconStyle} />
+                Issuance Forms
+              </span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`purchase-forms-${physicalStore._id}`}
             >
-              Purchase Forms
+              <span>
+                <Icon type="form" style={IconStyle} />
+                Purchase Forms
+              </span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`stock-adjustments-${physicalStore._id}`}
             >
-              Stock Adjustments
+              <span>
+                <Icon type="form" style={IconStyle} />
+                Stock Adjustments
+              </span>
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.SubMenu
             key={`reports-${physicalStore._id}`}
             title={
               <span>
-                <Icon type="book" />
+                <Icon type="folder-open" style={IconStyle} />
                 Reports
               </span>
             }
@@ -132,20 +145,26 @@ class Sidebar extends Component {
               parent-key={physicalStore._id}
               key={`issuance-report-${physicalStore._id}`}
             >
-              Issuance Report
+              <span>
+                <Icon type="book" style={IconStyle} />
+                Issuance Report
+              </span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`purchasing-report-${physicalStore._id}`}
             >
-              Purchase Report
+              <span>
+                <Icon type="book" style={IconStyle} />
+                Purchase Report
+              </span>
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.SubMenu
             key={`setup-${physicalStore._id}`}
             title={
               <span>
-                <Icon type="laptop" />
+                <Icon type="laptop" style={IconStyle} />
                 Setup
               </span>
             }
@@ -154,19 +173,28 @@ class Sidebar extends Component {
               parent-key={physicalStore._id}
               key={`vendors-${physicalStore._id}`}
             >
-              Vendors
+              <span>
+                <Icon type="shop" style={IconStyle} />
+                Vendors
+              </span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`item-categories-${physicalStore._id}`}
             >
-              Item Categories
+              <span>
+                <Icon type="tags" style={IconStyle} />
+                Item Categories
+              </span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`locations-${physicalStore._id}`}
             >
-              Locations
+              <span>
+                <Icon type="environment" style={IconStyle} />
+                Locations
+              </span>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu.SubMenu>

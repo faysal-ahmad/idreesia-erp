@@ -6,6 +6,10 @@ import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -36,7 +40,7 @@ class Sidebar extends Component {
       >
         <Menu.Item key="wazaif">
           <span>
-            <Icon type="read" />
+            <Icon type="read" style={IconStyle} />
             Wazaif
           </span>
         </Menu.Item>

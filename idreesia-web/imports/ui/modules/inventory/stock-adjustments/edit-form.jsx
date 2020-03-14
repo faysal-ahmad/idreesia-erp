@@ -23,7 +23,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 const FormStyle = {
   width: '800px',
@@ -158,7 +158,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={stockAdjustmentById} />
+        <AuditInfo record={stockAdjustmentById} />
       </Fragment>
     );
   }

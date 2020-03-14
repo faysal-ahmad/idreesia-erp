@@ -14,7 +14,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 class EditForm extends Component {
   static propTypes = {
@@ -82,7 +82,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={dutyById} />
+        <AuditInfo record={dutyById} />
       </Fragment>
     );
   }

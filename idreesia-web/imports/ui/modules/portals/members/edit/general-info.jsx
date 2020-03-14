@@ -15,7 +15,7 @@ import {
   SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
@@ -242,7 +242,7 @@ class GeneralInfo extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={portalMemberById} />
+        <AuditInfo record={portalMemberById} />
       </Fragment>
     );
   }

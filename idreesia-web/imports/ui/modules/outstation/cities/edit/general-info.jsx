@@ -8,7 +8,7 @@ import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 import { ALL_CITIES, PAGED_CITIES, CITY_BY_ID, UPDATE_CITY } from '../gql';
 
@@ -87,7 +87,7 @@ class GeneralInfo extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={cityById} />
+        <AuditInfo record={cityById} />
       </Fragment>
     );
   }

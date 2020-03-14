@@ -7,7 +7,7 @@ import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 import { PAYMENT_BY_ID, UPDATE_PAYMENT } from './gql';
 
 import {
@@ -169,7 +169,7 @@ const EditForm = ({ form, match, history }) => {
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
-      <RecordInfo record={paymentById} />
+      <AuditInfo record={paymentById} />
     </Fragment>
   );
 };

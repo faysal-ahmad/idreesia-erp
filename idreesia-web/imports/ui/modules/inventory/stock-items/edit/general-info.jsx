@@ -12,7 +12,7 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { WithItemCategoriesByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 import allUnitOfMeasurements from '../all-unit-of-measurements';
 
@@ -133,7 +133,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={stockItemById} />
+        <AuditInfo record={stockItemById} />
       </Fragment>
     );
   }

@@ -1,3 +1,5 @@
+export { default as AuditInfo } from './audit-info/audit-info';
+
 export { default as AmaanatLogsList } from './amaanat-logs/list';
 export { default as AmaanatLogsListFilter } from './amaanat-logs/list-filter';
 export { default as AmaanatLogsNewForm } from './amaanat-logs/new-form';

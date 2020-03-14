@@ -18,7 +18,7 @@ import {
   WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 class EditForm extends Component {
   static propTypes = {
@@ -112,7 +112,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={locationById} />
+        <AuditInfo record={locationById} />
       </Fragment>
     );
   }

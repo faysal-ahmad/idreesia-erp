@@ -14,7 +14,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 const GeneralInfo = ({
@@ -221,7 +221,7 @@ const GeneralInfo = ({
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
-      <RecordInfo record={karkun} />
+      <AuditInfo record={karkun} />
     </Fragment>
   );
 };

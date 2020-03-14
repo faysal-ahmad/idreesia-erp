@@ -11,7 +11,7 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 class EditForm extends Component {
   static propTypes = {
@@ -92,7 +92,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={sharedResidenceById} />
+        <AuditInfo record={sharedResidenceById} />
       </Fragment>
     );
   }

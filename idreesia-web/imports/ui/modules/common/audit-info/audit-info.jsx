@@ -12,7 +12,7 @@ const ListStyle = {
   backgroundColor: '#F0F2F5',
 };
 
-const RecordInfo = ({ record, formDataLoading, userNames }) => {
+const AuditInfo = ({ record, formDataLoading, userNames }) => {
   if (formDataLoading || !userNames || userNames.length === 0) return null;
   const { createdAt, updatedAt, approvedOn } = record;
 
@@ -42,7 +42,7 @@ const RecordInfo = ({ record, formDataLoading, userNames }) => {
       {approvalNode}
       <List.Item>
         <Typography.Text type="secondary">
-          {`Updated by ${userNames[1]} on ${strUpdatedAt}`}
+          {`Last Updated by ${userNames[1]} on ${strUpdatedAt}`}
         </Typography.Text>
       </List.Item>
       <List.Item>
@@ -54,7 +54,7 @@ const RecordInfo = ({ record, formDataLoading, userNames }) => {
   );
 };
 
-RecordInfo.propTypes = {
+AuditInfo.propTypes = {
   record: PropTypes.shape({
     createdAt: PropTypes.string,
     createdBy: PropTypes.string,
@@ -82,4 +82,4 @@ export default flowRight(
       },
     }),
   })
-)(RecordInfo);
+)(AuditInfo);

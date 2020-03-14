@@ -11,7 +11,7 @@ import {
   DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 import { MEHFIL_BY_ID, UPDATE_MEHFIL, ALL_MEHFILS } from './gql';
 
@@ -81,7 +81,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <RecordInfo record={mehfilById} />
+        <AuditInfo record={mehfilById} />
       </Fragment>
     );
   }

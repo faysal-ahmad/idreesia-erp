@@ -18,7 +18,7 @@ import {
   FormButtonsClose,
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
-import { RecordInfo } from '/imports/ui/modules/helpers/controls';
+import { AuditInfo } from '/imports/ui/modules/common';
 
 const FormStyle = {
   width: '800px',
@@ -137,7 +137,7 @@ class ViewForm extends Component {
 
           <FormButtonsClose handleClose={this.handleClose} />
         </Form>
-        <RecordInfo record={issuanceFormById} />
+        <AuditInfo record={issuanceFormById} />
       </Fragment>
     );
   }

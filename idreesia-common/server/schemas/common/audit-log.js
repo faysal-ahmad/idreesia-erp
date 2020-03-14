@@ -7,6 +7,22 @@ import {
 
 import { identifiable } from './';
 
+/*
+  const AuditValue = new SimpleSchema({
+    fieldName: {
+      type: String,
+    },
+    changedFrom: {
+      type: String,
+      optional: true,
+    },
+    changedTo: {
+      type: String,
+      optional: true,
+    },
+  });
+*/
+
 export default new SimpleSchema({
   entityId: {
     type: String,
@@ -18,6 +34,13 @@ export default new SimpleSchema({
   operationType: {
     type: String,
     allowedValues: values(OperationTypes),
+  },
+  auditValues: {
+    type: Array,
+    optional: true,
+  },
+  'auditValues.$': {
+    type: String,
   },
   operationTime: {
     type: Date,

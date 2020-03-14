@@ -1,9 +1,16 @@
 import moment from 'moment';
+
 import { Formats } from 'meteor/idreesia-common/constants';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Visitor as VisitorSchema } from 'meteor/idreesia-common/server/schemas/security';
-import { createAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/utilities';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  AuditLogs,
+  Attachments,
+} from 'meteor/idreesia-common/server/collections/common';
+import {
+  EntityTypes,
+  OperationTypes,
+} from 'meteor/idreesia-common/constants/audit';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 
 class Visitors extends AggregatableCollection {
@@ -17,13 +24,7 @@ class Visitors extends AggregatableCollection {
   // Create/Update Methods
   // **************************************************************
   createVisitor(values, user) {
-    const {
-      cnicNumber,
-      contactNumber1,
-      contactNumber2,
-      dataSource,
-      imageData,
-    } = values;
+    const { cnicNumber, contactNumber1, contactNumber2, dataSource } = values;
     if (cnicNumber) this.checkCnicNotInUse(cnicNumber);
     if (contactNumber1) this.checkContactNotInUse(contactNumber1);
     if (contactNumber2) this.checkContactNotInUse(contactNumber2);
@@ -31,37 +32,31 @@ class Visitors extends AggregatableCollection {
       throw new Error('Data Source is required to create a visitor.');
     }
 
-    let imageId = null;
-    if (imageData) {
-      imageId = createAttachment(
-        {
-          data: imageData,
-        },
-        { user }
-      );
-    }
-
     const date = new Date();
     const valuesToInsert = Object.assign({}, values, {
-      imageId,
       createdAt: date,
       createdBy: user._id,
       updatedAt: date,
       updatedBy: user._id,
     });
 
-    delete valuesToInsert.imageData;
     const visitorId = this.insert(valuesToInsert);
+    AuditLogs.createAuditLog({
+      entityId: visitorId,
+      entityType: EntityTypes.VISITOR,
+      operationType: OperationTypes.CREATE,
+      operationBy: user._id,
+      operationTime: date,
+      auditValues: values,
+    });
+
     return this.findOne(visitorId);
   }
 
   updateVisitor(values, user) {
     const { _id } = values;
-    const { changedValues, auditValuesCollection } = this.getChangedValues(
-      _id,
-      values,
-      user
-    );
+    const existingVisitor = this.findOne(_id);
+    const changedValues = this.getChangedValues(_id, values, existingVisitor);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
@@ -79,85 +74,62 @@ class Visitors extends AggregatableCollection {
     if (contactNumber2) this.checkContactNotInUse(contactNumber2, _id);
 
     if (imageId) {
-      const existingVisitor = this.findOne(_id);
       if (existingVisitor.imageId) {
         Attachments.removeAttachment(existingVisitor.imageId);
       }
     }
 
-    changedValues.updatedAt = new Date();
-    changedValues.updatedBy = user._id;
-    this.update(_id, {
-      $set: changedValues,
-      $addToSet: {
-        auditLog: auditValuesCollection,
-      },
+    const date = new Date();
+    const valuesToUpdate = Object.assign({}, changedValues, {
+      updatedAt: date,
+      updatedBy: user._id,
     });
+
+    this.update(_id, { $set: valuesToUpdate });
+
+    AuditLogs.createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityTypes.VISITOR,
+        operationType: OperationTypes.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: changedValues,
+      },
+      existingVisitor
+    );
 
     return this.findOne(_id);
   }
 
   // Iterate through the incoming changed values and check which of the
-  // values have actually changed. If there are actual changed values,
-  // then create an entry for the audit log.
-  getChangedValues(_id, newValues, user) {
+  // values have actually changed.
+  getChangedValues(_id, newValues, existingVisitor) {
     const changedValues = {};
-    const auditValuesCollection = {
-      auditValues: [],
-      changedOn: new Date(),
-      changedBy: user._id,
-    };
-
-    const existingKarkun = this.findOne(_id);
     forOwn(newValues, (newValue, key) => {
-      if (this.isValueChanged(key, newValue, existingKarkun)) {
+      if (this.isValueChanged(key, newValue, existingVisitor)) {
         changedValues[key] = newValue;
-        auditValuesCollection.auditValues.push({
-          fieldName: key,
-          changedFrom: existingKarkun[key],
-          changedTo: this.getNewValueToLog(key, newValue),
-        });
       }
     });
 
-    return {
-      changedValues,
-      auditValuesCollection,
-    };
+    return changedValues;
   }
 
-  isValueChanged(key, newValue, existingKarkun) {
+  isValueChanged(key, newValue, existingVisitor) {
     let isChanged;
 
     switch (key) {
       case 'ehadDate':
       case 'birthDate':
-        isChanged = !moment(existingKarkun[key]).isSame(moment(newValue));
+        isChanged = !moment(existingVisitor[key]).isSame(moment(newValue));
         break;
 
       default:
-        isChanged = existingKarkun[key] !== newValue;
+        isChanged = existingVisitor[key] !== newValue;
         break;
     }
 
     return isChanged;
-  }
-
-  getNewValueToLog(key, value) {
-    let valueToLog;
-
-    switch (key) {
-      case 'ehadDate':
-      case 'birthDate':
-        valueToLog = new Date(value);
-        break;
-
-      default:
-        valueToLog = value;
-        break;
-    }
-
-    return valueToLog;
   }
 
   // **************************************************************

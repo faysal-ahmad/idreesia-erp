@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
-import { auditable, deletable, identifiable, timestamps } from '../common';
+import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
   name: {
@@ -64,7 +64,5 @@ export default new SimpleSchema({
     optional: true,
   },
 })
-  .extend(auditable)
-  .extend(deletable)
   .extend(identifiable)
   .extend(timestamps);

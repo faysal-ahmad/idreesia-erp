@@ -1,0 +1,21 @@
+type AuditLogType {
+  _id: String
+  entityId: String
+  entityType: String
+  operationTime: String
+  auditValues: [String]
+  operationTime: String
+  operationBy: String
+}
+
+input AuditLogFilter {
+  entityId: String
+  operationBy: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedAuditLogType {
+  totalResults: Int
+  auditLogs: [AuditLogType]
+}

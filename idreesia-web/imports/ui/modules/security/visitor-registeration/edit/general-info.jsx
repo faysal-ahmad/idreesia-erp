@@ -24,7 +24,7 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(`${paths.visitorRegistrationPath}`);
+    history.push(`${paths.visitorRegistrationListPath}`);
   };
 
   handleSubmit = ({
@@ -58,7 +58,7 @@ class GeneralInfo extends Component {
       },
     })
       .then(() => {
-        history.push(`${paths.visitorRegistrationPath}`);
+        history.push(`${paths.visitorRegistrationListPath}`);
       })
       .catch(error => {
         message.error(error.message, 5);

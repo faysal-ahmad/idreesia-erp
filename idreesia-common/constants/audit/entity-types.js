@@ -1,6 +1,6 @@
 const EntityTypes = {
   KARKUN: 'karkun',
-  MEMBER: 'member',
+  VISITOR: 'visitor',
 };
 
 export default EntityTypes;

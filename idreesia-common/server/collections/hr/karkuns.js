@@ -1,7 +1,15 @@
 import moment from 'moment';
+
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Karkun as KarkunSchema } from 'meteor/idreesia-common/server/schemas/hr';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  AuditLogs,
+  Attachments,
+} from 'meteor/idreesia-common/server/collections/common';
+import {
+  EntityTypes,
+  OperationTypes,
+} from 'meteor/idreesia-common/constants/audit';
 import { forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 
 class Karkuns extends AggregatableCollection {
@@ -30,16 +38,22 @@ class Karkuns extends AggregatableCollection {
     });
 
     const karkunId = this.insert(valuesToInsert);
+    AuditLogs.createAuditLog({
+      entityId: karkunId,
+      entityType: EntityTypes.KARKUN,
+      operationType: OperationTypes.CREATE,
+      operationBy: user._id,
+      operationTime: date,
+      auditValues: values,
+    });
+
     return this.findOne(karkunId);
   }
 
   updateKarkun(values, user) {
     const { _id } = values;
-    const { changedValues, auditValuesCollection } = this.getChangedValues(
-      _id,
-      values,
-      user
-    );
+    const existingKarkun = this.findOne(_id);
+    const changedValues = this.getChangedValues(_id, values, existingKarkun);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
@@ -57,42 +71,39 @@ class Karkuns extends AggregatableCollection {
     if (contactNumber2) this.checkContactNotInUse(contactNumber2, _id);
 
     if (imageId) {
-      const existingKarkun = this.findOne(_id);
       if (existingKarkun.imageId) {
         Attachments.removeAttachment(existingKarkun.imageId);
       }
     }
 
-    changedValues.updatedAt = new Date();
-    changedValues.updatedBy = user._id;
-    this.update(_id, {
-      $set: changedValues,
-      $addToSet: {
-        auditLog: auditValuesCollection,
-      },
+    const date = new Date();
+    const valuesToUpdate = Object.assign({}, changedValues, {
+      updatedAt: date,
+      updatedBy: user._id,
     });
+
+    this.update(_id, { $set: valuesToUpdate });
+
+    AuditLogs.createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityTypes.KARKUN,
+        operationType: OperationTypes.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: changedValues,
+      },
+      existingKarkun
+    );
 
     return this.findOne(_id);
   }
 
   addAttachment({ _id, attachmentId }, user) {
-    const auditValuesCollection = {
-      auditValues: [
-        {
-          fieldName: 'attachmentIds',
-          changedFrom: null,
-          changedTo: attachmentId,
-        },
-      ],
-      changedOn: new Date(),
-      changedBy: user._id,
-    };
-
     const date = new Date();
     this.update(_id, {
       $addToSet: {
         attachmentIds: attachmentId,
-        auditLog: auditValuesCollection,
       },
       $set: {
         updatedAt: date,
@@ -100,29 +111,23 @@ class Karkuns extends AggregatableCollection {
       },
     });
 
+    AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityTypes.KARKUN,
+      operationType: OperationTypes.UPDATE,
+      operationBy: user._id,
+      operationTime: date,
+      auditValues: { attachmentId },
+    });
+
     return this.findOne(_id);
   }
 
   removeAttachment({ _id, attachmentId }, user) {
-    const auditValuesCollection = {
-      auditValues: [
-        {
-          fieldName: 'attachmentIds',
-          changedFrom: attachmentId,
-          changedTo: null,
-        },
-      ],
-      changedOn: new Date(),
-      changedBy: user._id,
-    };
-
     const date = new Date();
     this.update(_id, {
       $pull: {
         attachmentIds: attachmentId,
-      },
-      $addToSet: {
-        auditLog: auditValuesCollection,
       },
       $set: {
         updatedAt: date,
@@ -131,36 +136,35 @@ class Karkuns extends AggregatableCollection {
     });
 
     Attachments.removeAttachment(attachmentId);
+
+    AuditLogs.createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityTypes.KARKUN,
+        operationType: OperationTypes.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: { attachmentId: null },
+      },
+      {
+        attachmentId,
+      }
+    );
+
     return this.findOne(_id);
   }
 
   // Iterate through the incoming changed values and check which of the
-  // values have actually changed. If there are actual changed values,
-  // then create an entry for the audit log.
-  getChangedValues(_id, newValues, user) {
+  // values have actually changed.
+  getChangedValues(_id, newValues, existingKarkun) {
     const changedValues = {};
-    const auditValuesCollection = {
-      auditValues: [],
-      changedOn: new Date(),
-      changedBy: user._id,
-    };
-
-    const existingKarkun = this.findOne(_id);
     forOwn(newValues, (newValue, key) => {
       if (this.isValueChanged(key, newValue, existingKarkun)) {
         changedValues[key] = newValue;
-        auditValuesCollection.auditValues.push({
-          fieldName: key,
-          changedFrom: existingKarkun[key],
-          changedTo: this.getNewValueToLog(key, newValue),
-        });
       }
     });
 
-    return {
-      changedValues,
-      auditValuesCollection,
-    };
+    return changedValues;
   }
 
   isValueChanged(key, newValue, existingKarkun) {
@@ -181,26 +185,6 @@ class Karkuns extends AggregatableCollection {
     }
 
     return isChanged;
-  }
-
-  getNewValueToLog(key, value) {
-    let valueToLog;
-
-    switch (key) {
-      case 'ehadDate':
-      case 'birthDate':
-      case 'lastTarteebDate':
-      case 'employmentStartDate':
-      case 'employmentEndDate':
-        valueToLog = new Date(value);
-        break;
-
-      default:
-        valueToLog = value;
-        break;
-    }
-
-    return valueToLog;
   }
 
   // **************************************************************

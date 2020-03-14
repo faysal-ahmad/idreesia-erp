@@ -1,6 +1,4 @@
 export { default as approvable } from './approvable';
-export { default as auditable } from './auditable';
-export { default as deletable } from './deletable';
 export { default as identifiable } from './identifiable';
 export { default as timestamps } from './timestamps';
 

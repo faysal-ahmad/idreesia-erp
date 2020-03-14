@@ -1,5 +1,5 @@
 const OperationType = {
-  ADD: 'add',
+  CREATE: 'create',
   UPDATE: 'update',
   DELETE: 'delete',
 };

@@ -2,7 +2,7 @@ type AuditLogType {
   _id: String
   entityId: String
   entityType: String
-  operationTime: String
+  operationType: String
   auditValues: [String]
   operationTime: String
   operationBy: String
@@ -17,5 +17,5 @@ input AuditLogFilter {
 
 type PagedAuditLogType {
   totalResults: Int
-  auditLogs: [AuditLogType]
+  data: [AuditLogType]
 }

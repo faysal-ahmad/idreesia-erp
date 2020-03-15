@@ -1,6 +1,6 @@
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { AuditLog as AuditLogSchema } from 'meteor/idreesia-common/server/schemas/common';
-import { forOwn } from 'meteor/idreesia-common/utilities/lodash';
+import { forOwn, get } from 'meteor/idreesia-common/utilities/lodash';
 
 class AuditLogs extends AggregatableCollection {
   constructor(name = 'common-audit-log', options = {}) {
@@ -48,6 +48,43 @@ class AuditLogs extends AggregatableCollection {
     });
 
     return _auditValues;
+  }
+
+  // **************************************************************
+  // Query Functions
+  // **************************************************************
+  searchAuditLogs(params = {}) {
+    const pipeline = [];
+
+    const { entityId, pageIndex = '0', pageSize = '20' } = params;
+
+    if (entityId) {
+      pipeline.push({
+        $match: {
+          entityId: { $eq: entityId },
+        },
+      });
+    }
+
+    const countingPipeline = pipeline.concat({
+      $count: 'total',
+    });
+
+    const nPageIndex = parseInt(pageIndex, 10);
+    const nPageSize = parseInt(pageSize, 10);
+    const resultsPipeline = pipeline.concat([
+      { $sort: { name: 1 } },
+      { $skip: nPageIndex * nPageSize },
+      { $limit: nPageSize },
+    ]);
+
+    const auditLogs = this.aggregate(resultsPipeline).toArray();
+    const totalResults = this.aggregate(countingPipeline).toArray();
+
+    return Promise.all([auditLogs, totalResults]).then(results => ({
+      data: results[0],
+      totalResults: get(results[1], ['0', 'total'], 0),
+    }));
   }
 }
 

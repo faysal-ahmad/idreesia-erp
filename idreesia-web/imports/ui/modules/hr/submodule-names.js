@@ -7,6 +7,7 @@ const SubModuleNames = {
   attendanceSheets: 'Attendance Sheets',
   salarySheets: 'Salary Sheets',
   messages: 'Messages',
+  auditLogs: 'Audit Logs',
 };
 
 export default SubModuleNames;

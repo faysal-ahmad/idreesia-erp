@@ -44,6 +44,7 @@ class List extends Component {
     showActionsColumn: PropTypes.bool,
     predefinedFilterName: PropTypes.string,
     handlePrintClicked: PropTypes.func,
+    handleAuditLogClicked: PropTypes.func,
     handleNewClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
 
@@ -155,6 +156,15 @@ class List extends Component {
             className="list-actions-icon"
             onClick={() => {
               this.props.handlePrintClicked(record);
+            }}
+          />
+        </Tooltip>
+        <Tooltip title="Audit Log">
+          <Icon
+            type="audit"
+            className="list-actions-icon"
+            onClick={() => {
+              this.props.handleAuditLogClicked(record);
             }}
           />
         </Tooltip>

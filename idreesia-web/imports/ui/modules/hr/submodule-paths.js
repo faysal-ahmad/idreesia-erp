@@ -64,4 +64,9 @@ export default class SubModulePaths {
   ) {
     return `${SubModulePaths.sharedResidencesPath}/${sharedResidenceId}`;
   }
+
+  // ******************************************************************************
+  // Audit Logs
+  // ******************************************************************************
+  static auditLogsPath = `${ModulePaths.hr}/audit-logs`;
 }

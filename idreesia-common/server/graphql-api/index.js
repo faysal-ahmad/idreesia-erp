@@ -6,6 +6,8 @@ import { merge } from 'meteor/idreesia-common/utilities/lodash';
 import AttachmentSchema from './common/attachment/attachment.graphql';
 import AttachmentResolvers from './common/attachment/resolvers';
 
+import AuditLogsSchema from './common/audit-log/audit-log.graphql';
+
 import MessageSchema from './common/message/message.graphql';
 import MessageResolvers from './common/message/resolvers';
 
@@ -33,6 +35,9 @@ import UserGroupResolvers from './admin/user-group/resolvers';
 /**
  * Schema and Resolvers for the Security module
  */
+import SecurityAuditLogSchema from './security/audit-log/audit-log.graphql';
+import SecurityAuditLogResolvers from './security/audit-log/resolvers';
+
 import MehfilSchema from './security/mehfil/mehfil.graphql';
 import MehfilResolvers from './security/mehfil/resolvers';
 
@@ -60,6 +65,9 @@ import TelephoneRoomVisitorMulakaatResolvers from './telephone-room/visitor-mula
 /**
  * Schema and Resolvers for the HR module
  */
+import HRAuditLogSchema from './hr/audit-log/audit-log.graphql';
+import HRAuditLogResolvers from './hr/audit-log/resolvers';
+
 import DutyShiftSchema from './hr/duty-shift/duty-shift.graphql';
 import DutyShiftResolvers from './hr/duty-shift/resolvers';
 
@@ -202,6 +210,7 @@ import WazeefaResolvers from './wazaif-management/wazeefa/resolvers';
 
 const typeDefs = [
   AttachmentSchema,
+  AuditLogsSchema,
   MessageSchema,
   KarkunSchema,
   VisitorSchema,
@@ -210,6 +219,7 @@ const typeDefs = [
   UserSchema,
   UserGroupSchema,
 
+  SecurityAuditLogSchema,
   MehfilSchema,
   MehfilKarkunSchema,
   SecurityVisitorSchema,
@@ -219,6 +229,7 @@ const typeDefs = [
   TelephoneRoomVisitorSchema,
   TelephoneRoomVisitorMulakaatSchema,
 
+  HRAuditLogSchema,
   DutyShiftSchema,
   DutySchema,
   DutyLocationSchema,
@@ -278,6 +289,7 @@ const resolvers = merge(
   UserResolvers,
   UserGroupResolvers,
 
+  SecurityAuditLogResolvers,
   MehfilResolvers,
   MehfilKarkunResolvers,
   SecurityVisitorResolvers,
@@ -287,6 +299,7 @@ const resolvers = merge(
   TelephoneRoomVisitorResolvers,
   TelephoneRoomVisitorMulakaatResolvers,
 
+  HRAuditLogResolvers,
   DutyShiftResolvers,
   DutyResolvers,
   DutyLocationResolvers,

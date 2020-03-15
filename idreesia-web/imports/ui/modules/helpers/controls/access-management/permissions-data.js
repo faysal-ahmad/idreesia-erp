@@ -163,6 +163,10 @@ export const hrPermissionsData = {
       key: PermissionConstants.HR_MANAGE_SETUP_DATA,
     },
     {
+      title: 'View Audit Logs',
+      key: PermissionConstants.HR_VIEW_AUDIT_LOGS,
+    },
+    {
       title: 'Karkuns',
       key: 'module-hr-karkuns',
       children: [
@@ -461,6 +465,10 @@ export const securityPermissionsData = {
     {
       title: 'Manage Setup Data',
       key: PermissionConstants.SECURITY_MANAGE_SETUP_DATA,
+    },
+    {
+      title: 'View Audit Logs',
+      key: PermissionConstants.SECURITY_VIEW_AUDIT_LOGS,
     },
     {
       title: 'Mehfils',

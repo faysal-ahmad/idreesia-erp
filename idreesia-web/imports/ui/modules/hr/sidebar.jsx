@@ -64,6 +64,11 @@ class Sidebar extends Component {
         history.push(paths.sharedResidencesPath);
         break;
 
+      case 'audit-logs':
+        setActiveSubModuleName(SubModuleNames.auditLogs);
+        history.push(paths.auditLogsPath);
+        break;
+
       default:
         break;
     }

@@ -42,6 +42,7 @@ const Permissions = {
   // ****************************************************************************************
   HR_MANAGE_SETUP_DATA: 'hr-manage-setup-data',
   HR_DELETE_DATA: 'hr-delete-data',
+  HR_VIEW_AUDIT_LOGS: 'hr-view-audit-logs',
 
   HR_VIEW_KARKUNS: 'hr-view-karkuns',
   HR_MANAGE_KARKUNS: 'hr-manage-karkuns',
@@ -107,6 +108,7 @@ const Permissions = {
   // ****************************************************************************************
   SECURITY_DELETE_DATA: 'security-delete-data',
   SECURITY_MANAGE_SETUP_DATA: 'security-manage-setup-data',
+  SECURITY_VIEW_AUDIT_LOGS: 'security-view-audit-logs',
 
   SECURITY_VIEW_KARKUN_VERIFICATION: 'security-view-karkun-verification',
   SECURITY_VIEW_VISITORS: 'security-view-visitors',

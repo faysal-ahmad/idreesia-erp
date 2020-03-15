@@ -8,6 +8,7 @@ const SubModuleNames = {
   visitorStayReport: "Visitor's Stay Report",
   teamVisitReport: 'Team Visit Report',
   mulakaatReport: 'Mulakaat Report',
+  auditLogs: 'Audit Logs',
 };
 
 export default SubModuleNames;

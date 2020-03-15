@@ -15,6 +15,7 @@ import {
   VisitorRegistrationList,
 } from './visitor-registeration';
 import { VisitorCardVerificationForm } from './visitor-stays';
+import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
 import { TeamVisitReport } from './team-visit-report';
 import { MulakaatReport } from './mulakaat-report';
@@ -61,6 +62,8 @@ const Router = () => (
       path={paths.visitorCardVerificationPath}
       component={VisitorCardVerificationForm}
     />
+
+    <Route path={paths.auditLogsPath} component={AuditLogsList} />
 
     <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
     <Route path={paths.teamVisitReportPath} component={TeamVisitReport} />

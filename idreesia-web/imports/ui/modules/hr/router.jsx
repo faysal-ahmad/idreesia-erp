@@ -32,6 +32,7 @@ import {
   SharedResidencesEditForm,
   SharedResidencesList,
 } from './shared-residences';
+import { AuditLogsList } from './audit-logs';
 
 const Router = () => (
   <Switch>
@@ -92,6 +93,8 @@ const Router = () => (
       component={SharedResidencesEditForm}
     />
     <Route path={paths.sharedResidencesPath} component={SharedResidencesList} />
+
+    <Route path={paths.auditLogsPath} component={AuditLogsList} />
   </Switch>
 );
 

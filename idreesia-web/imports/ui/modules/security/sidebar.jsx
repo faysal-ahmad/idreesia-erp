@@ -46,6 +46,11 @@ class Sidebar extends Component {
         history.push(paths.visitorCardVerificationPath);
         break;
 
+      case 'audit-logs':
+        setActiveSubModuleName(SubModuleNames.auditLogs);
+        history.push(paths.auditLogsPath);
+        break;
+
       case 'visitor-stay-report':
         setActiveSubModuleName(SubModuleNames.visitorStayReport);
         history.push(paths.visitorStayReportPath);
@@ -130,6 +135,12 @@ class Sidebar extends Component {
             <span>
               <Icon type="barcode" style={IconStyle} />
               Card Verification
+            </span>
+          </Menu.Item>
+          <Menu.Item key="audit-logs">
+            <span>
+              <Icon type="audit" style={IconStyle} />
+              Audit Logs
             </span>
           </Menu.Item>
         </Menu.SubMenu>

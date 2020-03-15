@@ -60,9 +60,13 @@ const List = ({ history, location }) => {
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   const handleExportSelected = () => {

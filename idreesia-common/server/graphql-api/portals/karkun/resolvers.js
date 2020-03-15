@@ -92,7 +92,7 @@ export default {
         });
       }
 
-      const karkunId = Karkuns.createKarkun(
+      const karkun = Karkuns.createKarkun(
         {
           name: member.name,
           parentName: member.parentName,
@@ -110,11 +110,11 @@ export default {
 
       Visitors.update(memberId, {
         $set: {
-          karkunId,
+          karkunId: karkun._id,
         },
       });
 
-      return Karkuns.findOne(karkunId);
+      return karkun;
     },
 
     updatePortalKarkun(obj, values, { user }) {

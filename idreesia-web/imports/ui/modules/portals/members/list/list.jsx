@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -11,16 +11,19 @@ import {
   usePortal,
   usePortalCities,
 } from 'meteor/idreesia-common/hooks/portals';
-import { Button, message } from '/imports/ui/controls';
+import { Button, Modal, message } from '/imports/ui/controls';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { VisitorsList } from '/imports/ui/modules/common';
 import { CREATE_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';
 
 import ListFilter from './list-filter';
-import { PAGED_PORTAL_MEMBERS } from '../gql';
+import CreateKarkunForm from './create-karkun-form';
+import { PAGED_PORTAL_MEMBERS, LINK_PORTAL_KARKUN } from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
+  const [showCreateKarkunForm, setShowCreateKarkunForm] = useState(false);
+  const [memberForKarkunCreation, setMemberForKarkunCreation] = useState(null);
   const { portalId } = useParams();
   const { portal } = usePortal();
   const { portalCities } = usePortalCities();
@@ -39,6 +42,7 @@ const List = ({ history, location }) => {
   });
 
   const [createPortalKarkun] = useMutation(CREATE_PORTAL_KARKUN);
+  const [linkPortalKarkun] = useMutation(LINK_PORTAL_KARKUN);
   const { data, loading, refetch } = useQuery(PAGED_PORTAL_MEMBERS, {
     variables: {
       portalId,
@@ -68,20 +72,48 @@ const List = ({ history, location }) => {
     history.push(paths.karkunsEditFormPath(portalId, visitor.karkunId));
   };
 
+  const handleCreateKarkunCancelled = () => {
+    setShowCreateKarkunForm(false);
+    setMemberForKarkunCreation(null);
+  };
+
   const handleKarkunCreateAction = visitor => {
+    setShowCreateKarkunForm(true);
+    setMemberForKarkunCreation(visitor);
+  };
+
+  const handleCreateKarkun = () => {
     const city = find(
       portalCities,
-      portalCity => portalCity.name === visitor.city
+      portalCity => portalCity.name === memberForKarkunCreation.city
     );
 
     createPortalKarkun({
       variables: {
         portalId,
-        memberId: visitor._id,
+        memberId: memberForKarkunCreation._id,
         cityId: city._id,
       },
     })
       .then(() => {
+        handleCreateKarkunCancelled();
+        refetch();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  const handleLinkKarkun = karkunId => {
+    linkPortalKarkun({
+      variables: {
+        portalId,
+        memberId: memberForKarkunCreation._id,
+        karkunId,
+      },
+    })
+      .then(() => {
+        handleCreateKarkunCancelled();
         refetch();
       })
       .catch(error => {
@@ -127,22 +159,43 @@ const List = ({ history, location }) => {
   );
 
   return (
-    <VisitorsList
-      showCnicColumn
-      showPhoneNumbersColumn
-      showCityCountryColumn
-      showDeleteAction={false}
-      showKarkunLinkAction
-      showKarkunCreateAction
-      listHeader={getTableHeader}
-      handleSelectItem={handleSelectItem}
-      handleKarkunLinkAction={handleKarkunLinkAction}
-      handleKarkunCreateAction={handleKarkunCreateAction}
-      setPageParams={setPageParams}
-      pageIndex={numPageIndex}
-      pageSize={numPageSize}
-      pagedData={pagedPortalMembers}
-    />
+    <>
+      <VisitorsList
+        showCnicColumn
+        showPhoneNumbersColumn
+        showCityCountryColumn
+        showDeleteAction={false}
+        showKarkunLinkAction
+        showKarkunCreateAction
+        listHeader={getTableHeader}
+        handleSelectItem={handleSelectItem}
+        handleKarkunLinkAction={handleKarkunLinkAction}
+        handleKarkunCreateAction={handleKarkunCreateAction}
+        setPageParams={setPageParams}
+        pageIndex={numPageIndex}
+        pageSize={numPageSize}
+        pagedData={pagedPortalMembers}
+      />
+      <Modal
+        title="Create Karkun"
+        visible={showCreateKarkunForm}
+        onCancel={handleCreateKarkunCancelled}
+        width={600}
+        footer={null}
+      >
+        {showCreateKarkunForm ? (
+          <CreateKarkunForm
+            portalId={portalId}
+            portalCities={portalCities}
+            cnicNumber={memberForKarkunCreation.cnicNumber}
+            contactNumber={memberForKarkunCreation.contactNumber1}
+            handleCreate={handleCreateKarkun}
+            handleLink={handleLinkKarkun}
+            handleCancel={handleCreateKarkunCancelled}
+          />
+        ) : null}
+      </Modal>
+    </>
   );
 };
 

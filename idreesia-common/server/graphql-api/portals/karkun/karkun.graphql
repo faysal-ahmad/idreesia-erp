@@ -1,6 +1,7 @@
 extend type Query {
   portalKarkunById(portalId: String!, _id: String!): KarkunType
   pagedPortalKarkuns(portalId: String!, filter: KarkunFilter): PagedKarkunType
+  findPortalKarkunByCnicOrContactNumber(portalId: String!, cnicNumber: String, contactNumber: String): KarkunType
 }
 
 extend type Mutation {
@@ -8,6 +9,12 @@ extend type Mutation {
     portalId: String!
     memberId: String!
     cityId: String
+  ): KarkunType
+
+  linkPortalKarkun(
+    portalId: String!
+    memberId: String!
+    karkunId: String!
   ): KarkunType
 
   updatePortalKarkun(

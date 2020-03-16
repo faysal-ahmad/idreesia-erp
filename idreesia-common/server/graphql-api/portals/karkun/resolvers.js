@@ -41,6 +41,43 @@ export default {
 
       return getPortalKarkuns(portalId, filter);
     },
+
+    findPortalKarkunByCnicOrContactNumber(
+      obj,
+      { portalId, cnicNumber, contactNumber },
+      { user }
+    ) {
+      if (
+        hasInstanceAccess(user._id, portalId) === false ||
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_VIEW_KARKUNS,
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
+      ) {
+        return null;
+      }
+
+      let karkun = null;
+
+      if (cnicNumber) {
+        karkun = Karkuns.findOne({
+          cnicNumber: { $eq: cnicNumber },
+        });
+      }
+
+      if (karkun) return karkun;
+
+      if (contactNumber) {
+        karkun = Karkuns.findOne({
+          $or: [
+            { contactNumber1: contactNumber },
+            { contactNumber2: contactNumber },
+          ],
+        });
+      }
+
+      return karkun;
+    },
   },
 
   Mutation: {
@@ -115,6 +152,41 @@ export default {
       });
 
       return karkun;
+    },
+
+    linkPortalKarkun(obj, { portalId, memberId, karkunId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.PORTALS_MANAGE_KARKUNS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Karkuns in the System.'
+        );
+      }
+
+      if (hasInstanceAccess(user._id, portalId) === false) {
+        throw new Error(
+          'You do not have permission to manage Karkuns in this Mehfil Portal.'
+        );
+      }
+
+      // Before linking this karkun to the member, make sure that this karkun
+      // is not already linked to another member.
+      const karkunMember = Visitors.findOne({ karkunId });
+      if (karkunMember) {
+        throw new Error(
+          'This Karkun is already linked to another Member in the system.'
+        );
+      }
+
+      Visitors.update(memberId, {
+        $set: {
+          karkunId,
+        },
+      });
+
+      return Karkuns.findOne(karkunId);
     },
 
     updatePortalKarkun(obj, values, { user }) {

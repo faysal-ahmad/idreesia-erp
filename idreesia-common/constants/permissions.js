@@ -91,6 +91,7 @@ const Permissions = {
   // Portals Module
   // ****************************************************************************************
   PORTALS_DELETE_DATA: 'mehfil-portals-delete-data',
+  PORTALS_VIEW_AUDIT_LOGS: 'mehfil-portals-view-audit-logs',
 
   PORTALS_VIEW_USERS_AND_GROUPS: 'mehfil-portals-view-users-and-groups',
   PORTALS_MANAGE_USERS_AND_GROUPS: 'mehfil-portals-manage-users-and-groups',

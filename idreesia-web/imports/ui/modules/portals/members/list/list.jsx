@@ -13,10 +13,9 @@ import {
 } from 'meteor/idreesia-common/hooks/portals';
 import { Button, Modal, message } from '/imports/ui/controls';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
-import { VisitorsList } from '/imports/ui/modules/common';
+import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { CREATE_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';
 
-import ListFilter from './list-filter';
 import CreateKarkunForm from './create-karkun-form';
 import { PAGED_PORTAL_MEMBERS, LINK_PORTAL_KARKUN } from '../gql';
 
@@ -36,6 +35,7 @@ const List = ({ history, location }) => {
       'phoneNumber',
       'city',
       'ehadDuration',
+      'updatedBetween',
       'pageIndex',
       'pageSize',
     ],
@@ -70,6 +70,10 @@ const List = ({ history, location }) => {
 
   const handleKarkunLinkAction = visitor => {
     history.push(paths.karkunsEditFormPath(portalId, visitor.karkunId));
+  };
+
+  const handleAuditLogsAction = visitor => {
+    history.push(`${paths.auditLogsPath(portalId)}?entityId=${visitor._id}`);
   };
 
   const handleCreateKarkunCancelled = () => {
@@ -129,11 +133,14 @@ const List = ({ history, location }) => {
     phoneNumber,
     city,
     ehadDuration,
+    updatedBetween,
     pageIndex,
     pageSize,
   } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+
+  const cities = portalCities.map(portalCity => portalCity.name);
 
   const getTableHeader = () => (
     <div className="list-table-header">
@@ -145,13 +152,15 @@ const List = ({ history, location }) => {
       >
         New Member
       </Button>
-      <ListFilter
-        portalId={portalId}
+      <VisitorsListFilter
         name={name}
         cnicNumber={cnicNumber}
         phoneNumber={phoneNumber}
         city={city}
         ehadDuration={ehadDuration}
+        updatedBetween={updatedBetween}
+        showAdditionalInfoFilter={false}
+        distinctCities={cities}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -164,6 +173,7 @@ const List = ({ history, location }) => {
         showCnicColumn
         showPhoneNumbersColumn
         showCityCountryColumn
+        showAuditLogsAction
         showDeleteAction={false}
         showKarkunLinkAction
         showKarkunCreateAction
@@ -171,6 +181,7 @@ const List = ({ history, location }) => {
         handleSelectItem={handleSelectItem}
         handleKarkunLinkAction={handleKarkunLinkAction}
         handleKarkunCreateAction={handleKarkunCreateAction}
+        handleAuditLogsAction={handleAuditLogsAction}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}
         pageSize={numPageSize}

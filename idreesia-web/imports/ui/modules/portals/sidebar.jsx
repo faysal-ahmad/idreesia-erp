@@ -42,6 +42,9 @@ class Sidebar extends Component {
     } else if (key.startsWith('user-accounts')) {
       setActiveSubModuleName(SubModuleNames.users);
       history.push(paths.usersPath(portalId));
+    } else if (key.startsWith('audit-logs')) {
+      setActiveSubModuleName(SubModuleNames.auditLogs);
+      history.push(paths.auditLogsPath(portalId));
     }
   };
 
@@ -79,6 +82,12 @@ class Sidebar extends Component {
         </span>
       }
     >
+      <Menu.Item parent-key={portalId} key={`audit-logs-${portalId}`}>
+        <span>
+          <Icon type="audit" style={IconStyle} />
+          Audit Logs
+        </span>
+      </Menu.Item>
       <Menu.Item parent-key={portalId} key={`user-accounts-${portalId}`}>
         <span>
           <Icon type="unlock" style={IconStyle} />

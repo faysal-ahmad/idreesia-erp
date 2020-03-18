@@ -35,6 +35,7 @@ const List = ({ history, location }) => {
       'dutyId',
       'cityId',
       'cityMehfilId',
+      'updatedBetween',
       'pageIndex',
       'pageSize',
     ],
@@ -67,6 +68,10 @@ const List = ({ history, location }) => {
     history.push(paths.karkunsEditFormPath(portalId, karkun._id));
   };
 
+  const handleAuditLogsAction = karkun => {
+    history.push(`${paths.auditLogsPath(portalId)}?entityId=${karkun._id}`);
+  };
+
   if (loading) return null;
   const { pagedPortalKarkuns } = data;
   const {
@@ -78,6 +83,7 @@ const List = ({ history, location }) => {
     dutyId,
     cityId,
     cityMehfilId,
+    updatedBetween,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -108,6 +114,7 @@ const List = ({ history, location }) => {
         dutyId={dutyId}
         cityId={cityId}
         cityMehfilId={cityMehfilId}
+        updatedBetween={updatedBetween}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -128,10 +135,12 @@ const List = ({ history, location }) => {
       showCnicColumn
       showPhoneNumbersColumn
       showMehfilCityColumn
+      showAuditLogsAction
       showDutiesColumn
       showDeleteAction={false}
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
+      handleAuditLogsAction={handleAuditLogsAction}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

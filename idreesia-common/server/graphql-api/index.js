@@ -107,6 +107,9 @@ import CityResolvers from './outstation/city/resolvers';
 import CityMehfilSchema from './outstation/city-mehfil/city-mehfil.graphql';
 import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
 
+import OutstationAuditLogSchema from './outstation/audit-log/audit-log.graphql';
+import OutstationAuditLogResolvers from './outstation/audit-log/resolvers';
+
 import OutstationMemberSchema from './outstation/member/member.graphql';
 import OutstationMemberResolvers from './outstation/member/resolvers';
 
@@ -133,6 +136,9 @@ import PortalResolvers from './portals/portal/resolvers';
 
 import PortalUserSchema from './portals/user/user.graphql';
 import PortalUserResolvers from './portals/user/resolvers';
+
+import PortalAuditLogSchema from './portals/audit-log/audit-log.graphql';
+import PortalAuditLogResolvers from './portals/audit-log/resolvers';
 
 import PortalKarkunSchema from './portals/karkun/karkun.graphql';
 import PortalKarkunResolvers from './portals/karkun/resolvers';
@@ -243,6 +249,7 @@ const typeDefs = [
 
   CitySchema,
   CityMehfilSchema,
+  OutstationAuditLogSchema,
   OutstationMemberSchema,
   OutstationKarkunSchema,
   OutstationKarkunDutySchema,
@@ -252,6 +259,7 @@ const typeDefs = [
 
   PortalSchema,
   PortalUserSchema,
+  PortalAuditLogSchema,
   PortalKarkunSchema,
   PortalKarkunDutySchema,
   PortalMemberSchema,
@@ -313,6 +321,7 @@ const resolvers = merge(
 
   CityResolvers,
   CityMehfilResolvers,
+  OutstationAuditLogResolvers,
   OutstationMemberResolvers,
   OutstationKarkunResolvers,
   OutstationKarkunDutyResolvers,
@@ -322,6 +331,7 @@ const resolvers = merge(
 
   PortalResolvers,
   PortalUserResolvers,
+  PortalAuditLogResolvers,
   PortalKarkunResolvers,
   PortalKarkunDutyResolvers,
   PortalMemberResolvers,

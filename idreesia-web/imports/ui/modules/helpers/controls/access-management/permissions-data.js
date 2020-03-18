@@ -400,6 +400,14 @@ export const portalsPermissionsData = {
   key: 'module-portals',
   children: [
     {
+      title: 'Delete Data',
+      key: PermissionConstants.PORTALS_DELETE_DATA,
+    },
+    {
+      title: 'View Audit Logs',
+      key: PermissionConstants.PORTALS_VIEW_AUDIT_LOGS,
+    },
+    {
       title: 'Users & Groups',
       key: 'module-portals-users-and-groups',
       children: [

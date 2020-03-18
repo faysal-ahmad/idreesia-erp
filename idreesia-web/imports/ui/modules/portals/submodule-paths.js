@@ -44,6 +44,13 @@ export default class SubModulePaths {
     return `${SubModulePaths.membersPath(portalId)}/${memberId}`;
   }
 
+  // ******************************************************************************
+  // Audit Logs
+  // ******************************************************************************
+  static auditLogsPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/audit-logs`;
+  }
+
   // *************************************************************************************
   // Users Routes
   // *************************************************************************************

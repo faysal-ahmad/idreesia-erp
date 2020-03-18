@@ -46,6 +46,7 @@ const List = ({ history, location }) => {
       'ehadDuration',
       'additionalInfo',
       'dataSource',
+      'updatedBetween',
       'pageIndex',
       'pageSize',
     ],
@@ -71,6 +72,7 @@ const List = ({ history, location }) => {
     ehadDuration,
     additionalInfo,
     dataSource,
+    updatedBetween,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -108,6 +110,10 @@ const List = ({ history, location }) => {
 
   const handleScanClicked = () => {
     history.push(paths.visitorRegistrationPath);
+  };
+
+  const handleAuditLogsAction = visitor => {
+    history.push(`${paths.auditLogsPath}?entityId=${visitor._id}`);
   };
 
   const handleStayHistoryAction = visitor => {
@@ -197,6 +203,7 @@ const List = ({ history, location }) => {
           ehadDuration={ehadDuration}
           additionalInfo={additionalInfo}
           dataSource={dataSource}
+          updatedBetween={updatedBetween}
           showAdditionalInfoFilter
           showDataSourceFilter
           distinctCities={distinctCities || []}
@@ -229,13 +236,14 @@ const List = ({ history, location }) => {
         showCityCountryColumn
         showStayHistoryAction
         showMulakaatHistoryAction
-        showLookupAction={false}
+        showAuditLogsAction
         showDeleteAction
         listHeader={getTableHeader}
         handleSelectItem={handleSelectItem}
         handleDeleteItem={handleDeleteItem}
         handleStayHistoryAction={handleStayHistoryAction}
         handleMulakaatHistoryAction={handleMulakaatHistoryAction}
+        handleAuditLogsAction={handleAuditLogsAction}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}
         pageSize={numPageSize}

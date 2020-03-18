@@ -23,6 +23,7 @@ export { default as CascaderField } from './cascader-field';
 export { default as CheckboxField } from './checkbox-field';
 export { default as CheckboxGroupField } from './checkbox-group-field';
 export { default as DateField } from './date-field';
+export { default as DateRangeField } from './date-range-field';
 export { default as InputCnicField } from './input-cnic-field';
 export { default as InputMobileField } from './input-mobile-field';
 export { default as InputFileField } from './input-file-field';

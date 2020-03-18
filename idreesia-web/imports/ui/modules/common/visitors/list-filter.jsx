@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
+import { Formats } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants/security';
 
 import {
@@ -12,6 +14,7 @@ import {
   Tooltip,
 } from '/imports/ui/controls';
 import {
+  DateRangeField,
   InputCnicField,
   InputMobileField,
   InputTextField,
@@ -43,6 +46,7 @@ const ListFilter = ({
   ehadDuration,
   additionalInfo,
   dataSource,
+  updatedBetween,
   showAdditionalInfoFilter,
   showDataSourceFilter,
   distinctCities,
@@ -58,6 +62,7 @@ const ListFilter = ({
       ehadDuration: '',
       additionalInfo: '',
       dataSource: '',
+      updatedBetween: JSON.stringify(['', '']),
     });
   };
 
@@ -73,6 +78,14 @@ const ListFilter = ({
         ehadDuration: values.ehadDuration,
         additionalInfo: values.additionalInfo,
         dataSource: values.dataSource,
+        updatedBetween: JSON.stringify([
+          values.updatedBetween[0]
+            ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
+            : '',
+          values.updatedBetween[1]
+            ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
+            : '',
+        ]),
       });
     });
   };
@@ -151,6 +164,28 @@ const ListFilter = ({
     />
   ) : null;
 
+  let initialValue;
+  if (updatedBetween) {
+    const dates = updatedBetween ? JSON.parse(updatedBetween) : null;
+    initialValue = [
+      dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
+      dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
+    ];
+  } else {
+    initialValue = [null, null];
+  }
+
+  const updatedBetweenField = (
+    <DateRangeField
+      fieldName="updatedBetween"
+      fieldLabel="Updated"
+      required={false}
+      fieldLayout={formItemLayout}
+      initialValue={initialValue}
+      getFieldDecorator={getFieldDecorator}
+    />
+  );
+
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
@@ -200,6 +235,7 @@ const ListFilter = ({
           />
           {additionalInfoFilter}
           {dataSourceFilter}
+          {updatedBetweenField}
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">
               <Button type="default" onClick={handleReset}>
@@ -228,6 +264,7 @@ ListFilter.propTypes = {
   city: PropTypes.string,
   ehadDuration: PropTypes.string,
   additionalInfo: PropTypes.string,
+  updatedBetween: PropTypes.string,
   dataSource: PropTypes.string,
   distinctCities: PropTypes.array,
   setPageParams: PropTypes.func,

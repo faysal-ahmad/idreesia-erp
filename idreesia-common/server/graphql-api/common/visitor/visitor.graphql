@@ -39,6 +39,7 @@ input VisitorFilter {
   ehadDate: String
   additionalInfo: String
   dataSource: String
+  updatedBetween: String
   pageIndex: String
   pageSize: String
 }

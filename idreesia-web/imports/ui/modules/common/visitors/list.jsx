@@ -26,6 +26,7 @@ export default class VisitorsList extends Component {
     showDeleteAction: PropTypes.bool,
     showStayHistoryAction: PropTypes.bool,
     showMulakaatHistoryAction: PropTypes.bool,
+    showAuditLogsAction: PropTypes.bool,
     showKarkunLinkAction: PropTypes.bool,
     showKarkunCreateAction: PropTypes.bool,
 
@@ -34,6 +35,7 @@ export default class VisitorsList extends Component {
     handleDeleteItem: PropTypes.func,
     handleStayHistoryAction: PropTypes.func,
     handleMulakaatHistoryAction: PropTypes.func,
+    handleAuditLogsAction: PropTypes.func,
     handleKarkunLinkAction: PropTypes.func,
     handleKarkunCreateAction: PropTypes.func,
     setPageParams: PropTypes.func,
@@ -50,6 +52,7 @@ export default class VisitorsList extends Component {
     showDeleteAction: false,
     showStayHistoryAction: false,
     showMulakaatHistoryAction: false,
+    showAuditLogsAction: false,
     showKarkunLinkAction: false,
     showKarkunCreateAction: false,
 
@@ -57,6 +60,7 @@ export default class VisitorsList extends Component {
     handleDeleteItem: noop,
     handleStayHistoryAction: noop,
     handleMulakaatHistoryAction: noop,
+    handleAuditLogsAction: noop,
     handleKarkunLinkAction: noop,
     handleKarkunCreateAction: noop,
     listHeader: () => null,
@@ -146,11 +150,13 @@ export default class VisitorsList extends Component {
         showDeleteAction,
         showStayHistoryAction,
         showMulakaatHistoryAction,
+        showAuditLogsAction,
         showKarkunLinkAction,
         showKarkunCreateAction,
         handleDeleteItem,
         handleStayHistoryAction,
         handleMulakaatHistoryAction,
+        handleAuditLogsAction,
         handleKarkunLinkAction,
         handleKarkunCreateAction,
       } = this.props;
@@ -174,6 +180,18 @@ export default class VisitorsList extends Component {
             className="list-actions-icon"
             onClick={() => {
               handleMulakaatHistoryAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
+      const auditLogsAction = showAuditLogsAction ? (
+        <Tooltip title="Audit Logs">
+          <Icon
+            type="audit"
+            className="list-actions-icon"
+            onClick={() => {
+              handleAuditLogsAction(record);
             }}
           />
         </Tooltip>
@@ -224,6 +242,7 @@ export default class VisitorsList extends Component {
         <div className="list-actions-column">
           {stayHistoryAction}
           {mulakaatHistoryAction}
+          {auditLogsAction}
           {linkAction}
           {createAction}
           {deleteAction}

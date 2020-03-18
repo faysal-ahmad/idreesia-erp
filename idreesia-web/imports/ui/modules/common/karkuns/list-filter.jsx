@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { Formats } from 'meteor/idreesia-common/constants';
 import { Collapse, Form, Icon, Tooltip } from '/imports/ui/controls';
 
 import {
@@ -13,6 +14,7 @@ import {
   getMehfilDutyFilterField,
   getCityMehfilFilterField,
   getRegionFilterField,
+  getUpdatedBetweenFilterField,
   getFormButtons,
 } from '../field-helpers';
 
@@ -35,6 +37,7 @@ const ListFilter = ({
   cityId,
   cityMehfilId,
   region,
+  updatedBetween,
 
   showNameFilter,
   showCnicFilter,
@@ -45,6 +48,7 @@ const ListFilter = ({
   showMehfilDutyFilter,
   showCityMehfilFilter,
   showRegionFilter,
+  showUpdatedBetweenFilter,
 
   mehfilDuties,
   cities,
@@ -67,6 +71,7 @@ const ListFilter = ({
       cityId: null,
       cityMehfilId: null,
       region: null,
+      updatedBetween: JSON.stringify(['', '']),
     });
   };
 
@@ -75,9 +80,26 @@ const ListFilter = ({
       if (err) return;
       setPageParams({
         pageIndex: '0',
+        name: values.name,
+        cnicNumber: values.cnicNumber,
+        phoneNumber: values.phoneNumber,
+        bloodGroup: values.bloodGroup,
+        lastTarteeb: values.lastTarteeb,
+        attendance: values.attendance,
+        jobId: values.jobId,
+        dutyId: values.dutyId,
+        dutyShiftId: values.dutyShiftId,
         cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
         cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
-        ...values,
+        region: values.region,
+        updatedBetween: JSON.stringify([
+          values.updatedBetween[0]
+            ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
+            : '',
+          values.updatedBetween[1]
+            ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
+            : '',
+        ]),
       });
     });
   };
@@ -133,6 +155,10 @@ const ListFilter = ({
           {showRegionFilter
             ? getRegionFilterField(region, getFieldDecorator, regions)
             : null}
+
+          {showUpdatedBetweenFilter
+            ? getUpdatedBetweenFilterField(updatedBetween, getFieldDecorator)
+            : null}
           {getFormButtons(handleReset, handleSubmit)}
         </Form>
       </Collapse.Panel>
@@ -155,6 +181,7 @@ ListFilter.propTypes = {
   cityId: PropTypes.string,
   cityMehfilId: PropTypes.string,
   region: PropTypes.string,
+  updatedBetween: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 
@@ -169,6 +196,7 @@ ListFilter.propTypes = {
   showDutyShiftFilter: PropTypes.bool,
   showCityMehfilFilter: PropTypes.bool,
   showRegionFilter: PropTypes.bool,
+  showUpdatedBetweenFilter: PropTypes.bool,
 
   mehfilDuties: PropTypes.array,
   cities: PropTypes.array,
@@ -189,6 +217,7 @@ ListFilter.defaultProps = {
   showDutyShiftFilter: false,
   showCityMehfilFilter: false,
   showRegionFilter: false,
+  showUpdatedBetweenFilter: true,
 
   mehfilDuties: [],
   cities: [],

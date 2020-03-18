@@ -32,6 +32,7 @@ const List = ({ history, location }) => {
       'phoneNumber',
       'city',
       'ehadDuration',
+      'updatedBetween',
       'pageIndex',
       'pageSize',
     ],
@@ -53,6 +54,7 @@ const List = ({ history, location }) => {
     phoneNumber,
     city,
     ehadDuration,
+    updatedBetween,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -77,6 +79,10 @@ const List = ({ history, location }) => {
 
   const handleNewClicked = () => {
     history.push(paths.membersNewFormPath);
+  };
+
+  const handleAuditLogsAction = member => {
+    history.push(`${paths.auditLogsPath}?entityId=${member._id}`);
   };
 
   const handleExportSelected = () => {
@@ -137,6 +143,7 @@ const List = ({ history, location }) => {
           phoneNumber={phoneNumber}
           city={city}
           ehadDuration={ehadDuration}
+          updatedBetween={updatedBetween}
           showAdditionalInfoFilter={false}
           distinctCities={distinctCities}
           setPageParams={setPageParams}
@@ -164,12 +171,12 @@ const List = ({ history, location }) => {
       showCnicColumn
       showPhoneNumbersColumn
       showCityCountryColumn
-      showMulakaatHistoryAction={false}
-      showLookupAction={false}
+      showAuditLogsAction
       showDeleteAction
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
       handleDeleteItem={handleDeleteItem}
+      handleAuditLogsAction={handleAuditLogsAction}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

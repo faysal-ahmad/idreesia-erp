@@ -20,10 +20,12 @@ export default class KarkunsList extends Component {
     showDutiesColumn: PropTypes.bool,
     showMehfilCityColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
+    showAuditLogsAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
+    handleAuditLogsAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
     pageIndex: PropTypes.number,
@@ -35,8 +37,11 @@ export default class KarkunsList extends Component {
   };
 
   static defaultProps = {
+    showAuditLogsAction: false,
+
     handleSelectItem: noop,
     handleDeleteItem: noop,
+    handleAuditLogsAction: noop,
     listHeader: () => null,
   };
 
@@ -129,7 +134,25 @@ export default class KarkunsList extends Component {
   actionsColumn = {
     key: 'action',
     render: (text, record) => {
-      const { showDeleteAction, handleDeleteItem } = this.props;
+      const {
+        showAuditLogsAction,
+        showDeleteAction,
+        handleAuditLogsAction,
+        handleDeleteItem,
+      } = this.props;
+
+      const auditLogsAction = showAuditLogsAction ? (
+        <Tooltip title="Audit Logs">
+          <Icon
+            type="audit"
+            className="list-actions-icon"
+            onClick={() => {
+              handleAuditLogsAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
       const deleteAction = showDeleteAction ? (
         <Popconfirm
           title="Are you sure you want to delete this karkun?"
@@ -145,7 +168,12 @@ export default class KarkunsList extends Component {
         </Popconfirm>
       ) : null;
 
-      return <div className="list-actions-column">{deleteAction}</div>;
+      return (
+        <div className="list-actions-column">
+          {auditLogsAction}
+          {deleteAction}
+        </div>
+      );
     },
   };
 
@@ -155,6 +183,7 @@ export default class KarkunsList extends Component {
       showPhoneNumbersColumn,
       showMehfilCityColumn,
       showDutiesColumn,
+      showAuditLogsAction,
       showDeleteAction,
     } = this.props;
     const columns = [this.nameColumn];
@@ -175,7 +204,7 @@ export default class KarkunsList extends Component {
       columns.push(this.dutiesColumn);
     }
 
-    if (showDeleteAction) {
+    if (showAuditLogsAction || showDeleteAction) {
       columns.push(this.actionsColumn);
     }
 

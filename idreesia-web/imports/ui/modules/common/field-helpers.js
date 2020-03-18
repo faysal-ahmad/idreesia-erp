@@ -1,8 +1,11 @@
 import React from 'react';
+import moment from 'moment';
 
+import { Formats } from 'meteor/idreesia-common/constants';
 import { Button, Form, Row } from '/imports/ui/controls';
 import {
   CascaderField,
+  DateRangeField,
   InputCnicField,
   InputTextField,
   SelectField,
@@ -163,6 +166,29 @@ export function getRegionFilterField(fieldValue, getFieldDecorator, regions) {
       getDataText={item => item}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
+      getFieldDecorator={getFieldDecorator}
+    />
+  );
+}
+
+export function getUpdatedBetweenFilterField(fieldValue, getFieldDecorator) {
+  let initialValue;
+  if (fieldValue) {
+    const dates = JSON.parse(fieldValue);
+    initialValue = [
+      dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
+      dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
+    ];
+  } else {
+    initialValue = [null, null];
+  }
+
+  return (
+    <DateRangeField
+      fieldName="updatedBetween"
+      fieldLabel="Updated"
+      fieldLayout={formItemLayout}
+      initialValue={initialValue}
       getFieldDecorator={getFieldDecorator}
     />
   );

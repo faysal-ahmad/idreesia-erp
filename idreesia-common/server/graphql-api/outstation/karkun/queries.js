@@ -2,6 +2,7 @@ import moment from 'moment';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import { Formats } from 'meteor/idreesia-common/constants';
 
 const bloodGroupValueConversion = {
   'A-': 'A-',
@@ -28,6 +29,7 @@ function buildPipeline(params) {
     dutyId,
     cityId,
     cityMehfilId,
+    updatedBetween,
   } = params;
 
   if (name) {
@@ -176,6 +178,33 @@ function buildPipeline(params) {
         },
       },
     });
+  }
+
+  if (updatedBetween) {
+    const updatedBetweenDates = JSON.parse(updatedBetween);
+
+    if (updatedBetweenDates[0]) {
+      pipeline.push({
+        $match: {
+          updatedAt: {
+            $gte: moment(updatedBetweenDates[0], Formats.DATE_FORMAT)
+              .startOf('day')
+              .toDate(),
+          },
+        },
+      });
+    }
+    if (updatedBetweenDates[1]) {
+      pipeline.push({
+        $match: {
+          updatedAt: {
+            $lte: moment(updatedBetweenDates[1], Formats.DATE_FORMAT)
+              .endOf('day')
+              .toDate(),
+          },
+        },
+      });
+    }
   }
 
   return pipeline;

@@ -6,6 +6,7 @@ const SubModuleNames = {
   mehfilDuties: 'Mehfil Duties',
   amaanatLogs: 'Amaanat Logs',
   messages: 'Messages',
+  auditLogs: 'Audit Logs',
 };
 
 export default SubModuleNames;

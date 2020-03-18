@@ -57,4 +57,9 @@ export default class SubModulePaths {
   // Attendance Sheets
   // ******************************************************************************
   static attendanceSheetsPath = `${ModulePaths.outstation}/attendance-sheets`;
+
+  // ******************************************************************************
+  // Audit Logs
+  // ******************************************************************************
+  static auditLogsPath = `${ModulePaths.outstation}/audit-logs`;
 }

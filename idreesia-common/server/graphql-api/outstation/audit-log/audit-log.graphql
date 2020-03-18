@@ -1,0 +1,3 @@
+extend type Query {
+  pagedOutstationAuditLogs(filter: AuditLogFilter): PagedAuditLogType
+}

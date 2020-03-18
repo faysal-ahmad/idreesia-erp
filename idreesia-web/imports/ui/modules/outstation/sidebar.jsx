@@ -57,6 +57,11 @@ class Sidebar extends Component {
         history.push(paths.messagesPath);
         break;
 
+      case 'audit-logs':
+        setActiveSubModuleName(SubModuleNames.auditLogs);
+        history.push(paths.auditLogsPath);
+        break;
+
       default:
         break;
     }
@@ -99,6 +104,22 @@ class Sidebar extends Component {
             Messages
           </span>
         </Menu.Item>
+        <Menu.SubMenu
+          key="administration"
+          title={
+            <span>
+              <Icon type="tool" style={IconStyle} />
+              Administration
+            </span>
+          }
+        >
+          <Menu.Item key="audit-logs">
+            <span>
+              <Icon type="audit" style={IconStyle} />
+              Audit Logs
+            </span>
+          </Menu.Item>
+        </Menu.SubMenu>
         <Menu.SubMenu
           key="setup"
           title={

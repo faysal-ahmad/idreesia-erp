@@ -36,6 +36,7 @@ const List = ({ history, location }) => {
       'cityId',
       'cityMehfilId',
       'region',
+      'updatedBetween',
       'pageIndex',
       'pageSize',
     ],
@@ -90,6 +91,10 @@ const List = ({ history, location }) => {
     history.push(paths.karkunsEditFormPath(karkun._id));
   };
 
+  const handleAuditLogsAction = karkun => {
+    history.push(`${paths.auditLogsPath}?entityId=${karkun._id}`);
+  };
+
   if (loading) return null;
   const { pagedOutstationKarkuns } = data;
   const {
@@ -103,6 +108,7 @@ const List = ({ history, location }) => {
     cityId,
     cityMehfilId,
     region,
+    updatedBetween,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -139,6 +145,7 @@ const List = ({ history, location }) => {
         cityId={cityId}
         cityMehfilId={cityMehfilId}
         region={region}
+        updatedBetween={updatedBetween}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -186,10 +193,12 @@ const List = ({ history, location }) => {
       showPhoneNumbersColumn
       showMehfilCityColumn
       showDutiesColumn
+      showAuditLogsAction
       showDeleteAction
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
       handleDeleteItem={handleDeleteItem}
+      handleAuditLogsAction={handleAuditLogsAction}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

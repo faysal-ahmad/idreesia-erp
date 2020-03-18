@@ -55,6 +55,7 @@ input KarkunFilter {
   cityId: String
   cityMehfilId: String
   region: String
+  updatedBetween: String
   predefinedFilterName: String
   showVolunteers: String
   showEmployees: String

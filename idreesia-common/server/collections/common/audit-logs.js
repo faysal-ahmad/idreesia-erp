@@ -56,12 +56,20 @@ class AuditLogs extends AggregatableCollection {
   searchAuditLogs(params = {}) {
     const pipeline = [];
 
-    const { entityId, pageIndex = '0', pageSize = '20' } = params;
+    const { entityId, entityTypes, pageIndex = '0', pageSize = '20' } = params;
 
     if (entityId) {
       pipeline.push({
         $match: {
           entityId: { $eq: entityId },
+        },
+      });
+    }
+
+    if (entityTypes) {
+      pipeline.push({
+        $match: {
+          entityType: { $in: entityTypes },
         },
       });
     }
@@ -73,7 +81,7 @@ class AuditLogs extends AggregatableCollection {
     const nPageIndex = parseInt(pageIndex, 10);
     const nPageSize = parseInt(pageSize, 10);
     const resultsPipeline = pipeline.concat([
-      { $sort: { name: 1 } },
+      { $sort: { operationTime: -1 } },
       { $skip: nPageIndex * nPageSize },
       { $limit: nPageSize },
     ]);

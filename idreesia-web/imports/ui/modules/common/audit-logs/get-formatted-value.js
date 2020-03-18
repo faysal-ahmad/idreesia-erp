@@ -10,8 +10,10 @@ const fieldDisplayNamesMap = {
   emailAddress: 'Email',
   currentAddress: 'Current Address',
   permanentAddress: 'Permanent Address',
+  city: 'City',
   cityId: 'City ID',
   cityMehfilId: 'Mehfil ID',
+  country: 'Country',
   bloodGroup: 'Blood Group',
   sharedResidenceId: 'Shared Residence ID',
   educationalQualification: 'Educational Qualification',
@@ -24,6 +26,7 @@ const fieldDisplayNamesMap = {
   referenceName: 'R/O',
   imageId: 'Image ID',
   attachmentId: 'Attachment ID',
+  dataSource: 'Source',
 };
 
 const fieldValueFormatterMap = {

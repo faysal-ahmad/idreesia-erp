@@ -25,7 +25,7 @@ export default class AuditLogsList extends Component {
 
   columns = [
     {
-      title: 'EntityID',
+      title: 'Entity ID',
       dataIndex: 'entityId',
       key: 'entityId',
     },

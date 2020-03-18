@@ -126,9 +126,24 @@ class Sidebar extends Component {
             </span>
           }
         >
-          <Menu.Item key="jobs">Jobs</Menu.Item>
-          <Menu.Item key="ms-duties">Duties &amp; Shifts</Menu.Item>
-          <Menu.Item key="duty-locations">Duty Locations</Menu.Item>
+          <Menu.Item key="jobs">
+            <span>
+              <Icon type="tag" style={IconStyle} />
+              Jobs
+            </span>
+          </Menu.Item>
+          <Menu.Item key="ms-duties">
+            <span>
+              <Icon type="tags" style={IconStyle} />
+              Duties &amp; Shifts
+            </span>
+          </Menu.Item>
+          <Menu.Item key="duty-locations">
+            <span>
+              <Icon type="environment" style={IconStyle} />
+              Duty Locations
+            </span>
+          </Menu.Item>
         </SubMenu>
       </Menu>
     );

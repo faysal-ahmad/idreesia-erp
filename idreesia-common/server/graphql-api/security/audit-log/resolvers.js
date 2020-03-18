@@ -1,6 +1,7 @@
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { EntityTypes } from 'meteor/idreesia-common/constants/audit';
 
 export default {
   Query: {
@@ -16,7 +17,11 @@ export default {
         };
       }
 
-      return AuditLogs.searchAuditLogs(filter);
+      const updatedFilter = Object.assign({}, filter, {
+        entityTypes: [EntityTypes.VISITOR],
+      });
+
+      return AuditLogs.searchAuditLogs(updatedFilter);
     },
   },
 };

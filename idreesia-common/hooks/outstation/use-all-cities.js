@@ -6,6 +6,7 @@ const QUERY = gql`
     allCities {
       _id
       name
+      peripheryOf
       country
     }
   }

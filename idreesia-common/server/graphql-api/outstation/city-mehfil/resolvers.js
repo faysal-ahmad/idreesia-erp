@@ -18,16 +18,22 @@ export default {
     },
 
     cityMehfilsByCityId(obj, { cityId }) {
-      return CityMehfils.find({
-        cityId,
-      }).fetch();
+      return CityMehfils.find(
+        {
+          cityId,
+        },
+        { sort: { name: 1 } }
+      ).fetch();
     },
 
     cityMehfilsByPortalId(obj, { portalId }) {
       const portal = Portals.findOne(portalId);
-      return CityMehfils.find({
-        cityId: { $in: portal.cityIds },
-      }).fetch();
+      return CityMehfils.find(
+        {
+          cityId: { $in: portal.cityIds },
+        },
+        { sort: { name: 1 } }
+      ).fetch();
     },
 
     cityMehfilById(obj, { _id }) {

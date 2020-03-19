@@ -5,6 +5,7 @@ const CITY_BY_ID = gql`
     cityById(_id: $_id) {
       _id
       name
+      peripheryOf
       country
       region
       createdAt

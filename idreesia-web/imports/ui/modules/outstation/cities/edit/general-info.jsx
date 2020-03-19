@@ -2,15 +2,17 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
+import { WithAllCities } from '/imports/ui/modules/outstation/common/composers';
 
-import { ALL_CITIES, PAGED_CITIES, CITY_BY_ID, UPDATE_CITY } from '../gql';
+import { PAGED_CITIES, CITY_BY_ID, UPDATE_CITY } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -19,7 +21,9 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    loading: PropTypes.bool,
+    allCitiesLoading: PropTypes.bool,
+    allCities: PropTypes.array,
+    cityByIdLoading: PropTypes.bool,
     cityById: PropTypes.object,
     updateCity: PropTypes.func,
   };
@@ -32,13 +36,14 @@ class GeneralInfo extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, cityById, updateCity } = this.props;
-    form.validateFields((err, { name, country, region }) => {
+    form.validateFields((err, { name, peripheryOf, country, region }) => {
       if (err) return;
 
       updateCity({
         variables: {
           _id: cityById._id,
           name,
+          peripheryOf,
           country,
           region,
         },
@@ -52,10 +57,16 @@ class GeneralInfo extends Component {
     });
   };
 
+  getNonPeripheryCities = () => {
+    const { allCities } = this.props;
+    return filter(allCities, city => !city.peripheryOf);
+  };
+
   render() {
-    const { loading, cityById } = this.props;
+    const { cityByIdLoading, allCitiesLoading, cityById } = this.props;
     const { getFieldDecorator, isFieldsTouched } = this.props.form;
-    if (loading) return null;
+    if (cityByIdLoading || allCitiesLoading) return null;
+    const nonPeripheryCities = this.getNonPeripheryCities();
 
     return (
       <Fragment>
@@ -66,6 +77,15 @@ class GeneralInfo extends Component {
             initialValue={cityById.name}
             required
             requiredMessage="Please input a name for the city."
+            getFieldDecorator={getFieldDecorator}
+          />
+          <SelectField
+            data={nonPeripheryCities}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name }) => name}
+            fieldName="peripheryOf"
+            fieldLabel="Periphery Of"
+            initialValue={cityById.peripheryOf}
             getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
@@ -95,14 +115,15 @@ class GeneralInfo extends Component {
 
 export default flowRight(
   Form.create(),
+  WithAllCities(),
   graphql(UPDATE_CITY, {
     name: 'updateCity',
     options: {
-      refetchQueries: [{ query: PAGED_CITIES }, { query: ALL_CITIES }],
+      refetchQueries: [{ query: PAGED_CITIES }],
     },
   }),
   graphql(CITY_BY_ID, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }) => ({ cityByIdLoading: data.loading, ...data }),
     options: ({ cityId }) => ({ variables: { _id: cityId } }),
   })
 )(GeneralInfo);

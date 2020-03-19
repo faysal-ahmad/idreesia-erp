@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { filter } from 'meteor/idreesia-common/utilities/lodash';
+
 import {
   Button,
   Collapse,
@@ -33,6 +35,7 @@ const ListFilter = props => {
     form.resetFields();
     setPageParams({
       pageIndex: 0,
+      peripheryOf: null,
       region: null,
       portalId: null,
     });
@@ -41,10 +44,11 @@ const ListFilter = props => {
   const handleSubmit = () => {
     const { form, setPageParams } = props;
 
-    form.validateFields((err, { region, portalId }) => {
+    form.validateFields((err, { peripheryOf, region, portalId }) => {
       if (err) return;
       setPageParams({
         pageIndex: 0,
+        peripheryOf,
         region,
         portalId,
       });
@@ -70,15 +74,29 @@ const ListFilter = props => {
   const {
     region,
     portalId,
+    allCities,
     distinctRegions,
     allPortals,
     form: { getFieldDecorator },
   } = props;
 
+  const nonPeripheryCities = filter(allCities, city => !city.peripheryOf);
+
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
         <Form layout="horizontal">
+          <SelectField
+            fieldName="peripheryOf"
+            fieldLabel="Periphery Of"
+            required={false}
+            data={nonPeripheryCities}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name: _name }) => _name}
+            fieldLayout={formItemLayout}
+            initialValue={portalId}
+            getFieldDecorator={getFieldDecorator}
+          />
           <AutoCompleteField
             fieldName="region"
             fieldLabel="Region"
@@ -118,8 +136,10 @@ const ListFilter = props => {
 
 ListFilter.propTypes = {
   form: PropTypes.object,
+  allCities: PropTypes.array,
   distinctRegions: PropTypes.array,
   allPortals: PropTypes.array,
+  peripheryOf: PropTypes.string,
   region: PropTypes.string,
   portalId: PropTypes.string,
   setPageParams: PropTypes.func,

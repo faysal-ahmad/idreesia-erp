@@ -8,6 +8,7 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { find, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import {
+  useAllCities,
   useAllPortals,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
@@ -30,9 +31,10 @@ const List = ({ history, location }) => {
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: ['portalId', 'region', 'pageIndex', 'pageSize'],
+    paramNames: ['peripheryOf', 'portalId', 'region', 'pageIndex', 'pageSize'],
   });
 
+  const { allCitiesLoading, allCities } = useAllCities();
   const { allPortalsLoading, allPortals } = useAllPortals();
   const { distinctRegionsLoading, distinctRegions } = useDistinctRegions();
   const { data, loading, refetch } = useQuery(PAGED_CITIES, {
@@ -66,9 +68,15 @@ const List = ({ history, location }) => {
     });
   };
 
-  if (loading || allPortalsLoading || distinctRegionsLoading) return null;
+  if (
+    loading ||
+    allPortalsLoading ||
+    allCitiesLoading ||
+    distinctRegionsLoading
+  )
+    return null;
   const { pagedCities } = data;
-  const { region, portalId, pageIndex, pageSize } = queryParams;
+  const { peripheryOf, region, portalId, pageIndex, pageSize } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -77,19 +85,22 @@ const List = ({ history, location }) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 150,
       render: (text, record) => (
         <Link to={`${paths.citiesEditFormPath(record._id)}`}>{text}</Link>
       ),
     },
     {
-      title: 'Region',
-      dataIndex: 'region',
-      key: 'region',
+      title: 'Periphery Of',
+      key: 'peripheryOf',
+      width: 150,
+      render: (text, record) => record?.peripheryOfCity?.name,
     },
     {
-      title: 'Country',
-      dataIndex: 'country',
-      key: 'country',
+      title: 'Region',
+      dataIndex: 'region',
+      width: 100,
+      key: 'region',
     },
     {
       title: 'Mehfils',
@@ -97,13 +108,16 @@ const List = ({ history, location }) => {
       key: 'mehfils',
       render: (text, record) => {
         if (!record.mehfils || record.mehfils.length === 0) return null;
-        const mehfilNames = record.mehfils.map(mehfil => mehfil.name);
-        return mehfilNames.join(', ');
+        const mehfilNames = record.mehfils.map(mehfil => (
+          <li>{mehfil.name}</li>
+        ));
+        return <ul>{mehfilNames}</ul>;
       },
     },
     {
       title: 'In Portal',
       key: 'portal',
+      width: 150,
       render: (text, record) => {
         const cityPortal = find(allPortals, portal => {
           const cityIds = portal.cityIds || [];
@@ -115,6 +129,7 @@ const List = ({ history, location }) => {
     },
     {
       key: 'action',
+      width: 50,
       render: (text, record) => (
         <Tooltip key="delete" title="Delete">
           <Icon
@@ -143,8 +158,10 @@ const List = ({ history, location }) => {
       </div>
       <div className="list-table-header-section">
         <ListFilter
+          allCities={allCities}
           distinctRegions={distinctRegions}
           allPortals={allPortals}
+          peripheryOf={peripheryOf}
           region={region}
           portalId={portalId}
           setPageParams={setPageParams}
@@ -160,6 +177,7 @@ const List = ({ history, location }) => {
       dataSource={pagedCities.data}
       columns={columns}
       bordered
+      size="small"
       pagination={false}
       title={getTableHeader}
       footer={() => (

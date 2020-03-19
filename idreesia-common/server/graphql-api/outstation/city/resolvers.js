@@ -10,9 +10,19 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 export default {
   CityType: {
     mehfils: cityType =>
-      CityMehfils.find({
-        cityId: { $eq: cityType._id },
-      }).fetch(),
+      CityMehfils.find(
+        {
+          cityId: { $eq: cityType._id },
+        },
+        { sort: { name: 1 } }
+      ).fetch(),
+
+    peripheryOfCity: cityType =>
+      cityType.peripheryOf
+        ? Cities.findOne({
+            _id: { $eq: cityType.peripheryOf },
+          })
+        : null,
   },
 
   Query: {
@@ -47,7 +57,7 @@ export default {
   },
 
   Mutation: {
-    createCity(obj, { name, country, region }, { user }) {
+    createCity(obj, { name, peripheryOf, country, region }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -63,9 +73,21 @@ export default {
         throw new Error('A City with this name already exists.');
       }
 
+      if (peripheryOf) {
+        // This city cannot be a periphery of a city which is already a periphery
+        // of another city.
+        const _city = Cities.findOne({ _id: peripheryOf });
+        if (_city.peripheryOf) {
+          throw new Error(
+            `This city cannot be made a periphery of ${_city.name} as it is already a periphery of another city.`
+          );
+        }
+      }
+
       const date = new Date();
       const cityId = Cities.insert({
         name,
+        peripheryOf,
         country,
         region,
         createdAt: date,
@@ -77,7 +99,7 @@ export default {
       return Cities.findOne(cityId);
     },
 
-    updateCity(obj, { _id, name, country, region }, { user }) {
+    updateCity(obj, { _id, name, peripheryOf, country, region }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -88,10 +110,31 @@ export default {
         );
       }
 
+      if (peripheryOf) {
+        // This city cannot be a periphery of a city which is already a periphery
+        // of another city.
+        const _city = Cities.findOne({ _id: peripheryOf });
+        if (_city.peripheryOf) {
+          throw new Error(
+            `This city cannot be made a periphery of ${_city.name} as it is already a periphery of another city.`
+          );
+        }
+
+        // Also, this cannot be set as a periphery city, if other cities are set as
+        // periphery of this city.
+        const peripheryCount = Cities.find({ peripheryOf: _id }).count();
+        if (peripheryCount > 0) {
+          throw new Error(
+            "This city cannot be made a periphery of another city as it already has peripheries of it's own."
+          );
+        }
+      }
+
       const date = new Date();
       Cities.update(_id, {
         $set: {
           name,
+          peripheryOf,
           country,
           region,
           updatedAt: date,

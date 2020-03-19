@@ -16,11 +16,15 @@ export default () => WrappedComponent => {
       allCities {
         _id
         name
+        peripheryOf
       }
     }
   `;
 
   return graphql(withAllCitiesQuery, {
     props: ({ data }) => ({ allCitiesLoading: data.loading, ...data }),
+    options: {
+      fetchPolicy: 'no-cache',
+    },
   })(WithAllCities);
 };

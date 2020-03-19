@@ -24,7 +24,21 @@ class Cities extends AggregatableCollection {
   searchCities(params) {
     const pipeline = [];
 
-    const { region, portalId, pageIndex = '0', pageSize = '20' } = params;
+    const {
+      peripheryOf,
+      region,
+      portalId,
+      pageIndex = '0',
+      pageSize = '20',
+    } = params;
+
+    if (peripheryOf) {
+      pipeline.push({
+        $match: {
+          peripheryOf: { $eq: peripheryOf },
+        },
+      });
+    }
 
     if (region) {
       pipeline.push({

@@ -7,8 +7,13 @@ const PAGED_CITIES = gql`
       data {
         _id
         name
+        peripheryOf
         country
         region
+        peripheryOfCity {
+          _id
+          name
+        }
         mehfils {
           _id
           name

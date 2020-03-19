@@ -6,6 +6,10 @@ export default new SimpleSchema({
   name: {
     type: String,
   },
+  peripheryOf: {
+    type: String,
+    optional: true,
+  },
   country: {
     type: String,
   },

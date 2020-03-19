@@ -1,33 +1,22 @@
 import gql from 'graphql-tag';
 
 const PAGED_PAYMENTS = gql`
-  query pagedPayments($queryString: String) {
-    pagedPayments(queryString: $queryString) {
+  query pagedPayments($filter: PaymentFilter) {
+    pagedPayments(filter: $filter) {
       totalResults
       data {
         _id
+        paymentNumber
         name
         fatherName
         cnicNumber
         paymentDate
         paymentAmount
-        paymentNumber
         description
         isDeleted
-        history {
+        paymentType {
           _id
           name
-          fatherName
-          cnicNumber
-          paymentDate
-          paymentAmount
-          description
-          isDeleted
-          version
-          createdAt
-          createdBy
-          updatedAt
-          updatedBy
         }
       }
     }

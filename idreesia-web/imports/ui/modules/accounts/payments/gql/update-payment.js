@@ -8,7 +8,7 @@ const UPDATE_PAYMENT = gql`
     $cnicNumber: String
     $contactNumber: String
     $paymentAmount: Float
-    $paymentType: String
+    $paymentTypeId: String
     $paymentDate: String
     $description: String
   ) {
@@ -18,7 +18,7 @@ const UPDATE_PAYMENT = gql`
       fatherName: $fatherName
       cnicNumber: $cnicNumber
       contactNumber: $contactNumber
-      paymentType: $paymentType
+      paymentTypeId: $paymentTypeId
       paymentAmount: $paymentAmount
       paymentDate: $paymentDate
       description: $description
@@ -29,7 +29,7 @@ const UPDATE_PAYMENT = gql`
       cnicNumber
       contactNumber
       paymentAmount
-      paymentType
+      paymentTypeId
       paymentDate
       description
     }

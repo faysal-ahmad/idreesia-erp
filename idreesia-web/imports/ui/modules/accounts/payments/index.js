@@ -1,4 +1,4 @@
-export { default as PaymentsList } from './list/list-container';
+export { default as PaymentsList } from './list/list';
 export { default as PaymentsNewForm } from './new-form';
 export { default as PaymentsEditForm } from './edit-form';
 export {

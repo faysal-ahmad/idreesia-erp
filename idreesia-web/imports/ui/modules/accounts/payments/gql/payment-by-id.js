@@ -10,7 +10,7 @@ const PAYMENT_BY_ID = gql`
       contactNumber
       paymentNumber
       paymentAmount
-      paymentType
+      paymentTypeId
       paymentDate
       description
       isDeleted
@@ -18,21 +18,6 @@ const PAYMENT_BY_ID = gql`
       createdBy
       updatedAt
       updatedBy
-      history {
-        _id
-        name
-        fatherName
-        cnicNumber
-        paymentDate
-        paymentAmount
-        description
-        isDeleted
-        version
-        createdAt
-        createdBy
-        updatedAt
-        updatedBy
-      }
     }
   }
 `;

@@ -1,12 +1,22 @@
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
+import {
+  Payments,
+  PaymentTypes,
+} from 'meteor/idreesia-common/server/collections/accounts';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getPayments } from './queries';
 
 export default {
+  PaymentType: {
+    paymentType: paymentType =>
+      PaymentTypes.findOne({
+        _id: { $eq: paymentType.paymentTypeId },
+      }),
+  },
+
   Query: {
-    pagedPayments(obj, { queryString }, { user }) {
+    pagedPayments(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
@@ -19,7 +29,7 @@ export default {
         };
       }
 
-      return getPayments(queryString);
+      return getPayments(filter);
     },
 
     paymentById(obj, { _id }, { user }) {
@@ -34,16 +44,21 @@ export default {
 
       return Payments.findOne(_id);
     },
+
+    nextPaymentNumber() {
+      return Payments.getNextPaymentNo();
+    },
   },
   Mutation: {
     createPayment(
       obj,
       {
+        paymentNumber,
         name,
         fatherName,
         cnicNumber,
         contactNumber,
-        paymentType,
+        paymentTypeId,
         paymentAmount,
         paymentDate,
         description,
@@ -60,17 +75,19 @@ export default {
         );
       }
 
+      if (!Payments.isPaymentNoAvailable(paymentNumber, paymentDate)) {
+        throw new Error('This Voucher Number is already used.');
+      }
+
       const date = new Date();
-      const paymentNumber = Payments.getNextPaymentNo(paymentType, date);
       const paymentId = Payments.insert({
+        paymentNumber,
         name,
         fatherName,
         cnicNumber,
         contactNumber,
-        paymentNumber,
-        paymentType,
+        paymentTypeId,
         paymentAmount,
-        date,
         description,
         paymentDate,
         isDeleted: false,
@@ -91,7 +108,7 @@ export default {
         fatherName,
         cnicNumber,
         contactNumber,
-        paymentType,
+        paymentTypeId,
         paymentAmount,
         paymentDate,
         description,
@@ -119,7 +136,7 @@ export default {
             fatherName,
             cnicNumber,
             contactNumber,
-            paymentType,
+            paymentTypeId,
             paymentAmount,
             paymentDate,
             description,

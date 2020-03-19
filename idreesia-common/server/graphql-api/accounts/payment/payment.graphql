@@ -11,6 +11,8 @@ type PaymentType {
   description: String
   isDeleted: Boolean
 
+  paymentType: PaymentTypeType
+  
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -22,13 +24,27 @@ type PagedPaymentType {
   totalResults: Int
 }
 
+input PaymentFilter {
+  paymentNumber: String
+  name: String
+  cnicNumber: String
+  paymentTypeId: String
+  startDate: String
+  endDate: String
+  updatedBetween: String
+  pageIndex: String
+  pageSize: String
+}
+
 extend type Query {
   paymentById(_id: String!): PaymentType
-  pagedPayments(queryString: String): PagedPaymentType
+  pagedPayments(filter: PaymentFilter): PagedPaymentType
+  nextPaymentNumber: Int
 }
 
 extend type Mutation {
   createPayment(
+    paymentNumber: Int!
     name: String!
     fatherName: String!
     cnicNumber: String!

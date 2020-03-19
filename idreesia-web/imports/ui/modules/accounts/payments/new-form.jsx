@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useDispatch } from 'react-redux';
 
-import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useAllPaymentTypes } from 'meteor/idreesia-common/hooks/accounts';
 import { Form, message } from '/imports/ui/controls';
-import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
-import { PAGED_PAYMENTS, CREATE_PAYMENT } from './gql';
+import { NEXT_PAYMENT_NUMBER, PAGED_PAYMENTS, CREATE_PAYMENT } from './gql';
 
 import {
   DateField,
@@ -20,22 +19,23 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
-const NewForm = ({ form, history }) => {
+const NewForm = ({ form, history, location }) => {
+  const dispatch = useDispatch();
+  const { allPaymentTypes, allPaymentTypesLoading } = useAllPaymentTypes();
+  const { data, loading } = useQuery(NEXT_PAYMENT_NUMBER);
   const [createPayment] = useMutation(CREATE_PAYMENT, {
-    refetchQueries: [
-      {
-        query: PAGED_PAYMENTS,
-        variables: {
-          queryString:
-            '?name=&cnicNumber=&paymentType=&paymentAmount=&pageIndex=0&pageSize=20',
-        },
-      },
-    ],
+    refetchQueries: [{ query: PAGED_PAYMENTS }],
     awaitRefetchQueries: true,
   });
 
+  useEffect(() => {
+    dispatch(setBreadcrumbs(['Accounts', 'Payments', 'New']));
+  }, [location]);
+
+  if (loading || allPaymentTypesLoading) return null;
+
   const handleCancel = () => {
-    history.push(paths.paymentsPath);
+    history.goBack();
   };
 
   const handleSubmit = e => {
@@ -44,11 +44,12 @@ const NewForm = ({ form, history }) => {
       (
         err,
         {
+          paymentNumber,
           name,
           fatherName,
           cnicNumber,
           contactNumber,
-          paymentType,
+          paymentTypeId,
           paymentAmount,
           paymentDate,
           description,
@@ -58,18 +59,19 @@ const NewForm = ({ form, history }) => {
 
         createPayment({
           variables: {
+            paymentNumber,
             name,
             fatherName,
             cnicNumber,
             contactNumber,
-            paymentType,
+            paymentTypeId,
             paymentAmount,
             paymentDate,
             description,
           },
         })
           .then(() => {
-            history.push(paths.paymentsPath);
+            history.goBack();
           })
           .catch(error => {
             message.error(error.message, 5);
@@ -82,44 +84,47 @@ const NewForm = ({ form, history }) => {
 
   return (
     <Form layout="horizontal" onSubmit={handleSubmit}>
-      <SelectField
-        data={[
-          {
-            value: PaymentType.IMDAD_PAYMENT,
-            text: 'Imdad Payment',
-          },
-          {
-            value: PaymentType.MISCELLANEOUS_PAYMENT,
-            text: 'Miscellaneous Payment',
-          },
-        ]}
-        getDataValue={({ value }) => value}
-        getDataText={({ text }) => text}
-        fieldName="paymentType"
-        fieldLabel="Payment Type"
+      <InputTextField
+        fieldName="paymentNumber"
+        fieldLabel="Voucher No."
+        initialValue={data.nextPaymentNumber}
         required
-        requiredMessage="Please enter the Payment Type."
+        requiredMessage="Please enter the Voucher Number."
         getFieldDecorator={getFieldDecorator}
       />
+
+      <SelectField
+        data={allPaymentTypes}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="paymentTypeId"
+        fieldLabel="Payment Type"
+        required
+        requiredMessage="Please select a Payment Type."
+        getFieldDecorator={getFieldDecorator}
+      />
+
       <DateField
         fieldName="paymentDate"
         fieldLabel="Payment Date"
         required
-        requiredMessage="Please select a payment date."
+        requiredMessage="Please select a Payment Date."
         getFieldDecorator={getFieldDecorator}
       />
+
       <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
-        requiredMessage="Please enter the name."
+        requiredMessage="Please enter the Name."
         getFieldDecorator={getFieldDecorator}
       />
+
       <InputTextField
         fieldName="fatherName"
         fieldLabel="Father Name"
         required
-        requiredMessage="Please enter the fahter name."
+        requiredMessage="Please enter the Father Name."
         getFieldDecorator={getFieldDecorator}
       />
 
@@ -127,7 +132,7 @@ const NewForm = ({ form, history }) => {
         fieldName="cnicNumber"
         fieldLabel="CNIC Number"
         required
-        requiredMessage="Please input a valid CNIC number."
+        requiredMessage="Please input a valid CNIC Number."
         getFieldDecorator={getFieldDecorator}
       />
 
@@ -165,7 +170,5 @@ NewForm.propTypes = {
   location: PropTypes.object,
   form: PropTypes.object,
 };
-export default flowRight(
-  Form.create(),
-  WithBreadcrumbs(['Accounts', 'Payments', 'New'])
-)(NewForm);
+
+export default Form.create()(NewForm);

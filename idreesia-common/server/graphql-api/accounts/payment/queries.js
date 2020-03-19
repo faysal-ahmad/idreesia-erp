@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
@@ -16,16 +15,15 @@ async function getPaymentIdsByNameSearch(name) {
   return payments.map(({ _id }) => _id);
 }
 
-export async function getPayments(queryString) {
-  const params = parse(queryString);
+export async function getPayments(params) {
   const pipeline = [];
   const {
     pageIndex = '0',
     pageSize = '20',
+    paymentNumber,
     name,
     cnicNumber,
-    paymentType,
-    paymentAmount,
+    paymentTypeId,
     startDate,
     endDate,
     isDeleted,
@@ -36,6 +34,14 @@ export async function getPayments(queryString) {
     pipeline.push({
       $match: {
         _id: { $in: paymentIds },
+      },
+    });
+  }
+
+  if (paymentNumber) {
+    pipeline.push({
+      $match: {
+        paymentNumber: { $eq: paymentNumber },
       },
     });
   }
@@ -62,18 +68,10 @@ export async function getPayments(queryString) {
     });
   }
 
-  if (paymentType) {
+  if (paymentTypeId) {
     pipeline.push({
       $match: {
-        paymentType: { $eq: paymentType },
-      },
-    });
-  }
-
-  if (paymentAmount) {
-    pipeline.push({
-      $match: {
-        paymentAmount: { $eq: parseFloat(paymentAmount) },
+        paymentTypeId: { $eq: paymentTypeId },
       },
     });
   }

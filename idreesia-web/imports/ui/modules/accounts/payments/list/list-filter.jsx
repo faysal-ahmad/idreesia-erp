@@ -2,12 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Collapse, Form, Row, Button } from '/imports/ui/controls';
+import {
+  Button,
+  Collapse,
+  Form,
+  Icon,
+  Row,
+  Tooltip,
+} from '/imports/ui/controls';
 import {
   InputTextField,
-  InputNumberField,
   InputCnicField,
   SelectField,
   DateField,
@@ -33,11 +38,12 @@ class ListFilter extends Component {
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     paymentNumber: PropTypes.string,
-    paymentType: PropTypes.string,
-    paymentAmount: PropTypes.string,
-    startDate: PropTypes.object,
-    endDate: PropTypes.object,
+    paymentTypeId: PropTypes.string,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    allPaymentTypes: PropTypes.array,
     setPageParams: PropTypes.func,
+    refreshData: PropTypes.func,
   };
 
   handleSubmit = e => {
@@ -47,16 +53,16 @@ class ListFilter extends Component {
     form.validateFields(
       (
         err,
-        { name, cnicNumber, paymentType, paymentAmount, startDate, endDate }
+        { paymentNumber, name, cnicNumber, paymentTypeId, startDate, endDate }
       ) => {
         if (err) return;
         setPageParams({
+          paymentNumber,
           name,
           cnicNumber,
-          paymentType,
-          paymentAmount,
-          startDate,
-          endDate,
+          paymentTypeId,
+          startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
+          endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
           pageIndex: 0,
         });
       }
@@ -66,26 +72,42 @@ class ListFilter extends Component {
   handleReset = () => {
     const { setPageParams } = this.props;
     setPageParams({
-      name,
+      paymentNumber: null,
+      name: null,
       cnicNumber: null,
-      paymentType: null,
-      paymentAmount: null,
-      paymentDate: null,
+      paymentTypeId: null,
       startDate: null,
       endDate: null,
       pageIndex: 0,
     });
   };
 
+  refreshButton = () => {
+    const { refreshData } = this.props;
+
+    return (
+      <Tooltip title="Reload Data">
+        <Icon
+          type="sync"
+          onClick={event => {
+            event.stopPropagation();
+            if (refreshData) refreshData();
+          }}
+        />
+      </Tooltip>
+    );
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
-      startDate,
-      endDate,
+      paymentNumber,
       name,
       cnicNumber,
-      paymentType,
-      paymentAmount,
+      paymentTypeId,
+      startDate,
+      endDate,
+      allPaymentTypes,
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -93,23 +115,22 @@ class ListFilter extends Component {
 
     return (
       <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1">
+        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
           <Form layout="horizontal" onSubmit={this.handleSubmit}>
+            <InputTextField
+              fieldName="paymentNumber"
+              fieldLabel="Voucher No."
+              fieldLayout={formItemLayout}
+              initialValue={paymentNumber}
+              getFieldDecorator={getFieldDecorator}
+            />
+
             <SelectField
-              data={[
-                {
-                  value: PaymentType.IMDAD_PAYMENT,
-                  text: 'Imdad Payment',
-                },
-                {
-                  value: PaymentType.MISCELLANEOUS_PAYMENT,
-                  text: 'Miscellaneous Payment',
-                },
-              ]}
-              getDataValue={({ value }) => value}
-              getDataText={({ text }) => text}
-              initialValue={paymentType}
-              fieldName="paymentType"
+              data={allPaymentTypes}
+              getDataValue={({ _id }) => _id}
+              getDataText={({ name: _name }) => _name}
+              initialValue={paymentTypeId}
+              fieldName="paymentTypeId"
               fieldLabel="Payment Type"
               fieldLayout={formItemLayout}
               getFieldDecorator={getFieldDecorator}
@@ -128,14 +149,6 @@ class ListFilter extends Component {
               fieldLabel="CNIC Number"
               fieldLayout={formItemLayout}
               initialValue={cnicNumber}
-              getFieldDecorator={getFieldDecorator}
-            />
-
-            <InputNumberField
-              fieldName="paymentAmount"
-              fieldLabel="Payment Amount"
-              fieldLayout={formItemLayout}
-              initialValue={paymentAmount}
               getFieldDecorator={getFieldDecorator}
             />
 

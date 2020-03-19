@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useDispatch } from 'react-redux';
 
-import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useAllPaymentTypes } from 'meteor/idreesia-common/hooks/accounts';
 import { Form, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
 import { PAYMENT_BY_ID, UPDATE_PAYMENT } from './gql';
@@ -22,13 +22,19 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 const EditForm = ({ form, match, history }) => {
+  const dispatch = useDispatch();
   const { paymentId } = match.params;
+  const { allPaymentTypes, allPaymentTypesLoading } = useAllPaymentTypes();
   const [updatePayment] = useMutation(UPDATE_PAYMENT);
   const { data, loading } = useQuery(PAYMENT_BY_ID, {
     variables: { _id: paymentId },
   });
 
-  if (loading) return null;
+  useEffect(() => {
+    dispatch(setBreadcrumbs(['Accounts', 'Payments', 'Edit']));
+  }, [location]);
+
+  if (loading || allPaymentTypesLoading) return null;
   const { paymentById } = data;
   const { getFieldDecorator, isFieldsTouched } = form;
 
@@ -46,7 +52,7 @@ const EditForm = ({ form, match, history }) => {
           fatherName,
           cnicNumber,
           contactNumber,
-          paymentType,
+          paymentTypeId,
           paymentAmount,
           paymentDate,
           description,
@@ -62,7 +68,7 @@ const EditForm = ({ form, match, history }) => {
             cnicNumber,
             contactNumber,
             paymentAmount,
-            paymentType,
+            paymentTypeId,
             paymentDate,
             description,
           },
@@ -78,7 +84,7 @@ const EditForm = ({ form, match, history }) => {
   };
 
   return (
-    <Fragment>
+    <>
       <Form layout="horizontal" onSubmit={handleSubmit}>
         <InputNumberField
           fieldName="paymentNumber"
@@ -89,21 +95,14 @@ const EditForm = ({ form, match, history }) => {
         />
 
         <SelectField
-          data={[
-            {
-              value: PaymentType.IMDAD_PAYMENT,
-              text: 'Imdad Payment',
-            },
-            {
-              value: PaymentType.MISCELLANEOUS_PAYMENT,
-              text: 'Miscellaneous Payment',
-            },
-          ]}
-          getDataValue={({ value }) => value}
-          getDataText={({ text }) => text}
-          initialValue={paymentById.paymentType}
-          fieldName="paymentType"
+          data={allPaymentTypes}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          initialValue={paymentById.paymentTypeId}
+          fieldName="paymentTypeId"
           fieldLabel="Payment Type"
+          required
+          requiredMessage="Please select a Payment Type."
           getFieldDecorator={getFieldDecorator}
         />
         <DateField
@@ -111,7 +110,7 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="Payment Date"
           initialValue={moment(Number(paymentById.paymentDate))}
           required
-          requiredMessage="Please select a payment date."
+          requiredMessage="Please select a Payment Date."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -119,7 +118,7 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="Name"
           initialValue={paymentById.name}
           required
-          requiredMessage="Please enter the name."
+          requiredMessage="Please enter the Name."
           getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
@@ -127,7 +126,7 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="Father Name"
           initialValue={paymentById.fatherName}
           required
-          requiredMessage="Please enter the fahter name."
+          requiredMessage="Please enter the Father Name."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -136,7 +135,7 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="CNIC Number"
           initialValue={paymentById.cnicNumber}
           required
-          requiredMessage="Please input a valid CNIC number."
+          requiredMessage="Please input a valid CNIC Number."
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -152,7 +151,7 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="Payment Amount"
           initialValue={paymentById.paymentAmount}
           required
-          requiredMessage="Please enter the payment amount."
+          requiredMessage="Please enter the Payment Amount."
           minValue={0}
           getFieldDecorator={getFieldDecorator}
         />
@@ -170,7 +169,7 @@ const EditForm = ({ form, match, history }) => {
         />
       </Form>
       <AuditInfo record={paymentById} />
-    </Fragment>
+    </>
   );
 };
 EditForm.propTypes = {
@@ -180,7 +179,4 @@ EditForm.propTypes = {
   form: PropTypes.object,
 };
 
-export default flowRight(
-  Form.create(),
-  WithBreadcrumbs(['Accounts', 'Payments', 'Edit'])
-)(EditForm);
+export default Form.create()(EditForm);

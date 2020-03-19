@@ -1,5 +1,5 @@
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
-import { Payments as PaymentSchema } from 'meteor/idreesia-common/server/schemas/accounts';
+import { Payment as PaymentSchema } from 'meteor/idreesia-common/server/schemas/accounts';
 import moment from 'moment';
 
 class Payments extends AggregatableCollection {

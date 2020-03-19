@@ -9,6 +9,12 @@ import { Menu, Icon } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const { Item, SubMenu } = Menu;
+
+const IconStyle = {
+  fontSize: '20px',
+};
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -35,6 +41,9 @@ class Sidebar extends Component {
     } else if (key === 'payments') {
       setActiveSubModuleName(SubModuleNames.payments);
       history.push(paths.paymentsPath);
+    } else if (key === 'payment-types') {
+      setActiveSubModuleName(SubModuleNames.paymentTypes);
+      history.push(paths.paymentTypesPath);
     }
   };
 
@@ -43,42 +52,28 @@ class Sidebar extends Component {
     if (loading) return null;
 
     const subMenus = [];
-    subMenus.push(
-      <Menu.Item key="payments">
-        <span>
-          <Icon type="dollar" />
-          Payments
-        </span>
-      </Menu.Item>
-    );
 
     allAccessibleCompanies.forEach(company => {
       subMenus.push(
-        <Menu.SubMenu
+        <SubMenu
           key={company._id}
           title={
             <span>
-              <Icon type="credit-card" />
+              <Icon type="credit-card" style={IconStyle} />
               {company.name}
             </span>
           }
         >
-          <Menu.Item
-            parent-key={company._id}
-            key={`account-heads-${company._id}`}
-          >
+          <Item parent-key={company._id} key={`account-heads-${company._id}`}>
             Account Heads
-          </Menu.Item>
-          <Menu.Item
-            parent-key={company._id}
-            key={`activity-sheet-${company._id}`}
-          >
+          </Item>
+          <Item parent-key={company._id} key={`activity-sheet-${company._id}`}>
             Activity Sheet
-          </Menu.Item>
-          <Menu.Item parent-key={company._id} key={`vouchers-${company._id}`}>
+          </Item>
+          <Item parent-key={company._id} key={`vouchers-${company._id}`}>
             Vouchers
-          </Menu.Item>
-        </Menu.SubMenu>
+          </Item>
+        </SubMenu>
       );
     });
 
@@ -88,7 +83,30 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
+        <Item key="payments">
+          <span>
+            <Icon type="dollar" style={IconStyle} />
+            Payments
+          </span>
+        </Item>
+
         {subMenus}
+        <SubMenu
+          key="setup"
+          title={
+            <span>
+              <Icon type="laptop" style={IconStyle} />
+              Setup
+            </span>
+          }
+        >
+          <Item key="payment-types">
+            <span>
+              <Icon type="container" style={IconStyle} />
+              Payment Types
+            </span>
+          </Item>
+        </SubMenu>
       </Menu>
     );
   }

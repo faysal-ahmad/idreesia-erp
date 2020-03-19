@@ -4,7 +4,7 @@ type PaymentType {
   fatherName: String
   cnicNumber: String
   contactNumber: String
-  paymentType: String
+  paymentTypeId: String
   paymentAmount: Float
   paymentDate: String
   paymentNumber: Int
@@ -34,7 +34,7 @@ extend type Mutation {
     cnicNumber: String!
     contactNumber: String
     paymentAmount: Float!
-    paymentType: String!
+    paymentTypeId: String!
     paymentDate: String!
     description: String
   ): PaymentType
@@ -46,7 +46,7 @@ extend type Mutation {
     cnicNumber: String
     contactNumber: String
     paymentAmount: Float
-    paymentType: String
+    paymentTypeId: String
     paymentDate: String
     description: String
   ): PaymentType

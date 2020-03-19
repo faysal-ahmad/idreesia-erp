@@ -6,6 +6,11 @@ import { VouchersList, VouchersNewForm, VouchersEditForm } from './vouchers';
 import { AccountHeadsList, AccountHeadsEditForm } from './account-heads';
 import { ActivitySheetList } from './activity-sheet';
 import {
+  PaymentTypesNewForm,
+  PaymentTypesEditForm,
+  PaymentTypesList,
+} from './payment-types';
+import {
   PaymentsList,
   PaymentsNewForm,
   PaymentsEditForm,
@@ -31,6 +36,16 @@ const Router = () => (
     <Route path={paths.vouchersNewFormPath()} component={VouchersNewForm} />
     <Route path={paths.vouchersEditFormPath()} component={VouchersEditForm} />
     <Route path={paths.vouchersPath()} component={VouchersList} />
+
+    <Route
+      path={paths.paymentTypesNewFormPath}
+      component={PaymentTypesNewForm}
+    />
+    <Route
+      path={paths.paymentTypesEditFormPath()}
+      component={PaymentTypesEditForm}
+    />
+    <Route path={paths.paymentTypesPath} component={PaymentTypesList} />
 
     <Route path={paths.paymentsNewFormPath} component={PaymentsNewForm} />
     <Route path={paths.paymentReceiptsPath()} component={PaymentReceipts} />

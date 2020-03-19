@@ -1,0 +1,23 @@
+type PaymentTypeType {
+  _id: String
+  name: String
+  description: String
+
+  usedCount: Int
+  
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allPaymentTypes: [PaymentTypeType]
+  paymentTypeById(id: String!): PaymentTypeType
+}
+
+extend type Mutation {
+  createPaymentType(name: String!, description: String): PaymentTypeType
+  updatePaymentType(id: String!, name: String!, description: String): PaymentTypeType
+  removePaymentType(_id: String!): Int
+}

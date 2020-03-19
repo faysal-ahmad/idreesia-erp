@@ -4,3 +4,4 @@ export { default as Companies } from './companies';
 export { default as Vouchers } from './vouchers';
 export { default as VoucherDetails } from './voucher-details';
 export { default as Payments } from './payments';
+export { default as PaymentTypes } from './payment-types';

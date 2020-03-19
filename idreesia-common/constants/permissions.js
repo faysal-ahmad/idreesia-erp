@@ -2,6 +2,10 @@ const Permissions = {
   // ****************************************************************************************
   // Accounts Module
   // ****************************************************************************************
+  ACCOUNTS_MANAGE_SETUP_DATA: 'accounts-manage-setup-data',
+  ACCOUNTS_DELETE_DATA: 'accounts-delete-data',
+  ACCOUNTS_VIEW_AUDIT_LOGS: 'accounts-view-audit-logs',
+
   ACCOUNTS_VIEW_ACCOUNT_HEADS: 'accounts-view-account-heads',
   ACCOUNTS_MANAGE_ACCOUNT_HEADS: 'accounts-manage-account-heads',
   ACCOUNTS_VIEW_ACTIVTY_SHEET: 'accounts-view-activity-sheet',

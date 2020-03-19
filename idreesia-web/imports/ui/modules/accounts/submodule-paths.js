@@ -2,6 +2,15 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
+  // Data Setup Routes
+  // *************************************************************************************
+  static paymentTypesPath = `${ModulePaths.accounts}/payment-types`;
+  static paymentTypesNewFormPath = `${SubModulePaths.paymentTypesPath}/new`;
+  static paymentTypesEditFormPath(paymentTypeId = ':paymentTypeId') {
+    return `${SubModulePaths.paymentTypesPath}/${paymentTypeId}`;
+  }
+
+  // *************************************************************************************
   // Account Heads Routes
   // *************************************************************************************
   static accountHeadsPath(companyId = ':companyId') {

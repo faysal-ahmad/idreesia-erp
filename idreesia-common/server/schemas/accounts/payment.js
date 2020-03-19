@@ -1,8 +1,6 @@
 import SimpleSchema from 'simpl-schema';
-import { values } from 'meteor/idreesia-common/utilities/lodash';
 
 import { identifiable, timestamps } from '../common';
-import { PaymentType } from 'meteor/idreesia-common/constants/accounts';
 
 export default new SimpleSchema({
   name: {
@@ -21,9 +19,8 @@ export default new SimpleSchema({
   paymentNumber: {
     type: Number,
   },
-  paymentType: {
+  paymentTypeId: {
     type: String,
-    allowedValues: values(PaymentType),
   },
   paymentAmount: {
     type: Number,

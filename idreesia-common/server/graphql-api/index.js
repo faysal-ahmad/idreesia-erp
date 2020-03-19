@@ -203,10 +203,11 @@ import VoucherResolvers from './accounts/voucher/resolvers';
 import VoucherDetailSchema from './accounts/voucher-detail/voucher-detail.graphql';
 import VoucherDetailResolvers from './accounts/voucher-detail/resolvers';
 
-import PaymentsSchema from './accounts/payments/payment.graphql';
-import PaymentsResolvers from './accounts/payments/resolvers';
-import PaymentsHistorySchema from './accounts/payments-history/payment-history.graphql';
-import PaymentsHistoryResolvers from './accounts/payments-history/resolvers';
+import PaymentTypeSchema from './accounts/payment-type/payment-type.graphql';
+import PaymentTypeResolvers from './accounts/payment-type/resolvers';
+
+import PaymentSchema from './accounts/payment/payment.graphql';
+import PaymentResolvers from './accounts/payment/resolvers';
 
 /**
  * Schema and Resolvers for the Wazaif Management module
@@ -281,8 +282,8 @@ const typeDefs = [
   VoucherSchema,
   VoucherDetailSchema,
   AccountMonthlyBalanceSchema,
-  PaymentsSchema,
-  PaymentsHistorySchema,
+  PaymentTypeSchema,
+  PaymentSchema,
 
   WazeefaSchema,
 ];
@@ -353,8 +354,8 @@ const resolvers = merge(
   VoucherResolvers,
   VoucherDetailResolvers,
   AccountMonthlyBalanceResolvers,
-  PaymentsResolvers,
-  PaymentsHistoryResolvers,
+  PaymentTypeResolvers,
+  PaymentResolvers,
 
   WazeefaResolvers
 );

@@ -88,6 +88,18 @@ export const accountsPermissionsData = {
   key: 'module-accounts',
   children: [
     {
+      title: 'Delete Data',
+      key: PermissionConstants.ACCOUNTS_DELETE_DATA,
+    },
+    {
+      title: 'Manage Setup Data',
+      key: PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
+    },
+    {
+      title: 'View Audit Logs',
+      key: PermissionConstants.ACCOUNTS_VIEW_AUDIT_LOGS,
+    },
+    {
       title: 'Account Heads',
       key: 'module-accounts-account-heads',
       children: [

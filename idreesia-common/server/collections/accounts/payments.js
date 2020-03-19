@@ -4,9 +4,9 @@ import moment from 'moment';
 
 class Payments extends AggregatableCollection {
   constructor(name = 'accounts-payments', options = {}) {
-    const vouchers = super(name, options);
-    vouchers.attachSchema(PaymentSchema);
-    return vouchers;
+    const payments = super(name, options);
+    payments.attachSchema(PaymentSchema);
+    return payments;
   }
 
   getNextPaymentNo(paymentType, paymentDate) {

@@ -1,4 +1,4 @@
-type Payment {
+type PaymentType {
   _id: String
   name: String
   fatherName: String
@@ -8,24 +8,23 @@ type Payment {
   paymentAmount: Float
   paymentDate: String
   paymentNumber: Int
-  history:[PaymentHistory]
-
   description: String
   isDeleted: Boolean
+
   createdAt: String
   createdBy: String
   updatedAt: String
   updatedBy: String
 }
 
-type PagedPayment {
-  data: [Payment]
+type PagedPaymentType {
+  data: [PaymentType]
   totalResults: Int
 }
 
 extend type Query {
-  paymentById(_id: String!): Payment
-  pagedPayments(queryString: String): PagedPayment
+  paymentById(_id: String!): PaymentType
+  pagedPayments(queryString: String): PagedPaymentType
 }
 
 extend type Mutation {
@@ -38,7 +37,7 @@ extend type Mutation {
     paymentType: String!
     paymentDate: String!
     description: String
-  ): Payment
+  ): PaymentType
 
   updatePayment(
     _id: String
@@ -50,7 +49,7 @@ extend type Mutation {
     paymentType: String
     paymentDate: String
     description: String
-  ): Payment
+  ): PaymentType
 
   removePayment(_id: String!): Boolean
 }

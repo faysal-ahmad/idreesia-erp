@@ -26,7 +26,7 @@ import {
   PAGED_SECURITY_VISITOR_MULAKAATS,
 } from './gql';
 
-const List = () => {
+const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const { queryParams, setPageParams } = useQueryParams({
     history,

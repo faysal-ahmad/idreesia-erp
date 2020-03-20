@@ -171,6 +171,7 @@ class Payments extends AggregatableCollection {
       paymentTypeId,
       startDate,
       endDate,
+      updatedBetween,
       pageIndex = '0',
       pageSize = '20',
     } = params;
@@ -230,6 +231,33 @@ class Payments extends AggregatableCollection {
           },
         },
       });
+    }
+
+    if (updatedBetween) {
+      const updatedBetweenDates = JSON.parse(updatedBetween);
+
+      if (updatedBetweenDates[0]) {
+        pipeline.push({
+          $match: {
+            updatedAt: {
+              $gte: moment(updatedBetweenDates[0], Formats.DATE_FORMAT)
+                .startOf('day')
+                .toDate(),
+            },
+          },
+        });
+      }
+      if (updatedBetweenDates[1]) {
+        pipeline.push({
+          $match: {
+            updatedAt: {
+              $lte: moment(updatedBetweenDates[1], Formats.DATE_FORMAT)
+                .endOf('day')
+                .toDate(),
+            },
+          },
+        });
+      }
     }
 
     const nPageIndex = parseInt(pageIndex, 10);

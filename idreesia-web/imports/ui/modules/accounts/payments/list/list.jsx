@@ -39,6 +39,7 @@ const List = ({ history, location }) => {
       'paymentTypeId',
       'startDate',
       'endDate',
+      'updatedBetween',
       'pageIndex',
       'pageSize',
     ],
@@ -64,6 +65,7 @@ const List = ({ history, location }) => {
     paymentTypeId,
     startDate,
     endDate,
+    updatedBetween,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -214,6 +216,7 @@ const List = ({ history, location }) => {
           paymentTypeId={paymentTypeId}
           startDate={startDate}
           endDate={endDate}
+          updatedBetween={updatedBetween}
           allPaymentTypes={allPaymentTypes}
           refreshData={refetch}
           setPageParams={setPageParams}

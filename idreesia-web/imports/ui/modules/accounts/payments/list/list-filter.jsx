@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from '/imports/ui/controls';
 import {
+  DateRangeField,
   InputTextField,
   InputCnicField,
   SelectField,
@@ -41,6 +42,7 @@ class ListFilter extends Component {
     paymentTypeId: PropTypes.string,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
+    updatedBetween: PropTypes.string,
     allPaymentTypes: PropTypes.array,
     setPageParams: PropTypes.func,
     refreshData: PropTypes.func,
@@ -53,17 +55,33 @@ class ListFilter extends Component {
     form.validateFields(
       (
         err,
-        { paymentNumber, name, cnicNumber, paymentTypeId, startDate, endDate }
+        {
+          paymentNumber,
+          name,
+          cnicNumber,
+          paymentTypeId,
+          startDate,
+          endDate,
+          updatedBetween,
+        }
       ) => {
         if (err) return;
         setPageParams({
+          pageIndex: '0',
           paymentNumber,
           name,
           cnicNumber,
           paymentTypeId,
           startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
           endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
-          pageIndex: 0,
+          updatedBetween: JSON.stringify([
+            updatedBetween[0]
+              ? updatedBetween[0].format(Formats.DATE_FORMAT)
+              : '',
+            updatedBetween[1]
+              ? updatedBetween[1].format(Formats.DATE_FORMAT)
+              : '',
+          ]),
         });
       }
     );
@@ -72,13 +90,14 @@ class ListFilter extends Component {
   handleReset = () => {
     const { setPageParams } = this.props;
     setPageParams({
+      pageIndex: '0',
       paymentNumber: null,
       name: null,
       cnicNumber: null,
       paymentTypeId: null,
       startDate: null,
       endDate: null,
-      pageIndex: 0,
+      updatedBetween: JSON.stringify(['', '']),
     });
   };
 
@@ -108,10 +127,33 @@ class ListFilter extends Component {
       startDate,
       endDate,
       allPaymentTypes,
+      updatedBetween,
     } = this.props;
 
     const mStartDate = moment(startDate, Formats.DATE_FORMAT);
     const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+
+    let initialValue;
+    if (updatedBetween) {
+      const dates = updatedBetween ? JSON.parse(updatedBetween) : null;
+      initialValue = [
+        dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
+        dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
+      ];
+    } else {
+      initialValue = [null, null];
+    }
+
+    const updatedBetweenField = (
+      <DateRangeField
+        fieldName="updatedBetween"
+        fieldLabel="Updated"
+        required={false}
+        fieldLayout={formItemLayout}
+        initialValue={initialValue}
+        getFieldDecorator={getFieldDecorator}
+      />
+    );
 
     return (
       <Collapse style={ContainerStyle}>
@@ -168,6 +210,9 @@ class ListFilter extends Component {
               initialValue={mEndDate.isValid() ? mEndDate : null}
               getFieldDecorator={getFieldDecorator}
             />
+
+            {updatedBetweenField}
+
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">
                 <Button type="default" onClick={this.handleReset}>

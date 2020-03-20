@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { PaymentTypeDisplayNames } from 'meteor/idreesia-common/constants/accounts';
 import { Col, Divider, Row } from '/imports/ui/controls';
 
 import { Item } from './item';
@@ -40,22 +39,13 @@ export default class PaymentReceipts extends Component {
             </div>
           </Col>
           <Col order={3} style={{ marginRight: '10px' }}>
-            <div>{PaymentTypeDisplayNames[payment.paymentType]}</div>
+            <div>
+              {moment(Number(payment.paymentDate)).format('DD MMM, YYYY')}
+            </div>
           </Col>
         </Row>
         <Row type="flex" justify="start" gutter={10}>
           <Col order={2} style={{ minWidth: '600px' }}>
-            <Row type="flex">
-              <Col order={1} style={{ minWidth: '600px' }}>
-                <Item
-                  label="Date"
-                  value={moment(Number(payment.paymentDate)).format(
-                    'DD MMM, YYYY'
-                  )}
-                />
-              </Col>
-            </Row>
-
             <Item label="Received Cash Rs" value={payment.paymentAmount} />
             <Item label="Description" value={payment.description || ''} />
             <Row type="flex">
@@ -86,7 +76,7 @@ export default class PaymentReceipts extends Component {
         </Row>
         <Divider />
         <Row>
-          <Col order={1}>printed at : {formattedDate}</Col>
+          <Col order={1}>Printed on : {formattedDate}</Col>
         </Row>
       </div>
     );

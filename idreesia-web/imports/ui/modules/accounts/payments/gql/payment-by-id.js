@@ -13,7 +13,6 @@ const PAYMENT_BY_ID = gql`
       paymentTypeId
       paymentDate
       description
-      isDeleted
       createdAt
       createdBy
       updatedAt

@@ -16,6 +16,7 @@ import {
   PaymentsEditForm,
   PaymentReceipts,
 } from './payments';
+import { AuditLogsList } from './audit-logs';
 
 const Router = () => (
   <Switch>
@@ -51,6 +52,8 @@ const Router = () => (
     <Route path={paths.paymentReceiptsPath()} component={PaymentReceipts} />
     <Route path={paths.paymentsEditFormPath()} component={PaymentsEditForm} />
     <Route path={paths.paymentsPath} component={PaymentsList} />
+
+    <Route path={paths.auditLogsPath} component={AuditLogsList} />
   </Switch>
 );
 

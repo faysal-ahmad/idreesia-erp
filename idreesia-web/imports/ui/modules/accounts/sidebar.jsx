@@ -44,6 +44,9 @@ class Sidebar extends Component {
     } else if (key === 'payment-types') {
       setActiveSubModuleName(SubModuleNames.paymentTypes);
       history.push(paths.paymentTypesPath);
+    } else if (key === 'audit-logs') {
+      setActiveSubModuleName(SubModuleNames.auditLogs);
+      history.push(paths.auditLogsPath);
     }
   };
 
@@ -91,6 +94,22 @@ class Sidebar extends Component {
         </Item>
 
         {subMenus}
+        <SubMenu
+          key="administration"
+          title={
+            <span>
+              <Icon type="tool" style={IconStyle} />
+              Administration
+            </span>
+          }
+        >
+          <Item key="audit-logs">
+            <span>
+              <Icon type="audit" style={IconStyle} />
+              Audit Logs
+            </span>
+          </Item>
+        </SubMenu>
         <SubMenu
           key="setup"
           title={

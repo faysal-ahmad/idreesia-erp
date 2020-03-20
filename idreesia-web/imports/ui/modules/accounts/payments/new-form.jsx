@@ -22,7 +22,9 @@ import {
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const { allPaymentTypes, allPaymentTypesLoading } = useAllPaymentTypes();
-  const { data, loading } = useQuery(NEXT_PAYMENT_NUMBER);
+  const { data, loading } = useQuery(NEXT_PAYMENT_NUMBER, {
+    fetchPolicy: 'no-cache',
+  });
   const [createPayment] = useMutation(CREATE_PAYMENT, {
     refetchQueries: [{ query: PAGED_PAYMENTS }],
     awaitRefetchQueries: true,

@@ -13,7 +13,6 @@ const PAGED_PAYMENTS = gql`
         paymentDate
         paymentAmount
         description
-        isDeleted
         paymentType {
           _id
           name

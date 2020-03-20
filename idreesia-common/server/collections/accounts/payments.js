@@ -155,7 +155,7 @@ class Payments extends AggregatableCollection {
     return payments.map(({ _id }) => _id);
   }
 
-  async getPayments(params) {
+  async getPayments(params = {}) {
     const pipeline = [
       {
         $match: {
@@ -165,14 +165,14 @@ class Payments extends AggregatableCollection {
     ];
 
     const {
-      pageIndex = '0',
-      pageSize = '20',
       paymentNumber,
       name,
       cnicNumber,
       paymentTypeId,
       startDate,
       endDate,
+      pageIndex = '0',
+      pageSize = '20',
     } = params;
 
     if (name) {

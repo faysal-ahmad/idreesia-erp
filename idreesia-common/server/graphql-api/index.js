@@ -191,6 +191,9 @@ import StockAdjustmentResolvers from './inventory/stock-adjustment/resolvers';
 import CompanySchema from './accounts/company/company.graphql';
 import CompanyResolvers from './accounts/company/resolvers';
 
+import AccountAuditLogSchema from './accounts/audit-log/audit-log.graphql';
+import AccountAuditLogResolvers from './accounts/audit-log/resolvers';
+
 import AccountHeadSchema from './accounts/account-head/account-head.graphql';
 import AccountHeadResolvers from './accounts/account-head/resolvers';
 
@@ -277,6 +280,7 @@ const typeDefs = [
   PurchaseFormSchema,
   StockAdjustmentSchema,
 
+  AccountAuditLogSchema,
   AccountHeadSchema,
   CompanySchema,
   VoucherSchema,
@@ -349,6 +353,7 @@ const resolvers = merge(
   PurchaseFormResolvers,
   StockAdjustmentResolvers,
 
+  AccountAuditLogResolvers,
   AccountHeadResolvers,
   CompanyResolvers,
   VoucherResolvers,

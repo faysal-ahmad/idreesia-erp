@@ -103,6 +103,10 @@ const List = ({ history, location }) => {
     });
   };
 
+  const handleAuditLogsAction = payment => {
+    history.push(`${paths.auditLogsPath}?entityId=${payment._id}`);
+  };
+
   const handlePrintPaymentReceipts = payment => {
     history.push(paths.paymentReceiptsPath(payment._id));
   };
@@ -162,6 +166,15 @@ const List = ({ history, location }) => {
               className="list-actions-icon"
               onClick={() => {
                 handlePrintPaymentReceipts(record);
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="Audit Logs">
+            <Icon
+              type="audit"
+              className="list-actions-icon"
+              onClick={() => {
+                handleAuditLogsAction(record);
               }}
             />
           </Tooltip>

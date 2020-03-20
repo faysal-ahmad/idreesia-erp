@@ -1,8 +1,25 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
+import {
+  AutoComplete,
+  Button,
+  Checkbox,
+  Divider,
+  Input,
+} from '/imports/ui/controls';
+import Cards from './cards';
+
+import { ATTENDANCE_BY_BARCODE_IDS } from '../gql';
+
+const CardHeadings = ['لنگر شریف تقسیم', 'گوشت تقسیم', 'پارکنگ'];
 
 const ControlsContainer = {
   display: 'flex',
@@ -17,16 +34,6 @@ const InputControlsContainer = {
   justifyContent: 'flex-start',
 };
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
-import { Button, Divider, Input, Select } from '/imports/ui/controls';
-import Cards from './cards';
-
-const CardHeadings = ['لنگر شریف تقسیم', 'گوشت تقسیم', 'پارکنگ سٹینڈ'];
-
 const CardsContainer = ({
   attendanceLoading,
   attendanceByBarcodeIds,
@@ -34,24 +41,20 @@ const CardsContainer = ({
 }) => {
   const [cardHeading, setCardHeading] = useState(CardHeadings[0]);
   const [cardSubHeading, setCardSubHeading] = useState(null);
+  const [showDutyInfo, setShowDutyInfo] = useState(false);
   const meetingCardsRef = useRef(null);
   if (attendanceLoading) return null;
 
-  const cardHeadingSelector = (
-    <Select
+  const cardHeadingInput = (
+    <AutoComplete
       style={{ width: '200px' }}
       defaultValue={cardHeading}
+      dataSource={CardHeadings}
       allowClear={false}
       onChange={value => {
         setCardHeading(value);
       }}
-    >
-      {CardHeadings.map((heading, index) => (
-        <Select.Option key={index} value={heading}>
-          {heading}
-        </Select.Option>
-      ))}
-    </Select>
+    />
   );
 
   const cardSubHeadingInput = (
@@ -61,6 +64,15 @@ const CardsContainer = ({
         setCardSubHeading(event.target.value);
       }}
     />
+  );
+
+  const cardShowDutiesInput = (
+    <Checkbox
+      checked={showDutyInfo}
+      onChange={e => setShowDutyInfo(e.target.checked)}
+    >
+      Show Duty Info
+    </Checkbox>
   );
 
   return (
@@ -87,8 +99,9 @@ const CardsContainer = ({
           </Button>
         </div>
         <div style={InputControlsContainer}>
-          {cardHeadingSelector}
+          {cardHeadingInput}
           {cardSubHeadingInput}
+          {cardShowDutiesInput}
         </div>
       </div>
       <Divider />
@@ -96,6 +109,7 @@ const CardsContainer = ({
         ref={meetingCardsRef}
         cardHeading={cardHeading}
         cardSubHeading={cardSubHeading}
+        showDutyInfo={showDutyInfo}
         attendanceByBarcodeIds={attendanceByBarcodeIds}
       />
     </>
@@ -112,28 +126,9 @@ CardsContainer.propTypes = {
   attendanceByBarcodeIds: PropTypes.array,
 };
 
-const attendanceByBarcodeIdsQuery = gql`
-  query attendanceByBarcodeIds($barcodeIds: String!) {
-    attendanceByBarcodeIds(barcodeIds: $barcodeIds) {
-      _id
-      karkunId
-      month
-      meetingCardBarcodeId
-      karkun {
-        _id
-        name
-        image {
-          _id
-          data
-        }
-      }
-    }
-  }
-`;
-
 export default flowRight(
   WithQueryParams(),
-  graphql(attendanceByBarcodeIdsQuery, {
+  graphql(ATTENDANCE_BY_BARCODE_IDS, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
     options: ({ queryParams: { barcodeIds } }) => ({
       variables: { barcodeIds },

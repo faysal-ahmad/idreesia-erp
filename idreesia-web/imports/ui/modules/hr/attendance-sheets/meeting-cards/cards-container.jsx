@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
 
@@ -10,7 +9,9 @@ import {
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
 import { Button, Divider } from '/imports/ui/controls';
+
 import Cards from './cards';
+import { ATTENDANCE_BY_BARCODE_IDS } from '../gql';
 
 const CardsContainer = ({
   attendanceLoading,
@@ -64,46 +65,9 @@ CardsContainer.propTypes = {
   attendanceByBarcodeIds: PropTypes.array,
 };
 
-const attendanceByBarcodeIdsQuery = gql`
-  query attendanceByBarcodeIds($barcodeIds: String!) {
-    attendanceByBarcodeIds(barcodeIds: $barcodeIds) {
-      _id
-      karkunId
-      month
-      dutyId
-      shiftId
-      absentCount
-      presentCount
-      percentage
-      meetingCardBarcodeId
-      karkun {
-        _id
-        name
-        bloodGroup
-        image {
-          _id
-          data
-        }
-      }
-      job {
-        _id
-        name
-      }
-      duty {
-        _id
-        name
-      }
-      shift {
-        _id
-        name
-      }
-    }
-  }
-`;
-
 export default flowRight(
   WithQueryParams(),
-  graphql(attendanceByBarcodeIdsQuery, {
+  graphql(ATTENDANCE_BY_BARCODE_IDS, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
     options: ({ queryParams: { barcodeIds } }) => ({
       variables: { barcodeIds },

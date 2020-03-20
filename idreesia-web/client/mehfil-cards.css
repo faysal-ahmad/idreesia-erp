@@ -50,8 +50,12 @@
   border: 1px solid #ccc;
 }
 
+.mehfil_card_duty_shift_job {
+  margin: auto;
+}
+
 .mehfil_card_barcode {
   width: 120px;
   margin: auto;
-  padding: 5px 0;
+  padding: 3px 0;
 }

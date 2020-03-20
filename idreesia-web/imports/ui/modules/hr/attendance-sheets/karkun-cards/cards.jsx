@@ -24,6 +24,7 @@ export default class Cards extends Component {
   static propTypes = {
     cardHeading: PropTypes.string,
     cardSubHeading: PropTypes.string,
+    showDutyInfo: PropTypes.bool,
     attendanceByBarcodeIds: PropTypes.array,
   };
 
@@ -40,18 +41,41 @@ export default class Cards extends Component {
     return <div className="mehfil_card_picture">{karkunImage}</div>;
   };
 
+  getDutyShiftInfo = attendance => {
+    const { showDutyInfo } = this.props;
+    const dutyShiftNode = showDutyInfo ? (
+      <p className="mehfil_card_duty_shift_job">
+        {attendance.duty ? attendance.duty.name : ''}
+        {attendance.job ? attendance.job.name : ''}
+        <br />
+        {attendance.shift ? attendance.shift.name : ''}
+      </p>
+    ) : null;
+
+    return dutyShiftNode;
+  };
+
   getCardMarkup(attendance) {
-    const { cardHeading, cardSubHeading } = this.props;
+    const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
     const karkunImage = this.getKarkunImage(attendance);
+    const dutyShiftInfo = this.getDutyShiftInfo(attendance);
+
+    let cardHeight = 325;
+    if (showDutyInfo) cardHeight += 30;
 
     return (
-      <div key={attendance._id} className="mehfil_card">
+      <div
+        key={attendance._id}
+        className="mehfil_card"
+        style={{ height: cardHeight }}
+      >
         <div className="mehfil_card_heading">{cardHeading}</div>
         {cardSubHeading ? (
           <div className="mehfil_card_subheading">{cardSubHeading}</div>
         ) : null}
         {karkunImage}
         <h1 className="mehfil_card_name">{attendance.karkun.name}</h1>
+        {dutyShiftInfo}
         <div className="mehfil_card_barcode">
           <Barcode
             value={attendance.meetingCardBarcodeId}
@@ -71,7 +95,7 @@ export default class Cards extends Component {
     let index = 0;
     const cardContainers = [];
     while (cards.length > 0) {
-      const cardsForPage = cards.splice(0, 12);
+      const cardsForPage = cards.splice(0, 9);
       cardContainers.push(
         <div key={`container_${index}`} style={ContainerStyle}>
           {cardsForPage}

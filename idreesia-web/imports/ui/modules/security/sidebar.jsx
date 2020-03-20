@@ -82,14 +82,14 @@ class Sidebar extends Component {
           key="mehfil-management"
           title={
             <span>
-              <Icon type="build" style={IconStyle} />
+              <Icon type="flag" style={IconStyle} />
               Mehfil Management
             </span>
           }
         >
           <Menu.Item key="mehfils">
             <span>
-              <Icon type="flag" style={IconStyle} />
+              <Icon type="bars" style={IconStyle} />
               Mehfils
             </span>
           </Menu.Item>
@@ -104,7 +104,7 @@ class Sidebar extends Component {
           key="karkuns"
           title={
             <span>
-              <Icon type="build" style={IconStyle} />
+              <Icon type="team" style={IconStyle} />
               Karkuns
             </span>
           }
@@ -120,7 +120,7 @@ class Sidebar extends Component {
           key="visitors"
           title={
             <span>
-              <Icon type="build" style={IconStyle} />
+              <Icon type="team" style={IconStyle} />
               Visitors
             </span>
           }
@@ -137,18 +137,12 @@ class Sidebar extends Component {
               Card Verification
             </span>
           </Menu.Item>
-          <Menu.Item key="audit-logs">
-            <span>
-              <Icon type="audit" style={IconStyle} />
-              Audit Logs
-            </span>
-          </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu
           key="security-reports"
           title={
             <span>
-              <Icon type="build" style={IconStyle} />
+              <Icon type="file-search" style={IconStyle} />
               Reports
             </span>
           }
@@ -169,6 +163,22 @@ class Sidebar extends Component {
             <span>
               <Icon type="book" style={IconStyle} />
               Mulakaat Report
+            </span>
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu
+          key="administration"
+          title={
+            <span>
+              <Icon type="tool" style={IconStyle} />
+              Administration
+            </span>
+          }
+        >
+          <Menu.Item key="audit-logs">
+            <span>
+              <Icon type="audit" style={IconStyle} />
+              Audit Logs
             </span>
           </Menu.Item>
         </Menu.SubMenu>

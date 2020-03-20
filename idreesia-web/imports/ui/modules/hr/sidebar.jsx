@@ -111,12 +111,22 @@ class Sidebar extends Component {
             Shared Residences
           </span>
         </Menu.Item>
-        <Menu.Item key="audit-logs">
-          <span>
-            <Icon type="audit" style={IconStyle} />
-            Audit Logs
-          </span>
-        </Menu.Item>
+        <SubMenu
+          key="administration"
+          title={
+            <span>
+              <Icon type="tool" style={IconStyle} />
+              Administration
+            </span>
+          }
+        >
+          <Menu.Item key="audit-logs">
+            <span>
+              <Icon type="audit" style={IconStyle} />
+              Audit Logs
+            </span>
+          </Menu.Item>
+        </SubMenu>
         <SubMenu
           key="setup"
           title={

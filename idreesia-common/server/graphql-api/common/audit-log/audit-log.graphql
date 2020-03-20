@@ -6,6 +6,9 @@ type AuditLogType {
   auditValues: [String]
   operationTime: String
   operationBy: String
+
+  operationByName: String
+  operationByImageId: String
 }
 
 input AuditLogFilter {

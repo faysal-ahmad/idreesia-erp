@@ -2,14 +2,24 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
+import { Link } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  EntityTypes,
+  OperationTypeDisplayNames,
+} from 'meteor/idreesia-common/constants/audit';
 
 import { AuditLogsList, AuditLogsListFilter } from '/imports/ui/modules/common';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
 import { PAGED_ACCOUNTS_AUDIT_LOGS } from '../gql';
+
+const EntityTypeDisplayNames = {
+  [EntityTypes.PAYMENT]: 'Payment',
+};
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -24,7 +34,7 @@ const List = ({ history, location }) => {
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Outstation', 'Audit Logs', 'List']));
+    dispatch(setBreadcrumbs(['Accounts', 'Audit Logs', 'List']));
   }, [location]);
 
   const { entityId, pageIndex, pageSize } = queryParams;
@@ -42,6 +52,20 @@ const List = ({ history, location }) => {
     </div>
   );
 
+  const getAuditLogEntityRenderer = auditLog => {
+    const { entityId: _entityId, entityType, operationType } = auditLog;
+
+    if (entityType === EntityTypes.PAYMENT) {
+      return (
+        <Link to={paths.paymentsEditFormPath(_entityId)}>
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+        </Link>
+      );
+    }
+
+    return _entityId;
+  };
+
   const pagedAccountsAuditLogs = data
     ? data.pagedAccountsAuditLogs
     : {
@@ -54,6 +78,7 @@ const List = ({ history, location }) => {
   return (
     <>
       <AuditLogsList
+        entityRenderer={getAuditLogEntityRenderer}
         listHeader={getTableHeader}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}

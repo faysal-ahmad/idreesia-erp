@@ -5,11 +5,13 @@ import moment from 'moment';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { OperationTypes } from 'meteor/idreesia-common/constants/audit';
 import { Pagination, Table } from '/imports/ui/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import getFormattedValue from './get-formatted-value';
 
 export default class AuditLogsList extends Component {
   static propTypes = {
+    entityRenderer: PropTypes.func,
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
@@ -23,11 +25,15 @@ export default class AuditLogsList extends Component {
     }),
   };
 
+  static defaultProps = {
+    entityRenderer: record => record.entityId,
+  };
+
   columns = [
     {
-      title: 'Entity ID',
-      dataIndex: 'entityId',
+      title: 'Entity',
       key: 'entityId',
+      render: (text, record) => this.props.entityRenderer(record),
     },
     {
       title: 'Operation Time',
@@ -47,8 +53,15 @@ export default class AuditLogsList extends Component {
     },
     {
       title: 'Operation By',
-      dataIndex: 'operationBy',
       key: 'operationBy',
+      render: (text, record) => (
+        <PersonName
+          person={{
+            name: record.operationByName,
+            imageId: record.operationByImageId,
+          }}
+        />
+      ),
     },
     {
       title: 'Audit Values',

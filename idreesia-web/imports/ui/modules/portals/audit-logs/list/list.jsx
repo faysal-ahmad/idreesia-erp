@@ -3,15 +3,26 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { usePortal } from 'meteor/idreesia-common/hooks/portals';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  EntityTypes,
+  OperationTypeDisplayNames,
+} from 'meteor/idreesia-common/constants/audit';
 
 import { AuditLogsList, AuditLogsListFilter } from '/imports/ui/modules/common';
+import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
 import { PAGED_PORTAL_AUDIT_LOGS } from '../gql';
+
+const EntityTypeDisplayNames = {
+  [EntityTypes.KARKUN]: 'Karkun',
+  [EntityTypes.VISITOR]: 'Member',
+};
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -52,6 +63,25 @@ const List = ({ history, location }) => {
     </div>
   );
 
+  const getAuditLogEntityRenderer = auditLog => {
+    const { entityId: _entityId, entityType, operationType } = auditLog;
+    if (entityType === EntityTypes.KARKUN) {
+      return (
+        <Link to={paths.karkunsEditFormPath(portalId, _entityId)}>
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+        </Link>
+      );
+    } else if (entityType === EntityTypes.VISITOR) {
+      return (
+        <Link to={paths.membersEditFormPath(portalId, _entityId)}>
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+        </Link>
+      );
+    }
+
+    return _entityId;
+  };
+
   const pagedPortalAuditLogs = data
     ? data.pagedPortalAuditLogs
     : {
@@ -64,6 +94,7 @@ const List = ({ history, location }) => {
   return (
     <>
       <AuditLogsList
+        entityRenderer={getAuditLogEntityRenderer}
         listHeader={getTableHeader}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}

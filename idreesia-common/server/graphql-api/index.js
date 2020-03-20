@@ -6,7 +6,8 @@ import { merge } from 'meteor/idreesia-common/utilities/lodash';
 import AttachmentSchema from './common/attachment/attachment.graphql';
 import AttachmentResolvers from './common/attachment/resolvers';
 
-import AuditLogsSchema from './common/audit-log/audit-log.graphql';
+import AuditLogSchema from './common/audit-log/audit-log.graphql';
+import AuditLogResolvers from './common/audit-log/resolvers';
 
 import MessageSchema from './common/message/message.graphql';
 import MessageResolvers from './common/message/resolvers';
@@ -220,7 +221,7 @@ import WazeefaResolvers from './wazaif-management/wazeefa/resolvers';
 
 const typeDefs = [
   AttachmentSchema,
-  AuditLogsSchema,
+  AuditLogSchema,
   MessageSchema,
   KarkunSchema,
   VisitorSchema,
@@ -294,6 +295,7 @@ const typeDefs = [
 
 const resolvers = merge(
   AttachmentResolvers,
+  AuditLogResolvers,
   MessageResolvers,
   KarkunResolvers,
   VisitorResolvers,

@@ -12,6 +12,8 @@ const PAGED_PORTAL_AUDIT_LOGS = gql`
         auditValues
         operationTime
         operationBy
+        operationByName
+        operationByImageId
       }
     }
   }

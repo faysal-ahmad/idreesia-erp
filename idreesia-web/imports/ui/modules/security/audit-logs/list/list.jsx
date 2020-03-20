@@ -2,14 +2,24 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
+import { Link } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  EntityTypes,
+  OperationTypeDisplayNames,
+} from 'meteor/idreesia-common/constants/audit';
 
 import { AuditLogsList, AuditLogsListFilter } from '/imports/ui/modules/common';
+import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_AUDIT_LOGS } from '../gql';
+
+const EntityTypeDisplayNames = {
+  [EntityTypes.VISITOR]: 'Visitor',
+};
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -42,6 +52,19 @@ const List = ({ history, location }) => {
     </div>
   );
 
+  const getAuditLogEntityRenderer = auditLog => {
+    const { entityId: _entityId, entityType, operationType } = auditLog;
+    if (entityType === EntityTypes.VISITOR) {
+      return (
+        <Link to={paths.visitorRegistrationEditFormPath(_entityId)}>
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+        </Link>
+      );
+    }
+
+    return _entityId;
+  };
+
   const pagedSecurityAuditLogs = data
     ? data.pagedSecurityAuditLogs
     : {
@@ -54,6 +77,7 @@ const List = ({ history, location }) => {
   return (
     <>
       <AuditLogsList
+        entityRenderer={getAuditLogEntityRenderer}
         listHeader={getTableHeader}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}

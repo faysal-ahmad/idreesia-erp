@@ -57,7 +57,7 @@ const Router = () => (
     <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
     <Route path={paths.karkunsScanCardPath} component={KarkunsScanCard} />
     <Route path={paths.karkunsPrintPath()} component={KarkunPrintView} />
-    <Route path={paths.karkunsEditFormPath} component={KarkunsEditForm} />
+    <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath} component={KarkunsList} />
 
     <Route

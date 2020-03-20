@@ -151,23 +151,23 @@ class ListContainer extends Component {
       });
   };
 
-  handleViewKarkunCards = (selectedRows, cardType) => {
+  handleViewMeetingCards = (selectedRows, cardType) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
-    const path = `${paths.attendanceSheetsKarkunCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
+    const path = `${paths.attendanceSheetsMeetingCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
-  handleViewMehfilCards = selectedRows => {
+  handleViewKarkunCards = selectedRows => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
-    const path = `${paths.attendanceSheetsMehfilCardsPath}?barcodeIds=${barcodeIdsString}`;
+    const path = `${paths.attendanceSheetsKarkunCardsPath}?barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
@@ -263,8 +263,8 @@ class ListContainer extends Component {
           handleEditAttendance={this.handleEditAttendance}
           handleCreateMissingAttendances={this.handleCreateMissingAttendances}
           handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
+          handleViewMeetingCards={this.handleViewMeetingCards}
           handleViewKarkunCards={this.handleViewKarkunCards}
-          handleViewMehfilCards={this.handleViewMehfilCards}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}

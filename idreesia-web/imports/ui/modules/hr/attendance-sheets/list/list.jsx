@@ -45,8 +45,8 @@ export class List extends Component {
     handleCreateMissingAttendances: PropTypes.func,
     handleEditAttendance: PropTypes.func,
     handleImportFromGoogleSheet: PropTypes.func,
+    handleViewMeetingCards: PropTypes.func,
     handleViewKarkunCards: PropTypes.func,
-    handleViewMehfilCards: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
   };
@@ -181,19 +181,19 @@ export class List extends Component {
     });
   };
 
-  handleViewKarkunCards = cardType => {
-    const { handleViewKarkunCards } = this.props;
+  handleViewMeetingCards = cardType => {
+    const { handleViewMeetingCards } = this.props;
     const { selectedRows } = this.state;
-    if (handleViewKarkunCards) {
-      handleViewKarkunCards(selectedRows, cardType);
+    if (handleViewMeetingCards) {
+      handleViewMeetingCards(selectedRows, cardType);
     }
   };
 
-  handleViewMehfilCards = () => {
-    const { handleViewMehfilCards } = this.props;
+  handleViewKarkunCards = () => {
+    const { handleViewKarkunCards } = this.props;
     const { selectedRows } = this.state;
-    if (handleViewMehfilCards) {
-      handleViewMehfilCards(selectedRows);
+    if (handleViewKarkunCards) {
+      handleViewKarkunCards(selectedRows);
     }
   };
 
@@ -318,14 +318,14 @@ export class List extends Component {
           <Menu.Item
             key="5-1"
             onClick={() =>
-              this.handleViewKarkunCards(CardTypes.NAAM_I_MUBARIK_MEETING)
+              this.handleViewMeetingCards(CardTypes.NAAM_I_MUBARIK_MEETING)
             }
           >
             Naam-i-Mubarik Meeting
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item key="5-2" onClick={() => this.handleViewMehfilCards()}>
-            Mehfil Cards
+          <Menu.Item key="5-2" onClick={() => this.handleViewKarkunCards()}>
+            Karkun Cards
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />

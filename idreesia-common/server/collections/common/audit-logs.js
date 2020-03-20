@@ -26,7 +26,9 @@ class AuditLogs extends AggregatableCollection {
       operationType,
       operationBy,
       operationTime,
-      auditValues: this.getAuditValues(auditValues, existingEntity),
+      auditValues: auditValues
+        ? this.getAuditValues(auditValues, existingEntity)
+        : null,
     });
   }
 

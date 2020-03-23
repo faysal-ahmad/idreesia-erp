@@ -66,7 +66,7 @@ jobs:
           key: web-dependencies-{{ checksum "package.json" }}
 
       - run:
-          command: meteor yarn run build
+          command: meteor yarn run build --server-only
 
       - run:
           working_directory: ~/idreesia-erp

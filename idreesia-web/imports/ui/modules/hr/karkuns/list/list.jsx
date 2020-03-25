@@ -273,14 +273,14 @@ class List extends Component {
 
     const menu = (
       <Menu>
-        <Menu.Item key="1" onClick={this.handleExportSelected}>
-          <Icon type="download" />
-          Download Selected
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="2" onClick={this.handlePrintSelected}>
+        <Menu.Item key="1" onClick={this.handlePrintSelected}>
           <Icon type="printer" />
           Print Selected
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="2" onClick={this.handleExportSelected}>
+          <Icon type="download" />
+          Download Selected
         </Menu.Item>
       </Menu>
     );

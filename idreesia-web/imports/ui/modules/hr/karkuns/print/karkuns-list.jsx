@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
@@ -14,9 +13,7 @@ export default class KarkunsList extends Component {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => (
-      <PersonName person={record} onPersonNameClicked={noop} />
-    ),
+    render: (text, record) => <PersonName person={record} showLargeImage />,
   };
 
   cnicColumn = {
@@ -44,13 +41,18 @@ export default class KarkunsList extends Component {
     title: 'Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: duties => {
+    render: (duties, record) => {
       let dutyNames = [];
+
       if (duties.length > 0) {
         dutyNames = duties.map(duty => {
           const dutyName = duty.dutyName;
           return <span>{dutyName}</span>;
         });
+      }
+
+      if (record.job) {
+        dutyNames = [<span>{record.job.name}</span>].concat(dutyNames);
       }
 
       if (dutyNames.length === 0) {
@@ -85,7 +87,7 @@ export default class KarkunsList extends Component {
     let index = 0;
     const lists = [];
     while (allKarkuns.length > 0) {
-      const karkunsForPage = allKarkuns.splice(0, 17);
+      const karkunsForPage = allKarkuns.splice(0, 10);
       lists.push(
         <Table
           rowKey="_id"

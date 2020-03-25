@@ -1,5 +1,6 @@
 extend type Query {
   hrKarkunById(_id: String!): KarkunType
+  hrKarkunsById(_ids: String!): [KarkunType]
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
 }
 

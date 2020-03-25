@@ -15,6 +15,11 @@ export default {
       return Karkuns.findOne(_id);
     },
 
+    hrKarkunsById(obj, { _ids }) {
+      const idsArray = _ids.split(',');
+      return Karkuns.find({ _id: { $in: idsArray } }).fetch();
+    },
+
     pagedHrKarkuns(obj, { filter }) {
       return getKarkuns(filter);
     },

@@ -46,6 +46,15 @@ const PersonName = ({ person, onPersonNameClicked }) => {
     );
   }
 
+  if (person.image) {
+    avatarNode = (
+      <img
+        src={`data:image/jpeg;base64,${person.image.data}`}
+        style={{ height: '40px', width: '40px', borderRadius: '10%' }}
+      />
+    );
+  }
+
   return (
     <>
       <div style={NameDivStyle}>
@@ -70,6 +79,7 @@ PersonName.propTypes = {
   person: PropTypes.shape({
     name: PropTypes.string.isRequired,
     imageId: PropTypes.string,
+    image: PropTypes.object,
   }),
 };
 

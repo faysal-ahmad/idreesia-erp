@@ -7,6 +7,7 @@ import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Col, Divider, Row } from '/imports/ui/controls';
 import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
 
@@ -166,5 +167,6 @@ export default flowRight(
       const { karkunId } = match.params;
       return { variables: { _id: karkunId } };
     },
-  })
+  }),
+  WithBreadcrumbs(['HR', 'Karkuns', 'Print Karkun'])
 )(PrintView);

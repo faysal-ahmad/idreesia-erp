@@ -5,7 +5,7 @@ import LoginForm from './login-form';
 import BlankPage from './blank-page';
 
 import { default as securityPaths } from '/imports/ui/modules/security/submodule-paths';
-import { MehfilCardVerificationForm } from '/imports/ui/modules/security/mehfil-card-verification';
+import { KarkunCardVerificationForm } from '/imports/ui/modules/security/karkun-card-verification';
 import {
   VisitorRegistrationSearchForm,
   VisitorRegistrationNewForm,
@@ -16,8 +16,8 @@ const AppRouter = () => (
     <Route exact path="/login" component={LoginForm} />
     <Route
       exact
-      path={securityPaths.mehfilCardVerificationPath}
-      component={MehfilCardVerificationForm}
+      path={securityPaths.karkunCardVerificationPath}
+      component={KarkunCardVerificationForm}
     />
 
     <Route

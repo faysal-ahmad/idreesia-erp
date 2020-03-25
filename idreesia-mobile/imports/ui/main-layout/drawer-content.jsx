@@ -48,6 +48,21 @@ const DrawerContent = ({ history, toggleDrawer }) => {
           >
             Visitor Registration
           </List.Item>
+          <List.Item
+            onClick={() => {
+              toggleDrawer();
+              dispatch(
+                setActiveModuleAndSubModuleName(
+                  ModuleNames.security,
+                  SecuritySubModuleNames.karkunCardVerification
+                )
+              );
+              history.push(SecuritySubModulePaths.karkunCardVerificationPath);
+            }}
+            thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
+          >
+            Scan Karkun Card
+          </List.Item>
         </List>
       ) : null}
     </>

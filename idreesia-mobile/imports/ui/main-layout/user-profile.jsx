@@ -61,7 +61,7 @@ const UserProfile = ({ history, loggedInUserId }) => {
 
 UserProfile.propTypes = {
   history: PropTypes.object,
-  loggedInUserId: PropTypes.object,
+  loggedInUserId: PropTypes.string,
 };
 
 export default UserProfile;

@@ -3,12 +3,12 @@ const iosIconsFolder = 'private/assets/icon/ios';
 const androidIconsFolder = 'private/assets/icon/android';
 
 App.info({
-    version: '1.0.0',
-    buildNumber: 1,
-    description: 'Idreesia ERP Client',
-    author: 'Faisal Ahmad',
-    email: 'faisal.idreesi@gmail.com',
-    website: 'https://idreesia.com',
+  version: '1.0.0',
+  buildNumber: 1,
+  description: 'Idreesia ERP Client',
+  author: 'Faisal Ahmad',
+  email: 'faisal.idreesi@gmail.com',
+  website: 'https://idreesia.com',
 });
 
 // needs to be lower case because of iOS
@@ -44,6 +44,9 @@ App.icons({
 });
 
 App.appendToConfig(`
+  <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application" xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:usesCleartextTraffic="true"></application>
+  </edit-config>
   <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
     <string>We need to access your camera to let you take profile pictures.</string>
   </edit-config>

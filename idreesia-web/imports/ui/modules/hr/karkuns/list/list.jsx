@@ -6,7 +6,9 @@ import { graphql } from 'react-apollo';
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
+  Dropdown,
   Icon,
+  Menu,
   Pagination,
   Popconfirm,
   Row,
@@ -47,6 +49,7 @@ class List extends Component {
     handleAuditLogClicked: PropTypes.func,
     handleNewClicked: PropTypes.func,
     handleScanClicked: PropTypes.func,
+    handlePrintSelected: PropTypes.func,
 
     deleteHrKarkun: PropTypes.func,
     loading: PropTypes.bool,
@@ -258,6 +261,37 @@ class List extends Component {
     window.open(url, '_blank');
   };
 
+  handlePrintSelected = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+    this.props.handlePrintSelected(selectedRows);
+  };
+
+  getActionsMenu = () => {
+    const { showDownloadButton } = this.props;
+    if (!showDownloadButton) return null;
+
+    const menu = (
+      <Menu>
+        <Menu.Item key="1" onClick={this.handlePrintSelected}>
+          <Icon type="printer" />
+          Print Selected
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="2" onClick={this.handleExportSelected}>
+          <Icon type="download" />
+          Download Selected
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <Button icon="setting" size="large" />
+      </Dropdown>
+    );
+  };
+
   getTableHeader = () => {
     const {
       name,
@@ -273,7 +307,6 @@ class List extends Component {
       setPageParams,
       refetchListQuery,
       showNewButton,
-      showDownloadButton,
       handleNewClicked,
       handleScanClicked,
       predefinedFilterName,
@@ -324,19 +357,6 @@ class List extends Component {
       );
     }
 
-    let downloadButton = null;
-    if (showDownloadButton) {
-      downloadButton = (
-        <Tooltip title="Download Selected Data">
-          <Button
-            icon="download"
-            size="large"
-            onClick={this.handleExportSelected}
-          />
-        </Tooltip>
-      );
-    }
-
     if (!newButton && !listFilter) return null;
     return (
       <div className="list-table-header">
@@ -344,7 +364,7 @@ class List extends Component {
         <div className="list-table-header-section">
           {listFilter}
           &nbsp;&nbsp;
-          {downloadButton}
+          {this.getActionsMenu()}
         </div>
       </div>
     );

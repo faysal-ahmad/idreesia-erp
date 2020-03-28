@@ -16,6 +16,7 @@ import {
   KarkunsList,
   KarkunsScanCard,
   KarkunPrintView,
+  KarkunsPrintView,
 } from './karkuns';
 import {
   AttendanceSheetsList,
@@ -56,6 +57,7 @@ const Router = () => (
 
     <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
     <Route path={paths.karkunsScanCardPath} component={KarkunsScanCard} />
+    <Route path={paths.karkunsPrintListPath} component={KarkunsPrintView} />
     <Route path={paths.karkunsPrintPath()} component={KarkunPrintView} />
     <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath} component={KarkunsList} />

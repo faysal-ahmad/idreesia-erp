@@ -123,6 +123,14 @@ class ListContainer extends Component {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
+  handlePrintSelected = karkuns => {
+    const { history } = this.props;
+    const karkunIds = karkuns.map(karkun => karkun._id);
+    history.push(
+      `${paths.karkunsPrintListPath}?karkunIds=${karkunIds.join(',')}`
+    );
+  };
+
   render() {
     const {
       queryParams: {
@@ -170,6 +178,7 @@ class ListContainer extends Component {
         handleScanClicked={this.handleScanClicked}
         handlePrintClicked={this.handlePrintClicked}
         handleAuditLogClicked={this.handleAuditLogClicked}
+        handlePrintSelected={this.handlePrintSelected}
       />
     );
   }

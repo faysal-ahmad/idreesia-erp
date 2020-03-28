@@ -18,7 +18,7 @@ import combinedReducer from '../imports/ui/reducers/combined-reducer';
 
 const store = createStore(combinedReducer, applyMiddleware(thunkMiddleware));
 const client = new ApolloClient({
-  uri: '/graphql',
+  uri: Meteor.absoluteUrl('graphql'),
   request: operation =>
     operation.setContext(() => ({
       headers: {

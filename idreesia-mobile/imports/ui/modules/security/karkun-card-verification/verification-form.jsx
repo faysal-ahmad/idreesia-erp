@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { Button, Flex, WingBlank } from '/imports/ui/controls';
 import SearchResult from './search-result';
 
@@ -19,9 +21,11 @@ const SCANNER_CONFIG = {
 };
 
 const VerificationForm = ({ history, location }) => {
+  const dispatch = useDispatch();
   const { queryParams } = useQueryParams({ history, location });
   const [barcode, setBarcode] = useState(null);
   useEffect(() => {
+    dispatch(setBreadcrumbs(['Security', 'Karkun Card Verification']));
     if (queryParams.barcode) {
       setBarcode(queryParams.barcode);
     }
@@ -50,7 +54,7 @@ const VerificationForm = ({ history, location }) => {
     <Flex direction="column" justify="center" align="center" style={ColStyle}>
       <WingBlank style={{ width: '100%' }}>
         <Button type="default" onClick={scanBarcode}>
-          Start Scanning
+          Scan Card
         </Button>
       </WingBlank>
       {searchResult}

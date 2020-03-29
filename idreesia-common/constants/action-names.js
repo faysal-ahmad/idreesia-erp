@@ -14,6 +14,7 @@ const ActionNames = {
   // ****************************************************************************************
   // Action Names - Mobile
   // ****************************************************************************************
+  SET_DRAWER_OPEN: 'SET_DRAWER_OPEN',
   SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME:
     'SET_ACTIVE_MODULE_AND_SUB_MODULE_NAME',
 };

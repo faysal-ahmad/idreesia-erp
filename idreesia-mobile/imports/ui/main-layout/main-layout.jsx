@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 
+import { setDrawerOpen } from 'meteor/idreesia-common/action-creators';
 import { Drawer, NavBar } from '/imports/ui/controls';
 import AppRouter from './app-router';
 import DrawerContent from './drawer-content';
 
 const MainLayout = ({ history, location }) => {
+  const dispatch = useDispatch();
   const breadcrumbs = useSelector(state => state.breadcrumbs);
-  const [showDrawer, setShowDrawer] = useState(false);
+  const drawerOpen = useSelector(state => state.drawerOpen);
 
   const toggleDrawer = () => {
-    setShowDrawer(!showDrawer);
+    dispatch(setDrawerOpen(!drawerOpen));
   };
 
   const getTitle = () => {
@@ -54,7 +56,7 @@ const MainLayout = ({ history, location }) => {
             toggleDrawer={toggleDrawer}
           />
         }
-        open={showDrawer}
+        open={drawerOpen}
         onOpenChange={toggleDrawer}
       >
         <AppRouter />

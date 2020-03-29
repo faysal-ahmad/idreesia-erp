@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
 import {
+  setDrawerOpen,
   setLoggedInUserId,
   setActiveModuleAndSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
@@ -24,6 +25,7 @@ const UserProfile = ({ history, loggedInUserId }) => {
           <Button
             type="primary"
             onClick={() => {
+              dispatch(setDrawerOpen(false));
               history.push('/login');
             }}
           >
@@ -46,6 +48,7 @@ const UserProfile = ({ history, loggedInUserId }) => {
                 // eslint-disable-next-line no-console
                 console.log(error);
               }
+              dispatch(setDrawerOpen(false));
               dispatch(setLoggedInUserId(null));
               dispatch(setActiveModuleAndSubModuleName(null, null));
               history.push('/');

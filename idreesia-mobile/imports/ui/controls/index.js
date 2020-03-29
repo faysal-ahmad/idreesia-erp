@@ -39,10 +39,13 @@ export { default as WingBlank } from 'antd-mobile/lib/wing-blank';
 export { default as WhiteSpace } from 'antd-mobile/lib/white-space';
 
 export {
+  default as EhadDurationField,
+} from './ehad-duration-field/ehad-duration-field';
+export {
   default as FormButtonsSaveCancel,
 } from './form-buttons/form-buttons-save-cancel';
 export { default as InputItemField } from './input-item-field/input-item-field';
 export { default as PictureField } from './picture-field/picture-field';
 export {
-  default as EhadDurationField,
-} from './ehad-duration-field/ehad-duration-field';
+  default as SearchResultRow,
+} from './search-result-row/search-result-row';

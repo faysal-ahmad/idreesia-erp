@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faIdCard } from '@fortawesome/free-solid-svg-icons/faIdCard';
+import { faBarcode } from '@fortawesome/free-solid-svg-icons/faBarcode';
 
 import { setActiveModuleAndSubModuleName } from 'meteor/idreesia-common/action-creators';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
@@ -59,7 +60,7 @@ const DrawerContent = ({ history, toggleDrawer }) => {
               );
               history.push(SecuritySubModulePaths.karkunCardVerificationPath);
             }}
-            thumb={<FontAwesomeIcon icon={faIdCard} style={IconStyle} />}
+            thumb={<FontAwesomeIcon icon={faBarcode} style={IconStyle} />}
           >
             Scan Karkun Card
           </List.Item>

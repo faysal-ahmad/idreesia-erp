@@ -10,7 +10,8 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Button, Drawer, message } from '/imports/ui/controls';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
-import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
+import { VisitorMulakaatsList } from '/imports/ui/modules/telephone-room/visitor-mulakaats';
+import { ImdadRequestsList } from '/imports/ui/modules/telephone-room/imdad-requests';
 import { TelephoneRoomSubModulePaths as paths } from '/imports/ui/modules/telephone-room';
 
 import {
@@ -28,6 +29,7 @@ const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const visitorsList = useRef(null);
   const [showMulakaatList, setShowMulakaatList] = useState(false);
+  const [showImdadRequests, setShowImdadRequests] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState(null);
   const { queryParams, setPageParams } = useQueryParams({
     history,
@@ -101,6 +103,16 @@ const List = ({ history, location }) => {
     setVisitorIdForList(null);
   };
 
+  const handleImdadRequestsAction = visitor => {
+    setShowImdadRequests(true);
+    setVisitorIdForList(visitor._id);
+  };
+
+  const handleImdadRequestsListClose = () => {
+    setShowImdadRequests(false);
+    setVisitorIdForList(null);
+  };
+
   const getTableHeader = () => (
     <div className="list-table-header">
       <div style={ButtonGroupStyle}>
@@ -150,12 +162,14 @@ const List = ({ history, location }) => {
         showPhoneNumbersColumn
         showCityCountryColumn
         showMulakaatHistoryAction
+        showImdadRequestsAction
         showLookupAction={false}
         showDeleteAction
         listHeader={getTableHeader}
         handleSelectItem={handleSelectItem}
         handleDeleteItem={handleDeleteItem}
         handleMulakaatHistoryAction={handleMulakaatHistoryAction}
+        handleImdadRequestsAction={handleImdadRequestsAction}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}
         pageSize={numPageSize}
@@ -172,6 +186,14 @@ const List = ({ history, location }) => {
           showActionsColumn
           visitorId={visitorIdForList}
         />
+      </Drawer>
+      <Drawer
+        title="Imdad Requests"
+        width={400}
+        onClose={handleImdadRequestsListClose}
+        visible={showImdadRequests}
+      >
+        <ImdadRequestsList visitorId={visitorIdForList} />
       </Drawer>
     </>
   );

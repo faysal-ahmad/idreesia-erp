@@ -1,0 +1,27 @@
+type ImdadRequestType {
+  _id: String
+  visitorId: String
+  requestDate: String
+  status: String
+
+  visitor: VisitorType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedImdadRequestType {
+  totalResults: Int
+  data: [ImdadRequestType]
+}
+
+input ImdadRequestFilter {
+  visitorId: String
+  requestDate: String
+  cityId: String
+  cityMehfilId: String
+  pageIndex: String
+  pageSize: String
+}

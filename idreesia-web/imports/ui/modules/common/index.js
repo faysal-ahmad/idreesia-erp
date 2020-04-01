@@ -20,6 +20,8 @@ export {
   default as VisitorMulakaatCard,
 } from './visitor-mulakaats/mulakaat-card';
 
+export { default as ImdadRequestsList } from './imdad-requests/list';
+
 export { default as WazaifList } from './wazaif/list';
 export { default as WazaifListFilter } from './wazaif/list-filter';
 

@@ -1,0 +1,8 @@
+extend type Query {
+  pagedTelephoneRoomImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
+}
+
+extend type Mutation {
+  createTelephoneRoomImdadRequest(visitorId: String!): ImdadRequestType
+  deleteTelephoneRoomImdadRequest(_id: String!): Int
+}

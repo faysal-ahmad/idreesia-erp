@@ -26,6 +26,7 @@ export default class VisitorsList extends Component {
     showDeleteAction: PropTypes.bool,
     showStayHistoryAction: PropTypes.bool,
     showMulakaatHistoryAction: PropTypes.bool,
+    showImdadRequestsAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
     showKarkunLinkAction: PropTypes.bool,
     showKarkunCreateAction: PropTypes.bool,
@@ -35,6 +36,7 @@ export default class VisitorsList extends Component {
     handleDeleteItem: PropTypes.func,
     handleStayHistoryAction: PropTypes.func,
     handleMulakaatHistoryAction: PropTypes.func,
+    handleImdadRequestsAction: PropTypes.func,
     handleAuditLogsAction: PropTypes.func,
     handleKarkunLinkAction: PropTypes.func,
     handleKarkunCreateAction: PropTypes.func,
@@ -52,6 +54,7 @@ export default class VisitorsList extends Component {
     showDeleteAction: false,
     showStayHistoryAction: false,
     showMulakaatHistoryAction: false,
+    showImdadRequestsAction: false,
     showAuditLogsAction: false,
     showKarkunLinkAction: false,
     showKarkunCreateAction: false,
@@ -60,6 +63,7 @@ export default class VisitorsList extends Component {
     handleDeleteItem: noop,
     handleStayHistoryAction: noop,
     handleMulakaatHistoryAction: noop,
+    handleImdadRequestsAction: noop,
     handleAuditLogsAction: noop,
     handleKarkunLinkAction: noop,
     handleKarkunCreateAction: noop,
@@ -150,12 +154,14 @@ export default class VisitorsList extends Component {
         showDeleteAction,
         showStayHistoryAction,
         showMulakaatHistoryAction,
+        showImdadRequestsAction,
         showAuditLogsAction,
         showKarkunLinkAction,
         showKarkunCreateAction,
         handleDeleteItem,
         handleStayHistoryAction,
         handleMulakaatHistoryAction,
+        handleImdadRequestsAction,
         handleAuditLogsAction,
         handleKarkunLinkAction,
         handleKarkunCreateAction,
@@ -180,6 +186,18 @@ export default class VisitorsList extends Component {
             className="list-actions-icon"
             onClick={() => {
               handleMulakaatHistoryAction(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
+
+      const imdadRequestsAction = showImdadRequestsAction ? (
+        <Tooltip title="Imdad Requests">
+          <Icon
+            type="wallet"
+            className="list-actions-icon"
+            onClick={() => {
+              handleImdadRequestsAction(record);
             }}
           />
         </Tooltip>
@@ -242,6 +260,7 @@ export default class VisitorsList extends Component {
         <div className="list-actions-column">
           {stayHistoryAction}
           {mulakaatHistoryAction}
+          {imdadRequestsAction}
           {auditLogsAction}
           {linkAction}
           {createAction}
@@ -260,6 +279,7 @@ export default class VisitorsList extends Component {
       showDeleteAction,
       showStayHistoryAction,
       showMulakaatHistoryAction,
+      showAuditLogsAction,
       showKarkunLinkAction,
       showKarkunCreateAction,
     } = this.props;
@@ -288,6 +308,7 @@ export default class VisitorsList extends Component {
       showStayHistoryAction ||
       showMulakaatHistoryAction ||
       showKarkunLinkAction ||
+      showAuditLogsAction ||
       showKarkunCreateAction
     ) {
       columns.push(this.actionsColumn);

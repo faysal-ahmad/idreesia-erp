@@ -21,6 +21,9 @@ import VisitorResolvers from './common/visitor/resolvers';
 import VisitorMulakaatSchema from './common/visitor-mulakaat/visitor-mulakaat.graphql';
 import VisitorMulakaatResolvers from './common/visitor-mulakaat/resolvers';
 
+import ImdadRequestSchema from './common/imdad-request/imdad-request.graphql';
+import ImdadRequestResolvers from './common/imdad-request/resolvers';
+
 /**
  * Schema and Resolvers for the Admin module
  */
@@ -62,6 +65,9 @@ import TelephoneRoomVisitorResolvers from './telephone-room/visitor/resolvers';
 
 import TelephoneRoomVisitorMulakaatSchema from './telephone-room/visitor-mulakaat/visitor-mulakaat.graphql';
 import TelephoneRoomVisitorMulakaatResolvers from './telephone-room/visitor-mulakaat/resolvers';
+
+import TelephoneRoomImdadRequestSchema from './telephone-room/imdad-request/imdad-request.graphql';
+import TelephoneRoomImdadRequestResolvers from './telephone-room/imdad-request/resolvers';
 
 /**
  * Schema and Resolvers for the HR module
@@ -226,6 +232,7 @@ const typeDefs = [
   KarkunSchema,
   VisitorSchema,
   VisitorMulakaatSchema,
+  ImdadRequestSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
@@ -239,6 +246,7 @@ const typeDefs = [
 
   TelephoneRoomVisitorSchema,
   TelephoneRoomVisitorMulakaatSchema,
+  TelephoneRoomImdadRequestSchema,
 
   HRAuditLogSchema,
   DutyShiftSchema,
@@ -300,6 +308,7 @@ const resolvers = merge(
   KarkunResolvers,
   VisitorResolvers,
   VisitorMulakaatResolvers,
+  ImdadRequestResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
@@ -313,6 +322,7 @@ const resolvers = merge(
 
   TelephoneRoomVisitorResolvers,
   TelephoneRoomVisitorMulakaatResolvers,
+  TelephoneRoomImdadRequestResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,

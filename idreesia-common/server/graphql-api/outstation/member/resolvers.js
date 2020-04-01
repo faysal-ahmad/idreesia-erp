@@ -2,7 +2,7 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { DataSource } from 'meteor/idreesia-common/constants/security';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {

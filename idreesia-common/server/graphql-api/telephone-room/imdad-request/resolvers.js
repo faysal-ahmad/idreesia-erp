@@ -2,6 +2,7 @@ import moment from 'moment';
 import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { DataSource } from 'meteor/idreesia-common/constants';
 import { RequestStatus } from 'meteor/idreesia-common/constants/imdad';
 
 export default {
@@ -36,6 +37,7 @@ export default {
       const date = new Date();
       const imdadRequestId = ImdadRequests.insert({
         visitorId,
+        dataSource: DataSource.TELEPHONE_ROOM,
         requestDate: moment()
           .startOf('day')
           .toDate(),

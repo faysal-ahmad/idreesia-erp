@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { DataSource } from 'meteor/idreesia-common/constants/security';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 import {
   Button,

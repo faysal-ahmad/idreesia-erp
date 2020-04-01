@@ -7,7 +7,7 @@ import {
   canDeleteKarkun,
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
-import { DataSource } from 'meteor/idreesia-common/constants/security';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getOutstationKarkuns } from './queries';
 

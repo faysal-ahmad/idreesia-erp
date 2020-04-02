@@ -10,5 +10,6 @@ Migrations.add({
     imdadRequests.createIndex({ requestDate: 1 }, { background: true });
     imdadRequests.createIndex({ dataSource: 1 }, { background: true });
     imdadRequests.createIndex({ status: 1 }, { background: true });
+    imdadRequests.createIndex({ updatedAt: 1 }, { background: true });
   },
 });

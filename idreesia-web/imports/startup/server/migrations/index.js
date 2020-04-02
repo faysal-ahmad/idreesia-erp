@@ -30,6 +30,7 @@ import './26-create-hr-indexes';
 import './27-create-security-indexes';
 import './28-create-visitors-against-ms-karkuns';
 import './29-create-audit-log-indexes';
+import './30-create-imdad-indexes';
 
 Migrations.config({
   log: true,

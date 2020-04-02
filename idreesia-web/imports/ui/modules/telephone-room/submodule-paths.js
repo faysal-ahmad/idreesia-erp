@@ -14,6 +14,7 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Report Routes
   // *************************************************************************************
+  static imdadRequestReportPath = `${ModulePaths.telephoneRoom}/imdad-request-report`;
   static mulakaatReportPath = `${ModulePaths.telephoneRoom}/mulakaat-report`;
   static newEhadReportPath = `${ModulePaths.telephoneRoom}/new-ehad-report`;
 }

@@ -34,6 +34,12 @@ export default {
         );
       }
 
+      if (!ImdadRequests.isImdadRequestAllowed(visitorId)) {
+        throw new Error(
+          'Visitor already has submitted an imdad request in the last 30 days.'
+        );
+      }
+
       const date = new Date();
       const imdadRequestId = ImdadRequests.insert({
         visitorId,

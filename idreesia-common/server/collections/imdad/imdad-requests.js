@@ -69,6 +69,24 @@ class ImdadRequests extends AggregatableCollection {
       totalResults: get(results[1], ['0', 'total'], 0),
     }));
   }
+
+  // **************************************************************
+  // Utility Functions
+  // **************************************************************
+  isImdadRequestAllowed(visitorId) {
+    // Before creating, ensure that there isn't already another record created
+    // for last 30 days for this visitor.
+    const date = moment()
+      .startOf('day')
+      .subtract(30, 'days');
+    const previousRequest = this.findOne({
+      visitorId,
+      requestDate: { $gte: date.toDate() },
+    });
+
+    if (previousRequest) return false;
+    return true;
+  }
 }
 
 export default new ImdadRequests();

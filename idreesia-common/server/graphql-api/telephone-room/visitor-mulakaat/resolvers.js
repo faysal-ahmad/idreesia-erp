@@ -49,10 +49,10 @@ export default {
         );
       }
 
-      // Before creating, ensure that there isn't already another record created
-      // for the week of this date for this visitor.
       if (!VisitorMulakaats.isMulakaatAllowed(visitorId, mulakaatDate)) {
-        throw new Error('Visitor already has a mulakaat for this week.');
+        throw new Error(
+          'Visitor already has done mulakaat in the last 7 days.'
+        );
       }
 
       const mMulakaatDate = moment(mulakaatDate);

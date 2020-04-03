@@ -232,7 +232,7 @@ export class List extends Component {
     // Don't show the edit and delete actions for salaries from previous months
     const { selectedMonth } = this.props;
     const currentMonth = moment();
-    if (currentMonth.diff(selectedMonth, 'months') === 0) {
+    if (currentMonth.diff(selectedMonth, 'months') <= 1) {
       return columns.concat(actionsColumn);
     }
 

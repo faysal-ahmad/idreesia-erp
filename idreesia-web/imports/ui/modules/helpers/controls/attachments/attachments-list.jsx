@@ -36,6 +36,7 @@ const FileIconStyle = {
 class AttachmentsList extends Component {
   static propTypes = {
     attachments: PropTypes.array,
+    canTakePicture: PropTypes.bool,
     canEditAttachments: PropTypes.bool,
     handleAttachmentAdded: PropTypes.func,
     handleAttachmentRemoved: PropTypes.func,
@@ -44,6 +45,7 @@ class AttachmentsList extends Component {
 
   static defaultProps = {
     attachments: [],
+    canTakePicture: false,
     canEditAttachments: false,
     handleAttachmentAdded: noop,
     handleAttachmentRemoved: noop,
@@ -173,6 +175,7 @@ class AttachmentsList extends Component {
     const { showForm, defaultValues } = this.state;
     const {
       attachments,
+      canTakePicture,
       canEditAttachments,
       handleAttachmentAdded,
     } = this.props;
@@ -193,13 +196,15 @@ class AttachmentsList extends Component {
                   onUploadFinish={handleAttachmentAdded}
                 />
               </Col>
-              <Col order={2}>
-                <TakePicture
-                  enabled={canEditAttachments}
-                  buttonText="Capture Image"
-                  onPictureTaken={handleAttachmentAdded}
-                />
-              </Col>
+              {canTakePicture ? (
+                <Col order={2}>
+                  <TakePicture
+                    enabled={canEditAttachments}
+                    buttonText="Capture Image"
+                    onPictureTaken={handleAttachmentAdded}
+                  />
+                </Col>
+              ) : null}
             </Row>
           )}
         />

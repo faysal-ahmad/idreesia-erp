@@ -85,6 +85,8 @@ const List = ({ visitorId }) => {
 
   return (
     <ImdadRequestsList
+      showRequestDateColumn
+      showStatusColumn
       showDeleteAction
       listHeader={getTableHeader}
       handleDeleteItem={handleDeleteItem}

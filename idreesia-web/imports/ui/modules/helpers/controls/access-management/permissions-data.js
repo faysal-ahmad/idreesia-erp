@@ -159,6 +159,20 @@ export const accountsPermissionsData = {
         },
       ],
     },
+    {
+      title: 'Imdad Requests',
+      key: 'module-accounts-imdad-requests',
+      children: [
+        {
+          title: 'View Imdad Requests',
+          key: PermissionConstants.ACCOUNTS_VIEW_IMDAD_REQUESTS,
+        },
+        {
+          title: 'Manage Imdad Requests',
+          key: PermissionConstants.ACCOUNTS_MANAGE_IMDAD_REQUESTS,
+        },
+      ],
+    },
   ],
 };
 

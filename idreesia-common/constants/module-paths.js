@@ -1,11 +1,11 @@
 const ModulePaths = {
-  admin: '/admin',
   accounts: '/accounts',
-  inventory: '/inventory',
+  admin: '/admin',
   hr: '/hr',
-  security: '/security',
+  inventory: '/inventory',
   outstation: '/outstation',
   portals: '/portals',
+  security: '/security',
   telephoneRoom: '/telephone-room',
   wazaifManagement: '/wazaif-management',
 };

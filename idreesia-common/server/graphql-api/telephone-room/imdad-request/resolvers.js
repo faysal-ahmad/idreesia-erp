@@ -1,9 +1,9 @@
 import moment from 'moment';
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
+import { ImdadRequests } from 'meteor/idreesia-common/server/collections/accounts';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants';
-import { RequestStatus } from 'meteor/idreesia-common/constants/imdad';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
 
 export default {
   Query: {
@@ -47,7 +47,7 @@ export default {
         requestDate: moment()
           .startOf('day')
           .toDate(),
-        status: RequestStatus.CREATED,
+        status: ImdadRequestStatus.CREATED,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,

@@ -219,6 +219,9 @@ import PaymentTypeResolvers from './accounts/payment-type/resolvers';
 import PaymentSchema from './accounts/payment/payment.graphql';
 import PaymentResolvers from './accounts/payment/resolvers';
 
+import AccountsImdadRequestSchema from './accounts/imdad-request/imdad-request.graphql';
+import AccountsImdadRequestResolvers from './accounts/imdad-request/resolvers';
+
 /**
  * Schema and Resolvers for the Wazaif Management module
  */
@@ -297,6 +300,7 @@ const typeDefs = [
   AccountMonthlyBalanceSchema,
   PaymentTypeSchema,
   PaymentSchema,
+  AccountsImdadRequestSchema,
 
   WazeefaSchema,
 ];
@@ -373,6 +377,7 @@ const resolvers = merge(
   AccountMonthlyBalanceResolvers,
   PaymentTypeResolvers,
   PaymentResolvers,
+  AccountsImdadRequestResolvers,
 
   WazeefaResolvers
 );

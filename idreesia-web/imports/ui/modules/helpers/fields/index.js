@@ -16,6 +16,9 @@ export {
   default as KarkunSelectionInputField,
 } from './karkun-selection-input/field';
 export { default as AttendanceDetailField } from './attendance-detail-field';
+export {
+  default as VisitorSelectionInputField,
+} from './visitor-selection-input/field';
 
 export { default as AutoCompleteField } from './auto-complete-field';
 export { default as BarcodeField } from './barcode-field';

@@ -10,13 +10,22 @@ import {
   Table,
   Tooltip,
 } from '/imports/ui/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 export default class ImdadRequestsList extends Component {
   static propTypes = {
+    showRequestDateColumn: PropTypes.bool,
+    showNameColumn: PropTypes.bool,
+    showCnicNumberColumn: PropTypes.bool,
+    showMobileNumberColumn: PropTypes.bool,
+    showCityCountryColumn: PropTypes.bool,
+    showStatusColumn: PropTypes.bool,
+    showEditAction: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
+    handlePersonSelect: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
     handleAuditLogsAction: PropTypes.func,
@@ -31,11 +40,19 @@ export default class ImdadRequestsList extends Component {
   };
 
   static defaultProps = {
+    showRequestDateColumn: false,
+    showNameColumn: false,
+    showCnicNumberColumn: false,
+    showMobileNumberColumn: false,
+    showCityCountryColumn: false,
+    showStatusColumn: false,
+    showEditAction: false,
     showDeleteAction: false,
     showAuditLogsAction: false,
 
     handleSelectItem: noop,
     handleDeleteItem: noop,
+    handlePersonSelect: noop,
     handleAuditLogsAction: noop,
     listHeader: () => null,
   };
@@ -50,6 +67,38 @@ export default class ImdadRequestsList extends Component {
     },
   };
 
+  nameColumn = {
+    title: 'Name',
+    key: 'visitor.name',
+    render: (text, record) => (
+      <PersonName
+        person={record.visitor}
+        onPersonNameClicked={this.props.handlePersonSelect}
+      />
+    ),
+  };
+
+  cnicNumberColumn = {
+    title: 'CNIC Number',
+    key: 'visitor.cnicNumber',
+    dataIndex: 'visitor.cnicNumber',
+  };
+
+  mobileNumberColumn = {
+    title: 'Mobile No.',
+    key: 'visitor.contactNumber1',
+    dataIndex: 'visitor.contactNumber1',
+  };
+
+  cityCountryColumn = {
+    title: 'City / Country',
+    key: 'cityCountry',
+    render: (text, record) => {
+      const { visitor } = record;
+      return `${visitor.city}, ${visitor.country}`;
+    },
+  };
+
   statusColumn = {
     title: 'Status',
     dataIndex: 'status',
@@ -61,11 +110,24 @@ export default class ImdadRequestsList extends Component {
     width: 80,
     render: (text, record) => {
       const {
+        showEditAction,
         showDeleteAction,
         showAuditLogsAction,
         handleDeleteItem,
         handleAuditLogsAction,
       } = this.props;
+
+      const editAction = showEditAction ? (
+        <Tooltip title="Edit">
+          <Icon
+            type="edit"
+            className="list-actions-icon"
+            onClick={() => {
+              this.props.handleSelectItem(record);
+            }}
+          />
+        </Tooltip>
+      ) : null;
 
       const auditLogsAction = showAuditLogsAction ? (
         <Tooltip title="Audit Logs">
@@ -96,6 +158,7 @@ export default class ImdadRequestsList extends Component {
 
       return (
         <div className="list-actions-column">
+          {editAction}
           {auditLogsAction}
           {deleteAction}
         </div>
@@ -104,10 +167,27 @@ export default class ImdadRequestsList extends Component {
   };
 
   getColumns = () => {
-    const { showDeleteAction, showAuditLogsAction } = this.props;
-    const columns = [this.requestDateColumn, this.statusColumn];
+    const {
+      showRequestDateColumn,
+      showNameColumn,
+      showCnicNumberColumn,
+      showMobileNumberColumn,
+      showCityCountryColumn,
+      showStatusColumn,
+      showEditAction,
+      showDeleteAction,
+      showAuditLogsAction,
+    } = this.props;
+    const columns = [];
 
-    if (showDeleteAction || showAuditLogsAction) {
+    if (showRequestDateColumn) columns.push(this.requestDateColumn);
+    if (showNameColumn) columns.push(this.nameColumn);
+    if (showCnicNumberColumn) columns.push(this.cnicNumberColumn);
+    if (showMobileNumberColumn) columns.push(this.mobileNumberColumn);
+    if (showCityCountryColumn) columns.push(this.cityCountryColumn);
+    if (showStatusColumn) columns.push(this.statusColumn);
+
+    if (showEditAction || showDeleteAction || showAuditLogsAction) {
       columns.push(this.actionsColumn);
     }
 

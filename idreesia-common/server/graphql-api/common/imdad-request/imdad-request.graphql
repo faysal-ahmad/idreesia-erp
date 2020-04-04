@@ -4,8 +4,11 @@ type ImdadRequestType {
   dataSource: String
   requestDate: String
   status: String
+  notes: String
+  attachmentIds: [String]
 
   visitor: VisitorType
+  attachments: [Attachment]
 
   createdAt: String
   createdBy: String
@@ -21,8 +24,9 @@ type PagedImdadRequestType {
 input ImdadRequestFilter {
   visitorId: String
   requestDate: String
-  cityId: String
-  cityMehfilId: String
+  cnicNumber: String
+  status: String
+  updatedBetween: String
   pageIndex: String
   pageSize: String
 }

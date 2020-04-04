@@ -1,0 +1,19 @@
+extend type Query {
+  accountsImdadRequestById(_id: String!): ImdadRequestType
+  pagedAccountsImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
+}
+
+extend type Mutation {
+  createAccountsImdadRequest(requestDate: String!, visitorId: String!, notes: String): ImdadRequestType
+  updateAccountsImdadRequest(_id: String, status: String, notes: String): ImdadRequestType
+  deleteAccountsImdadRequest(_id: String!): Int
+
+  addAccountsImdadRequestAttachment(
+    _id: String!
+    attachmentId: String!
+  ): ImdadRequestType
+  removeAccountsImdadRequestAttachment(
+    _id: String!
+    attachmentId: String!
+  ): ImdadRequestType
+}

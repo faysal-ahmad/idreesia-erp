@@ -45,6 +45,7 @@ input VisitorFilter {
 }
 
 extend type Query {
+  pagedVisitors(filter: VisitorFilter): PagedVisitorType
   distinctCities: [String]
   distinctCountries: [String]
 }

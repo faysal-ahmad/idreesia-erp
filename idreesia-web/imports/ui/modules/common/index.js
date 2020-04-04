@@ -21,6 +21,9 @@ export {
 } from './visitor-mulakaats/mulakaat-card';
 
 export { default as ImdadRequestsList } from './imdad-requests/list';
+export {
+  default as ImdadRequestsListFilter,
+} from './imdad-requests/list-filter';
 
 export { default as WazaifList } from './wazaif/list';
 export { default as WazaifListFilter } from './wazaif/list-filter';

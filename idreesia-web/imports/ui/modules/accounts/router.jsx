@@ -16,6 +16,11 @@ import {
   PaymentsEditForm,
   PaymentReceipts,
 } from './payments';
+import {
+  ImdadRequestsList,
+  ImdadRequestsNewForm,
+  ImdadRequestsEditForm,
+} from './imdad-requests';
 import { AuditLogsList } from './audit-logs';
 
 const Router = () => (
@@ -52,6 +57,16 @@ const Router = () => (
     <Route path={paths.paymentReceiptsPath()} component={PaymentReceipts} />
     <Route path={paths.paymentsEditFormPath()} component={PaymentsEditForm} />
     <Route path={paths.paymentsPath} component={PaymentsList} />
+
+    <Route
+      path={paths.imdadRequestsNewFormPath}
+      component={ImdadRequestsNewForm}
+    />
+    <Route
+      path={paths.imdadRequestsEditFormPath()}
+      component={ImdadRequestsEditForm}
+    />
+    <Route path={paths.imdadRequestsPath} component={ImdadRequestsList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
   </Switch>

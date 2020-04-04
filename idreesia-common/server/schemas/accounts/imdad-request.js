@@ -2,7 +2,7 @@ import SimpleSchema from 'simpl-schema';
 
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { DataSource } from 'meteor/idreesia-common/constants';
-import { RequestStatus } from 'meteor/idreesia-common/constants/imdad';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
 import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
@@ -18,7 +18,18 @@ export default new SimpleSchema({
   },
   status: {
     type: String,
-    allowedValues: values(RequestStatus),
+    allowedValues: values(ImdadRequestStatus),
+  },
+  notes: {
+    type: String,
+    optional: true,
+  },
+  attachmentIds: {
+    type: Array,
+    optional: true,
+  },
+  'attachmentIds.$': {
+    type: String,
   },
 })
   .extend(identifiable)

@@ -1,6 +1,6 @@
 import { Migrations } from 'meteor/percolate:migrations';
 
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
+import { ImdadRequests } from 'meteor/idreesia-common/server/collections/accounts';
 
 Migrations.add({
   version: 30,

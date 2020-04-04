@@ -4,6 +4,7 @@ const SubModuleNames = {
   vouchers: 'Vouchers',
   payments: 'Payments',
   paymentTypes: 'Payment Types',
+  imdadRequests: 'Imdad Requests',
   auditLogs: 'Audit Logs',
 };
 

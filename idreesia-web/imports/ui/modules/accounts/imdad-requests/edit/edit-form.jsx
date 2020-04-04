@@ -7,6 +7,7 @@ import { Tabs } from '/imports/ui/controls';
 
 import GeneralInfo from './general-info';
 import AttachmentsList from './attachments-list';
+import PaymentsHistory from './payments-history';
 
 const EditForm = props => {
   const requestId = get(props, ['match', 'params', 'requestId'], null);
@@ -15,8 +16,11 @@ const EditForm = props => {
       <Tabs.TabPane tab="General Info" key="1">
         <GeneralInfo requestId={requestId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="File Attachments" key="3">
+      <Tabs.TabPane tab="File Attachments" key="2">
         <AttachmentsList requestId={requestId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Payments History" key="3">
+        <PaymentsHistory requestId={requestId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

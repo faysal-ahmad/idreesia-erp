@@ -20,3 +20,7 @@ export {
 export {
   default as REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT,
 } from './remove-accounts-imdad-request-attachment';
+
+export {
+  default as PAGED_PAYMENTS_FOR_IMDAD_REQUEST,
+} from './paged-payments-for-imdad-request';

@@ -7,7 +7,7 @@ import { Form, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
 import {
   DateField,
-  TextAreaField,
+  InputTextAreaField,
   VisitorSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
@@ -81,7 +81,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <TextAreaField
+        <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           initialValue={accountsImdadRequestById.notes}

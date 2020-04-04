@@ -12,7 +12,7 @@ import {
 
 import {
   DateField,
-  TextAreaField,
+  InputTextAreaField,
   VisitorSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
@@ -76,7 +76,7 @@ const NewForm = ({ form, history, location }) => {
         getFieldDecorator={getFieldDecorator}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="notes"
         fieldLabel="Notes"
         getFieldDecorator={getFieldDecorator}

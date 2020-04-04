@@ -32,14 +32,16 @@ input PaymentFilter {
   startDate: String
   endDate: String
   updatedBetween: String
+  visitorId: String
   pageIndex: String
   pageSize: String
 }
 
 extend type Query {
+  nextPaymentNumber: Int
   paymentById(_id: String!): PaymentType
   pagedPayments(filter: PaymentFilter): PagedPaymentType
-  nextPaymentNumber: Int
+  pagedPaymentsForImdadRequest(imdadRequestId: String!, filter: PaymentFilter): PagedPaymentType
 }
 
 extend type Mutation {

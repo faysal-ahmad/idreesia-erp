@@ -11,8 +11,8 @@ export default class CheckPermissionsDirective extends SchemaDirectiveVisitor {
     const { resolve = defaultFieldResolver } = field;
     const { permissions } = this.args;
 
-    field.resolve = async (...args) => {
-      const [, , context, info] = args;
+    field.resolve = async (...params) => {
+      const [, , context, info] = params;
       const { user } = context;
 
       const permissionValues = permissions.map(permission => {
@@ -44,7 +44,7 @@ export default class CheckPermissionsDirective extends SchemaDirectiveVisitor {
         );
       }
 
-      const result = await resolve.apply(this, args);
+      const result = await resolve.apply(this, params);
       return result;
     };
   }

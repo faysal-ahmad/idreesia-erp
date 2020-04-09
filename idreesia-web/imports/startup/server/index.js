@@ -6,13 +6,17 @@ import { ApolloServer } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { getUser } from 'meteor/apollo';
 import { typeDefs, resolvers } from 'meteor/idreesia-common/server/graphql-api';
-import { CheckPermissionsDirective } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import {
+  CheckPermissionsDirective,
+  CheckInstanceAccessDirective,
+} from 'meteor/idreesia-common/server/graphql-api/_directives';
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   schemaDirectives: {
     checkPermissions: CheckPermissionsDirective,
+    checkInstanceAccess: CheckInstanceAccessDirective,
   },
   context: async ({ req }) => ({
     user: await getUser(req.headers.authorization),

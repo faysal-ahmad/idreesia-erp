@@ -1,0 +1,3 @@
+directive @checkInstanceAccess(
+  instanceIdArgName: String,
+) on FIELD_DEFINITION

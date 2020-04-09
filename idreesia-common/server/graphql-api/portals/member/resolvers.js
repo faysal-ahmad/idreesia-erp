@@ -1,43 +1,15 @@
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getPortalMembers } from './queries';
 
 export default {
   Query: {
-    pagedPortalMembers(obj, { portalId, queryString }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_MEMBERS,
-          PermissionConstants.PORTALS_MANAGE_MEMBERS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedPortalMembers(obj, { portalId, queryString }) {
       return getPortalMembers(portalId, queryString);
     },
 
-    portalMemberById(obj, { portalId, _id }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_MEMBERS,
-          PermissionConstants.PORTALS_MANAGE_MEMBERS,
-        ])
-      ) {
-        return null;
-      }
-
+    portalMemberById(obj, { _id }) {
       return Visitors.findOne(_id);
     },
   },
@@ -63,23 +35,6 @@ export default {
       },
       { user }
     ) {
-      if (
-        user &&
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Members in this Mehfil Portal.'
-        );
-      }
-
       return Visitors.createVisitor(
         {
           name,
@@ -104,7 +59,6 @@ export default {
     updatePortalMember(
       obj,
       {
-        portalId,
         _id,
         name,
         parentName,
@@ -121,22 +75,6 @@ export default {
       },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Members in this Mehfil Portal.'
-        );
-      }
-
       return Visitors.updateVisitor(
         {
           _id,
@@ -157,23 +95,7 @@ export default {
       );
     },
 
-    setPortalMemberImage(obj, { portalId, _id, imageId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Members in this Mehfil Portal.'
-        );
-      }
-
+    setPortalMemberImage(obj, { _id, imageId }, { user }) {
       return Visitors.updateVisitor({ _id, imageId }, user);
     },
   },

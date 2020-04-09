@@ -1,7 +1,5 @@
 import { Wazaif } from 'meteor/idreesia-common/server/collections/wazaif-management';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { without } from 'meteor/idreesia-common/utilities/lodash';
 
 export default {
@@ -17,44 +15,17 @@ export default {
   },
 
   Query: {
-    pagedWazaif(obj, { filter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.WM_VIEW_WAZAIF,
-          PermissionConstants.WM_MANAGE_WAZAIF,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedWazaif(obj, { filter }) {
       return Wazaif.searchWazaif(filter);
     },
 
-    wazeefaById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.WM_VIEW_WAZAIF,
-          PermissionConstants.WM_MANAGE_WAZAIF,
-        ])
-      ) {
-        return null;
-      }
-
+    wazeefaById(obj, { _id }) {
       return Wazaif.findOne(_id);
     },
   },
 
   Mutation: {
     createWazeefa(obj, { name, revisionNumber, revisionDate }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.WM_MANAGE_WAZAIF])) {
-        throw new Error(
-          'You do not have permission to manage Wazaif in the System.'
-        );
-      }
-
       const date = new Date();
       const wazeefaId = Wazaif.insert({
         name,
@@ -70,12 +41,6 @@ export default {
     },
 
     updateWazeefa(obj, { _id, name, revisionNumber, revisionDate }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.WM_MANAGE_WAZAIF])) {
-        throw new Error(
-          'You do not have permission to manage Wazaif in the System.'
-        );
-      }
-
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -90,13 +55,7 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    deleteWazeefa(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.WM_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to delete Wazaif in the System.'
-        );
-      }
-
+    deleteWazeefa(obj, { _id }) {
       const wazeefa = Wazaif.findOne(_id);
       const { imageIds } = wazeefa;
       if (imageIds && imageIds.length > 0) {
@@ -107,12 +66,6 @@ export default {
     },
 
     setWazeefaImages(obj, { _id, imageIds }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.WM_MANAGE_WAZAIF])) {
-        throw new Error(
-          'You do not have permission to manage Wazaif in the System.'
-        );
-      }
-
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -126,12 +79,6 @@ export default {
     },
 
     removeWazeefaImage(obj, { _id, imageId }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.WM_MANAGE_WAZAIF])) {
-        throw new Error(
-          'You do not have permission to manage Wazaif in the System.'
-        );
-      }
-
       const wazeefa = Wazaif.findOne(_id);
       const { imageIds } = wazeefa;
       const updatedImageIds = without(imageIds, imageId);

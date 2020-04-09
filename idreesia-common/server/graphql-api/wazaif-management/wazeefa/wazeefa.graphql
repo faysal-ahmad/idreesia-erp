@@ -26,7 +26,10 @@ input WazaifFilter {
 
 extend type Query {
   pagedWazaif(filter: WazaifFilter): PagedWazeefaType
+  @checkPermissions(permissions: [WM_VIEW_WAZAIF, WM_MANAGE_WAZAIF])
+
   wazeefaById(_id: String!): WazeefaType
+  @checkPermissions(permissions: [WM_VIEW_WAZAIF, WM_MANAGE_WAZAIF])
 }
 
 extend type Mutation {
@@ -35,6 +38,7 @@ extend type Mutation {
     revisionNumber: Int
     revisionDate: String
   ): WazeefaType
+  @checkPermissions(permissions: [WM_MANAGE_WAZAIF])
 
   updateWazeefa(
     _id: String!
@@ -42,8 +46,14 @@ extend type Mutation {
     revisionNumber: Int
     revisionDate: String
   ): WazeefaType
+  @checkPermissions(permissions: [WM_MANAGE_WAZAIF])
 
   deleteWazeefa(_id: String!): Int
+  @checkPermissions(permissions: [WM_DELETE_DATA])
+
   setWazeefaImages(_id: String!, imageIds: [String]!): WazeefaType
+  @checkPermissions(permissions: [WM_MANAGE_WAZAIF])
+
   removeWazeefaImage(_id: String!, imageId: String!): WazeefaType
+  @checkPermissions(permissions: [WM_MANAGE_WAZAIF])
 }

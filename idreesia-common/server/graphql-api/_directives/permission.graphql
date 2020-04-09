@@ -1,0 +1,5 @@
+enum Permission {
+  TR_VIEW_VISITORS
+  TR_MANAGE_VISITORS
+  TR_DELETE_DATA
+}

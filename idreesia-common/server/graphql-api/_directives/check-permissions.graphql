@@ -1,0 +1,3 @@
+directive @checkPermissions(
+  permissions: [Permission!],
+) on FIELD_DEFINITION

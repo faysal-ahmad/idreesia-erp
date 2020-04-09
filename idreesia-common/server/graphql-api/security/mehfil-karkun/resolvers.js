@@ -4,8 +4,6 @@ import {
   Mehfils,
   MehfilKarkuns,
 } from 'meteor/idreesia-common/server/collections/security';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   MehfilKarkunType: {
@@ -14,46 +12,18 @@ export default {
   },
 
   Query: {
-    mehfilKarkunsByMehfilId(obj, { mehfilId, dutyName }, { user }) {
-      if (
-        !dutyName ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_MEHFILS,
-          PermissionConstants.SECURITY_MANAGE_MEHFILS,
-        ])
-      ) {
-        return [];
-      }
-
+    mehfilKarkunsByMehfilId(obj, { mehfilId, dutyName }) {
       return MehfilKarkuns.find({ mehfilId, dutyName }).fetch();
     },
 
-    mehfilKarkunsByIds(obj, { ids }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_MEHFILS,
-          PermissionConstants.SECURITY_MANAGE_MEHFILS,
-        ])
-      ) {
-        return [];
-      }
-
+    mehfilKarkunsByIds(obj, { ids }) {
       const idsArray = ids.split(',');
       return MehfilKarkuns.find({
         _id: { $in: idsArray },
       }).fetch();
     },
 
-    mehfilKarkunByBarcodeId(obj, { barcode }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_MEHFILS,
-          PermissionConstants.SECURITY_MANAGE_MEHFILS,
-        ])
-      ) {
-        return null;
-      }
-
+    mehfilKarkunByBarcodeId(obj, { barcode }) {
       return MehfilKarkuns.findOne({
         dutyCardBarcodeId: barcode,
       });
@@ -62,16 +32,6 @@ export default {
 
   Mutation: {
     addMehfilKarkun(obj, { mehfilId, karkunId, dutyName }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_MEHFILS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Mehfils Data in the System.'
-        );
-      }
-
       const existingMehfilKarkun = MehfilKarkuns.findOne({
         mehfilId,
         karkunId,
@@ -96,16 +56,6 @@ export default {
     },
 
     setDutyDetail(obj, { ids, dutyDetail }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_MEHFILS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Mehfils Data in the System.'
-        );
-      }
-
       const date = new Date();
       MehfilKarkuns.update(
         {
@@ -124,17 +74,7 @@ export default {
       return MehfilKarkuns.find({ _id: { $in: ids } }).fetch();
     },
 
-    removeMehfilKarkun(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_MEHFILS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Mehfils Data in the System.'
-        );
-      }
-
+    removeMehfilKarkun(obj, { _id }) {
       return MehfilKarkuns.remove(_id);
     },
   },

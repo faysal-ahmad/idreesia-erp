@@ -14,11 +14,19 @@ type MehfilType {
 
 extend type Query {
   allMehfils: [MehfilType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
   mehfilById(_id: String!): MehfilType
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
 }
 
 extend type Mutation {
   createMehfil(name: String!, mehfilDate: String!): MehfilType
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
   updateMehfil(_id: String!, name: String!, mehfilDate: String): MehfilType
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
   removeMehfil(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }

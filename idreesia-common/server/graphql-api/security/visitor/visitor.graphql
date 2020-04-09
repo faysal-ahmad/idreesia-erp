@@ -1,8 +1,15 @@
 extend type Query {
   pagedSecurityVisitors(filter: VisitorFilter): PagedVisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   securityVisitorById(_id: String!): VisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   securityVisitorByCnic(cnicNumbers: [String]!): VisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
 extend type Mutation {
@@ -20,6 +27,7 @@ extend type Mutation {
     country: String
     imageData: String
   ): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitor(
     _id: String!
@@ -35,17 +43,23 @@ extend type Mutation {
     city: String
     country: String
   ): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   deleteSecurityVisitor(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 
   setSecurityVisitorImage(_id: String!, imageId: String!): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
   updateSecurityVisitorNotes(
     _id: String!
     criminalRecord: String
     otherNotes: String
   ): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   importSecurityVisitorsCsvData(
     csvData: String!
   ): String
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 }

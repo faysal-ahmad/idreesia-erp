@@ -1,8 +1,12 @@
 extend type Query {
   pagedTelephoneRoomImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
+  @checkPermissions(permissions: [TR_VIEW_VISITORS, TR_MANAGE_VISITORS])
 }
 
 extend type Mutation {
   createTelephoneRoomImdadRequest(visitorId: String!): ImdadRequestType
+  @checkPermissions(permissions: [TR_MANAGE_VISITORS])
+
   deleteTelephoneRoomImdadRequest(_id: String!): Int
+  @checkPermissions(permissions: [TR_DELETE_DATA])
 }

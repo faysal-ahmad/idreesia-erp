@@ -1,6 +1,13 @@
 import { merge } from 'meteor/idreesia-common/utilities/lodash';
 
 /**
+ * Custom Directives
+ */
+import Permission from './_directives/permission.graphql';
+import CheckPermissionsDirective from './_directives/check-permissions.graphql';
+import CheckInstanceAccessDirective from './_directives/check-instance-access.graphql';
+
+/**
  * Common Schema and Resolvers
  */
 import AttachmentSchema from './common/attachment/attachment.graphql';
@@ -229,6 +236,10 @@ import WazeefaSchema from './wazaif-management/wazeefa/wazeefa.graphql';
 import WazeefaResolvers from './wazaif-management/wazeefa/resolvers';
 
 const typeDefs = [
+  Permission,
+  CheckPermissionsDirective,
+  CheckInstanceAccessDirective,
+
   AttachmentSchema,
   AuditLogSchema,
   MessageSchema,

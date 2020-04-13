@@ -5,6 +5,44 @@ import {
   Karkuns,
 } from 'meteor/idreesia-common/server/collections/hr';
 
+export function getMonthlySalaryValues(prevMonthSalary) {
+  if (!prevMonthSalary) {
+    return {
+      salary: 0,
+      openingLoan: 0,
+      loanDeduction: 0,
+      newLoan: 0,
+      closingLoan: 0,
+      otherDeduction: 0,
+      netPayment: 0,
+      arrears: 0,
+      rashanMadad: 0,
+    };
+  }
+
+  const salary = prevMonthSalary.salary;
+  const openingLoan = prevMonthSalary.closingLoan;
+  const loanDeduction = Math.min(
+    prevMonthSalary.loanDeduction,
+    prevMonthSalary.closingLoan
+  );
+  const closingLoan = openingLoan - loanDeduction;
+  const netPayment = salary - loanDeduction;
+  const rashanMadad = prevMonthSalary.rashanMadad;
+
+  return {
+    salary,
+    openingLoan,
+    loanDeduction,
+    newLoan: 0,
+    closingLoan,
+    otherDeduction: 0,
+    arrears: 0,
+    netPayment,
+    rashanMadad,
+  };
+}
+
 export function createMonthlySalaries(
   formattedCurrentMonth,
   formattedPreviousMonth,
@@ -47,51 +85,17 @@ export function createMonthlySalaries(
           month: formattedPreviousMonth,
         });
 
-        if (!existingPreviousMonthSalary) {
-          Salaries.insert({
-            karkunId: _id,
-            jobId,
-            month: formattedCurrentMonth,
-            salary: 0,
-            openingLoan: 0,
-            loanDeduction: 0,
-            newLoan: 0,
-            closingLoan: 0,
-            otherDeduction: 0,
-            netPayment: 0,
-            arrears: 0,
-            rashanMadad: 0,
-            createdAt: date,
-            createdBy: user._id,
-          });
-        } else {
-          const salary = existingPreviousMonthSalary.salary;
-          const openingLoan = existingPreviousMonthSalary.closingLoan;
-          const loanDeduction = Math.min(
-            existingPreviousMonthSalary.loanDeduction,
-            existingPreviousMonthSalary.closingLoan
-          );
-          const closingLoan = openingLoan - loanDeduction;
-          const netPayment = salary - loanDeduction;
-          const rashanMadad = existingPreviousMonthSalary.rashanMadad;
-
-          Salaries.insert({
-            karkunId: _id,
-            jobId,
-            month: formattedCurrentMonth,
-            salary,
-            openingLoan,
-            loanDeduction,
-            newLoan: 0,
-            closingLoan,
-            otherDeduction: 0,
-            arrears: 0,
-            netPayment,
-            rashanMadad,
-            createdAt: date,
-            createdBy: user._id,
-          });
-        }
+        const salaryValues = getMonthlySalaryValues(
+          existingPreviousMonthSalary
+        );
+        Salaries.insert({
+          karkunId: _id,
+          jobId,
+          month: formattedCurrentMonth,
+          createdAt: date,
+          createdBy: user._id,
+          ...salaryValues,
+        });
       }
     }
   });

@@ -1,7 +1,12 @@
 extend type Query {
-  pagedTelephoneRoomVisitors(filter: VisitorFilter): PagedVisitorType
+  pagedTelephoneRoomVisitors(filter: VisitorFilter): PagedVisitorType 
+  @checkPermissions(permissions: [TR_VIEW_VISITORS, TR_MANAGE_VISITORS])
+
   telephoneRoomVisitorById(_id: String!): VisitorType
+  @checkPermissions(permissions: [TR_VIEW_VISITORS, TR_MANAGE_VISITORS])
+
   telephoneRoomVisitorsByCnic(cnicNumbers: [String], partialCnicNumber: String): [VisitorType]
+  @checkPermissions(permissions: [TR_VIEW_VISITORS, TR_MANAGE_VISITORS])
 }
 
 extend type Mutation {
@@ -19,6 +24,7 @@ extend type Mutation {
     country: String
     imageData: String
   ): VisitorType
+  @checkPermissions(permissions: [TR_MANAGE_VISITORS])
 
   updateTelephoneRoomVisitor(
     _id: String!
@@ -34,7 +40,11 @@ extend type Mutation {
     city: String
     country: String
   ): VisitorType
+  @checkPermissions(permissions: [TR_MANAGE_VISITORS])
 
   deleteTelephoneRoomVisitor(_id: String!): Int
+  @checkPermissions(permissions: [TR_DELETE_DATA])
+
   setTelephoneRoomVisitorImage(_id: String!, imageId: String!): VisitorType
+  @checkPermissions(permissions: [TR_MANAGE_VISITORS])
 }

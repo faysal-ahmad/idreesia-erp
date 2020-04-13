@@ -43,9 +43,17 @@ type PagedTeamVisitType {
 
 extend type Query {
   pagedVisitorStays(queryString: String!): PagedVisitorStayType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   pagedVisitorStaysByVisitorId(visitorId: String!): PagedVisitorStayType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   pagedTeamVisits(queryString: String!): PagedTeamVisitType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   visitorStayById(_id: String!): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   distinctStayAllowedBy: [String]
   distinctTeamNames: [String]
 }
@@ -60,6 +68,7 @@ extend type Mutation {
     shiftId: String
     teamName: String
   ): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateVisitorStay(
     _id: String!
@@ -71,8 +80,14 @@ extend type Mutation {
     shiftId: String
     teamName: String
   ): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   fixNameSpelling(existingSpelling: String!, newSpelling: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
   cancelVisitorStay(_id: String!): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
   deleteVisitorStay(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }

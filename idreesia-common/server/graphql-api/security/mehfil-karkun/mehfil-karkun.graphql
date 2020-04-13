@@ -17,12 +17,22 @@ type MehfilKarkunType {
 
 extend type Query {
   mehfilKarkunsByMehfilId(mehfilId: String!, dutyName: String): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
   mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
   mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
 }
 
 extend type Mutation {
   addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyName: String!): MehfilKarkunType
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
   setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
   removeMehfilKarkun(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
 }

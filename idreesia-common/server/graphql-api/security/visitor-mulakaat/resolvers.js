@@ -1,52 +1,19 @@
 import moment from 'moment';
 import { VisitorMulakaats } from 'meteor/idreesia-common/server/collections/security';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedSecurityVisitorMulakaats(obj, { filter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedSecurityVisitorMulakaats(obj, { filter }) {
       return VisitorMulakaats.getPagedData(filter);
     },
 
-    securityVisitorMulakaatById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        return null;
-      }
-
+    securityVisitorMulakaatById(obj, { _id }) {
       return VisitorMulakaats.findOne(_id);
     },
   },
 
   Mutation: {
     createSecurityVisitorMulakaat(obj, { visitorId, mulakaatDate }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       // Before creating, ensure that there isn't already another record created
       // for the week of this date for this visitor.
       if (!VisitorMulakaats.isMulakaatAllowed(visitorId, mulakaatDate)) {
@@ -68,16 +35,6 @@ export default {
     },
 
     cancelSecurityVisitorMulakaats(obj, { mulakaatDate }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const date = new Date();
       const mMulakaatDate = moment(mulakaatDate);
       return VisitorMulakaats.update(
@@ -97,16 +54,6 @@ export default {
     },
 
     cancelSecurityVisitorMulakaat(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const date = new Date();
       VisitorMulakaats.update(_id, {
         $set: {
@@ -120,15 +67,7 @@ export default {
       return VisitorMulakaats.findOne(_id);
     },
 
-    deleteSecurityVisitorMulakaat(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.SECURITY_DELETE_DATA])
-      ) {
-        throw new Error(
-          'You do not have permission to delete Visitors in the System.'
-        );
-      }
-
+    deleteSecurityVisitorMulakaat(obj, { _id }) {
       return VisitorMulakaats.remove(_id);
     },
   },

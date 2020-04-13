@@ -1,6 +1,9 @@
 extend type Query {
   securityVisitorMulakaatById(_id: String!): VisitorMulakaatType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
   pagedSecurityVisitorMulakaats(filter: VisitorMulakaatFilter): PagedVisitorMulakaatType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
 extend type Mutation {
@@ -8,8 +11,14 @@ extend type Mutation {
     visitorId: String!
     mulakaatDate: String!
   ): VisitorMulakaatType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   cancelSecurityVisitorMulakaats(mulakaatDate: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
   cancelSecurityVisitorMulakaat(_id: String!): VisitorMulakaatType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
   deleteSecurityVisitorMulakaat(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }

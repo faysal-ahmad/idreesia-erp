@@ -1,36 +1,13 @@
 import moment from 'moment';
 import { VisitorMulakaats } from 'meteor/idreesia-common/server/collections/security';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedTelephoneRoomVisitorMulakaats(obj, { filter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.TR_VIEW_VISITORS,
-          PermissionConstants.TR_MANAGE_VISITORS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedTelephoneRoomVisitorMulakaats(obj, { filter }) {
       return VisitorMulakaats.getPagedData(filter);
     },
 
-    telephoneRoomVisitorMulakaatById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.TR_VIEW_VISITORS,
-          PermissionConstants.TR_MANAGE_VISITORS,
-        ])
-      ) {
-        return null;
-      }
-
+    telephoneRoomVisitorMulakaatById(obj, { _id }) {
       return VisitorMulakaats.findOne(_id);
     },
   },
@@ -41,14 +18,6 @@ export default {
       { visitorId, mulakaatDate },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       if (!VisitorMulakaats.isMulakaatAllowed(visitorId, mulakaatDate)) {
         throw new Error(
           'Visitor already has done mulakaat in the last 7 days.'
@@ -70,14 +39,6 @@ export default {
     },
 
     cancelTelephoneRoomVisitorMulakaats(obj, { mulakaatDate }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const date = new Date();
       const mMulakaatDate = moment(mulakaatDate);
       return VisitorMulakaats.update(
@@ -97,14 +58,6 @@ export default {
     },
 
     cancelTelephoneRoomVisitorMulakaat(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.TR_MANAGE_VISITORS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const date = new Date();
       VisitorMulakaats.update(_id, {
         $set: {
@@ -118,13 +71,7 @@ export default {
       return VisitorMulakaats.findOne(_id);
     },
 
-    deleteTelephoneRoomVisitorMulakaat(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.TR_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to delete Visitors in the System.'
-        );
-      }
-
+    deleteTelephoneRoomVisitorMulakaat(obj, { _id }) {
       return VisitorMulakaats.remove(_id);
     },
   },

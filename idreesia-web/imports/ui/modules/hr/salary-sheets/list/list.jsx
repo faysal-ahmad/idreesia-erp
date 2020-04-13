@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import FileSaver from 'file-saver';
 
@@ -25,6 +24,8 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
+
+import { PREV_MONTH_SALARIES, CURRENT_MONTH_SALARIES } from '../gql';
 
 const SelectStyle = {
   width: '300px',
@@ -111,10 +112,13 @@ export class List extends Component {
         key: 'salary',
         render: (text, record) => {
           if (record.salary !== record.prevSalary) {
+            const tooltip = `Last month Salary value was ${record.prevSalary}`;
             return (
-              <span style={{ fontWeight: 'bold', color: 'orange' }}>
-                {text}
-              </span>
+              <Tooltip title={tooltip}>
+                <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                  {text}
+                </span>
+              </Tooltip>
             );
           }
           return text;
@@ -126,10 +130,13 @@ export class List extends Component {
         key: 'rashanMadad',
         render: (text, record) => {
           if (record.rashanMadad !== record.prevRashanMadad) {
+            const tooltip = `Last month Rashan value was ${record.prevRashanMadad}`;
             return (
-              <span style={{ fontWeight: 'bold', color: 'orange' }}>
-                {text}
-              </span>
+              <Tooltip title={tooltip}>
+                <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                  {text}
+                </span>
+              </Tooltip>
             );
           }
           return text;
@@ -166,10 +173,13 @@ export class List extends Component {
         key: 'otherDeduction',
         render: (text, record) => {
           if (record.otherDeduction !== record.prevOtherDeduction) {
+            const tooltip = `Last month Other Deduction value was ${record.prevOtherDeduction}`;
             return (
-              <span style={{ fontWeight: 'bold', color: 'orange' }}>
-                {text}
-              </span>
+              <Tooltip title={tooltip}>
+                <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                  {text}
+                </span>
+              </Tooltip>
             );
           }
           return text;
@@ -181,10 +191,13 @@ export class List extends Component {
         key: 'arrears',
         render: (text, record) => {
           if (record.arrears !== record.prevArrears) {
+            const tooltip = `Last month Arrears value was ${record.prevArrears}`;
             return (
-              <span style={{ fontWeight: 'bold', color: 'orange' }}>
-                {text}
-              </span>
+              <Tooltip title={tooltip}>
+                <span style={{ fontWeight: 'bold', color: 'orange' }}>
+                  {text}
+                </span>
+              </Tooltip>
             );
           }
           return text;
@@ -504,61 +517,8 @@ export class List extends Component {
   }
 }
 
-const currentSalariesQuery = gql`
-  query salariesByMonth($month: String!, $jobId: String) {
-    salariesByMonth(month: $month, jobId: $jobId) {
-      _id
-      karkunId
-      month
-      jobId
-      salary
-      openingLoan
-      loanDeduction
-      newLoan
-      closingLoan
-      otherDeduction
-      arrears
-      netPayment
-      rashanMadad
-      approvedOn
-      approvedBy
-      approver {
-        _id
-        name
-      }
-      karkun {
-        _id
-        name
-        parentName
-        imageId
-        cnicNumber
-        contactNumber1
-      }
-      job {
-        _id
-        name
-      }
-    }
-  }
-`;
-
-const prevSalariesQuery = gql`
-  query salariesByMonth($month: String!, $jobId: String) {
-    salariesByMonth(month: $month, jobId: $jobId) {
-      _id
-      karkunId
-      month
-      jobId
-      salary
-      otherDeduction
-      arrears
-      rashanMadad
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(prevSalariesQuery, {
+  graphql(PREV_MONTH_SALARIES, {
     props: ({ data }) => ({
       prevSalariesLoading: data.loading,
       prevSalaries: data.salariesByMonth,
@@ -574,7 +534,7 @@ export default flowRight(
       };
     },
   }),
-  graphql(currentSalariesQuery, {
+  graphql(CURRENT_MONTH_SALARIES, {
     props: ({ data }) => ({
       currentSalariesLoading: data.loading,
       currentSalaries: data.salariesByMonth,

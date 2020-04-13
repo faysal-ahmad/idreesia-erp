@@ -9,8 +9,6 @@ import {
   Visitors,
   VisitorStays,
 } from 'meteor/idreesia-common/server/collections/security';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getVisitorStays, getTeamVisits } from './queries';
 
@@ -50,64 +48,19 @@ export default {
     },
   },
   Query: {
-    pagedVisitorStays(obj, { queryString }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedVisitorStays(obj, { queryString }) {
       return getVisitorStays(queryString);
     },
 
-    pagedVisitorStaysByVisitorId(obj, { visitorId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedVisitorStaysByVisitorId(obj, { visitorId }) {
       return getVisitorStays(`?visitorId=${visitorId}&pageSize=5`);
     },
 
-    pagedTeamVisits(obj, { queryString }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedTeamVisits(obj, { queryString }) {
       return getTeamVisits(queryString);
     },
 
-    visitorStayById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_VISITORS,
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        return null;
-      }
-
+    visitorStayById(obj, { _id }) {
       return VisitorStays.findOne(_id);
     },
 
@@ -144,16 +97,6 @@ export default {
       },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       // We are going to assume that if the current time is before midnight, but
       // after 6 PM, then the stay is for the next day's date.
       // But if it is after midnight, then it is for the current date.
@@ -211,16 +154,6 @@ export default {
       },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const mFromDate = moment(fromDate);
       const mToDate = moment(toDate);
       const numOfDays = mToDate.diff(mFromDate, 'days') + 1;
@@ -245,16 +178,6 @@ export default {
     },
 
     fixNameSpelling(obj, { existingSpelling, newSpelling }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const date = new Date();
       const count = VisitorStays.update(
         {
@@ -274,16 +197,6 @@ export default {
     },
 
     cancelVisitorStay(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       const date = new Date();
       VisitorStays.update(_id, {
         $set: {
@@ -296,17 +209,7 @@ export default {
       return VisitorStays.findOne(_id);
     },
 
-    deleteVisitorStay(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
+    deleteVisitorStay(obj, { _id }) {
       return VisitorStays.remove(_id);
     },
   },

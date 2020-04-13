@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -16,6 +15,15 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List from './list';
 import EditForm from './edit-form';
+
+import {
+  APPROVE_SALARIES,
+  APPROVE_ALL_SALARIES,
+  CREATE_SALARIES,
+  DELETE_ALL_SALARIES,
+  DELETE_SALARIES,
+  UPDATE_SALARY,
+} from '../gql';
 
 class ListContainer extends Component {
   static propTypes = {
@@ -294,7 +302,7 @@ class ListContainer extends Component {
           title="Update Salary"
           visible={this.state.showEditForm}
           onCancel={this.handleEditSalaryCancel}
-          width={370}
+          width={520}
           footer={null}
         >
           {this.state.showEditForm ? (
@@ -310,106 +318,38 @@ class ListContainer extends Component {
   }
 }
 
-const createMutation = gql`
-  mutation createSalaries($month: String!) {
-    createSalaries(month: $month)
-  }
-`;
-
-const updateMutation = gql`
-  mutation updateSalary(
-    $_id: String!
-    $salary: Int
-    $openingLoan: Int
-    $loanDeduction: Int
-    $newLoan: Int
-    $otherDeduction: Int
-    $arrears: Int
-    $rashanMadad: Int
-  ) {
-    updateSalary(
-      _id: $_id
-      salary: $salary
-      openingLoan: $openingLoan
-      loanDeduction: $loanDeduction
-      newLoan: $newLoan
-      otherDeduction: $otherDeduction
-      arrears: $arrears
-      rashanMadad: $rashanMadad
-    ) {
-      _id
-      karkunId
-      jobId
-      month
-      salary
-      openingLoan
-      loanDeduction
-      newLoan
-      closingLoan
-      otherDeduction
-      arrears
-      netPayment
-      rashanMadad
-    }
-  }
-`;
-
-const approveMutation = gql`
-  mutation approveSalaries($month: String!, $ids: [String]!) {
-    approveSalaries(month: $month, ids: $ids)
-  }
-`;
-
-const approveAllMutation = gql`
-  mutation approveAllSalaries($month: String!) {
-    approveAllSalaries(month: $month)
-  }
-`;
-
-const deleteMutation = gql`
-  mutation deleteSalaries($month: String!, $ids: [String]!) {
-    deleteSalaries(month: $month, ids: $ids)
-  }
-`;
-
-const deleteAllMutation = gql`
-  mutation deleteAllSalaries($month: String!) {
-    deleteAllSalaries(month: $month)
-  }
-`;
-
 export default flowRight(
-  graphql(createMutation, {
+  graphql(CREATE_SALARIES, {
     name: 'createSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],
     },
   }),
-  graphql(updateMutation, {
+  graphql(UPDATE_SALARY, {
     name: 'updateSalary',
     options: {
       refetchQueries: ['salariesByMonth'],
     },
   }),
-  graphql(approveMutation, {
+  graphql(APPROVE_SALARIES, {
     name: 'approveSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],
     },
   }),
-  graphql(approveAllMutation, {
+  graphql(APPROVE_ALL_SALARIES, {
     name: 'approveAllSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],
     },
   }),
-  graphql(deleteMutation, {
+  graphql(DELETE_SALARIES, {
     name: 'deleteSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],
     },
   }),
-  graphql(deleteAllMutation, {
+  graphql(DELETE_ALL_SALARIES, {
     name: 'deleteAllSalaries',
     options: {
       refetchQueries: ['salariesByMonth'],

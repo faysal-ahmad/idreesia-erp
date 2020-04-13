@@ -41,7 +41,6 @@
     "react-router-dom": "^5.1.2",
     "react-webcam": "^5.0.0",
     "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0",
     "request": "^2.88.2",
     "simpl-schema": "^1.5.7",
     "xlsx": "^0.15.5"

@@ -4,6 +4,11 @@ import PropTypes from 'prop-types';
 import { Button, Col, Form, Row } from '/imports/ui/controls';
 import { InputNumberField } from '/imports/ui/modules/helpers/fields';
 
+const formItemLayout = {
+  labelCol: { span: 12 },
+  wrapperCol: { span: 6 },
+};
+
 class EditForm extends Component {
   static propTypes = {
     form: PropTypes.object,
@@ -32,13 +37,13 @@ class EditForm extends Component {
 
         handleSave({
           _id: salaryObj._id,
-          salary,
-          rashanMadad,
-          openingLoan,
-          loanDeduction,
-          newLoan,
-          otherDeduction,
-          arrears,
+          salary: salary || 0,
+          rashanMadad: rashanMadad || 0,
+          openingLoan: openingLoan || 0,
+          loanDeduction: loanDeduction || 0,
+          newLoan: newLoan || 0,
+          otherDeduction: otherDeduction || 0,
+          arrears: arrears || 0,
         });
       }
     );
@@ -52,51 +57,71 @@ class EditForm extends Component {
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
-        <InputNumberField
-          fieldName="salary"
-          fieldLabel="Salary"
-          initialValue={salary.salary}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="rashanMadad"
-          fieldLabel="Rashan"
-          initialValue={salary.rashanMadad}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="openingLoan"
-          fieldLabel="Opening Loan"
-          initialValue={salary.openingLoan}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="loanDeduction"
-          fieldLabel="Loan Deduction"
-          initialValue={salary.loanDeduction}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="newLoan"
-          fieldLabel="New Loan"
-          initialValue={salary.newLoan}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="otherDeduction"
-          fieldLabel="Other Deduction"
-          initialValue={salary.otherDeduction}
-          getFieldDecorator={getFieldDecorator}
-        />
-        <InputNumberField
-          fieldName="arrears"
-          fieldLabel="Arrears"
-          initialValue={salary.arrears}
-          getFieldDecorator={getFieldDecorator}
-        />
+        <Row>
+          <Col span={10}>
+            <InputNumberField
+              fieldName="salary"
+              fieldLabel="Salary"
+              minValue={0}
+              initialValue={salary.salary}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputNumberField
+              fieldName="rashanMadad"
+              fieldLabel="Rashan"
+              minValue={0}
+              initialValue={salary.rashanMadad}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputNumberField
+              fieldName="otherDeduction"
+              fieldLabel="Other Deduction"
+              minValue={0}
+              initialValue={salary.otherDeduction}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputNumberField
+              fieldName="arrears"
+              fieldLabel="Arrears"
+              minValue={0}
+              initialValue={salary.arrears}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+          </Col>
+          <Col span={10}>
+            <InputNumberField
+              fieldName="openingLoan"
+              fieldLabel="Opening Loan"
+              minValue={0}
+              initialValue={salary.openingLoan}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputNumberField
+              fieldName="loanDeduction"
+              fieldLabel="Loan Deduction"
+              minValue={0}
+              initialValue={salary.loanDeduction}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+            <InputNumberField
+              fieldName="newLoan"
+              fieldLabel="New Loan"
+              minValue={0}
+              initialValue={salary.newLoan}
+              fieldLayout={formItemLayout}
+              getFieldDecorator={getFieldDecorator}
+            />
+          </Col>
+        </Row>
 
         <Row type="flex" justify="start">
-          <Col offset={5}>
+          <Col offset={10}>
             <Button
               size="large"
               type="default"

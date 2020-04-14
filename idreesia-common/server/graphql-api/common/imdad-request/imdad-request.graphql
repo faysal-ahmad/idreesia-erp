@@ -1,3 +1,22 @@
+type ApprovedImdadType {
+  fromMonth: String
+  toMonth: String
+  oneOffMedical: Int
+  oneOffHouseConstruction: Int
+  oneOffMarriageExpense: Int
+  oneOffMiscPayment: Int
+  fixedRecurringWeeklyPayment: Int
+  fixedRecurringMonthlyPayment: Int
+  fixedRecurringHouseRent: Int
+  ration: String
+  fixedRecurringMedical: Int
+  fixedRecurringSchoolFee: Int
+  fixedRecurringMilk: Int
+  fixedRecurringFuel: Int
+  variableRecurringMedical: Int
+  variableRecurringUtilityBills: Int
+}
+
 type ImdadRequestType {
   _id: String
   visitorId: String
@@ -5,6 +24,7 @@ type ImdadRequestType {
   requestDate: String
   status: String
   notes: String
+  approvedImdad: ApprovedImdadType
   attachmentIds: [String]
 
   visitor: VisitorType

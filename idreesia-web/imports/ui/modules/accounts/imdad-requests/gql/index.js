@@ -15,6 +15,9 @@ export {
 } from './delete-accounts-imdad-request';
 
 export {
+  default as SET_ACCOUNTS_APPROVED_IMDAD,
+} from './set-accounts-approved-imdad';
+export {
   default as ADD_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT,
 } from './add-accounts-imdad-request-attachment';
 export {

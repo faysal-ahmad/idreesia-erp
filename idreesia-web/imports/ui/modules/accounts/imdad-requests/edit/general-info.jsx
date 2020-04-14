@@ -3,11 +3,15 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
 
+import { values } from 'meteor/idreesia-common/utilities/lodash';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
+
 import { Form, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
 import {
   DateField,
   InputTextAreaField,
+  SelectField,
   VisitorSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
@@ -22,7 +26,9 @@ const GeneralInfo = ({ requestId, form, history }) => {
   const [updateAccountsImdadRequest] = useMutation(
     UPDATE_ACCOUNTS_IMDAD_REQUEST,
     {
-      refetchQueries: [{ query: PAGED_ACCOUNTS_IMDAD_REQUESTS }],
+      refetchQueries: [
+        { query: PAGED_ACCOUNTS_IMDAD_REQUESTS, variables: { filter: {} } },
+      ],
       awaitRefetchQueries: true,
     }
   );
@@ -69,6 +75,17 @@ const GeneralInfo = ({ requestId, form, history }) => {
           required
           requiredMessage="Please select a Request Date."
           initialValue={moment(Number(accountsImdadRequestById.requestDate))}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <SelectField
+          data={values(ImdadRequestStatus)}
+          getDataValue={status => status}
+          getDataText={status => status}
+          fieldName="status"
+          fieldLabel="Status"
+          allowClear={false}
+          initialValue={accountsImdadRequestById.status}
           getFieldDecorator={getFieldDecorator}
         />
 

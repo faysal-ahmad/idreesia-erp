@@ -3,10 +3,31 @@ extend type Query {
   pagedAccountsImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
 }
 
+input ApprovedImdad {
+  fromMonth: String
+  toMonth: String
+  oneOffMedical: Int
+  oneOffHouseConstruction: Int
+  oneOffMarriageExpense: Int
+  oneOffMiscPayment: Int
+  fixedRecurringWeeklyPayment: Int
+  fixedRecurringMonthlyPayment: Int
+  fixedRecurringHouseRent: Int
+  ration: String
+  fixedRecurringMedical: Int
+  fixedRecurringSchoolFee: Int
+  fixedRecurringMilk: Int
+  fixedRecurringFuel: Int
+  variableRecurringMedical: Int
+  variableRecurringUtilityBills: Int
+}
+
 extend type Mutation {
   createAccountsImdadRequest(requestDate: String!, visitorId: String!, notes: String): ImdadRequestType
   updateAccountsImdadRequest(_id: String, status: String, notes: String): ImdadRequestType
   deleteAccountsImdadRequest(_id: String!): Int
+
+  setAccountsApprovedImdad(_id:String, approvedImdad: ApprovedImdad!) : ImdadRequestType
 
   addAccountsImdadRequestAttachment(
     _id: String!

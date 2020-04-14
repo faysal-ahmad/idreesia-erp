@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { flowRight } from 'lodash';
-import { graphql } from 'react-apollo';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
 import { message } from '/imports/ui/controls';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
@@ -12,21 +11,22 @@ import {
   REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT,
 } from '../gql';
 
-class AttachmentsList extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const AttachmentsList = ({ requestId }) => {
+  const [addAccountsImdadRequestAttachment] = useMutation(
+    ADD_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT
+  );
+  const [removeAccountsImdadRequestAttachment] = useMutation(
+    REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT
+  );
 
-    formDataLoading: PropTypes.bool,
-    requestId: PropTypes.string,
-    accountsImdadRequestById: PropTypes.object,
-    addAccountsImdadRequestAttachment: PropTypes.func,
-    removeAccountsImdadRequestAttachment: PropTypes.func,
-  };
+  const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
+    variables: { _id: requestId },
+  });
 
-  handleAttachmentAdded = attachmentId => {
-    const { addAccountsImdadRequestAttachment, requestId } = this.props;
+  if (loading) return null;
+  const { accountsImdadRequestById } = data;
+
+  const handleAttachmentAdded = attachmentId => {
     addAccountsImdadRequestAttachment({
       variables: {
         _id: requestId,
@@ -37,8 +37,7 @@ class AttachmentsList extends Component {
     });
   };
 
-  handleAttachmentRemoved = attachmentId => {
-    const { removeAccountsImdadRequestAttachment, requestId } = this.props;
+  const handleAttachmentRemoved = attachmentId => {
     removeAccountsImdadRequestAttachment({
       variables: {
         _id: requestId,
@@ -49,29 +48,17 @@ class AttachmentsList extends Component {
     });
   };
 
-  render() {
-    const { accountsImdadRequestById, formDataLoading } = this.props;
-    if (formDataLoading) return null;
+  return (
+    <AttachmentsListControl
+      attachments={accountsImdadRequestById.attachments}
+      handleAttachmentAdded={handleAttachmentAdded}
+      handleAttachmentRemoved={handleAttachmentRemoved}
+    />
+  );
+};
 
-    return (
-      <AttachmentsListControl
-        attachments={accountsImdadRequestById.attachments}
-        handleAttachmentAdded={this.handleAttachmentAdded}
-        handleAttachmentRemoved={this.handleAttachmentRemoved}
-      />
-    );
-  }
-}
+AttachmentsList.propTypes = {
+  requestId: PropTypes.string,
+};
 
-export default flowRight(
-  graphql(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ requestId }) => ({ variables: { _id: requestId } }),
-  }),
-  graphql(ADD_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT, {
-    name: 'addAccountsImdadRequestAttachment',
-  }),
-  graphql(REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT, {
-    name: 'removeAccountsImdadRequestAttachment',
-  })
-)(AttachmentsList);
+export default AttachmentsList;

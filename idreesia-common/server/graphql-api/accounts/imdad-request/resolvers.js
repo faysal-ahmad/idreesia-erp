@@ -83,6 +83,34 @@ export default {
       return ImdadRequests.remove(_id);
     },
 
+    setAccountsApprovedImdad(obj, { _id, approvedImdad }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.ACCOUNTS_MANAGE_IMDAD_REQUESTS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Imdad Requests in the System.'
+        );
+      }
+
+      const date = new Date();
+      ImdadRequests.update(
+        {
+          _id,
+        },
+        {
+          $set: {
+            approvedImdad,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
+
+      return ImdadRequests.findOne(_id);
+    },
+
     addAccountsImdadRequestAttachment(obj, { _id, attachmentId }, { user }) {
       if (
         !hasOnePermission(user._id, [

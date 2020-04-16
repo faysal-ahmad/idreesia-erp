@@ -5,4 +5,5 @@ export { default as Vouchers } from './vouchers';
 export { default as VoucherDetails } from './voucher-details';
 export { default as Payments } from './payments';
 export { default as PaymentTypes } from './payment-types';
+export { default as ImdadReasons } from './imdad-reasons';
 export { default as ImdadRequests } from './imdad-requests';

@@ -11,6 +11,11 @@ import {
   PaymentTypesList,
 } from './payment-types';
 import {
+  ImdadReasonsNewForm,
+  ImdadReasonsEditForm,
+  ImdadReasonsList,
+} from './imdad-reasons';
+import {
   PaymentsList,
   PaymentsNewForm,
   PaymentsEditForm,
@@ -52,6 +57,16 @@ const Router = () => (
       component={PaymentTypesEditForm}
     />
     <Route path={paths.paymentTypesPath} component={PaymentTypesList} />
+
+    <Route
+      path={paths.imdadReasonsNewFormPath}
+      component={ImdadReasonsNewForm}
+    />
+    <Route
+      path={paths.imdadReasonsEditFormPath()}
+      component={ImdadReasonsEditForm}
+    />
+    <Route path={paths.imdadReasonsPath} component={ImdadReasonsList} />
 
     <Route path={paths.paymentsNewFormPath} component={PaymentsNewForm} />
     <Route path={paths.paymentReceiptsPath()} component={PaymentReceipts} />

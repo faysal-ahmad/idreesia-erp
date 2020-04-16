@@ -10,6 +10,12 @@ export default class SubModulePaths {
     return `${SubModulePaths.paymentTypesPath}/${paymentTypeId}`;
   }
 
+  static imdadReasonsPath = `${ModulePaths.accounts}/imdad-reasons`;
+  static imdadReasonsNewFormPath = `${SubModulePaths.imdadReasonsPath}/new`;
+  static imdadReasonsEditFormPath(imdadReasonId = ':imdadReasonId') {
+    return `${SubModulePaths.imdadReasonsPath}/${imdadReasonId}`;
+  }
+
   // ******************************************************************************
   // Audit Logs
   // ******************************************************************************

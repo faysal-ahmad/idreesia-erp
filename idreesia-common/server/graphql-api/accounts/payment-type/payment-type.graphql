@@ -13,11 +13,11 @@ type PaymentTypeType {
 
 extend type Query {
   allPaymentTypes: [PaymentTypeType]
-  paymentTypeById(id: String!): PaymentTypeType
+  paymentTypeById(_id: String!): PaymentTypeType
 }
 
 extend type Mutation {
   createPaymentType(name: String!, description: String): PaymentTypeType
-  updatePaymentType(id: String!, name: String!, description: String): PaymentTypeType
+  updatePaymentType(_id: String!, name: String!, description: String): PaymentTypeType
   removePaymentType(_id: String!): Int
 }

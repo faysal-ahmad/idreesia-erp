@@ -35,7 +35,7 @@ export default {
       }
 
       const date = new Date();
-      const jobId = PaymentTypes.insert({
+      const paymentTypeId = PaymentTypes.insert({
         name,
         description,
         createdAt: date,
@@ -44,10 +44,10 @@ export default {
         updatedBy: user._id,
       });
 
-      return PaymentTypes.findOne(jobId);
+      return PaymentTypes.findOne(paymentTypeId);
     },
 
-    updatePaymentType(obj, { id, name, description }, { user }) {
+    updatePaymentType(obj, { _id, name, description }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
@@ -59,7 +59,7 @@ export default {
       }
 
       const date = new Date();
-      PaymentTypes.update(id, {
+      PaymentTypes.update(_id, {
         $set: {
           name,
           description,
@@ -68,7 +68,7 @@ export default {
         },
       });
 
-      return PaymentTypes.findOne(id);
+      return PaymentTypes.findOne(_id);
     },
 
     removePaymentType(obj, { _id }, { user }) {

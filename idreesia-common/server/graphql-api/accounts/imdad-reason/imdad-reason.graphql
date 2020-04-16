@@ -1,0 +1,28 @@
+type ImdadReasonType {
+  _id: String
+  name: String
+  description: String
+
+  usedCount: Int
+  
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allImdadReasons: [ImdadReasonType]
+  imdadReasonById(_id: String!): ImdadReasonType
+}
+
+extend type Mutation {
+  createImdadReason(name: String!, description: String): ImdadReasonType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_SETUP_DATA])
+
+  updateImdadReason(_id: String!, name: String!, description: String): ImdadReasonType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_SETUP_DATA])
+
+  removeImdadReason(_id: String!): Int
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_SETUP_DATA])
+}

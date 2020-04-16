@@ -6,6 +6,7 @@ const ACCOUNTS_IMDAD_REQUEST_BY_ID = gql`
       _id
       visitorId
       requestDate
+      imdadReasonId
       status
       notes
       approvedImdad {

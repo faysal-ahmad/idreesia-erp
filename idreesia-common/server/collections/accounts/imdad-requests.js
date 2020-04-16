@@ -8,6 +8,10 @@ import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
 } from 'meteor/idreesia-common/constants/list-options';
+import {
+  // AuditLogs,
+  Attachments,
+} from 'meteor/idreesia-common/server/collections/common';
 
 class ImdadRequests extends AggregatableCollection {
   constructor(name = 'accounts-imdad-requests', options = {}) {
@@ -20,7 +24,7 @@ class ImdadRequests extends AggregatableCollection {
   // Create/Update Methods
   // **************************************************************
   createImdadRequest(values, user) {
-    const { requestDate, visitorId } = values;
+    const { requestDate, visitorId, imdadReasonId } = values;
     if (!values.dataSource) {
       throw new Error('Data Source is required to create an Imdad Request.');
     }
@@ -36,6 +40,7 @@ class ImdadRequests extends AggregatableCollection {
       requestDate: moment(requestDate)
         .startOf('day')
         .toDate(),
+      imdadReasonId,
       status: ImdadRequestStatus.CREATED,
       createdAt: date,
       createdBy: user._id,
@@ -89,6 +94,13 @@ class ImdadRequests extends AggregatableCollection {
     let isChanged;
 
     switch (key) {
+      case 'requestDate':
+        isChanged = !moment(existingImdadRequest[key]).isSame(moment(newValue));
+        break;
+
+      case 'approvedImdad':
+        break;
+
       default:
         isChanged = existingImdadRequest[key] !== newValue;
         break;
@@ -97,6 +109,42 @@ class ImdadRequests extends AggregatableCollection {
     return isChanged;
   }
 
+  addAttachment({ _id, attachmentId }, user) {
+    const date = new Date();
+    ImdadRequests.update(
+      { _id },
+      {
+        $addToSet: {
+          attachmentIds: attachmentId,
+        },
+        $set: {
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      }
+    );
+
+    return ImdadRequests.findOne(_id);
+  }
+
+  removeAttachment({ _id, attachmentId }, user) {
+    const date = new Date();
+    ImdadRequests.update(
+      { _id },
+      {
+        $pull: {
+          attachmentIds: attachmentId,
+        },
+        $set: {
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      }
+    );
+
+    Attachments.remove(attachmentId);
+    return ImdadRequests.findOne(_id);
+  }
   // **************************************************************
   // Query Functions
   // **************************************************************

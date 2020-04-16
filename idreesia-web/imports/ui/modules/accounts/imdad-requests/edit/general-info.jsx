@@ -5,6 +5,7 @@ import moment from 'moment';
 
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
+import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/accounts';
 
 import { Form, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
@@ -33,11 +34,12 @@ const GeneralInfo = ({ requestId, form, history }) => {
     }
   );
 
+  const { allImdadReasons, allImdadReasonsLoading } = useAllImdadReasons();
   const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
     variables: { _id: requestId },
   });
 
-  if (loading) return null;
+  if (loading || allImdadReasonsLoading) return null;
   const { accountsImdadRequestById } = data;
   const { getFieldDecorator, isFieldsTouched } = form;
 
@@ -47,12 +49,13 @@ const GeneralInfo = ({ requestId, form, history }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    form.validateFields((err, { status, notes }) => {
+    form.validateFields((err, { imdadReasonId, status, notes }) => {
       if (err) return;
 
       updateAccountsImdadRequest({
         variables: {
           _id: requestId,
+          imdadReasonId,
           status,
           notes,
         },
@@ -95,6 +98,18 @@ const GeneralInfo = ({ requestId, form, history }) => {
           required
           requiredMessage="Please select a Person"
           initialValue={accountsImdadRequestById.visitor}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <SelectField
+          data={allImdadReasons}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="imdadReasonId"
+          fieldLabel="Request Reason"
+          required
+          requiredMessage="Please select an Imdad Request Reason."
+          initialValue={accountsImdadRequestById.imdadReasonId}
           getFieldDecorator={getFieldDecorator}
         />
 

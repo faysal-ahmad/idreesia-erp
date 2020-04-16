@@ -1,8 +1,3 @@
-extend type Query {
-  accountsImdadRequestById(_id: String!): ImdadRequestType
-  pagedAccountsImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
-}
-
 input ApprovedImdad {
   fromMonth: String
   toMonth: String
@@ -22,19 +17,36 @@ input ApprovedImdad {
   variableRecurringUtilityBills: Int
 }
 
+extend type Query {
+  accountsImdadRequestById(_id: String!): ImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_VIEW_IMDAD_REQUESTS, ACCOUNTS_MANAGE_IMDAD_REQUESTS])
+
+  pagedAccountsImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_VIEW_IMDAD_REQUESTS, ACCOUNTS_MANAGE_IMDAD_REQUESTS])
+}
+
 extend type Mutation {
-  createAccountsImdadRequest(requestDate: String!, visitorId: String!, notes: String): ImdadRequestType
-  updateAccountsImdadRequest(_id: String, status: String, notes: String): ImdadRequestType
+  createAccountsImdadRequest(requestDate: String!, visitorId: String!, imdadReasonId: String, notes: String): ImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_IMDAD_REQUESTS])
+
+  updateAccountsImdadRequest(_id: String, imdadReasonId: String, status: String, notes: String): ImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_IMDAD_REQUESTS])
+
   deleteAccountsImdadRequest(_id: String!): Int
+  @checkPermissions(permissions: [ACCOUNTS_DELETE_DATA])
 
   setAccountsApprovedImdad(_id:String, approvedImdad: ApprovedImdad!) : ImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_IMDAD_REQUESTS])
 
   addAccountsImdadRequestAttachment(
     _id: String!
     attachmentId: String!
   ): ImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_IMDAD_REQUESTS])
+
   removeAccountsImdadRequestAttachment(
     _id: String!
     attachmentId: String!
   ): ImdadRequestType
+  @checkPermissions(permissions: [ACCOUNTS_MANAGE_IMDAD_REQUESTS])
 }

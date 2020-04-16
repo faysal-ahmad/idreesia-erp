@@ -22,6 +22,7 @@ type ImdadRequestType {
   visitorId: String
   dataSource: String
   requestDate: String
+  imdadReasonId: String
   status: String
   notes: String
   approvedImdad: ApprovedImdadType

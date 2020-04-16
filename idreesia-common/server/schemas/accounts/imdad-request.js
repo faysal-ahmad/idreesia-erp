@@ -80,6 +80,9 @@ export default new SimpleSchema({
   requestDate: {
     type: Date,
   },
+  imdadReasonId: {
+    type: String,
+  },
   dataSource: {
     type: String,
     allowedValues: values(DataSource),

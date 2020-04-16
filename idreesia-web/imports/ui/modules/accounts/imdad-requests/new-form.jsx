@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/accounts';
 import { Form, message } from '/imports/ui/controls';
 import {
   PAGED_ACCOUNTS_IMDAD_REQUESTS,
@@ -13,12 +14,14 @@ import {
 import {
   DateField,
   InputTextAreaField,
+  SelectField,
   VisitorSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
+  const { allImdadReasons, allImdadReasonsLoading } = useAllImdadReasons();
   const [createAccountsImdadRequest] = useMutation(
     CREATE_ACCOUNTS_IMDAD_REQUEST,
     {
@@ -31,29 +34,34 @@ const NewForm = ({ form, history, location }) => {
     dispatch(setBreadcrumbs(['Accounts', 'Imdad Requests', 'New']));
   }, [location]);
 
+  if (allImdadReasonsLoading) return null;
+
   const handleCancel = () => {
     history.goBack();
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    form.validateFields((err, { requestDate, visitor, notes }) => {
-      if (err) return;
+    form.validateFields(
+      (err, { requestDate, visitor, imdadReasonId, notes }) => {
+        if (err) return;
 
-      createAccountsImdadRequest({
-        variables: {
-          requestDate,
-          visitorId: visitor._id,
-          notes,
-        },
-      })
-        .then(() => {
-          history.goBack();
+        createAccountsImdadRequest({
+          variables: {
+            requestDate,
+            visitorId: visitor._id,
+            imdadReasonId,
+            notes,
+          },
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.goBack();
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   const { getFieldDecorator, isFieldsTouched } = form;
@@ -73,6 +81,17 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Person"
         required
         requiredMessage="Please select a Person"
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <SelectField
+        data={allImdadReasons}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="imdadReasonId"
+        fieldLabel="Request Reason"
+        required
+        requiredMessage="Please select an Imdad Request Reason."
         getFieldDecorator={getFieldDecorator}
       />
 

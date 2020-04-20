@@ -12,7 +12,11 @@ export default new SimpleSchema({
   messageBody: {
     type: String,
   },
-  karkunFilter: {
+  karkunFilters: {
+    type: Array,
+    optional: true,
+  },
+  'karkunFilters.$': {
     type: KarkunFilter,
     optional: true,
   },

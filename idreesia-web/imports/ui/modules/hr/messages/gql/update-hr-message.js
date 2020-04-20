@@ -4,7 +4,7 @@ const UPDATE_HR_MESSAGE = gql`
   mutation updateHrMessage(
     $_id: String!
     $messageBody: String!
-    $karkunFilter: KarkunFilter
+    $karkunFilter: MessageKarkunFilter
   ) {
     updateHrMessage(
       _id: $_id
@@ -13,16 +13,16 @@ const UPDATE_HR_MESSAGE = gql`
     ) {
       _id
       messageBody
-      karkunFilter {
+      karkunFilters {
+        filterTarget
+        bloodGroup
+        lastTarteeb
+        jobId
         dutyId
-        cityId
-        cityMehfilId
-        region
+        dutyShiftId
       }
       status
       sentDate
-      karkunIds
-      visitorIds
       approvedOn
       approvedBy
       createdAt

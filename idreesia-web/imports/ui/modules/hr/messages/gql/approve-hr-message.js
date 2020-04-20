@@ -8,8 +8,7 @@ const APPROVE_HR_MESSAGE = gql`
       messageBody
       status
       sentDate
-      karkunIds
-      visitorIds
+      msKarkunIds
       approvedOn
       approvedBy
       createdAt

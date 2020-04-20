@@ -1,11 +1,27 @@
-type KarkunFilterType {
+input MessageKarkunFilter {
+  filterTarget: String
   name: String
   cnicNumber: String
   phoneNumber: String
   bloodGroup: String
   lastTarteeb: String
   attendance: String
-  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+}
+
+type MessageKarkunFilterType {
+  filterTarget: String
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  lastTarteeb: String
+  attendance: String
   jobId: String
   dutyId: String
   dutyShiftId: String
@@ -18,13 +34,15 @@ type MessageType {
   _id: String
   source: String
   messageBody: String
-  karkunFilter: KarkunFilterType
+  karkunFilters: [MessageKarkunFilterType]
   status: String
   sentDate: String
-  karkunIds: [String]
+  msKarkunIds: [String]
+  outstationKarkunIds: [String]
   visitorIds: [String]
 
-  karkunCount: Int
+  msKarkunCount: Int
+  outstationKarkunCount: Int
   visitorCount: Int
 
   approvedOn: String

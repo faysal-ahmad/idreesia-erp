@@ -5,16 +5,17 @@ const HR_MESSAGE_BY_ID = gql`
     hrMessageById(_id: $_id) {
       _id
       messageBody
-      karkunFilter {
+      karkunFilters {
+        filterTarget
+        bloodGroup
+        lastTarteeb
+        jobId
         dutyId
-        cityId
-        cityMehfilId
-        region
+        dutyShiftId
       }
       status
       sentDate
-      karkunIds
-      visitorIds
+      msKarkunIds
       approvedOn
       approvedBy
       createdAt

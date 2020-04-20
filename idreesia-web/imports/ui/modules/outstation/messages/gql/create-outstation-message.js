@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 const CREATE_OUTSTATION_MESSAGE = gql`
   mutation createOutstationMessage(
     $messageBody: String!
-    $karkunFilter: KarkunFilter
+    $karkunFilter: MessageKarkunFilter
   ) {
     createOutstationMessage(
       messageBody: $messageBody

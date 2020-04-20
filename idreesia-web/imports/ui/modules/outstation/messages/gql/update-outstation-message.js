@@ -4,7 +4,7 @@ const UPDATE_OUTSTATION_MESSAGE = gql`
   mutation updateOutstationMessage(
     $_id: String!
     $messageBody: String!
-    $karkunFilter: KarkunFilter
+    $karkunFilter: MessageKarkunFilter
   ) {
     updateOutstationMessage(
       _id: $_id

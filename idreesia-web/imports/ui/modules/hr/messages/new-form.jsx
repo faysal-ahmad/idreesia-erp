@@ -4,13 +4,22 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useAllMSDuties } from 'meteor/idreesia-common/hooks/hr';
+import { FilterTarget } from 'meteor/idreesia-common/constants/communication';
+import {
+  useAllJobs,
+  useAllMSDuties,
+  useAllMSDutyShifts,
+} from 'meteor/idreesia-common/hooks/hr';
+
 import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
+  CascaderField,
   InputTextAreaField,
+  LastTarteebFilterField,
   SelectField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
+import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 import { PAGED_HR_MESSAGES, CREATE_HR_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
@@ -23,13 +32,17 @@ const NewForm = ({ form, history, location }) => {
     refetchQueries: [{ query: PAGED_HR_MESSAGES }],
   });
 
+  const { allJobs, allJobsLoading } = useAllJobs();
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
+  const { allMSDutyShifts, allMSDutyShiftsLoading } = useAllMSDutyShifts();
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['HR', 'Messages', 'New']));
   }, [location]);
 
-  if (allMSDutiesLoading) return null;
+  if (allJobsLoading || allMSDutiesLoading || allMSDutyShiftsLoading) {
+    return null;
+  }
 
   const { getFieldDecorator, validateFields, isFieldsTouched } = form;
 
@@ -46,25 +59,37 @@ const NewForm = ({ form, history, location }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    validateFields((err, { messageBody, dutyId }) => {
-      if (err) return;
+    validateFields(
+      (err, { messageBody, bloodGroup, lastTarteeb, jobId, dutyIdShiftId }) => {
+        if (err) return;
 
-      createHrMessage({
-        variables: {
-          messageBody,
-          karkunFilter: {
-            dutyId,
+        createHrMessage({
+          variables: {
+            messageBody,
+            karkunFilter: {
+              filterTarget: FilterTarget.MS_KARKUNS,
+              bloodGroup,
+              lastTarteeb,
+              jobId,
+              dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
+              dutyShiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
+            },
           },
-        },
-      })
-        .then(() => {
-          history.goBack();
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.goBack();
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
+
+  const dutyShiftCascaderData = getDutyShiftCascaderData(
+    allMSDuties,
+    allMSDutyShifts
+  );
 
   return (
     <>
@@ -76,13 +101,45 @@ const NewForm = ({ form, history, location }) => {
           requiredMessage="Please input the message to send."
           getFieldDecorator={getFieldDecorator}
         />
-        <Divider>Karkuns Filter Criteria</Divider>
+        <Divider>Karkuns Selection Criteria</Divider>
         <SelectField
-          fieldName="dutyId"
-          fieldLabel="Duty"
-          data={allMSDuties}
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={[
+            { label: 'A-', value: 'A-' },
+            { label: 'A+', value: 'Aplus' },
+            { label: 'B-', value: 'B-' },
+            { label: 'B+', value: 'Bplus' },
+            { label: 'AB-', value: 'AB-' },
+            { label: 'AB+', value: 'ABplus' },
+            { label: 'O-', value: 'O-' },
+            { label: 'O+', value: 'Oplus' },
+          ]}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <LastTarteebFilterField
+          fieldName="lastTarteeb"
+          fieldLabel="Last Tarteeb"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          fieldName="jobId"
+          fieldLabel="Job"
+          required={false}
+          data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <CascaderField
+          data={dutyShiftCascaderData}
+          fieldName="dutyIdShiftId"
+          fieldLabel="Duty/Shift"
+          required={false}
           getFieldDecorator={getFieldDecorator}
         />
         <Divider />

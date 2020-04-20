@@ -1,6 +1,13 @@
 import SimpleSchema from 'simpl-schema';
 
+import { values } from 'meteor/idreesia-common/utilities/lodash';
+import { FilterTarget } from 'meteor/idreesia-common/constants/communication';
+
 export default new SimpleSchema({
+  filterTarget: {
+    type: String,
+    allowedValues: values(FilterTarget),
+  },
   name: {
     type: String,
     optional: true,

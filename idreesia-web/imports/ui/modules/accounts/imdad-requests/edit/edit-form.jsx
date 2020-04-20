@@ -9,6 +9,7 @@ import GeneralInfo from './general-info';
 import AttachmentsList from './attachments-list';
 import ApprovedImdad from './approved-imdad';
 import PaymentsHistory from './payments-history';
+import WazaifInfo from './wazaif-info';
 
 const EditForm = props => {
   const requestId = get(props, ['match', 'params', 'requestId'], null);
@@ -17,13 +18,16 @@ const EditForm = props => {
       <Tabs.TabPane tab="General Info" key="1">
         <GeneralInfo requestId={requestId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Approved Imdad" key="2">
+      <Tabs.TabPane tab="Wazaif Info" key="2">
+        <WazaifInfo requestId={requestId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Approved Imdad" key="3">
         <ApprovedImdad requestId={requestId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="File Attachments" key="3">
+      <Tabs.TabPane tab="File Attachments" key="4">
         <AttachmentsList requestId={requestId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Payments History" key="4">
+      <Tabs.TabPane tab="Payments History" key="5">
         <PaymentsHistory requestId={requestId} {...props} />
       </Tabs.TabPane>
     </Tabs>

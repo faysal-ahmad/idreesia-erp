@@ -64,3 +64,14 @@ input MessageFilter {
   startDate: String
   endDate: String
 }
+
+extend type Query {
+  pagedMSKarkunMessageRecepients(filter: MessageKarkunFilter!): PagedKarkunType
+  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
+
+  pagedOutstationKarkunMessageRecepients(filter: MessageKarkunFilter!): PagedKarkunType
+  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
+
+  pagedVisitorMessageRecepients(filter: MessageKarkunFilter!): PagedVisitorType
+  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
+}

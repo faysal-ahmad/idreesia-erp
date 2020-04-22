@@ -9,7 +9,7 @@ const PAGED_OUTSTATION_MESSAGES = gql`
         messageBody
         status
         sentDate
-        karkunCount
+        outstationKarkunCount
       }
     }
   }

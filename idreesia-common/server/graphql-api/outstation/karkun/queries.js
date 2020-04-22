@@ -3,17 +3,7 @@ import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { Formats } from 'meteor/idreesia-common/constants';
-
-const bloodGroupValueConversion = {
-  'A-': 'A-',
-  Aplus: 'A+',
-  'B-': 'B-',
-  Bplus: 'B+',
-  'AB-': 'AB-',
-  ABplus: 'AB+',
-  'O-': 'O-',
-  Oplus: 'O+',
-};
+import { BloodGroups } from 'meteor/idreesia-common/constants/hr';
 
 function buildPipeline(params) {
   const pipeline = [];
@@ -61,7 +51,7 @@ function buildPipeline(params) {
   }
 
   if (bloodGroup) {
-    const convertedBloodGroupValue = bloodGroupValueConversion[bloodGroup];
+    const convertedBloodGroupValue = BloodGroups[bloodGroup];
     pipeline.push({
       $match: {
         bloodGroup: { $eq: convertedBloodGroupValue },

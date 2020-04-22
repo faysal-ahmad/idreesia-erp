@@ -8,8 +8,7 @@ const APPROVE_OUTSTATION_MESSAGE = gql`
       messageBody
       status
       sentDate
-      karkunIds
-      visitorIds
+      outstationKarkunIds
       approvedOn
       approvedBy
       createdAt

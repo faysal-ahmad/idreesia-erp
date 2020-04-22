@@ -14,8 +14,7 @@ const OUTSTATION_MESSAGE_BY_ID = gql`
       }
       status
       sentDate
-      karkunIds
-      visitorIds
+      outstationKarkunIds
       approvedOn
       approvedBy
       createdAt

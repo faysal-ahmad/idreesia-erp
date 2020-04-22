@@ -7,18 +7,10 @@ import {
   PurchaseForms,
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
-
-const bloodGroupValueConversion = {
-  'A-': 'A-',
-  Aplus: 'A+',
-  'B-': 'B-',
-  Bplus: 'B+',
-  'AB-': 'AB-',
-  ABplus: 'AB+',
-  'O-': 'O-',
-  Oplus: 'O+',
-};
+import {
+  BloodGroups,
+  PredefinedFilterNames,
+} from 'meteor/idreesia-common/constants/hr';
 
 function buildPipeline(params) {
   const pipeline = [];
@@ -91,7 +83,7 @@ function buildPipeline(params) {
   }
 
   if (bloodGroup) {
-    const convertedBloodGroupValue = bloodGroupValueConversion[bloodGroup];
+    const convertedBloodGroupValue = BloodGroups[bloodGroup];
     pipeline.push({
       $match: {
         bloodGroup: { $eq: convertedBloodGroupValue },

@@ -5,7 +5,7 @@ const HR_MESSAGE_BY_ID = gql`
     hrMessageById(_id: $_id) {
       _id
       messageBody
-      karkunFilters {
+      recepientFilters {
         filterTarget
         bloodGroup
         lastTarteeb

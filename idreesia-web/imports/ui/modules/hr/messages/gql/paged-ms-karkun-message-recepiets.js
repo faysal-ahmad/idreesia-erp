@@ -1,8 +1,10 @@
 import gql from 'graphql-tag';
 
 const PAGED_MS_KARKUN_MESSAGE_RECEPIENTS = gql`
-  query pagedMSKarkunMessageRecepients($filter: MessageKarkunFilter!) {
-    pagedMSKarkunMessageRecepients(filter: $filter) {
+  query pagedMSKarkunMessageRecepients(
+    $recepientFilter: MessageRecepientFilter!
+  ) {
+    pagedMSKarkunMessageRecepients(recepientFilter: $recepientFilter) {
       totalResults
       karkuns {
         _id

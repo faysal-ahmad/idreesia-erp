@@ -3,13 +3,16 @@ import gql from 'graphql-tag';
 const CREATE_HR_MESSAGE = gql`
   mutation createHrMessage(
     $messageBody: String!
-    $karkunFilter: MessageKarkunFilter
+    $recepientFilter: MessageRecepientFilter
   ) {
-    createHrMessage(messageBody: $messageBody, karkunFilter: $karkunFilter) {
+    createHrMessage(
+      messageBody: $messageBody
+      recepientFilter: $recepientFilter
+    ) {
       _id
       source
       messageBody
-      karkunFilters {
+      recepientFilters {
         filterTarget
         bloodGroup
         lastTarteeb

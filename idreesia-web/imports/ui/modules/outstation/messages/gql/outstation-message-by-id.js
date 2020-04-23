@@ -5,7 +5,7 @@ const OUTSTATION_MESSAGE_BY_ID = gql`
     outstationMessageById(_id: $_id) {
       _id
       messageBody
-      karkunFilter {
+      recepientFilters {
         lastTarteeb
         dutyId
         cityId

@@ -21,12 +21,12 @@ export default {
   },
 
   Mutation: {
-    createHrMessage(obj, { messageBody, karkunFilter }, { user }) {
+    createHrMessage(obj, { messageBody, recepientFilter }, { user }) {
       const date = new Date();
       const messageId = Messages.insert({
         source: MessageSource.HR,
         messageBody,
-        karkunFilters: [karkunFilter],
+        recepientFilters: [recepientFilter],
         status: MessageStatus.WAITING_APPROVAL,
         createdAt: date,
         createdBy: user._id,
@@ -37,7 +37,7 @@ export default {
       return Messages.findOne(messageId);
     },
 
-    updateHrMessage(obj, { _id, messageBody, karkunFilter }, { user }) {
+    updateHrMessage(obj, { _id, messageBody, recepientFilter }, { user }) {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(
@@ -59,7 +59,7 @@ export default {
         {
           $set: {
             messageBody,
-            karkunFilters: [karkunFilter],
+            recepientFilters: [recepientFilter],
             updatedAt: date,
             updatedBy: user._id,
           },

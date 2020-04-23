@@ -4,16 +4,16 @@ const UPDATE_OUTSTATION_MESSAGE = gql`
   mutation updateOutstationMessage(
     $_id: String!
     $messageBody: String!
-    $karkunFilter: MessageKarkunFilter
+    $recepientFilter: MessageRecepientFilter
   ) {
     updateOutstationMessage(
       _id: $_id
       messageBody: $messageBody
-      karkunFilter: $karkunFilter
+      recepientFilter: $recepientFilter
     ) {
       _id
       messageBody
-      karkunFilter {
+      recepientFilters {
         lastTarteeb
         dutyId
         cityId

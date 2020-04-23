@@ -9,14 +9,14 @@ extend type Query {
 extend type Mutation {
   createHrMessage(
     messageBody: String!
-    karkunFilter: MessageKarkunFilter
+    recepientFilter: MessageRecepientFilter
   ): MessageType
   @checkPermissions(permissions: [HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 
   updateHrMessage(
     _id: String!
     messageBody: String!
-    karkunFilter: MessageKarkunFilter
+    recepientFilter: MessageRecepientFilter
   ): MessageType
   @checkPermissions(permissions: [HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 

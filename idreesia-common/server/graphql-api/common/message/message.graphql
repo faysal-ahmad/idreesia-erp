@@ -1,4 +1,4 @@
-input MessageKarkunFilter {
+input MessageRecepientFilter {
   filterTarget: String
   name: String
   cnicNumber: String
@@ -34,7 +34,7 @@ type MessageType {
   _id: String
   source: String
   messageBody: String
-  karkunFilters: [MessageKarkunFilterType]
+  recepientFilters: [MessageKarkunFilterType]
   status: String
   sentDate: String
   msKarkunIds: [String]
@@ -66,12 +66,12 @@ input MessageFilter {
 }
 
 extend type Query {
-  pagedMSKarkunMessageRecepients(filter: MessageKarkunFilter!): PagedKarkunType
+  pagedMSKarkunMessageRecepients(filter: MessageRecepientFilter!): PagedKarkunType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 
-  pagedOutstationKarkunMessageRecepients(filter: MessageKarkunFilter!): PagedKarkunType
+  pagedOutstationKarkunMessageRecepients(filter: MessageRecepientFilter!): PagedKarkunType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 
-  pagedVisitorMessageRecepients(filter: MessageKarkunFilter!): PagedVisitorType
+  pagedVisitorMessageRecepients(filter: MessageRecepientFilter!): PagedVisitorType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 }

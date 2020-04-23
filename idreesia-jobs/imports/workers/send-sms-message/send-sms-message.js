@@ -14,7 +14,7 @@ export default function sendSmsMessage(phoneNumber, messageBody) {
 
   return new Promise((resolve, reject) => {
     const options = {
-      uri: `${baseUri}?message=${messageBody}&phoneno=${updatedPhoneNumber}&shortcode=13&carrier=850`,
+      uri: `${baseUri}?message=${messageBody}&phoneno=${updatedPhoneNumber}&username=MTMSG&password=AE381A`,
     };
 
     request.get(options, error => {

@@ -27,7 +27,7 @@ import KarkunsPreview from './karkuns-preview';
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const [showPreview, setShowPreview] = useState(false);
-  const [karkunFilter, setKarkunFilter] = useState(null);
+  const [recepientFilter, setRecepientFilter] = useState(null);
   const [createHrMessage] = useMutation(CREATE_HR_MESSAGE, {
     refetchQueries: [{ query: PAGED_HR_MESSAGES }],
   });
@@ -54,7 +54,7 @@ const NewForm = ({ form, history, location }) => {
     const dutyId = form.getFieldValue('dutyId');
     const filter = { dutyId };
     setShowPreview(true);
-    setKarkunFilter(filter);
+    setRecepientFilter(filter);
   };
 
   const handleSubmit = e => {
@@ -66,7 +66,7 @@ const NewForm = ({ form, history, location }) => {
         createHrMessage({
           variables: {
             messageBody,
-            karkunFilter: {
+            recepientFilter: {
               filterTarget: FilterTarget.MS_KARKUNS,
               bloodGroup,
               lastTarteeb,
@@ -158,7 +158,7 @@ const NewForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={karkunFilter} />
+        <KarkunsPreview filter={recepientFilter} />
       </Drawer>
     </>
   );

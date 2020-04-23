@@ -6,13 +6,13 @@ extend type Query {
 extend type Mutation {
   createOutstationMessage(
     messageBody: String!
-    karkunFilter: MessageKarkunFilter
+    recepientFilter: MessageRecepientFilter
   ): MessageType
 
   updateOutstationMessage(
     _id: String!
     messageBody: String!
-    karkunFilter: MessageKarkunFilter
+    recepientFilter: MessageRecepientFilter
   ): MessageType
 
   approveOutstationMessage(_id: String!): MessageType

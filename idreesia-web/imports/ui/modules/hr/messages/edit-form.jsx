@@ -28,7 +28,7 @@ const EditForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const { messageId } = useParams();
   const [showPreview, setShowPreview] = useState(false);
-  const [karkunFilter, setKarkunFilter] = useState(null);
+  const [recepientFilter, setRecepientFilter] = useState(null);
   const [updateHrMessage] = useMutation(UPDATE_HR_MESSAGE, {
     refetchQueries: [{ query: PAGED_HR_MESSAGES }],
   });
@@ -78,7 +78,7 @@ const EditForm = ({ form, history, location }) => {
     };
 
     setShowPreview(true);
-    setKarkunFilter(filter);
+    setRecepientFilter(filter);
   };
 
   const handleSubmit = e => {
@@ -91,7 +91,7 @@ const EditForm = ({ form, history, location }) => {
           variables: {
             _id: messageId,
             messageBody,
-            karkunFilter: {
+            recepientFilter: {
               filterTarget: FilterTarget.MS_KARKUNS,
               bloodGroup,
               lastTarteeb,
@@ -112,10 +112,10 @@ const EditForm = ({ form, history, location }) => {
   };
 
   const {
-    hrMessageById: { messageBody, karkunFilters },
+    hrMessageById: { messageBody, recepientFilters },
   } = data;
 
-  const _karkunFilter = karkunFilters ? karkunFilters[0] : null;
+  const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
   const dutyShiftCascaderData = getDutyShiftCascaderData(
     allMSDuties,
     allMSDutyShifts
@@ -149,14 +149,14 @@ const EditForm = ({ form, history, location }) => {
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
-          initialValue={_karkunFilter ? _karkunFilter.bloodGroup : null}
+          initialValue={_recepientFilter ? _recepientFilter.bloodGroup : null}
           getFieldDecorator={getFieldDecorator}
         />
         <LastTarteebFilterField
           fieldName="lastTarteeb"
           fieldLabel="Last Tarteeb"
           required={false}
-          initialValue={_karkunFilter ? _karkunFilter.lastTarteeb : null}
+          initialValue={_recepientFilter ? _recepientFilter.lastTarteeb : null}
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
@@ -166,7 +166,7 @@ const EditForm = ({ form, history, location }) => {
           data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
-          initialValue={_karkunFilter ? _karkunFilter.jobId : null}
+          initialValue={_recepientFilter ? _recepientFilter.jobId : null}
           getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
@@ -175,8 +175,8 @@ const EditForm = ({ form, history, location }) => {
           fieldLabel="Duty/Shift"
           required={false}
           initialValue={
-            _karkunFilter
-              ? [_karkunFilter.dutyId, _karkunFilter.dutyShiftId]
+            _recepientFilter
+              ? [_recepientFilter.dutyId, _recepientFilter.dutyShiftId]
               : null
           }
           getFieldDecorator={getFieldDecorator}
@@ -197,7 +197,7 @@ const EditForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={karkunFilter} />
+        <KarkunsPreview filter={recepientFilter} />
       </Drawer>
     </>
   );

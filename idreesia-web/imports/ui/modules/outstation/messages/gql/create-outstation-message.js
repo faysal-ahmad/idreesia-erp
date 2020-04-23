@@ -3,16 +3,16 @@ import gql from 'graphql-tag';
 const CREATE_OUTSTATION_MESSAGE = gql`
   mutation createOutstationMessage(
     $messageBody: String!
-    $karkunFilter: MessageKarkunFilter
+    $recepientFilter: MessageRecepientFilter
   ) {
     createOutstationMessage(
       messageBody: $messageBody
-      karkunFilter: $karkunFilter
+      recepientFilter: $recepientFilter
     ) {
       _id
       source
       messageBody
-      karkunFilter {
+      recepientFilters {
         lastTarteeb
         dutyId
         cityId

@@ -4,16 +4,16 @@ const UPDATE_HR_MESSAGE = gql`
   mutation updateHrMessage(
     $_id: String!
     $messageBody: String!
-    $karkunFilter: MessageKarkunFilter
+    $recepientFilter: MessageRecepientFilter
   ) {
     updateHrMessage(
       _id: $_id
       messageBody: $messageBody
-      karkunFilter: $karkunFilter
+      recepientFilter: $recepientFilter
     ) {
       _id
       messageBody
-      karkunFilters {
+      recepientFilters {
         filterTarget
         bloodGroup
         lastTarteeb

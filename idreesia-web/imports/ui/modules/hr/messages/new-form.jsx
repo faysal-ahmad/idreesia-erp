@@ -51,8 +51,21 @@ const NewForm = ({ form, history, location }) => {
   };
 
   const handlePeviewKarkuns = () => {
-    const dutyId = form.getFieldValue('dutyId');
-    const filter = { dutyId };
+    const bloodGroup = form.getFieldValue('bloodGroup');
+    const lastTarteeb = form.getFieldValue('lastTarteeb');
+    const jobId = form.getFieldValue('jobId');
+    const dutyIdShiftId = form.getFieldValue('dutyIdShiftId');
+
+    const dutyId = dutyIdShiftId ? dutyIdShiftId[0] : null;
+    const dutyShiftId = dutyIdShiftId ? dutyIdShiftId[1] : null;
+    const filter = {
+      bloodGroup,
+      lastTarteeb,
+      jobId,
+      dutyId,
+      dutyShiftId,
+    };
+
     setShowPreview(true);
     setRecepientFilter(filter);
   };
@@ -158,7 +171,7 @@ const NewForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={recepientFilter} />
+        <KarkunsPreview recepientFilter={recepientFilter} />
       </Drawer>
     </>
   );

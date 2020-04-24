@@ -6,13 +6,13 @@ import { KarkunsList } from '/imports/ui/modules/common';
 
 import { PAGED_MS_KARKUN_MESSAGE_RECEPIENTS } from './gql';
 
-const KarkunsPreview = ({ filter }) => {
+const KarkunsPreview = ({ recepientFilter }) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(20);
-  const { data, loading } = filter
+  const { data, loading } = recepientFilter
     ? useQuery(PAGED_MS_KARKUN_MESSAGE_RECEPIENTS, {
         variables: {
-          filter,
+          recepientFilter,
         },
       })
     : {
@@ -24,7 +24,7 @@ const KarkunsPreview = ({ filter }) => {
 
   useEffect(() => {
     setPageIndex(0);
-  }, [filter]);
+  }, [recepientFilter]);
 
   const setPageParams = params => {
     if (params.pageSize) setPageSize(params.pageSize);
@@ -50,7 +50,7 @@ const KarkunsPreview = ({ filter }) => {
 };
 
 KarkunsPreview.propTypes = {
-  filter: PropTypes.object,
+  recepientFilter: PropTypes.object,
 };
 
 export default KarkunsPreview;

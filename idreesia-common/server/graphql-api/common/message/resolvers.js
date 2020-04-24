@@ -15,16 +15,16 @@ export default {
   },
 
   Query: {
-    pagedMSKarkunMessageRecepients(obj, { filter }) {
-      return getMSKarkuns(filter);
+    pagedMSKarkunMessageRecepients(obj, { recepientFilter }) {
+      return getMSKarkuns(recepientFilter);
     },
 
-    pagedOutstationKarkunMessageRecepients(obj, { filter }) {
-      return getOutstationKarkuns(filter);
+    pagedOutstationKarkunMessageRecepients(obj, { recepientFilter }) {
+      return getOutstationKarkuns(recepientFilter);
     },
 
-    pagedVisitorMessageRecepients(obj, { filter }) {
-      return Visitors.searchVisitors(filter);
+    pagedVisitorMessageRecepients(obj, { recepientFilter }) {
+      return Visitors.searchVisitors(recepientFilter);
     },
   },
 };

@@ -66,12 +66,12 @@ input MessageFilter {
 }
 
 extend type Query {
-  pagedMSKarkunMessageRecepients(filter: MessageRecepientFilter!): PagedKarkunType
+  pagedMSKarkunMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedKarkunType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 
-  pagedOutstationKarkunMessageRecepients(filter: MessageRecepientFilter!): PagedKarkunType
+  pagedOutstationKarkunMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedKarkunType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 
-  pagedVisitorMessageRecepients(filter: MessageRecepientFilter!): PagedVisitorType
+  pagedVisitorMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedVisitorType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
 }

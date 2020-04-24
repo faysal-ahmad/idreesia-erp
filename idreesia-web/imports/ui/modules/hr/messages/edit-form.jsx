@@ -5,7 +5,10 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { FilterTarget } from 'meteor/idreesia-common/constants/communication';
+import {
+  FilterTarget,
+  MessageStatus,
+} from 'meteor/idreesia-common/constants/communication';
 import {
   useAllJobs,
   useAllMSDuties,
@@ -112,7 +115,7 @@ const EditForm = ({ form, history, location }) => {
   };
 
   const {
-    hrMessageById: { messageBody, recepientFilters },
+    hrMessageById: { messageBody, recepientFilters, status },
   } = data;
 
   const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
@@ -186,6 +189,7 @@ const EditForm = ({ form, history, location }) => {
           extraText="Preview Karkuns"
           handleCancel={handleCancel}
           handleExtra={handlePeviewKarkuns}
+          allowSubmit={status === MessageStatus.WAITING_APPROVAL}
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
@@ -197,7 +201,7 @@ const EditForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={recepientFilter} />
+        <KarkunsPreview recepientFilter={recepientFilter} />
       </Drawer>
     </>
   );

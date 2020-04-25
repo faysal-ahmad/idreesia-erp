@@ -40,6 +40,8 @@ type MessageType {
   msKarkunIds: [String]
   outstationKarkunIds: [String]
   visitorIds: [String]
+  succeededPhoneNumbers: [String]
+  failedPhoneNumbers: [String]
 
   msKarkunCount: Int
   outstationKarkunCount: Int

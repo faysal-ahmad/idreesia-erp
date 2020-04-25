@@ -50,6 +50,8 @@ export const worker = (job, callback) => {
   const karkunIds = [];
   const visitorIds = [];
   const phoneNumbers = [];
+  const succeededPhoneNumbers = [];
+  const failedPhoneNumbers = [];
 
   const recepientFilter = recepientFilters[0];
   const getMessageRecepients =
@@ -72,7 +74,15 @@ export const worker = (job, callback) => {
 
       return phoneNumbers.reduce(
         (p, phoneNumber) =>
-          p.then(() => sendSmsMessage(phoneNumber, message.messageBody)),
+          p
+            .then(() => sendSmsMessage(phoneNumber, message.messageBody))
+            .then(result => {
+              if (result.messageSent) {
+                succeededPhoneNumbers.push(result.phoneNumber);
+              } else {
+                failedPhoneNumbers.push(result.phoneNumber);
+              }
+            }),
         Promise.resolve()
       );
     })
@@ -85,6 +95,8 @@ export const worker = (job, callback) => {
         $set: {
           karkunIds,
           visitorIds,
+          succeededPhoneNumbers,
+          failedPhoneNumbers,
           status: MessageStatus.COMPLETED,
           sentDate: new Date(),
         },

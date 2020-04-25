@@ -1,11 +1,11 @@
 import request from 'request';
 
 const baseUri = 'http://sms.aimztra.com:7080/smsprocessor/sendmtmsg.htm';
-const updatePhoneNumber = phoneNumber =>
+const transformPhoneNumber = phoneNumber =>
   `92${phoneNumber.substring(1, 4)}${phoneNumber.substring(5)}`;
 
 export default function sendSmsMessage(phoneNumber, messageBody) {
-  const updatedPhoneNumber = updatePhoneNumber(phoneNumber);
+  const updatedPhoneNumber = transformPhoneNumber(phoneNumber);
   /*
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
@@ -23,8 +23,11 @@ export default function sendSmsMessage(phoneNumber, messageBody) {
       if (error) reject(error);
       // Look for string `SuccessList:[+############]` in the returned body
       // to find out if it succeeded.
-      const messageSent = body.includes(`+${updatePhoneNumber}`);
-      resolve(messageSent);
+      const messageSent = body.includes(`+${updatedPhoneNumber}`);
+      resolve({
+        phoneNumber,
+        messageSent,
+      });
     });
   });
 }

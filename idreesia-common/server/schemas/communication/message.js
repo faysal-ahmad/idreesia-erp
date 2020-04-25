@@ -46,6 +46,20 @@ export default new SimpleSchema({
   'visitorIds.$': {
     type: String,
   },
+  succeededPhoneNumbers: {
+    type: Array,
+    optional: true,
+  },
+  'succeededPhoneNumbers.$': {
+    type: String,
+  },
+  failedPhoneNumbers: {
+    type: Array,
+    optional: true,
+  },
+  'failedPhoneNumbers.$': {
+    type: String,
+  },
 })
   .extend(identifiable)
   .extend(approvable)

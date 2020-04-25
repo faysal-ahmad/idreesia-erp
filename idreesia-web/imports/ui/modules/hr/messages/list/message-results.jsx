@@ -4,31 +4,35 @@ import { useQuery } from '@apollo/react-hooks';
 
 import { KarkunsList } from '/imports/ui/modules/common';
 
-import { PAGED_MS_KARKUN_MESSAGE_RECEPIENTS } from './gql';
+import { PAGED_MS_KARKUN_MESSAGE_RECEPIENTS_BY_RESULT } from '../gql';
 
-const KarkunsPreview = ({ recepientFilter }) => {
+const MessageResults = ({ messageId, succeeded }) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(20);
-  const { data, loading } = recepientFilter
-    ? useQuery(PAGED_MS_KARKUN_MESSAGE_RECEPIENTS, {
+  const { data, loading } = messageId
+    ? useQuery(PAGED_MS_KARKUN_MESSAGE_RECEPIENTS_BY_RESULT, {
         variables: {
-          recepientFilter: {
+          recepientsByResultFilter: {
+            _id: messageId,
+            succeeded,
             pageIndex: pageIndex.toString(),
             pageSize: pageSize.toString(),
-            ...recepientFilter,
           },
         },
       })
     : {
         data: {
-          pagedMSKarkunMessageRecepients: { karkuns: [], totalResults: 0 },
+          pagedMSKarkunMessageRecepientsByResult: {
+            karkuns: [],
+            totalResults: 0,
+          },
         },
         loading: false,
       };
 
   useEffect(() => {
     setPageIndex(0);
-  }, [recepientFilter]);
+  }, [messageId]);
 
   const setPageParams = params => {
     if (params.pageSize) setPageSize(params.pageSize);
@@ -36,6 +40,7 @@ const KarkunsPreview = ({ recepientFilter }) => {
   };
 
   if (loading) return null;
+  debugger;
 
   return (
     <KarkunsList
@@ -47,14 +52,15 @@ const KarkunsPreview = ({ recepientFilter }) => {
       showDeleteAction={false}
       pageIndex={pageIndex}
       pageSize={pageSize}
-      pagedData={data.pagedMSKarkunMessageRecepients}
+      pagedData={data.pagedMSKarkunMessageRecepientsByResult}
       setPageParams={setPageParams}
     />
   );
 };
 
-KarkunsPreview.propTypes = {
-  recepientFilter: PropTypes.object,
+MessageResults.propTypes = {
+  messageId: PropTypes.string,
+  succeeded: PropTypes.bool,
 };
 
-export default KarkunsPreview;
+export default MessageResults;

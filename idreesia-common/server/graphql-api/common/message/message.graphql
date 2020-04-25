@@ -12,6 +12,15 @@ input MessageRecepientFilter {
   cityId: String
   cityMehfilId: String
   region: String
+  pageIndex: String
+  pageSize: String
+}
+
+input MessageRecepientByResultFilter {
+  _id: String!
+  succeeded: Boolean!
+  pageIndex: String
+  pageSize: String
 }
 
 type MessageKarkunFilterType {
@@ -37,15 +46,15 @@ type MessageType {
   recepientFilters: [MessageKarkunFilterType]
   status: String
   sentDate: String
-  msKarkunIds: [String]
-  outstationKarkunIds: [String]
+  karkunIds: [String]
   visitorIds: [String]
   succeededPhoneNumbers: [String]
   failedPhoneNumbers: [String]
 
-  msKarkunCount: Int
-  outstationKarkunCount: Int
+  karkunCount: Int
   visitorCount: Int
+  succeededMessageCount: Int
+  failedMessageCount: Int
 
   approvedOn: String
   approvedBy: String
@@ -69,10 +78,13 @@ input MessageFilter {
 
 extend type Query {
   pagedMSKarkunMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedKarkunType
-  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
+  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES], dataFieldName: "karkuns")
+
+  pagedMSKarkunMessageRecepientsByResult(recepientsByResultFilter: MessageRecepientByResultFilter!): PagedKarkunType
+  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES], dataFieldName: "karkuns")
 
   pagedOutstationKarkunMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedKarkunType
-  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])
+  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES], dataFieldName: "karkuns")
 
   pagedVisitorMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedVisitorType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])

@@ -20,6 +20,7 @@ function buildPipeline(params) {
     name,
     cnicNumber,
     phoneNumber,
+    phoneNumbers,
     bloodGroup,
     lastTarteeb,
     jobId,
@@ -78,6 +79,14 @@ function buildPipeline(params) {
     pipeline.push({
       $match: {
         $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
+      },
+    });
+  }
+
+  if (phoneNumbers) {
+    pipeline.push({
+      $match: {
+        contactNumber1: { $in: phoneNumbers },
       },
     });
   }

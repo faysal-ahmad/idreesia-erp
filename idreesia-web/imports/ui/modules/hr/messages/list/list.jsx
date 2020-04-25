@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import {
   Button,
+  Drawer,
   Icon,
   Pagination,
   Table,
@@ -23,14 +24,24 @@ import {
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import ListFilter from './list-filter';
+import MessageResults from './message-results';
 import {
   PAGED_HR_MESSAGES,
   APPROVE_HR_MESSAGE,
   DELETE_HR_MESSAGE,
 } from '../gql';
 
+const LinkStyle = {
+  width: '100%',
+  color: '#1890FF',
+  cursor: 'pointer',
+};
+
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
+  const [messageIdForResults, setMessageIdForResults] = useState(null);
+  const [succeededForResults, setSucceededForResults] = useState(true);
+  const [showResults, setShowResults] = useState(false);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -84,6 +95,12 @@ const List = ({ history, location }) => {
     });
   };
 
+  const showResultForMessage = (messageId, succeeded) => {
+    setMessageIdForResults(messageId);
+    setSucceededForResults(succeeded);
+    setShowResults(true);
+  };
+
   if (loading) return null;
   const { pagedHrMessages } = data;
   const { startDate, endDate, pageIndex, pageSize } = queryParams;
@@ -104,6 +121,53 @@ const List = ({ history, location }) => {
       dataIndex: 'status',
       key: 'status',
       render: text => MessageStatusDescription[text],
+    },
+    {
+      title: 'Selected',
+      dataIndex: 'karkunCount',
+      key: 'karkunCount',
+    },
+    {
+      title: 'Sent',
+      dataIndex: 'succeededMessageCount',
+      key: 'succeededMessageCount',
+      render: (text, record) => {
+        if (text !== 0) {
+          return (
+            <div
+              style={LinkStyle}
+              onClick={() => {
+                showResultForMessage(record._id, true);
+              }}
+            >
+              {text}
+            </div>
+          );
+        }
+
+        return text;
+      },
+    },
+    {
+      title: 'Failed',
+      dataIndex: 'failedMessageCount',
+      key: 'failedMessageCount',
+      render: (text, record) => {
+        if (text !== 0) {
+          return (
+            <div
+              style={LinkStyle}
+              onClick={() => {
+                showResultForMessage(record._id, false);
+              }}
+            >
+              {text}
+            </div>
+          );
+        }
+
+        return text;
+      },
     },
     {
       title: 'Sent Date',
@@ -178,27 +242,46 @@ const List = ({ history, location }) => {
   );
 
   return (
-    <Table
-      rowKey="_id"
-      dataSource={pagedHrMessages.data}
-      columns={columns}
-      bordered
-      pagination={false}
-      title={getTableHeader}
-      footer={() => (
-        <Pagination
-          current={numPageIndex}
-          pageSize={numPageSize}
-          showSizeChanger
-          showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} items`
-          }
-          onChange={onPaginationChange}
-          onShowSizeChange={onPaginationChange}
-          total={pagedHrMessages.totalResults}
+    <>
+      <Table
+        rowKey="_id"
+        dataSource={pagedHrMessages.data}
+        columns={columns}
+        bordered
+        pagination={false}
+        title={getTableHeader}
+        footer={() => (
+          <Pagination
+            current={numPageIndex}
+            pageSize={numPageSize}
+            showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            onChange={onPaginationChange}
+            onShowSizeChange={onPaginationChange}
+            total={pagedHrMessages.totalResults}
+          />
+        )}
+      />
+      <Drawer
+        title={
+          succeededForResults
+            ? 'Message Results - Sent'
+            : 'Message Results - Failed'
+        }
+        width={720}
+        onClose={() => {
+          setShowResults(false);
+        }}
+        visible={showResults}
+      >
+        <MessageResults
+          messageId={messageIdForResults}
+          succeeded={succeededForResults}
         />
-      )}
-    />
+      </Drawer>
+    </>
   );
 };
 

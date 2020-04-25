@@ -8,3 +8,6 @@ export { default as UPDATE_HR_MESSAGE } from './update-hr-message';
 export {
   default as PAGED_MS_KARKUN_MESSAGE_RECEPIENTS,
 } from './paged-ms-karkun-message-recepiets';
+export {
+  default as PAGED_MS_KARKUN_MESSAGE_RECEPIENTS_BY_RESULT,
+} from './paged-ms-karkun-message-recepiets-by-result';

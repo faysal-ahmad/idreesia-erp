@@ -9,7 +9,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 export default class CheckPermissionsDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const { resolve = defaultFieldResolver } = field;
-    const { permissions } = this.args;
+    const { permissions, dataFieldName = 'data' } = this.args;
 
     field.resolve = async (...params) => {
       const [, , context, info] = params;
@@ -30,7 +30,7 @@ export default class CheckPermissionsDirective extends SchemaDirectiveVisitor {
         if (info.parentType.name === 'Query') {
           if (info.fieldName.startsWith('paged')) {
             return {
-              data: [],
+              [dataFieldName]: [],
               totalResults: 0,
             };
           }

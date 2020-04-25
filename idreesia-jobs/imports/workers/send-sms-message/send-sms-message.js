@@ -6,13 +6,14 @@ const transformPhoneNumber = phoneNumber =>
 
 export default function sendSmsMessage(phoneNumber, messageBody) {
   const updatedPhoneNumber = transformPhoneNumber(phoneNumber);
-  /*
-    if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log(`Sending message to ${updatedPhoneNumber}`);
-      return Promise.resolve();
-    }
-  */
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.log(`Sending message to ${updatedPhoneNumber}`);
+    return Promise.resolve({
+      phoneNumber,
+      messageSent: true,
+    });
+  }
 
   return new Promise((resolve, reject) => {
     const options = {

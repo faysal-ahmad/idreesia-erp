@@ -15,7 +15,7 @@ const HR_MESSAGE_BY_ID = gql`
       }
       status
       sentDate
-      msKarkunIds
+      karkunIds
       approvedOn
       approvedBy
       createdAt

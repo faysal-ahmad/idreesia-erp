@@ -21,7 +21,7 @@ const CREATE_OUTSTATION_MESSAGE = gql`
       }
       status
       sentDate
-      outstationKarkunIds
+      karkunIds
       approvedOn
       approvedBy
       createdAt

@@ -24,7 +24,7 @@ export default function sendSmsMessage(phoneNumber, messageBody) {
       if (error) reject(error);
       // Look for string `SuccessList:[+############]` in the returned body
       // to find out if it succeeded.
-      const messageSent = body.includes(`+${updatedPhoneNumber}`);
+      const messageSent = body.includes(`SuccessList:[+${updatedPhoneNumber}]`);
       resolve({
         phoneNumber,
         messageSent,

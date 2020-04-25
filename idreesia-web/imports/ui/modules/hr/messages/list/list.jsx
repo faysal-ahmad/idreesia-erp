@@ -112,9 +112,17 @@ const List = ({ history, location }) => {
       title: 'Message',
       dataIndex: 'messageBody',
       key: 'messageBody',
-      render: (text, record) => (
-        <Link to={`${paths.messagesEditFormPath(record._id)}`}>{text}</Link>
-      ),
+      render: (text, record) => {
+        const messageText =
+          text.length < 40 ? text : `${text.substring(0, 37)}...`;
+        return (
+          <Tooltip title={text}>
+            <Link to={`${paths.messagesEditFormPath(record._id)}`}>
+              {messageText}
+            </Link>
+          </Tooltip>
+        );
+      },
     },
     {
       title: 'Status',

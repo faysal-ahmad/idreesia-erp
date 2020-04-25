@@ -11,8 +11,6 @@ const PAGED_MS_KARKUN_MESSAGE_RECEPIENTS = gql`
         name
         cnicNumber
         contactNumber1
-        contactNumber2
-        lastTarteebDate
         imageId
         job {
           _id

@@ -27,6 +27,7 @@ import {
   SalarySheetsList,
   SalarySheetsSalaryReceipts,
   SalarySheetsRashanReceipts,
+  SalarySheetsEidReceipts,
 } from './salary-sheets';
 import {
   SharedResidencesNewForm,
@@ -79,6 +80,10 @@ const Router = () => (
     <Route
       path={paths.salarySheetsRashanReceiptsPath}
       component={SalarySheetsRashanReceipts}
+    />
+    <Route
+      path={paths.salarySheetsEidReceiptsPath}
+      component={SalarySheetsEidReceipts}
     />
     <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
 

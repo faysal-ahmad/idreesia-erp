@@ -5,3 +5,6 @@ export {
 export {
   default as SalarySheetsRashanReceipts,
 } from './receipts/rashan-receipts-container';
+export {
+  default as SalarySheetsEidReceipts,
+} from './receipts/eid-receipts-container';

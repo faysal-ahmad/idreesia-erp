@@ -51,6 +51,7 @@ export class List extends Component {
     handleEditSalary: PropTypes.func,
     handleViewSalaryReceipts: PropTypes.func,
     handleViewRashanReceipts: PropTypes.func,
+    handleViewEidReceipts: PropTypes.func,
     handleApproveSelectedSalaries: PropTypes.func,
     handleApproveAllSalaries: PropTypes.func,
     handleDeleteSelectedSalaries: PropTypes.func,
@@ -304,6 +305,14 @@ export class List extends Component {
     }
   };
 
+  handlePrintEidReceipts = () => {
+    const { handleViewEidReceipts } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewEidReceipts) {
+      handleViewEidReceipts(selectedRows);
+    }
+  };
+
   handleDownloadAsCSV = () => {
     const { currentSalaries } = this.props;
     const sortedSalariesByMonth = sortBy(currentSalaries, 'karkun.name');
@@ -436,6 +445,10 @@ export class List extends Component {
         <Menu.Item key="5" onClick={this.handlePrintRashanReceipts}>
           <Icon type="printer" />
           Print Rashan Receipts
+        </Menu.Item>
+        <Menu.Item key="6" onClick={this.handlePrintEidReceipts}>
+          <Icon type="printer" />
+          Print Eid Receipts
         </Menu.Item>
         {deleteMenuItems}
       </Menu>

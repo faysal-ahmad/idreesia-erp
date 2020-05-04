@@ -73,7 +73,7 @@ class EditForm extends Component {
             getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
-            handleCancel={this.handleCancel}
+            handleCancel={this.props.handleCancel}
             isFieldsTouched={isFieldsTouched}
           />
         </Form>

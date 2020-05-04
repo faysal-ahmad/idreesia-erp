@@ -8,6 +8,7 @@ const DUTY_SHIFTS_BY_DUTY_ID = gql`
       name
       startTime
       endTime
+      attendanceSheet
       usedCount
     }
   }

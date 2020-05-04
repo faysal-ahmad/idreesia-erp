@@ -5,6 +5,7 @@ import { round } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attendances,
   Karkuns,
+  KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
 
 const NAME_COLUMN = 'Name';
@@ -64,6 +65,24 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
         `Could not find a karkun with name '${karkunName}' against CNIC '${karkunCnic}' or contact number '${phoneNumber}'.`
       );
     }
+
+    // Do not import the attendance of this karkun, unless he has been assigned
+    // to this dutyId/shiftId
+    let karkunDuty;
+    if (shiftId) {
+      karkunDuty = KarkunDuties.findOne({
+        karkunId: karkun._id,
+        dutyId,
+        shiftId,
+      });
+    } else {
+      karkunDuty = KarkunDuties.findOne({
+        karkunId: karkun._id,
+        dutyId,
+      });
+    }
+
+    if (!karkunDuty) return;
 
     // If there is already an attendance present for this karkun/month/duty/shift combination
     // then update that, otherwise insert a new one.

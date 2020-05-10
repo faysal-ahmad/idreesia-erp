@@ -51,7 +51,7 @@ class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
-        if (record.usedCount === 0) {
+        if (record.canDelete) {
           return (
             <Tooltip key="delete" title="Delete">
               <Icon
@@ -117,7 +117,7 @@ const listQuery = gql`
       _id
       name
       description
-      usedCount
+      canDelete
       shifts {
         _id
         name

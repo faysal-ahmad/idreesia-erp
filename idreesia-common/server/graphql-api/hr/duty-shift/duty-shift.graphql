@@ -6,8 +6,8 @@ type DutyShiftType {
   endTime: String
   attendanceSheet: String
 
-  usedCount: Int
   duty: DutyType
+  canDelete: Boolean
 
   createdAt: String
   createdBy: String

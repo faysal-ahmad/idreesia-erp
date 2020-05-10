@@ -7,6 +7,7 @@ type DutyType {
 
   usedCount: Int
   shifts: [DutyShiftType]
+  canDelete: Boolean
 
   createdAt: String
   createdBy: String

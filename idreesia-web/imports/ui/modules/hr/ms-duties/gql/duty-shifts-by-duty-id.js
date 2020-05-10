@@ -9,7 +9,7 @@ const DUTY_SHIFTS_BY_DUTY_ID = gql`
       startTime
       endTime
       attendanceSheet
-      usedCount
+      canDelete
     }
   }
 `;

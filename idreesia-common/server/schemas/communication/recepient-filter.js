@@ -36,17 +36,26 @@ export default new SimpleSchema({
     type: Boolean,
     optional: true,
   },
-  jobId: {
-    type: String,
+  jobIds: {
+    type: Array,
     optional: true,
   },
-  dutyId: {
+  'jobIds.$': {
     type: String,
+  },
+  dutyIds: {
+    type: Array,
     optional: true,
   },
-  dutyShiftId: {
+  'dutyIds.$': {
     type: String,
+  },
+  dutyShiftIds: {
+    type: Array,
     optional: true,
+  },
+  'dutyShiftIds.$': {
+    type: String,
   },
   cityId: {
     type: String,

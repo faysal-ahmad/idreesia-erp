@@ -17,9 +17,9 @@ const UPDATE_HR_MESSAGE = gql`
         filterTarget
         bloodGroup
         lastTarteeb
-        jobId
-        dutyId
-        dutyShiftId
+        jobIds
+        dutyIds
+        dutyShiftIds
       }
       status
       sentDate

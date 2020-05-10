@@ -16,16 +16,17 @@ import {
 } from 'meteor/idreesia-common/hooks/hr';
 import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
-  CascaderField,
   InputTextAreaField,
   LastTarteebFilterField,
   SelectField,
+  TreeMultiSelectField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
-import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
+import { getDutyShiftTreeData } from '/imports/ui/modules/hr/common/utilities';
 
 import { HR_MESSAGE_BY_ID, PAGED_HR_MESSAGES, UPDATE_HR_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
+import { separateDutyAndShifts } from './helpers';
 
 const EditForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
@@ -67,17 +68,21 @@ const EditForm = ({ form, history, location }) => {
   const handlePeviewKarkuns = () => {
     const bloodGroup = form.getFieldValue('bloodGroup');
     const lastTarteeb = form.getFieldValue('lastTarteeb');
-    const jobId = form.getFieldValue('jobId');
-    const dutyIdShiftId = form.getFieldValue('dutyIdShiftId');
+    const jobIds = form.getFieldValue('jobIds');
+    const dutyIdShiftIds = form.getFieldValue('dutyIdShiftIds');
 
-    const dutyId = dutyIdShiftId ? dutyIdShiftId[0] : null;
-    const dutyShiftId = dutyIdShiftId ? dutyIdShiftId[1] : null;
+    const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+      dutyIdShiftIds,
+      allMSDuties,
+      allMSDutyShifts
+    );
+
     const filter = {
       bloodGroup,
       lastTarteeb,
-      jobId,
-      dutyId,
-      dutyShiftId,
+      jobIds,
+      dutyIds,
+      dutyShiftIds,
     };
 
     setShowPreview(true);
@@ -87,8 +92,17 @@ const EditForm = ({ form, history, location }) => {
   const handleSubmit = e => {
     e.preventDefault();
     validateFields(
-      (err, { messageBody, bloodGroup, lastTarteeb, jobId, dutyIdShiftId }) => {
+      (
+        err,
+        { messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }
+      ) => {
         if (err) return;
+
+        const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+          dutyIdShiftIds,
+          allMSDuties,
+          allMSDutyShifts
+        );
 
         updateHrMessage({
           variables: {
@@ -98,9 +112,9 @@ const EditForm = ({ form, history, location }) => {
               filterTarget: FilterTarget.MS_KARKUNS,
               bloodGroup,
               lastTarteeb,
-              jobId,
-              dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
-              dutyShiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
+              jobIds,
+              dutyIds,
+              dutyShiftIds,
             },
           },
         })
@@ -119,10 +133,8 @@ const EditForm = ({ form, history, location }) => {
   } = data;
 
   const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
-  const dutyShiftCascaderData = getDutyShiftCascaderData(
-    allMSDuties,
-    allMSDutyShifts
-  );
+  const dutyShiftTreeData = getDutyShiftTreeData(allMSDuties, allMSDutyShifts);
+  debugger;
 
   return (
     <>
@@ -163,8 +175,8 @@ const EditForm = ({ form, history, location }) => {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
-          fieldName="jobId"
-          fieldLabel="Job"
+          fieldName="jobIds"
+          fieldLabel="Jobs"
           required={false}
           data={allJobs}
           getDataValue={({ _id }) => _id}
@@ -172,15 +184,18 @@ const EditForm = ({ form, history, location }) => {
           initialValue={_recepientFilter ? _recepientFilter.jobId : null}
           getFieldDecorator={getFieldDecorator}
         />
-        <CascaderField
-          data={dutyShiftCascaderData}
-          fieldName="dutyIdShiftId"
-          fieldLabel="Duty/Shift"
+        <TreeMultiSelectField
+          data={dutyShiftTreeData}
+          fieldName="dutyIdShiftIds"
+          fieldLabel="Duties/Shifts"
           required={false}
           initialValue={
             _recepientFilter
-              ? [_recepientFilter.dutyId, _recepientFilter.dutyShiftId]
-              : null
+              ? [
+                  ...(_recepientFilter.dutyIds || []),
+                  ...(_recepientFilter.dutyShiftIds || []),
+                ]
+              : []
           }
           getFieldDecorator={getFieldDecorator}
         />

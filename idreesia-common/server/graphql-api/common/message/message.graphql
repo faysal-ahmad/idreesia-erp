@@ -6,9 +6,9 @@ input MessageRecepientFilter {
   bloodGroup: String
   lastTarteeb: String
   attendance: String
-  jobId: String
-  dutyId: String
-  dutyShiftId: String
+  jobIds: [String]
+  dutyIds: [String]
+  dutyShiftIds: [String]
   cityId: String
   cityMehfilId: String
   region: String
@@ -31,9 +31,9 @@ type MessageKarkunFilterType {
   bloodGroup: String
   lastTarteeb: String
   attendance: String
-  jobId: String
-  dutyId: String
-  dutyShiftId: String
+  jobIds: [String]
+  dutyIds: [String]
+  dutyShiftIds: [String]
   cityId: String
   cityMehfilId: String
   region: String

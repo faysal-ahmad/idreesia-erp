@@ -32,6 +32,7 @@ import './28-create-visitors-against-ms-karkuns';
 import './29-create-audit-log-indexes';
 import './30-create-imdad-indexes';
 import './31-create-updated-at-indexes';
+import './32-update-existing-messages';
 
 Migrations.config({
   log: true,

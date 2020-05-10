@@ -26,6 +26,9 @@ function buildPipeline(params) {
     jobId,
     dutyId,
     dutyShiftId,
+    jobIds,
+    dutyIds,
+    dutyShiftIds,
     showVolunteers,
     showEmployees,
   } = params;
@@ -126,7 +129,12 @@ function buildPipeline(params) {
     });
   }
 
-  if (dutyId) {
+  // Link the karkun-duties table if we are searching by dutyId or shiftId
+  if (
+    dutyId ||
+    (!!dutyIds && dutyIds.length > 0) ||
+    (!!dutyShiftIds && dutyShiftIds.length > 0)
+  ) {
     pipeline.push({
       $lookup: {
         from: 'hr-karkun-duties',
@@ -135,6 +143,9 @@ function buildPipeline(params) {
         as: 'duties',
       },
     });
+  }
+
+  if (dutyId) {
     pipeline.push({
       $match: {
         duties: {
@@ -156,6 +167,30 @@ function buildPipeline(params) {
         },
       });
     }
+  }
+
+  if (
+    (!!jobIds && jobIds.length > 0) ||
+    (!!dutyIds && dutyIds.length > 0) ||
+    (!!dutyShiftIds && dutyShiftIds.length > 0)
+  ) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { jobId: { $in: jobIds || [] } },
+          {
+            duties: {
+              $elemMatch: {
+                $or: [
+                  { dutyId: { $in: dutyIds || [] } },
+                  { shiftId: { $in: dutyShiftIds || [] } },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    });
   }
 
   return pipeline;

@@ -6,6 +6,8 @@ import {
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 
+import { getKarkunsWithoutPagination } from '../karkun/queries';
+
 export default {
   Query: {
     hrMessageById(obj, { _id }) {
@@ -16,25 +18,32 @@ export default {
     },
 
     pagedHrMessages(obj, { filter }) {
-      return Messages.searchMessages(filter);
+      return Messages.searchMessages({
+        ...filter,
+        source: MessageSource.HR,
+      });
     },
   },
 
   Mutation: {
     createHrMessage(obj, { messageBody, recepientFilter }, { user }) {
-      const date = new Date();
-      const messageId = Messages.insert({
-        source: MessageSource.HR,
-        messageBody,
-        recepientFilters: [recepientFilter],
-        status: MessageStatus.WAITING_APPROVAL,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
+      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
+        const karkunIds = karkuns.map(karkun => karkun._id);
+        const date = new Date();
+        const messageId = Messages.insert({
+          source: MessageSource.HR,
+          messageBody,
+          recepientFilters: [recepientFilter],
+          status: MessageStatus.WAITING_APPROVAL,
+          karkunIds,
+          createdAt: date,
+          createdBy: user._id,
+          updatedAt: date,
+          updatedBy: user._id,
+        });
 
-      return Messages.findOne(messageId);
+        return Messages.findOne(messageId);
+      });
     },
 
     updateHrMessage(obj, { _id, messageBody, recepientFilter }, { user }) {
@@ -50,23 +59,27 @@ export default {
         );
       }
 
-      const date = new Date();
-      Messages.update(
-        {
-          _id,
-          source: MessageSource.HR,
-        },
-        {
-          $set: {
-            messageBody,
-            recepientFilters: [recepientFilter],
-            updatedAt: date,
-            updatedBy: user._id,
+      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
+        const karkunIds = karkuns.map(karkun => karkun._id);
+        const date = new Date();
+        Messages.update(
+          {
+            _id,
+            source: MessageSource.HR,
           },
-        }
-      );
+          {
+            $set: {
+              messageBody,
+              recepientFilters: [recepientFilter],
+              karkunIds,
+              updatedAt: date,
+              updatedBy: user._id,
+            },
+          }
+        );
 
-      return Messages.findOne(_id);
+        return Messages.findOne(_id);
+      });
     },
 
     approveHrMessage(obj, { _id }, { user }) {

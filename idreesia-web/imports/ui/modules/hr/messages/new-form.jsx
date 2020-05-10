@@ -13,16 +13,17 @@ import {
 
 import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
-  CascaderField,
   InputTextAreaField,
   LastTarteebFilterField,
   SelectField,
+  TreeMultiSelectField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
-import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
+import { getDutyShiftTreeData } from '/imports/ui/modules/hr/common/utilities';
 
 import { PAGED_HR_MESSAGES, CREATE_HR_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
+import { separateDutyAndShifts } from './helpers';
 
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
@@ -53,17 +54,21 @@ const NewForm = ({ form, history, location }) => {
   const handlePeviewKarkuns = () => {
     const bloodGroup = form.getFieldValue('bloodGroup');
     const lastTarteeb = form.getFieldValue('lastTarteeb');
-    const jobId = form.getFieldValue('jobId');
-    const dutyIdShiftId = form.getFieldValue('dutyIdShiftId');
+    const jobIds = form.getFieldValue('jobIds');
+    const dutyIdShiftIds = form.getFieldValue('dutyIdShiftIds');
 
-    const dutyId = dutyIdShiftId ? dutyIdShiftId[0] : null;
-    const dutyShiftId = dutyIdShiftId ? dutyIdShiftId[1] : null;
+    const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+      dutyIdShiftIds,
+      allMSDuties,
+      allMSDutyShifts
+    );
+
     const filter = {
       bloodGroup,
       lastTarteeb,
-      jobId,
-      dutyId,
-      dutyShiftId,
+      jobIds,
+      dutyIds,
+      dutyShiftIds,
     };
 
     setShowPreview(true);
@@ -73,8 +78,17 @@ const NewForm = ({ form, history, location }) => {
   const handleSubmit = e => {
     e.preventDefault();
     validateFields(
-      (err, { messageBody, bloodGroup, lastTarteeb, jobId, dutyIdShiftId }) => {
+      (
+        err,
+        { messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }
+      ) => {
         if (err) return;
+
+        const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+          dutyIdShiftIds,
+          allMSDuties,
+          allMSDutyShifts
+        );
 
         createHrMessage({
           variables: {
@@ -83,9 +97,9 @@ const NewForm = ({ form, history, location }) => {
               filterTarget: FilterTarget.MS_KARKUNS,
               bloodGroup,
               lastTarteeb,
-              jobId,
-              dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
-              dutyShiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
+              jobIds,
+              dutyIds,
+              dutyShiftIds,
             },
           },
         })
@@ -99,10 +113,7 @@ const NewForm = ({ form, history, location }) => {
     );
   };
 
-  const dutyShiftCascaderData = getDutyShiftCascaderData(
-    allMSDuties,
-    allMSDutyShifts
-  );
+  const dutyShiftTreeData = getDutyShiftTreeData(allMSDuties, allMSDutyShifts);
 
   return (
     <>
@@ -140,18 +151,20 @@ const NewForm = ({ form, history, location }) => {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
-          fieldName="jobId"
-          fieldLabel="Job"
+          mode="multiple"
+          fieldName="jobIds"
+          fieldLabel="Jobs"
           required={false}
           data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
+          initialValue={[]}
           getFieldDecorator={getFieldDecorator}
         />
-        <CascaderField
-          data={dutyShiftCascaderData}
-          fieldName="dutyIdShiftId"
-          fieldLabel="Duty/Shift"
+        <TreeMultiSelectField
+          data={dutyShiftTreeData}
+          fieldName="dutyIdShiftIds"
+          fieldLabel="Duties/Shifts"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />

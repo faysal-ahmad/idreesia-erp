@@ -17,6 +17,7 @@ import {
   Drawer,
   Icon,
   Pagination,
+  Popconfirm,
   Table,
   Tooltip,
   message,
@@ -213,15 +214,18 @@ const List = ({ history, location }) => {
 
         if (status !== MessageStatus.SENDING) {
           actions.push(
-            <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
-                className="list-actions-icon"
-                onClick={() => {
-                  handleDeleteItem(record);
-                }}
-              />
-            </Tooltip>
+            <Popconfirm
+              title="Are you sure you want to delete this message?"
+              onConfirm={() => {
+                handleDeleteItem(record);
+              }}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Tooltip key="delete" title="Delete">
+                <Icon type="delete" className="list-actions-icon" />
+              </Tooltip>
+            </Popconfirm>
           );
         }
 

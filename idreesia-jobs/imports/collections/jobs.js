@@ -8,6 +8,7 @@ import {
   AccountsImportJob,
   VouchersImportJob,
   AccountsCalculationJob,
+  CheckSubscriptionStatusJob,
 } from '/imports/models';
 
 const JobModels = {
@@ -17,6 +18,7 @@ const JobModels = {
   [JobTypes.ACCOUNTS_IMPORT]: AccountsImportJob,
   [JobTypes.VOUCHERS_IMPORT]: VouchersImportJob,
   [JobTypes.ACCOUNTS_CALCULATION]: AccountsCalculationJob,
+  [JobTypes.CHECK_SUBSCRIPTION_STATUS]: CheckSubscriptionStatusJob,
 };
 
 class Jobs extends JobCollection {

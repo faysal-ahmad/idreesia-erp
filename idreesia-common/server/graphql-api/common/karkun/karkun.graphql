@@ -5,6 +5,8 @@ type KarkunType {
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
+  contactNumber1Subscribed: Boolean
+  contactNumber2Subscribed: Boolean
   emailAddress: String
   currentAddress: String
   permanentAddress: String

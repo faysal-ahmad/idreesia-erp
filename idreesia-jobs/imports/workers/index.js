@@ -9,3 +9,6 @@ export { default as sendEmailsJob } from './send-emails/send-emails-job';
 export {
   default as sendSmsMessageJob,
 } from './send-sms-message/send-sms-message-job';
+export {
+  default as checkSubscriptionStatusJob,
+} from './check-subscription-status/check-subscription-status-job';

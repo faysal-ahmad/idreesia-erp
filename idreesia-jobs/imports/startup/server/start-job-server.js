@@ -1,5 +1,9 @@
 import Jobs from '/imports/collections/jobs';
-import { CleanupJob, SendEmailsJob } from '/imports/models';
+import {
+  CleanupJob,
+  SendEmailsJob,
+  CheckSubscriptionStatusJob,
+} from '/imports/models';
 
 Meteor.startup(() =>
   Jobs.startJobServer(null, () => {
@@ -11,6 +15,11 @@ Meteor.startup(() =>
     const sendEmailsJob = new SendEmailsJob();
     sendEmailsJob
       .repeat({ schedule: Jobs.later.parse.text('at 4:00 am') })
+      .save({ cancelRepeats: true });
+
+    const checkSubscriptionStatusJob = new CheckSubscriptionStatusJob();
+    checkSubscriptionStatusJob
+      .repeat({ schedule: Jobs.later.parse.text('at 3:00 am') })
       .save({ cancelRepeats: true });
   })
 );

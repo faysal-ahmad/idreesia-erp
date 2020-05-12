@@ -48,6 +48,14 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  contactNumber1Subscribed: {
+    type: Boolean,
+    optional: true,
+  },
+  contactNumber2Subscribed: {
+    type: Boolean,
+    optional: true,
+  },
   emailAddress: {
     type: String,
     optional: true,

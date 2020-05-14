@@ -134,7 +134,6 @@ const EditForm = ({ form, history, location }) => {
 
   const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
   const dutyShiftTreeData = getDutyShiftTreeData(allMSDuties, allMSDutyShifts);
-  debugger;
 
   return (
     <>
@@ -175,13 +174,14 @@ const EditForm = ({ form, history, location }) => {
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
+          mode="multiple"
           fieldName="jobIds"
           fieldLabel="Jobs"
           required={false}
           data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
-          initialValue={_recepientFilter ? _recepientFilter.jobId : null}
+          initialValue={_recepientFilter ? _recepientFilter.jobIds : null}
           getFieldDecorator={getFieldDecorator}
         />
         <TreeMultiSelectField

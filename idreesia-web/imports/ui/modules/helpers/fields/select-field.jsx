@@ -37,7 +37,7 @@ export default class SelectField extends Component {
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
-    initialValue: PropTypes.string,
+    initialValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     onChange: PropTypes.func,
   };
 

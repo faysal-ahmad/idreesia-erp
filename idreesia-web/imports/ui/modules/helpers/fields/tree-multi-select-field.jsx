@@ -30,7 +30,7 @@ export default class TreeMultiSelectField extends Component {
     required: PropTypes.bool,
     requiredMessage: PropTypes.string,
     getFieldDecorator: PropTypes.func,
-    initialValue: PropTypes.string,
+    initialValue: PropTypes.array,
     skipValue: PropTypes.string,
     onChange: PropTypes.func,
   };

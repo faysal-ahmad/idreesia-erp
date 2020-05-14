@@ -219,10 +219,11 @@ const List = ({ history, location }) => {
               onConfirm={() => {
                 handleDeleteItem(record);
               }}
+              key="delete"
               okText="Yes"
               cancelText="No"
             >
-              <Tooltip key="delete" title="Delete">
+              <Tooltip title="Delete">
                 <Icon type="delete" className="list-actions-icon" />
               </Tooltip>
             </Popconfirm>

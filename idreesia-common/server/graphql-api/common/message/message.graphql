@@ -74,6 +74,7 @@ input MessageFilter {
   pageSize: String
   startDate: String
   endDate: String
+  source: String
 }
 
 extend type Query {

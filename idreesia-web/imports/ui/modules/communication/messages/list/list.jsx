@@ -7,14 +7,14 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { Button, Drawer, message } from '/imports/ui/controls';
 import { MessagesList } from '/imports/ui/modules/common';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { CommunicationSubModulePaths as paths } from '/imports/ui/modules/communication';
 
 import ListFilter from './list-filter';
 import MessageResults from './message-results';
 import {
-  PAGED_HR_MESSAGES,
-  APPROVE_HR_MESSAGE,
-  DELETE_HR_MESSAGE,
+  PAGED_COMM_MESSAGES,
+  APPROVE_COMM_MESSAGE,
+  DELETE_COMM_MESSAGE,
 } from '../gql';
 
 const List = ({ history, location }) => {
@@ -25,22 +25,22 @@ const List = ({ history, location }) => {
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: ['startDate', 'endDate', 'pageIndex', 'pageSize'],
+    paramNames: ['startDate', 'endDate', 'source', 'pageIndex', 'pageSize'],
   });
 
-  const [deleteHrMessage] = useMutation(DELETE_HR_MESSAGE);
-  const [approveHrMessage] = useMutation(APPROVE_HR_MESSAGE);
-  const { data, loading, refetch } = useQuery(PAGED_HR_MESSAGES, {
+  const [deleteCommMessage] = useMutation(DELETE_COMM_MESSAGE);
+  const [approveCommMessage] = useMutation(APPROVE_COMM_MESSAGE);
+  const { data, loading, refetch } = useQuery(PAGED_COMM_MESSAGES, {
     variables: {
       filter: queryParams,
     },
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['HR', 'Messages', 'List']));
+    dispatch(setBreadcrumbs(['Communication', 'Messages', 'List']));
   }, [location]);
 
-  const { startDate, endDate, pageIndex, pageSize } = queryParams;
+  const { startDate, endDate, source, pageIndex, pageSize } = queryParams;
 
   const handleNewClicked = () => {
     history.push(paths.messagesNewFormPath);
@@ -51,7 +51,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteItem = _message => {
-    deleteHrMessage({
+    deleteCommMessage({
       variables: { _id: _message._id },
     })
       .then(() => {
@@ -63,7 +63,7 @@ const List = ({ history, location }) => {
   };
 
   const handleApproveItem = _message => {
-    approveHrMessage({
+    approveCommMessage({
       variables: { _id: _message._id },
     })
       .then(() => {
@@ -93,6 +93,7 @@ const List = ({ history, location }) => {
       <ListFilter
         startDate={startDate}
         endDate={endDate}
+        source={source}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -100,7 +101,7 @@ const List = ({ history, location }) => {
   );
 
   if (loading) return null;
-  const { pagedHrMessages } = data;
+  const { pagedCommMessages } = data;
 
   return (
     <>
@@ -113,7 +114,7 @@ const List = ({ history, location }) => {
         setPageParams={setPageParams}
         pageIndex={pageIndex}
         pageSize={pageSize}
-        pagedData={pagedHrMessages}
+        pagedData={pagedCommMessages}
       />
       <Drawer
         title={

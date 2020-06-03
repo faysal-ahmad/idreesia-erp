@@ -22,6 +22,8 @@ export {
 
 export { default as ImdadRequestsList } from './imdad-requests/list';
 
+export { default as MessagesList } from './messages/list';
+
 export { default as WazaifList } from './wazaif/list';
 export { default as WazaifListFilter } from './wazaif/list-filter';
 

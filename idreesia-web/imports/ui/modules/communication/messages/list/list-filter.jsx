@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
+import { MessageSource } from 'meteor/idreesia-common/constants/communication';
 import {
   Button,
   Collapse,
@@ -11,7 +12,7 @@ import {
   Row,
   Tooltip,
 } from '/imports/ui/controls';
-import { DateField } from '/imports/ui/modules/helpers/fields';
+import { DateField, SelectField } from '/imports/ui/modules/helpers/fields';
 
 const ContainerStyle = {
   width: '500px',
@@ -33,11 +34,12 @@ const ListFilter = props => {
       setPageParams,
       form: { validateFields },
     } = props;
-    validateFields((err, { startDate, endDate }) => {
+    validateFields((err, { startDate, endDate, source }) => {
       if (err) return;
       setPageParams({
         startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
         endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
+        source,
         pageIndex: 0,
       });
     });
@@ -48,6 +50,7 @@ const ListFilter = props => {
     setPageParams({
       startDate: null,
       endDate: null,
+      source: null,
       pageIndex: 0,
     });
   };
@@ -72,6 +75,7 @@ const ListFilter = props => {
     form: { getFieldDecorator },
     startDate,
     endDate,
+    source,
   } = props;
 
   const mStartDate = moment(startDate, Formats.DATE_FORMAT);
@@ -97,6 +101,30 @@ const ListFilter = props => {
             initialValue={mEndDate.isValid() ? mEndDate : null}
             getFieldDecorator={getFieldDecorator}
           />
+          <SelectField
+            fieldName="source"
+            fieldLabel="Source"
+            required={false}
+            data={[
+              {
+                label: 'HR',
+                value: MessageSource.HR,
+              },
+              {
+                label: 'Outstation',
+                value: MessageSource.OUTSTATION,
+              },
+              {
+                label: 'Communication',
+                value: MessageSource.COMMUNICATION,
+              },
+            ]}
+            getDataValue={({ value }) => value}
+            getDataText={({ label }) => label}
+            initialValue={source}
+            fieldLayout={formItemLayout}
+            getFieldDecorator={getFieldDecorator}
+          />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">
               <Button type="default" onClick={handleReset}>
@@ -118,6 +146,7 @@ ListFilter.propTypes = {
   form: PropTypes.object,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
+  source: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 };

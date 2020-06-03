@@ -37,6 +37,7 @@ const Permissions = {
   // ****************************************************************************************
   // Communication Module
   // ****************************************************************************************
+  COMM_DELETE_DATA: 'communication-delete-data',
   COMM_VIEW_MESSAGES: 'communication-view-messages',
   COMM_MANAGE_MESSAGES: 'communication-manage-messages',
   COMM_APPROVE_MESSAGES: 'communication-approve-messages',

@@ -1,0 +1,28 @@
+extend type Query {
+  commMessageById(_id: String!): MessageType
+  @checkPermissions(permissions: [COMM_VIEW_MESSAGES, COMM_MANAGE_MESSAGES, COMM_APPROVE_MESSAGES])
+
+  pagedCommMessages(filter: MessageFilter): PagedMessageType
+  @checkPermissions(permissions: [COMM_VIEW_MESSAGES, COMM_MANAGE_MESSAGES, COMM_APPROVE_MESSAGES])
+}
+
+extend type Mutation {
+  createCommMessage(
+    messageBody: String!
+    recepientFilter: MessageRecepientFilter
+  ): MessageType
+  @checkPermissions(permissions: [COMM_MANAGE_MESSAGES, COMM_APPROVE_MESSAGES])
+
+  updateCommMessage(
+    _id: String!
+    messageBody: String!
+    recepientFilter: MessageRecepientFilter
+  ): MessageType
+  @checkPermissions(permissions: [COMM_MANAGE_MESSAGES, COMM_APPROVE_MESSAGES])
+
+  approveCommMessage(_id: String!): MessageType
+  @checkPermissions(permissions: [COMM_APPROVE_MESSAGES])
+
+  deleteCommMessage(_id: String!): Int
+  @checkPermissions(permissions: [COMM_DELETE_DATA])
+}

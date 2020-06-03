@@ -113,6 +113,12 @@ import SharedResidenceSchema from './hr/shared-residence/shared-residence.graphq
 import SharedResidenceResolvers from './hr/shared-residence/resolvers';
 
 /**
+ * Schema and Resolvers for the Communication module
+ */
+import CommMessageSchema from './communication/message/message.graphql';
+import CommMessageResolvers from './communication/message/resolvers';
+
+/**
  * Schema and Resolvers for the Outstation module
  */
 import CitySchema from './outstation/city/city.graphql';
@@ -271,6 +277,8 @@ const typeDefs = [
   HrMessageSchema,
   SharedResidenceSchema,
 
+  CommMessageSchema,
+
   CitySchema,
   CityMehfilSchema,
   OutstationAuditLogSchema,
@@ -346,6 +354,8 @@ const resolvers = merge(
   SalaryResolvers,
   HrMessageResolvers,
   SharedResidenceResolvers,
+
+  CommMessageResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

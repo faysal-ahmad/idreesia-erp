@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { MessageSource } from 'meteor/idreesia-common/constants/communication';
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Collapse,
@@ -76,10 +77,38 @@ const ListFilter = props => {
     startDate,
     endDate,
     source,
+    showSourceFilter,
   } = props;
 
   const mStartDate = moment(startDate, Formats.DATE_FORMAT);
   const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+
+  const sourceFilter = showSourceFilter ? (
+    <SelectField
+      fieldName="source"
+      fieldLabel="Source"
+      required={false}
+      data={[
+        {
+          label: 'HR',
+          value: MessageSource.HR,
+        },
+        {
+          label: 'Outstation',
+          value: MessageSource.OUTSTATION,
+        },
+        {
+          label: 'Communication',
+          value: MessageSource.COMMUNICATION,
+        },
+      ]}
+      getDataValue={({ value }) => value}
+      getDataText={({ label }) => label}
+      initialValue={source}
+      fieldLayout={formItemLayout}
+      getFieldDecorator={getFieldDecorator}
+    />
+  ) : null;
 
   return (
     <Collapse style={ContainerStyle}>
@@ -101,30 +130,7 @@ const ListFilter = props => {
             initialValue={mEndDate.isValid() ? mEndDate : null}
             getFieldDecorator={getFieldDecorator}
           />
-          <SelectField
-            fieldName="source"
-            fieldLabel="Source"
-            required={false}
-            data={[
-              {
-                label: 'HR',
-                value: MessageSource.HR,
-              },
-              {
-                label: 'Outstation',
-                value: MessageSource.OUTSTATION,
-              },
-              {
-                label: 'Communication',
-                value: MessageSource.COMMUNICATION,
-              },
-            ]}
-            getDataValue={({ value }) => value}
-            getDataText={({ label }) => label}
-            initialValue={source}
-            fieldLayout={formItemLayout}
-            getFieldDecorator={getFieldDecorator}
-          />
+          {sourceFilter}
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">
               <Button type="default" onClick={handleReset}>
@@ -147,8 +153,15 @@ ListFilter.propTypes = {
   startDate: PropTypes.string,
   endDate: PropTypes.string,
   source: PropTypes.string,
+  showSourceFilter: PropTypes.bool,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
+};
+
+ListFilter.defaultProps = {
+  showSourceFilter: false,
+  setPageParams: noop,
+  refreshData: noop,
 };
 
 export default Form.create()(ListFilter);

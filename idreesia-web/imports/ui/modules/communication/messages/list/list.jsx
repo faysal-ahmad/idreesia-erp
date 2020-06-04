@@ -6,10 +6,9 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { Button, Drawer, message } from '/imports/ui/controls';
-import { MessagesList } from '/imports/ui/modules/common';
+import { MessagesList, MessagesListFilter } from '/imports/ui/modules/common';
 import { CommunicationSubModulePaths as paths } from '/imports/ui/modules/communication';
 
-import ListFilter from './list-filter';
 import MessageResults from './message-results';
 import {
   PAGED_COMM_MESSAGES,
@@ -90,7 +89,8 @@ const List = ({ history, location }) => {
       >
         New Message
       </Button>
-      <ListFilter
+      <MessagesListFilter
+        showSourceFilter
         startDate={startDate}
         endDate={endDate}
         source={source}

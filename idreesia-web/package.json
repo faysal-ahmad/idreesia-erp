@@ -9,7 +9,7 @@
   "dependencies": {
     "antd": "^3.26.7",
     "apollo-boost": "^0.4.7",
-    "apollo-server-express": "^2.10.1",
+    "apollo-server-express": "^2.14.2",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

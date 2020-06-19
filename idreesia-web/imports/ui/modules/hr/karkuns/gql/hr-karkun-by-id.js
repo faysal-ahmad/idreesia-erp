@@ -10,6 +10,8 @@ const HR_KARKUN_BY_ID = gql`
       imageId
       contactNumber1
       contactNumber2
+      contactNumber1Subscribed
+      contactNumber2Subscribed
       emailAddress
       currentAddress
       permanentAddress

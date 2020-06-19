@@ -118,13 +118,32 @@ class PrintView extends Component {
         <Divider />
         <div className="karkun-print-view" ref={this.printViewRef}>
           <Row type="flex" justify="start" gutter={40}>
-            <Col order={2}>
+            <Col order={1}>
               <Barcode value={hrKarkunById._id} {...barcodeOptions} />
               <DisplayItem label="Generated On" value={timestamp} />
               <DisplayItem label="Name" value={hrKarkunById.name} />
               <DisplayItem label="S/O" value={hrKarkunById.parentName} />
               <DisplayItem label="CNIC" value={hrKarkunById.cnicNumber} />
-              <DisplayItem label="Phone" value={hrKarkunById.contactNumber1} />
+              <DisplayItem
+                label="Mobile No."
+                value={`${hrKarkunById.contactNumber1} - ${
+                  hrKarkunById.contactNumber1Subscribed
+                    ? '(Subscribed)'
+                    : 'Not Subscribed'
+                }`}
+              />
+              {hrKarkunById.contactNumber2 ? (
+                <DisplayItem
+                  label="Home No."
+                  value={`${hrKarkunById.contactNumber2} - ${
+                    hrKarkunById.contactNumber2Subscribed
+                      ? '(Subscribed)'
+                      : 'Not Subscribed'
+                  }`}
+                />
+              ) : (
+                <DisplayItem label="Home No." value="" />
+              )}
               <DisplayItem label="Email" value={hrKarkunById.emailAddress} />
               <DisplayItem
                 label="Blood Group"
@@ -154,6 +173,17 @@ class PrintView extends Component {
             </Col>
           </Row>
           <DisplayItem label="Job / Duties" value={jobDetails} />
+          <Divider>Family Details</Divider>
+          <DisplayItem label="Married/Single" value="" />
+          <DisplayItem label="Dependent Family Members" value="" />
+          <Divider>Emergency Contact</Divider>
+          <DisplayItem label="Name" value="" />
+          <DisplayItem label="Phone" value="" />
+          <DisplayItem label="Relationship" value="" />
+          <Divider>If not originally from Multan</Divider>
+          <DisplayItem label="Date Shifted to Multan" value="" />
+          <DisplayItem label="Permission Granted By" value="" />
+          <DisplayItem label="Address before Shifting" value="" />
         </div>
       </>
     );

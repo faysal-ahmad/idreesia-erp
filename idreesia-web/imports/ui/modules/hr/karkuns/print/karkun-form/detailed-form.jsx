@@ -19,7 +19,7 @@ const barcodeOptions = {
 };
 
 const DataStyle = {
-  fontSize: 22,
+  fontSize: 20,
 };
 
 export class DetailedForm extends Component {
@@ -71,7 +71,6 @@ export class DetailedForm extends Component {
       hrKarkunById.duties
     );
     const timestamp = moment().format('DD MMM, YYYY');
-    debugger;
 
     return (
       <div className="karkun-print-view" ref={this.printViewRef}>

@@ -95,4 +95,19 @@ form {
   .karkun-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
   .salary-receipt-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
   .pagebreak { page-break-before: always; }
+
+  /* 
+    modules/hr/karkuns/print/karkun-formdetailed-form uses checkbox and 
+    input number controls. overriding the styles here to make their border
+    prominent when printing the form.
+  */
+  .ant-checkbox .ant-checkbox-inner {
+    border-color: black;
+  }
+  .ant-checkbox-checked .ant-checkbox-inner {
+    border-color: black;
+  }
+  .ant-input-number {
+    border-color: black !important;
+  }
 }

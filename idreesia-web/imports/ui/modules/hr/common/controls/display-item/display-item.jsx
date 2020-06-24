@@ -6,11 +6,11 @@ import { isArray } from 'meteor/idreesia-common/utilities/lodash';
 
 const LabelStyle = {
   fontWeight: 'bold',
-  fontSize: 22,
+  fontSize: 20,
 };
 
 const DataStyle = {
-  fontSize: 22,
+  fontSize: 20,
 };
 
 const DisplayItem = ({ label, value, children, labelStyle, dataStyle }) => (

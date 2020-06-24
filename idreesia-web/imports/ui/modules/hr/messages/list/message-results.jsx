@@ -40,7 +40,6 @@ const MessageResults = ({ messageId, succeeded }) => {
   };
 
   if (loading) return null;
-  debugger;
 
   return (
     <KarkunsList

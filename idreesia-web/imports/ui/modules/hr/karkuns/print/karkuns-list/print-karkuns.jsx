@@ -8,7 +8,7 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { Button, Divider } from '/imports/ui/controls';
 
-import { HR_KARKUNS_BY_ID } from '../gql';
+import { HR_KARKUNS_BY_ID } from '../../gql';
 import KarkunsList from './karkuns-list';
 
 const PrintView = ({ history, location }) => {

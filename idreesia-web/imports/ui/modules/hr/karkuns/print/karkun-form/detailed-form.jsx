@@ -22,7 +22,7 @@ const DataStyle = {
   fontSize: 22,
 };
 
-export class DataInputForm extends Component {
+export class DetailedForm extends Component {
   static propTypes = {
     hrKarkunById: PropTypes.object,
   };

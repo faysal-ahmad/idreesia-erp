@@ -17,7 +17,7 @@ const barcodeOptions = {
   margin: 5,
 };
 
-export class DataDisplayForm extends Component {
+export class NonDetailedForm extends Component {
   static propTypes = {
     hrKarkunById: PropTypes.object,
   };

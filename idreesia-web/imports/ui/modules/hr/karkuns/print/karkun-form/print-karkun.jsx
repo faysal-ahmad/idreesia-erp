@@ -8,8 +8,8 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Checkbox, Divider } from '/imports/ui/controls';
 
 import { HR_KARKUN_BY_ID } from '../../gql';
-import { DataInputForm } from './data-input-form';
-import { DataDisplayForm } from './data-display-form';
+import { DetailedForm } from './detailed-form';
+import { NonDetailedForm } from './non-detailed-form';
 
 const ControlsContainer = {
   display: 'flex',
@@ -36,7 +36,7 @@ class PrintView extends Component {
   }
 
   state = {
-    showDataInput: false,
+    showDetails: false,
   };
 
   handleBack = () => {
@@ -52,10 +52,10 @@ class PrintView extends Component {
     const { history, formDataLoading, hrKarkunById } = this.props;
     if (formDataLoading) return null;
 
-    const form = this.state.showDataInput ? (
-      <DataInputForm hrKarkunById={hrKarkunById} />
+    const form = this.state.showDetails ? (
+      <DetailedForm hrKarkunById={hrKarkunById} />
     ) : (
-      <DataDisplayForm hrKarkunById={hrKarkunById} />
+      <NonDetailedForm hrKarkunById={hrKarkunById} />
     );
 
     return (
@@ -82,10 +82,10 @@ class PrintView extends Component {
             </Button>
           </div>
           <Checkbox
-            checked={this.state.showDataInput}
-            onChange={e => this.setState({ showDataInput: e.target.checked })}
+            checked={this.state.showDetails}
+            onChange={e => this.setState({ showDetails: e.target.checked })}
           >
-            Show Data Input Form
+            Show Detailed Form
           </Checkbox>
         </div>
         <Divider />

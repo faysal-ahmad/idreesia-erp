@@ -1,7 +1,10 @@
 export { default as AttendanceSheetsList } from './list/list-container';
 export {
   default as AttendanceSheetsMeetingCards,
-} from './meeting-cards/cards-container';
+} from './print/meeting-cards/cards-container';
 export {
   default as AttendanceSheetsKarkunCards,
-} from './karkun-cards/cards-container';
+} from './print/karkun-cards/cards-container';
+export {
+  default as AttendanceSheetsKarkunList,
+} from './print/karkun-list/print-karkuns';

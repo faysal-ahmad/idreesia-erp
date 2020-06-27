@@ -171,6 +171,19 @@ class ListContainer extends Component {
     history.push(path);
   };
 
+  handlePrintKarkunsList = (
+    selectedMonth,
+    selectedCategoryId,
+    selectedSubCategoryId
+  ) => {
+    const { history } = this.props;
+    history.push(
+      `${paths.attendanceSheetsKarkunListPath}?month=${selectedMonth.format(
+        Formats.DATE_FORMAT
+      )}&categoryId=${selectedCategoryId}&subCategoryId=${selectedSubCategoryId}`
+    );
+  };
+
   handleDeleteSelectedAttendances = selectedAttendances => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
@@ -265,6 +278,7 @@ class ListContainer extends Component {
           handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
           handleViewMeetingCards={this.handleViewMeetingCards}
           handleViewKarkunCards={this.handleViewKarkunCards}
+          handlePrintKarkunsList={this.handlePrintKarkunsList}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}

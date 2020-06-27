@@ -17,7 +17,7 @@ import {
 } from '/imports/ui/controls';
 import Cards from './cards';
 
-import { ATTENDANCE_BY_BARCODE_IDS } from '../gql';
+import { ATTENDANCE_BY_BARCODE_IDS } from '../../gql';
 
 const CardHeadings = ['لنگر شریف تقسیم', 'گوشت تقسیم', 'پارکنگ'];
 

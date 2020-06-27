@@ -11,7 +11,7 @@ import {
 import { Button, Divider } from '/imports/ui/controls';
 
 import Cards from './cards';
-import { ATTENDANCE_BY_BARCODE_IDS } from '../gql';
+import { ATTENDANCE_BY_BARCODE_IDS } from '../../gql';
 
 const CardsContainer = ({
   attendanceLoading,

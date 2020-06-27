@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import FileSaver from 'file-saver';
 
@@ -25,6 +24,8 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { CardTypes } from 'meteor/idreesia-common/constants/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
+import { ATTENDANCE_BY_MONTH } from '../gql';
+
 const CascaderStyle = {
   width: '300px',
 };
@@ -47,6 +48,7 @@ export class List extends Component {
     handleImportFromGoogleSheet: PropTypes.func,
     handleViewMeetingCards: PropTypes.func,
     handleViewKarkunCards: PropTypes.func,
+    handlePrintKarkunsList: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
   };
@@ -197,6 +199,22 @@ export class List extends Component {
     }
   };
 
+  handlePrintKarkunsList = () => {
+    const {
+      selectedMonth,
+      selectedCategoryId,
+      selectedSubCategoryId,
+      handlePrintKarkunsList,
+    } = this.props;
+    if (handlePrintKarkunsList) {
+      handlePrintKarkunsList(
+        selectedMonth,
+        selectedCategoryId,
+        selectedSubCategoryId
+      );
+    }
+  };
+
   handleDownloadAsCSV = () => {
     const { attendanceByMonth } = this.props;
     const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
@@ -314,18 +332,22 @@ export class List extends Component {
           Import from Google Sheets
         </Menu.Item>
         <Menu.Divider />
-        <Menu.SubMenu key="5" title="Print Cards">
+        <Menu.SubMenu key="5" title="Print" icon="printer">
           <Menu.Item
             key="5-1"
             onClick={() =>
               this.handleViewMeetingCards(CardTypes.NAAM_I_MUBARIK_MEETING)
             }
           >
-            Naam-i-Mubarik Meeting
+            Naam-i-Mubarik Meeting Cards
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item key="5-2" onClick={() => this.handleViewKarkunCards()}>
             Karkun Cards
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item key="5-3" onClick={() => this.handlePrintKarkunsList()}>
+            Karkuns List
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />
@@ -399,53 +421,8 @@ export class List extends Component {
   }
 }
 
-const attendanceByMonthQuery = gql`
-  query attendanceByMonth(
-    $month: String!
-    $categoryId: String
-    $subCategoryId: String
-  ) {
-    attendanceByMonth(
-      month: $month
-      categoryId: $categoryId
-      subCategoryId: $subCategoryId
-    ) {
-      _id
-      karkunId
-      month
-      dutyId
-      shiftId
-      attendanceDetails
-      presentCount
-      lateCount
-      absentCount
-      percentage
-      meetingCardBarcodeId
-      karkun {
-        _id
-        name
-        imageId
-        cnicNumber
-        contactNumber1
-      }
-      duty {
-        _id
-        name
-      }
-      shift {
-        _id
-        name
-      }
-      job {
-        _id
-        name
-      }
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(attendanceByMonthQuery, {
+  graphql(ATTENDANCE_BY_MONTH, {
     props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
     options: ({
       selectedMonth,

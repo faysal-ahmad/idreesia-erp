@@ -8,7 +8,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 import { getSharedResidences } from './queries';
 
 export default {
-  SharedResidenceType: {
+  HRSharedResidenceType: {
     residentCount: sharedResidenceType =>
       Karkuns.find({
         sharedResidenceId: { $eq: sharedResidenceType._id },
@@ -26,10 +26,10 @@ export default {
   },
 
   Query: {
-    allSharedResidences() {
+    allHRSharedResidences() {
       return SharedResidences.find({}).fetch();
     },
-    pagedSharedResidences(obj, { queryString }, { user }) {
+    pagedHRSharedResidences(obj, { queryString }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_SHARED_RESIDENCES,
@@ -44,7 +44,7 @@ export default {
 
       return getSharedResidences(queryString);
     },
-    sharedResidenceById(obj, { _id }, { user }) {
+    hrSharedResidenceById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_VIEW_SHARED_RESIDENCES,
@@ -59,7 +59,7 @@ export default {
   },
 
   Mutation: {
-    createSharedResidence(obj, { name, address, ownerKarkunId }, { user }) {
+    createHRSharedResidence(obj, { name, address, ownerKarkunId }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_SHARED_RESIDENCES,
@@ -84,7 +84,7 @@ export default {
       return SharedResidences.findOne(dutyId);
     },
 
-    updateSharedResidence(
+    updateHRSharedResidence(
       obj,
       { _id, name, address, ownerKarkunId },
       { user }
@@ -113,7 +113,7 @@ export default {
       return SharedResidences.findOne(_id);
     },
 
-    removeSharedResidence(obj, { _id }, { user }) {
+    removeHRSharedResidence(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.HR_MANAGE_SHARED_RESIDENCES,

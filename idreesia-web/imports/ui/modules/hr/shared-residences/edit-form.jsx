@@ -21,8 +21,8 @@ class EditForm extends Component {
     form: PropTypes.object,
 
     loading: PropTypes.bool,
-    sharedResidenceById: PropTypes.object,
-    updateSharedResidence: PropTypes.func,
+    hrSharedResidenceById: PropTypes.object,
+    updateHRSharedResidence: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -35,15 +35,15 @@ class EditForm extends Component {
     const {
       form,
       history,
-      sharedResidenceById,
-      updateSharedResidence,
+      hrSharedResidenceById,
+      updateHRSharedResidence,
     } = this.props;
     form.validateFields((err, { name, address, ownerKarkun }) => {
       if (err) return;
 
-      updateSharedResidence({
+      updateHRSharedResidence({
         variables: {
-          _id: sharedResidenceById._id,
+          _id: hrSharedResidenceById._id,
           name,
           address,
           ownerKarkunId: ownerKarkun ? ownerKarkun._id : null,
@@ -59,7 +59,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { loading, sharedResidenceById } = this.props;
+    const { loading, hrSharedResidenceById } = this.props;
     const { getFieldDecorator, isFieldsTouched } = this.props.form;
     if (loading) return null;
 
@@ -71,20 +71,20 @@ class EditForm extends Component {
             fieldLabel="Name"
             required
             requiredMessage="Please input name for the residence."
-            initialValue={sharedResidenceById.name}
+            initialValue={hrSharedResidenceById.name}
             getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="address"
             fieldLabel="Address"
-            initialValue={sharedResidenceById.address}
+            initialValue={hrSharedResidenceById.address}
             getFieldDecorator={getFieldDecorator}
           />
           <KarkunField
             fieldName="ownerKarkun"
             fieldLabel="Owned By"
             placeholder="Owned By"
-            initialValue={sharedResidenceById.owner}
+            initialValue={hrSharedResidenceById.owner}
             getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
@@ -92,15 +92,15 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <AuditInfo record={sharedResidenceById} />
+        <AuditInfo record={hrSharedResidenceById} />
       </Fragment>
     );
   }
 }
 
 const formQuery = gql`
-  query sharedResidenceById($_id: String!) {
-    sharedResidenceById(_id: $_id) {
+  query hrSharedResidenceById($_id: String!) {
+    hrSharedResidenceById(_id: $_id) {
       _id
       name
       address
@@ -117,13 +117,13 @@ const formQuery = gql`
 `;
 
 const formMutation = gql`
-  mutation updateSharedResidence(
+  mutation updateHRSharedResidence(
     $_id: String!
     $name: String!
     $address: String
     $ownerKarkunId: String
   ) {
-    updateSharedResidence(
+    updateHRSharedResidence(
       _id: $_id
       name: $name
       address: $address
@@ -144,9 +144,9 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'updateSharedResidence',
+    name: 'updateHRSharedResidence',
     options: {
-      refetchQueries: ['pagedSharedResidences'],
+      refetchQueries: ['pagedHRSharedResidences'],
     },
   }),
   graphql(formQuery, {
@@ -156,5 +156,5 @@ export default flowRight(
       return { variables: { _id: sharedResidenceId } };
     },
   }),
-  WithBreadcrumbs(['Security', 'Shared Residences', 'Edit'])
+  WithBreadcrumbs(['HR', 'Shared Residences', 'Edit'])
 )(EditForm);

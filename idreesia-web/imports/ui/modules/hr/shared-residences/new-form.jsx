@@ -17,7 +17,7 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createSharedResidence: PropTypes.func,
+    createHRSharedResidence: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -27,11 +27,11 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createSharedResidence, history } = this.props;
+    const { form, createHRSharedResidence, history } = this.props;
     form.validateFields((err, { name, address, ownerKarkun }) => {
       if (err) return;
 
-      createSharedResidence({
+      createHRSharedResidence({
         variables: {
           name,
           address,
@@ -80,12 +80,12 @@ class NewForm extends Component {
 }
 
 const formMutation = gql`
-  mutation createSharedResidence(
+  mutation createHRSharedResidence(
     $name: String!
     $address: String
     $ownerKarkunId: String
   ) {
-    createSharedResidence(
+    createHRSharedResidence(
       name: $name
       address: $address
       ownerKarkunId: $ownerKarkunId
@@ -101,10 +101,10 @@ const formMutation = gql`
 export default flowRight(
   Form.create(),
   graphql(formMutation, {
-    name: 'createSharedResidence',
+    name: 'createHRSharedResidence',
     options: {
-      refetchQueries: ['pagedSharedResidences'],
+      refetchQueries: ['pagedHRSharedResidences'],
     },
   }),
-  WithBreadcrumbs(['Security', 'Shared Residences', 'New'])
+  WithBreadcrumbs(['HR', 'Shared Residences', 'New'])
 )(NewForm);

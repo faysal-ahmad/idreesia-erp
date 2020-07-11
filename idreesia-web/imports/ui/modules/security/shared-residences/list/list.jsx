@@ -79,9 +79,10 @@ const List = ({ history, location }) => {
       key: 'residents',
       render: (text, record) => {
         const residents = record.residents || [];
-        const residentsNodes = residents.map(resident => (
-          <VisitorName key={resident._id} visitor={resident} />
-        ));
+        const residentsNodes = residents.map(residentObj => {
+          const visitor = residentObj.resident;
+          return <VisitorName key={visitor._id} visitor={visitor} />;
+        });
         return <ul>{residentsNodes}</ul>;
       },
     },

@@ -6,7 +6,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-const NameDivStyle = {
+const ContainerDivStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -16,7 +16,14 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const VisitorName = ({ visitor, onVisitorNameClicked }) => {
+const TextDivStyle = {
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  justifyContent: 'flex-start',
+  width: '100%',
+};
+
+const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }) => {
   const [showDialog, setShowDialog] = useState(false);
   if (!visitor) return null;
 
@@ -33,6 +40,10 @@ const VisitorName = ({ visitor, onVisitorNameClicked }) => {
       {visitor.name}
     </Link>
   );
+
+  const additionalInfoNode = additionalInfo ? (
+    <span>{additionalInfo}</span>
+  ) : null;
 
   let imageUrl;
   let avatarNode = <Avatar shape="square" size="large" icon="user" />;
@@ -52,10 +63,13 @@ const VisitorName = ({ visitor, onVisitorNameClicked }) => {
 
   return (
     <>
-      <div style={NameDivStyle}>
+      <div style={ContainerDivStyle}>
         {avatarNode}
         &nbsp;&nbsp;
-        {nameNode}
+        <div style={TextDivStyle}>
+          {nameNode}
+          {additionalInfoNode}
+        </div>
       </div>
       <Modal
         title={visitor.name}
@@ -71,6 +85,7 @@ const VisitorName = ({ visitor, onVisitorNameClicked }) => {
 
 VisitorName.propTypes = {
   visitor: PropTypes.object,
+  additionalInfo: PropTypes.string,
   onVisitorNameClicked: PropTypes.func,
 };
 

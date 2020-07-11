@@ -81,7 +81,20 @@ const List = ({ history, location }) => {
         const residents = record.residents || [];
         const residentsNodes = residents.map(residentObj => {
           const visitor = residentObj.resident;
-          return <VisitorName key={visitor._id} visitor={visitor} />;
+          let additionalInfo = `Room No. ${residentObj.roomNumber}`;
+          if (residentObj.isOwner) {
+            additionalInfo = `${additionalInfo} - Owner`;
+          }
+
+          return (
+            <div>
+              <VisitorName
+                key={visitor._id}
+                visitor={visitor}
+                additionalInfo={additionalInfo}
+              />
+            </div>
+          );
         });
         return <ul>{residentsNodes}</ul>;
       },

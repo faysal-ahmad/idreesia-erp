@@ -1,0 +1,61 @@
+type SharedResidenceResidentType {
+  _id: String
+  sharedResidenceId: String
+  residentId: String
+  isOwner: Boolean
+  roomNumber: Int
+  fromDate: String
+  toDate: String
+
+  resident: VisitorType
+}
+
+type SharedResidenceType {
+  _id: String
+  name: String
+  address: String
+
+  residentsCount: Int
+  residents: [SharedResidenceResidentType]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedSharedResidenceType {
+  totalResults: Int
+  data: [SharedResidenceType]
+}
+
+extend type Query {
+  allSharedResidences: [SharedResidenceType]
+  pagedSharedResidences(queryString: String): PagedSharedResidenceType
+  sharedResidenceById(_id: String!): SharedResidenceType
+}
+
+extend type Mutation {
+  createSharedResidence(name: String!, address: String): SharedResidenceType
+  updateSharedResidence(_id: String!, name: String!, address: String): SharedResidenceType
+  removeSharedResidence(_id: String!): Int
+
+  createResident(
+    sharedResidenceId: String!
+    residentId: String!
+    isOwner: Boolean!
+    roomNumber: Int
+    fromDate: String
+    toDate: String
+  ): SharedResidenceResidentType
+
+  updateResident(
+    _id: String!
+    isOwner: Boolean!
+    roomNumber: Int
+    fromDate: String
+    toDate: String
+  ): SharedResidenceResidentType
+
+  removeResident(_id: String!): Int
+}

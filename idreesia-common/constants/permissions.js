@@ -121,6 +121,9 @@ const Permissions = {
   SECURITY_VIEW_VISITORS: 'security-view-visitors',
   SECURITY_MANAGE_VISITORS: 'security-manage-visitors',
 
+  SECURITY_VIEW_SHARED_RESIDENCES: 'security-view-shared-residences',
+  SECURITY_MANAGE_SHARED_RESIDENCES: 'security-manage-shared-residences',
+
   SECURITY_VIEW_MEHFILS: 'security-view-mehfils',
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
 

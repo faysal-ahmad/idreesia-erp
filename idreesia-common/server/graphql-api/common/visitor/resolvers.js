@@ -35,6 +35,10 @@ export default {
 
       return compact(distincFunction('country'));
     },
+
+    pagedVisitors(obj, { filter }) {
+      return Visitors.searchVisitors(filter);
+    },
   },
 
   Mutation: {

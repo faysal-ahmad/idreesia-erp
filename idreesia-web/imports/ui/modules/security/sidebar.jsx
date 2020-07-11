@@ -36,6 +36,11 @@ class Sidebar extends Component {
         history.push(paths.karkunCardVerificationPath);
         break;
 
+      case 'shared-residencs':
+        setActiveSubModuleName(SubModuleNames.sharedResidences);
+        history.push(paths.sharedResidencesPath);
+        break;
+
       case 'visitor-registration':
         setActiveSubModuleName(SubModuleNames.visitorRegistration);
         history.push(paths.visitorRegistrationPath);
@@ -113,6 +118,12 @@ class Sidebar extends Component {
             <span>
               <Icon type="barcode" style={IconStyle} />
               Card Verification
+            </span>
+          </Menu.Item>
+          <Menu.Item key="shared-residencs">
+            <span>
+              <Icon type="home" style={IconStyle} />
+              Shared Residences
             </span>
           </Menu.Item>
         </Menu.SubMenu>

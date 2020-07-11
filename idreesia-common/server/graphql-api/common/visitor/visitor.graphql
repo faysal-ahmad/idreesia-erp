@@ -47,6 +47,7 @@ input VisitorFilter {
 extend type Query {
   distinctCities: [String]
   distinctCountries: [String]
+  pagedVisitors(filter: VisitorFilter): PagedVisitorType
 }
 
 extend type Mutation {

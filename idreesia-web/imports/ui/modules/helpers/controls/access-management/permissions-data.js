@@ -542,6 +542,20 @@ export const securityPermissionsData = {
       key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
     },
     {
+      title: 'Shared Residences',
+      key: 'module-security-shared-residences',
+      children: [
+        {
+          title: 'View Shared Residences',
+          key: PermissionConstants.SECURITY_VIEW_SHARED_RESIDENCES,
+        },
+        {
+          title: 'Manage Shared Residences',
+          key: PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
+        },
+      ],
+    },
+    {
       title: 'Visitor Registration',
       key: 'module-security-visitor-registration',
       children: [

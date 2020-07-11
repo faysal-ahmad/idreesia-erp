@@ -83,6 +83,12 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
+        <Menu.Item key="shared-residencs">
+          <span>
+            <Icon type="home" style={IconStyle} />
+            Shared Residences
+          </span>
+        </Menu.Item>
         <Menu.SubMenu
           key="mehfil-management"
           title={
@@ -118,12 +124,6 @@ class Sidebar extends Component {
             <span>
               <Icon type="barcode" style={IconStyle} />
               Card Verification
-            </span>
-          </Menu.Item>
-          <Menu.Item key="shared-residencs">
-            <span>
-              <Icon type="home" style={IconStyle} />
-              Shared Residences
             </span>
           </Menu.Item>
         </Menu.SubMenu>

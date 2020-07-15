@@ -183,7 +183,6 @@ const ResidentsList = ({ sharedResidenceId }) => {
     sharedResidenceById: { residents },
   } = data;
 
-  debugger;
   return (
     <>
       <Table

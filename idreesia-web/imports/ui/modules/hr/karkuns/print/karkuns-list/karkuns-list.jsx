@@ -46,7 +46,11 @@ export default class KarkunsList extends Component {
 
       if (duties.length > 0) {
         dutyNames = duties.map(duty => {
-          const dutyName = duty.dutyName;
+          let dutyName = duty.dutyName;
+          if (duty.shiftName) {
+            dutyName = `${dutyName} - ${duty.shiftName}`;
+          }
+
           return <span>{dutyName}</span>;
         });
       }

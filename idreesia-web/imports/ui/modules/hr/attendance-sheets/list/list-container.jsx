@@ -171,16 +171,13 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handlePrintKarkunsList = (
-    selectedMonth,
-    selectedCategoryId,
-    selectedSubCategoryId
-  ) => {
+  handlePrintKarkunsList = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
     const { history } = this.props;
+    const karkunIds = selectedRows.map(row => row.karkunId);
     history.push(
-      `${paths.attendanceSheetsKarkunListPath}?month=${selectedMonth.format(
-        Formats.DATE_FORMAT
-      )}&categoryId=${selectedCategoryId}&subCategoryId=${selectedSubCategoryId}`
+      `${paths.karkunsPrintListPath}?karkunIds=${karkunIds.join(',')}`
     );
   };
 

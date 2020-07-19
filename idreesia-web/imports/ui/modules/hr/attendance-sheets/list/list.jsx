@@ -200,18 +200,11 @@ export class List extends Component {
   };
 
   handlePrintKarkunsList = () => {
-    const {
-      selectedMonth,
-      selectedCategoryId,
-      selectedSubCategoryId,
-      handlePrintKarkunsList,
-    } = this.props;
+    const { handlePrintKarkunsList } = this.props;
+    const { selectedRows } = this.state;
+
     if (handlePrintKarkunsList) {
-      handlePrintKarkunsList(
-        selectedMonth,
-        selectedCategoryId,
-        selectedSubCategoryId
-      );
+      handlePrintKarkunsList(selectedRows);
     }
   };
 

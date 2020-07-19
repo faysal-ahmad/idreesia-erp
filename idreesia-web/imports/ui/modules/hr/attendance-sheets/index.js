@@ -5,6 +5,3 @@ export {
 export {
   default as AttendanceSheetsKarkunCards,
 } from './print/karkun-cards/cards-container';
-export {
-  default as AttendanceSheetsKarkunList,
-} from './print/karkun-list/print-karkuns';

@@ -5,7 +5,10 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Row, Col, message } from '/imports/ui/controls';
-import { TakePicture } from '/imports/ui/modules/helpers/controls';
+import {
+  TakePicture,
+  UploadAttachment,
+} from '/imports/ui/modules/helpers/controls';
 
 import { SECURITY_VISITOR_BY_ID, SET_SECURITY_VISITOR_IMAGE } from '../gql';
 
@@ -44,6 +47,7 @@ class Picture extends Component {
         <br />
         <Row>
           <Col span={16}>
+            <UploadAttachment onUploadFinish={this.updateImageId} />
             <TakePicture onPictureTaken={this.updateImageId} />
           </Col>
         </Row>

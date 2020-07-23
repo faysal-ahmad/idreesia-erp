@@ -90,11 +90,12 @@ const ResidentsList = ({ sharedResidenceId }) => {
     fromDate,
     toDate,
   }) => {
+    const _id = resident._id;
     setResident(null);
     setShowEditForm(false);
     updateResident({
       variables: {
-        sharedResidenceId,
+        _id,
         isOwner,
         roomNumber,
         fromDate,

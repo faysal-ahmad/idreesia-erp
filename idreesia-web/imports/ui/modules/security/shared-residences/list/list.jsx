@@ -81,9 +81,12 @@ const List = ({ history, location }) => {
         const residents = record.residents || [];
         const residentsNodes = residents.map(residentObj => {
           const visitor = residentObj.resident;
-          let additionalInfo = `Room No. ${residentObj.roomNumber}`;
+          const additionalInfo = [];
           if (residentObj.isOwner) {
-            additionalInfo = `${additionalInfo} - Owner`;
+            additionalInfo.push('Owner');
+          }
+          if (residentObj.roomNumber) {
+            additionalInfo.push(`Room No. ${residentObj.roomNumber}`);
           }
 
           return (
@@ -91,7 +94,7 @@ const List = ({ history, location }) => {
               <VisitorName
                 key={visitor._id}
                 visitor={visitor}
-                additionalInfo={additionalInfo}
+                additionalInfo={additionalInfo.join(' - ')}
               />
             </div>
           );

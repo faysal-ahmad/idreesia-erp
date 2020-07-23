@@ -62,6 +62,16 @@ export class List extends Component {
         key: 'karkun.contactNumber1',
       },
       {
+        title: 'Duty Name',
+        dataIndex: 'dutyName',
+        key: 'dutyName',
+        render: text => {
+          debugger;
+          const duty = MehfilDuties.find(mehfilDuty => mehfilDuty._id === text);
+          return duty.name;
+        },
+      },
+      {
         title: 'Duty Detail',
         dataIndex: 'dutyDetail',
         key: 'dutyDetail',
@@ -106,6 +116,9 @@ export class List extends Component {
     setPageParams({
       dutyName: value,
     });
+    this.setState({
+      selectedRows: [],
+    });
   };
 
   handleEditDutyDetails = () => {
@@ -131,6 +144,7 @@ export class List extends Component {
 
   getTableHeader = () => {
     const { mehfilById, dutyName } = this.props;
+    const { selectedRows } = this.state;
     const mehfilDate = moment(Number(mehfilById.mehfilDate));
     const isPastMehfil = moment().isAfter(mehfilDate);
 
@@ -162,7 +176,7 @@ export class List extends Component {
         />
         &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil || !dutyName}
+          disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
           icon="edit"
           size="large"
           onClick={this.handleEditDutyDetails}
@@ -171,7 +185,7 @@ export class List extends Component {
         </Button>
         &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil || !dutyName}
+          disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
           icon="printer"
           size="large"
           onClick={this.handleViewMehfilCards}

@@ -7,7 +7,7 @@ import { Button, Select, Icon, Table, Tooltip } from '/imports/ui/controls';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
-import { KarkunSelectionButton } from '/imports/ui/modules/hr/karkuns/field';
+import { KarkunSelectionButton } from '/imports/ui/modules/helpers/controls';
 
 import { MEHFIL_BY_ID } from '/imports/ui/modules/security/mehfils/gql';
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
@@ -45,6 +45,11 @@ export class List extends Component {
         render: (text, record) => (
           <KarkunName karkun={record.karkun} onKarkunNameClicked={() => {}} />
         ),
+      },
+      {
+        title: 'City',
+        dataIndex: 'karkun.city.name',
+        key: 'karkun.city.name',
       },
       {
         title: 'CNIC',

@@ -20,6 +20,10 @@ export {
 
 export { default as InputFile } from './file/input-file';
 
+export {
+  default as KarkunSelectionButton,
+} from './karkun-selection-button/button';
+
 export { default as ScanCnic } from './cnic/scan-cnic';
 export { default as ScanBarcode } from './barcode/scan-barcode';
 export { default as DisplayBarcode } from './barcode/display-barcode';

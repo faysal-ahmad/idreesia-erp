@@ -1,0 +1,25 @@
+type WazeefaType {
+  _id: String
+  name: String
+  revisionNumber: Int
+  revisionDate: String
+  imageIds: [String]
+
+  images: [Attachment]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedWazeefaType {
+  totalResults: Int
+  data: [WazeefaType]
+}
+
+input WazaifFilter {
+  name: String
+  pageIndex: String
+  pageSize: String
+}

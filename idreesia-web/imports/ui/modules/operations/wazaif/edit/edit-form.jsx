@@ -27,6 +27,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Wazaif Management', 'Wazaif', 'Edit'])(
-  EditForm
-);
+export default WithBreadcrumbs(['Operations', 'Wazaif', 'Edit'])(EditForm);

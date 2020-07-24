@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PAGED_WAZAIF = gql`
-  query pagedWazaif($filter: WazaifFilter) {
-    pagedWazaif(filter: $filter) {
+const PAGED_OPERATIONS_WAZAIF = gql`
+  query pagedOperationsWazaif($filter: WazaifFilter) {
+    pagedOperationsWazaif(filter: $filter) {
       totalResults
       data {
         _id
@@ -19,4 +19,4 @@ const PAGED_WAZAIF = gql`
   }
 `;
 
-export default PAGED_WAZAIF;
+export default PAGED_OPERATIONS_WAZAIF;

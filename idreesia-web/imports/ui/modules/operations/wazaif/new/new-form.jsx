@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
-import { WazaifManagementSubModulePaths as paths } from '/imports/ui/modules/wazaif-management';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 import {
   InputTextField,
   InputNumberField,
@@ -13,14 +13,14 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-import { CREATE_WAZEEFA } from '../gql';
+import { CREATE_OPERATIONS_WAZEEFA } from '../gql';
 
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createWazeefa: PropTypes.func,
+    createOperationsWazeefa: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -30,18 +30,18 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, createWazeefa } = this.props;
+    const { form, history, createOperationsWazeefa } = this.props;
     form.validateFields((err, { name, revisionNumber, revisionDate }) => {
       if (err) return;
 
-      createWazeefa({
+      createOperationsWazeefa({
         variables: {
           name,
           revisionNumber,
           revisionDate,
         },
       })
-        .then(({ data: { createWazeefa: newWazeefa } }) => {
+        .then(({ data: { createOperationsWazeefa: newWazeefa } }) => {
           history.push(`${paths.wazaifEditFormPath(newWazeefa._id)}`);
         })
         .catch(error => {
@@ -89,11 +89,11 @@ class NewForm extends Component {
 
 export default flowRight(
   Form.create(),
-  graphql(CREATE_WAZEEFA, {
-    name: 'createWazeefa',
+  graphql(CREATE_OPERATIONS_WAZEEFA, {
+    name: 'createOperationsWazeefa',
     options: {
-      refetchQueries: ['pagedWazaif'],
+      refetchQueries: ['pagedOperationsWazaif'],
     },
   }),
-  WithBreadcrumbs(['Wazaif Management', 'Wazaif', 'New'])
+  WithBreadcrumbs(['Operations', 'Wazaif', 'New'])
 )(NewForm);

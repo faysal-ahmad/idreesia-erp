@@ -1,0 +1,33 @@
+extend type Query {
+  pagedOperationsWazaif(filter: WazaifFilter): PagedWazeefaType
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF, OP_MANAGE_WAZAIF])
+
+  operationsWazeefaById(_id: String!): WazeefaType
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF, OP_MANAGE_WAZAIF])
+}
+
+extend type Mutation {
+  createOperationsWazeefa(
+    name: String!
+    revisionNumber: Int
+    revisionDate: String
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+
+  updateOperationsWazeefa(
+    _id: String!
+    name: String!
+    revisionNumber: Int
+    revisionDate: String
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+
+  deleteOperationsWazeefa(_id: String!): Int
+  @checkPermissions(permissions: [OP_DELETE_DATA])
+
+  setOperationsWazeefaImage(_id: String!, imageIds: [String]!): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+
+  removeOperationsWazeefaImage(_id: String!, imageId: String!): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+}

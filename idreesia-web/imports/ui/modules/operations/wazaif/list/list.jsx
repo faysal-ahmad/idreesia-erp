@@ -11,7 +11,7 @@ import { Button, message } from '/imports/ui/controls';
 import { WazaifList, WazaifListFilter } from '/imports/ui/modules/common';
 import { WazaifManagementSubModulePaths as paths } from '/imports/ui/modules/wazaif-management';
 
-import { PAGED_WAZAIF, DELETE_WAZEEFA } from '../gql';
+import { PAGED_OPERATIONS_WAZAIF, DELETE_OPERATIONS_WAZEEFA } from '../gql';
 
 const ButtonGroupStyle = {
   display: 'flex',
@@ -28,13 +28,13 @@ const List = ({ history, location }) => {
     paramNames: ['name', 'pageIndex', 'pageSize'],
   });
 
-  const [deleteWzeefa] = useMutation(DELETE_WAZEEFA);
-  const { data, refetch } = useQuery(PAGED_WAZAIF, {
+  const [deleteOperationsWzeefa] = useMutation(DELETE_OPERATIONS_WAZEEFA);
+  const { data, refetch } = useQuery(PAGED_OPERATIONS_WAZAIF, {
     variables: { filter: queryParams },
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Wazaif Management', 'Wazaif', 'List']));
+    dispatch(setBreadcrumbs(['Operations', 'Wazaif', 'List']));
   }, [location]);
 
   const { name, pageIndex, pageSize } = queryParams;
@@ -44,7 +44,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteItem = record => {
-    deleteWzeefa({
+    deleteOperationsWzeefa({
       variables: {
         _id: record._id,
       },
@@ -83,8 +83,8 @@ const List = ({ history, location }) => {
     </div>
   );
 
-  const pagedWazaif = data
-    ? data.pagedWazaif
+  const pagedOperationsWazaif = data
+    ? data.pagedOperationsWazaif
     : {
         data: [],
         totalResults: 0,
@@ -102,7 +102,7 @@ const List = ({ history, location }) => {
         setPageParams={setPageParams}
         pageIndex={numPageIndex}
         pageSize={numPageSize}
-        pagedData={pagedWazaif}
+        pagedData={pagedOperationsWazaif}
       />
     </>
   );

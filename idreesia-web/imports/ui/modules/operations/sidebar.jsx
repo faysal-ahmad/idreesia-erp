@@ -26,6 +26,11 @@ class Sidebar extends Component {
         history.push(paths.visitorsPath);
         break;
 
+      case 'wazaif':
+        setActiveSubModuleName(SubModuleNames.wazaif);
+        history.push(paths.wazaifPath);
+        break;
+
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
@@ -62,6 +67,12 @@ class Sidebar extends Component {
           <span>
             <Icon type="idcard" style={IconStyle} />
             Visitors
+          </span>
+        </Menu.Item>
+        <Menu.Item key="wazaif">
+          <span>
+            <Icon type="read" style={IconStyle} />
+            Wazaif
           </span>
         </Menu.Item>
         <Menu.Item key="messages">

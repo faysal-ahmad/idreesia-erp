@@ -16,11 +16,14 @@ import AttachmentResolvers from './common/attachment/resolvers';
 import AuditLogSchema from './common/audit-log/audit-log.graphql';
 import AuditLogResolvers from './common/audit-log/resolvers';
 
-import MessageSchema from './common/message/message.graphql';
-import MessageResolvers from './common/message/resolvers';
+import ImdadRequestSchema from './common/imdad-request/imdad-request.graphql';
+import ImdadRequestResolvers from './common/imdad-request/resolvers';
 
 import KarkunSchema from './common/karkun/karkun.graphql';
 import KarkunResolvers from './common/karkun/resolvers';
+
+import MessageSchema from './common/message/message.graphql';
+import MessageResolvers from './common/message/resolvers';
 
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
@@ -28,8 +31,8 @@ import VisitorResolvers from './common/visitor/resolvers';
 import VisitorMulakaatSchema from './common/visitor-mulakaat/visitor-mulakaat.graphql';
 import VisitorMulakaatResolvers from './common/visitor-mulakaat/resolvers';
 
-import ImdadRequestSchema from './common/imdad-request/imdad-request.graphql';
-import ImdadRequestResolvers from './common/imdad-request/resolvers';
+import WazeefaSchema from './common/wazeefa/wazeefa.graphql';
+import WazeefaResolvers from './common/wazeefa/resolvers';
 
 /**
  * Schema and Resolvers for the Admin module
@@ -68,13 +71,16 @@ import SharedResidenceSchema from './security/shared-residence/shared-residence.
 import SharedResidenceResolvers from './security/shared-residence/resolvers';
 
 /**
- * Schema and Resolvers for the Operaitons module
+ * Schema and Resolvers for the Operations module
  */
 import OperationsVisitorSchema from './operations/visitor/visitor.graphql';
 import OperationsVisitorResolvers from './operations/visitor/resolvers';
 
 import OperationsMessageSchema from './operations/message/message.graphql';
 import OperationsMessageResolvers from './operations/message/resolvers';
+
+import OperationsWazeefaSchema from './operations/wazeefa/wazeefa.graphql';
+import OperationsWazeefaResolvers from './operations/wazeefa/resolvers';
 
 import OperationsVisitorMulakaatSchema from './operations/visitor-mulakaat/visitor-mulakaat.graphql';
 import OperationsVisitorMulakaatResolvers from './operations/visitor-mulakaat/resolvers';
@@ -238,12 +244,6 @@ import AccountsAmaanatLogResolvers from './accounts/amaanat-log/resolvers';
 import AccountsImdadRequestSchema from './accounts/imdad-request/imdad-request.graphql';
 import AccountsImdadRequestResolvers from './accounts/imdad-request/resolvers';
 
-/**
- * Schema and Resolvers for the Wazaif Management module
- */
-import WazeefaSchema from './wazaif-management/wazeefa/wazeefa.graphql';
-import WazeefaResolvers from './wazaif-management/wazeefa/resolvers';
-
 const typeDefs = [
   Permission,
   CheckPermissionsDirective,
@@ -251,11 +251,12 @@ const typeDefs = [
 
   AttachmentSchema,
   AuditLogSchema,
-  MessageSchema,
+  ImdadRequestSchema,
   KarkunSchema,
+  MessageSchema,
   VisitorSchema,
   VisitorMulakaatSchema,
-  ImdadRequestSchema,
+  WazeefaSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
@@ -270,6 +271,7 @@ const typeDefs = [
 
   OperationsVisitorSchema,
   OperationsMessageSchema,
+  OperationsWazeefaSchema,
   OperationsVisitorMulakaatSchema,
   OperationsImdadRequestSchema,
 
@@ -331,11 +333,12 @@ const typeDefs = [
 const resolvers = merge(
   AttachmentResolvers,
   AuditLogResolvers,
-  MessageResolvers,
+  ImdadRequestResolvers,
   KarkunResolvers,
+  MessageResolvers,
   VisitorResolvers,
   VisitorMulakaatResolvers,
-  ImdadRequestResolvers,
+  WazeefaResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
@@ -350,6 +353,7 @@ const resolvers = merge(
 
   OperationsVisitorResolvers,
   OperationsMessageResolvers,
+  OperationsWazeefaResolvers,
   OperationsVisitorMulakaatResolvers,
   OperationsImdadRequestResolvers,
 

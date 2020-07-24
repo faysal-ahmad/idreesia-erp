@@ -7,6 +7,7 @@ import {
   VisitorsEditForm,
   VisitorsList,
 } from './visitors';
+import { WazaifList, WazaifNewForm, WazaifEditForm } from './wazaif';
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import { MulakaatReport } from './mulakaat-report';
 import { NewEhadReport } from './new-ehad-report';
@@ -20,6 +21,10 @@ const Router = () => (
     <Route path={paths.visitorsScanFormPath} component={VisitorsScanForm} />
     <Route path={paths.visitorsEditFormPath()} component={VisitorsEditForm} />
     <Route path={paths.visitorsPath} component={VisitorsList} />
+
+    <Route path={paths.wazaifNewFormPath} component={WazaifNewForm} />
+    <Route path={paths.wazaifEditFormPath()} component={WazaifEditForm} />
+    <Route path={paths.wazaifPath} component={WazaifList} />
 
     <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
     <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />

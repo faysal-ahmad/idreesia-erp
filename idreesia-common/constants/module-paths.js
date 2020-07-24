@@ -7,7 +7,6 @@ const ModulePaths = {
   portals: '/portals',
   security: '/security',
   operations: '/operations',
-  wazaifManagement: '/wazaif-management',
 };
 
 export default ModulePaths;

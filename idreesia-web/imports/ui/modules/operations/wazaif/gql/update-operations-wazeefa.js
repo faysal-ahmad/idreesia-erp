@@ -1,13 +1,13 @@
 import gql from 'graphql-tag';
 
-const UPDATE_WAZEEFA = gql`
-  mutation updateWazeefa(
+const UPDATE_OPERATIONS_WAZEEFA = gql`
+  mutation updateOperationsWazeefa(
     $_id: String!
     $name: String!
     $revisionNumber: Int
     $revisionDate: String
   ) {
-    updateWazeefa(
+    updateOperationsWazeefa(
       _id: $_id
       name: $name
       revisionNumber: $revisionNumber
@@ -21,4 +21,4 @@ const UPDATE_WAZEEFA = gql`
   }
 `;
 
-export default UPDATE_WAZEEFA;
+export default UPDATE_OPERATIONS_WAZEEFA;

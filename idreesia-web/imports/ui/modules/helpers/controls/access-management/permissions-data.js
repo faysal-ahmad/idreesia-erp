@@ -587,32 +587,17 @@ export const operationsPermissionsData = {
         },
       ],
     },
-  ],
-};
-
-export const wazaifManagementPermissionsData = {
-  title: 'Wazaif Management',
-  key: 'module-wazaif-management',
-  children: [
-    {
-      title: 'Delete Data',
-      key: PermissionConstants.WM_DELETE_DATA,
-    },
-    {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.WM_MANAGE_SETUP_DATA,
-    },
     {
       title: 'Wazaif',
-      key: 'module-wazaif-management-wazaif',
+      key: 'module-operations-wazaif',
       children: [
         {
           title: 'View Wazaif',
-          key: PermissionConstants.WM_VIEW_WAZAIF,
+          key: PermissionConstants.OP_VIEW_WAZAIF,
         },
         {
           title: 'Manage Wazaif',
-          key: PermissionConstants.WM_MANAGE_WAZAIF,
+          key: PermissionConstants.OP_MANAGE_WAZAIF,
         },
       ],
     },

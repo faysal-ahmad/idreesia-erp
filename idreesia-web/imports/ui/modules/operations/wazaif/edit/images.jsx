@@ -16,15 +16,19 @@ import {
 import { UploadAttachment } from '/imports/ui/modules/helpers/controls';
 
 import {
-  WAZEEFA_BY_ID,
-  SET_WAZEEFA_IMAGES,
-  REMOVE_WAZEEFA_IMAGE,
+  OPERATIONS_WAZEEFA_BY_ID,
+  SET_OPERATIONS_WAZEEFA_IMAGES,
+  REMOVE_OPERATIONS_WAZEEFA_IMAGE,
 } from '../gql';
 
 const Images = ({ wazeefaId }) => {
-  const [setWazeefaImages] = useMutation(SET_WAZEEFA_IMAGES);
-  const [removeWazeefaImage] = useMutation(REMOVE_WAZEEFA_IMAGE);
-  const { data, loading, refetch } = useQuery(WAZEEFA_BY_ID, {
+  const [setOperationsWazeefaImage] = useMutation(
+    SET_OPERATIONS_WAZEEFA_IMAGES
+  );
+  const [removeOperationsWazeefaImage] = useMutation(
+    REMOVE_OPERATIONS_WAZEEFA_IMAGE
+  );
+  const { data, loading, refetch } = useQuery(OPERATIONS_WAZEEFA_BY_ID, {
     variables: { _id: wazeefaId },
   });
 
@@ -32,7 +36,7 @@ const Images = ({ wazeefaId }) => {
   const { wazeefaById } = data;
 
   const handleDeleteClicked = attachmentId => {
-    removeWazeefaImage({
+    removeOperationsWazeefaImage({
       variables: {
         _id: wazeefaId,
         imageId: attachmentId,
@@ -52,7 +56,7 @@ const Images = ({ wazeefaId }) => {
     imageIds[index] = imageIds[index - 1];
     imageIds[index - 1] = imageId;
 
-    setWazeefaImages({
+    setOperationsWazeefaImage({
       variables: {
         _id: wazeefaId,
         imageIds,
@@ -72,7 +76,7 @@ const Images = ({ wazeefaId }) => {
     imageIds[index] = imageIds[index + 1];
     imageIds[index + 1] = imageId;
 
-    setWazeefaImages({
+    setOperationsWazeefaImage({
       variables: {
         _id: wazeefaId,
         imageIds,
@@ -88,7 +92,7 @@ const Images = ({ wazeefaId }) => {
 
   const handleImageAdded = imageId => {
     const { imageIds } = wazeefaById;
-    setWazeefaImages({
+    setOperationsWazeefaImage({
       variables: {
         _id: wazeefaId,
         imageIds: (imageIds || []).concat(imageId),

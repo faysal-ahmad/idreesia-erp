@@ -3,29 +3,22 @@ import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { without } from 'meteor/idreesia-common/utilities/lodash';
 
 export default {
-  WazeefaType: {
-    images: wazeefaType => {
-      const { imageIds } = wazeefaType;
-      if (imageIds && imageIds.length > 0) {
-        return Attachments.find({ _id: { $in: imageIds } }).fetch();
-      }
-
-      return [];
-    },
-  },
-
   Query: {
-    pagedWazaif(obj, { filter }) {
+    pagedOperationsWazaif(obj, { filter }) {
       return Wazaif.searchWazaif(filter);
     },
 
-    wazeefaById(obj, { _id }) {
+    operationsWazeefaById(obj, { _id }) {
       return Wazaif.findOne(_id);
     },
   },
 
   Mutation: {
-    createWazeefa(obj, { name, revisionNumber, revisionDate }, { user }) {
+    createOperationsWazeefa(
+      obj,
+      { name, revisionNumber, revisionDate },
+      { user }
+    ) {
       const date = new Date();
       const wazeefaId = Wazaif.insert({
         name,
@@ -40,7 +33,11 @@ export default {
       return Wazaif.findOne(wazeefaId);
     },
 
-    updateWazeefa(obj, { _id, name, revisionNumber, revisionDate }, { user }) {
+    updateOperationsWazeefa(
+      obj,
+      { _id, name, revisionNumber, revisionDate },
+      { user }
+    ) {
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -55,7 +52,7 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    deleteWazeefa(obj, { _id }) {
+    deleteOperationsWazeefa(obj, { _id }) {
       const wazeefa = Wazaif.findOne(_id);
       const { imageIds } = wazeefa;
       if (imageIds && imageIds.length > 0) {
@@ -65,7 +62,7 @@ export default {
       return Wazaif.remove(_id);
     },
 
-    setWazeefaImages(obj, { _id, imageIds }, { user }) {
+    setOperationsWazeefaImage(obj, { _id, imageIds }, { user }) {
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -78,7 +75,7 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    removeWazeefaImage(obj, { _id, imageId }, { user }) {
+    removeOperationsWazeefaImage(obj, { _id, imageId }, { user }) {
       const wazeefa = Wazaif.findOne(_id);
       const { imageIds } = wazeefa;
       const updatedImageIds = without(imageIds, imageId);

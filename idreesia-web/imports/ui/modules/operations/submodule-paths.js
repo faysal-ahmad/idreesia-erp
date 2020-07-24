@@ -21,6 +21,15 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Wazaif Routes
+  // *************************************************************************************
+  static wazaifPath = `${ModulePaths.operations}/wazaif`;
+  static wazaifNewFormPath = `${SubModulePaths.wazaifPath}/new`;
+  static wazaifEditFormPath(wazeefaId = ':wazeefaId') {
+    return `${SubModulePaths.wazaifPath}/${wazeefaId}`;
+  }
+
+  // *************************************************************************************
   // Report Routes
   // *************************************************************************************
   static imdadRequestReportPath = `${ModulePaths.operations}/imdad-request-report`;

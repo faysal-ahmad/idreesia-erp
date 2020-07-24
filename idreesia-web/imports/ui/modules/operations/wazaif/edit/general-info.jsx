@@ -11,9 +11,9 @@ import {
   DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { WazaifManagementSubModulePaths as paths } from '/imports/ui/modules/wazaif-management';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
-import { UPDATE_WAZEEFA, WAZEEFA_BY_ID } from '../gql';
+import { UPDATE_OPERATIONS_WAZEEFA, OPERATIONS_WAZEEFA_BY_ID } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -24,8 +24,8 @@ class GeneralInfo extends Component {
 
     formDataLoading: PropTypes.bool,
     wazeefaId: PropTypes.string,
-    wazeefaById: PropTypes.object,
-    updateWazeefa: PropTypes.func,
+    operationsWazeefaById: PropTypes.object,
+    updateOperationsWazeefa: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -35,11 +35,11 @@ class GeneralInfo extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, wazeefaId, updateWazeefa } = this.props;
+    const { form, history, wazeefaId, updateOperationsWazeefa } = this.props;
     form.validateFields((err, { name, revisionNumber, revisionDate }) => {
       if (err) return;
 
-      updateWazeefa({
+      updateOperationsWazeefa({
         variables: {
           _id: wazeefaId,
           name,
@@ -60,7 +60,7 @@ class GeneralInfo extends Component {
     const {
       form: { getFieldDecorator, isFieldsTouched },
       formDataLoading,
-      wazeefaById,
+      operationsWazeefaById,
     } = this.props;
     if (formDataLoading) return null;
 
@@ -71,14 +71,14 @@ class GeneralInfo extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the wazeefa."
-          initialValue={wazeefaById.name}
+          initialValue={operationsWazeefaById.name}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="revisionNumber"
           fieldLabel="Revision Number"
-          initialValue={wazeefaById.revisionNumber}
+          initialValue={operationsWazeefaById.revisionNumber}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -86,8 +86,8 @@ class GeneralInfo extends Component {
           fieldName="revisionDate"
           fieldLabel="Revision Date"
           initialValue={
-            wazeefaById.revisionDate
-              ? moment(Number(wazeefaById.revisionDate))
+            operationsWazeefaById.revisionDate
+              ? moment(Number(operationsWazeefaById.revisionDate))
               : null
           }
           getFieldDecorator={getFieldDecorator}
@@ -104,13 +104,13 @@ class GeneralInfo extends Component {
 
 export default flowRight(
   Form.create(),
-  graphql(UPDATE_WAZEEFA, {
-    name: 'updateWazeefa',
+  graphql(UPDATE_OPERATIONS_WAZEEFA, {
+    name: 'updateOperationsWazeefa',
     options: {
-      refetchQueries: ['pagedWazaif'],
+      refetchQueries: ['pagedOperationsWazaif'],
     },
   }),
-  graphql(WAZEEFA_BY_ID, {
+  graphql(OPERATIONS_WAZEEFA_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ wazeefaId }) => ({ variables: { _id: wazeefaId } }),
   })

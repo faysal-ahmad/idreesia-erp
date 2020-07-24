@@ -18,10 +18,6 @@ export default {
   },
 
   Query: {
-    pagedVisitors(obj, { filter }) {
-      return Visitors.searchVisitors(filter);
-    },
-
     distinctCities() {
       const distincFunction = Meteor.wrapAsync(
         Visitors.rawCollection().distinct,
@@ -38,6 +34,10 @@ export default {
       );
 
       return compact(distincFunction('country'));
+    },
+
+    pagedVisitors(obj, { filter }) {
+      return Visitors.searchVisitors(filter);
     },
   },
 

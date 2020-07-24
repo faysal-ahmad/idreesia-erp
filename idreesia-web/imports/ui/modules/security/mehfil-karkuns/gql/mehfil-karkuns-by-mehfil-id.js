@@ -15,6 +15,10 @@ const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
         imageId
         cnicNumber
         contactNumber1
+        city {
+          _id
+          name
+        }
       }
     }
   }

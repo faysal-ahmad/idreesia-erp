@@ -132,6 +132,16 @@ class ListContainer extends Component {
     history.push(path);
   };
 
+  handleViewEidReceipts = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { history } = this.props;
+    const ids = selectedRows.map(row => row._id);
+    const idsString = ids.join(',');
+    const path = `${paths.salarySheetsEidReceiptsPath}?ids=${idsString}`;
+    history.push(path);
+  };
+
   handleCreateMissingSalaries = () => {
     const {
       createSalaries,
@@ -290,6 +300,7 @@ class ListContainer extends Component {
           handleEditSalary={this.handleEditSalary}
           handleViewSalaryReceipts={this.handleViewSalaryReceipts}
           handleViewRashanReceipts={this.handleViewRashanReceipts}
+          handleViewEidReceipts={this.handleViewEidReceipts}
           handleCreateMissingSalaries={this.handleCreateMissingSalaries}
           handleApproveSelectedSalaries={this.handleApproveSelectedSalaries}
           handleApproveAllSalaries={this.handleApproveAllSalaries}

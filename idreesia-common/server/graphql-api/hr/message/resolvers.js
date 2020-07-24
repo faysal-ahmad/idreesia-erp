@@ -1,6 +1,4 @@
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import {
   MessageSource,
   MessageStatus,
@@ -8,85 +6,47 @@ import {
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 
-import { getMessages } from './queries';
+import { getKarkunsWithoutPagination } from '../karkun/queries';
 
 export default {
   Query: {
-    hrMessageById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_MESSAGES,
-          PermissionConstants.HR_MANAGE_MESSAGES,
-          PermissionConstants.HR_APPROVE_MESSAGES,
-        ])
-      ) {
-        return null;
-      }
-
+    hrMessageById(obj, { _id }) {
       return Messages.findOne({
         _id,
         source: MessageSource.HR,
       });
     },
 
-    pagedHrMessages(obj, { filter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_VIEW_MESSAGES,
-          PermissionConstants.HR_MANAGE_MESSAGES,
-          PermissionConstants.HR_APPROVE_MESSAGES,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResuts: 0,
-        };
-      }
-
-      return getMessages(filter);
+    pagedHrMessages(obj, { filter }) {
+      return Messages.searchMessages({
+        ...filter,
+        source: MessageSource.HR,
+      });
     },
   },
 
   Mutation: {
-    createHrMessage(obj, { messageBody, karkunFilter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_MESSAGES,
-          PermissionConstants.HR_APPROVE_MESSAGES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Messages in the System.'
-        );
-      }
+    createHrMessage(obj, { messageBody, recepientFilter }, { user }) {
+      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
+        const karkunIds = karkuns.map(karkun => karkun._id);
+        const date = new Date();
+        const messageId = Messages.insert({
+          source: MessageSource.HR,
+          messageBody,
+          recepientFilters: [recepientFilter],
+          status: MessageStatus.WAITING_APPROVAL,
+          karkunIds,
+          createdAt: date,
+          createdBy: user._id,
+          updatedAt: date,
+          updatedBy: user._id,
+        });
 
-      const date = new Date();
-      const messageId = Messages.insert({
-        source: MessageSource.HR,
-        messageBody,
-        karkunFilter,
-        status: MessageStatus.WAITING_APPROVAL,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
+        return Messages.findOne(messageId);
       });
-
-      return Messages.findOne(messageId);
     },
 
-    updateHrMessage(obj, { _id, messageBody, karkunFilter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_MESSAGES,
-          PermissionConstants.HR_APPROVE_MESSAGES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Messages in the System.'
-        );
-      }
-
+    updateHrMessage(obj, { _id, messageBody, recepientFilter }, { user }) {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(
@@ -99,34 +59,30 @@ export default {
         );
       }
 
-      const date = new Date();
-      Messages.update(
-        {
-          _id,
-          source: MessageSource.HR,
-        },
-        {
-          $set: {
-            messageBody,
-            karkunFilter,
-            updatedAt: date,
-            updatedBy: user._id,
+      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
+        const karkunIds = karkuns.map(karkun => karkun._id);
+        const date = new Date();
+        Messages.update(
+          {
+            _id,
+            source: MessageSource.HR,
           },
-        }
-      );
+          {
+            $set: {
+              messageBody,
+              recepientFilters: [recepientFilter],
+              karkunIds,
+              updatedAt: date,
+              updatedBy: user._id,
+            },
+          }
+        );
 
-      return Messages.findOne(_id);
+        return Messages.findOne(_id);
+      });
     },
 
     approveHrMessage(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_MESSAGES])
-      ) {
-        throw new Error(
-          'You do not have permission to approve Messages in the System.'
-        );
-      }
-
       const date = new Date();
       Messages.update(
         {
@@ -149,13 +105,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    deleteHrMessage(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to delete Messages in the System.'
-        );
-      }
-
+    deleteHrMessage(obj, { _id }) {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(

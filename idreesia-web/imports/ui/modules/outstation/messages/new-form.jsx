@@ -27,7 +27,7 @@ import KarkunsPreview from './karkuns-preview';
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const [showPreview, setShowPreview] = useState(false);
-  const [karkunFilter, setKarkunFilter] = useState(null);
+  const [recepientFilter, setRecepientFilter] = useState(null);
   const [createOutstationMessage] = useMutation(CREATE_OUTSTATION_MESSAGE, {
     refetchQueries: [{ query: PAGED_OUTSTATION_MESSAGES }],
   });
@@ -75,7 +75,7 @@ const NewForm = ({ form, history, location }) => {
     };
 
     setShowPreview(true);
-    setKarkunFilter(filter);
+    setRecepientFilter(filter);
   };
 
   const handleSubmit = e => {
@@ -87,7 +87,7 @@ const NewForm = ({ form, history, location }) => {
         createOutstationMessage({
           variables: {
             messageBody,
-            karkunFilter: {
+            recepientFilter: {
               lastTarteeb,
               dutyId,
               cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
@@ -158,7 +158,7 @@ const NewForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={karkunFilter} />
+        <KarkunsPreview recepientFilter={recepientFilter} />
       </Drawer>
     </>
   );

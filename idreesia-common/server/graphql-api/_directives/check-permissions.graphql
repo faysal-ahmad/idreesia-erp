@@ -1,3 +1,4 @@
 directive @checkPermissions(
   permissions: [Permission!],
+  dataFieldName: String,
 ) on FIELD_DEFINITION

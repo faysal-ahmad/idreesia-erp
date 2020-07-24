@@ -1,6 +1,7 @@
 const ModuleNames = {
   accounts: 'Accounts',
   admin: 'Admin',
+  communication: 'Communication',
   hr: 'HR',
   inventory: 'Inventory',
   outstation: 'Outstation',

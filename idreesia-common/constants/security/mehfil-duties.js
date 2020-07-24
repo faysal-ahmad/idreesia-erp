@@ -17,6 +17,7 @@ const MehfilDuties = [
   { _id: 'joota-stand', name: 'Shoe Rack', urduName: 'جوتا اسٹینڈ' },
   { _id: 'madad-committee', name: 'Madad Committee', urduName: 'مدد کمیٹی' },
   { _id: 'wazaif-room', name: 'Wazaif Room', urduName: 'وظائف روم' },
+  { _id: 'qurbani', name: 'Qurbani Duty', urduName: 'قربانی ڈیوٹی' },
 ];
 
 export default MehfilDuties;

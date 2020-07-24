@@ -2,6 +2,7 @@ import {
   Duties,
   DutyShifts,
   KarkunDuties,
+  Attendances,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -9,10 +10,21 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 export default {
   DutyShiftType: {
     duty: dutyShiftType => Duties.findOne(dutyShiftType.dutyId),
-    usedCount: dutyShiftType =>
-      KarkunDuties.find({
+    canDelete: dutyShiftType => {
+      // Check if this shift is currently assigned to a karkun
+      const karkunDutiesCount = KarkunDuties.find({
         shiftId: { $eq: dutyShiftType._id },
-      }).count(),
+      }).count();
+      if (karkunDutiesCount > 0) return false;
+
+      // Check if we have marked attendance against this shift
+      const attendanceCount = Attendances.find({
+        shiftId: { $eq: dutyShiftType._id },
+      }).count();
+      if (attendanceCount > 0) return false;
+
+      return true;
+    },
   },
 
   Query: {

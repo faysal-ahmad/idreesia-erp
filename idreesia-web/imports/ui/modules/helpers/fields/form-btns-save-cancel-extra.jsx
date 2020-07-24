@@ -12,6 +12,7 @@ const buttonItemLayout = {
  * handleCancel: Function to run when cancel button is pressed.
  */
 const FormButtonsSaveCancelExtra = ({
+  allowSubmit,
   extraText,
   handleExtra,
   handleCancel,
@@ -40,7 +41,7 @@ const FormButtonsSaveCancelExtra = ({
           type="primary"
           icon="save"
           htmlType="submit"
-          disabled={isFieldsTouched && !isFieldsTouched()}
+          disabled={!allowSubmit || (isFieldsTouched && !isFieldsTouched())}
         >
           Save
         </Button>
@@ -50,6 +51,7 @@ const FormButtonsSaveCancelExtra = ({
 );
 
 FormButtonsSaveCancelExtra.propTypes = {
+  allowSubmit: PropTypes.bool,
   extraText: PropTypes.string,
   handleExtra: PropTypes.func,
   handleCancel: PropTypes.func,
@@ -58,6 +60,7 @@ FormButtonsSaveCancelExtra.propTypes = {
 };
 
 FormButtonsSaveCancelExtra.defaultProps = {
+  allowSubmit: true,
   itemLayout: buttonItemLayout,
   handleExtra: noop,
   handleCancel: noop,

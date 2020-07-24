@@ -46,6 +46,7 @@ export default class SubModulePaths {
   static salarySheetsPath = `${ModulePaths.hr}/salary-sheets`;
   static salarySheetsSalaryReceiptsPath = `${SubModulePaths.salarySheetsPath}/salary-receipts`;
   static salarySheetsRashanReceiptsPath = `${SubModulePaths.salarySheetsPath}/rashan-receipts`;
+  static salarySheetsEidReceiptsPath = `${SubModulePaths.salarySheetsPath}/eid-receipts`;
 
   // *************************************************************************************
   // Messages Routes

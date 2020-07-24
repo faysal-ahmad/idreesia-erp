@@ -36,6 +36,11 @@ class Sidebar extends Component {
         history.push(paths.karkunCardVerificationPath);
         break;
 
+      case 'shared-residencs':
+        setActiveSubModuleName(SubModuleNames.sharedResidences);
+        history.push(paths.sharedResidencesPath);
+        break;
+
       case 'visitor-registration':
         setActiveSubModuleName(SubModuleNames.visitorRegistration);
         history.push(paths.visitorRegistrationPath);
@@ -78,6 +83,12 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
+        <Menu.Item key="shared-residencs">
+          <span>
+            <Icon type="home" style={IconStyle} />
+            Shared Residences
+          </span>
+        </Menu.Item>
         <Menu.SubMenu
           key="mehfil-management"
           title={

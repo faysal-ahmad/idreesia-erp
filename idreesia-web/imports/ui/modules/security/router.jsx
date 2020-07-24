@@ -14,6 +14,11 @@ import {
   VisitorRegistrationUploadForm,
   VisitorRegistrationList,
 } from './visitor-registeration';
+import {
+  SharedResidencesNewForm,
+  SharedResidencesEditForm,
+  SharedResidencesList,
+} from './shared-residences';
 import { VisitorCardVerificationForm } from './visitor-stays';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
@@ -62,6 +67,16 @@ const Router = () => (
       path={paths.visitorCardVerificationPath}
       component={VisitorCardVerificationForm}
     />
+
+    <Route
+      path={paths.sharedResidencesNewFormPath}
+      component={SharedResidencesNewForm}
+    />
+    <Route
+      path={paths.sharedResidencesEditFormPath()}
+      component={SharedResidencesEditForm}
+    />
+    <Route path={paths.sharedResidencesPath} component={SharedResidencesList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
 

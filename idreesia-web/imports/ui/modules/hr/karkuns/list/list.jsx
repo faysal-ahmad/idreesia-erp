@@ -22,6 +22,14 @@ import ListFilter from './list-filter';
 
 import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
 
+const ContactNumberSubscribed = {
+  color: 'green',
+};
+
+const ContactNumberNotSubscribed = {
+  color: 'red',
+};
+
 class List extends Component {
   static propTypes = {
     pageIndex: PropTypes.number,
@@ -94,10 +102,35 @@ class List extends Component {
     key: 'contactNumber',
     render: (text, record) => {
       const numbers = [];
-      if (record.contactNumber1)
-        numbers.push(<Row key="1">{record.contactNumber1}</Row>);
-      if (record.contactNumber2)
-        numbers.push(<Row key="2">{record.contactNumber2}</Row>);
+      let style = {};
+      if (record.contactNumber1) {
+        if (record.contactNumber1Subscribed === true) {
+          style = ContactNumberSubscribed;
+        } else if (record.contactNumber1Subscribed === false) {
+          style = ContactNumberNotSubscribed;
+        }
+
+        numbers.push(
+          <Row key="1">
+            <span style={style}>{record.contactNumber1}</span>
+          </Row>
+        );
+      }
+
+      if (record.contactNumber2) {
+        style = {};
+        if (record.contactNumber2Subscribed === true) {
+          style = ContactNumberSubscribed;
+        } else if (record.contactNumber2Subscribed === false) {
+          style = ContactNumberNotSubscribed;
+        }
+
+        numbers.push(
+          <Row key="2">
+            <span style={style}>{record.contactNumber2}</span>
+          </Row>
+        );
+      }
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;

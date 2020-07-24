@@ -33,7 +33,7 @@ const EditForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const { messageId } = useParams();
   const [showPreview, setShowPreview] = useState(false);
-  const [karkunFilter, setKarkunFilter] = useState(null);
+  const [recepientFilter, setRecepientFilter] = useState(null);
   const [updateOutstationMessage] = useMutation(UPDATE_OUTSTATION_MESSAGE, {
     refetchQueries: [{ query: PAGED_OUTSTATION_MESSAGES }],
   });
@@ -87,7 +87,7 @@ const EditForm = ({ form, history, location }) => {
     };
 
     setShowPreview(true);
-    setKarkunFilter(filter);
+    setRecepientFilter(filter);
   };
 
   const handleSubmit = e => {
@@ -100,7 +100,7 @@ const EditForm = ({ form, history, location }) => {
           variables: {
             _id: messageId,
             messageBody,
-            karkunFilter: {
+            recepientFilter: {
               lastTarteeb,
               dutyId,
               cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
@@ -120,8 +120,10 @@ const EditForm = ({ form, history, location }) => {
   };
 
   const {
-    outstationMessageById: { messageBody, karkunFilter: _karkunFilter },
+    outstationMessageById: { messageBody, recepientFilters },
   } = data;
+
+  const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
 
   return (
     <>
@@ -138,7 +140,7 @@ const EditForm = ({ form, history, location }) => {
         <LastTarteebFilterField
           fieldName="lastTarteeb"
           fieldLabel="Last Tarteeb"
-          initialValue={_karkunFilter ? _karkunFilter.lastTarteeb : null}
+          initialValue={_recepientFilter ? _recepientFilter.lastTarteeb : null}
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
@@ -147,7 +149,7 @@ const EditForm = ({ form, history, location }) => {
           data={allMehfilDuties}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
-          initialValue={_karkunFilter ? _karkunFilter.dutyId : null}
+          initialValue={_recepientFilter ? _recepientFilter.dutyId : null}
           getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
@@ -155,8 +157,8 @@ const EditForm = ({ form, history, location }) => {
           fieldName="cityIdMehfilId"
           fieldLabel="City / Mehfil"
           initialValue={[
-            _karkunFilter ? _karkunFilter.cityId : null,
-            _karkunFilter ? _karkunFilter.cityMehfilId : null,
+            _recepientFilter ? _recepientFilter.cityId : null,
+            _recepientFilter ? _recepientFilter.cityMehfilId : null,
           ]}
           getFieldDecorator={getFieldDecorator}
         />
@@ -164,7 +166,7 @@ const EditForm = ({ form, history, location }) => {
           fieldName="region"
           fieldLabel="Region"
           dataSource={distinctRegions}
-          initialValue={_karkunFilter ? _karkunFilter.region : null}
+          initialValue={_recepientFilter ? _recepientFilter.region : null}
           getFieldDecorator={getFieldDecorator}
         />
         <Divider />
@@ -183,7 +185,7 @@ const EditForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={karkunFilter} />
+        <KarkunsPreview recepientFilter={recepientFilter} />
       </Drawer>
     </>
   );

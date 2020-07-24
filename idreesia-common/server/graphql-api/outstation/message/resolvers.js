@@ -48,7 +48,7 @@ export default {
   },
 
   Mutation: {
-    createOutstationMessage(obj, { messageBody, karkunFilter }, { user }) {
+    createOutstationMessage(obj, { messageBody, recepientFilter }, { user }) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
@@ -64,7 +64,7 @@ export default {
       const messageId = Messages.insert({
         source: MessageSource.OUTSTATION,
         messageBody,
-        karkunFilter,
+        recepientFilters: [recepientFilter],
         status: MessageStatus.WAITING_APPROVAL,
         createdAt: date,
         createdBy: user._id,
@@ -75,7 +75,11 @@ export default {
       return Messages.findOne(messageId);
     },
 
-    updateOutstationMessage(obj, { _id, messageBody, karkunFilter }, { user }) {
+    updateOutstationMessage(
+      obj,
+      { _id, messageBody, recepientFilter },
+      { user }
+    ) {
       if (
         !hasOnePermission(user._id, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
@@ -108,7 +112,7 @@ export default {
         {
           $set: {
             messageBody,
-            karkunFilter,
+            recepientFilters: [recepientFilter],
             updatedAt: date,
             updatedBy: user._id,
           },

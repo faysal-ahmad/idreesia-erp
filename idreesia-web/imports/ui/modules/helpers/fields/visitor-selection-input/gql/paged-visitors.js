@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const PAGED_VISITORS = gql`
+export const PAGED_VISITORS = gql`
   query pagedVisitors($filter: VisitorFilter) {
     pagedVisitors(filter: $filter) {
       totalResults
@@ -17,5 +17,3 @@ const PAGED_VISITORS = gql`
     }
   }
 `;
-
-export default PAGED_VISITORS;

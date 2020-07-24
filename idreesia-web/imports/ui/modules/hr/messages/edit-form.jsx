@@ -5,22 +5,34 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useAllMSDuties } from 'meteor/idreesia-common/hooks/hr';
+import {
+  FilterTarget,
+  MessageStatus,
+} from 'meteor/idreesia-common/constants/communication';
+import {
+  useAllJobs,
+  useAllMSDuties,
+  useAllMSDutyShifts,
+} from 'meteor/idreesia-common/hooks/hr';
 import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
   InputTextAreaField,
+  LastTarteebFilterField,
   SelectField,
+  TreeMultiSelectField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
+import { getDutyShiftTreeData } from '/imports/ui/modules/hr/common/utilities';
 
 import { HR_MESSAGE_BY_ID, PAGED_HR_MESSAGES, UPDATE_HR_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
+import { separateDutyAndShifts } from './helpers';
 
 const EditForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const { messageId } = useParams();
   const [showPreview, setShowPreview] = useState(false);
-  const [karkunFilter, setKarkunFilter] = useState(null);
+  const [recepientFilter, setRecepientFilter] = useState(null);
   const [updateHrMessage] = useMutation(UPDATE_HR_MESSAGE, {
     refetchQueries: [{ query: PAGED_HR_MESSAGES }],
   });
@@ -30,13 +42,22 @@ const EditForm = ({ form, history, location }) => {
     },
   });
 
+  const { allJobs, allJobsLoading } = useAllJobs();
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
+  const { allMSDutyShifts, allMSDutyShiftsLoading } = useAllMSDutyShifts();
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['HR', 'Messages', 'Edit']));
   }, [location]);
 
-  if (loading || allMSDutiesLoading) return null;
+  if (
+    loading ||
+    allJobsLoading ||
+    allMSDutiesLoading ||
+    allMSDutyShiftsLoading
+  ) {
+    return null;
+  }
 
   const { getFieldDecorator, validateFields, isFieldsTouched } = form;
 
@@ -45,42 +66,74 @@ const EditForm = ({ form, history, location }) => {
   };
 
   const handlePeviewKarkuns = () => {
-    const dutyId = form.getFieldValue('dutyId');
+    const bloodGroup = form.getFieldValue('bloodGroup');
+    const lastTarteeb = form.getFieldValue('lastTarteeb');
+    const jobIds = form.getFieldValue('jobIds');
+    const dutyIdShiftIds = form.getFieldValue('dutyIdShiftIds');
+
+    const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+      dutyIdShiftIds,
+      allMSDuties,
+      allMSDutyShifts
+    );
 
     const filter = {
-      dutyId,
+      bloodGroup,
+      lastTarteeb,
+      jobIds,
+      dutyIds,
+      dutyShiftIds,
     };
 
     setShowPreview(true);
-    setKarkunFilter(filter);
+    setRecepientFilter(filter);
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    validateFields((err, { messageBody, dutyId }) => {
-      if (err) return;
+    validateFields(
+      (
+        err,
+        { messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }
+      ) => {
+        if (err) return;
 
-      updateHrMessage({
-        variables: {
-          _id: messageId,
-          messageBody,
-          karkunFilter: {
-            dutyId,
+        const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+          dutyIdShiftIds,
+          allMSDuties,
+          allMSDutyShifts
+        );
+
+        updateHrMessage({
+          variables: {
+            _id: messageId,
+            messageBody,
+            recepientFilter: {
+              filterTarget: FilterTarget.MS_KARKUNS,
+              bloodGroup,
+              lastTarteeb,
+              jobIds,
+              dutyIds,
+              dutyShiftIds,
+            },
           },
-        },
-      })
-        .then(() => {
-          history.goBack();
         })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+          .then(() => {
+            history.goBack();
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      }
+    );
   };
 
   const {
-    hrMessageById: { messageBody, karkunFilter: _karkunFilter },
+    hrMessageById: { messageBody, recepientFilters, status },
   } = data;
+
+  const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
+  const dutyShiftTreeData = getDutyShiftTreeData(allMSDuties, allMSDutyShifts);
 
   return (
     <>
@@ -93,14 +146,57 @@ const EditForm = ({ form, history, location }) => {
           initialValue={messageBody}
           getFieldDecorator={getFieldDecorator}
         />
-        <Divider>Karkuns Filter Criteria</Divider>
+        <Divider>Karkuns Selection Criteria</Divider>
         <SelectField
-          fieldName="dutyId"
-          fieldLabel="Duty"
-          data={allMSDuties}
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={[
+            { label: 'A-', value: 'A-' },
+            { label: 'A+', value: 'Aplus' },
+            { label: 'B-', value: 'B-' },
+            { label: 'B+', value: 'Bplus' },
+            { label: 'AB-', value: 'AB-' },
+            { label: 'AB+', value: 'ABplus' },
+            { label: 'O-', value: 'O-' },
+            { label: 'O+', value: 'Oplus' },
+          ]}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
+          initialValue={_recepientFilter ? _recepientFilter.bloodGroup : null}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <LastTarteebFilterField
+          fieldName="lastTarteeb"
+          fieldLabel="Last Tarteeb"
+          required={false}
+          initialValue={_recepientFilter ? _recepientFilter.lastTarteeb : null}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <SelectField
+          mode="multiple"
+          fieldName="jobIds"
+          fieldLabel="Jobs"
+          required={false}
+          data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
-          initialValue={_karkunFilter ? _karkunFilter.dutyId : null}
+          initialValue={_recepientFilter ? _recepientFilter.jobIds : null}
+          getFieldDecorator={getFieldDecorator}
+        />
+        <TreeMultiSelectField
+          data={dutyShiftTreeData}
+          fieldName="dutyIdShiftIds"
+          fieldLabel="Duties/Shifts"
+          required={false}
+          initialValue={
+            _recepientFilter
+              ? [
+                  ...(_recepientFilter.dutyIds || []),
+                  ...(_recepientFilter.dutyShiftIds || []),
+                ]
+              : []
+          }
           getFieldDecorator={getFieldDecorator}
         />
         <Divider />
@@ -108,6 +204,7 @@ const EditForm = ({ form, history, location }) => {
           extraText="Preview Karkuns"
           handleCancel={handleCancel}
           handleExtra={handlePeviewKarkuns}
+          allowSubmit={status === MessageStatus.WAITING_APPROVAL}
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
@@ -119,7 +216,7 @@ const EditForm = ({ form, history, location }) => {
         }}
         visible={showPreview}
       >
-        <KarkunsPreview filter={karkunFilter} />
+        <KarkunsPreview recepientFilter={recepientFilter} />
       </Drawer>
     </>
   );

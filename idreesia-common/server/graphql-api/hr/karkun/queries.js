@@ -7,18 +7,10 @@ import {
   PurchaseForms,
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
-
-const bloodGroupValueConversion = {
-  'A-': 'A-',
-  Aplus: 'A+',
-  'B-': 'B-',
-  Bplus: 'B+',
-  'AB-': 'AB-',
-  ABplus: 'AB+',
-  'O-': 'O-',
-  Oplus: 'O+',
-};
+import {
+  BloodGroups,
+  PredefinedFilterNames,
+} from 'meteor/idreesia-common/constants/hr';
 
 function buildPipeline(params) {
   const pipeline = [];
@@ -28,11 +20,15 @@ function buildPipeline(params) {
     name,
     cnicNumber,
     phoneNumber,
+    phoneNumbers,
     bloodGroup,
     lastTarteeb,
     jobId,
     dutyId,
     dutyShiftId,
+    jobIds,
+    dutyIds,
+    dutyShiftIds,
     showVolunteers,
     showEmployees,
   } = params;
@@ -90,8 +86,16 @@ function buildPipeline(params) {
     });
   }
 
+  if (phoneNumbers) {
+    pipeline.push({
+      $match: {
+        contactNumber1: { $in: phoneNumbers },
+      },
+    });
+  }
+
   if (bloodGroup) {
-    const convertedBloodGroupValue = bloodGroupValueConversion[bloodGroup];
+    const convertedBloodGroupValue = BloodGroups[bloodGroup];
     pipeline.push({
       $match: {
         bloodGroup: { $eq: convertedBloodGroupValue },
@@ -125,7 +129,12 @@ function buildPipeline(params) {
     });
   }
 
-  if (dutyId) {
+  // Link the karkun-duties table if we are searching by dutyId or shiftId
+  if (
+    dutyId ||
+    (!!dutyIds && dutyIds.length > 0) ||
+    (!!dutyShiftIds && dutyShiftIds.length > 0)
+  ) {
     pipeline.push({
       $lookup: {
         from: 'hr-karkun-duties',
@@ -134,6 +143,9 @@ function buildPipeline(params) {
         as: 'duties',
       },
     });
+  }
+
+  if (dutyId) {
     pipeline.push({
       $match: {
         duties: {
@@ -155,6 +167,30 @@ function buildPipeline(params) {
         },
       });
     }
+  }
+
+  if (
+    (!!jobIds && jobIds.length > 0) ||
+    (!!dutyIds && dutyIds.length > 0) ||
+    (!!dutyShiftIds && dutyShiftIds.length > 0)
+  ) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { jobId: { $in: jobIds || [] } },
+          {
+            duties: {
+              $elemMatch: {
+                $or: [
+                  { dutyId: { $in: dutyIds || [] } },
+                  { shiftId: { $in: dutyShiftIds || [] } },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    });
   }
 
   return pipeline;

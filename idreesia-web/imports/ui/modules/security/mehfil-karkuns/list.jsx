@@ -7,7 +7,7 @@ import { Button, Select, Icon, Table, Tooltip } from '/imports/ui/controls';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
-import { KarkunSelectionButton } from '/imports/ui/modules/hr/karkuns/field';
+import { KarkunSelectionButton } from '/imports/ui/modules/helpers/controls';
 
 import { MEHFIL_BY_ID } from '/imports/ui/modules/security/mehfils/gql';
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
@@ -47,6 +47,11 @@ export class List extends Component {
         ),
       },
       {
+        title: 'City',
+        dataIndex: 'karkun.city.name',
+        key: 'karkun.city.name',
+      },
+      {
         title: 'CNIC',
         dataIndex: 'karkun.cnicNumber',
         key: 'karkun.cnicNumber',
@@ -55,6 +60,16 @@ export class List extends Component {
         title: 'Mobile No.',
         dataIndex: 'karkun.contactNumber1',
         key: 'karkun.contactNumber1',
+      },
+      {
+        title: 'Duty Name',
+        dataIndex: 'dutyName',
+        key: 'dutyName',
+        render: text => {
+          debugger;
+          const duty = MehfilDuties.find(mehfilDuty => mehfilDuty._id === text);
+          return duty.name;
+        },
       },
       {
         title: 'Duty Detail',
@@ -101,6 +116,9 @@ export class List extends Component {
     setPageParams({
       dutyName: value,
     });
+    this.setState({
+      selectedRows: [],
+    });
   };
 
   handleEditDutyDetails = () => {
@@ -126,6 +144,7 @@ export class List extends Component {
 
   getTableHeader = () => {
     const { mehfilById, dutyName } = this.props;
+    const { selectedRows } = this.state;
     const mehfilDate = moment(Number(mehfilById.mehfilDate));
     const isPastMehfil = moment().isAfter(mehfilDate);
 
@@ -157,7 +176,7 @@ export class List extends Component {
         />
         &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil || !dutyName}
+          disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
           icon="edit"
           size="large"
           onClick={this.handleEditDutyDetails}
@@ -166,7 +185,7 @@ export class List extends Component {
         </Button>
         &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil || !dutyName}
+          disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
           icon="printer"
           size="large"
           onClick={this.handleViewMehfilCards}

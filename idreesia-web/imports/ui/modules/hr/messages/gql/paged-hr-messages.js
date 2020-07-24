@@ -10,6 +10,8 @@ const PAGED_HR_MESSAGES = gql`
         status
         sentDate
         karkunCount
+        succeededMessageCount
+        failedMessageCount
       }
     }
   }

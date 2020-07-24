@@ -13,7 +13,11 @@ export default {
 
   Query: {
     mehfilKarkunsByMehfilId(obj, { mehfilId, dutyName }) {
-      return MehfilKarkuns.find({ mehfilId, dutyName }).fetch();
+      if (dutyName) {
+        return MehfilKarkuns.find({ mehfilId, dutyName }).fetch();
+      }
+
+      return MehfilKarkuns.find({ mehfilId }).fetch();
     },
 
     mehfilKarkunsByIds(obj, { ids }) {

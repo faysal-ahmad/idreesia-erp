@@ -2,18 +2,18 @@
 import { JobTypes } from 'meteor/idreesia-common/constants';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
 import {
-  MessageSource,
+  FilterTarget,
   MessageStatus,
 } from 'meteor/idreesia-common/constants/communication';
 
 import Jobs from '/imports/collections/jobs';
 import sendSmsMessage from './send-sms-message';
-import getHrMessageRecepients from './get-hr-message-recepients';
-import getOutstationMessageRecepients from './get-outstation-message-recepients';
+import getMsKarkunMessageRecepients from './get-ms-karkun-message-recepients';
+import getOutstationKarkunMessageRecepients from './get-outstation-karkun-message-recepients';
 
 const MessageRecepientsEvaluator = {
-  [MessageSource.HR]: getHrMessageRecepients,
-  [MessageSource.OUTSTATION]: getOutstationMessageRecepients,
+  [FilterTarget.MS_KARKUNS]: getMsKarkunMessageRecepients,
+  [FilterTarget.OUTSTATION_KARKUNS]: getOutstationKarkunMessageRecepients,
 };
 
 export const worker = (job, callback) => {
@@ -26,6 +26,19 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+
+    return Promise.resolve();
+  }
+
+  const { recepientFilters } = message;
+  if (!recepientFilters || recepientFilters.length === 0) {
+    console.error(`Message has no defined recepients.`);
+    job.done();
+    if (callback) {
+      callback();
+    }
+
+    return Promise.resolve();
   }
 
   Messages.update(messageId, {
@@ -37,9 +50,13 @@ export const worker = (job, callback) => {
   const karkunIds = [];
   const visitorIds = [];
   const phoneNumbers = [];
+  const succeededPhoneNumbers = [];
+  const failedPhoneNumbers = [];
 
-  const getMessageRecepients = MessageRecepientsEvaluator[message.source];
-  return getMessageRecepients(message)
+  const recepientFilter = recepientFilters[0];
+  const getMessageRecepients =
+    MessageRecepientsEvaluator[recepientFilter.filterTarget];
+  return getMessageRecepients(recepientFilter)
     .then(({ karkuns, visitors }) => {
       karkuns.forEach(({ _id, contactNumber1 }) => {
         if (contactNumber1) {
@@ -57,7 +74,15 @@ export const worker = (job, callback) => {
 
       return phoneNumbers.reduce(
         (p, phoneNumber) =>
-          p.then(() => sendSmsMessage(phoneNumber, message.messageBody)),
+          p
+            .then(() => sendSmsMessage(phoneNumber, message.messageBody))
+            .then(result => {
+              if (result.messageSent) {
+                succeededPhoneNumbers.push(result.phoneNumber);
+              } else {
+                failedPhoneNumbers.push(result.phoneNumber);
+              }
+            }),
         Promise.resolve()
       );
     })
@@ -70,6 +95,8 @@ export const worker = (job, callback) => {
         $set: {
           karkunIds,
           visitorIds,
+          succeededPhoneNumbers,
+          failedPhoneNumbers,
           status: MessageStatus.COMPLETED,
           sentDate: new Date(),
         },

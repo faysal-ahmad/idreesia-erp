@@ -1,1 +1,1 @@
-export { default as PAGED_VISITORS } from './paged-visitors';
+export { PAGED_VISITORS } from './paged-visitors';

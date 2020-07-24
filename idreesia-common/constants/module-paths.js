@@ -1,8 +1,9 @@
 const ModulePaths = {
   accounts: '/accounts',
   admin: '/admin',
-  hr: '/hr',
+  communication: '/communication',
   inventory: '/inventory',
+  hr: '/hr',
   outstation: '/outstation',
   portals: '/portals',
   security: '/security',

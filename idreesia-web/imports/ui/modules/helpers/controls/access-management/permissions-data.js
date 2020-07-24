@@ -259,6 +259,35 @@ export const hrPermissionsData = {
   ],
 };
 
+export const communicationPermissionsData = {
+  title: 'Communication',
+  key: 'module-communication',
+  children: [
+    {
+      title: 'Delete Data',
+      key: PermissionConstants.COMM_DELETE_DATA,
+    },
+    {
+      title: 'Messages',
+      key: 'module-communication-messages',
+      children: [
+        {
+          title: 'View Messages',
+          key: PermissionConstants.COMM_VIEW_MESSAGES,
+        },
+        {
+          title: 'Manage Messages',
+          key: PermissionConstants.COMM_MANAGE_MESSAGES,
+        },
+        {
+          title: 'Approve Messages',
+          key: PermissionConstants.COMM_APPROVE_MESSAGES,
+        },
+      ],
+    },
+  ],
+};
+
 export const inventoryPermissionsData = {
   title: 'Inventory',
   key: 'module-inventory',
@@ -525,6 +554,20 @@ export const securityPermissionsData = {
     {
       title: 'Karkun Verification',
       key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
+    },
+    {
+      title: 'Shared Residences',
+      key: 'module-security-shared-residences',
+      children: [
+        {
+          title: 'View Shared Residences',
+          key: PermissionConstants.SECURITY_VIEW_SHARED_RESIDENCES,
+        },
+        {
+          title: 'Manage Shared Residences',
+          key: PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
+        },
+      ],
     },
     {
       title: 'Visitor Registration',

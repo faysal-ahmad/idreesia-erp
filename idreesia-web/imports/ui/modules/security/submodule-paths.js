@@ -44,6 +44,17 @@ export default class SubModulePaths {
   static mulakaatReportPath = `${ModulePaths.security}/mulakaat-report`;
 
   // ******************************************************************************
+  // Shared Residences
+  // ******************************************************************************
+  static sharedResidencesPath = `${ModulePaths.security}/shared-residences`;
+  static sharedResidencesNewFormPath = `${SubModulePaths.sharedResidencesPath}/new`;
+  static sharedResidencesEditFormPath(
+    sharedResidenceId = ':sharedResidenceId'
+  ) {
+    return `${SubModulePaths.sharedResidencesPath}/${sharedResidenceId}`;
+  }
+
+  // ******************************************************************************
   // Audit Logs
   // ******************************************************************************
   static auditLogsPath = `${ModulePaths.security}/audit-logs`;

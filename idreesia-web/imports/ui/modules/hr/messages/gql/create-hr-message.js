@@ -1,21 +1,27 @@
 import gql from 'graphql-tag';
 
 const CREATE_HR_MESSAGE = gql`
-  mutation createHrMessage($messageBody: String!, $karkunFilter: KarkunFilter) {
-    createHrMessage(messageBody: $messageBody, karkunFilter: $karkunFilter) {
+  mutation createHrMessage(
+    $messageBody: String!
+    $recepientFilter: MessageRecepientFilter
+  ) {
+    createHrMessage(
+      messageBody: $messageBody
+      recepientFilter: $recepientFilter
+    ) {
       _id
       source
       messageBody
-      karkunFilter {
-        dutyId
-        cityId
-        cityMehfilId
-        region
+      recepientFilters {
+        filterTarget
+        bloodGroup
+        lastTarteeb
+        jobIds
+        dutyIds
+        dutyShiftIds
       }
       status
       sentDate
-      karkunIds
-      visitorIds
       approvedOn
       approvedBy
       createdAt

@@ -71,5 +71,5 @@ class ListContainer extends Component {
 
 export default flowRight(
   WithQueryParams(),
-  WithBreadcrumbs(['Security', 'Shared Residences', 'List'])
+  WithBreadcrumbs(['HR', 'Shared Residences', 'List'])
 )(ListContainer);

@@ -68,7 +68,7 @@ class List extends Component {
       key: 'action',
       render: (text, record) => {
         let deleteAction = null;
-        if (record.usedCount === 0) {
+        if (record.canDelete) {
           deleteAction = (
             <Tooltip title="Delete">
               <Icon

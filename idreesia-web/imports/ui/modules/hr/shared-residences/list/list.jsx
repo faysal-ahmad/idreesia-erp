@@ -29,11 +29,11 @@ class List extends Component {
     setPageParams: PropTypes.func,
     loading: PropTypes.bool,
     refetchListQuery: PropTypes.func,
-    pagedSharedResidences: PropTypes.shape({
+    pagedHRSharedResidences: PropTypes.shape({
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
-    removeSharedResidence: PropTypes.func,
+    removeHRSharedResidence: PropTypes.func,
   };
 
   columns = [
@@ -98,8 +98,8 @@ class List extends Component {
   };
 
   handleDeleteClicked = record => {
-    const { removeSharedResidence } = this.props;
-    removeSharedResidence({
+    const { removeHRSharedResidence } = this.props;
+    removeHRSharedResidence({
       variables: {
         _id: record._id,
       },
@@ -138,7 +138,7 @@ class List extends Component {
     const {
       pageIndex,
       pageSize,
-      pagedSharedResidences: { totalResults, data },
+      pagedHRSharedResidences: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
@@ -174,8 +174,8 @@ class List extends Component {
 }
 
 const listQuery = gql`
-  query pagedSharedResidences($queryString: String) {
-    pagedSharedResidences(queryString: $queryString) {
+  query pagedHRSharedResidences($queryString: String) {
+    pagedHRSharedResidences(queryString: $queryString) {
       totalResults
       data {
         _id
@@ -198,8 +198,8 @@ const listQuery = gql`
 `;
 
 const removeSharedResidenceMutation = gql`
-  mutation removeSharedResidence($_id: String!) {
-    removeSharedResidence(_id: $_id)
+  mutation removeHRSharedResidence($_id: String!) {
+    removeHRSharedResidence(_id: $_id)
   }
 `;
 
@@ -213,9 +213,9 @@ export default flowRight(
     }),
   }),
   graphql(removeSharedResidenceMutation, {
-    name: 'removeSharedResidence',
+    name: 'removeHRSharedResidence',
     options: {
-      refetchQueries: ['pagedSharedResidences'],
+      refetchQueries: ['pagedHRSharedResidences'],
     },
   })
 )(List);

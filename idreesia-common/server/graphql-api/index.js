@@ -64,6 +64,9 @@ import VisitorStayResolvers from './security/visitor-stay/resolvers';
 import SecurityVisitorMulakaatSchema from './security/visitor-mulakaat/visitor-mulakaat.graphql';
 import SecurityVisitorMulakaatResolvers from './security/visitor-mulakaat/resolvers';
 
+import SharedResidenceSchema from './security/shared-residence/shared-residence.graphql';
+import SharedResidenceResolvers from './security/shared-residence/resolvers';
+
 /**
  * Schema and Resolvers for the Telephone Room module
  */
@@ -106,11 +109,17 @@ import AttendanceResolvers from './hr/attendance/resolvers';
 import SalarySchema from './hr/salary/salary.graphql';
 import SalaryResolvers from './hr/salary/resolvers';
 
-import HrMessageSchema from './hr/message/message.graphql';
-import HrMessageResolvers from './hr/message/resolvers';
+import HRMessageSchema from './hr/message/message.graphql';
+import HRMessageResolvers from './hr/message/resolvers';
 
-import SharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
-import SharedResidenceResolvers from './hr/shared-residence/resolvers';
+import HRSharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
+import HRSharedResidenceResolvers from './hr/shared-residence/resolvers';
+
+/**
+ * Schema and Resolvers for the Communication module
+ */
+import CommMessageSchema from './communication/message/message.graphql';
+import CommMessageResolvers from './communication/message/resolvers';
 
 /**
  * Schema and Resolvers for the Outstation module
@@ -260,6 +269,7 @@ const typeDefs = [
   SecurityVisitorSchema,
   VisitorStaySchema,
   SecurityVisitorMulakaatSchema,
+  SharedResidenceSchema,
 
   TelephoneRoomVisitorSchema,
   TelephoneRoomVisitorMulakaatSchema,
@@ -274,8 +284,10 @@ const typeDefs = [
   KarkunDutySchema,
   AttendanceSchema,
   SalarySchema,
-  HrMessageSchema,
-  SharedResidenceSchema,
+  HRMessageSchema,
+  HRSharedResidenceSchema,
+
+  CommMessageSchema,
 
   CitySchema,
   CityMehfilSchema,
@@ -338,6 +350,7 @@ const resolvers = merge(
   SecurityVisitorResolvers,
   VisitorStayResolvers,
   SecurityVisitorMulakaatResolvers,
+  SharedResidenceResolvers,
 
   TelephoneRoomVisitorResolvers,
   TelephoneRoomVisitorMulakaatResolvers,
@@ -352,8 +365,10 @@ const resolvers = merge(
   KarkunDutyResolvers,
   AttendanceResolvers,
   SalaryResolvers,
-  HrMessageResolvers,
-  SharedResidenceResolvers,
+  HRMessageResolvers,
+  HRSharedResidenceResolvers,
+
+  CommMessageResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

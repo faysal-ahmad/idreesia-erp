@@ -171,6 +171,16 @@ class ListContainer extends Component {
     history.push(path);
   };
 
+  handlePrintKarkunsList = selectedRows => {
+    if (!selectedRows || selectedRows.length === 0) return;
+
+    const { history } = this.props;
+    const karkunIds = selectedRows.map(row => row.karkunId);
+    history.push(
+      `${paths.karkunsPrintListPath}?karkunIds=${karkunIds.join(',')}`
+    );
+  };
+
   handleDeleteSelectedAttendances = selectedAttendances => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
@@ -265,6 +275,7 @@ class ListContainer extends Component {
           handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
           handleViewMeetingCards={this.handleViewMeetingCards}
           handleViewKarkunCards={this.handleViewKarkunCards}
+          handlePrintKarkunsList={this.handlePrintKarkunsList}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}

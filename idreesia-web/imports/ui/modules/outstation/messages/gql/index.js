@@ -16,3 +16,7 @@ export {
 export {
   default as UPDATE_OUTSTATION_MESSAGE,
 } from './update-outstation-message';
+
+export {
+  default as PAGED_OUTSTATION_KARKUN_MESSAGE_RECEPIENTS,
+} from './paged-outstation-karkun-message-recepiets';

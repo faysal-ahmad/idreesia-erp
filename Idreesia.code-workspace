@@ -4,10 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "/Users/faisal/Workspaces/idreesia-digitalocean"
-		},
-		{
-			"path": "/Users/faisal/Workspaces/idreesia-erp.wiki"
+			"path": "../idreesia-digitalocean"
 		}
 	],
 	"settings": {}

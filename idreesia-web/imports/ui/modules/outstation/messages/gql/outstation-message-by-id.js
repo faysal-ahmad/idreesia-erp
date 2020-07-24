@@ -5,7 +5,7 @@ const OUTSTATION_MESSAGE_BY_ID = gql`
     outstationMessageById(_id: $_id) {
       _id
       messageBody
-      karkunFilter {
+      recepientFilters {
         lastTarteeb
         dutyId
         cityId
@@ -15,7 +15,6 @@ const OUTSTATION_MESSAGE_BY_ID = gql`
       status
       sentDate
       karkunIds
-      visitorIds
       approvedOn
       approvedBy
       createdAt

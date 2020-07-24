@@ -9,7 +9,6 @@ const APPROVE_HR_MESSAGE = gql`
       status
       sentDate
       karkunIds
-      visitorIds
       approvedOn
       approvedBy
       createdAt

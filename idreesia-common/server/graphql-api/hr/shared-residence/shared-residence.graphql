@@ -1,4 +1,4 @@
-type SharedResidenceType {
+type HRSharedResidenceType {
   _id: String
   name: String
   address: String
@@ -14,19 +14,19 @@ type SharedResidenceType {
   updatedBy: String
 }
 
-type PagedSharedResidenceType {
+type PagedHRSharedResidenceType {
   totalResults: Int
-  data: [SharedResidenceType]
+  data: [HRSharedResidenceType]
 }
 
 extend type Query {
-  allSharedResidences: [SharedResidenceType]
-  pagedSharedResidences(queryString: String): PagedSharedResidenceType
-  sharedResidenceById(_id: String!): SharedResidenceType
+  allHRSharedResidences: [HRSharedResidenceType]
+  pagedHRSharedResidences(queryString: String): PagedHRSharedResidenceType
+  hrSharedResidenceById(_id: String!): HRSharedResidenceType
 }
 
 extend type Mutation {
-  createSharedResidence(name: String!, address: String, ownerKarkunId: String): SharedResidenceType
-  updateSharedResidence(_id: String!, name: String!, address: String, ownerKarkunId: String): SharedResidenceType
-  removeSharedResidence(_id: String!): Int
+  createHRSharedResidence(name: String!, address: String, ownerKarkunId: String): HRSharedResidenceType
+  updateHRSharedResidence(_id: String!, name: String!, address: String, ownerKarkunId: String): HRSharedResidenceType
+  removeHRSharedResidence(_id: String!): Int
 }

@@ -22,6 +22,15 @@ export default class SubModulePaths {
   static auditLogsPath = `${ModulePaths.accounts}/audit-logs`;
 
   // *************************************************************************************
+  // Amaanat Logs Routes
+  // *************************************************************************************
+  static amaanatLogsPath = `${ModulePaths.accounts}/amaanat-logs`;
+  static amaanatLogsNewFormPath = `${SubModulePaths.amaanatLogsPath}/new`;
+  static amaanatLogsEditFormPath(logId = ':logId') {
+    return `${SubModulePaths.amaanatLogsPath}/${logId}`;
+  }
+
+  // *************************************************************************************
   // Account Heads Routes
   // *************************************************************************************
   static accountHeadsPath(companyId = ':companyId') {

@@ -44,6 +44,9 @@ class Sidebar extends Component {
     } else if (key === 'imdad-requests') {
       setActiveSubModuleName(SubModuleNames.imdadRequests);
       history.push(paths.imdadRequestsPath);
+    } else if (key === 'amaanat-logs') {
+      setActiveSubModuleName(SubModuleNames.amaanatLogs);
+      history.push(paths.amaanatLogsPath);
     } else if (key === 'payment-types') {
       setActiveSubModuleName(SubModuleNames.paymentTypes);
       history.push(paths.paymentTypesPath);
@@ -103,6 +106,13 @@ class Sidebar extends Component {
           <span>
             <Icon type="wallet" style={IconStyle} />
             Imdad Requests
+          </span>
+        </Item>
+
+        <Item key="amaanat-logs">
+          <span>
+            <Icon type="red-envelope" style={IconStyle} />
+            Amaanat Logs
           </span>
         </Item>
 

@@ -91,9 +91,6 @@ const Permissions = {
   OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
   OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
 
-  OUTSTATION_VIEW_AMAANAT_LOGS: 'outstation-view-amaanat-logs',
-  OUTSTATION_MANAGE_AMAANAT_LOGS: 'outstation-manage-amaanat-logs',
-
   OUTSTATION_VIEW_MESSAGES: 'outstation-view-messages',
   OUTSTATION_MANAGE_MESSAGES: 'outstation-manage-messages',
   OUTSTATION_APPROVE_MESSAGES: 'outstation-approve-messages',

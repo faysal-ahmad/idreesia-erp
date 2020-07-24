@@ -145,9 +145,6 @@ import OutstationKarkunDutyResolvers from './outstation/karkun-duties/resolvers'
 import OutstationAttendanceSchema from './outstation/attendance/attendance.graphql';
 import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 
-import OutstationAmaanatLogSchema from './outstation/amaanat-log/amaanat-log.graphql';
-import OutstationAmaanatLogResolvers from './outstation/amaanat-log/resolvers';
-
 import OutstationMessageSchema from './outstation/message/message.graphql';
 import OutstationMessageResolvers from './outstation/message/resolvers';
 
@@ -238,6 +235,9 @@ import PaymentTypeResolvers from './accounts/payment-type/resolvers';
 import PaymentSchema from './accounts/payment/payment.graphql';
 import PaymentResolvers from './accounts/payment/resolvers';
 
+import AccountsAmaanatLogSchema from './accounts/amaanat-log/amaanat-log.graphql';
+import AccountsAmaanatLogResolvers from './accounts/amaanat-log/resolvers';
+
 import AccountsImdadRequestSchema from './accounts/imdad-request/imdad-request.graphql';
 import AccountsImdadRequestResolvers from './accounts/imdad-request/resolvers';
 
@@ -296,7 +296,6 @@ const typeDefs = [
   OutstationKarkunSchema,
   OutstationKarkunDutySchema,
   OutstationAttendanceSchema,
-  OutstationAmaanatLogSchema,
   OutstationMessageSchema,
 
   PortalSchema,
@@ -327,6 +326,7 @@ const typeDefs = [
   AccountMonthlyBalanceSchema,
   PaymentTypeSchema,
   PaymentSchema,
+  AccountsAmaanatLogSchema,
   AccountsImdadRequestSchema,
 
   WazeefaSchema,
@@ -377,7 +377,6 @@ const resolvers = merge(
   OutstationKarkunResolvers,
   OutstationKarkunDutyResolvers,
   OutstationAttendanceResolvers,
-  OutstationAmaanatLogResolvers,
   OutstationMessageResolvers,
 
   PortalResolvers,
@@ -408,6 +407,7 @@ const resolvers = merge(
   AccountMonthlyBalanceResolvers,
   PaymentTypeResolvers,
   PaymentResolvers,
+  AccountsAmaanatLogResolvers,
   AccountsImdadRequestResolvers,
 
   WazeefaResolvers

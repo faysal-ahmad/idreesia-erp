@@ -416,20 +416,6 @@ export const outstationPermissionsData = {
       ],
     },
     {
-      title: 'Amaanat Logs',
-      key: 'module-outstation-amaanat-logs',
-      children: [
-        {
-          title: 'View Amaanat Logs',
-          key: PermissionConstants.OUTSTATION_VIEW_AMAANAT_LOGS,
-        },
-        {
-          title: 'Manage Amaanat Logs',
-          key: PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
-        },
-      ],
-    },
-    {
       title: 'Messages',
       key: 'module-outstation-messages',
       children: [

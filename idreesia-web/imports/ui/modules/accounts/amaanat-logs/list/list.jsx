@@ -15,11 +15,11 @@ import {
   AmaanatLogsList,
   AmaanatLogsListFilter,
 } from '/imports/ui/modules/common';
-import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
+import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
 import {
-  PAGED_OUTSTATION_AMAANAT_LOGS,
-  REMOVE_OUTSTATION_AMAANAT_LOG,
+  PAGED_ACCOUNTS_AMAANAT_LOGS,
+  REMOVE_ACCOUNTS_AMAANAT_LOG,
 } from '../gql';
 
 const List = ({ history, location }) => {
@@ -39,21 +39,19 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const [removeOutstationAmaanatLog] = useMutation(
-    REMOVE_OUTSTATION_AMAANAT_LOG
-  );
-  const { data, loading, refetch } = useQuery(PAGED_OUTSTATION_AMAANAT_LOGS, {
+  const [removeAccountsAmaanatLog] = useMutation(REMOVE_ACCOUNTS_AMAANAT_LOG);
+  const { data, loading, refetch } = useQuery(PAGED_ACCOUNTS_AMAANAT_LOGS, {
     variables: {
       filter: queryParams,
     },
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Outstation', 'Amaanat Logs', 'List']));
+    dispatch(setBreadcrumbs(['Accounts', 'Amaanat Logs', 'List']));
   }, [location]);
 
   if (loading || allCitiesLoading || allCityMehfilsLoading) return null;
-  const { pagedOutstationAmaanatLogs } = data;
+  const { pagedAccountsAmaanatLogs } = data;
   const {
     cityId,
     cityMehfilId,
@@ -74,7 +72,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteItem = amaanatLog => {
-    removeOutstationAmaanatLog({
+    removeAccountsAmaanatLog({
       variables: { _id: amaanatLog._id },
     })
       .then(() => {
@@ -116,7 +114,7 @@ const List = ({ history, location }) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedOutstationAmaanatLogs}
+      pagedData={pagedAccountsAmaanatLogs}
     />
   );
 };

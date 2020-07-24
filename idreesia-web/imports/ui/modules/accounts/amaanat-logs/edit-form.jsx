@@ -13,9 +13,9 @@ import { message } from '/imports/ui/controls';
 import { AmaanatLogsEditForm } from '/imports/ui/modules/common';
 
 import {
-  PAGED_OUTSTATION_AMAANAT_LOGS,
-  OUTSTATION_AMAANAT_LOG_BY_ID,
-  UPDATE_OUTSTATION_AMAANAT_LOG,
+  PAGED_ACCOUNTS_AMAANAT_LOGS,
+  ACCOUNTS_AMAANAT_LOG_BY_ID,
+  UPDATE_ACCOUNTS_AMAANAT_LOG,
 } from './gql';
 
 const EditForm = ({ history, location }) => {
@@ -23,18 +23,15 @@ const EditForm = ({ history, location }) => {
   const { logId } = useParams();
   const { allCities, allCitiesLoading } = useAllCities();
   const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
-  const [updateOutstationAmaanatLog] = useMutation(
-    UPDATE_OUTSTATION_AMAANAT_LOG,
-    {
-      refetchQueries: [{ query: PAGED_OUTSTATION_AMAANAT_LOGS }],
-    }
-  );
+  const [updateAccountsAmaanatLog] = useMutation(UPDATE_ACCOUNTS_AMAANAT_LOG, {
+    refetchQueries: [{ query: PAGED_ACCOUNTS_AMAANAT_LOGS }],
+  });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Outstation', 'Amaanat Logs', 'Edit']));
+    dispatch(setBreadcrumbs(['Accounts', 'Amaanat Logs', 'Edit']));
   }, [location]);
 
-  const { data, loading } = useQuery(OUTSTATION_AMAANAT_LOG_BY_ID, {
+  const { data, loading } = useQuery(ACCOUNTS_AMAANAT_LOG_BY_ID, {
     variables: {
       _id: logId,
     },
@@ -57,7 +54,7 @@ const EditForm = ({ history, location }) => {
     otherPortion,
     otherPortionDescription,
   }) => {
-    updateOutstationAmaanatLog({
+    updateAccountsAmaanatLog({
       variables: {
         _id: logId,
         cityId: cityIdMehfilId[0],

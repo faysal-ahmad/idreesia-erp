@@ -1,5 +1,5 @@
+import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
 import {
-  AmaanatLogs,
   Cities,
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
@@ -21,11 +21,11 @@ export default {
   },
 
   Query: {
-    outstationAmaanatLogById(obj, { _id }, { user }) {
+    accountsAmaanatLogById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_VIEW_AMAANAT_LOGS,
-          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         return null;
@@ -34,11 +34,11 @@ export default {
       return AmaanatLogs.findOne({ _id });
     },
 
-    pagedOutstationAmaanatLogs(obj, { filter }, { user }) {
+    pagedAccountsAmaanatLogs(obj, { filter }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_VIEW_AMAANAT_LOGS,
-          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         return {
@@ -52,7 +52,7 @@ export default {
   },
 
   Mutation: {
-    createOutstationAmaanatLog(
+    createAccountsAmaanatLog(
       obj,
       {
         cityId,
@@ -70,7 +70,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         throw new Error(
@@ -99,7 +99,7 @@ export default {
       return AmaanatLogs.findOne(amaanatLogId);
     },
 
-    updateOutstationAmaanatLog(
+    updateAccountsAmaanatLog(
       obj,
       {
         _id,
@@ -118,7 +118,7 @@ export default {
     ) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         throw new Error(
@@ -152,10 +152,10 @@ export default {
       return AmaanatLogs.findOne(_id);
     },
 
-    removeOutstationAmaanatLog(obj, { _id }, { user }) {
+    removeAccountsAmaanatLog(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_AMAANAT_LOGS,
+          PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
         throw new Error(

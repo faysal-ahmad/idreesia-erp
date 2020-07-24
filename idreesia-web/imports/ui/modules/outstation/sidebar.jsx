@@ -47,11 +47,6 @@ class Sidebar extends Component {
         history.push(paths.attendanceSheetsPath);
         break;
 
-      case 'amaanat-logs':
-        setActiveSubModuleName(SubModuleNames.amaanatLogs);
-        history.push(paths.amaanatLogsPath);
-        break;
-
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
@@ -90,12 +85,6 @@ class Sidebar extends Component {
           <span>
             <Icon type="solution" style={IconStyle} />
             Attendance Sheets
-          </span>
-        </Menu.Item>
-        <Menu.Item key="amaanat-logs">
-          <span>
-            <Icon type="red-envelope" style={IconStyle} />
-            Amaanat Logs
           </span>
         </Menu.Item>
         <Menu.Item key="messages">

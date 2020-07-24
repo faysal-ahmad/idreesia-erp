@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/outstation';
+import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
 
 export default function getAmaanatLogs(filter) {
   const pipeline = [];

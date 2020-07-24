@@ -36,15 +36,6 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
-  // Amaanat Logs Routes
-  // *************************************************************************************
-  static amaanatLogsPath = `${ModulePaths.outstation}/amaanat-logs`;
-  static amaanatLogsNewFormPath = `${SubModulePaths.amaanatLogsPath}/new`;
-  static amaanatLogsEditFormPath(logId = ':logId') {
-    return `${SubModulePaths.amaanatLogsPath}/${logId}`;
-  }
-
-  // *************************************************************************************
   // Messages Routes
   // *************************************************************************************
   static messagesPath = `${ModulePaths.outstation}/messages`;

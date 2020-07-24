@@ -1,8 +1,8 @@
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
-import { AmaanatLog as AmaanatLogSchema } from 'meteor/idreesia-common/server/schemas/outstation';
+import { AmaanatLog as AmaanatLogSchema } from 'meteor/idreesia-common/server/schemas/accounts';
 
 class AmaanatLogs extends AggregatableCollection {
-  constructor(name = 'outstation-amaanat-logs', options = {}) {
+  constructor(name = 'accounts-amaanat-logs', options = {}) {
     const amaanatLogs = super(name, options);
     amaanatLogs.attachSchema(AmaanatLogSchema);
     return amaanatLogs;

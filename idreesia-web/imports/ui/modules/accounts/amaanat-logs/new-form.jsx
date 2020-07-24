@@ -12,27 +12,24 @@ import { message } from '/imports/ui/controls';
 import { AmaanatLogsNewForm } from '/imports/ui/modules/common';
 
 import {
-  PAGED_OUTSTATION_AMAANAT_LOGS,
-  CREATE_OUTSTATION_AMAANAT_LOG,
+  PAGED_ACCOUNTS_AMAANAT_LOGS,
+  CREATE_ACCOUNTS_AMAANAT_LOG,
 } from './gql';
 
 const NewForm = ({ history, location }) => {
   const dispatch = useDispatch();
   const { allCities, allCitiesLoading } = useAllCities();
   const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
-  const [createOutstationAmaanatLog] = useMutation(
-    CREATE_OUTSTATION_AMAANAT_LOG,
-    {
-      refetchQueries: [
-        {
-          query: PAGED_OUTSTATION_AMAANAT_LOGS,
-        },
-      ],
-    }
-  );
+  const [createAccountsAmaanatLog] = useMutation(CREATE_ACCOUNTS_AMAANAT_LOG, {
+    refetchQueries: [
+      {
+        query: PAGED_ACCOUNTS_AMAANAT_LOGS,
+      },
+    ],
+  });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Outstation', 'Amaanat Logs', 'New']));
+    dispatch(setBreadcrumbs(['Accounts', 'Amaanat Logs', 'New']));
   }, [location]);
 
   if (allCitiesLoading || allCityMehfilsLoading) return null;
@@ -52,7 +49,7 @@ const NewForm = ({ history, location }) => {
     otherPortion,
     otherPortionDescription,
   }) => {
-    createOutstationAmaanatLog({
+    createAccountsAmaanatLog({
       variables: {
         cityId: cityIdMehfilId[0],
         cityMehfilId: cityIdMehfilId[1],

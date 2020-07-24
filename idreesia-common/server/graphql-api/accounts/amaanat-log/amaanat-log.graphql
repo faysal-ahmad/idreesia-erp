@@ -36,12 +36,12 @@ input AmaanatLogFilter {
 }
 
 extend type Query {
-  outstationAmaanatLogById(_id: String!): AmaanatLogType
-  pagedOutstationAmaanatLogs(filter: AmaanatLogFilter): PagedAmaanatLogType
+  accountsAmaanatLogById(_id: String!): AmaanatLogType
+  pagedAccountsAmaanatLogs(filter: AmaanatLogFilter): PagedAmaanatLogType
 }
 
 extend type Mutation {
-  createOutstationAmaanatLog(
+  createAccountsAmaanatLog(
     cityId: String!
     cityMehfilId: String!
     sentDate: String!
@@ -54,7 +54,7 @@ extend type Mutation {
     otherPortionDescription: String
   ): AmaanatLogType
 
-  updateOutstationAmaanatLog(
+  updateAccountsAmaanatLog(
     _id: String!
     cityId: String!
     cityMehfilId: String!
@@ -68,5 +68,5 @@ extend type Mutation {
     otherPortionDescription: String
   ): AmaanatLogType
 
-  removeOutstationAmaanatLog(_id: String!): Int
+  removeAccountsAmaanatLog(_id: String!): Int
 }

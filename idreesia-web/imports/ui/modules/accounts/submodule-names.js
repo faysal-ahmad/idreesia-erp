@@ -6,6 +6,7 @@ const SubModuleNames = {
   paymentTypes: 'Payment Types',
   imdadReasons: 'Imdad Reasons',
   imdadRequests: 'Imdad Requests',
+  amaanatLogs: 'Amaanat Logs',
   auditLogs: 'Audit Logs',
 };
 

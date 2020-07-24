@@ -26,6 +26,11 @@ import {
   ImdadRequestsNewForm,
   ImdadRequestsEditForm,
 } from './imdad-requests';
+import {
+  AmaanatLogsList,
+  AmaanatLogsNewForm,
+  AmaanatLogsEditForm,
+} from './amaanat-logs';
 import { AuditLogsList } from './audit-logs';
 
 const Router = () => (
@@ -72,6 +77,13 @@ const Router = () => (
     <Route path={paths.paymentReceiptsPath()} component={PaymentReceipts} />
     <Route path={paths.paymentsEditFormPath()} component={PaymentsEditForm} />
     <Route path={paths.paymentsPath} component={PaymentsList} />
+
+    <Route path={paths.amaanatLogsNewFormPath} component={AmaanatLogsNewForm} />
+    <Route
+      path={paths.amaanatLogsEditFormPath()}
+      component={AmaanatLogsEditForm}
+    />
+    <Route path={paths.amaanatLogsPath} component={AmaanatLogsList} />
 
     <Route
       path={paths.imdadRequestsNewFormPath}

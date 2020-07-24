@@ -1,7 +1,8 @@
 import gql from 'graphql-tag';
 
-const CREATE_OUTSTATION_AMAANAT_LOG = gql`
-  mutation createOutstationAmaanatLog(
+const UPDATE_ACCOUNTS_AMAANAT_LOG = gql`
+  mutation updateAccountsAmaanatLog(
+    $_id: String!
     $cityId: String!
     $cityMehfilId: String!
     $sentDate: String!
@@ -13,7 +14,8 @@ const CREATE_OUTSTATION_AMAANAT_LOG = gql`
     $otherPortion: Float
     $otherPortionDescription: String
   ) {
-    createOutstationAmaanatLog(
+    updateAccountsAmaanatLog(
+      _id: $_id
       cityId: $cityId
       cityMehfilId: $cityMehfilId
       sentDate: $sentDate
@@ -40,4 +42,4 @@ const CREATE_OUTSTATION_AMAANAT_LOG = gql`
   }
 `;
 
-export default CREATE_OUTSTATION_AMAANAT_LOG;
+export default UPDATE_ACCOUNTS_AMAANAT_LOG;

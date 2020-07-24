@@ -29,7 +29,7 @@ const modulePathsMapping = {
   [ModuleNames.communication]: ModulePaths.communication,
   [ModuleNames.inventory]: ModulePaths.inventory,
   //  [ModuleNames.wazaifManagement]: ModulePaths.wazaifManagement,
-  [ModuleNames.telephoneRoom]: ModulePaths.telephoneRoom,
+  [ModuleNames.operations]: ModulePaths.operations,
   [ModuleNames.security]: ModulePaths.security,
   [ModuleNames.outstation]: ModulePaths.outstation,
   [ModuleNames.portals]: ModulePaths.portals,

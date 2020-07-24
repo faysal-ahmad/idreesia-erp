@@ -68,16 +68,16 @@ import SharedResidenceSchema from './security/shared-residence/shared-residence.
 import SharedResidenceResolvers from './security/shared-residence/resolvers';
 
 /**
- * Schema and Resolvers for the Telephone Room module
+ * Schema and Resolvers for the Operaitons module
  */
-import TelephoneRoomVisitorSchema from './telephone-room/visitor/visitor.graphql';
-import TelephoneRoomVisitorResolvers from './telephone-room/visitor/resolvers';
+import OperationsVisitorSchema from './operations/visitor/visitor.graphql';
+import OperationsVisitorResolvers from './operations/visitor/resolvers';
 
-import TelephoneRoomVisitorMulakaatSchema from './telephone-room/visitor-mulakaat/visitor-mulakaat.graphql';
-import TelephoneRoomVisitorMulakaatResolvers from './telephone-room/visitor-mulakaat/resolvers';
+import OperationsVisitorMulakaatSchema from './operations/visitor-mulakaat/visitor-mulakaat.graphql';
+import OperationsVisitorMulakaatResolvers from './operations/visitor-mulakaat/resolvers';
 
-import TelephoneRoomImdadRequestSchema from './telephone-room/imdad-request/imdad-request.graphql';
-import TelephoneRoomImdadRequestResolvers from './telephone-room/imdad-request/resolvers';
+import OperationsImdadRequestSchema from './operations/imdad-request/imdad-request.graphql';
+import OperationsImdadRequestResolvers from './operations/imdad-request/resolvers';
 
 /**
  * Schema and Resolvers for the HR module
@@ -271,9 +271,9 @@ const typeDefs = [
   SecurityVisitorMulakaatSchema,
   SharedResidenceSchema,
 
-  TelephoneRoomVisitorSchema,
-  TelephoneRoomVisitorMulakaatSchema,
-  TelephoneRoomImdadRequestSchema,
+  OperationsVisitorSchema,
+  OperationsVisitorMulakaatSchema,
+  OperationsImdadRequestSchema,
 
   HRAuditLogSchema,
   DutyShiftSchema,
@@ -352,9 +352,9 @@ const resolvers = merge(
   SecurityVisitorMulakaatResolvers,
   SharedResidenceResolvers,
 
-  TelephoneRoomVisitorResolvers,
-  TelephoneRoomVisitorMulakaatResolvers,
-  TelephoneRoomImdadRequestResolvers,
+  OperationsVisitorResolvers,
+  OperationsVisitorMulakaatResolvers,
+  OperationsImdadRequestResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,

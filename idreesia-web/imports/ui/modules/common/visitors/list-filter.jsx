@@ -148,8 +148,8 @@ const ListFilter = ({
           value: DataSource.OUTSTATION,
         },
         {
-          label: 'Telephone Room',
-          value: DataSource.TELEPHONE_ROOM,
+          label: 'Operations',
+          value: DataSource.OPERATIONS,
         },
         {
           label: 'Portals',

@@ -1,0 +1,24 @@
+extend type Query {
+  operationsVisitorMulakaatById(_id: String!): VisitorMulakaatType
+  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+
+  pagedOperationsVisitorMulakaats(filter: VisitorMulakaatFilter): PagedVisitorMulakaatType
+  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+}
+
+extend type Mutation {
+  createOperationsVisitorMulakaat(
+    visitorId: String!
+    mulakaatDate: String!
+  ): VisitorMulakaatType
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+
+  cancelOperationsVisitorMulakaats(mulakaatDate: String!): Int
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+
+  cancelOperationsVisitorMulakaat(_id: String!): VisitorMulakaatType
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+
+  deleteOperationsVisitorMulakaat(_id: String!): Int
+  @checkPermissions(permissions: [OP_DELETE_DATA])
+}

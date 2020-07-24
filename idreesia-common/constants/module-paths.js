@@ -7,7 +7,7 @@ const ModulePaths = {
   outstation: '/outstation',
   portals: '/portals',
   security: '/security',
-  telephoneRoom: '/telephone-room',
+  operations: '/operations',
   wazaifManagement: '/wazaif-management',
 };
 

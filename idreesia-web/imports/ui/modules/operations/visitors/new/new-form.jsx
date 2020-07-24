@@ -3,22 +3,18 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { message } from '/imports/ui/controls';
-import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
+import { VisitorsNewForm } from '/imports/ui/modules/common';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
-import { UPDATE_OUTSTATION_MEMBER, OUTSTATION_MEMBER_BY_ID } from '../gql';
+import { CREATE_OPERATIONS_VISITOR } from '../gql';
 
-class GeneralInfo extends Component {
+class NewForm extends Component {
   static propTypes = {
-    match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
-
-    formDataLoading: PropTypes.bool,
-    memberId: PropTypes.string,
-    outstationMemberById: PropTypes.object,
-    updateOutstationMember: PropTypes.func,
+    createOperationsVisitor: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -39,14 +35,10 @@ class GeneralInfo extends Component {
     city,
     country,
   }) => {
-    const {
-      history,
-      outstationMemberById,
-      updateOutstationMember,
-    } = this.props;
-    updateOutstationMember({
+    const { history, createOperationsVisitor } = this.props;
+
+    createOperationsVisitor({
       variables: {
-        _id: outstationMemberById._id,
         name,
         parentName,
         cnicNumber,
@@ -60,8 +52,8 @@ class GeneralInfo extends Component {
         country,
       },
     })
-      .then(() => {
-        history.goBack();
+      .then(({ data: { createOperationsVisitor: newVisitor } }) => {
+        history.push(`${paths.visitorsEditFormPath(newVisitor._id)}`);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -69,12 +61,8 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { formDataLoading, outstationMemberById } = this.props;
-    if (formDataLoading) return null;
-
     return (
-      <VisitorsGeneralInfo
-        visitor={outstationMemberById}
+      <VisitorsNewForm
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
       />
@@ -83,17 +71,11 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  graphql(UPDATE_OUTSTATION_MEMBER, {
-    name: 'updateOutstationMember',
+  graphql(CREATE_OPERATIONS_VISITOR, {
+    name: 'createOperationsVisitor',
     options: {
       refetchQueries: ['pagedOperationsVisitors'],
     },
   }),
-  graphql(OUTSTATION_MEMBER_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { memberId } = match.params;
-      return { variables: { _id: memberId } };
-    },
-  })
-)(GeneralInfo);
+  WithBreadcrumbs(['Operations', 'Visitors', 'New'])
+)(NewForm);

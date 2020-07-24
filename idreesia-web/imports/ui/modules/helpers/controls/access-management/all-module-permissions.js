@@ -7,7 +7,7 @@ import {
   outstationPermissionsData,
   portalsPermissionsData,
   securityPermissionsData,
-  telephoneRoomPermissionsData,
+  operationsPermissionsData,
   wazaifManagementPermissionsData,
 } from './permissions-data';
 
@@ -20,6 +20,6 @@ export const allModulePermissions = [
   outstationPermissionsData,
   portalsPermissionsData,
   securityPermissionsData,
-  telephoneRoomPermissionsData,
+  operationsPermissionsData,
   wazaifManagementPermissionsData,
 ];

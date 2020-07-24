@@ -586,29 +586,29 @@ export const securityPermissionsData = {
   ],
 };
 
-export const telephoneRoomPermissionsData = {
-  title: 'Telephone Room',
-  key: 'module-telephone-room',
+export const operationsPermissionsData = {
+  title: 'Operations',
+  key: 'module-operations',
   children: [
     {
       title: 'Delete Data',
-      key: PermissionConstants.TR_DELETE_DATA,
+      key: PermissionConstants.OP_DELETE_DATA,
     },
     {
       title: 'Manage Setup Data',
-      key: PermissionConstants.TR_MANAGE_SETUP_DATA,
+      key: PermissionConstants.OP_MANAGE_SETUP_DATA,
     },
     {
       title: 'Visitors',
-      key: 'module-telephone-room-visitors',
+      key: 'module-operations-visitors',
       children: [
         {
           title: 'View Visitors',
-          key: PermissionConstants.TR_VIEW_VISITORS,
+          key: PermissionConstants.OP_VIEW_VISITORS,
         },
         {
           title: 'Manage Visitors',
-          key: PermissionConstants.TR_MANAGE_VISITORS,
+          key: PermissionConstants.OP_MANAGE_VISITORS,
         },
       ],
     },

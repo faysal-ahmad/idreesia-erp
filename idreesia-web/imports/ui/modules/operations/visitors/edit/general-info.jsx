@@ -6,7 +6,7 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/controls';
 import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
 
-import { UPDATE_OUTSTATION_MEMBER, OUTSTATION_MEMBER_BY_ID } from '../gql';
+import { UPDATE_OPERATIONS_VISITOR, OPERATIONS_VISITOR_BY_ID } from '../gql';
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -16,9 +16,9 @@ class GeneralInfo extends Component {
     form: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
-    memberId: PropTypes.string,
-    outstationMemberById: PropTypes.object,
-    updateOutstationMember: PropTypes.func,
+    visitorId: PropTypes.string,
+    operationsVisitorById: PropTypes.object,
+    updateOperationsVisitor: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -41,12 +41,12 @@ class GeneralInfo extends Component {
   }) => {
     const {
       history,
-      outstationMemberById,
-      updateOutstationMember,
+      operationsVisitorById,
+      updateOperationsVisitor,
     } = this.props;
-    updateOutstationMember({
+    updateOperationsVisitor({
       variables: {
-        _id: outstationMemberById._id,
+        _id: operationsVisitorById._id,
         name,
         parentName,
         cnicNumber,
@@ -69,12 +69,12 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { formDataLoading, outstationMemberById } = this.props;
+    const { formDataLoading, operationsVisitorById } = this.props;
     if (formDataLoading) return null;
 
     return (
       <VisitorsGeneralInfo
-        visitor={outstationMemberById}
+        visitor={operationsVisitorById}
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
       />
@@ -83,17 +83,17 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  graphql(UPDATE_OUTSTATION_MEMBER, {
-    name: 'updateOutstationMember',
+  graphql(UPDATE_OPERATIONS_VISITOR, {
+    name: 'updateOperationsVisitor',
     options: {
       refetchQueries: ['pagedOperationsVisitors'],
     },
   }),
-  graphql(OUTSTATION_MEMBER_BY_ID, {
+  graphql(OPERATIONS_VISITOR_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
-      const { memberId } = match.params;
-      return { variables: { _id: memberId } };
+      const { visitorId } = match.params;
+      return { variables: { _id: visitorId } };
     },
   })
 )(GeneralInfo);

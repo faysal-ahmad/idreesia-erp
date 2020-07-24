@@ -22,8 +22,8 @@ const sidebarsMap = {
   [ModuleNames.wazaifManagement]: React.lazy(() =>
     import('/imports/ui/modules/wazaif-management/sidebar')
   ),
-  [ModuleNames.telephoneRoom]: React.lazy(() =>
-    import('/imports/ui/modules/telephone-room/sidebar')
+  [ModuleNames.operations]: React.lazy(() =>
+    import('/imports/ui/modules/operations/sidebar')
   ),
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/sidebar')

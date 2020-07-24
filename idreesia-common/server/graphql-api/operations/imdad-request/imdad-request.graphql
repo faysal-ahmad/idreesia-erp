@@ -1,0 +1,12 @@
+extend type Query {
+  pagedOperationsImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
+  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+}
+
+extend type Mutation {
+  createOperationsImdadRequest(visitorId: String!): ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+
+  deleteOperationsImdadRequest(_id: String!): Int
+  @checkPermissions(permissions: [OP_DELETE_DATA])
+}

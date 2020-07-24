@@ -1,0 +1,50 @@
+extend type Query {
+  pagedOperationsVisitors(filter: VisitorFilter): PagedVisitorType 
+  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+
+  operationsVisitorById(_id: String!): VisitorType
+  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+
+  operationsVisitorsByCnic(cnicNumbers: [String], partialCnicNumber: String): [VisitorType]
+  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+}
+
+extend type Mutation {
+  createOperationsVisitor(
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    birthDate: String
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+    imageData: String
+  ): VisitorType
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+
+  updateOperationsVisitor(
+    _id: String!
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    birthDate: String
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    address: String
+    city: String
+    country: String
+  ): VisitorType
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+
+  deleteOperationsVisitor(_id: String!): Int
+  @checkPermissions(permissions: [OP_DELETE_DATA])
+
+  setOperationsVisitorImage(_id: String!, imageId: String!): VisitorType
+  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+}

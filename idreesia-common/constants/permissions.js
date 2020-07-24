@@ -70,13 +70,13 @@ const Permissions = {
   HR_APPROVE_MESSAGES: 'hr-approve-messages',
 
   // ****************************************************************************************
-  // Telephone Room Module
+  // Operations Module
   // ****************************************************************************************
-  TR_MANAGE_SETUP_DATA: 'telephone-room-manage-setup-data',
-  TR_DELETE_DATA: 'telephone-room-delete-data',
+  OP_MANAGE_SETUP_DATA: 'operations-manage-setup-data',
+  OP_DELETE_DATA: 'operations-delete-data',
 
-  TR_VIEW_VISITORS: 'telephone-room-view-visitors',
-  TR_MANAGE_VISITORS: 'telephone-room-manage-visitors',
+  OP_VIEW_VISITORS: 'operations-view-visitors',
+  OP_MANAGE_VISITORS: 'operations-manage-visitors',
 
   // ****************************************************************************************
   // Outstation Module

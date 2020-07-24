@@ -1,7 +1,7 @@
 const DataSource = {
   ACCOUNTS: 'accounts',
   SECURITY: 'security',
-  TELEPHONE_ROOM: 'telephone-room',
+  OPERATIONS: 'operations',
   OUTSTATION: 'outstation',
   PORTAL: 'portal',
 };

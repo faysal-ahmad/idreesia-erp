@@ -7,7 +7,7 @@ const ModuleNames = {
   outstation: 'Outstation',
   portals: 'Mehfil Portals',
   security: 'Security',
-  telephoneRoom: 'Telephone Room',
+  operations: 'Operations',
   wazaifManagement: 'Wazaif Management',
 };
 

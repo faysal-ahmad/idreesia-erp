@@ -1,5 +1,5 @@
 const MessageSource = {
-  COMMUNICATION: 'communication',
+  OPERATIONS: 'operations',
   HR: 'hr',
   OUTSTATION: 'outstation',
 };

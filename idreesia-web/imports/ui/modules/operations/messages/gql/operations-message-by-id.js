@@ -1,16 +1,8 @@
 import gql from 'graphql-tag';
 
-const UPDATE_COMM_MESSAGE = gql`
-  mutation updateCommMessage(
-    $_id: String!
-    $messageBody: String!
-    $recepientFilter: MessageRecepientFilter
-  ) {
-    updateCommMessage(
-      _id: $_id
-      messageBody: $messageBody
-      recepientFilter: $recepientFilter
-    ) {
+const OPERATIONS_MESSAGE_BY_ID = gql`
+  query operationsMessageById($_id: String!) {
+    operationsMessageById(_id: $_id) {
       _id
       messageBody
       recepientFilters {
@@ -23,6 +15,7 @@ const UPDATE_COMM_MESSAGE = gql`
       }
       status
       sentDate
+      karkunIds
       approvedOn
       approvedBy
       createdAt
@@ -33,4 +26,4 @@ const UPDATE_COMM_MESSAGE = gql`
   }
 `;
 
-export default UPDATE_COMM_MESSAGE;
+export default OPERATIONS_MESSAGE_BY_ID;

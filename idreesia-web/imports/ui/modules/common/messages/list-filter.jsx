@@ -98,8 +98,8 @@ const ListFilter = props => {
           value: MessageSource.OUTSTATION,
         },
         {
-          label: 'Communication',
-          value: MessageSource.COMMUNICATION,
+          label: 'Operations',
+          value: MessageSource.OPERATIONS,
         },
       ]}
       getDataValue={({ value }) => value}

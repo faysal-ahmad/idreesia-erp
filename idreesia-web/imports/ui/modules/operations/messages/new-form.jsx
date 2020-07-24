@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useQuery, useMutation } from '@apollo/react-hooks';
-import { useParams } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import {
-  FilterTarget,
-  MessageStatus,
-} from 'meteor/idreesia-common/constants/communication';
+import { FilterTarget } from 'meteor/idreesia-common/constants/communication';
 import {
   useAllJobs,
   useAllMSDuties,
   useAllMSDutyShifts,
 } from 'meteor/idreesia-common/hooks/hr';
+
 import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
   InputTextAreaField,
@@ -24,26 +21,16 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { getDutyShiftTreeData } from '/imports/ui/modules/hr/common/utilities';
 
-import {
-  COMM_MESSAGE_BY_ID,
-  PAGED_COMM_MESSAGES,
-  UPDATE_COMM_MESSAGE,
-} from './gql';
+import { PAGED_OPERATIONS_MESSAGES, CREATE_OPERATIONS_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
 import { separateDutyAndShifts } from './helpers';
 
-const EditForm = ({ form, history, location }) => {
+const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
-  const { messageId } = useParams();
   const [showPreview, setShowPreview] = useState(false);
   const [recepientFilter, setRecepientFilter] = useState(null);
-  const [updateCommMessage] = useMutation(UPDATE_COMM_MESSAGE, {
-    refetchQueries: [{ query: PAGED_COMM_MESSAGES }],
-  });
-  const { data, loading } = useQuery(COMM_MESSAGE_BY_ID, {
-    variables: {
-      _id: messageId,
-    },
+  const [createOperationsMessage] = useMutation(CREATE_OPERATIONS_MESSAGE, {
+    refetchQueries: [{ query: PAGED_OPERATIONS_MESSAGES }],
   });
 
   const { allJobs, allJobsLoading } = useAllJobs();
@@ -51,15 +38,10 @@ const EditForm = ({ form, history, location }) => {
   const { allMSDutyShifts, allMSDutyShiftsLoading } = useAllMSDutyShifts();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Communication', 'Messages', 'Edit']));
+    dispatch(setBreadcrumbs(['Operations', 'Messages', 'New']));
   }, [location]);
 
-  if (
-    loading ||
-    allJobsLoading ||
-    allMSDutiesLoading ||
-    allMSDutyShiftsLoading
-  ) {
+  if (allJobsLoading || allMSDutiesLoading || allMSDutyShiftsLoading) {
     return null;
   }
 
@@ -108,9 +90,8 @@ const EditForm = ({ form, history, location }) => {
           allMSDutyShifts
         );
 
-        updateCommMessage({
+        createOperationsMessage({
           variables: {
-            _id: messageId,
             messageBody,
             recepientFilter: {
               filterTarget: FilterTarget.MS_KARKUNS,
@@ -132,11 +113,6 @@ const EditForm = ({ form, history, location }) => {
     );
   };
 
-  const {
-    commMessageById: { messageBody, recepientFilters, status },
-  } = data;
-
-  const _recepientFilter = recepientFilters ? recepientFilters[0] : null;
   const dutyShiftTreeData = getDutyShiftTreeData(allMSDuties, allMSDutyShifts);
 
   return (
@@ -147,7 +123,6 @@ const EditForm = ({ form, history, location }) => {
           fieldLabel="Message"
           required
           requiredMessage="Please input the message to send."
-          initialValue={messageBody}
           getFieldDecorator={getFieldDecorator}
         />
         <Divider>Karkuns Selection Criteria</Divider>
@@ -167,14 +142,12 @@ const EditForm = ({ form, history, location }) => {
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
-          initialValue={_recepientFilter ? _recepientFilter.bloodGroup : null}
           getFieldDecorator={getFieldDecorator}
         />
         <LastTarteebFilterField
           fieldName="lastTarteeb"
           fieldLabel="Last Tarteeb"
           required={false}
-          initialValue={_recepientFilter ? _recepientFilter.lastTarteeb : null}
           getFieldDecorator={getFieldDecorator}
         />
         <SelectField
@@ -185,7 +158,7 @@ const EditForm = ({ form, history, location }) => {
           data={allJobs}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
-          initialValue={_recepientFilter ? _recepientFilter.jobIds : null}
+          initialValue={[]}
           getFieldDecorator={getFieldDecorator}
         />
         <TreeMultiSelectField
@@ -193,14 +166,6 @@ const EditForm = ({ form, history, location }) => {
           fieldName="dutyIdShiftIds"
           fieldLabel="Duties/Shifts"
           required={false}
-          initialValue={
-            _recepientFilter
-              ? [
-                  ...(_recepientFilter.dutyIds || []),
-                  ...(_recepientFilter.dutyShiftIds || []),
-                ]
-              : []
-          }
           getFieldDecorator={getFieldDecorator}
         />
         <Divider />
@@ -208,7 +173,6 @@ const EditForm = ({ form, history, location }) => {
           extraText="Preview Karkuns"
           handleCancel={handleCancel}
           handleExtra={handlePeviewKarkuns}
-          allowSubmit={status === MessageStatus.WAITING_APPROVAL}
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
@@ -226,10 +190,10 @@ const EditForm = ({ form, history, location }) => {
   );
 };
 
-EditForm.propTypes = {
+NewForm.propTypes = {
   form: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
 };
 
-export default Form.create()(EditForm);
+export default Form.create()(NewForm);

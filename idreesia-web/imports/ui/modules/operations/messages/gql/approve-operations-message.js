@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const APPROVE_COMM_MESSAGE = gql`
-  mutation approveCommMessage($_id: String!) {
-    approveCommMessage(_id: $_id) {
+const APPROVE_OPERATIONS_MESSAGE = gql`
+  mutation approveOperationsMessage($_id: String!) {
+    approveOperationsMessage(_id: $_id) {
       _id
       source
       messageBody
@@ -19,4 +19,4 @@ const APPROVE_COMM_MESSAGE = gql`
   }
 `;
 
-export default APPROVE_COMM_MESSAGE;
+export default APPROVE_OPERATIONS_MESSAGE;

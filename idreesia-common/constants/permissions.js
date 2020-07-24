@@ -41,14 +41,6 @@ const Permissions = {
   ADMIN_MANAGE_PORTALS: 'admin-manage-portals',
 
   // ****************************************************************************************
-  // Communication Module
-  // ****************************************************************************************
-  COMM_DELETE_DATA: 'communication-delete-data',
-  COMM_VIEW_MESSAGES: 'communication-view-messages',
-  COMM_MANAGE_MESSAGES: 'communication-manage-messages',
-  COMM_APPROVE_MESSAGES: 'communication-approve-messages',
-
-  // ****************************************************************************************
   // HR Module
   // ****************************************************************************************
   HR_MANAGE_SETUP_DATA: 'hr-manage-setup-data',
@@ -77,6 +69,10 @@ const Permissions = {
 
   OP_VIEW_VISITORS: 'operations-view-visitors',
   OP_MANAGE_VISITORS: 'operations-manage-visitors',
+
+  OP_VIEW_MESSAGES: 'operations-view-messages',
+  OP_MANAGE_MESSAGES: 'operations-manage-messages',
+  OP_APPROVE_MESSAGES: 'operations-approve-messages',
 
   // ****************************************************************************************
   // Outstation Module

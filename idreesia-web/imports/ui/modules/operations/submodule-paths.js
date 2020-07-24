@@ -12,6 +12,15 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Messages Routes
+  // *************************************************************************************
+  static messagesPath = `${ModulePaths.operations}/messages`;
+  static messagesNewFormPath = `${SubModulePaths.messagesPath}/new`;
+  static messagesEditFormPath(messageId = ':messageId') {
+    return `${SubModulePaths.messagesPath}/${messageId}`;
+  }
+
+  // *************************************************************************************
   // Report Routes
   // *************************************************************************************
   static imdadRequestReportPath = `${ModulePaths.operations}/imdad-request-report`;

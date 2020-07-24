@@ -26,6 +26,11 @@ class Sidebar extends Component {
         history.push(paths.visitorsPath);
         break;
 
+      case 'messages':
+        setActiveSubModuleName(SubModuleNames.messages);
+        history.push(paths.messagesPath);
+        break;
+
       case 'new-ehad-report':
         setActiveSubModuleName(SubModuleNames.newEhadReport);
         history.push(paths.newEhadReportPath);
@@ -57,6 +62,12 @@ class Sidebar extends Component {
           <span>
             <Icon type="idcard" style={IconStyle} />
             Visitors
+          </span>
+        </Menu.Item>
+        <Menu.Item key="messages">
+          <span>
+            <Icon type="message" style={IconStyle} />
+            Messages
           </span>
         </Menu.Item>
         <Menu.SubMenu

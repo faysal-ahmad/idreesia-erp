@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PAGED_COMM_MESSAGES = gql`
-  query pagedCommMessages($filter: MessageFilter) {
-    pagedCommMessages(filter: $filter) {
+const PAGED_OPERATIONS_MESSAGES = gql`
+  query pagedOperationsMessages($filter: MessageFilter) {
+    pagedOperationsMessages(filter: $filter) {
       totalResults
       data {
         _id
@@ -17,4 +17,4 @@ const PAGED_COMM_MESSAGES = gql`
   }
 `;
 
-export default PAGED_COMM_MESSAGES;
+export default PAGED_OPERATIONS_MESSAGES;

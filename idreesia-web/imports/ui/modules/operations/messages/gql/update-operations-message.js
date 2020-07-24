@@ -1,16 +1,17 @@
 import gql from 'graphql-tag';
 
-const CREATE_COMM_MESSAGE = gql`
-  mutation createCommMessage(
+const UPDATE_OPERATIONS_MESSAGE = gql`
+  mutation updateOperationsMessage(
+    $_id: String!
     $messageBody: String!
     $recepientFilter: MessageRecepientFilter
   ) {
-    createCommMessage(
+    updateOperationsMessage(
+      _id: $_id
       messageBody: $messageBody
       recepientFilter: $recepientFilter
     ) {
       _id
-      source
       messageBody
       recepientFilters {
         filterTarget
@@ -32,4 +33,4 @@ const CREATE_COMM_MESSAGE = gql`
   }
 `;
 
-export default CREATE_COMM_MESSAGE;
+export default UPDATE_OPERATIONS_MESSAGE;

@@ -7,6 +7,7 @@ import {
   VisitorsEditForm,
   VisitorsList,
 } from './visitors';
+import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import { MulakaatReport } from './mulakaat-report';
 import { NewEhadReport } from './new-ehad-report';
 import { ImdadRequestReport } from './imdad-request-report';
@@ -19,6 +20,10 @@ const Router = () => (
     <Route path={paths.visitorsScanFormPath} component={VisitorsScanForm} />
     <Route path={paths.visitorsEditFormPath()} component={VisitorsEditForm} />
     <Route path={paths.visitorsPath} component={VisitorsList} />
+
+    <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
+    <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />
+    <Route path={paths.messagesPath} component={MessagesList} />
 
     <Route path={paths.mulakaatReportPath} component={MulakaatReport} />
     <Route path={paths.newEhadReportPath} component={NewEhadReport} />

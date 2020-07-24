@@ -7,13 +7,13 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { Button, Drawer, message } from '/imports/ui/controls';
 import { MessagesList, MessagesListFilter } from '/imports/ui/modules/common';
-import { CommunicationSubModulePaths as paths } from '/imports/ui/modules/communication';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import MessageResults from './message-results';
 import {
-  PAGED_COMM_MESSAGES,
-  APPROVE_COMM_MESSAGE,
-  DELETE_COMM_MESSAGE,
+  PAGED_OPERATIONS_MESSAGES,
+  APPROVE_OPERATIONS_MESSAGE,
+  DELETE_OPERATIONS_MESSAGE,
 } from '../gql';
 
 const List = ({ history, location }) => {
@@ -27,16 +27,16 @@ const List = ({ history, location }) => {
     paramNames: ['startDate', 'endDate', 'source', 'pageIndex', 'pageSize'],
   });
 
-  const [deleteCommMessage] = useMutation(DELETE_COMM_MESSAGE);
-  const [approveCommMessage] = useMutation(APPROVE_COMM_MESSAGE);
-  const { data, loading, refetch } = useQuery(PAGED_COMM_MESSAGES, {
+  const [deleteOperationsMessage] = useMutation(DELETE_OPERATIONS_MESSAGE);
+  const [approveOperationsMessage] = useMutation(APPROVE_OPERATIONS_MESSAGE);
+  const { data, loading, refetch } = useQuery(PAGED_OPERATIONS_MESSAGES, {
     variables: {
       filter: queryParams,
     },
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Communication', 'Messages', 'List']));
+    dispatch(setBreadcrumbs(['Operations', 'Messages', 'List']));
   }, [location]);
 
   const { startDate, endDate, source, pageIndex, pageSize } = queryParams;
@@ -50,7 +50,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteItem = _message => {
-    deleteCommMessage({
+    deleteOperationsMessage({
       variables: { _id: _message._id },
     })
       .then(() => {
@@ -62,7 +62,7 @@ const List = ({ history, location }) => {
   };
 
   const handleApproveItem = _message => {
-    approveCommMessage({
+    approveOperationsMessage({
       variables: { _id: _message._id },
     })
       .then(() => {
@@ -101,7 +101,7 @@ const List = ({ history, location }) => {
   );
 
   if (loading) return null;
-  const { pagedCommMessages } = data;
+  const { pagedOperationsMessages } = data;
 
   return (
     <>
@@ -114,7 +114,7 @@ const List = ({ history, location }) => {
         setPageParams={setPageParams}
         pageIndex={pageIndex}
         pageSize={pageSize}
-        pagedData={pagedCommMessages}
+        pagedData={pagedOperationsMessages}
       />
       <Drawer
         title={

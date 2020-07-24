@@ -73,6 +73,9 @@ import SharedResidenceResolvers from './security/shared-residence/resolvers';
 import OperationsVisitorSchema from './operations/visitor/visitor.graphql';
 import OperationsVisitorResolvers from './operations/visitor/resolvers';
 
+import OperationsMessageSchema from './operations/message/message.graphql';
+import OperationsMessageResolvers from './operations/message/resolvers';
+
 import OperationsVisitorMulakaatSchema from './operations/visitor-mulakaat/visitor-mulakaat.graphql';
 import OperationsVisitorMulakaatResolvers from './operations/visitor-mulakaat/resolvers';
 
@@ -114,12 +117,6 @@ import HRMessageResolvers from './hr/message/resolvers';
 
 import HRSharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
 import HRSharedResidenceResolvers from './hr/shared-residence/resolvers';
-
-/**
- * Schema and Resolvers for the Communication module
- */
-import CommMessageSchema from './communication/message/message.graphql';
-import CommMessageResolvers from './communication/message/resolvers';
 
 /**
  * Schema and Resolvers for the Outstation module
@@ -272,6 +269,7 @@ const typeDefs = [
   SharedResidenceSchema,
 
   OperationsVisitorSchema,
+  OperationsMessageSchema,
   OperationsVisitorMulakaatSchema,
   OperationsImdadRequestSchema,
 
@@ -286,8 +284,6 @@ const typeDefs = [
   SalarySchema,
   HRMessageSchema,
   HRSharedResidenceSchema,
-
-  CommMessageSchema,
 
   CitySchema,
   CityMehfilSchema,
@@ -353,6 +349,7 @@ const resolvers = merge(
   SharedResidenceResolvers,
 
   OperationsVisitorResolvers,
+  OperationsMessageResolvers,
   OperationsVisitorMulakaatResolvers,
   OperationsImdadRequestResolvers,
 
@@ -367,8 +364,6 @@ const resolvers = merge(
   SalaryResolvers,
   HRMessageResolvers,
   HRSharedResidenceResolvers,
-
-  CommMessageResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

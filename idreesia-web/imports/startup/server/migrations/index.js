@@ -34,6 +34,7 @@ import './30-create-imdad-indexes';
 import './31-create-updated-at-indexes';
 import './32-update-existing-messages';
 import './33-change-tr-to-op';
+import './34-move-messages-to-operations';
 
 Migrations.config({
   log: true,

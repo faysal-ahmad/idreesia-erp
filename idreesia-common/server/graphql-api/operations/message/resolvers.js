@@ -10,11 +10,11 @@ import { getKarkunsWithoutPagination } from 'meteor/idreesia-common/server/graph
 
 export default {
   Query: {
-    commMessageById(obj, { _id }) {
+    operationsMessageById(obj, { _id }) {
       return Messages.findOne(_id);
     },
 
-    pagedCommMessages(obj, { filter }) {
+    pagedOperationsMessages(obj, { filter }) {
       return Messages.searchMessages({
         ...filter,
       });
@@ -22,12 +22,12 @@ export default {
   },
 
   Mutation: {
-    createCommMessage(obj, { messageBody, recepientFilter }, { user }) {
+    createOperationsMessage(obj, { messageBody, recepientFilter }, { user }) {
       return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
         const karkunIds = karkuns.map(karkun => karkun._id);
         const date = new Date();
         const messageId = Messages.insert({
-          source: MessageSource.COMMUNICATION,
+          source: MessageSource.OPERATIONS,
           messageBody,
           recepientFilters: [recepientFilter],
           status: MessageStatus.WAITING_APPROVAL,
@@ -42,7 +42,11 @@ export default {
       });
     },
 
-    updateCommMessage(obj, { _id, messageBody, recepientFilter }, { user }) {
+    updateOperationsMessage(
+      obj,
+      { _id, messageBody, recepientFilter },
+      { user }
+    ) {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(
@@ -61,7 +65,7 @@ export default {
         Messages.update(
           {
             _id,
-            source: MessageSource.COMMUNICATION,
+            source: MessageSource.OPERATIONS,
           },
           {
             $set: {
@@ -78,12 +82,12 @@ export default {
       });
     },
 
-    approveCommMessage(obj, { _id }, { user }) {
+    approveOperationsMessage(obj, { _id }, { user }) {
       const date = new Date();
       Messages.update(
         {
           _id,
-          source: MessageSource.COMMUNICATION,
+          source: MessageSource.OPERATIONS,
         },
         {
           $set: {
@@ -100,7 +104,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    deleteCommMessage(obj, { _id }) {
+    deleteOperationsMessage(obj, { _id }) {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(
@@ -110,7 +114,7 @@ export default {
 
       return Messages.remove({
         _id,
-        source: MessageSource.COMMUNICATION,
+        source: MessageSource.OPERATIONS,
       });
     },
   },

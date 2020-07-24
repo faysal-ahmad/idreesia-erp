@@ -9,7 +9,7 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Button, message } from '/imports/ui/controls';
 import { WazaifList, WazaifListFilter } from '/imports/ui/modules/common';
-import { WazaifManagementSubModulePaths as paths } from '/imports/ui/modules/wazaif-management';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import { PAGED_OPERATIONS_WAZAIF, DELETE_OPERATIONS_WAZEEFA } from '../gql';
 

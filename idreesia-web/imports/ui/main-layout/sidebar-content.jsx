@@ -19,9 +19,6 @@ const sidebarsMap = {
   [ModuleNames.accounts]: React.lazy(() =>
     import('/imports/ui/modules/accounts/sidebar')
   ),
-  [ModuleNames.wazaifManagement]: React.lazy(() =>
-    import('/imports/ui/modules/wazaif-management/sidebar')
-  ),
   [ModuleNames.operations]: React.lazy(() =>
     import('/imports/ui/modules/operations/sidebar')
   ),

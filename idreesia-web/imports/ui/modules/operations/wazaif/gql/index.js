@@ -8,8 +8,8 @@ export {
   default as DELETE_OPERATIONS_WAZEEFA,
 } from './delete-operations-wazeefa';
 export {
-  default as SET_OPERATIONS_WAZEEFA_IMAGES,
-} from './set-operations-wazeefa-images';
+  default as SET_OPERATIONS_WAZEEFA_IMAGE,
+} from './set-operations-wazeefa-image';
 export {
   default as REMOVE_OPERATIONS_WAZEEFA_IMAGE,
 } from './remove-operations-wazeefa-image';

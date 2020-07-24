@@ -17,14 +17,12 @@ import { UploadAttachment } from '/imports/ui/modules/helpers/controls';
 
 import {
   OPERATIONS_WAZEEFA_BY_ID,
-  SET_OPERATIONS_WAZEEFA_IMAGES,
+  SET_OPERATIONS_WAZEEFA_IMAGE,
   REMOVE_OPERATIONS_WAZEEFA_IMAGE,
 } from '../gql';
 
 const Images = ({ wazeefaId }) => {
-  const [setOperationsWazeefaImage] = useMutation(
-    SET_OPERATIONS_WAZEEFA_IMAGES
-  );
+  const [setOperationsWazeefaImage] = useMutation(SET_OPERATIONS_WAZEEFA_IMAGE);
   const [removeOperationsWazeefaImage] = useMutation(
     REMOVE_OPERATIONS_WAZEEFA_IMAGE
   );
@@ -33,7 +31,7 @@ const Images = ({ wazeefaId }) => {
   });
 
   if (loading) return null;
-  const { wazeefaById } = data;
+  const { operationsWazeefaById } = data;
 
   const handleDeleteClicked = attachmentId => {
     removeOperationsWazeefaImage({
@@ -51,7 +49,7 @@ const Images = ({ wazeefaId }) => {
   };
 
   const handleMoveUpClicked = imageId => {
-    const { imageIds } = wazeefaById;
+    const { imageIds } = operationsWazeefaById;
     const index = imageIds.indexOf(imageId);
     imageIds[index] = imageIds[index - 1];
     imageIds[index - 1] = imageId;
@@ -71,7 +69,7 @@ const Images = ({ wazeefaId }) => {
   };
 
   const handleMoveDownClicked = imageId => {
-    const { imageIds } = wazeefaById;
+    const { imageIds } = operationsWazeefaById;
     const index = imageIds.indexOf(imageId);
     imageIds[index] = imageIds[index + 1];
     imageIds[index + 1] = imageId;
@@ -91,7 +89,7 @@ const Images = ({ wazeefaId }) => {
   };
 
   const handleImageAdded = imageId => {
-    const { imageIds } = wazeefaById;
+    const { imageIds } = operationsWazeefaById;
     setOperationsWazeefaImage({
       variables: {
         _id: wazeefaId,
@@ -128,7 +126,7 @@ const Images = ({ wazeefaId }) => {
     {
       key: 'action',
       render: (text, record, index) => {
-        const { imageIds } = wazeefaById;
+        const { imageIds } = operationsWazeefaById;
 
         const moveDownAction =
           index !== imageIds.length - 1 && imageIds.length > 1 ? (
@@ -185,7 +183,7 @@ const Images = ({ wazeefaId }) => {
   ];
 
   const getSortedImages = () => {
-    const { imageIds, images } = wazeefaById;
+    const { imageIds, images } = operationsWazeefaById;
     return (imageIds || []).map(imageId =>
       find(images, ({ _id }) => _id === imageId)
     );

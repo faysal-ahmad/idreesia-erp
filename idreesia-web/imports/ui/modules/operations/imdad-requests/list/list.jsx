@@ -11,11 +11,11 @@ import {
   ImdadRequestsList,
   ImdadRequestsListFilter,
 } from '/imports/ui/modules/common';
-import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import {
-  DELETE_ACCOUNTS_IMDAD_REQUEST,
-  PAGED_ACCOUNTS_IMDAD_REQUESTS,
+  DELETE_OPERATIONS_IMDAD_REQUEST,
+  PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
 
 const List = ({ history, location }) => {
@@ -32,17 +32,17 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const [deleteAccountsImdadRequest] = useMutation(
-    DELETE_ACCOUNTS_IMDAD_REQUEST
+  const [deleteOperationsImdadRequest] = useMutation(
+    DELETE_OPERATIONS_IMDAD_REQUEST
   );
-  const { data, loading, refetch } = useQuery(PAGED_ACCOUNTS_IMDAD_REQUESTS, {
+  const { data, loading, refetch } = useQuery(PAGED_OPERATIONS_IMDAD_REQUESTS, {
     variables: {
       filter: queryParams,
     },
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Accounts', 'Imdad Requests', 'List']));
+    dispatch(setBreadcrumbs(['Operations', 'Imdad Requests', 'List']));
   }, [location]);
 
   const {
@@ -58,7 +58,7 @@ const List = ({ history, location }) => {
   };
 
   const handleDeleteItem = ({ _id }) => {
-    deleteAccountsImdadRequest({
+    deleteOperationsImdadRequest({
       variables: {
         _id,
       },
@@ -104,7 +104,7 @@ const List = ({ history, location }) => {
   };
 
   if (loading) return null;
-  const { pagedAccountsImdadRequests } = data;
+  const { pagedOperationsImdadRequests } = data;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -122,7 +122,7 @@ const List = ({ history, location }) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedAccountsImdadRequests}
+      pagedData={pagedOperationsImdadRequests}
     />
   );
 };

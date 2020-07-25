@@ -1,12 +1,14 @@
 import gql from 'graphql-tag';
 
-const SET_ACCOUNTS_APPROVED_IMDAD = gql`
-  mutation setAccountsApprovedImdad(
-    $_id: String!
-    $approvedImdad: ApprovedImdad!
-  ) {
-    setAccountsApprovedImdad(_id: $_id, approvedImdad: $approvedImdad) {
+const OPERATIONS_IMDAD_REQUEST_BY_ID = gql`
+  query operationsImdadRequestById($_id: String!) {
+    operationsImdadRequestById(_id: $_id) {
       _id
+      visitorId
+      requestDate
+      imdadReasonId
+      status
+      notes
       approvedImdad {
         fromMonth
         toMonth
@@ -25,8 +27,22 @@ const SET_ACCOUNTS_APPROVED_IMDAD = gql`
         variableRecurringMedical
         variableRecurringUtilityBills
       }
+      visitor {
+        _id
+        name
+      }
+      attachments {
+        _id
+        name
+        description
+        mimeType
+      }
+      createdAt
+      createdBy
+      updatedAt
+      updatedBy
     }
   }
 `;
 
-export default SET_ACCOUNTS_APPROVED_IMDAD;
+export default OPERATIONS_IMDAD_REQUEST_BY_ID;

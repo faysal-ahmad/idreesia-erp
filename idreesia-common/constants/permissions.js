@@ -19,9 +19,6 @@ const Permissions = {
   ACCOUNTS_VIEW_AMAANAT_LOGS: 'accounts-view-amaanat-logs',
   ACCOUNTS_MANAGE_AMAANAT_LOGS: 'accounts-manage-amaanat-logs',
 
-  ACCOUNTS_VIEW_IMDAD_REQUESTS: 'accounts-view-imdad-requests',
-  ACCOUNTS_MANAGE_IMDAD_REQUESTS: 'accounts-manage-imdad-requests',
-
   // ****************************************************************************************
   // Admin Module
   // ****************************************************************************************
@@ -76,6 +73,9 @@ const Permissions = {
   OP_VIEW_MESSAGES: 'operations-view-messages',
   OP_MANAGE_MESSAGES: 'operations-manage-messages',
   OP_APPROVE_MESSAGES: 'operations-approve-messages',
+
+  OP_VIEW_IMDAD_REQUESTS: 'operations-view-imdad-requests',
+  OP_MANAGE_IMDAD_REQUESTS: 'operations-manage-imdad-requests',
 
   // ****************************************************************************************
   // Outstation Module

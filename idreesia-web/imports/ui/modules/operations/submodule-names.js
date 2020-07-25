@@ -3,6 +3,7 @@ const SubModuleNames = {
   messages: 'Messages',
   wazaif: 'Wazaif',
   imdadReasons: 'Imdad Reasons',
+  imdadRequests: 'Imdad Requests',
   imdadRequestReport: 'Imdad Request Report',
   mulakaatReport: 'Mulakaat Report',
   newEhadReport: 'New Ehad Report',

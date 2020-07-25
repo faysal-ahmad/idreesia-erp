@@ -28,6 +28,11 @@ class Sidebar extends Component {
         history.push(paths.visitorsPath);
         break;
 
+      case 'imdad-requests':
+        setActiveSubModuleName(SubModuleNames.imdadRequests);
+        history.push(paths.imdadRequestsPath);
+        break;
+
       case 'wazaif':
         setActiveSubModuleName(SubModuleNames.wazaif);
         history.push(paths.wazaifPath);
@@ -74,6 +79,12 @@ class Sidebar extends Component {
           <span>
             <Icon type="idcard" style={IconStyle} />
             Visitors
+          </span>
+        </Item>
+        <Item key="imdad-requests">
+          <span>
+            <Icon type="wallet" style={IconStyle} />
+            Imdad Requests
           </span>
         </Item>
         <Item key="wazaif">

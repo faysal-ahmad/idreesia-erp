@@ -14,6 +14,11 @@ import {
   ImdadReasonsEditForm,
   ImdadReasonsList,
 } from './imdad-reasons';
+import {
+  ImdadRequestsList,
+  ImdadRequestsNewForm,
+  ImdadRequestsEditForm,
+} from './imdad-requests';
 import { MulakaatReport } from './mulakaat-report';
 import { NewEhadReport } from './new-ehad-report';
 import { ImdadRequestReport } from './imdad-request-report';
@@ -44,6 +49,16 @@ const Router = () => (
       component={ImdadReasonsEditForm}
     />
     <Route path={paths.imdadReasonsPath} component={ImdadReasonsList} />
+
+    <Route
+      path={paths.imdadRequestsNewFormPath}
+      component={ImdadRequestsNewForm}
+    />
+    <Route
+      path={paths.imdadRequestsEditFormPath()}
+      component={ImdadRequestsEditForm}
+    />
+    <Route path={paths.imdadRequestsPath} component={ImdadRequestsList} />
 
     <Route path={paths.mulakaatReportPath} component={MulakaatReport} />
     <Route path={paths.newEhadReportPath} component={NewEhadReport} />

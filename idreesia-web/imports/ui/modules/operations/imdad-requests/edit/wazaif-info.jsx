@@ -18,28 +18,28 @@ const formItemLayout = {
 };
 
 import {
-  ACCOUNTS_IMDAD_REQUEST_BY_ID,
-  UPDATE_ACCOUNTS_IMDAD_REQUEST,
-  PAGED_ACCOUNTS_IMDAD_REQUESTS,
+  OPERATIONS_IMDAD_REQUEST_BY_ID,
+  UPDATE_OPERATIONS_IMDAD_REQUEST,
+  PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
 
 const GeneralInfo = ({ requestId, form, history }) => {
-  const [updateAccountsImdadRequest] = useMutation(
-    UPDATE_ACCOUNTS_IMDAD_REQUEST,
+  const [updateOperationsImdadRequest] = useMutation(
+    UPDATE_OPERATIONS_IMDAD_REQUEST,
     {
       refetchQueries: [
-        { query: PAGED_ACCOUNTS_IMDAD_REQUESTS, variables: { filter: {} } },
+        { query: PAGED_OPERATIONS_IMDAD_REQUESTS, variables: { filter: {} } },
       ],
       awaitRefetchQueries: true,
     }
   );
 
-  const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
+  const { data, loading } = useQuery(OPERATIONS_IMDAD_REQUEST_BY_ID, {
     variables: { _id: requestId },
   });
 
   if (loading) return null;
-  const { accountsImdadRequestById } = data;
+  const { operationsImdadRequestById } = data;
   const { getFieldDecorator, isFieldsTouched } = form;
 
   const handleCancel = () => {
@@ -51,7 +51,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
     form.validateFields((err, { imdadReasonId, status, notes }) => {
       if (err) return;
 
-      updateAccountsImdadRequest({
+      updateOperationsImdadRequest({
         variables: {
           _id: requestId,
           imdadReasonId,
@@ -136,7 +136,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
             <InputTextAreaField
               fieldName="notes"
               fieldLabel="Notes"
-              initialValue={accountsImdadRequestById.notes}
+              initialValue={operationsImdadRequestById.notes}
               getFieldDecorator={getFieldDecorator}
             />
           </Panel>
@@ -148,7 +148,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
-      <AuditInfo record={accountsImdadRequestById} />
+      <AuditInfo record={operationsImdadRequestById} />
     </>
   );
 };

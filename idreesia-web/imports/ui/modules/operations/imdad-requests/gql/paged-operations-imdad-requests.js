@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const PAGED_ACCOUNTS_IMDAD_REQUESTS = gql`
-  query pagedAccountsImdadRequests($filter: ImdadRequestFilter) {
-    pagedAccountsImdadRequests(filter: $filter) {
+const PAGED_OPERATIONS_IMDAD_REQUESTS = gql`
+  query pagedOperationsImdadRequests($filter: ImdadRequestFilter) {
+    pagedOperationsImdadRequests(filter: $filter) {
       totalResults
       data {
         _id
@@ -23,4 +23,4 @@ const PAGED_ACCOUNTS_IMDAD_REQUESTS = gql`
   }
 `;
 
-export default PAGED_ACCOUNTS_IMDAD_REQUESTS;
+export default PAGED_OPERATIONS_IMDAD_REQUESTS;

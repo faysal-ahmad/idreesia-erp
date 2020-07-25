@@ -1,13 +1,13 @@
 import gql from 'graphql-tag';
 
-const UPDATE_ACCOUNTS_IMDAD_REQUEST = gql`
-  mutation updateAccountsImdadRequest(
+const UPDATE_OPERATIONS_IMDAD_REQUEST = gql`
+  mutation updateOperationsImdadRequest(
     $_id: String!
     $status: String
     $imdadReasonId: String
     $notes: String
   ) {
-    updateAccountsImdadRequest(
+    updateOperationsImdadRequest(
       _id: $_id
       status: $status
       imdadReasonId: $imdadReasonId
@@ -23,4 +23,4 @@ const UPDATE_ACCOUNTS_IMDAD_REQUEST = gql`
   }
 `;
 
-export default UPDATE_ACCOUNTS_IMDAD_REQUEST;
+export default UPDATE_OPERATIONS_IMDAD_REQUEST;

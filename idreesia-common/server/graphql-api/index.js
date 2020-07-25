@@ -241,9 +241,6 @@ import PaymentResolvers from './accounts/payment/resolvers';
 import AccountsAmaanatLogSchema from './accounts/amaanat-log/amaanat-log.graphql';
 import AccountsAmaanatLogResolvers from './accounts/amaanat-log/resolvers';
 
-import AccountsImdadRequestSchema from './accounts/imdad-request/imdad-request.graphql';
-import AccountsImdadRequestResolvers from './accounts/imdad-request/resolvers';
-
 const typeDefs = [
   Permission,
   CheckPermissionsDirective,
@@ -325,7 +322,6 @@ const typeDefs = [
   PaymentTypeSchema,
   PaymentSchema,
   AccountsAmaanatLogSchema,
-  AccountsImdadRequestSchema,
 
   WazeefaSchema,
 ];
@@ -407,7 +403,6 @@ const resolvers = merge(
   PaymentTypeResolvers,
   PaymentResolvers,
   AccountsAmaanatLogResolvers,
-  AccountsImdadRequestResolvers,
 
   WazeefaResolvers
 );

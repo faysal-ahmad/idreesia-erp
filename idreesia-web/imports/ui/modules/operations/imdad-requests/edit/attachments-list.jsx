@@ -6,28 +6,28 @@ import { message } from '/imports/ui/controls';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
 import {
-  ACCOUNTS_IMDAD_REQUEST_BY_ID,
-  ADD_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT,
-  REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT,
+  OPERATIONS_IMDAD_REQUEST_BY_ID,
+  ADD_OPERATIONS_IMDAD_REQUEST_ATTACHMENT,
+  REMOVE_OPERATIONS_IMDAD_REQUEST_ATTACHMENT,
 } from '../gql';
 
 const AttachmentsList = ({ requestId }) => {
-  const [addAccountsImdadRequestAttachment] = useMutation(
-    ADD_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT
+  const [addOperationsImdadRequestAttachment] = useMutation(
+    ADD_OPERATIONS_IMDAD_REQUEST_ATTACHMENT
   );
-  const [removeAccountsImdadRequestAttachment] = useMutation(
-    REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT
+  const [removeOperationsImdadRequestAttachment] = useMutation(
+    REMOVE_OPERATIONS_IMDAD_REQUEST_ATTACHMENT
   );
 
-  const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
+  const { data, loading } = useQuery(OPERATIONS_IMDAD_REQUEST_BY_ID, {
     variables: { _id: requestId },
   });
 
   if (loading) return null;
-  const { accountsImdadRequestById } = data;
+  const { operationsImdadRequestById } = data;
 
   const handleAttachmentAdded = attachmentId => {
-    addAccountsImdadRequestAttachment({
+    addOperationsImdadRequestAttachment({
       variables: {
         _id: requestId,
         attachmentId,
@@ -38,7 +38,7 @@ const AttachmentsList = ({ requestId }) => {
   };
 
   const handleAttachmentRemoved = attachmentId => {
-    removeAccountsImdadRequestAttachment({
+    removeOperationsImdadRequestAttachment({
       variables: {
         _id: requestId,
         attachmentId,
@@ -50,7 +50,7 @@ const AttachmentsList = ({ requestId }) => {
 
   return (
     <AttachmentsListControl
-      attachments={accountsImdadRequestById.attachments}
+      attachments={operationsImdadRequestById.attachments}
       handleAttachmentAdded={handleAttachmentAdded}
       handleAttachmentRemoved={handleAttachmentRemoved}
     />

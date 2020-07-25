@@ -7,8 +7,8 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/imdad';
 import { Form, message } from '/imports/ui/controls';
 import {
-  PAGED_ACCOUNTS_IMDAD_REQUESTS,
-  CREATE_ACCOUNTS_IMDAD_REQUEST,
+  PAGED_OPERATIONS_IMDAD_REQUESTS,
+  CREATE_OPERATIONS_IMDAD_REQUEST,
 } from './gql';
 
 import {
@@ -22,16 +22,16 @@ import {
 const NewForm = ({ form, history, location }) => {
   const dispatch = useDispatch();
   const { allImdadReasons, allImdadReasonsLoading } = useAllImdadReasons();
-  const [createAccountsImdadRequest] = useMutation(
-    CREATE_ACCOUNTS_IMDAD_REQUEST,
+  const [createOperationsImdadRequest] = useMutation(
+    CREATE_OPERATIONS_IMDAD_REQUEST,
     {
-      refetchQueries: [{ query: PAGED_ACCOUNTS_IMDAD_REQUESTS }],
+      refetchQueries: [{ query: PAGED_OPERATIONS_IMDAD_REQUESTS }],
       awaitRefetchQueries: true,
     }
   );
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Accounts', 'Imdad Requests', 'New']));
+    dispatch(setBreadcrumbs(['Operations', 'Imdad Requests', 'New']));
   }, [location]);
 
   if (allImdadReasonsLoading) return null;
@@ -46,7 +46,7 @@ const NewForm = ({ form, history, location }) => {
       (err, { requestDate, visitor, imdadReasonId, notes }) => {
         if (err) return;
 
-        createAccountsImdadRequest({
+        createOperationsImdadRequest({
           variables: {
             requestDate,
             visitorId: visitor._id,

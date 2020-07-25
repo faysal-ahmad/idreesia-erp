@@ -1,11 +1,11 @@
 import gql from 'graphql-tag';
 
-const REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT = gql`
-  mutation removeAccountsImdadRequestAttachment(
+const ADD_OPERATIONS_IMDAD_REQUEST_ATTACHMENT = gql`
+  mutation addOperationsImdadRequestAttachment(
     $_id: String!
     $attachmentId: String!
   ) {
-    removeAccountsImdadRequestAttachment(
+    addOperationsImdadRequestAttachment(
       _id: $_id
       attachmentId: $attachmentId
     ) {
@@ -20,4 +20,4 @@ const REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT = gql`
   }
 `;
 
-export default REMOVE_ACCOUNTS_IMDAD_REQUEST_ATTACHMENT;
+export default ADD_OPERATIONS_IMDAD_REQUEST_ATTACHMENT;

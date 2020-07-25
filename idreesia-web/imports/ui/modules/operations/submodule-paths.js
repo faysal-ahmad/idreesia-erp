@@ -39,6 +39,15 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Imdad Requests Routes
+  // *************************************************************************************
+  static imdadRequestsPath = `${ModulePaths.operations}/imdad-requests`;
+  static imdadRequestsNewFormPath = `${SubModulePaths.imdadRequestsPath}/new`;
+  static imdadRequestsEditFormPath(requestId = ':requestId') {
+    return `${SubModulePaths.imdadRequestsPath}/${requestId}`;
+  }
+
+  // *************************************************************************************
   // Report Routes
   // *************************************************************************************
   static imdadRequestReportPath = `${ModulePaths.operations}/imdad-request-report`;

@@ -71,13 +71,4 @@ export default class SubModulePaths {
   static paymentReceiptsPath(paymentId = ':paymentId') {
     return `${SubModulePaths.paymentsPath}/${paymentId}/payment-receipts`;
   }
-
-  // *************************************************************************************
-  // Imdad Requests Routes
-  // *************************************************************************************
-  static imdadRequestsPath = `${ModulePaths.accounts}/imdad-requests`;
-  static imdadRequestsNewFormPath = `${SubModulePaths.imdadRequestsPath}/new`;
-  static imdadRequestsEditFormPath(requestId = ':requestId') {
-    return `${SubModulePaths.imdadRequestsPath}/${requestId}`;
-  }
 }

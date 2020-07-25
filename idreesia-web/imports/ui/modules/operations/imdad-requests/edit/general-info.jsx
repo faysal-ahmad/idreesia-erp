@@ -18,29 +18,29 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import {
-  ACCOUNTS_IMDAD_REQUEST_BY_ID,
-  UPDATE_ACCOUNTS_IMDAD_REQUEST,
-  PAGED_ACCOUNTS_IMDAD_REQUESTS,
+  OPERATIONS_IMDAD_REQUEST_BY_ID,
+  UPDATE_OPERATIONS_IMDAD_REQUEST,
+  PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
 
 const GeneralInfo = ({ requestId, form, history }) => {
-  const [updateAccountsImdadRequest] = useMutation(
-    UPDATE_ACCOUNTS_IMDAD_REQUEST,
+  const [updateOperationsImdadRequest] = useMutation(
+    UPDATE_OPERATIONS_IMDAD_REQUEST,
     {
       refetchQueries: [
-        { query: PAGED_ACCOUNTS_IMDAD_REQUESTS, variables: { filter: {} } },
+        { query: PAGED_OPERATIONS_IMDAD_REQUESTS, variables: { filter: {} } },
       ],
       awaitRefetchQueries: true,
     }
   );
 
   const { allImdadReasons, allImdadReasonsLoading } = useAllImdadReasons();
-  const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
+  const { data, loading } = useQuery(OPERATIONS_IMDAD_REQUEST_BY_ID, {
     variables: { _id: requestId },
   });
 
   if (loading || allImdadReasonsLoading) return null;
-  const { accountsImdadRequestById } = data;
+  const { operationsImdadRequestById } = data;
   const { getFieldDecorator, isFieldsTouched } = form;
 
   const handleCancel = () => {
@@ -52,7 +52,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
     form.validateFields((err, { imdadReasonId, status, notes }) => {
       if (err) return;
 
-      updateAccountsImdadRequest({
+      updateOperationsImdadRequest({
         variables: {
           _id: requestId,
           imdadReasonId,
@@ -77,7 +77,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
           fieldLabel="Request Date"
           required
           requiredMessage="Please select a Request Date."
-          initialValue={moment(Number(accountsImdadRequestById.requestDate))}
+          initialValue={moment(Number(operationsImdadRequestById.requestDate))}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -88,7 +88,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
           fieldName="status"
           fieldLabel="Status"
           allowClear={false}
-          initialValue={accountsImdadRequestById.status}
+          initialValue={operationsImdadRequestById.status}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -97,7 +97,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
           fieldLabel="Person"
           required
           requiredMessage="Please select a Person"
-          initialValue={accountsImdadRequestById.visitor}
+          initialValue={operationsImdadRequestById.visitor}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -109,14 +109,14 @@ const GeneralInfo = ({ requestId, form, history }) => {
           fieldLabel="Request Reason"
           required
           requiredMessage="Please select an Imdad Request Reason."
-          initialValue={accountsImdadRequestById.imdadReasonId}
+          initialValue={operationsImdadRequestById.imdadReasonId}
           getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
-          initialValue={accountsImdadRequestById.notes}
+          initialValue={operationsImdadRequestById.notes}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -125,7 +125,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
-      <AuditInfo record={accountsImdadRequestById} />
+      <AuditInfo record={operationsImdadRequestById} />
     </>
   );
 };

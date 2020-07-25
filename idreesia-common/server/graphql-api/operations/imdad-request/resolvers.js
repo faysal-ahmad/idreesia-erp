@@ -5,13 +5,17 @@ import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 
 export default {
   Query: {
+    operationsImdadRequestById(obj, { _id }) {
+      return ImdadRequests.findOne(_id);
+    },
+
     pagedOperationsImdadRequests(obj, { filter }) {
       return ImdadRequests.getPagedData(filter);
     },
   },
 
   Mutation: {
-    createOperationsImdadRequest(obj, { visitorId }, { user }) {
+    createOperationsVisitorImdadRequest(obj, { visitorId }, { user }) {
       if (!ImdadRequests.isImdadRequestAllowed(visitorId)) {
         throw new Error(
           'Visitor already has submitted an imdad request in the last 30 days.'
@@ -35,8 +39,34 @@ export default {
       return ImdadRequests.findOne(imdadRequestId);
     },
 
+    createOperationsImdadRequest(obj, values, { user }) {
+      return ImdadRequests.createImdadRequest(
+        {
+          dataSource: DataSource.ACCOUNTS,
+          ...values,
+        },
+        user
+      );
+    },
+
+    updateOperationsImdadRequest(obj, values, { user }) {
+      return ImdadRequests.updateImdadRequest(values, user);
+    },
+
     deleteOperationsImdadRequest(obj, { _id }) {
       return ImdadRequests.remove(_id);
+    },
+
+    setOperationsApprovedImdad(obj, values, { user }) {
+      return ImdadRequests.updateImdadRequest(values, user);
+    },
+
+    addOperationsImdadRequestAttachment(obj, values, { user }) {
+      return ImdadRequests.addAttachment(values, user);
+    },
+
+    removeOperationsImdadRequestAttachment(obj, values, { user }) {
+      return ImdadRequests.removeAttachment(values, user);
     },
   },
 };

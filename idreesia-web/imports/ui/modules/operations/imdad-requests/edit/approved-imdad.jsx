@@ -24,26 +24,29 @@ const formMonthItemLayout = {
 };
 
 import {
-  ACCOUNTS_IMDAD_REQUEST_BY_ID,
-  SET_ACCOUNTS_APPROVED_IMDAD,
-  PAGED_ACCOUNTS_IMDAD_REQUESTS,
+  OPERATIONS_IMDAD_REQUEST_BY_ID,
+  SET_OPERATIONS_APPROVED_IMDAD,
+  PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
 
 const ApprovedImdad = ({ requestId, form, history }) => {
-  const [setAccountsApprovedImdad] = useMutation(SET_ACCOUNTS_APPROVED_IMDAD, {
-    refetchQueries: [
-      { query: PAGED_ACCOUNTS_IMDAD_REQUESTS, variables: { filter: {} } },
-    ],
-    awaitRefetchQueries: true,
-  });
+  const [setOperationsApprovedImdad] = useMutation(
+    SET_OPERATIONS_APPROVED_IMDAD,
+    {
+      refetchQueries: [
+        { query: PAGED_OPERATIONS_IMDAD_REQUESTS, variables: { filter: {} } },
+      ],
+      awaitRefetchQueries: true,
+    }
+  );
 
-  const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
+  const { data, loading } = useQuery(OPERATIONS_IMDAD_REQUEST_BY_ID, {
     variables: { _id: requestId },
   });
 
   if (loading) return null;
-  const { accountsImdadRequestById } = data;
-  const approvedImdad = accountsImdadRequestById.approvedImdad || {};
+  const { operationsImdadRequestById } = data;
+  const approvedImdad = operationsImdadRequestById.approvedImdad || {};
   const { getFieldDecorator, isFieldsTouched } = form;
 
   const handleCancel = () => {
@@ -55,8 +58,7 @@ const ApprovedImdad = ({ requestId, form, history }) => {
     form.validateFields((err, values) => {
       if (err) return;
 
-      debugger;
-      setAccountsApprovedImdad({
+      setOperationsApprovedImdad({
         variables: {
           _id: requestId,
           approvedImdad: {

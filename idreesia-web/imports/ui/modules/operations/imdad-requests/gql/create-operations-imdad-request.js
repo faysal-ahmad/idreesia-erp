@@ -1,13 +1,13 @@
 import gql from 'graphql-tag';
 
-const CREATE_ACCOUNTS_IMDAD_REQUEST = gql`
-  mutation createAccountsImdadRequest(
+const CREATE_OPERATIONS_IMDAD_REQUEST = gql`
+  mutation createOperationsImdadRequest(
     $requestDate: String!
     $visitorId: String!
     $imdadReasonId: String
     $notes: String
   ) {
-    createAccountsImdadRequest(
+    createOperationsImdadRequest(
       requestDate: $requestDate
       visitorId: $visitorId
       imdadReasonId: $imdadReasonId
@@ -23,4 +23,4 @@ const CREATE_ACCOUNTS_IMDAD_REQUEST = gql`
   }
 `;
 
-export default CREATE_ACCOUNTS_IMDAD_REQUEST;
+export default CREATE_OPERATIONS_IMDAD_REQUEST;

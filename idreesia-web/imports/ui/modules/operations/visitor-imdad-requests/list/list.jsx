@@ -7,7 +7,7 @@ import { Button, message } from '/imports/ui/controls';
 import { ImdadRequestsList } from '/imports/ui/modules/common';
 
 import {
-  CREATE_OPERATIONS_IMDAD_REQUEST,
+  CREATE_OPERATIONS_VISITOR_IMDAD_REQUEST,
   DELETE_OPERATIONS_IMDAD_REQUEST,
   PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
@@ -16,8 +16,8 @@ const List = ({ visitorId }) => {
   const [pageIndex, setPageIndex] = useState('0');
   const [pageSize, setPageSize] = useState('10');
 
-  const [createOperationsImdadRequest] = useMutation(
-    CREATE_OPERATIONS_IMDAD_REQUEST
+  const [createOperationsVisitorImdadRequest] = useMutation(
+    CREATE_OPERATIONS_VISITOR_IMDAD_REQUEST
   );
   const [deleteOperationsImdadRequest] = useMutation(
     DELETE_OPERATIONS_IMDAD_REQUEST
@@ -38,7 +38,7 @@ const List = ({ visitorId }) => {
   };
 
   const handleNewClicked = () => {
-    createOperationsImdadRequest({
+    createOperationsVisitorImdadRequest({
       variables: {
         visitorId,
       },

@@ -1,12 +1,56 @@
+input ApprovedImdad {
+  fromMonth: String
+  toMonth: String
+  oneOffMedical: Int
+  oneOffHouseConstruction: Int
+  oneOffMarriageExpense: Int
+  oneOffMiscPayment: Int
+  fixedRecurringWeeklyPayment: Int
+  fixedRecurringMonthlyPayment: Int
+  fixedRecurringHouseRent: Int
+  ration: String
+  fixedRecurringMedical: Int
+  fixedRecurringSchoolFee: Int
+  fixedRecurringMilk: Int
+  fixedRecurringFuel: Int
+  variableRecurringMedical: Int
+  variableRecurringUtilityBills: Int
+}
+
 extend type Query {
+  operationsImdadRequestById(_id: String!): ImdadRequestType
+  @checkPermissions(permissions: [OP_VIEW_IMDAD_REQUESTS, OP_MANAGE_IMDAD_REQUESTS])
+
   pagedOperationsImdadRequests(filter: ImdadRequestFilter): PagedImdadRequestType
-  @checkPermissions(permissions: [OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
+  @checkPermissions(permissions: [OP_VIEW_IMDAD_REQUESTS, OP_MANAGE_IMDAD_REQUESTS, OP_VIEW_VISITORS, OP_MANAGE_VISITORS])
 }
 
 extend type Mutation {
-  createOperationsImdadRequest(visitorId: String!): ImdadRequestType
-  @checkPermissions(permissions: [OP_MANAGE_VISITORS])
+  createOperationsVisitorImdadRequest(visitorId: String!): ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_IMDAD_REQUESTS, OP_MANAGE_VISITORS])
+
+  createOperationsImdadRequest(requestDate: String!, visitorId: String!, imdadReasonId: String, notes: String): ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_IMDAD_REQUESTS])
+
+  updateOperationsImdadRequest(_id: String, imdadReasonId: String, status: String, notes: String): ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_IMDAD_REQUESTS])
 
   deleteOperationsImdadRequest(_id: String!): Int
   @checkPermissions(permissions: [OP_DELETE_DATA])
+
+  setOperationsApprovedImdad(_id:String, approvedImdad: ApprovedImdad!) : ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_IMDAD_REQUESTS])
+
+  addOperationsImdadRequestAttachment(
+    _id: String!
+    attachmentId: String!
+  ): ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_IMDAD_REQUESTS])
+
+  removeOperationsImdadRequestAttachment(
+    _id: String!
+    attachmentId: String!
+  ): ImdadRequestType
+  @checkPermissions(permissions: [OP_MANAGE_IMDAD_REQUESTS])
+
 }

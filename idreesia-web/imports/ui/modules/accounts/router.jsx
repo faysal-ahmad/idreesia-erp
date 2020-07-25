@@ -17,11 +17,6 @@ import {
   PaymentReceipts,
 } from './payments';
 import {
-  ImdadRequestsList,
-  ImdadRequestsNewForm,
-  ImdadRequestsEditForm,
-} from './imdad-requests';
-import {
   AmaanatLogsList,
   AmaanatLogsNewForm,
   AmaanatLogsEditForm,
@@ -69,16 +64,6 @@ const Router = () => (
       component={AmaanatLogsEditForm}
     />
     <Route path={paths.amaanatLogsPath} component={AmaanatLogsList} />
-
-    <Route
-      path={paths.imdadRequestsNewFormPath}
-      component={ImdadRequestsNewForm}
-    />
-    <Route
-      path={paths.imdadRequestsEditFormPath()}
-      component={ImdadRequestsEditForm}
-    />
-    <Route path={paths.imdadRequestsPath} component={ImdadRequestsList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
   </Switch>

@@ -41,18 +41,12 @@ class Sidebar extends Component {
     } else if (key === 'payments') {
       setActiveSubModuleName(SubModuleNames.payments);
       history.push(paths.paymentsPath);
-    } else if (key === 'imdad-requests') {
-      setActiveSubModuleName(SubModuleNames.imdadRequests);
-      history.push(paths.imdadRequestsPath);
     } else if (key === 'amaanat-logs') {
       setActiveSubModuleName(SubModuleNames.amaanatLogs);
       history.push(paths.amaanatLogsPath);
     } else if (key === 'payment-types') {
       setActiveSubModuleName(SubModuleNames.paymentTypes);
       history.push(paths.paymentTypesPath);
-    } else if (key === 'imdad-reasons') {
-      setActiveSubModuleName(SubModuleNames.imdadReasons);
-      history.push(paths.imdadReasonsPath);
     } else if (key === 'audit-logs') {
       setActiveSubModuleName(SubModuleNames.auditLogs);
       history.push(paths.auditLogsPath);
@@ -99,13 +93,6 @@ class Sidebar extends Component {
           <span>
             <Icon type="dollar" style={IconStyle} />
             Payments
-          </span>
-        </Item>
-
-        <Item key="imdad-requests">
-          <span>
-            <Icon type="wallet" style={IconStyle} />
-            Imdad Requests
           </span>
         </Item>
 

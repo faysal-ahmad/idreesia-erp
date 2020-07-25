@@ -159,20 +159,6 @@ export const accountsPermissionsData = {
         },
       ],
     },
-    {
-      title: 'Imdad Requests',
-      key: 'module-accounts-imdad-requests',
-      children: [
-        {
-          title: 'View Imdad Requests',
-          key: PermissionConstants.ACCOUNTS_VIEW_IMDAD_REQUESTS,
-        },
-        {
-          title: 'Manage Imdad Requests',
-          key: PermissionConstants.ACCOUNTS_MANAGE_IMDAD_REQUESTS,
-        },
-      ],
-    },
   ],
 };
 
@@ -566,6 +552,20 @@ export const operationsPermissionsData = {
         {
           title: 'Manage Visitors',
           key: PermissionConstants.OP_MANAGE_VISITORS,
+        },
+      ],
+    },
+    {
+      title: 'Imdad Requests',
+      key: 'module-operations-imdad-requests',
+      children: [
+        {
+          title: 'View Imdad Requests',
+          key: PermissionConstants.OP_VIEW_IMDAD_REQUESTS,
+        },
+        {
+          title: 'Manage Imdad Requests',
+          key: PermissionConstants.OP_MANAGE_IMDAD_REQUESTS,
         },
       ],
     },

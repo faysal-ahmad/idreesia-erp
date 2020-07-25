@@ -85,6 +85,9 @@ import OperationsWazeefaResolvers from './operations/wazeefa/resolvers';
 import OperationsVisitorMulakaatSchema from './operations/visitor-mulakaat/visitor-mulakaat.graphql';
 import OperationsVisitorMulakaatResolvers from './operations/visitor-mulakaat/resolvers';
 
+import ImdadReasonSchema from './operations/imdad-reason/imdad-reason.graphql';
+import ImdadReasonResolvers from './operations/imdad-reason/resolvers';
+
 import OperationsImdadRequestSchema from './operations/imdad-request/imdad-request.graphql';
 import OperationsImdadRequestResolvers from './operations/imdad-request/resolvers';
 
@@ -228,9 +231,6 @@ import VoucherResolvers from './accounts/voucher/resolvers';
 
 import VoucherDetailSchema from './accounts/voucher-detail/voucher-detail.graphql';
 import VoucherDetailResolvers from './accounts/voucher-detail/resolvers';
-
-import ImdadReasonSchema from './accounts/imdad-reason/imdad-reason.graphql';
-import ImdadReasonResolvers from './accounts/imdad-reason/resolvers';
 
 import PaymentTypeSchema from './accounts/payment-type/payment-type.graphql';
 import PaymentTypeResolvers from './accounts/payment-type/resolvers';

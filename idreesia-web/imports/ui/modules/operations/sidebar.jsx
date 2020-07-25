@@ -6,6 +6,8 @@ import { Icon, Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const { Item, SubMenu } = Menu;
+
 const IconStyle = {
   fontSize: '20px',
 };
@@ -36,6 +38,11 @@ class Sidebar extends Component {
         history.push(paths.messagesPath);
         break;
 
+      case 'imdad-reasons':
+        setActiveSubModuleName(SubModuleNames.imdadReasons);
+        history.push(paths.imdadReasonsPath);
+        break;
+
       case 'new-ehad-report':
         setActiveSubModuleName(SubModuleNames.newEhadReport);
         history.push(paths.newEhadReportPath);
@@ -63,25 +70,25 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
-        <Menu.Item key="visitors">
+        <Item key="visitors">
           <span>
             <Icon type="idcard" style={IconStyle} />
             Visitors
           </span>
-        </Menu.Item>
-        <Menu.Item key="wazaif">
+        </Item>
+        <Item key="wazaif">
           <span>
             <Icon type="read" style={IconStyle} />
             Wazaif
           </span>
-        </Menu.Item>
-        <Menu.Item key="messages">
+        </Item>
+        <Item key="messages">
           <span>
             <Icon type="message" style={IconStyle} />
             Messages
           </span>
-        </Menu.Item>
-        <Menu.SubMenu
+        </Item>
+        <SubMenu
           key="operations-reports"
           title={
             <span>
@@ -90,16 +97,32 @@ class Sidebar extends Component {
             </span>
           }
         >
-          <Menu.Item key="mulakaat-report">
+          <Item key="mulakaat-report">
             <span>Mulakaat Report</span>
-          </Menu.Item>
-          <Menu.Item key="new-ehad-report">
+          </Item>
+          <Item key="new-ehad-report">
             <span>New Ehad Report</span>
-          </Menu.Item>
-          <Menu.Item key="imdad-request-report">
+          </Item>
+          <Item key="imdad-request-report">
             <span>Imdad Request Report</span>
-          </Menu.Item>
-        </Menu.SubMenu>
+          </Item>
+        </SubMenu>
+        <SubMenu
+          key="setup"
+          title={
+            <span>
+              <Icon type="laptop" style={IconStyle} />
+              Setup
+            </span>
+          }
+        >
+          <Item key="imdad-reasons">
+            <span>
+              <Icon type="monitor" style={IconStyle} />
+              Imdad Reasons
+            </span>
+          </Item>
+        </SubMenu>
       </Menu>
     );
   }

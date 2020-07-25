@@ -6,7 +6,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
-import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import { ALL_IMDAD_REASONS, REMOVE_IMDAD_REASON } from './gql';
 

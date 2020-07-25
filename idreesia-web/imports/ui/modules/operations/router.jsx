@@ -9,6 +9,11 @@ import {
 } from './visitors';
 import { WazaifList, WazaifNewForm, WazaifEditForm } from './wazaif';
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
+import {
+  ImdadReasonsNewForm,
+  ImdadReasonsEditForm,
+  ImdadReasonsList,
+} from './imdad-reasons';
 import { MulakaatReport } from './mulakaat-report';
 import { NewEhadReport } from './new-ehad-report';
 import { ImdadRequestReport } from './imdad-request-report';
@@ -29,6 +34,16 @@ const Router = () => (
     <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
     <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />
     <Route path={paths.messagesPath} component={MessagesList} />
+
+    <Route
+      path={paths.imdadReasonsNewFormPath}
+      component={ImdadReasonsNewForm}
+    />
+    <Route
+      path={paths.imdadReasonsEditFormPath()}
+      component={ImdadReasonsEditForm}
+    />
+    <Route path={paths.imdadReasonsPath} component={ImdadReasonsList} />
 
     <Route path={paths.mulakaatReportPath} component={MulakaatReport} />
     <Route path={paths.newEhadReportPath} component={NewEhadReport} />

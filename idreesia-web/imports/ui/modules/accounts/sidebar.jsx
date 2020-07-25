@@ -142,12 +142,6 @@ class Sidebar extends Component {
             </span>
           }
         >
-          <Item key="imdad-reasons">
-            <span>
-              <Icon type="monitor" style={IconStyle} />
-              Imdad Reasons
-            </span>
-          </Item>
           <Item key="payment-types">
             <span>
               <Icon type="container" style={IconStyle} />

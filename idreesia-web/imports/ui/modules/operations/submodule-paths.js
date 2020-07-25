@@ -2,6 +2,15 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
+  // Data Setup Routes
+  // *************************************************************************************
+  static imdadReasonsPath = `${ModulePaths.operations}/imdad-reasons`;
+  static imdadReasonsNewFormPath = `${SubModulePaths.imdadReasonsPath}/new`;
+  static imdadReasonsEditFormPath(imdadReasonId = ':imdadReasonId') {
+    return `${SubModulePaths.imdadReasonsPath}/${imdadReasonId}`;
+  }
+
+  // *************************************************************************************
   // Visitor Routes
   // *************************************************************************************
   static visitorsPath = `${ModulePaths.operations}/visitors`;

@@ -18,11 +18,11 @@ extend type Query {
 
 extend type Mutation {
   createImdadReason(name: String!, description: String): ImdadReasonType
-  @checkPermissions(permissions: [ACCOUNTS_MANAGE_SETUP_DATA])
+  @checkPermissions(permissions: [OP_MANAGE_SETUP_DATA])
 
   updateImdadReason(_id: String!, name: String!, description: String): ImdadReasonType
-  @checkPermissions(permissions: [ACCOUNTS_MANAGE_SETUP_DATA])
+  @checkPermissions(permissions: [OP_MANAGE_SETUP_DATA])
 
   removeImdadReason(_id: String!): Int
-  @checkPermissions(permissions: [ACCOUNTS_MANAGE_SETUP_DATA])
+  @checkPermissions(permissions: [OP_MANAGE_SETUP_DATA])
 }

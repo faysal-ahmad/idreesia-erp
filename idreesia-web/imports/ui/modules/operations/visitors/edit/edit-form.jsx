@@ -7,7 +7,7 @@ import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './general-info';
 import Picture from './picture';
 import { VisitorMulakaatsList } from '/imports/ui/modules/operations/visitor-mulakaats';
-import { ImdadRequestsList } from '/imports/ui/modules/operations/imdad-requests';
+import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 
 const EditForm = props => {
   const visitorId = get(props, ['match', 'params', 'visitorId'], null);
@@ -28,7 +28,7 @@ const EditForm = props => {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Imdad Requests" key="4">
-        <ImdadRequestsList visitorId={visitorId} {...props} />
+        <VisitorImdadRequestsList visitorId={visitorId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

@@ -2,8 +2,8 @@ import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/secu
 import {
   Payments,
   PaymentTypes,
-  ImdadRequests,
 } from 'meteor/idreesia-common/server/collections/accounts';
+import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 

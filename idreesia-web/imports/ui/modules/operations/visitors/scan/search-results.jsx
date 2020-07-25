@@ -7,7 +7,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Icon, Row, Spin, Tabs } from '/imports/ui/controls';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
-import { ImdadRequestsList } from '/imports/ui/modules/operations/imdad-requests';
+import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 
 import { OPERATIONS_VISITORS_BY_CNIC } from '../gql';
 
@@ -99,7 +99,7 @@ const SearchResult = ({ visitor }) => {
             />
           </Tabs.TabPane>
           <Tabs.TabPane tab="Imdad Requests" key="2">
-            <ImdadRequestsList visitorId={_id} />
+            <VisitorImdadRequestsList visitorId={_id} />
           </Tabs.TabPane>
         </Tabs>
       </Col>

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/accounts';
+import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 

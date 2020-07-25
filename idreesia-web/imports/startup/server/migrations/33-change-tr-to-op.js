@@ -1,7 +1,7 @@
 import { Migrations } from 'meteor/percolate:migrations';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/accounts';
+import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({

@@ -11,7 +11,7 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Drawer, message } from '/imports/ui/controls';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { VisitorMulakaatsList } from '/imports/ui/modules/operations/visitor-mulakaats';
-import { ImdadRequestsList } from '/imports/ui/modules/operations/imdad-requests';
+import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import { PAGED_OPERATIONS_VISITORS, DELETE_OPERATIONS_VISITOR } from '../gql';
@@ -188,7 +188,7 @@ const List = ({ history, location }) => {
         onClose={handleImdadRequestsListClose}
         visible={showImdadRequests}
       >
-        <ImdadRequestsList visitorId={visitorIdForList} />
+        <VisitorImdadRequestsList visitorId={visitorIdForList} />
       </Drawer>
     </>
   );

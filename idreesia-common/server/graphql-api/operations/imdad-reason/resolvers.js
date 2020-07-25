@@ -1,7 +1,7 @@
 import {
   ImdadRequests,
   ImdadReasons,
-} from 'meteor/idreesia-common/server/collections/accounts';
+} from 'meteor/idreesia-common/server/collections/imdad';
 
 export default {
   ImdadReasonType: {

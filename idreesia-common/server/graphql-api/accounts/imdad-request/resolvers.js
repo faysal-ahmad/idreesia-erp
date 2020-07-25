@@ -1,4 +1,4 @@
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/accounts';
+import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {

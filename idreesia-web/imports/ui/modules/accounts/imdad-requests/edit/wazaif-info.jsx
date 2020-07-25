@@ -1,20 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import moment from 'moment';
-
-import { values } from 'meteor/idreesia-common/utilities/lodash';
-import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
-import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/accounts';
 
 import { Col, Collapse, Form, Row, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
 import {
-  DateField,
   InputNumberField,
   InputTextAreaField,
-  SelectField,
-  VisitorSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -42,12 +34,11 @@ const GeneralInfo = ({ requestId, form, history }) => {
     }
   );
 
-  const { allImdadReasons, allImdadReasonsLoading } = useAllImdadReasons();
   const { data, loading } = useQuery(ACCOUNTS_IMDAD_REQUEST_BY_ID, {
     variables: { _id: requestId },
   });
 
-  if (loading || allImdadReasonsLoading) return null;
+  if (loading) return null;
   const { accountsImdadRequestById } = data;
   const { getFieldDecorator, isFieldsTouched } = form;
 
@@ -149,55 +140,8 @@ const GeneralInfo = ({ requestId, form, history }) => {
               getFieldDecorator={getFieldDecorator}
             />
           </Panel>
-          <Panel header="Pabandi &amp; Raabta"></Panel>
+          <Panel header="Pabandi &amp; Raabta" />
         </Collapse>
-        <DateField
-          fieldName="requestDate"
-          fieldLabel="Request Date"
-          required
-          requiredMessage="Please select a Request Date."
-          initialValue={moment(Number(accountsImdadRequestById.requestDate))}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <SelectField
-          data={values(ImdadRequestStatus)}
-          getDataValue={status => status}
-          getDataText={status => status}
-          fieldName="status"
-          fieldLabel="Status"
-          allowClear={false}
-          initialValue={accountsImdadRequestById.status}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <VisitorSelectionInputField
-          fieldName="visitor"
-          fieldLabel="Person"
-          required
-          requiredMessage="Please select a Person"
-          initialValue={accountsImdadRequestById.visitor}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <SelectField
-          data={allImdadReasons}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="imdadReasonId"
-          fieldLabel="Request Reason"
-          required
-          requiredMessage="Please select an Imdad Request Reason."
-          initialValue={accountsImdadRequestById.imdadReasonId}
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-          initialValue={accountsImdadRequestById.notes}
-          getFieldDecorator={getFieldDecorator}
-        />
 
         <FormButtonsSaveCancel
           handleCancel={handleCancel}

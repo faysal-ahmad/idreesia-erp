@@ -2,8 +2,8 @@ import moment from 'moment';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
-import { ImdadRequest as ImdadRequestSchema } from 'meteor/idreesia-common/server/schemas/accounts';
-import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
+import { ImdadRequest as ImdadRequestSchema } from 'meteor/idreesia-common/server/schemas/imdad';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
@@ -14,7 +14,7 @@ import {
 } from 'meteor/idreesia-common/server/collections/common';
 
 class ImdadRequests extends AggregatableCollection {
-  constructor(name = 'accounts-imdad-requests', options = {}) {
+  constructor(name = 'imdad-imdad-requests', options = {}) {
     const imdadRequests = super(name, options);
     imdadRequests.attachSchema(ImdadRequestSchema);
     return imdadRequests;

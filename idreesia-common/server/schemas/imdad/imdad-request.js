@@ -2,7 +2,7 @@ import SimpleSchema from 'simpl-schema';
 
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { DataSource } from 'meteor/idreesia-common/constants';
-import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 import { identifiable, timestamps } from '../common';
 
 const ApprovedImdad = new SimpleSchema({

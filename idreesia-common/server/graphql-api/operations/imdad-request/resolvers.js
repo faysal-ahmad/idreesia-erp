@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { ImdadRequests } from 'meteor/idreesia-common/server/collections/accounts';
 import { DataSource } from 'meteor/idreesia-common/constants';
-import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 
 export default {
   Query: {

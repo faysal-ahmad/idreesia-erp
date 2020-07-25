@@ -6,5 +6,3 @@ export { default as VoucherDetail } from './voucher-detail';
 export { default as Voucher } from './voucher';
 export { default as Payment } from './payment';
 export { default as PaymentType } from './payment-type';
-export { default as ImdadReason } from './imdad-reason';
-export { default as ImdadRequest } from './imdad-request';

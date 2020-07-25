@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
-import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 import { Collapse, Form, Icon, Tooltip } from '/imports/ui/controls';
 import { SelectField } from '/imports/ui/modules/helpers/fields';
 

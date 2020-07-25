@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/accounts';
+import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/imdad';
 import { Form, message } from '/imports/ui/controls';
 import {
   PAGED_ACCOUNTS_IMDAD_REQUESTS,

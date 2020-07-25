@@ -4,8 +4,8 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
 
 import { values } from 'meteor/idreesia-common/utilities/lodash';
-import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/accounts';
-import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/accounts';
+import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
+import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/imdad';
 
 import { Form, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';

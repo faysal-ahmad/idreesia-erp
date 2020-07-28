@@ -38,7 +38,7 @@ export const Card = ({ mehfilKarkun }) => {
   return (
     <div key={mehfilKarkun._id} className="mehfil_card">
       <div className="mehfil_card_heading">
-        {mehfilDuty ? mehfilDuty.urduName : ''}
+        {mehfilDuty ? mehfilDuty.name : ''}
       </div>
       {mehfilKarkun.dutyDetail ? (
         <div className="mehfil_card_subheading">{mehfilKarkun.dutyDetail}</div>

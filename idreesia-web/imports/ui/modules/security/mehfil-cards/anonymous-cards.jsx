@@ -46,7 +46,7 @@ export const Card = ({ dutyName }) => {
   return (
     <div className="mehfil_card">
       <div className="mehfil_card_heading">
-        {mehfilDuty ? mehfilDuty.urduName : ''}
+        {mehfilDuty ? mehfilDuty.name : ''}
       </div>
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">381 Karkun</h1>

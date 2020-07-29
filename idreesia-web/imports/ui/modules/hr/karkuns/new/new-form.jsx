@@ -5,7 +5,6 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Divider, Form, message } from '/imports/ui/controls';
-import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   AgeField,
@@ -26,8 +25,6 @@ class NewForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
     createHrKarkun: PropTypes.func,
-    allSharedResidencesLoading: PropTypes.bool,
-    allSharedResidences: PropTypes.array,
   };
 
   handleCancel = () => {
@@ -51,7 +48,6 @@ class NewForm extends Component {
           currentAddress,
           permanentAddress,
           bloodGroup,
-          sharedResidenceId,
           educationalQualification,
           meansOfEarning,
           ehadDate,
@@ -89,7 +85,6 @@ class NewForm extends Component {
               currentAddress,
               permanentAddress,
               bloodGroup,
-              sharedResidenceId,
               educationalQualification,
               meansOfEarning,
               ehadDate,
@@ -110,11 +105,8 @@ class NewForm extends Component {
 
   render() {
     const {
-      allSharedResidences,
-      allSharedResidencesLoading,
       form: { getFieldDecorator, isFieldsTouched },
     } = this.props;
-    if (allSharedResidencesLoading) return null;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -203,16 +195,6 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <SelectField
-          fieldName="sharedResidenceId"
-          fieldLabel="Shared Residence"
-          required={false}
-          data={allSharedResidences}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name, address }) => `${name} - ${address}`}
-          getFieldDecorator={getFieldDecorator}
-        />
-
         <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
@@ -253,9 +235,8 @@ export default flowRight(
   graphql(CREATE_HR_KARKUN, {
     name: 'createHrKarkun',
     options: {
-      refetchQueries: ['pagedHrKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedHrKarkuns'],
     },
   }),
-  WithAllSharedResidences(),
   WithBreadcrumbs(['HR', 'Karkuns', 'New'])
 )(NewForm);

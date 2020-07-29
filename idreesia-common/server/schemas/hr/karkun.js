@@ -35,11 +35,6 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  sharedResidenceId: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id,
-    optional: true,
-  },
   contactNumber1: {
     type: String,
     optional: true,

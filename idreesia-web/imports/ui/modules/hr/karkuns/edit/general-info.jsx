@@ -5,7 +5,6 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/controls';
 import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
-import { WithAllSharedResidences } from '/imports/ui/modules/hr/common/composers';
 import {
   WithAllCities,
   WithAllCityMehfils,
@@ -25,8 +24,6 @@ class GeneralInfo extends Component {
     allCitiesLoading: PropTypes.bool,
     allCityMehfils: PropTypes.array,
     allCityMehfilsLoading: PropTypes.bool,
-    allSharedResidences: PropTypes.array,
-    allSharedResidencesLoading: PropTypes.bool,
     hrKarkunById: PropTypes.object,
     formDataLoading: PropTypes.bool,
     updateHrKarkun: PropTypes.func,
@@ -48,7 +45,6 @@ class GeneralInfo extends Component {
     permanentAddress,
     cityIdMehfilId,
     bloodGroup,
-    sharedResidenceId,
     educationalQualification,
     meansOfEarning,
     ehadDate,
@@ -70,7 +66,6 @@ class GeneralInfo extends Component {
         cityId: cityIdMehfilId[0],
         cityMehfilId: cityIdMehfilId[1],
         bloodGroup: bloodGroup || null,
-        sharedResidenceId: sharedResidenceId || null,
         educationalQualification,
         meansOfEarning,
         ehadDate,
@@ -92,17 +87,10 @@ class GeneralInfo extends Component {
       allCitiesLoading,
       allCityMehfils,
       allCityMehfilsLoading,
-      allSharedResidences,
-      allSharedResidencesLoading,
       formDataLoading,
       hrKarkunById,
     } = this.props;
-    if (
-      formDataLoading ||
-      allCitiesLoading ||
-      allCityMehfilsLoading ||
-      allSharedResidencesLoading
-    )
+    if (formDataLoading || allCitiesLoading || allCityMehfilsLoading)
       return null;
 
     return (
@@ -111,10 +99,8 @@ class GeneralInfo extends Component {
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
         showCityMehfilField
-        showSharedResidencesField
         cities={allCities}
         cityMehfils={allCityMehfils}
-        sharedResidences={allSharedResidences}
       />
     );
   }
@@ -123,11 +109,10 @@ class GeneralInfo extends Component {
 export default flowRight(
   WithAllCities(),
   WithAllCityMehfils(),
-  WithAllSharedResidences(),
   graphql(UPDATE_HR_KARKUN, {
     name: 'updateHrKarkun',
     options: {
-      refetchQueries: ['pagedHrKarkuns', 'pagedSharedResidences'],
+      refetchQueries: ['pagedHrKarkuns'],
     },
   }),
   graphql(HR_KARKUN_BY_ID, {

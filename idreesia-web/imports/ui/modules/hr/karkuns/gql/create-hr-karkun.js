@@ -11,7 +11,6 @@ const CREATE_HR_KARKUN = gql`
     $currentAddress: String
     $permanentAddress: String
     $bloodGroup: String
-    $sharedResidenceId: String
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
@@ -28,7 +27,6 @@ const CREATE_HR_KARKUN = gql`
       currentAddress: $currentAddress
       permanentAddress: $permanentAddress
       bloodGroup: $bloodGroup
-      sharedResidenceId: $sharedResidenceId
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
@@ -45,7 +43,6 @@ const CREATE_HR_KARKUN = gql`
       currentAddress
       permanentAddress
       bloodGroup
-      sharedResidenceId
       educationalQualification
       meansOfEarning
       ehadDate

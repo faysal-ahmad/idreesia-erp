@@ -17,7 +17,6 @@ extend type Mutation {
     cityMehfilId: String
     permanentAddress: String
     bloodGroup: String
-    sharedResidenceId: String
     educationalQualification: String
     meansOfEarning: String
     ehadDate: String
@@ -38,7 +37,6 @@ extend type Mutation {
     cityId: String
     cityMehfilId: String
     bloodGroup: String
-    sharedResidenceId: String
     educationalQualification: String
     meansOfEarning: String
     ehadDate: String

@@ -18,7 +18,6 @@ const HR_KARKUN_BY_ID = gql`
       cityId
       cityMehfilId
       bloodGroup
-      sharedResidenceId
       educationalQualification
       meansOfEarning
       ehadDate

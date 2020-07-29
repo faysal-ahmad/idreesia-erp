@@ -24,9 +24,7 @@ const GeneralInfo = ({
   handleCancel,
   cities,
   cityMehfils,
-  sharedResidences,
   showCityMehfilField,
-  showSharedResidencesField,
 }) => {
   const _handleSubmit = e => {
     e.preventDefault();
@@ -171,19 +169,6 @@ const GeneralInfo = ({
           getFieldDecorator={getFieldDecorator}
         />
 
-        {showSharedResidencesField ? (
-          <SelectField
-            fieldName="sharedResidenceId"
-            fieldLabel="Shared Residence"
-            required={false}
-            initialValue={karkun.sharedResidenceId}
-            data={sharedResidences}
-            getDataValue={({ _id }) => _id}
-            getDataText={({ name, address }) => `${name} - ${address}`}
-            getFieldDecorator={getFieldDecorator}
-          />
-        ) : null}
-
         <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
@@ -234,17 +219,13 @@ GeneralInfo.propTypes = {
 
   cities: PropTypes.array,
   cityMehfils: PropTypes.array,
-  sharedResidences: PropTypes.array,
   showCityMehfilField: PropTypes.bool,
-  showSharedResidencesField: PropTypes.bool,
 };
 
 GeneralInfo.defaultProps = {
   cities: [],
   cityMehfils: [],
-  sharedResidences: [],
   showCityMehfilField: false,
-  showSharedResidencesField: false,
 };
 
 export default Form.create()(GeneralInfo);

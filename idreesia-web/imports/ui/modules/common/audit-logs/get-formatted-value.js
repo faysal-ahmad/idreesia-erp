@@ -15,7 +15,6 @@ const fieldDisplayNamesMap = {
   cityMehfilId: 'Mehfil ID',
   country: 'Country',
   bloodGroup: 'Blood Group',
-  sharedResidenceId: 'Shared Residence ID',
   educationalQualification: 'Educational Qualification',
   meansOfEarning: 'Means of Earning',
   ehadDate: 'Ehad Date',

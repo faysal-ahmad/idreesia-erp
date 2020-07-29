@@ -13,7 +13,6 @@ type KarkunType {
   cityId: String
   cityMehfilId: String
   bloodGroup: String
-  sharedResidenceId: String
   educationalQualification: String
   meansOfEarning: String
   ehadDate: String

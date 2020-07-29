@@ -59,11 +59,6 @@ class Sidebar extends Component {
         history.push(paths.messagesPath);
         break;
 
-      case 'shared-residencs':
-        setActiveSubModuleName(SubModuleNames.sharedResidences);
-        history.push(paths.sharedResidencesPath);
-        break;
-
       case 'audit-logs':
         setActiveSubModuleName(SubModuleNames.auditLogs);
         history.push(paths.auditLogsPath);
@@ -103,12 +98,6 @@ class Sidebar extends Component {
           <span>
             <Icon type="message" style={IconStyle} />
             Messages
-          </span>
-        </Menu.Item>
-        <Menu.Item key="shared-residencs">
-          <span>
-            <Icon type="home" style={IconStyle} />
-            Shared Residences
           </span>
         </Menu.Item>
         <SubMenu

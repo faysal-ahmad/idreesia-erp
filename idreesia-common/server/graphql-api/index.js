@@ -124,9 +124,6 @@ import SalaryResolvers from './hr/salary/resolvers';
 import HRMessageSchema from './hr/message/message.graphql';
 import HRMessageResolvers from './hr/message/resolvers';
 
-import HRSharedResidenceSchema from './hr/shared-residence/shared-residence.graphql';
-import HRSharedResidenceResolvers from './hr/shared-residence/resolvers';
-
 /**
  * Schema and Resolvers for the Outstation module
  */
@@ -282,7 +279,6 @@ const typeDefs = [
   AttendanceSchema,
   SalarySchema,
   HRMessageSchema,
-  HRSharedResidenceSchema,
 
   CitySchema,
   CityMehfilSchema,
@@ -363,7 +359,6 @@ const resolvers = merge(
   AttendanceResolvers,
   SalaryResolvers,
   HRMessageResolvers,
-  HRSharedResidenceResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

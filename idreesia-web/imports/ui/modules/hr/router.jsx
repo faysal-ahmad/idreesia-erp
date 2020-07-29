@@ -29,11 +29,6 @@ import {
   SalarySheetsRashanReceipts,
   SalarySheetsEidReceipts,
 } from './salary-sheets';
-import {
-  SharedResidencesNewForm,
-  SharedResidencesEditForm,
-  SharedResidencesList,
-} from './shared-residences';
 import { AuditLogsList } from './audit-logs';
 
 const Router = () => (
@@ -90,16 +85,6 @@ const Router = () => (
     <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
     <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />
     <Route path={paths.messagesPath} component={MessagesList} />
-
-    <Route
-      path={paths.sharedResidencesNewFormPath}
-      component={SharedResidencesNewForm}
-    />
-    <Route
-      path={paths.sharedResidencesEditFormPath()}
-      component={SharedResidencesEditForm}
-    />
-    <Route path={paths.sharedResidencesPath} component={SharedResidencesList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
   </Switch>

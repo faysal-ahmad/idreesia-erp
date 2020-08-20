@@ -6,7 +6,7 @@
     "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ./build"
   },
   "dependencies": {
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "lodash": "^4.17.19",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",

@@ -15,6 +15,17 @@ services:
       - ./data/mongo:/data/db
       - ~/Dropbox/Idreesia-ERP-Backup:/data/backup
 
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "3002:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=erp-admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=fairly long password
+    depends_on:
+      - mongo
+  
   web:
     build:
       context: ./idreesia-web

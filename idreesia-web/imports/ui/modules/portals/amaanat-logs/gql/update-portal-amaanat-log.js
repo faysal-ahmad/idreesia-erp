@@ -5,7 +5,7 @@ const UPDATE_PORTAL_AMAANAT_LOG = gql`
     $portalId: String!
     $_id: String!
     $cityId: String!
-    $cityMehfilId: String!
+    $cityMehfilId: String
     $sentDate: String!
     $totalAmount: Float!
     $hadiaPortion: Float

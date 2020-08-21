@@ -4,7 +4,7 @@ const UPDATE_ACCOUNTS_AMAANAT_LOG = gql`
   mutation updateAccountsAmaanatLog(
     $_id: String!
     $cityId: String!
-    $cityMehfilId: String!
+    $cityMehfilId: String
     $sentDate: String!
     $totalAmount: Float!
     $hadiaPortion: Float

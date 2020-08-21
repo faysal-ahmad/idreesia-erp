@@ -1,4 +1,4 @@
-import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/outstation';
+import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
 import {
   hasInstanceAccess,
   hasOnePermission,

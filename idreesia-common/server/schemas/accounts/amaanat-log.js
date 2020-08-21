@@ -8,6 +8,7 @@ export default new SimpleSchema({
   },
   cityMehfilId: {
     type: String,
+    optional: true,
   },
   sentDate: {
     type: Date,

@@ -43,7 +43,7 @@ extend type Query {
 extend type Mutation {
   createAccountsAmaanatLog(
     cityId: String!
-    cityMehfilId: String!
+    cityMehfilId: String
     sentDate: String!
     totalAmount: Float!
     hadiaPortion: Float
@@ -57,7 +57,7 @@ extend type Mutation {
   updateAccountsAmaanatLog(
     _id: String!
     cityId: String!
-    cityMehfilId: String!
+    cityMehfilId: String
     sentDate: String!
     totalAmount: Float!
     hadiaPortion: Float

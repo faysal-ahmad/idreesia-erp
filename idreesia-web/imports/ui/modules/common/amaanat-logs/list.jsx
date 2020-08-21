@@ -33,8 +33,13 @@ export default class AmaanatLogsList extends Component {
     {
       title: 'City / Mehfil',
       key: 'cityMehfil',
-      render: (text, record) =>
-        `${record.city.name} - ${record.cityMehfil.name}`,
+      render: (text, record) => {
+        if (record.cityMehfil) {
+          return `${record.city.name} - ${record.cityMehfil.name}`;
+        }
+
+        return `${record.city.name}`;
+      },
     },
     {
       title: 'Total Amount',

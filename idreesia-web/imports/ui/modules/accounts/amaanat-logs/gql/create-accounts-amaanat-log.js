@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 const CREATE_ACCOUNTS_AMAANAT_LOG = gql`
   mutation createAccountsAmaanatLog(
     $cityId: String!
-    $cityMehfilId: String!
+    $cityMehfilId: String
     $sentDate: String!
     $totalAmount: Float!
     $hadiaPortion: Float

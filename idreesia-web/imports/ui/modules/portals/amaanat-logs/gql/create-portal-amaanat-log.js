@@ -4,7 +4,7 @@ const CREATE_PORTAL_AMAANAT_LOG = gql`
   mutation createPortalAmaanatLog(
     $portalId: String!
     $cityId: String!
-    $cityMehfilId: String!
+    $cityMehfilId: String
     $sentDate: String!
     $totalAmount: Float!
     $hadiaPortion: Float

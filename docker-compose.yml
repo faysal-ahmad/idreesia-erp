@@ -16,7 +16,8 @@ services:
       - ~/Dropbox/Idreesia-ERP-Backup:/data/backup
 
   mongo-express:
-    image: mongo-express
+    build:
+      context: ./containers/mongo-express
     ports:
       - "3002:8081"
     environment:

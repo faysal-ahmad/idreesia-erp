@@ -37,7 +37,7 @@ export default {
         };
       }
 
-      return getAmaanatLogs(queryString);
+      return getAmaanatLogs(portalId, queryString);
     },
   },
 

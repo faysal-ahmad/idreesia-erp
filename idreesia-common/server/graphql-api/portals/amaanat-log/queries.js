@@ -3,9 +3,11 @@ import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
+import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-export default function getAmaanatLogs(queryString) {
+export default function getAmaanatLogs(portalId, queryString) {
+  const portal = Portals.findOne(portalId);
   const params = parse(queryString);
   const pipeline = [];
 
@@ -31,6 +33,14 @@ export default function getAmaanatLogs(queryString) {
     pipeline.push({
       $match: {
         cityMehfilId: { $eq: cityMehfilId },
+      },
+    });
+  }
+
+  if (!cityId && !cityMehfilId) {
+    pipeline.push({
+      $match: {
+        cityId: { $in: portal.cityIds },
       },
     });
   }

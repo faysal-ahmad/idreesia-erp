@@ -62,8 +62,9 @@ class NewForm extends Component {
           referenceName,
           contactNumber1,
           contactNumber2,
-          address,
           cityCountry,
+          currentAddress,
+          permanentAddress,
         }
       ) => {
         if (err) return;
@@ -104,9 +105,10 @@ class NewForm extends Component {
             referenceName,
             contactNumber1,
             contactNumber2,
-            address,
             city: visitorCity.name,
             country: visitorCity.country,
+            currentAddress,
+            permanentAddress,
           },
         })
           .then(({ data: { createPortalMember: newMember } }) => {
@@ -168,8 +170,15 @@ class NewForm extends Component {
         />
 
         <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
+          fieldName="currentAddress"
+          fieldLabel="Current Address"
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextAreaField
+          fieldName="permanentAddress"
+          fieldLabel="Permanent Address"
           required={false}
           getFieldDecorator={getFieldDecorator}
         />

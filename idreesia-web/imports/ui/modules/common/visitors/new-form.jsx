@@ -99,8 +99,15 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
       />
 
       <InputTextAreaField
-        fieldName="address"
-        fieldLabel="Address"
+        fieldName="currentAddress"
+        fieldLabel="Current Address"
+        required={false}
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <InputTextAreaField
+        fieldName="permanentAddress"
+        fieldLabel="Permanent Address"
         required={false}
         getFieldDecorator={getFieldDecorator}
       />
@@ -138,6 +145,22 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
       <InputTextField
         fieldName="contactNumber2"
         fieldLabel="Home Number"
+        required={false}
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <Divider />
+
+      <InputTextField
+        fieldName="educationalQualification"
+        fieldLabel="Education"
+        required={false}
+        getFieldDecorator={getFieldDecorator}
+      />
+
+      <InputTextAreaField
+        fieldName="meansOfEarning"
+        fieldLabel="Means of Earning"
         required={false}
         getFieldDecorator={getFieldDecorator}
       />

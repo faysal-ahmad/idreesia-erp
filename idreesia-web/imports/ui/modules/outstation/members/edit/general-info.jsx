@@ -35,7 +35,10 @@ class GeneralInfo extends Component {
     referenceName,
     contactNumber1,
     contactNumber2,
-    address,
+    currentAddress,
+    permanentAddress,
+    educationalQualification,
+    meansOfEarning,
     city,
     country,
   }) => {
@@ -55,9 +58,12 @@ class GeneralInfo extends Component {
         referenceName,
         contactNumber1,
         contactNumber2,
-        address,
         city,
         country,
+        currentAddress,
+        permanentAddress,
+        educationalQualification,
+        meansOfEarning,
       },
     })
       .then(() => {

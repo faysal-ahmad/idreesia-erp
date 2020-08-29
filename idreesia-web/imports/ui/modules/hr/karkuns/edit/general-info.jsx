@@ -49,6 +49,7 @@ class GeneralInfo extends Component {
     meansOfEarning,
     ehadDate,
     birthDate,
+    deathDate,
     referenceName,
   }) => {
     const { history, karkunId, updateHrKarkun } = this.props;
@@ -70,6 +71,7 @@ class GeneralInfo extends Component {
         meansOfEarning,
         ehadDate,
         birthDate,
+        deathDate,
         referenceName,
       },
     })

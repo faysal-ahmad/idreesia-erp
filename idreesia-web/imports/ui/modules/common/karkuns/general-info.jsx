@@ -6,6 +6,7 @@ import { Divider, Form } from '/imports/ui/controls';
 import {
   AgeField,
   CascaderField,
+  DateField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
@@ -93,6 +94,15 @@ const GeneralInfo = ({
           }
           required
           requiredMessage="Please specify the Ehad duration for the karkun."
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <DateField
+          fieldName="deathDate"
+          fieldLabel="Date of Death"
+          initialValue={
+            karkun.deathDate ? moment(Number(karkun.deathDate)) : null
+          }
           getFieldDecorator={getFieldDecorator}
         />
 

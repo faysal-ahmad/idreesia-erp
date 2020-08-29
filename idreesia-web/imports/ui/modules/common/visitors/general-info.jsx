@@ -108,10 +108,18 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
         />
 
         <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
+          fieldName="currentAddress"
+          fieldLabel="Current Address"
           required={false}
-          initialValue={visitor.address}
+          initialValue={visitor.currentAddress}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextAreaField
+          fieldName="permanentAddress"
+          fieldLabel="Permanent Address"
+          required={false}
+          initialValue={visitor.permanentAddress}
           getFieldDecorator={getFieldDecorator}
         />
 
@@ -153,6 +161,24 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldName="contactNumber2"
           fieldLabel="Home Number"
           initialValue={visitor.contactNumber2}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <Divider />
+
+        <InputTextField
+          fieldName="educationalQualification"
+          fieldLabel="Education"
+          initialValue={visitor.educationalQualification}
+          required={false}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <InputTextAreaField
+          fieldName="meansOfEarning"
+          fieldLabel="Means of Earning"
+          initialValue={visitor.meansOfEarning}
+          required={false}
           getFieldDecorator={getFieldDecorator}
         />
 

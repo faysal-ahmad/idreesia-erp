@@ -35,9 +35,12 @@ class GeneralInfo extends Component {
     referenceName,
     contactNumber1,
     contactNumber2,
-    address,
     city,
     country,
+    currentAddress,
+    permanentAddress,
+    educationalQualification,
+    meansOfEarning,
   }) => {
     const {
       history,
@@ -55,9 +58,12 @@ class GeneralInfo extends Component {
         referenceName,
         contactNumber1,
         contactNumber2,
-        address,
         city,
         country,
+        currentAddress,
+        permanentAddress,
+        educationalQualification,
+        meansOfEarning,
       },
     })
       .then(() => {

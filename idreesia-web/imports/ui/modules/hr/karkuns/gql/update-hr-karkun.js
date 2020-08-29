@@ -18,6 +18,7 @@ const UPDATE_HR_KARKUN = gql`
     $meansOfEarning: String
     $ehadDate: String
     $birthDate: String
+    $deathDate: String
     $referenceName: String
   ) {
     updateHrKarkun(
@@ -37,6 +38,7 @@ const UPDATE_HR_KARKUN = gql`
       meansOfEarning: $meansOfEarning
       ehadDate: $ehadDate
       birthDate: $birthDate
+      deathDate: $deathDate
       referenceName: $referenceName
     ) {
       _id
@@ -55,6 +57,7 @@ const UPDATE_HR_KARKUN = gql`
       meansOfEarning
       ehadDate
       birthDate
+      deathDate
       lastTarteebDate
       mehfilRaabta
       msRaabta

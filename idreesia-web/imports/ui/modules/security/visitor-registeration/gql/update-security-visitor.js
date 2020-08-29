@@ -11,9 +11,12 @@ const UPDATE_SECURITY_VISITOR = gql`
     $referenceName: String!
     $contactNumber1: String
     $contactNumber2: String
-    $address: String
     $city: String
     $country: String
+    $currentAddress: String
+    $permanentAddress: String
+    $educationalQualification: String
+    $meansOfEarning: String
   ) {
     updateSecurityVisitor(
       _id: $_id
@@ -25,9 +28,12 @@ const UPDATE_SECURITY_VISITOR = gql`
       referenceName: $referenceName
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
-      address: $address
       city: $city
       country: $country
+      currentAddress: $currentAddress
+      permanentAddress: $permanentAddress
+      educationalQualification: $educationalQualification
+      meansOfEarning: $meansOfEarning
     ) {
       _id
       name
@@ -38,9 +44,12 @@ const UPDATE_SECURITY_VISITOR = gql`
       referenceName
       contactNumber1
       contactNumber2
-      address
       city
       country
+      currentAddress
+      permanentAddress
+      educationalQualification
+      meansOfEarning
     }
   }
 `;

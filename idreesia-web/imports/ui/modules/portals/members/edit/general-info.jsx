@@ -68,8 +68,9 @@ class GeneralInfo extends Component {
           referenceName,
           contactNumber1,
           contactNumber2,
-          address,
           cityCountry,
+          currentAddress,
+          permanentAddress,
         }
       ) => {
         if (err) return;
@@ -111,9 +112,10 @@ class GeneralInfo extends Component {
             referenceName,
             contactNumber1,
             contactNumber2,
-            address,
             city: visitorCity.name,
             country: visitorCity.country,
+            currentAddress,
+            permanentAddress,
           },
         })
           .then(() => {
@@ -187,9 +189,17 @@ class GeneralInfo extends Component {
           />
 
           <InputTextAreaField
-            fieldName="address"
-            fieldLabel="Address"
-            initialValue={portalMemberById.address}
+            fieldName="currentAddress"
+            fieldLabel="Current Address"
+            initialValue={portalMemberById.currentAddress}
+            required={false}
+            getFieldDecorator={getFieldDecorator}
+          />
+
+          <InputTextAreaField
+            fieldName="permanentAddress"
+            fieldLabel="Permanent Address"
+            initialValue={portalMemberById.permanentAddress}
             required={false}
             getFieldDecorator={getFieldDecorator}
           />

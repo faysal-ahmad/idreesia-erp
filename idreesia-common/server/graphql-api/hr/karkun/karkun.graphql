@@ -41,6 +41,7 @@ extend type Mutation {
     meansOfEarning: String
     ehadDate: String
     birthDate: String
+    deathDate: String
     referenceName: String
   ): KarkunType
 

@@ -23,7 +23,16 @@ export default new SimpleSchema({
   referenceName: {
     type: String,
   },
+  // TODO: remove this
   address: {
+    type: String,
+    optional: true,
+  },
+  currentAddress: {
+    type: String,
+    optional: true,
+  },
+  permanentAddress: {
     type: String,
     optional: true,
   },
@@ -40,6 +49,22 @@ export default new SimpleSchema({
     optional: true,
   },
   contactNumber2: {
+    type: String,
+    optional: true,
+  },
+  contactNumber1Subscribed: {
+    type: Boolean,
+    optional: true,
+  },
+  contactNumber2Subscribed: {
+    type: Boolean,
+    optional: true,
+  },
+  educationalQualification: {
+    type: String,
+    optional: true,
+  },
+  meansOfEarning: {
     type: String,
     optional: true,
   },

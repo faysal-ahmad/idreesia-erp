@@ -8,9 +8,14 @@ type VisitorType {
   referenceName: String
   contactNumber1: String
   contactNumber2: String
-  address: String
+  contactNumber1Subscribed: Boolean
+  contactNumber2Subscribed: Boolean
   city: String
   country: String
+  currentAddress: String
+  permanentAddress: String
+  educationalQualification: String
+  meansOfEarning: String
   imageId: String
   karkunId: String
   dataSource: String

@@ -22,6 +22,7 @@ const HR_KARKUN_BY_ID = gql`
       meansOfEarning
       ehadDate
       birthDate
+      deathDate
       lastTarteebDate
       mehfilRaabta
       msRaabta

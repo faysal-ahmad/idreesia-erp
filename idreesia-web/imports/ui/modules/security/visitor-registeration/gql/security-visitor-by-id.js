@@ -12,9 +12,12 @@ const SECURITY_VISITOR_BY_ID = gql`
       referenceName
       contactNumber1
       contactNumber2
-      address
       city
       country
+      currentAddress
+      permanentAddress
+      educationalQualification
+      meansOfEarning
       criminalRecord
       otherNotes
       imageId

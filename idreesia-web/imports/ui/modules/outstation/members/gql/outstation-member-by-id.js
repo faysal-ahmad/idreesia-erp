@@ -12,9 +12,12 @@ const OUTSTATION_MEMBER_BY_ID = gql`
       referenceName
       contactNumber1
       contactNumber2
-      address
       city
       country
+      currentAddress
+      permanentAddress
+      educationalQualification
+      meansOfEarning
       imageId
       createdAt
       createdBy

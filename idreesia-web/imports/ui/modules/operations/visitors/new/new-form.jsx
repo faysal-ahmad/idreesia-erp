@@ -31,9 +31,12 @@ class NewForm extends Component {
     referenceName,
     contactNumber1,
     contactNumber2,
-    address,
     city,
     country,
+    currentAddress,
+    permanentAddress,
+    educationalQualification,
+    meansOfEarning,
   }) => {
     const { history, createOperationsVisitor } = this.props;
 
@@ -47,9 +50,12 @@ class NewForm extends Component {
         referenceName,
         contactNumber1,
         contactNumber2,
-        address,
         city,
         country,
+        currentAddress,
+        permanentAddress,
+        educationalQualification,
+        meansOfEarning,
       },
     })
       .then(({ data: { createOperationsVisitor: newVisitor } }) => {

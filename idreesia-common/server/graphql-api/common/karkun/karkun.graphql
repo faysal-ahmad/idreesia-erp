@@ -17,6 +17,7 @@ type KarkunType {
   meansOfEarning: String
   ehadDate: String
   birthDate: String
+  deathDate: String
   lastTarteebDate: String
   mehfilRaabta: String
   msRaabta: String

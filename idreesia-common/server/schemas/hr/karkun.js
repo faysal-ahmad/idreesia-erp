@@ -75,6 +75,10 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
+  deathDate: {
+    type: Date,
+    optional: true,
+  },
   lastTarteebDate: {
     type: Date,
     optional: true,

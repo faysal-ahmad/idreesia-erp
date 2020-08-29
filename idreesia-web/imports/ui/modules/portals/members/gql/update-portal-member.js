@@ -12,9 +12,12 @@ const UPDATE_PORTAL_MEMBER = gql`
     $referenceName: String!
     $contactNumber1: String
     $contactNumber2: String
-    $address: String
     $city: String
     $country: String
+    $currentAddress: String
+    $permanentAddress: String
+    $educationalQualification: String
+    $meansOfEarning: String
   ) {
     updatePortalMember(
       portalId: $portalId
@@ -27,9 +30,12 @@ const UPDATE_PORTAL_MEMBER = gql`
       referenceName: $referenceName
       contactNumber1: $contactNumber1
       contactNumber2: $contactNumber2
-      address: $address
       city: $city
       country: $country
+      currentAddress: $currentAddress
+      permanentAddress: $permanentAddress
+      educationalQualification: $educationalQualification
+      meansOfEarning: $meansOfEarning
     ) {
       _id
       name
@@ -40,9 +46,12 @@ const UPDATE_PORTAL_MEMBER = gql`
       referenceName
       contactNumber1
       contactNumber2
-      address
       city
       country
+      currentAddress
+      permanentAddress
+      educationalQualification
+      meansOfEarning
     }
   }
 `;

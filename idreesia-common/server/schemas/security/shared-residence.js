@@ -15,6 +15,14 @@ export default new SimpleSchema({
     regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
+  attachmentIds: {
+    type: Array,
+    optional: true,
+  },
+  'attachmentIds.$': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

@@ -10,6 +10,12 @@ export const SHARED_RESIDENCE_BY_ID = gql`
       createdBy
       updatedAt
       updatedBy
+      attachments {
+        _id
+        name
+        description
+        mimeType
+      }
       residents {
         _id
         isOwner

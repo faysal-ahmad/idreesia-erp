@@ -51,9 +51,6 @@ const Permissions = {
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
   HR_APPROVE_SALARIES: 'hr-approve-salaries',
 
-  HR_VIEW_SHARED_RESIDENCES: 'hr-view-shared-residences',
-  HR_MANAGE_SHARED_RESIDENCES: 'hr-manage-shared-residences',
-
   HR_VIEW_MESSAGES: 'hr-view-messages',
   HR_MANAGE_MESSAGES: 'hr-manage-messages',
   HR_APPROVE_MESSAGES: 'hr-approve-messages',

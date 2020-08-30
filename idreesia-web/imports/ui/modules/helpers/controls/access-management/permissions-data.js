@@ -228,20 +228,6 @@ export const hrPermissionsData = {
         },
       ],
     },
-    {
-      title: 'Shared Residences',
-      key: 'module-hr-shared-residences',
-      children: [
-        {
-          title: 'View Shared Residences',
-          key: PermissionConstants.HR_VIEW_SHARED_RESIDENCES,
-        },
-        {
-          title: 'Manage Shared Residences',
-          key: PermissionConstants.HR_MANAGE_SHARED_RESIDENCES,
-        },
-      ],
-    },
   ],
 };
 

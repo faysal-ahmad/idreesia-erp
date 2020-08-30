@@ -6,6 +6,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Tabs } from '/imports/ui/controls';
 import GeneralInfo from './general-info';
 import ResidentsList from './residents-list';
+import AttachmentsList from './attachments-list';
 
 const EditForm = props => {
   const sharedResidenceId = get(
@@ -20,6 +21,9 @@ const EditForm = props => {
       </Tabs.TabPane>
       <Tabs.TabPane tab="Residents List" key="2">
         <ResidentsList sharedResidenceId={sharedResidenceId} {...props} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="File Attachments" key="6">
+        <AttachmentsList sharedResidenceId={sharedResidenceId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );

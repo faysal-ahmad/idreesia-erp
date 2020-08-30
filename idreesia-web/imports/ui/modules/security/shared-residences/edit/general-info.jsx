@@ -20,7 +20,7 @@ class EditForm extends Component {
     location: PropTypes.object,
     form: PropTypes.object,
 
-    sharedResidenceId: String,
+    sharedResidenceId: PropTypes.string,
     loading: PropTypes.bool,
     sharedResidenceById: PropTypes.object,
     updateSharedResidence: PropTypes.func,

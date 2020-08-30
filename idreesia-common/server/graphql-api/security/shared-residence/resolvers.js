@@ -3,6 +3,7 @@ import {
   SharedResidences,
   SharedResidenceResidents,
 } from 'meteor/idreesia-common/server/collections/security';
+import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
@@ -18,6 +19,14 @@ export default {
       SharedResidenceResidents.find({
         sharedResidenceId: { $eq: sharedResidenceType._id },
       }).fetch(),
+    attachments: sharedResidenceType => {
+      const { attachmentIds } = sharedResidenceType;
+      if (attachmentIds && attachmentIds.length > 0) {
+        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
+      }
+
+      return [];
+    },
   },
 
   SharedResidenceResidentType: {
@@ -207,6 +216,57 @@ export default {
       }
 
       return SharedResidenceResidents.remove(_id);
+    },
+
+    addSharedResidenceAttachment(obj, { _id, attachmentId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Shared Residences in the System.'
+        );
+      }
+
+      const date = new Date();
+      SharedResidences.update(_id, {
+        $addToSet: {
+          attachmentIds: attachmentId,
+        },
+        $set: {
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return SharedResidences.findOne(_id);
+    },
+
+    removeSharedResidenceAttachment(obj, { _id, attachmentId }, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Shared Residences in the System.'
+        );
+      }
+
+      const date = new Date();
+      SharedResidences.update(_id, {
+        $pull: {
+          attachmentIds: attachmentId,
+        },
+        $set: {
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      Attachments.removeAttachment(attachmentId);
+      return SharedResidences.findOne(_id);
     },
   },
 };

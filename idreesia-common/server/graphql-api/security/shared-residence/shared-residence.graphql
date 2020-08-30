@@ -14,9 +14,11 @@ type SharedResidenceType {
   _id: String
   name: String
   address: String
+  attachmentIds: [String]
 
   residentsCount: Int
   residents: [SharedResidenceResidentType]
+  attachments: [Attachment]
 
   createdAt: String
   createdBy: String
@@ -58,4 +60,7 @@ extend type Mutation {
   ): SharedResidenceResidentType
 
   removeResident(_id: String!): Int
+
+  addSharedResidenceAttachment(_id: String!, attachmentId: String!): SharedResidenceType
+  removeSharedResidenceAttachment(_id: String!, attachmentId: String!): SharedResidenceType
 }

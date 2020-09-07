@@ -1,0 +1,10 @@
+extend type Mutation {
+  createOutstationMehfilDuty(name: String!, description: String): DutyType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
+
+  updateOutstationMehfilDuty(_id: String!, name: String!, description: String): DutyType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
+
+  removeOutstationMehfilDuty(_id: String!): Int
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
+}

@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -16,6 +15,8 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
 
+import { DUTY_BY_ID, UPDATE_OUTSTATION_MEHFIL_DUTY } from './gql';
+
 class EditForm extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -25,7 +26,7 @@ class EditForm extends Component {
 
     loading: PropTypes.bool,
     dutyById: PropTypes.object,
-    updateDuty: PropTypes.func,
+    updateOustationMehfilDuty: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -35,13 +36,13 @@ class EditForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, history, dutyById, updateDuty } = this.props;
+    const { form, history, dutyById, updateOustationMehfilDuty } = this.props;
     form.validateFields((err, { name, description }) => {
       if (err) return;
 
-      updateDuty({
+      updateOustationMehfilDuty({
         variables: {
-          id: dutyById._id,
+          _id: dutyById._id,
           name,
           description,
         },
@@ -88,59 +89,21 @@ class EditForm extends Component {
   }
 }
 
-const formQuery = gql`
-  query dutyById($id: String!) {
-    dutyById(id: $id) {
-      _id
-      name
-      description
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateDuty(
-    $id: String!
-    $name: String!
-    $description: String
-    $attendanceSheet: String
-  ) {
-    updateDuty(
-      id: $id
-      name: $name
-      description: $description
-      attendanceSheet: $attendanceSheet
-    ) {
-      _id
-      name
-      description
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
   WithQueryParams(),
-  graphql(formMutation, {
-    name: 'updateDuty',
+  graphql(UPDATE_OUTSTATION_MEHFIL_DUTY, {
+    name: 'updateOustationMehfilDuty',
     options: {
       refetchQueries: ['allMehfilDuties'],
     },
   }),
-  graphql(formQuery, {
+  graphql(DUTY_BY_ID, {
     props: ({ data }) => ({ ...data }),
     options: ({ match }) => {
       const { dutyId } = match.params;
       return { variables: { id: dutyId } };
     },
   }),
-  WithBreadcrumbs(['HR', 'Mehfil Duties', 'Edit'])
+  WithBreadcrumbs(['Outstations', 'Mehfil Duties', 'Edit'])
 )(EditForm);

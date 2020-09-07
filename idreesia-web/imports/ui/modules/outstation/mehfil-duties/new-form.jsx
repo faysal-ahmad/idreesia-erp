@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,12 +11,14 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
+import { CREATE_OUTSTATION_MEHFIL_DUTY } from './gql';
+
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     form: PropTypes.object,
-    createDuty: PropTypes.func,
+    createOutstationMehfilDuty: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -27,14 +28,13 @@ class NewForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, createDuty, history } = this.props;
+    const { form, createOutstationMehfilDuty, history } = this.props;
     form.validateFields((err, { name, description }) => {
       if (err) return;
 
-      createDuty({
+      createOutstationMehfilDuty({
         variables: {
           name,
-          isMehfilDuty: true,
           description,
         },
       })
@@ -73,35 +73,13 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createDuty(
-    $name: String!
-    $isMehfilDuty: Boolean!
-    $description: String
-    $attendanceSheet: String
-  ) {
-    createDuty(
-      name: $name
-      isMehfilDuty: $isMehfilDuty
-      description: $description
-      attendanceSheet: $attendanceSheet
-    ) {
-      _id
-      name
-      isMehfilDuty
-      description
-      attendanceSheet
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
-    name: 'createDuty',
+  graphql(CREATE_OUTSTATION_MEHFIL_DUTY, {
+    name: 'createOutstationMehfilDuty',
     options: {
       refetchQueries: ['allMehfilDuties'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Mehfil Duties', 'New'])
+  WithBreadcrumbs(['Outstation', 'Mehfil Duties', 'New'])
 )(NewForm);

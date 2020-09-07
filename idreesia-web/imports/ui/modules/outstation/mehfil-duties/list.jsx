@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
+
+import { ALL_MEHFIL_DUTIES, REMOVE_OUTSTATION_MEHFIL_DUTY } from './gql';
 
 class List extends Component {
   static propTypes = {
@@ -100,32 +101,15 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query allMehfilDuties {
-    allMehfilDuties {
-      _id
-      name
-      description
-      usedCount
-    }
-  }
-`;
-
-const removeDutyMutation = gql`
-  mutation removeDuty($_id: String!) {
-    removeDuty(_id: $_id)
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(ALL_MEHFIL_DUTIES, {
     props: ({ data }) => ({ ...data }),
   }),
-  graphql(removeDutyMutation, {
+  graphql(REMOVE_OUTSTATION_MEHFIL_DUTY, {
     name: 'removeDuty',
     options: {
       refetchQueries: ['allMehfilDuties'],
     },
   }),
-  WithBreadcrumbs(['HR', 'Mehfil Duties', 'List'])
+  WithBreadcrumbs(['Outstation', 'Mehfil Duties', 'List'])
 )(List);

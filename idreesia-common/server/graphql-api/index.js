@@ -133,6 +133,9 @@ import CityResolvers from './outstation/city/resolvers';
 import CityMehfilSchema from './outstation/city-mehfil/city-mehfil.graphql';
 import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
 
+import MehfilDutySchema from './outstation/mehfil-duty/duty.graphql';
+import MehfilDutyResolvers from './outstation/mehfil-duty/resolvers';
+
 import OutstationAuditLogSchema from './outstation/audit-log/audit-log.graphql';
 import OutstationAuditLogResolvers from './outstation/audit-log/resolvers';
 
@@ -282,6 +285,7 @@ const typeDefs = [
 
   CitySchema,
   CityMehfilSchema,
+  MehfilDutySchema,
   OutstationAuditLogSchema,
   OutstationMemberSchema,
   OutstationKarkunSchema,
@@ -362,6 +366,7 @@ const resolvers = merge(
 
   CityResolvers,
   CityMehfilResolvers,
+  MehfilDutyResolvers,
   OutstationAuditLogResolvers,
   OutstationMemberResolvers,
   OutstationKarkunResolvers,

@@ -36,8 +36,6 @@ const ListFilter = props => {
       setPageParams({
         showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
         showUnlocked: status.indexOf('unlocked') !== -1 ? 'true' : 'false',
-        showActive: status.indexOf('active') !== -1 ? 'true' : 'false',
-        showInactive: status.indexOf('inactive') !== -1 ? 'true' : 'false',
         pageIndex: '0',
       });
     });
@@ -48,8 +46,6 @@ const ListFilter = props => {
     setPageParams({
       showLocked: 'false',
       showUnlocked: 'true',
-      showActive: 'true',
-      showInactive: 'true',
       pageIndex: '0',
     });
   };
@@ -75,15 +71,11 @@ const ListFilter = props => {
     form: { getFieldDecorator },
     showLocked,
     showUnlocked,
-    showActive,
-    showInactive,
   } = props;
 
   const status = [];
   if (showLocked === 'true') status.push('locked');
   if (showUnlocked === 'true') status.push('unlocked');
-  if (showActive === 'true') status.push('active');
-  if (showInactive === 'true') status.push('inactive');
 
   return (
     <Collapse style={ContainerStyle}>
@@ -96,8 +88,6 @@ const ListFilter = props => {
             options={[
               { label: 'Locked Users', value: 'locked' },
               { label: 'Unlocked Users', value: 'unlocked' },
-              { label: 'Currently Active', value: 'active' },
-              { label: 'Currently Inactive', value: 'inactive' },
             ]}
             initialValue={status}
             getFieldDecorator={getFieldDecorator}
@@ -123,8 +113,6 @@ ListFilter.propTypes = {
   form: PropTypes.object,
   showLocked: PropTypes.string,
   showUnlocked: PropTypes.string,
-  showActive: PropTypes.string,
-  showInactive: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 };

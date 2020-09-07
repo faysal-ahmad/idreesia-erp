@@ -9,6 +9,7 @@ const PAGED_PORTAL_USERS = gql`
         username
         locked
         lastActiveAt
+        permissions
         karkun {
           _id
           name

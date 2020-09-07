@@ -10,7 +10,7 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { usePortal } from 'meteor/idreesia-common/hooks/portals';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats } from 'meteor/idreesia-common/constants';
+import { Formats, Permissions } from 'meteor/idreesia-common/constants';
 
 import { Button, Icon, Pagination, Row, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
@@ -19,6 +19,19 @@ import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import ListFilter from './list-filter';
 import { PAGED_PORTAL_USERS } from '../gql';
 
+const permissionDisplayText = {
+  [Permissions.PORTALS_DELETE_DATA]: 'Delete Data',
+  [Permissions.PORTALS_VIEW_AUDIT_LOGS]: 'View Audit Logs',
+  [Permissions.PORTALS_VIEW_USERS_AND_GROUPS]: 'View Users & Groups',
+  [Permissions.PORTALS_MANAGE_USERS_AND_GROUPS]: 'Manage Users & Groups',
+  [Permissions.PORTALS_VIEW_AMAANAT_LOGS]: 'View Amaanat Logs',
+  [Permissions.PORTALS_MANAGE_AMAANAT_LOGS]: 'Manage Amaanat Logs',
+  [Permissions.PORTALS_VIEW_KARKUNS]: 'View Karkuns',
+  [Permissions.PORTALS_MANAGE_KARKUNS]: 'Manage Karkuns',
+  [Permissions.PORTALS_VIEW_MEMBERS]: 'View Members',
+  [Permissions.PORTALS_MANAGE_MEMBERS]: 'Manage Members',
+};
+
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const { portalId } = useParams();
@@ -26,19 +39,10 @@ const List = ({ history, location }) => {
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: [
-      'showLocked',
-      'showUnlocked',
-      'showActive',
-      'showInactive',
-      'pageIndex',
-      'pageSize',
-    ],
+    paramNames: ['showLocked', 'showUnlocked', 'pageIndex', 'pageSize'],
     paramDefaultValues: {
       showLocked: 'false',
       showUnlocked: 'true',
-      showActive: 'true',
-      showInactive: 'true',
     },
   });
 
@@ -73,14 +77,7 @@ const List = ({ history, location }) => {
     history.push(paths.usersNewFormPath(portalId));
   };
 
-  const {
-    showLocked,
-    showUnlocked,
-    showActive,
-    showInactive,
-    pageIndex,
-    pageSize,
-  } = queryParams;
+  const { showLocked, showUnlocked, pageIndex, pageSize } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -97,8 +94,6 @@ const List = ({ history, location }) => {
       <ListFilter
         showLocked={showLocked}
         showUnlocked={showUnlocked}
-        showActive={showActive}
-        showInactive={showInactive}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -160,6 +155,22 @@ const List = ({ history, location }) => {
       render: text => {
         if (!text) return '';
         return moment(Number(text)).format(Formats.DATE_TIME_FORMAT);
+      },
+    },
+    {
+      title: 'Permissions',
+      dataIndex: 'permissions',
+      key: 'permissions',
+      render: permissions => {
+        const items = [];
+        permissions.forEach(permission => {
+          const text = permissionDisplayText[permission];
+          if (text) {
+            items.push(<li key={permission}>{text}</li>);
+          }
+        });
+
+        return <ul>{items}</ul>;
       },
     },
   ];

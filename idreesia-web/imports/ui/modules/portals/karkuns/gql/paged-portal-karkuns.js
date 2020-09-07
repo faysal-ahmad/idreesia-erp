@@ -10,6 +10,8 @@ const PAGED_PORTAL_KARKUNS = gql`
         cnicNumber
         contactNumber1
         contactNumber2
+        contactNumber1Subscribed
+        contactNumber2Subscribed
         imageId
         duties {
           _id

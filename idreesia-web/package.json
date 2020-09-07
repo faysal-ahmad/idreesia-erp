@@ -7,6 +7,7 @@
     "visualize": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor --production --extra-packages bundle-visualizer --settings ./private/env/settings.json"
   },
   "dependencies": {
+    "@babel/runtime": "^7.11.2",
     "antd": "^3.26.7",
     "apollo-boost": "^0.4.7",
     "apollo-server-express": "^2.14.2",

@@ -34,9 +34,6 @@ const Permissions = {
   ADMIN_VIEW_COMPANIES: 'admin-view-companies',
   ADMIN_MANAGE_COMPANIES: 'admin-manage-companies',
 
-  ADMIN_VIEW_PORTALS: 'admin-view-portals',
-  ADMIN_MANAGE_PORTALS: 'admin-manage-portals',
-
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************

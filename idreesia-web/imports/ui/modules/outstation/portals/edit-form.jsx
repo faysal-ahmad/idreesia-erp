@@ -76,7 +76,7 @@ class EditForm extends Component {
           mode="tags"
           fieldName="cityIds"
           fieldLabel="Cities"
-          initialValue={portalById.cityIds}
+          initialValue={portalById.cityIds || []}
           getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
@@ -124,5 +124,5 @@ export default flowRight(
       return { variables: { _id: portalId } };
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Portals', 'Edit'])
+  WithBreadcrumbs(['Outstation', 'Portals', 'Edit'])
 )(EditForm);

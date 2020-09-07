@@ -16,6 +16,7 @@ import {
   MehfilDutiesEditForm,
   MehfilDutiesList,
 } from './mehfil-duties';
+import { PortalsNewForm, PortalsEditForm, PortalsList } from './portals';
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import { AuditLogsList } from './audit-logs';
 
@@ -34,6 +35,10 @@ const Router = () => (
       component={MehfilDutiesEditForm}
     />
     <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
+
+    <Route path={paths.portalsNewFormPath} component={PortalsNewForm} />
+    <Route path={paths.portalsEditFormPath} component={PortalsEditForm} />
+    <Route path={paths.portalsPath} component={PortalsList} />
 
     <Route path={paths.membersUploadFormPath} component={MembersUploadForm} />
     <Route path={paths.membersNewFormPath} component={MembersNewForm} />

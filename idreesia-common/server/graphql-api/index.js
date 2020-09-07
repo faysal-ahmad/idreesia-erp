@@ -127,6 +127,9 @@ import HRMessageResolvers from './hr/message/resolvers';
 /**
  * Schema and Resolvers for the Outstation module
  */
+import PortalSchema from './outstation/portal/portal.graphql';
+import PortalResolvers from './outstation/portal/resolvers';
+
 import CitySchema from './outstation/city/city.graphql';
 import CityResolvers from './outstation/city/resolvers';
 
@@ -157,9 +160,6 @@ import OutstationMessageResolvers from './outstation/message/resolvers';
 /**
  * Schema and Resolvers for the Portals module
  */
-import PortalSchema from './portals/portal/portal.graphql';
-import PortalResolvers from './portals/portal/resolvers';
-
 import PortalUserSchema from './portals/user/user.graphql';
 import PortalUserResolvers from './portals/user/resolvers';
 
@@ -283,6 +283,7 @@ const typeDefs = [
   SalarySchema,
   HRMessageSchema,
 
+  PortalSchema,
   CitySchema,
   CityMehfilSchema,
   MehfilDutySchema,
@@ -293,7 +294,6 @@ const typeDefs = [
   OutstationAttendanceSchema,
   OutstationMessageSchema,
 
-  PortalSchema,
   PortalUserSchema,
   PortalAuditLogSchema,
   PortalKarkunSchema,
@@ -364,6 +364,7 @@ const resolvers = merge(
   SalaryResolvers,
   HRMessageResolvers,
 
+  PortalResolvers,
   CityResolvers,
   CityMehfilResolvers,
   MehfilDutyResolvers,
@@ -374,7 +375,6 @@ const resolvers = merge(
   OutstationAttendanceResolvers,
   OutstationMessageResolvers,
 
-  PortalResolvers,
   PortalUserResolvers,
   PortalAuditLogResolvers,
   PortalKarkunResolvers,

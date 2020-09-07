@@ -33,7 +33,9 @@ export default {
   Mutation: {
     createPortal(obj, { name, cityIds }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_PORTALS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Portals in the System.'
@@ -55,7 +57,9 @@ export default {
 
     updatePortal(obj, { _id, name, cityIds }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.ADMIN_MANAGE_PORTALS])
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
+        ])
       ) {
         throw new Error(
           'You do not have permission to manage Portals in the System.'

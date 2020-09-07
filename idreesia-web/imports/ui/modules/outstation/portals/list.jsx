@@ -7,7 +7,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Button, Table } from '/imports/ui/controls';
-import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 class List extends Component {
   static propTypes = {
@@ -77,5 +77,5 @@ export default flowRight(
   graphql(listQuery, {
     props: ({ data }) => ({ ...data }),
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Portals', 'List'])
+  WithBreadcrumbs(['Outstation', 'Portals', 'List'])
 )(List);

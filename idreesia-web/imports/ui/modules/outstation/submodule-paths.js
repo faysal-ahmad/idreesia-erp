@@ -16,6 +16,10 @@ export default class SubModulePaths {
     return `${SubModulePaths.mehfilDutiesPath}/${dutyId}`;
   }
 
+  static portalsPath = `${ModulePaths.outstation}/portals`;
+  static portalsNewFormPath = `${SubModulePaths.portalsPath}/new`;
+  static portalsEditFormPath = `${SubModulePaths.portalsPath}/:portalId`;
+
   // *************************************************************************************
   // Members Routes
   // *************************************************************************************

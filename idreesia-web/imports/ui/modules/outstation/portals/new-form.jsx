@@ -100,5 +100,5 @@ export default flowRight(
       refetchQueries: ['allPortals'],
     },
   }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Portals', 'New'])
+  WithBreadcrumbs(['Outstation', 'Portals', 'New'])
 )(NewForm);

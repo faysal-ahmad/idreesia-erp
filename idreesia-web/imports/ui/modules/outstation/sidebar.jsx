@@ -22,6 +22,11 @@ class Sidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
+      case 'portals':
+        setActiveSubModuleName(SubModuleNames.portals);
+        history.push(paths.portalsPath);
+        break;
+
       case 'mehfil-duties':
         setActiveSubModuleName(SubModuleNames.mehfilDuties);
         history.push(paths.mehfilDutiesPath);
@@ -118,6 +123,12 @@ class Sidebar extends Component {
             </span>
           }
         >
+          <Menu.Item key="portals">
+            <span>
+              <Icon type="home" style={IconStyle} />
+              Portals
+            </span>
+          </Menu.Item>
           <Menu.Item key="cities">
             <span>
               <Icon type="environment" style={IconStyle} />

@@ -64,20 +64,6 @@ export const adminPermissionsData = {
             },
           ],
         },
-        {
-          title: 'Portals',
-          key: 'module-admin-portals',
-          children: [
-            {
-              title: 'View Portals',
-              key: PermissionConstants.ADMIN_VIEW_PORTALS,
-            },
-            {
-              title: 'Manage Portals',
-              key: PermissionConstants.ADMIN_MANAGE_PORTALS,
-            },
-          ],
-        },
       ],
     },
   ],

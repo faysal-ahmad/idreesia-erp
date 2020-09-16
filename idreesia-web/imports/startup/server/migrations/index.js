@@ -37,6 +37,7 @@ import './33-change-tr-to-op';
 import './34-move-messages-to-operations';
 import './35-move-wazaif-to-operations';
 import './36-rename-fields-in-visitor';
+import './37-create-mehfil-portals';
 
 Migrations.config({
   log: true,

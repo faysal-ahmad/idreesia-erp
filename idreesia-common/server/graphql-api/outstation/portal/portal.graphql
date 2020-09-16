@@ -22,9 +22,12 @@ extend type Mutation {
     name: String!
     cityIds: [String]
   ): PortalType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
+
   updatePortal(
     _id: String!
     name: String!
     cityIds: [String]
   ): PortalType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
 }

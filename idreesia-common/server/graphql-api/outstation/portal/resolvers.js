@@ -1,10 +1,6 @@
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import {
-  filterByInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { filterByInstanceAccess } from 'meteor/idreesia-common/server/graphql-api/security';
 
 export default {
   PortalType: {
@@ -32,14 +28,9 @@ export default {
 
   Mutation: {
     createPortal(obj, { name, cityIds }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Portals in the System.'
-        );
+      const existingPortal = Portals.findOne({ name });
+      if (existingPortal) {
+        throw new Error('Another portal with the same name already exists.');
       }
 
       const date = new Date();
@@ -56,14 +47,9 @@ export default {
     },
 
     updatePortal(obj, { _id, name, cityIds }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Portals in the System.'
-        );
+      const existingPortal = Portals.findOne({ name });
+      if (existingPortal && existingPortal._id !== _id) {
+        throw new Error('Another portal with the same name already exists.');
       }
 
       const date = new Date();

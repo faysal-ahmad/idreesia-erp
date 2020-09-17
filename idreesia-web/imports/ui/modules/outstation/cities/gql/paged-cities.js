@@ -18,6 +18,8 @@ const PAGED_CITIES = gql`
           _id
           name
         }
+        karkunCount
+        memberCount
       }
     }
   }

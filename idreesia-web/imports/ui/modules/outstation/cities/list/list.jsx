@@ -99,7 +99,7 @@ const List = ({ history, location }) => {
     {
       title: 'Region',
       dataIndex: 'region',
-      width: 100,
+      width: 75,
       key: 'region',
     },
     {
@@ -113,6 +113,18 @@ const List = ({ history, location }) => {
         ));
         return <ul>{mehfilNames}</ul>;
       },
+    },
+    {
+      title: 'Karkuns',
+      dataIndex: 'karkunCount',
+      width: 80,
+      key: 'karkunCount',
+    },
+    {
+      title: 'Members',
+      dataIndex: 'memberCount',
+      width: 80,
+      key: 'memberCount',
     },
     {
       title: 'In Portal',

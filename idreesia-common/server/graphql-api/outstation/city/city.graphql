@@ -5,6 +5,8 @@ type CityType {
   country: String
   region: String
  
+  karkunCount: Int
+  memberCount: Int
   mehfils: [CityMehfilType]
   peripheryOfCity: CityType
 

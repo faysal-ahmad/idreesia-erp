@@ -17,6 +17,7 @@ extend type Mutation {
     lastTarteebDate: String
     mehfilRaabta: String
     msRaabta: String
+    msLastVisitDate: String
   ): String
 
   updateOutstationKarkun(
@@ -46,6 +47,7 @@ extend type Mutation {
     lastTarteebDate: String
     mehfilRaabta: String
     msRaabta: String
+    msLastVisitDate: String
   ): KarkunType
 
   setOutstationKarkunProfileImage(_id: String!, imageId: String!): KarkunType

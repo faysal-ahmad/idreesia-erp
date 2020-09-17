@@ -51,6 +51,17 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
           getFieldDecorator={getFieldDecorator}
         />
 
+        <DateField
+          fieldName="msLastVisitDate"
+          fieldLabel="Last MS Visit"
+          initialValue={
+            karkun.msLastVisitDate
+              ? moment(Number(karkun.msLastVisitDate))
+              : null
+          }
+          getFieldDecorator={getFieldDecorator}
+        />
+
         <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}

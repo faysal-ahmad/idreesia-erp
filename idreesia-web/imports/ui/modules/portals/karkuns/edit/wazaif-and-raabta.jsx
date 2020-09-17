@@ -30,7 +30,12 @@ class WazaifAndRaabta extends Component {
     history.goBack();
   };
 
-  handleSubmit = ({ lastTarteebDate, mehfilRaabta, msRaabta }) => {
+  handleSubmit = ({
+    lastTarteebDate,
+    mehfilRaabta,
+    msRaabta,
+    msLastVisitDate,
+  }) => {
     const {
       history,
       portalId,
@@ -46,6 +51,9 @@ class WazaifAndRaabta extends Component {
           : null,
         mehfilRaabta,
         msRaabta,
+        msLastVisitDate: msLastVisitDate
+          ? msLastVisitDate.startOf('day')
+          : null,
       },
     })
       .then(() => {

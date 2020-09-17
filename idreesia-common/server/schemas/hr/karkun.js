@@ -91,6 +91,10 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  msLastVisitDate: {
+    type: Date,
+    optional: true,
+  },
   referenceName: {
     type: String,
     optional: true,

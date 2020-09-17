@@ -44,6 +44,7 @@ extend type Mutation {
     lastTarteebDate: String
     mehfilRaabta: String
     msRaabta: String
+    msLastVisitDate: String
   ): KarkunType
 
   setPortalKarkunProfileImage(portalId: String!, _id: String!, imageId: String!): KarkunType

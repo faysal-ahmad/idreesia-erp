@@ -7,6 +7,7 @@ const SET_PORTAL_KARKUN_WAZAIF_AND_RAABTA = gql`
     $lastTarteebDate: String
     $mehfilRaabta: String
     $msRaabta: String
+    $msLastVisitDate: String
   ) {
     setPortalKarkunWazaifAndRaabta(
       portalId: $portalId
@@ -14,11 +15,13 @@ const SET_PORTAL_KARKUN_WAZAIF_AND_RAABTA = gql`
       lastTarteebDate: $lastTarteebDate
       mehfilRaabta: $mehfilRaabta
       msRaabta: $msRaabta
+      msLastVisitDate: $msLastVisitDate
     ) {
       _id
       lastTarteebDate
       mehfilRaabta
       msRaabta
+      msLastVisitDate
     }
   }
 `;

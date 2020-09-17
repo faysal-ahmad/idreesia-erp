@@ -3,6 +3,8 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
+import { JobTypes } from 'meteor/idreesia-common/constants';
 
 export default {
   UserType: {
@@ -219,6 +221,10 @@ export default {
             lastLoggedInAt: new Date(),
           },
         });
+
+        const params = { userId: user._id };
+        const options = { priority: 'normal', retry: 10 };
+        createJob({ type: JobTypes.SEND_LOGIN_SMS_MESSAGE, params, options });
       }
 
       return 1;

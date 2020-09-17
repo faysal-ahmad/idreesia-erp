@@ -10,12 +10,10 @@ import Jobs from '/imports/collections/jobs';
 import sendSmsMessage from './send-sms-message';
 import getMsKarkunMessageRecepients from './get-ms-karkun-message-recepients';
 import getOutstationKarkunMessageRecepients from './get-outstation-karkun-message-recepients';
-import getUserAccountsMessageRecepients from './get-user-accounts-message-recepients';
 
 const MessageRecepientsEvaluator = {
   [FilterTarget.MS_KARKUNS]: getMsKarkunMessageRecepients,
   [FilterTarget.OUTSTATION_KARKUNS]: getOutstationKarkunMessageRecepients,
-  [FilterTarget.USER_ACCOUNTS]: getUserAccountsMessageRecepients,
 };
 
 export const worker = (job, callback) => {

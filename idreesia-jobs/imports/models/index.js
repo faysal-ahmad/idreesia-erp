@@ -10,5 +10,8 @@ export {
   default as SendSmsMessageJob,
 } from './send-sms-message/send-sms-message-job';
 export {
+  default as SendLoginSmsMessageJob,
+} from './send-sms-message/send-login-sms-message-job';
+export {
   default as CheckSubscriptionStatusJob,
 } from './check-subscription-status/check-subscription-status-job';

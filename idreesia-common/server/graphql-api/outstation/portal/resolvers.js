@@ -16,7 +16,7 @@ export default {
     },
 
     allAccessiblePortals(obj, params, { user }) {
-      const portals = Portals.find({}).fetch();
+      const portals = Portals.find({}, { sort: { name: 1 } }).fetch();
       const filteredPortals = filterByInstanceAccess(user._id, portals);
       return filteredPortals;
     },

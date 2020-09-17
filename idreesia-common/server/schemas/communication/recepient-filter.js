@@ -69,4 +69,11 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  userIds: {
+    type: Array,
+    optional: true,
+  },
+  'userIds.$': {
+    type: String,
+  },
 });

@@ -15,6 +15,7 @@ const ATTENDANCE_BY_BARCODE_IDS = gql`
       karkun {
         _id
         name
+        bloodGroup
         contactNumber1Subscribed
         contactNumber2Subscribed
         image {

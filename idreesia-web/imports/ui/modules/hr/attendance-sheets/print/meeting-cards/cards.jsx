@@ -99,11 +99,12 @@ export default class Cards extends Component {
 
   getKarkunImage = attendance => {
     const { cardType } = this.props;
+    const subscribed =
+      attendance.karkun.contactNumber1Subscribed ||
+      attendance.karkun.contactNumber2Subscribed;
     const percentageClass =
       attendance.percentage > 0 ? 'info_box' : 'info_box hidden';
-    const bloodGroupClass = attendance.karkun.bloodGroup
-      ? 'info_box'
-      : 'info_box hidden';
+    const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
 
     const karkunImage = attendance.karkun.image ? (
       <img
@@ -122,7 +123,7 @@ export default class Cards extends Component {
         {karkunImage}
         <div className="info_container">
           <div className={percentageClass}>{attendance.percentage}%</div>
-          <div className={bloodGroupClass}>{attendance.karkun.bloodGroup}</div>
+          <div className={subscriptionClass}>NS</div>
         </div>
       </div>
     );

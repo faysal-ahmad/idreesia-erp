@@ -362,6 +362,20 @@ export const outstationPermissionsData = {
         },
       ],
     },
+    {
+      title: 'Portal Users and Groups',
+      key: 'module-outstation-portal-users-and-groups',
+      children: [
+        {
+          title: 'View Users and Groups',
+          key: PermissionConstants.OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS,
+        },
+        {
+          title: 'Manage Users and Groups',
+          key: PermissionConstants.OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS,
+        },
+      ],
+    },
   ],
 };
 

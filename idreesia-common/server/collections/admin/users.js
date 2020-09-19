@@ -25,12 +25,7 @@ const mapUser = user => ({
   instances: user.instances || [],
 });
 
-Users.findOneUser = userId => {
-  const user = Meteor.users.findOne(userId);
-  return mapUser(user);
-};
-
-Users.searchUsers = params => {
+const buildPipeline = params => {
   const pipeline = [];
   const {
     showLocked,
@@ -39,8 +34,6 @@ Users.searchUsers = params => {
     showInactive,
     moduleAccess,
     portalAccess,
-    pageIndex = '0',
-    pageSize = '20',
   } = params;
 
   if (showLocked === 'true' && showUnlocked === 'false') {
@@ -106,6 +99,62 @@ Users.searchUsers = params => {
     });
   }
 
+  return pipeline;
+};
+
+Users.findOneUser = userId => {
+  const user = Meteor.users.findOne(userId);
+  return mapUser(user);
+};
+
+Users.searchUsers = params => {
+  const { pageIndex = '0', pageSize = '20' } = params;
+  const pipeline = buildPipeline(params);
+  const countingPipeline = pipeline.concat({
+    $count: 'total',
+  });
+
+  const nPageIndex = parseInt(pageIndex, 10);
+  const nPageSize = parseInt(pageSize, 10);
+  const resultsPipeline = pipeline.concat([
+    { $sort: { username: 1 } },
+    { $skip: nPageIndex * nPageSize },
+    { $limit: nPageSize },
+  ]);
+
+  const users = aggregate(resultsPipeline).toArray();
+  const totalResults = aggregate(countingPipeline).toArray();
+
+  return Promise.all([users, totalResults]).then(results => ({
+    totalResults: get(results[1], ['0', 'total'], 0),
+    data: results[0].map(user => mapUser(user)),
+  }));
+};
+
+Users.searchOutstationPortalUsers = (params, portalIds) => {
+  const { pageIndex = '0', pageSize = '20' } = params;
+  const initialPipeline = [
+    {
+      $match: {
+        karkunId: { $exists: true, $ne: null },
+        $or: [
+          {
+            permissions: {
+              $elemMatch: { $regex: `^mehfil-portals` },
+            },
+          },
+          {
+            // We want to get back users even if they don't have any
+            // permissions related to the portal, but have been given
+            // access to a portal.
+            instances: { $in: portalIds },
+          },
+        ],
+      },
+    },
+  ];
+
+  const pipeline = initialPipeline.concat(buildPipeline(params));
   const countingPipeline = pipeline.concat({
     $count: 'total',
   });

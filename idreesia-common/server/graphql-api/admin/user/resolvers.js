@@ -1,6 +1,7 @@
 import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
@@ -12,6 +13,11 @@ export default {
       if (!userType.karkunId) return null;
       return Karkuns.findOne(userType.karkunId);
     },
+
+    portal: userType =>
+      Portals.findOne({
+        _id: { $in: userType.instances },
+      }),
   },
 
   Query: {

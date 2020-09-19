@@ -148,14 +148,17 @@ import OutstationMemberResolvers from './outstation/member/resolvers';
 import OutstationKarkunSchema from './outstation/karkun/karkun.graphql';
 import OutstationKarkunResolvers from './outstation/karkun/resolvers';
 
-import OutstationKarkunDutySchema from './outstation/karkun-duties/karkun-duty.graphql';
-import OutstationKarkunDutyResolvers from './outstation/karkun-duties/resolvers';
+import OutstationKarkunDutySchema from './outstation/karkun-duty/karkun-duty.graphql';
+import OutstationKarkunDutyResolvers from './outstation/karkun-duty/resolvers';
 
 import OutstationAttendanceSchema from './outstation/attendance/attendance.graphql';
 import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 
 import OutstationMessageSchema from './outstation/message/message.graphql';
 import OutstationMessageResolvers from './outstation/message/resolvers';
+
+import OutstationPortalUserSchema from './outstation/portal-user/portal-user.graphql';
+import OutstationPortalUserResolvers from './outstation/portal-user/resolvers';
 
 /**
  * Schema and Resolvers for the Portals module
@@ -293,6 +296,7 @@ const typeDefs = [
   OutstationKarkunDutySchema,
   OutstationAttendanceSchema,
   OutstationMessageSchema,
+  OutstationPortalUserSchema,
 
   PortalUserSchema,
   PortalAuditLogSchema,
@@ -374,6 +378,7 @@ const resolvers = merge(
   OutstationKarkunDutyResolvers,
   OutstationAttendanceResolvers,
   OutstationMessageResolvers,
+  OutstationPortalUserResolvers,
 
   PortalUserResolvers,
   PortalAuditLogResolvers,

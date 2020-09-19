@@ -12,6 +12,7 @@ type UserType {
   instances: [String]
 
   karkun: KarkunType
+  portal: PortalType
 }
 
 type PagedUserType {

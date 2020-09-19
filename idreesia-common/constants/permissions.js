@@ -88,6 +88,11 @@ const Permissions = {
   OUTSTATION_MANAGE_MESSAGES: 'outstation-manage-messages',
   OUTSTATION_APPROVE_MESSAGES: 'outstation-approve-messages',
 
+  OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS:
+    'outstation-view-portal-users-and-groups',
+  OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS:
+    'outstation-manage-portal-users-and-groups',
+
   // ****************************************************************************************
   // Portals Module
   // ****************************************************************************************

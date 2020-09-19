@@ -5,6 +5,7 @@ const SubModuleNames = {
   attendanceSheets: 'Attendance Sheets',
   mehfilDuties: 'Mehfil Duties',
   portals: 'Portals',
+  portalUsers: 'Portal Users',
   messages: 'Messages',
   auditLogs: 'Audit Logs',
 };

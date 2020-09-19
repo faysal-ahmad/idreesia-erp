@@ -7,7 +7,7 @@ export default () => WrappedComponent => {
   const WithAllPortals = props => <WrappedComponent {...props} />;
 
   WithAllPortals.propTypes = {
-    portalsLoading: PropTypes.bool,
+    allPortalsLoading: PropTypes.bool,
     allPortals: PropTypes.array,
   };
 
@@ -22,6 +22,6 @@ export default () => WrappedComponent => {
   `;
 
   return graphql(portalsListQuery, {
-    props: ({ data }) => ({ portalsLoading: data.loading, ...data }),
+    props: ({ data }) => ({ allPortalsLoading: data.loading, ...data }),
   })(WithAllPortals);
 };

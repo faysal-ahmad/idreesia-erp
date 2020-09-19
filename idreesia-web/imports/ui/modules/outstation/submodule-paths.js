@@ -53,6 +53,15 @@ export default class SubModulePaths {
   // ******************************************************************************
   static attendanceSheetsPath = `${ModulePaths.outstation}/attendance-sheets`;
 
+  // *************************************************************************************
+  // Portal Users Routes
+  // *************************************************************************************
+  static portalUsersPath = `${ModulePaths.outstation}/portal-users`;
+  static portalUsersNewFormPath = `${SubModulePaths.portalUsersPath}/new`;
+  static portalUsersEditFormPath(userId = ':userId') {
+    return `${SubModulePaths.portalUsersPath}/${userId}`;
+  }
+
   // ******************************************************************************
   // Audit Logs
   // ******************************************************************************

@@ -57,6 +57,11 @@ class Sidebar extends Component {
         history.push(paths.messagesPath);
         break;
 
+      case 'portal-user-accounts':
+        setActiveSubModuleName(SubModuleNames.portalUsers);
+        history.push(paths.portalUsersPath);
+        break;
+
       case 'audit-logs':
         setActiveSubModuleName(SubModuleNames.auditLogs);
         history.push(paths.auditLogsPath);
@@ -107,6 +112,12 @@ class Sidebar extends Component {
             </span>
           }
         >
+          <Menu.Item key="portal-user-accounts">
+            <span>
+              <Icon type="unlock" style={IconStyle} />
+              Portal User Accounts
+            </span>
+          </Menu.Item>
           <Menu.Item key="audit-logs">
             <span>
               <Icon type="audit" style={IconStyle} />

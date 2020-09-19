@@ -39,7 +39,7 @@ export default class AuditLogsList extends Component {
       title: 'Operation Time',
       dataIndex: 'operationTime',
       key: 'operationTime',
-      width: 100,
+      width: 110,
       render: text => {
         const date = moment(Number(text));
         return (

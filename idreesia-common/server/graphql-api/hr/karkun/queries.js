@@ -25,6 +25,7 @@ function buildPipeline(params) {
     lastTarteeb,
     jobId,
     dutyId,
+    ehadKarkun,
     dutyShiftId,
     jobIds,
     dutyIds,
@@ -99,6 +100,15 @@ function buildPipeline(params) {
     pipeline.push({
       $match: {
         bloodGroup: { $eq: convertedBloodGroupValue },
+      },
+    });
+  }
+
+  if (ehadKarkun) {
+    const ehadKarkunValue = ehadKarkun === 'true';
+    pipeline.push({
+      $match: {
+        ehadKarkun: { $eq: ehadKarkunValue },
       },
     });
   }

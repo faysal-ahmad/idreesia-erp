@@ -26,6 +26,7 @@ export function getPortalKarkuns(portalId, params) {
     bloodGroup,
     lastTarteeb,
     dutyId,
+    ehadKarkun,
     cityId,
     cityMehfilId,
     pageIndex = '0',
@@ -71,6 +72,15 @@ export function getPortalKarkuns(portalId, params) {
     pipeline.push({
       $match: {
         bloodGroup: { $eq: convertedBloodGroupValue },
+      },
+    });
+  }
+
+  if (ehadKarkun) {
+    const ehadKarkunValue = ehadKarkun === 'true';
+    pipeline.push({
+      $match: {
+        ehadKarkun: { $eq: ehadKarkunValue },
       },
     });
   }

@@ -33,6 +33,7 @@ const List = ({ history, location }) => {
       'lastTarteeb',
       'attendance',
       'dutyId',
+      'ehadKarkun',
       'cityId',
       'cityMehfilId',
       'region',
@@ -105,6 +106,7 @@ const List = ({ history, location }) => {
     lastTarteeb,
     attendance,
     dutyId,
+    ehadKarkun,
     cityId,
     cityMehfilId,
     region,
@@ -131,6 +133,7 @@ const List = ({ history, location }) => {
         showMehfilDutyFilter
         showCityMehfilFilter
         showRegionFilter
+        showEhadKarkunFilter
         mehfilDuties={allMehfilDuties}
         cities={allCities}
         cityMehfils={allCityMehfils}
@@ -142,6 +145,7 @@ const List = ({ history, location }) => {
         lastTarteeb={lastTarteeb}
         attendance={attendance}
         dutyId={dutyId}
+        ehadKarkun={ehadKarkun}
         cityId={cityId}
         cityMehfilId={cityMehfilId}
         region={region}

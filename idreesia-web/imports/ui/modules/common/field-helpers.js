@@ -89,6 +89,22 @@ export function getBloodGroupFilterField(fieldValue, getFieldDecorator) {
   );
 }
 
+export function getEhadKarkunFilterField(fieldValue, getFieldDecorator) {
+  return (
+    <SelectField
+      fieldName="ehadKarkun"
+      fieldLabel="Ehad Karkun"
+      required={false}
+      data={[{ label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }]}
+      getDataValue={({ value }) => value}
+      getDataText={({ label }) => label}
+      fieldLayout={formItemLayout}
+      initialValue={fieldValue}
+      getFieldDecorator={getFieldDecorator}
+    />
+  );
+}
+
 export function getAttendanceFilterField(fieldValue, getFieldDecorator) {
   return (
     <AttendanceFilterField

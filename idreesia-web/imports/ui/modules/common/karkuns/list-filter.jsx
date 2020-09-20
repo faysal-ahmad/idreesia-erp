@@ -13,6 +13,7 @@ import {
   getAttendanceFilterField,
   getMehfilDutyFilterField,
   getCityMehfilFilterField,
+  getEhadKarkunFilterField,
   getRegionFilterField,
   getUpdatedBetweenFilterField,
   getFormButtons,
@@ -34,6 +35,7 @@ const ListFilter = ({
   lastTarteeb,
   attendance,
   dutyId,
+  ehadKarkun,
   cityId,
   cityMehfilId,
   region,
@@ -46,6 +48,7 @@ const ListFilter = ({
   showLastTarteebFilter,
   showAttendanceFilter,
   showMehfilDutyFilter,
+  showEhadKarkunFilter,
   showCityMehfilFilter,
   showRegionFilter,
   showUpdatedBetweenFilter,
@@ -68,6 +71,7 @@ const ListFilter = ({
       jobId: null,
       dutyId: null,
       dutyShiftId: null,
+      ehadKarkun: null,
       cityId: null,
       cityMehfilId: null,
       region: null,
@@ -89,6 +93,7 @@ const ListFilter = ({
         jobId: values.jobId,
         dutyId: values.dutyId,
         dutyShiftId: values.dutyShiftId,
+        ehadKarkun: values.ehadKarkun,
         cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
         cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
         region: values.region,
@@ -144,6 +149,9 @@ const ListFilter = ({
           {showMehfilDutyFilter
             ? getMehfilDutyFilterField(dutyId, getFieldDecorator, mehfilDuties)
             : null}
+          {showEhadKarkunFilter
+            ? getEhadKarkunFilterField(ehadKarkun, getFieldDecorator)
+            : null}
           {showCityMehfilFilter
             ? getCityMehfilFilterField(
                 [cityId, cityMehfilId],
@@ -178,6 +186,7 @@ ListFilter.propTypes = {
   jobId: PropTypes.string,
   dutyId: PropTypes.string,
   dutyShiftId: PropTypes.string,
+  ehadKarkun: PropTypes.string,
   cityId: PropTypes.string,
   cityMehfilId: PropTypes.string,
   region: PropTypes.string,
@@ -194,6 +203,7 @@ ListFilter.propTypes = {
   showAttendanceFilter: PropTypes.bool,
   showMehfilDutyFilter: PropTypes.bool,
   showDutyShiftFilter: PropTypes.bool,
+  showEhadKarkunFilter: PropTypes.bool,
   showCityMehfilFilter: PropTypes.bool,
   showRegionFilter: PropTypes.bool,
   showUpdatedBetweenFilter: PropTypes.bool,
@@ -215,6 +225,7 @@ ListFilter.defaultProps = {
   showAttendanceFilter: false,
   showMehfilDutyFilter: false,
   showDutyShiftFilter: false,
+  showEhadKarkunFilter: false,
   showCityMehfilFilter: false,
   showRegionFilter: false,
   showUpdatedBetweenFilter: true,

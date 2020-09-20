@@ -19,6 +19,8 @@ const UPDATE_OUTSTATION_KARKUN = gql`
     $ehadDate: String
     $birthDate: String
     $referenceName: String
+    $ehadKarkun: Boolean
+    $ehadPermissionDate: String
   ) {
     updateOutstationKarkun(
       _id: $_id
@@ -38,6 +40,8 @@ const UPDATE_OUTSTATION_KARKUN = gql`
       ehadDate: $ehadDate
       birthDate: $birthDate
       referenceName: $referenceName
+      ehadKarkun: $ehadKarkun
+      ehadPermissionDate: $ehadPermissionDate
     ) {
       _id
       name
@@ -56,6 +60,8 @@ const UPDATE_OUTSTATION_KARKUN = gql`
       ehadDate
       birthDate
       referenceName
+      ehadKarkun
+      ehadPermissionDate
       createdAt
       createdBy
       updatedAt

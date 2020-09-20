@@ -21,6 +21,8 @@ const HR_KARKUN_BY_ID = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      ehadKarkun
+      ehadPermissionDate
       birthDate
       deathDate
       lastTarteebDate

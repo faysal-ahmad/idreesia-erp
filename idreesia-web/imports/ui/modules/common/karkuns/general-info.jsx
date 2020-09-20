@@ -12,6 +12,7 @@ import {
   InputMobileField,
   InputTextField,
   SelectField,
+  SwitchField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
@@ -140,6 +141,26 @@ const GeneralInfo = ({
             getFieldDecorator={getFieldDecorator}
           />
         ) : null}
+
+        <Divider />
+
+        <SwitchField
+          fieldName="ehadKarkun"
+          fieldLabel="Ehad Karkun"
+          initialValue={karkun.ehadKarkun}
+          getFieldDecorator={getFieldDecorator}
+        />
+
+        <DateField
+          fieldName="ehadPermissionDate"
+          fieldLabel="Ehad Permission Date"
+          initialValue={
+            karkun.ehadPermissionDate
+              ? moment(Number(karkun.ehadPermissionDate))
+              : null
+          }
+          getFieldDecorator={getFieldDecorator}
+        />
 
         <Divider />
 

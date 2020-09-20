@@ -54,6 +54,8 @@ class GeneralInfo extends Component {
     ehadDate,
     birthDate,
     referenceName,
+    ehadKarkun,
+    ehadPermissionDate,
   }) => {
     const {
       history,
@@ -79,6 +81,8 @@ class GeneralInfo extends Component {
         ehadDate,
         birthDate,
         referenceName,
+        ehadKarkun,
+        ehadPermissionDate,
       },
     })
       .then(() => {

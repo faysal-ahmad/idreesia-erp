@@ -38,9 +38,16 @@ extend type Mutation {
     ehadDate: String
     birthDate: String
     referenceName: String
+    ehadKarkun: Boolean
+    ehadPermissionDate: String
   ): KarkunType
 
   deleteOutstationKarkun(_id: String!): Int
+
+  setOutstationKarkunEhadDuty(
+    _id: String!
+    ehadKarkun: Boolean!
+  ): KarkunType
 
   setOutstationKarkunWazaifAndRaabta(
     _id: String!

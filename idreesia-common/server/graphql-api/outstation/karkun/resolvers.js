@@ -175,6 +175,20 @@ export default {
       return Karkuns.updateKarkun(values, user);
     },
 
+    setOutstationKarkunEhadDuty(obj, values, { user }) {
+      if (
+        !hasOnePermission(user._id, [
+          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Karkuns in the System.'
+        );
+      }
+
+      return Karkuns.updateKarkun(values, user);
+    },
+
     setOutstationKarkunProfileImage(obj, values, { user }) {
       if (
         !hasOnePermission(user._id, [

@@ -18,6 +18,8 @@ const PORTAL_KARKUN_BY_ID = gql`
       educationalQualification
       meansOfEarning
       ehadDate
+      ehadKarkun
+      ehadPermissionDate
       birthDate
       lastTarteebDate
       mehfilRaabta

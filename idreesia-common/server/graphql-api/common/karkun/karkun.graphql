@@ -16,6 +16,8 @@ type KarkunType {
   educationalQualification: String
   meansOfEarning: String
   ehadDate: String
+  ehadKarkun: Boolean
+  ehadPermissionDate: String
   birthDate: String
   deathDate: String
   lastTarteebDate: String

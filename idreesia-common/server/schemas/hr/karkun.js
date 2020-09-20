@@ -75,6 +75,14 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
+  ehadKarkun: {
+    type: Boolean,
+    optional: true,
+  },
+  ehadPermissionDate: {
+    type: Date,
+    optional: true,
+  },
   deathDate: {
     type: Date,
     optional: true,

@@ -8,8 +8,8 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  EntityTypes,
-  OperationTypeDisplayNames,
+  EntityType,
+  OperationTypeDisplayName,
 } from 'meteor/idreesia-common/constants/audit';
 
 import { AuditLogsList, AuditLogsListFilter } from '/imports/ui/modules/common';
@@ -18,8 +18,8 @@ import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstatio
 import { PAGED_OUTSTATION_AUDIT_LOGS } from '../gql';
 
 const EntityTypeDisplayNames = {
-  [EntityTypes.KARKUN]: 'Karkun',
-  [EntityTypes.VISITOR]: 'Member',
+  [EntityType.KARKUN]: 'Karkun',
+  [EntityType.VISITOR]: 'Member',
 };
 
 const List = ({ history, location }) => {
@@ -55,16 +55,16 @@ const List = ({ history, location }) => {
 
   const getAuditLogEntityRenderer = auditLog => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
-    if (entityType === EntityTypes.KARKUN) {
+    if (entityType === EntityType.KARKUN) {
       return (
         <Link to={paths.karkunsEditFormPath(_entityId)}>
-          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
         </Link>
       );
-    } else if (entityType === EntityTypes.VISITOR) {
+    } else if (entityType === EntityType.VISITOR) {
       return (
         <Link to={paths.membersEditFormPath(_entityId)}>
-          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
         </Link>
       );
     }

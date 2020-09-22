@@ -1,7 +1,7 @@
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { EntityTypes } from 'meteor/idreesia-common/constants/audit';
+import { EntityType } from 'meteor/idreesia-common/constants/audit';
 
 export default {
   Query: {
@@ -18,7 +18,7 @@ export default {
       }
 
       const updatedFilter = Object.assign({}, filter, {
-        entityTypes: [EntityTypes.PAYMENT],
+        entityTypes: [EntityType.PAYMENT],
       });
 
       return AuditLogs.searchAuditLogs(updatedFilter);

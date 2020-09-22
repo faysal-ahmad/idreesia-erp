@@ -8,8 +8,8 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  EntityTypes,
-  OperationTypeDisplayNames,
+  EntityType,
+  OperationTypeDisplayName,
 } from 'meteor/idreesia-common/constants/audit';
 
 import { AuditLogsList, AuditLogsListFilter } from '/imports/ui/modules/common';
@@ -18,7 +18,7 @@ import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import { PAGED_ACCOUNTS_AUDIT_LOGS } from '../gql';
 
 const EntityTypeDisplayNames = {
-  [EntityTypes.PAYMENT]: 'Payment',
+  [EntityType.PAYMENT]: 'Payment',
 };
 
 const List = ({ history, location }) => {
@@ -55,10 +55,10 @@ const List = ({ history, location }) => {
   const getAuditLogEntityRenderer = auditLog => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
 
-    if (entityType === EntityTypes.PAYMENT) {
+    if (entityType === EntityType.PAYMENT) {
       return (
         <Link to={paths.paymentsEditFormPath(_entityId)}>
-          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayNames[operationType]}]`}
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
         </Link>
       );
     }

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { OperationTypes } from 'meteor/idreesia-common/constants/audit';
+import { OperationType } from 'meteor/idreesia-common/constants/audit';
 import { Pagination, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
@@ -75,7 +75,7 @@ export default class AuditLogsList extends Component {
             parsedValue
           );
 
-          if (operationType === OperationTypes.CREATE) {
+          if (operationType === OperationType.CREATE) {
             return <li key={index}>{`${fieldName}: ${changedTo}`}</li>;
           }
 

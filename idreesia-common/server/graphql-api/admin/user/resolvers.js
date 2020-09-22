@@ -2,8 +2,10 @@ import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
+import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 
@@ -143,6 +145,14 @@ export default {
         });
       }
 
+      // Create a security log
+      SecurityLogs.insert({
+        userId: newUserId,
+        operationType: SecurityOperationType.ACCOUNT_CREATED,
+        operationBy: user._id,
+        operationTime: new Date(),
+      });
+
       return Users.findOneUser(newUserId);
     },
 
@@ -161,8 +171,35 @@ export default {
         );
       }
 
+      const existingUser = Users.findOneUser(userId);
+      if (existingUser.locked !== locked) {
+        // Create a security log
+        if (locked === true) {
+          SecurityLogs.insert({
+            userId,
+            operationType: SecurityOperationType.ACCOUNT_LOCKED,
+            operationBy: user._id,
+            operationTime: new Date(),
+          });
+        } else {
+          SecurityLogs.insert({
+            userId,
+            operationType: SecurityOperationType.ACCOUNT_UNLOCKED,
+            operationBy: user._id,
+            operationTime: new Date(),
+          });
+        }
+      }
+
       if (password) {
         Accounts.setPassword(userId, password);
+        // Create a security log
+        SecurityLogs.insert({
+          userId,
+          operationType: SecurityOperationType.PASSWORD_RESET,
+          operationBy: user._id,
+          operationTime: new Date(),
+        });
       }
 
       if (email) {
@@ -228,9 +265,17 @@ export default {
           },
         });
 
+        // Send sms message to user on successful login
         const params = { userId: user._id };
         const options = { priority: 'normal', retry: 10 };
         createJob({ type: JobTypes.SEND_LOGIN_SMS_MESSAGE, params, options });
+
+        // Create a security log
+        SecurityLogs.insert({
+          userId: user._id,
+          operationType: SecurityOperationType.LOGIN,
+          operationTime: new Date(),
+        });
       }
 
       return 1;

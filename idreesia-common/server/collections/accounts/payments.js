@@ -5,8 +5,8 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import {
-  EntityTypes,
-  OperationTypes,
+  EntityType,
+  OperationType,
 } from 'meteor/idreesia-common/constants/audit';
 
 class Payments extends AggregatableCollection {
@@ -37,8 +37,8 @@ class Payments extends AggregatableCollection {
     const paymentId = this.insert(valuesToInsert);
     AuditLogs.createAuditLog({
       entityId: paymentId,
-      entityType: EntityTypes.PAYMENT,
-      operationType: OperationTypes.CREATE,
+      entityType: EntityType.PAYMENT,
+      operationType: OperationType.CREATE,
       operationBy: user._id,
       operationTime: date,
       auditValues: values,
@@ -68,8 +68,8 @@ class Payments extends AggregatableCollection {
     AuditLogs.createAuditLog(
       {
         entityId: _id,
-        entityType: EntityTypes.PAYMENT,
-        operationType: OperationTypes.UPDATE,
+        entityType: EntityType.PAYMENT,
+        operationType: OperationType.UPDATE,
         operationBy: user._id,
         operationTime: date,
         auditValues: changedValues,
@@ -97,8 +97,8 @@ class Payments extends AggregatableCollection {
 
     AuditLogs.createAuditLog({
       entityId: _id,
-      entityType: EntityTypes.PAYMENT,
-      operationType: OperationTypes.DELETE,
+      entityType: EntityType.PAYMENT,
+      operationType: OperationType.DELETE,
       operationBy: user._id,
       operationTime: date,
     });

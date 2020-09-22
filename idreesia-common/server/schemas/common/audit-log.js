@@ -1,8 +1,8 @@
 import SimpleSchema from 'simpl-schema';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  EntityTypes,
-  OperationTypes,
+  EntityType,
+  OperationType,
 } from 'meteor/idreesia-common/constants/audit';
 
 import { identifiable } from './';
@@ -29,11 +29,11 @@ export default new SimpleSchema({
   },
   entityType: {
     type: String,
-    allowedValues: values(EntityTypes),
+    allowedValues: values(EntityType),
   },
   operationType: {
     type: String,
-    allowedValues: values(OperationTypes),
+    allowedValues: values(OperationType),
   },
   auditValues: {
     type: Array,

@@ -7,8 +7,8 @@ import {
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
 import {
-  EntityTypes,
-  OperationTypes,
+  EntityType,
+  OperationType,
 } from 'meteor/idreesia-common/constants/audit';
 import { forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 
@@ -40,8 +40,8 @@ class Karkuns extends AggregatableCollection {
     const karkunId = this.insert(valuesToInsert);
     AuditLogs.createAuditLog({
       entityId: karkunId,
-      entityType: EntityTypes.KARKUN,
-      operationType: OperationTypes.CREATE,
+      entityType: EntityType.KARKUN,
+      operationType: OperationType.CREATE,
       operationBy: user._id,
       operationTime: date,
       auditValues: values,
@@ -87,8 +87,8 @@ class Karkuns extends AggregatableCollection {
     AuditLogs.createAuditLog(
       {
         entityId: _id,
-        entityType: EntityTypes.KARKUN,
-        operationType: OperationTypes.UPDATE,
+        entityType: EntityType.KARKUN,
+        operationType: OperationType.UPDATE,
         operationBy: user._id,
         operationTime: date,
         auditValues: changedValues,
@@ -113,8 +113,8 @@ class Karkuns extends AggregatableCollection {
 
     AuditLogs.createAuditLog({
       entityId: _id,
-      entityType: EntityTypes.KARKUN,
-      operationType: OperationTypes.UPDATE,
+      entityType: EntityType.KARKUN,
+      operationType: OperationType.UPDATE,
       operationBy: user._id,
       operationTime: date,
       auditValues: { attachmentId },
@@ -140,8 +140,8 @@ class Karkuns extends AggregatableCollection {
     AuditLogs.createAuditLog(
       {
         entityId: _id,
-        entityType: EntityTypes.KARKUN,
-        operationType: OperationTypes.UPDATE,
+        entityType: EntityType.KARKUN,
+        operationType: OperationType.UPDATE,
         operationBy: user._id,
         operationTime: date,
         auditValues: { attachmentId: null },

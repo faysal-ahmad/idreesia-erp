@@ -1,4 +1,4 @@
-const EntityTypes = {
+const EntityType = {
   USER: 'user',
   KARKUN: 'karkun',
   VISITOR: 'visitor',
@@ -6,4 +6,4 @@ const EntityTypes = {
   IMDAD_REQUEST: 'imdad-requst',
 };
 
-export default EntityTypes;
+export default EntityType;

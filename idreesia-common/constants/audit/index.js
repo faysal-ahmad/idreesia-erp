@@ -1,5 +1,6 @@
-export { default as EntityTypes } from './entity-types';
-export { default as OperationTypes } from './operation-types';
+export { default as EntityType } from './entity-type';
+export { default as OperationType } from './operation-type';
+export { default as SecurityOperationType } from './security-operation-type';
 export {
-  default as OperationTypeDisplayNames,
-} from './operation-type-display-names';
+  default as OperationTypeDisplayName,
+} from './operation-type-display-name';

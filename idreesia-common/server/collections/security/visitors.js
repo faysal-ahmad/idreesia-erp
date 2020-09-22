@@ -8,8 +8,8 @@ import {
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
 import {
-  EntityTypes,
-  OperationTypes,
+  EntityType,
+  OperationType,
 } from 'meteor/idreesia-common/constants/audit';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 
@@ -43,8 +43,8 @@ class Visitors extends AggregatableCollection {
     const visitorId = this.insert(valuesToInsert);
     AuditLogs.createAuditLog({
       entityId: visitorId,
-      entityType: EntityTypes.VISITOR,
-      operationType: OperationTypes.CREATE,
+      entityType: EntityType.VISITOR,
+      operationType: OperationType.CREATE,
       operationBy: user._id,
       operationTime: date,
       auditValues: values,
@@ -90,8 +90,8 @@ class Visitors extends AggregatableCollection {
     AuditLogs.createAuditLog(
       {
         entityId: _id,
-        entityType: EntityTypes.VISITOR,
-        operationType: OperationTypes.UPDATE,
+        entityType: EntityType.VISITOR,
+        operationType: OperationType.UPDATE,
         operationBy: user._id,
         operationTime: date,
         auditValues: changedValues,

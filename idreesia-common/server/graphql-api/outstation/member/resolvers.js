@@ -25,8 +25,8 @@ export default {
     outstationMemberById(obj, { _id }, { user }) {
       if (
         !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_MEMBERS,
-          PermissionConstants.PORTALS_MANAGE_MEMBERS,
+          PermissionConstants.OUTSTATION_VIEW_MEMBERS,
+          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
         ])
       ) {
         return null;

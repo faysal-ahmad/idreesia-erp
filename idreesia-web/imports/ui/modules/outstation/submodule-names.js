@@ -8,6 +8,7 @@ const SubModuleNames = {
   portalUsers: 'Portal Users',
   messages: 'Messages',
   auditLogs: 'Audit Logs',
+  securityLogs: 'Security Logs',
 };
 
 export default SubModuleNames;

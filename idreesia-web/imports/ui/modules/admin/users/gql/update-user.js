@@ -7,7 +7,6 @@ const UPDATE_USER = gql`
     $email: String
     $displayName: String
     $locked: Boolean
-    $karkunId: String
   ) {
     updateUser(
       userId: $userId
@@ -15,7 +14,6 @@ const UPDATE_USER = gql`
       email: $email
       displayName: $displayName
       locked: $locked
-      karkunId: $karkunId
     ) {
       _id
       username

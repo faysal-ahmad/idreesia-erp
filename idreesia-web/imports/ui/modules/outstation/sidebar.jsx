@@ -67,6 +67,11 @@ class Sidebar extends Component {
         history.push(paths.auditLogsPath);
         break;
 
+      case 'security-logs':
+        setActiveSubModuleName(SubModuleNames.securityLogs);
+        history.push(paths.securityLogsPath);
+        break;
+
       default:
         break;
     }
@@ -122,6 +127,12 @@ class Sidebar extends Component {
             <span>
               <Icon type="audit" style={IconStyle} />
               Audit Logs
+            </span>
+          </Menu.Item>
+          <Menu.Item key="security-logs">
+            <span>
+              <Icon type="file-protect" style={IconStyle} />
+              Security Logs
             </span>
           </Menu.Item>
         </Menu.SubMenu>

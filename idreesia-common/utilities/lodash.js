@@ -2,6 +2,7 @@ export { default as assign } from 'lodash/assign';
 export { default as capitalize } from 'lodash/capitalize';
 export { default as compact } from 'lodash/compact';
 export { default as debounce } from 'lodash/debounce';
+export { default as difference } from 'lodash/difference';
 export { default as filter } from 'lodash/filter';
 export { default as find } from 'lodash/find';
 export { default as flowRight } from 'lodash/flowRight';

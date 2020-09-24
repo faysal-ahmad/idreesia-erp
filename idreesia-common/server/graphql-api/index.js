@@ -7,6 +7,9 @@ import Permission from './_directives/permission.graphql';
 import CheckPermissionsDirective from './_directives/check-permissions.graphql';
 import CheckInstanceAccessDirective from './_directives/check-instance-access.graphql';
 
+import ExternalTypes from './_external-types/external-types.graphql';
+import ExternalTypeResolvers from './_external-types/resolvers';
+
 /**
  * Common Schema and Resolvers
  */
@@ -15,6 +18,9 @@ import AttachmentResolvers from './common/attachment/resolvers';
 
 import AuditLogSchema from './common/audit-log/audit-log.graphql';
 import AuditLogResolvers from './common/audit-log/resolvers';
+
+import SecurityLogSchema from './common/security-log/security-log.graphql';
+import SecurityLogResolvers from './common/security-log/resolvers';
 
 import ImdadRequestSchema from './common/imdad-request/imdad-request.graphql';
 import ImdadRequestResolvers from './common/imdad-request/resolvers';
@@ -142,6 +148,9 @@ import MehfilDutyResolvers from './outstation/mehfil-duty/resolvers';
 import OutstationAuditLogSchema from './outstation/audit-log/audit-log.graphql';
 import OutstationAuditLogResolvers from './outstation/audit-log/resolvers';
 
+import OutstationSecurityLogSchema from './outstation/security-log/security-log.graphql';
+import OutstationSecurityLogResolvers from './outstation/security-log/resolvers';
+
 import OutstationMemberSchema from './outstation/member/member.graphql';
 import OutstationMemberResolvers from './outstation/member/resolvers';
 
@@ -248,9 +257,11 @@ const typeDefs = [
   Permission,
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
+  ExternalTypes,
 
   AttachmentSchema,
   AuditLogSchema,
+  SecurityLogSchema,
   ImdadRequestSchema,
   KarkunSchema,
   MessageSchema,
@@ -291,6 +302,7 @@ const typeDefs = [
   CityMehfilSchema,
   MehfilDutySchema,
   OutstationAuditLogSchema,
+  OutstationSecurityLogSchema,
   OutstationMemberSchema,
   OutstationKarkunSchema,
   OutstationKarkunDutySchema,
@@ -331,8 +343,11 @@ const typeDefs = [
 ];
 
 const resolvers = merge(
+  ExternalTypeResolvers,
+
   AttachmentResolvers,
   AuditLogResolvers,
+  SecurityLogResolvers,
   ImdadRequestResolvers,
   KarkunResolvers,
   MessageResolvers,
@@ -373,6 +388,7 @@ const resolvers = merge(
   CityMehfilResolvers,
   MehfilDutyResolvers,
   OutstationAuditLogResolvers,
+  OutstationSecurityLogResolvers,
   OutstationMemberResolvers,
   OutstationKarkunResolvers,
   OutstationKarkunDutyResolvers,

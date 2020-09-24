@@ -24,6 +24,7 @@ import {
 import { PortalsNewForm, PortalsEditForm, PortalsList } from './portals';
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import { AuditLogsList } from './audit-logs';
+import { SecurityLogsList } from './security-logs';
 
 const Router = () => (
   <Switch>
@@ -57,6 +58,7 @@ const Router = () => (
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
+    <Route path={paths.securityLogsPath} component={SecurityLogsList} />
 
     <Route path={paths.portalUsersNewFormPath} component={PortalUsersNewForm} />
     <Route

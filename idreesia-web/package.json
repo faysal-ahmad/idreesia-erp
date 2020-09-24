@@ -18,6 +18,7 @@
     "dataloader": "^2.0.0",
     "express": "^4.17.1",
     "file-saver": "^2.0.2",
+    "graphql-scalars": "^1.2.2",
     "googleapis": "^45.0.0",
     "graphql": "^14.6.0",
     "indexof": "^0.0.1",

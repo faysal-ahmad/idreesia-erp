@@ -1,5 +1,11 @@
 import moment from 'moment';
-import { get, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  difference,
+  get,
+  kebabCase,
+} from 'meteor/idreesia-common/utilities/lodash';
+import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 
 const Users = Meteor.users;
 
@@ -174,6 +180,200 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
     totalResults: get(results[1], ['0', 'total'], 0),
     data: results[0].map(user => mapUser(user)),
   }));
+};
+
+// *******************************************************************
+// Common Create/Update methods for User.
+// Used from Admin/Outstation/Portals.
+// *******************************************************************
+Users.createUser = (
+  { userName, password, email, displayName, karkunId },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  if (userName) {
+    const existingUser = Accounts.findUserByUsername(userName);
+    if (existingUser) {
+      throw new Error(`User name '${userName}' is already in use.`);
+    }
+  }
+
+  if (karkunId) {
+    const existingUser = Users.findOne({ karkunId });
+    if (existingUser) {
+      throw new Error(`This karkun already has a user account.`);
+    }
+  }
+
+  let newUserId = null;
+  if (userName && password) {
+    newUserId = Accounts.createUser({
+      username: userName,
+      password,
+    });
+
+    Users.update(newUserId, {
+      $set: {
+        email,
+        displayName,
+        karkunId,
+      },
+    });
+  } else if (email) {
+    newUserId = Accounts.createUser({
+      email,
+    });
+
+    Users.update(newUserId, {
+      $set: {
+        displayName,
+        karkunId,
+      },
+    });
+  }
+
+  // Create a security log
+  SecurityLogs.insert({
+    userId: newUserId,
+    operationType: SecurityOperationType.ACCOUNT_CREATED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(newUserId);
+};
+
+Users.updateUser = (
+  { userId, password, email, displayName, locked },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = Users.findOneUser(userId);
+  if (existingUser.locked !== locked) {
+    // Create a security log
+    if (locked === true) {
+      SecurityLogs.insert({
+        userId,
+        operationType: SecurityOperationType.ACCOUNT_LOCKED,
+        operationBy: user._id,
+        operationTime: new Date(),
+        dataSource,
+        dataSourceDetail,
+      });
+    } else {
+      SecurityLogs.insert({
+        userId,
+        operationType: SecurityOperationType.ACCOUNT_UNLOCKED,
+        operationBy: user._id,
+        operationTime: new Date(),
+        dataSource,
+        dataSourceDetail,
+      });
+    }
+  }
+
+  if (password) {
+    Accounts.setPassword(userId, password);
+    // Create a security log
+    SecurityLogs.insert({
+      userId,
+      operationType: SecurityOperationType.PASSWORD_RESET,
+      operationBy: user._id,
+      operationTime: new Date(),
+      dataSource,
+      dataSourceDetail,
+    });
+  }
+
+  if (email) {
+    Users.update(userId, {
+      $set: {
+        'emails.0.address': email,
+        displayName,
+        locked,
+      },
+    });
+  } else {
+    Users.update(userId, {
+      $unset: {
+        emails: '',
+      },
+      $set: {
+        displayName,
+        locked,
+      },
+    });
+  }
+
+  return Users.findOneUser(userId);
+};
+
+Users.setPermissions = (
+  { userId, permissions },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = Users.findOneUser(userId);
+  Users.update(userId, { $set: { permissions } });
+
+  // Create a security log
+  const permissionsAdded = difference(
+    permissions,
+    existingUser.permissions || []
+  );
+  const permissionsRemoved = difference(
+    existingUser.permissions || [],
+    permissions
+  );
+
+  SecurityLogs.insert({
+    userId,
+    operationType: SecurityOperationType.PERMISSIONS_CHANGED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    operationDetails: {
+      permissionsAdded,
+      permissionsRemoved,
+    },
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
+};
+
+Users.setInstanceAccess = (
+  { userId, instances },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = Users.findOneUser(userId);
+  Users.update(userId, { $set: { instances } });
+
+  // Create a security log
+  const instancesAdded = difference(instances, existingUser.instances || []);
+  const instancesRemoved = difference(existingUser.instances || [], instances);
+
+  SecurityLogs.insert({
+    userId,
+    operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    operationDetails: {
+      instancesAdded,
+      instancesRemoved,
+    },
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
 };
 
 export default Users;

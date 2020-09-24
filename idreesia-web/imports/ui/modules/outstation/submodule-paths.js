@@ -63,7 +63,8 @@ export default class SubModulePaths {
   }
 
   // ******************************************************************************
-  // Audit Logs
+  // Audit and Security Logs
   // ******************************************************************************
   static auditLogsPath = `${ModulePaths.outstation}/audit-logs`;
+  static securityLogsPath = `${ModulePaths.outstation}/security-logs`;
 }

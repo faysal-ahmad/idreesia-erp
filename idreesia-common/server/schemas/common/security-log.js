@@ -1,5 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
+import { DataSource } from 'meteor/idreesia-common/constants';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 
 import { identifiable } from './';
@@ -21,6 +22,15 @@ export default new SimpleSchema({
     type: Date,
   },
   operationBy: {
+    type: String,
+    optional: true,
+  },
+  dataSource: {
+    type: String,
+    allowedValues: values(DataSource),
+  },
+  // Use for saving portalId when the dataSource is portal
+  dataSourceDetail: {
     type: String,
     optional: true,
   },

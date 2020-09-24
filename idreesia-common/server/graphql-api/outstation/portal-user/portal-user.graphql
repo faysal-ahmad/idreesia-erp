@@ -1,6 +1,9 @@
 extend type Query {
   pagedOutstationPortalUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS, OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
+
   outstationPortalUserById(_id: String!): UserType
+    @checkPermissions(permissions: [OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS, OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 }
 
 extend type Mutation {
@@ -9,17 +12,17 @@ extend type Mutation {
     password: String!
     karkunId: String!
     portalId: String!
-  ): UserType
+  ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 
   updateOutstationPortalUser(
     userId: String!
     portalId: String!
     locked: Boolean!
     password: String
-  ): UserType
+  ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 
   setOutstationPortalUserPermissions(
     userId: String!
     permissions: [String]!
-  ): UserType
+  ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 }

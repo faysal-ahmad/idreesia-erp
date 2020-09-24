@@ -1,4 +1,5 @@
 const DataSource = {
+  ADMIN: 'admin',
   ACCOUNTS: 'accounts',
   SECURITY: 'security',
   OPERATIONS: 'operations',

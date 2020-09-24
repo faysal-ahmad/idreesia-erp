@@ -1,6 +1,8 @@
 export { default as AuditInfo } from './audit-info/audit-info';
 export { default as AuditLogsList } from './audit-logs/list';
 export { default as AuditLogsListFilter } from './audit-logs/list-filter';
+export { default as SecurityLogsList } from './security-logs/list';
+export { default as SecurityLogsListFilter } from './security-logs/list-filter';
 
 export { default as AmaanatLogsList } from './amaanat-logs/list';
 export { default as AmaanatLogsListFilter } from './amaanat-logs/list-filter';

@@ -1,26 +1,11 @@
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { DataSource } from 'meteor/idreesia-common/constants';
+
+import { isKarkunInPortal } from './helpers';
 
 export default {
   Query: {
-    pagedPortalUsers(obj, { portalId, filter }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_USERS_AND_GROUPS,
-          PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedPortalUsers(obj, { portalId, filter }) {
       const updatedFilter = Object.assign({}, filter, {
         portalAccess: portalId,
       });
@@ -28,17 +13,7 @@ export default {
       return Users.searchUsers(updatedFilter);
     },
 
-    portalUserById(obj, { portalId, _id }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_USERS_AND_GROUPS,
-          PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        return null;
-      }
-
+    portalUserById(obj, { portalId, _id }) {
       const _user = Users.findOneUser(_id);
       if (_user.instances.indexOf(portalId) === -1) return null;
       return _user;
@@ -51,88 +26,55 @@ export default {
       { portalId, userName, password, karkunId },
       { user }
     ) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
+      const karkunInPortal = isKarkunInPortal(karkunId, portalId);
+      if (!karkunInPortal) {
         throw new Error(
-          'You do not have permission to manage Users in this Mehfil Portal.'
+          `This karkun does not belong to any city in the portal.`
         );
       }
 
-      let existingUser = Accounts.findUserByUsername(userName);
-      if (existingUser) {
-        throw new Error(`User name '${userName}' is already in use.`);
-      }
+      const createdUser = Users.createUser(
+        { userName, password, karkunId },
+        user,
+        DataSource.PORTAL,
+        portalId
+      );
 
-      existingUser = Users.findOne({ karkunId });
-      if (existingUser) {
-        throw new Error(`This karkun already has a user account.`);
-      }
-
-      let newUserId = null;
-      newUserId = Accounts.createUser({
-        username: userName,
-        password,
-      });
-
-      Users.update(newUserId, {
-        $set: {
-          karkunId,
-          instances: [portalId],
-        },
-      });
-
-      return Users.findOneUser(newUserId);
+      return Users.setInstanceAccess(
+        createdUser._id,
+        [portalId],
+        user,
+        DataSource.PORTAL,
+        portalId
+      );
     },
 
     updatePortalUser(obj, { portalId, userId, password, locked }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
+      const _user = Users.findOneUser(userId);
+      const karkunInPortal = isKarkunInPortal(_user.karkunId, portalId);
+      if (!karkunInPortal) {
         throw new Error(
-          'You do not have permission to manage Users in this Mehfil Portal.'
+          `This karkun does not belong to any city in the portal.`
         );
       }
 
-      const _user = Users.findOneUser(userId);
-      if (_user.instances.indexOf(portalId) !== -1) {
-        if (password) {
-          Accounts.setPassword(userId, password);
-        }
-
-        if (locked) {
-          Users.update(userId, {
-            $set: {
-              locked,
-            },
-          });
-        }
-      }
-
-      return Users.findOneUser(userId);
+      return Users.updateUser(
+        { userId, password, locked },
+        user,
+        DataSource.PORTAL,
+        portalId
+      );
     },
 
     setPortalUserPermissions(obj, { portalId, userId, permissions }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Users in this Mehfil Portal.'
-        );
-      }
-
       const _user = Users.findOneUser(userId);
       if (_user.instances.indexOf(portalId) !== -1) {
-        Users.update(userId, { $set: { permissions } });
+        return Users.setPermissions(
+          { userId, permissions },
+          user,
+          DataSource.PORTAL,
+          portalId
+        );
       }
 
       return Users.findOneUser(userId);

@@ -3,11 +3,10 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
-import { JobTypes } from 'meteor/idreesia-common/constants';
+import { DataSource, JobTypes } from 'meteor/idreesia-common/constants';
 
 export default {
   UserType: {
@@ -23,31 +22,12 @@ export default {
   },
 
   Query: {
-    pagedUsers(obj, { filter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
-          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedUsers(obj, { filter }) {
       return Users.searchUsers(filter);
     },
 
     userById(obj, { _id }, { user }) {
-      if (
-        !_id ||
-        !user ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_VIEW_USERS_AND_GROUPS,
-          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
+      if (!_id || !user) {
         return null;
       }
 
@@ -89,184 +69,33 @@ export default {
   },
 
   Mutation: {
-    createUser(
-      obj,
-      { userName, password, email, displayName, karkunId },
-      { user }
-    ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Users in the System.'
-        );
-      }
-
-      if (userName) {
-        const existingUser = Accounts.findUserByUsername(userName);
-        if (existingUser) {
-          throw new Error(`User name '${userName}' is already in use.`);
-        }
-      }
-
-      if (karkunId) {
-        const existingUser = Users.findOne({ karkunId });
-        if (existingUser) {
-          throw new Error(`This karkun already has a user account.`);
-        }
-      }
-
-      let newUserId = null;
-      if (userName && password) {
-        newUserId = Accounts.createUser({
-          username: userName,
-          password,
-        });
-
-        Users.update(newUserId, {
-          $set: {
-            email,
-            displayName,
-            karkunId,
-          },
-        });
-      } else if (email) {
-        newUserId = Accounts.createUser({
-          email,
-        });
-
-        Users.update(newUserId, {
-          $set: {
-            displayName,
-            karkunId,
-          },
-        });
-      }
-
-      // Create a security log
-      SecurityLogs.insert({
-        userId: newUserId,
-        operationType: SecurityOperationType.ACCOUNT_CREATED,
-        operationBy: user._id,
-        operationTime: new Date(),
-      });
-
-      return Users.findOneUser(newUserId);
+    createUser(obj, params, { user }) {
+      return Users.createUser(params, user, DataSource.ADMIN);
     },
 
-    updateUser(
-      obj,
-      { userId, password, email, displayName, locked, karkunId },
-      { user }
-    ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Users in the System.'
-        );
-      }
-
-      const existingUser = Users.findOneUser(userId);
-      if (existingUser.locked !== locked) {
-        // Create a security log
-        if (locked === true) {
-          SecurityLogs.insert({
-            userId,
-            operationType: SecurityOperationType.ACCOUNT_LOCKED,
-            operationBy: user._id,
-            operationTime: new Date(),
-          });
-        } else {
-          SecurityLogs.insert({
-            userId,
-            operationType: SecurityOperationType.ACCOUNT_UNLOCKED,
-            operationBy: user._id,
-            operationTime: new Date(),
-          });
-        }
-      }
-
-      if (password) {
-        Accounts.setPassword(userId, password);
-        // Create a security log
-        SecurityLogs.insert({
-          userId,
-          operationType: SecurityOperationType.PASSWORD_RESET,
-          operationBy: user._id,
-          operationTime: new Date(),
-        });
-      }
-
-      if (email) {
-        Users.update(userId, {
-          $set: {
-            'emails.0.address': email,
-            displayName,
-            locked,
-            karkunId,
-          },
-        });
-      } else {
-        Users.update(userId, {
-          $unset: {
-            emails: '',
-          },
-          $set: {
-            displayName,
-            locked,
-            karkunId,
-          },
-        });
-      }
-
-      return Users.findOneUser(userId);
+    updateUser(obj, params, { user }) {
+      return Users.updateUser(params, user, DataSource.ADMIN);
     },
 
-    setPermissions(obj, { userId, permissions }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Users in the System.'
-        );
-      }
-
-      Users.update(userId, { $set: { permissions } });
-      return Users.findOneUser(userId);
+    setPermissions(obj, params, { user }) {
+      return Users.setPermissions(params, user, DataSource.ADMIN);
     },
 
-    setInstanceAccess(obj, { userId, instances }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Users in the System.'
-        );
-      }
-
-      Users.update(userId, { $set: { instances } });
-      return Users.findOneUser(userId);
+    setInstanceAccess(obj, params, { user }) {
+      return Users.setInstanceAccess(params, user, DataSource.ADMIN);
     },
 
     updateLoginTime(obj, {}, { user }) {
       if (user) {
+        const loginTime = new Date();
         Users.update(user._id, {
           $set: {
-            lastLoggedInAt: new Date(),
+            lastLoggedInAt: loginTime,
           },
         });
 
         // Send sms message to user on successful login
-        const params = { userId: user._id };
+        const params = { userId: user._id, loginTime };
         const options = { priority: 'normal', retry: 10 };
         createJob({ type: JobTypes.SEND_LOGIN_SMS_MESSAGE, params, options });
 
@@ -275,6 +104,8 @@ export default {
           userId: user._id,
           operationType: SecurityOperationType.LOGIN,
           operationTime: new Date(),
+          dataSource: DataSource.ADMIN,
+          dataSourceDetail: null,
         });
       }
 

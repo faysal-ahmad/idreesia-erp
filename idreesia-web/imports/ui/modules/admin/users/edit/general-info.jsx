@@ -34,33 +34,30 @@ class GeneralInfo extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, userById, updateUser } = this.props;
-    form.validateFields(
-      (err, { password, email, displayName, locked, karkun }) => {
-        if (err) return;
+    form.validateFields((err, { password, email, displayName, locked }) => {
+      if (err) return;
 
-        if (email && !email.includes('@gmail.com')) {
-          message.error('This is not a valid Google Email.', 5);
-          return;
-        }
-
-        updateUser({
-          variables: {
-            userId: userById._id,
-            password,
-            email,
-            displayName,
-            locked,
-            karkunId: karkun ? karkun._id : userById.karkunId,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
+      if (email && !email.includes('@gmail.com')) {
+        message.error('This is not a valid Google Email.', 5);
+        return;
       }
-    );
+
+      updateUser({
+        variables: {
+          userId: userById._id,
+          password,
+          email,
+          displayName,
+          locked,
+        },
+      })
+        .then(() => {
+          history.goBack();
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+    });
   };
 
   render() {

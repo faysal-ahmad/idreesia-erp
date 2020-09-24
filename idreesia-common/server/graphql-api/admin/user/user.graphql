@@ -33,7 +33,11 @@ input UserFilter {
 
 extend type Query {
   pagedUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+
   userById(_id: String): UserType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+
   currentUser: UserType
   userNames(ids: [String]): [String]
 }
@@ -45,7 +49,7 @@ extend type Mutation {
     email: String
     displayName: String
     karkunId: String
-  ): UserType
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateUser(
     userId: String!
@@ -53,18 +57,17 @@ extend type Mutation {
     email: String
     displayName: String
     locked: Boolean
-    karkunId: String
-  ): UserType
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   setPermissions(
     userId: String!
     permissions: [String]!
-  ): UserType
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   setInstanceAccess(
     userId: String!
     instances: [String]!
-  ): UserType
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateLoginTime: Int
   updateLastActiveTime: Int

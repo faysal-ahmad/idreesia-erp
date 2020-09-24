@@ -6,12 +6,15 @@ export { default as VouchersImportJob } from './accounts/vouchers-import-job';
 
 export { default as CleanupJob } from './cleanup/cleanup-job';
 export { default as SendEmailsJob } from './send-emails/send-emails-job';
+
 export {
-  default as SendSmsMessageJob,
-} from './send-sms-message/send-sms-message-job';
+  CheckSubscriptionStatusJob,
+  CheckSubscriptionStatusNowJob,
+} from './check-subscription-status';
+
 export {
-  default as SendLoginSmsMessageJob,
-} from './send-sms-message/send-login-sms-message-job';
-export {
-  default as CheckSubscriptionStatusJob,
-} from './check-subscription-status/check-subscription-status-job';
+  SendSmsMessageJob,
+  SendLoginSmsMessageJob,
+  SendPasswordResetSmsMessageJob,
+  SendAccountCreatedSmsMessageJob,
+} from './send-sms-message';

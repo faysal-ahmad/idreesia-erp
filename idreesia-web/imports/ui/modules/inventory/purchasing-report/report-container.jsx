@@ -38,7 +38,6 @@ class ReportContainer extends Component {
     const {
       physicalStoreId,
       physicalStoreLoading,
-      physicalStore,
       locationsLoading,
       locationsByPhysicalStoreId,
     } = this.props;
@@ -50,7 +49,6 @@ class ReportContainer extends Component {
         month={month}
         monthString={monthString}
         physicalStoreId={physicalStoreId}
-        physicalStore={physicalStore}
         locations={locationsByPhysicalStoreId}
         setPageParams={this.setPageParams}
       />

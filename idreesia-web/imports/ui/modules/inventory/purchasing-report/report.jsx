@@ -1,39 +1,59 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import numeral from 'numeral';
 
 import {
-  flowRight,
   keyBy,
   keys,
   reverse,
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, DatePicker, Spin, Table } from '/imports/ui/controls';
+import { Button, DatePicker, Spin, Row, Table } from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
-class Report extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const LIST_QUERY = gql`
+  query purchaseFormsByMonth($physicalStoreId: String!, $month: String!) {
+    purchaseFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
+      _id
+      purchaseDate
+      locationId
+      items {
+        stockItemId
+        quantity
+        isInflow
+        price
+        stockItemName
+        stockItemImageId
+        categoryName
+        unitOfMeasurement
+      }
+    }
+  }
+`;
 
-    month: PropTypes.object,
-    monthString: PropTypes.string,
-    physicalStoreId: PropTypes.string,
-    setPageParams: PropTypes.func,
-    loading: PropTypes.bool,
-    locations: PropTypes.array,
-    purchaseFormsByMonth: PropTypes.array,
-  };
+const Report = ({
+  physicalStoreId,
+  month,
+  monthString,
+  locations,
+  setPageParams,
+}) => {
+  const { data, loading } = useQuery(LIST_QUERY, {
+    variables: { physicalStoreId, month: monthString },
+  });
 
-  columns = [
+  if (loading) {
+    return <Spin size="large" />;
+  }
+
+  const columns = [
     {
       title: 'Item Name',
       dataIndex: 'stockItemName',
       key: 'stockItemName',
       render: (text, record) => {
-        const { physicalStoreId } = this.props;
         const stockItem = {
           _id: record.stockItemId,
           physicalStoreId,
@@ -75,183 +95,173 @@ class Report extends Component {
             nodeText = `${nodeText} ${record.unitOfMeasurement}`;
           }
 
-          locationNodes.push(<li key={locationId}>{nodeText}</li>);
+          locationNodes.push(<Row key={locationId}>{nodeText}</Row>);
         });
 
-        return <ul>{locationNodes}</ul>;
+        return locationNodes;
+      },
+    },
+    {
+      title: 'Unit Price (Rs)',
+      key: 'unitPrice',
+      render: (text, record) => {
+        const { quantity, cost } = record;
+        const unitPrice = (cost / quantity).toFixed(0);
+        return numeral(unitPrice).format('0,0');
       },
     },
     {
       title: 'Total Cost (Rs)',
       dataIndex: 'cost',
       key: 'cost',
+      render: text => numeral(text).format('0,0'),
     },
   ];
 
-  handleMonthChange = value => {
-    const { setPageParams } = this.props;
+  const handleMonthChange = value => {
     setPageParams({
       month: value,
     });
   };
 
-  handleMonthGoBack = () => {
-    const { setPageParams, month } = this.props;
+  const handleMonthGoBack = () => {
     setPageParams({
       month: month.clone().subtract(1, 'months'),
     });
   };
 
-  handleMonthGoForward = () => {
-    const { setPageParams, month } = this.props;
+  const handleMonthGoForward = () => {
     setPageParams({
       month: month.clone().add(1, 'months'),
     });
   };
 
-  getTableHeader = () => {
-    const { month } = this.props;
-    return (
-      <div className="list-table-header">
-        <div>
-          <Button
-            type="primary"
-            shape="circle"
-            icon="left"
-            onClick={this.handleMonthGoBack}
-          />
-          &nbsp;&nbsp;
-          <DatePicker.MonthPicker
-            allowClear={false}
-            format="MMM, YYYY"
-            onChange={this.handleMonthChange}
-            value={month}
-          />
-          &nbsp;&nbsp;
-          <Button
-            type="primary"
-            shape="circle"
-            icon="right"
-            onClick={this.handleMonthGoForward}
-          />
-        </div>
-      </div>
-    );
-  };
+  const locationsMap = keyBy(locations, '_id');
+  const { purchaseFormsByMonth } = data;
+  const purchaseSummary = [];
+  const purchaseSummaryMap = {};
 
-  getPurchaseSummary = () => {
-    const { locations } = this.props;
-    const locationsMap = keyBy(locations, '_id');
-    const purchaseSummary = [];
-    const purchaseSummaryMap = {};
+  purchaseFormsByMonth.forEach(purchaseForm => {
+    const { locationId, items } = purchaseForm;
+    items.forEach(item => {
+      let summaryItem = purchaseSummaryMap[item.stockItemId];
+      if (!summaryItem) {
+        summaryItem = {
+          stockItemId: item.stockItemId,
+          stockItemName: item.stockItemName,
+          stockItemImageId: item.stockItemImageId,
+          categoryName: item.categoryName,
+          unitOfMeasurement: item.unitOfMeasurement,
+          byLocation: {},
+          inflow: 0,
+          outflow: 0,
+          quantity: 0,
+          cost: 0,
+        };
 
-    const { purchaseFormsByMonth } = this.props;
-    purchaseFormsByMonth.forEach(purchaseForm => {
-      const { locationId, items } = purchaseForm;
-      items.forEach(item => {
-        let summaryItem = purchaseSummaryMap[item.stockItemId];
-        if (!summaryItem) {
-          summaryItem = {
-            stockItemId: item.stockItemId,
-            stockItemName: item.stockItemName,
-            stockItemImageId: item.stockItemImageId,
-            categoryName: item.categoryName,
-            unitOfMeasurement: item.unitOfMeasurement,
-            byLocation: {},
-            inflow: 0,
-            outflow: 0,
-            quantity: 0,
-            cost: 0,
-          };
-
-          purchaseSummary.push(summaryItem);
-          purchaseSummaryMap[item.stockItemId] = summaryItem;
-        }
-
-        if (item.isInflow) {
-          summaryItem.inflow += item.quantity;
-          summaryItem.quantity += item.quantity;
-          summaryItem.cost += item.price;
-
-          if (locationId && locationsMap[locationId]) {
-            if (!summaryItem.byLocation[locationId]) {
-              summaryItem.byLocation[locationId] = {
-                locationId,
-                locationName: locationsMap[locationId].name,
-                quantity: item.quantity,
-              };
-            } else {
-              summaryItem.byLocation[locationId].quantity += item.quantity;
-            }
-          }
-        } else {
-          summaryItem.outflow += item.quantity;
-          summaryItem.quantity -= item.quantity;
-          summaryItem.cost -= item.price;
-
-          if (locationId && locationsMap[locationId]) {
-            if (!summaryItem.byLocation[locationId]) {
-              summaryItem.byLocation[locationId] = {
-                locationId,
-                locationName: locationsMap[locationId].name,
-                quantity: -item.quantity,
-              };
-            } else {
-              summaryItem.byLocation[locationId].quantity -= item.quantity;
-            }
-          }
-        }
-      });
-    });
-
-    return reverse(sortBy(purchaseSummary, 'cost'));
-  };
-
-  render() {
-    const { loading } = this.props;
-    if (loading) {
-      return <Spin size="large" />;
-    }
-
-    return (
-      <Table
-        rowKey="stockItemId"
-        title={this.getTableHeader}
-        dataSource={this.getPurchaseSummary()}
-        columns={this.columns}
-        size="small"
-        pagination={false}
-        bordered
-      />
-    );
-  }
-}
-
-const listQuery = gql`
-  query purchaseFormsByMonth($physicalStoreId: String!, $month: String!) {
-    purchaseFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
-      _id
-      purchaseDate
-      locationId
-      items {
-        stockItemId
-        quantity
-        isInflow
-        price
-        stockItemName
-        stockItemImageId
-        categoryName
-        unitOfMeasurement
+        purchaseSummary.push(summaryItem);
+        purchaseSummaryMap[item.stockItemId] = summaryItem;
       }
-    }
-  }
-`;
 
-export default flowRight(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId, monthString }) => ({
-      variables: { physicalStoreId, month: monthString },
-    }),
-  })
-)(Report);
+      if (item.isInflow) {
+        summaryItem.inflow += item.quantity;
+        summaryItem.quantity += item.quantity;
+        summaryItem.cost += item.price;
+
+        if (locationId && locationsMap[locationId]) {
+          if (!summaryItem.byLocation[locationId]) {
+            summaryItem.byLocation[locationId] = {
+              locationId,
+              locationName: locationsMap[locationId].name,
+              quantity: item.quantity,
+            };
+          } else {
+            summaryItem.byLocation[locationId].quantity += item.quantity;
+          }
+        }
+      } else {
+        summaryItem.outflow += item.quantity;
+        summaryItem.quantity -= item.quantity;
+        summaryItem.cost -= item.price;
+
+        if (locationId && locationsMap[locationId]) {
+          if (!summaryItem.byLocation[locationId]) {
+            summaryItem.byLocation[locationId] = {
+              locationId,
+              locationName: locationsMap[locationId].name,
+              quantity: -item.quantity,
+            };
+          } else {
+            summaryItem.byLocation[locationId].quantity -= item.quantity;
+          }
+        }
+      }
+    });
+  });
+
+  const sortedPurchaseSummary = reverse(sortBy(purchaseSummary, 'cost'));
+
+  let totalCost = 0;
+  purchaseSummary.forEach(summaryItem => {
+    totalCost += summaryItem.cost;
+  });
+
+  const getTableHeader = () => (
+    <div className="list-table-header">
+      <div className="list-table-header-section">
+        <Button
+          type="primary"
+          shape="circle"
+          icon="left"
+          onClick={handleMonthGoBack}
+        />
+        &nbsp;&nbsp;
+        <DatePicker.MonthPicker
+          allowClear={false}
+          format="MMM, YYYY"
+          onChange={handleMonthChange}
+          value={month}
+        />
+        &nbsp;&nbsp;
+        <Button
+          type="primary"
+          shape="circle"
+          icon="right"
+          onClick={handleMonthGoForward}
+        />
+      </div>
+      <div>
+        <h3>
+          Total Purchases = Rs. <b>{numeral(totalCost).format('0,0')}</b>
+        </h3>
+      </div>
+    </div>
+  );
+
+  return (
+    <Table
+      rowKey="stockItemId"
+      title={getTableHeader}
+      dataSource={sortedPurchaseSummary}
+      columns={columns}
+      size="small"
+      pagination={false}
+      bordered
+    />
+  );
+};
+
+Report.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  month: PropTypes.object,
+  monthString: PropTypes.string,
+  physicalStoreId: PropTypes.string,
+  setPageParams: PropTypes.func,
+  loading: PropTypes.bool,
+  locations: PropTypes.array,
+  purchaseFormsByMonth: PropTypes.array,
+};
+
+export default Report;

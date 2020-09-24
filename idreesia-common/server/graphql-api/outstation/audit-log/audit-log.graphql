@@ -1,4 +1,9 @@
 extend type Query {
   pagedOutstationAuditLogs(filter: AuditLogFilter): PagedAuditLogType
-    @checkPermissions(permissions: [OUTSTATION_VIEW_AUDIT_LOGS])
+    @checkPermissions(permissions: [
+      OUTSTATION_VIEW_MEMBERS,
+      OUTSTATION_MANAGE_MEMBERS,
+      OUTSTATION_VIEW_KARKUNS,
+      OUTSTATION_MANAGE_KARKUNS
+    ])
 }

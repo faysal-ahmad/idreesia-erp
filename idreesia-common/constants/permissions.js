@@ -76,7 +76,6 @@ const Permissions = {
   // ****************************************************************************************
   OUTSTATION_MANAGE_SETUP_DATA: 'outstation-manage-setup-data',
   OUTSTATION_DELETE_DATA: 'outstation-delete-data',
-  OUTSTATION_VIEW_AUDIT_LOGS: 'outstation-view-audit-logs',
 
   OUTSTATION_VIEW_MEMBERS: 'outstation-view-members',
   OUTSTATION_MANAGE_MEMBERS: 'outstation-manage-members',

@@ -313,10 +313,6 @@ export const outstationPermissionsData = {
       key: PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
     },
     {
-      title: 'View Audit Logs',
-      key: PermissionConstants.OUTSTATION_VIEW_AUDIT_LOGS,
-    },
-    {
       title: 'Members',
       key: 'module-outstation-members',
       children: [

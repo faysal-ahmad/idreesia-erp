@@ -2,18 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { WithItemCategoriesByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
 
 const ContainerStyle = {
@@ -71,21 +65,7 @@ class ListFilter extends Component {
     );
   };
 
-  refreshButton = () => {
-    const { refreshData } = this.props;
-
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            if (refreshData) refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
 
   render() {
     const { getFieldDecorator } = this.props.form;

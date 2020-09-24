@@ -2,14 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   CheckboxGroupField,
   InputCnicField,
@@ -18,6 +11,7 @@ import {
   SelectField,
   LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 import {
   WithAllJobs,
@@ -116,21 +110,7 @@ class ListFilter extends Component {
     );
   };
 
-  refreshButton = () => {
-    const { refreshData } = this.props;
-
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            if (refreshData) refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
 
   render() {
     const { getFieldDecorator } = this.props.form;

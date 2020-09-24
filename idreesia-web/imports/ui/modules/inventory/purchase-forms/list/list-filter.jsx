@@ -3,20 +3,14 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   CheckboxGroupField,
   DateField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { WithVendorsByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
 
 const ContainerStyle = {
@@ -72,21 +66,7 @@ class ListFilter extends Component {
     });
   };
 
-  refreshButton = () => {
-    const { refreshData } = this.props;
-
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            if (refreshData) refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
 
   render() {
     const { vendorsLoading, vendorsByPhysicalStoreId } = this.props;

@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Collapse, Form, Icon, Tooltip } from '/imports/ui/controls';
+import { Collapse, Form } from '/imports/ui/controls';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
 import {
   getNameFilterField,
@@ -109,20 +110,7 @@ const ListFilter = ({
     });
   };
 
-  const refreshButton = () => {
-    if (!refreshData) return null;
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const { getFieldDecorator } = form;
 

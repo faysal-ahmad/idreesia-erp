@@ -5,14 +5,7 @@ import moment from 'moment';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   DateRangeField,
   InputCnicField,
@@ -21,6 +14,7 @@ import {
   SelectField,
   EhadDurationFilterField,
 } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
 const ContainerStyle = {
   width: '500px',
@@ -90,20 +84,7 @@ const ListFilter = ({
     });
   };
 
-  const refreshButton = () => {
-    if (!refreshData) return null;
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const { getFieldDecorator } = form;
   const additionalInfoFilter = showAdditionalInfoFilter ? (

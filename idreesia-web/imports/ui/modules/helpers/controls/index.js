@@ -14,6 +14,7 @@ export { default as AttachmentsList } from './attachments/attachments-list';
 export { default as PersonName } from './person-name/person-name';
 export { default as WazeefaName } from './wazeefa-name/wazeefa-name';
 export { default as SearchResultRow } from './search-result/search-result-row';
+export { default as RefreshButton } from './refresh-button/refresh-button';
 export {
   default as EhadDurationDisplay,
 } from './ehad-duration/ehad-duration-display';

@@ -2,18 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   CheckboxGroupField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
 const ContainerStyle = {
   width: '500px',
@@ -29,6 +23,8 @@ const buttonItemLayout = {
 };
 
 const ListFilter = props => {
+  const { refreshData } = props;
+
   const { allPortals, allPortalsLoading } = useAllPortals();
   if (allPortalsLoading) return null;
 
@@ -59,22 +55,7 @@ const ListFilter = props => {
     });
   };
 
-  const refreshButton = () => {
-    const { refreshData } = props;
-    if (!refreshData) return null;
-
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
     form: { getFieldDecorator },

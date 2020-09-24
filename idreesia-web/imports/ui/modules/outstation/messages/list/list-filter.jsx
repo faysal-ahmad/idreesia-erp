@@ -3,15 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { DateField } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
 const ContainerStyle = {
   width: '500px',
@@ -27,6 +21,8 @@ const buttonItemLayout = {
 };
 
 const ListFilter = props => {
+  const { refreshData } = props;
+
   const handleSubmit = e => {
     e.preventDefault();
     const {
@@ -52,21 +48,7 @@ const ListFilter = props => {
     });
   };
 
-  const refreshButton = () => {
-    const { refreshData } = props;
-
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            if (refreshData) refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
     form: { getFieldDecorator },

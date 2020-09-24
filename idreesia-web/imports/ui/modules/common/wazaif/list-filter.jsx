@@ -1,15 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  Button,
-  Collapse,
-  Form,
-  Icon,
-  Row,
-  Tooltip,
-} from '/imports/ui/controls';
+import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
+import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
 const ContainerStyle = {
   width: '500px',
@@ -43,20 +37,7 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
     });
   };
 
-  const refreshButton = () => {
-    if (!refreshData) return null;
-    return (
-      <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
-          onClick={event => {
-            event.stopPropagation();
-            refreshData();
-          }}
-        />
-      </Tooltip>
-    );
-  };
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const { getFieldDecorator } = form;
   return (

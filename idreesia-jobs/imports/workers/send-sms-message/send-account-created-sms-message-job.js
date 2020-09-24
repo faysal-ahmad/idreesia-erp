@@ -8,7 +8,7 @@ import sendSmsMessage from './send-sms-message';
 
 export const worker = (job, callback) => {
   console.log(`--> Sending Account Creation SMS Message`, job.data);
-  const { userId, password } = job.data;
+  const { userId, password, email } = job.data;
 
   const user = Users.findOneUser(userId);
   if (!user.karkunId) {
@@ -33,10 +33,19 @@ export const worker = (job, callback) => {
     }
   }
 
-  const message = `Your account for Idressia ERP has been created with password ${password}. Visit https://381-erp-server.ngrok.io/ to login.`;
+  let message;
+  if (email) {
+    message = `Your account for Idressia ERP has been created. Visit https://381-erp-server.ngrok.io/ and login with your Google Account.`;
+  } else {
+    message = `Your account for Idressia ERP has been created with password ${password}. Visit https://381-erp-server.ngrok.io/ to login.`;
+  }
+
   sendSmsMessage(contactNumber, message)
     .then(() => {
-      console.log(`--> Finished sending Password Reset Message`, job.data);
+      console.log(
+        `--> Finished sending Account Creation SMS Message`,
+        job.data
+      );
     })
     .catch(error => {
       console.log(error);
@@ -50,7 +59,7 @@ export const worker = (job, callback) => {
 };
 
 export default Jobs.processJobs(
-  JobTypes.SEND_ACCOUNT_CREATION_SMS_MESSAGE,
+  JobTypes.SEND_ACCOUNT_CREATED_SMS_MESSAGE,
   {
     pollInterval: 60 * 1000,
     concurrency: 1,

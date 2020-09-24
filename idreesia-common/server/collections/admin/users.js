@@ -1,3 +1,4 @@
+import { Random } from 'meteor/random';
 import moment from 'moment';
 import {
   difference,
@@ -6,6 +7,8 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
+import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
+import { JobTypes } from 'meteor/idreesia-common/constants';
 
 const Users = Meteor.users;
 
@@ -233,6 +236,15 @@ Users.createUser = (
     });
   }
 
+  // Send sms message to user for account creation
+  const params = { userId: newUserId, password, email };
+  const options = { priority: 'normal', retry: 10 };
+  createJob({
+    type: JobTypes.SEND_ACCOUNT_CREATED_SMS_MESSAGE,
+    params,
+    options,
+  });
+
   // Create a security log
   SecurityLogs.insert({
     userId: newUserId,
@@ -374,6 +386,45 @@ Users.setInstanceAccess = (
   });
 
   return Users.findOneUser(userId);
+};
+
+Users.resetPassword = (
+  { userId, userName },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = userId
+    ? Users.findOneUser(userId)
+    : Accounts.findUserByUsername(userName);
+
+  if (!existingUser) {
+    throw new Error('User does not exist in the system.');
+  }
+
+  const password = Random.id(8);
+  Accounts.setPassword(existingUser._id, password);
+
+  // Send sms message to user for new password
+  const params = { userId: existingUser._id, password };
+  const options = { priority: 'normal', retry: 10 };
+  createJob({
+    type: JobTypes.SEND_PASSWORD_RESET_SMS_MESSAGE,
+    params,
+    options,
+  });
+
+  // Create a security log
+  SecurityLogs.insert({
+    userId: existingUser._id,
+    operationType: SecurityOperationType.PASSWORD_RESET,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(existingUser._id);
 };
 
 export default Users;

@@ -4,19 +4,22 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithAllPortals } from 'meteor/idreesia-common/composers/admin';
-import { Form, message } from '/imports/ui/controls';
+import { Form, Modal, message } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,
   SwitchField,
-  FormButtonsSaveCancel,
+  FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
 
 import {
   OUTSTATION_PORTAL_USER_BY_ID,
   PAGED_OUTSTATION_PORTAL_USERS,
   UPDATE_OUTSTATION_PORTAL_USER,
+  RESET_OUTSTATION_PORTAL_USER_PASSWORD,
 } from '../gql';
+
+const { confirm } = Modal;
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -31,6 +34,7 @@ class GeneralInfo extends Component {
     loading: PropTypes.bool,
     outstationPortalUserById: PropTypes.object,
     updateOutstationPortalUser: PropTypes.func,
+    resetOutstationPortalUserPassword: PropTypes.func,
   };
 
   handleCancel = () => {
@@ -38,16 +42,39 @@ class GeneralInfo extends Component {
     history.goBack();
   };
 
+  handlePasswordReset = () => {
+    const { userId, resetOutstationPortalUserPassword } = this.props;
+    confirm({
+      title: 'Do you want to reset the password for this account?',
+      onOk() {
+        resetOutstationPortalUserPassword({
+          variables: {
+            userId,
+          },
+        })
+          .then(() => {
+            message.success(
+              'The password has been reset and a message has been sent to the user.',
+              5
+            );
+          })
+          .catch(error => {
+            message.error(error.message, 5);
+          });
+      },
+      onCancel() {},
+    });
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, history, userId, updateOutstationPortalUser } = this.props;
-    form.validateFields((err, { password, locked, portalId }) => {
+    form.validateFields((err, { locked, portalId }) => {
       if (err) return;
 
       updateOutstationPortalUser({
         variables: {
           userId,
-          password,
           locked: locked || false,
           portalId,
         },
@@ -95,13 +122,6 @@ class GeneralInfo extends Component {
         />
 
         <InputTextField
-          fieldName="password"
-          fieldLabel="Password"
-          type="password"
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
           fieldName="karkunName"
           fieldLabel="Karkun Name"
           disabled
@@ -119,8 +139,10 @@ class GeneralInfo extends Component {
           getFieldDecorator={getFieldDecorator}
         />
 
-        <FormButtonsSaveCancel
+        <FormButtonsSaveCancelExtra
+          extraText="Reset Password"
           handleCancel={this.handleCancel}
+          handleExtra={this.handlePasswordReset}
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
@@ -131,6 +153,9 @@ class GeneralInfo extends Component {
 export default flowRight(
   Form.create(),
   WithAllPortals(),
+  graphql(RESET_OUTSTATION_PORTAL_USER_PASSWORD, {
+    name: 'resetOutstationPortalUserPassword',
+  }),
   graphql(UPDATE_OUTSTATION_PORTAL_USER, {
     name: 'updateOutstationPortalUser',
     options: () => ({

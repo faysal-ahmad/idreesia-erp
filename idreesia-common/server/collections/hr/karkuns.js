@@ -11,6 +11,8 @@ import {
   OperationType,
 } from 'meteor/idreesia-common/constants/audit';
 import { forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
+import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
+import { JobTypes } from 'meteor/idreesia-common/constants';
 
 class Karkuns extends AggregatableCollection {
   constructor(name = 'hr-karkuns', options = {}) {
@@ -47,6 +49,15 @@ class Karkuns extends AggregatableCollection {
       auditValues: values,
     });
 
+    // Check subscription staus of contact numbers
+    const params = { karkunId };
+    const options = { priority: 'normal', retry: 10 };
+    createJob({
+      type: JobTypes.CHECK_SUBSCRIPTION_STATUS_NOW,
+      params,
+      options,
+    });
+
     return this.findOne(karkunId);
   }
 
@@ -69,6 +80,16 @@ class Karkuns extends AggregatableCollection {
     if (cnicNumber) this.checkCnicNotInUse(cnicNumber, _id);
     if (contactNumber1) this.checkContactNotInUse(contactNumber1, _id);
     if (contactNumber2) this.checkContactNotInUse(contactNumber2, _id);
+    if (contactNumber1 || contactNumber2) {
+      // Check subscription staus of contact numbers
+      const params = { karkunId: _id };
+      const options = { priority: 'normal', retry: 10 };
+      createJob({
+        type: JobTypes.CHECK_SUBSCRIPTION_STATUS_NOW,
+        params,
+        options,
+      });
+    }
 
     if (imageId) {
       if (existingKarkun.imageId) {

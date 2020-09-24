@@ -85,6 +85,10 @@ export default {
       return Users.setInstanceAccess(params, user, DataSource.ADMIN);
     },
 
+    resetPassword(obj, params, { user }) {
+      return Users.resetPassword(params, user, DataSource.ADMIN);
+    },
+
     updateLoginTime(obj, {}, { user }) {
       if (user) {
         const loginTime = new Date();

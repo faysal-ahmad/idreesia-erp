@@ -9,7 +9,6 @@ extend type Query {
 extend type Mutation {
   createOutstationPortalUser(
     userName: String!
-    password: String!
     karkunId: String!
     portalId: String!
   ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
@@ -18,11 +17,14 @@ extend type Mutation {
     userId: String!
     portalId: String!
     locked: Boolean!
-    password: String
   ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 
   setOutstationPortalUserPermissions(
     userId: String!
     permissions: [String]!
+  ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
+
+  resetOutstationPortalUserPassword(
+    userId: String!
   ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 }

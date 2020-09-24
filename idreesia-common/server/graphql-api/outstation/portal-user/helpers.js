@@ -13,3 +13,12 @@ export function isKarkunInPortal(karkunId, portalId) {
   if (portalCities.indexOf(karkunCityId) === -1) return false;
   return true;
 }
+
+export function isKarkunSubscribed(karkunId) {
+  const karkun = Karkuns.findOne(karkunId);
+  if (karkun.contactNumber1Subscribed || karkun.contactNumber2Subscribed) {
+    return true;
+  }
+
+  return true;
+}

@@ -1,6 +1,12 @@
 import request from 'request';
 
 export default function sendEmail({ from, to, replyTo, subject, html }) {
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.log(`Sending email to ${to}`);
+    return Promise.resolve();
+  }
+
   return new Promise((resolve, reject) => {
     const options = {
       uri: 'https://api.sendgrid.com/v3/mail/send',

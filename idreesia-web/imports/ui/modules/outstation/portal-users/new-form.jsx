@@ -25,6 +25,7 @@ class NewForm extends Component {
     form: PropTypes.object,
 
     allPortals: PropTypes.array,
+    allPortalsLoading: PropTypes.bool,
     createOutstationPortalUser: PropTypes.func,
   };
 
@@ -36,7 +37,7 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createOutstationPortalUser, history } = this.props;
-    form.validateFields((err, { karkun, userName, password, portalId }) => {
+    form.validateFields((err, { karkun, userName, portalId }) => {
       if (err) return;
 
       createOutstationPortalUser({
@@ -44,7 +45,6 @@ class NewForm extends Component {
           portalId,
           karkunId: karkun._id,
           userName,
-          password,
         },
       })
         .then(() => {
@@ -59,13 +59,16 @@ class NewForm extends Component {
   render() {
     const {
       allPortals,
+      allPortalsLoading,
       form: { getFieldDecorator, isFieldsTouched },
     } = this.props;
 
-    const portalsData = allPortals.map(portal => ({
-      value: portal._id,
-      text: portal.name,
-    }));
+    const portalsData = allPortalsLoading
+      ? []
+      : allPortals.map(portal => ({
+          value: portal._id,
+          text: portal.name,
+        }));
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -74,15 +77,6 @@ class NewForm extends Component {
           fieldLabel="User name"
           required
           requiredMessage="Please input the user name."
-          getFieldDecorator={getFieldDecorator}
-        />
-
-        <InputTextField
-          fieldName="password"
-          fieldLabel="Password"
-          type="password"
-          required
-          requiredMessage="Please specify a password for the user."
           getFieldDecorator={getFieldDecorator}
         />
 

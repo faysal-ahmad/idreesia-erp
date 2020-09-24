@@ -13,3 +13,6 @@ export {
 export {
   default as SET_OUTSTATION_PORTAL_USER_PERMISSIONS,
 } from './set-outstation-portal-user-permissions';
+export {
+  default as RESET_OUTSTATION_PORTAL_USER_PASSWORD,
+} from './reset-outstation-portal-user-password';

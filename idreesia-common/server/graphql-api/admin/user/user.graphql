@@ -69,6 +69,10 @@ extend type Mutation {
     instances: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
+  resetPassword(
+    userName: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
   updateLoginTime: Int
   updateLastActiveTime: Int
 }

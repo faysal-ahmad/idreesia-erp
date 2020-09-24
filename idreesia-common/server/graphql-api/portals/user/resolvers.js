@@ -41,8 +41,10 @@ export default {
       );
 
       return Users.setInstanceAccess(
-        createdUser._id,
-        [portalId],
+        {
+          userId: createdUser._id,
+          instances: [portalId],
+        },
         user,
         DataSource.PORTAL,
         portalId

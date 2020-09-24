@@ -5,14 +5,17 @@ import { filterByInstanceAccess } from 'meteor/idreesia-common/server/graphql-ap
 export default {
   PortalType: {
     cities: portalType =>
-      Cities.find({
-        _id: { $in: portalType.cityIds },
-      }).fetch(),
+      Cities.find(
+        {
+          _id: { $in: portalType.cityIds },
+        },
+        { sort: { name: 1 } }
+      ).fetch(),
   },
 
   Query: {
     allPortals() {
-      return Portals.find({}).fetch();
+      return Portals.find({}, { sort: { name: 1 } }).fetch();
     },
 
     allAccessiblePortals(obj, params, { user }) {

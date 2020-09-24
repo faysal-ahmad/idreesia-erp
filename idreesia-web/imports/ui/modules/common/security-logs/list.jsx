@@ -3,22 +3,19 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithAllPortals } from 'meteor/idreesia-common/composers/admin';
 import {
   SecurityOperationType,
   SecurityOperationTypeDisplayName,
 } from 'meteor/idreesia-common/constants/audit';
-import { Pagination, Row, Table } from '/imports/ui/controls';
+import { Pagination, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-const PermissionAdded = {
-  color: 'green',
-};
+import PermissionsChangedRenderer from './permissions-changed-renderer';
+import InstanceAccessChangedRenderer from './instance-access-changed-renderer';
 
-const PermissionRemoved = {
-  color: 'red',
-};
-
-export default class AuditLogsList extends Component {
+class AuditLogsList extends Component {
   static propTypes = {
     entityRenderer: PropTypes.func,
     listHeader: PropTypes.func,
@@ -26,6 +23,12 @@ export default class AuditLogsList extends Component {
     handleDeleteItem: PropTypes.func,
     setPageParams: PropTypes.func,
 
+    allCompaniesLoading: PropTypes.bool,
+    allCompanies: PropTypes.array,
+    allPhysicalStoresLoading: PropTypes.bool,
+    allPhysicalStores: PropTypes.array,
+    allPortalsLoading: PropTypes.bool,
+    allPortals: PropTypes.array,
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
     pagedData: PropTypes.shape({
@@ -84,35 +87,19 @@ export default class AuditLogsList extends Component {
       dataIndex: 'auditValues',
       key: 'auditValues',
       render: (values, record) => {
-        const { operationType, operationDetails } = record;
+        const { allPortals } = this.props;
+        const { operationType } = record;
         if (operationType === SecurityOperationType.PERMISSIONS_CHANGED) {
-          const {
-            permissionsAdded = [],
-            permissionsRemoved = [],
-          } = operationDetails;
-
-          const permissions = [
-            <Row key={`permission-changed-${record._id}`}>
-              <span>{SecurityOperationTypeDisplayName[operationType]}</span>
-            </Row>,
-          ];
-
-          permissionsAdded.forEach((permission, index) => {
-            permissions.push(
-              <Row key={`permission-added-${index}`}>
-                <span style={PermissionAdded}>{permission}</span>
-              </Row>
-            );
-          });
-          permissionsRemoved.forEach((permission, index) => {
-            permissions.push(
-              <Row key={`permission-removed-${index}`}>
-                <span style={PermissionRemoved}>{permission}</span>
-              </Row>
-            );
-          });
-
-          return <>{permissions}</>;
+          return <PermissionsChangedRenderer record={record} />;
+        } else if (
+          operationType === SecurityOperationType.INSTANCE_ACCESS_CHANGED
+        ) {
+          return (
+            <InstanceAccessChangedRenderer
+              record={record}
+              allPortals={allPortals}
+            />
+          );
         }
 
         return SecurityOperationTypeDisplayName[operationType];
@@ -130,11 +117,15 @@ export default class AuditLogsList extends Component {
 
   render() {
     const {
+      allPortalsLoading,
       listHeader,
       pageIndex,
       pageSize,
       pagedData: { totalResults, data },
     } = this.props;
+    if (allPortalsLoading) {
+      return null;
+    }
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
@@ -165,3 +156,5 @@ export default class AuditLogsList extends Component {
     );
   }
 }
+
+export default flowRight(WithAllPortals())(AuditLogsList);

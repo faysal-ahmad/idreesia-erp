@@ -290,6 +290,16 @@ Users.updateUser = (
 
   if (password) {
     Accounts.setPassword(userId, password);
+
+    // Send sms message to user for new password
+    const params = { userId, password };
+    const options = { priority: 'normal', retry: 10 };
+    createJob({
+      type: JobTypes.SEND_PASSWORD_RESET_SMS_MESSAGE,
+      params,
+      options,
+    });
+
     // Create a security log
     SecurityLogs.insert({
       userId,

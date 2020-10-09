@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
@@ -12,7 +11,6 @@ import { Formats, Permissions } from 'meteor/idreesia-common/constants';
 
 import { Icon, Pagination, Row, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
-import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import { PAGED_OUTSTATION_USERS } from '../gql';
 
@@ -75,12 +73,7 @@ const List = ({ history, location }) => {
       key: 'karkun.name',
       render: (text, record) =>
         record.karkun ? (
-          <PersonName
-            person={record.karkun}
-            onPersonNameClicked={() => {
-              history.push(paths.karkunsEditFormPath(record.karkun._id));
-            }}
-          />
+          <PersonName person={record.karkun} />
         ) : (
           ''
         ),
@@ -89,9 +82,6 @@ const List = ({ history, location }) => {
       title: 'User Name',
       dataIndex: 'username',
       key: 'username',
-      render: (text, record) => (
-        <Link to={paths.portalUsersEditFormPath(record._id)}>{text}</Link>
-      ),
     },
     {
       title: 'Last Active',

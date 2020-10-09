@@ -32,6 +32,7 @@ const mapUser = user => ({
   lastActiveAt: user.lastActiveAt,
   permissions: user.permissions || [],
   instances: user.instances || [],
+  groups: user.groups || [],
 });
 
 const buildPipeline = params => {
@@ -390,6 +391,35 @@ Users.setInstanceAccess = (
     operationDetails: {
       instancesAdded,
       instancesRemoved,
+    },
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
+};
+
+Users.setGroups = (
+  { userId, groups },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = Users.findOneUser(userId);
+  Users.update(userId, { $set: { groups } });
+
+  // Create a security log
+  const groupsAdded = difference(groups, existingUser.groups || []);
+  const groupsRemoved = difference(existingUser.groups || [], groups);
+
+  SecurityLogs.insert({
+    userId,
+    operationType: SecurityOperationType.GROUPS_CHANGED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    operationDetails: {
+      groupsAdded,
+      groupsRemoved,
     },
     dataSource,
     dataSourceDetail,

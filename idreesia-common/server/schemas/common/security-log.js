@@ -8,6 +8,11 @@ import { identifiable } from './';
 export default new SimpleSchema({
   userId: {
     type: String,
+    optional: true,
+  },
+  groupId: {
+    type: String,
+    optional: true,
   },
   operationType: {
     type: String,

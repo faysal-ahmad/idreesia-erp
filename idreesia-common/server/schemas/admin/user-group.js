@@ -6,6 +6,9 @@ export default new SimpleSchema({
   name: {
     type: String,
   },
+  moduleName: {
+    type: String,
+  },
   description: {
     type: String,
     optional: true,

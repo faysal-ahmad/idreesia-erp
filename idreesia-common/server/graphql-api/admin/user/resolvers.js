@@ -85,6 +85,10 @@ export default {
       return Users.setInstanceAccess(params, user, DataSource.ADMIN);
     },
 
+    setGroups(obj, params, { user }) {
+      return Users.setGroups(params, user, DataSource.ADMIN);
+    },
+
     resetPassword(obj, params, { user }) {
       return Users.resetPassword(params, user, DataSource.ADMIN);
     },

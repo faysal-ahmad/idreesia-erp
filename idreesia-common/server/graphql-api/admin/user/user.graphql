@@ -10,6 +10,7 @@ type UserType {
   lastActiveAt: String
   permissions: [String]
   instances: [String]
+  groups: [String]
 
   karkun: KarkunType
   portal: PortalType
@@ -67,6 +68,11 @@ extend type Mutation {
   setInstanceAccess(
     userId: String!
     instances: [String]!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  setGroups(
+    userId: String!
+    groups: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   resetPassword(

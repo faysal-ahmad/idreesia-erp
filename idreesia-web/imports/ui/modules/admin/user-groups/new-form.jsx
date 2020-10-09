@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { flowRight, values } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+
+import { CREATE_USER_GROUP } from './gql';
 
 class NewForm extends Component {
   static propTypes = {
@@ -28,12 +31,13 @@ class NewForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, createUserGroup, history } = this.props;
-    form.validateFields((err, { name, description }) => {
+    form.validateFields((err, { name, moduleName, description }) => {
       if (err) return;
 
       createUserGroup({
         variables: {
           name,
+          moduleName,
           description,
         },
       })
@@ -49,6 +53,12 @@ class NewForm extends Component {
   render() {
     const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
+    const moduleNames = values(ModuleNames);
+    const moduleNamesData = moduleNames.map(name => ({
+      value: name,
+      text: name,
+    }));
+  
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
@@ -57,6 +67,17 @@ class NewForm extends Component {
           getFieldDecorator={getFieldDecorator}
           required
           requiredMessage="Please input a name for the group."
+        />
+
+        <SelectField
+          data={moduleNamesData}
+          getDataValue={({ value }) => value}
+          getDataText={({ text }) => text}
+          fieldName="moduleName"
+          fieldLabel="Module Name"
+          getFieldDecorator={getFieldDecorator}
+          required
+          requiredMessage="Please select a module for the group."
         />
 
         <InputTextAreaField
@@ -74,19 +95,9 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createUserGroup($name: String!, $description: String) {
-    createUserGroup(name: $name, description: $description) {
-      _id
-      name
-      description
-    }
-  }
-`;
-
 export default flowRight(
   Form.create(),
-  graphql(formMutation, {
+  graphql(CREATE_USER_GROUP, {
     name: 'createUserGroup',
     options: {
       refetchQueries: ['pagedUserGroups'],

@@ -57,6 +57,11 @@ class Sidebar extends Component {
         history.push(paths.messagesPath);
         break;
 
+      case 'outstation-user-accounts':
+        setActiveSubModuleName(SubModuleNames.outstationUsers);
+        history.push(paths.outstationUsersPath);
+        break;
+
       case 'portal-user-accounts':
         setActiveSubModuleName(SubModuleNames.portalUsers);
         history.push(paths.portalUsersPath);
@@ -117,6 +122,12 @@ class Sidebar extends Component {
             </span>
           }
         >
+          <Menu.Item key="outstation-user-accounts">
+            <span>
+              <Icon type="unlock" style={IconStyle} />
+              Outstation User Accounts
+            </span>
+          </Menu.Item>
           <Menu.Item key="portal-user-accounts">
             <span>
               <Icon type="unlock" style={IconStyle} />

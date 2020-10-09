@@ -62,6 +62,11 @@ export default class SubModulePaths {
     return `${SubModulePaths.portalUsersPath}/${userId}`;
   }
 
+  // *************************************************************************************
+  // Outstation Users Routes
+  // *************************************************************************************
+  static outstationUsersPath = `${ModulePaths.outstation}/outstation-users`;
+
   // ******************************************************************************
   // Audit and Security Logs
   // ******************************************************************************

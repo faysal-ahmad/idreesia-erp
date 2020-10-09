@@ -21,6 +21,7 @@ import {
   PortalUsersNewForm,
   PortalUsersEditForm,
 } from './portal-users';
+import { OutstationUsersList } from './outstation-users';
 import { PortalsNewForm, PortalsEditForm, PortalsList } from './portals';
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import { AuditLogsList } from './audit-logs';
@@ -60,6 +61,7 @@ const Router = () => (
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
     <Route path={paths.securityLogsPath} component={SecurityLogsList} />
 
+    <Route path={paths.outstationUsersPath} component={OutstationUsersList} />
     <Route path={paths.portalUsersNewFormPath} component={PortalUsersNewForm} />
     <Route
       path={paths.portalUsersEditFormPath()}

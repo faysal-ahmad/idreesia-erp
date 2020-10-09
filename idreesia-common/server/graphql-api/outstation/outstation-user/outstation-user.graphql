@@ -1,0 +1,4 @@
+extend type Query {
+  pagedOutstationUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS, OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
+}

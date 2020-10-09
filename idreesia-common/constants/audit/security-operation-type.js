@@ -5,8 +5,10 @@ const SecurityOperationType = {
   PASSWORD_RESET: 'password-reset',
   PERMISSIONS_CHANGED: 'permissions-changed',
   INSTANCE_ACCESS_CHANGED: 'instance-access-changed',
-  INVALID_LOGIN_ATTEMPT: 'invalid-login-attempt',
+  GROUPS_CHANGED: 'groups-changed',
+
   LOGIN: 'login',
+  INVALID_LOGIN_ATTEMPT: 'invalid-login-attempt',
 };
 
 export default SecurityOperationType;

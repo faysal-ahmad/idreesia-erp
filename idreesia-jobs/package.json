@@ -13,6 +13,7 @@
     "mjml": "^4.6.2",
     "moment": "^2.24.0",
     "mssql": "^4.3.1",
+    "query-string": "^6.8.2",
     "request": "^2.88.2",
     "simpl-schema": "^1.5.7"
   }

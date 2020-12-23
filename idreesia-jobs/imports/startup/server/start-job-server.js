@@ -3,6 +3,7 @@ import {
   CleanupJob,
   SendEmailsJob,
   CheckSubscriptionStatusJob,
+  InactiveAccountsMonitoringJob,
 } from '/imports/models';
 
 Meteor.startup(() =>
@@ -12,14 +13,19 @@ Meteor.startup(() =>
       .repeat({ schedule: Jobs.later.parse.text('every 10 minutes') })
       .save({ cancelRepeats: true });
 
+    const checkSubscriptionStatusJob = new CheckSubscriptionStatusJob();
+    checkSubscriptionStatusJob
+      .repeat({ schedule: Jobs.later.parse.text('at 2:00 am') })
+      .save({ cancelRepeats: true });
+
+    const inactiveAccountsMonitoringJob = new InactiveAccountsMonitoringJob();
+    inactiveAccountsMonitoringJob
+      .repeat({ schedule: Jobs.later.parse.text('at 3:00 am') })
+      .save({ cancelRepeats: true });
+
     const sendEmailsJob = new SendEmailsJob();
     sendEmailsJob
       .repeat({ schedule: Jobs.later.parse.text('at 4:00 am') })
-      .save({ cancelRepeats: true });
-
-    const checkSubscriptionStatusJob = new CheckSubscriptionStatusJob();
-    checkSubscriptionStatusJob
-      .repeat({ schedule: Jobs.later.parse.text('at 3:00 am') })
       .save({ cancelRepeats: true });
   })
 );

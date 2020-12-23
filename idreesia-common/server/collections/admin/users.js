@@ -467,4 +467,18 @@ Users.resetPassword = (
   return Users.findOneUser(existingUser._id);
 };
 
+Users.lockAccount = ({ userId }, user, dataSource, dataSourceDetail) => {
+  Users.update(userId, { $set: { locked: true } });
+  SecurityLogs.insert({
+    userId,
+    operationType: SecurityOperationType.ACCOUNT_LOCKED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
+};
+
 export default Users;

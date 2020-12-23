@@ -5,6 +5,10 @@ export {
   default as accountsCalculationJob,
 } from './accounts/accounts-calculation-job';
 
+export {
+  default as inactiveAccountsMonitoringJob,
+} from './admin/inactive-accounts-monitoring-job';
+
 export { default as sendEmailsJob } from './send-emails/send-emails-job';
 
 export {

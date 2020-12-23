@@ -1,5 +1,6 @@
 const JobTypes = {
   CLEANUP_JOB: 'CLEANUP_JOB',
+  INACTIVE_ACCOUNTS_MONITORING_JOB: 'Inactive Accounts Monitoring Job',
   SEND_SMS_MESSAGE: 'Send SMS Message',
   SEND_LOGIN_SMS_MESSAGE: 'Send Login SMS Message',
   SEND_PASSWORD_RESET_SMS_MESSAGE: 'Send Password Reset SMS Message',

@@ -19,7 +19,7 @@ function getAttendanceValues(jsonRecord) {
   let absentCount = 0;
 
   for (let i = 1; i <= 31; i++) {
-    const attendanceVal = jsonRecord[i.toString()];
+    const attendanceVal = jsonRecord[i.toString()]?.replace(/[^aApPlL ]/g, '');
     if (attendanceVal === 'P' || attendanceVal === 'p') {
       attendanceDetails[i.toString()] = 'pr';
       presentCount++;

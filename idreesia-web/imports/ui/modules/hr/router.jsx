@@ -20,8 +20,9 @@ import {
 } from './karkuns';
 import {
   AttendanceSheetsList,
-  AttendanceSheetsMeetingCards,
-  AttendanceSheetsKarkunCards,
+  AttendanceSheetsPrintMeetingCards,
+  AttendanceSheetsPrintKarkunCards,
+  AttendanceSheetPrintAttendanceSheet,
 } from './attendance-sheets';
 import {
   SalarySheetsList,
@@ -60,12 +61,13 @@ const Router = () => (
 
     <Route
       path={paths.attendanceSheetsMeetingCardsPath}
-      component={AttendanceSheetsMeetingCards}
+      component={AttendanceSheetsPrintMeetingCards}
     />
     <Route
       path={paths.attendanceSheetsKarkunCardsPath}
-      component={AttendanceSheetsKarkunCards}
+      component={AttendanceSheetsPrintKarkunCards}
     />
+    <Route path={paths.attendanceSheetsPrintAttendanceSheetPath} component={AttendanceSheetPrintAttendanceSheet} />
     <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 
     <Route

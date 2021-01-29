@@ -49,6 +49,7 @@ export class List extends Component {
     handleViewMeetingCards: PropTypes.func,
     handleViewKarkunCards: PropTypes.func,
     handlePrintKarkunsList: PropTypes.func,
+    handlePrintAttendanceSheet: PropTypes.func,
     handleDeleteSelectedAttendances: PropTypes.func,
     handleDeleteAllAttendances: PropTypes.func,
   };
@@ -309,6 +310,7 @@ export class List extends Component {
     const {
       handleCreateMissingAttendances,
       handleImportFromGoogleSheet,
+      handlePrintAttendanceSheet,
     } = this.props;
     const menu = (
       <Menu>
@@ -341,6 +343,10 @@ export class List extends Component {
           <Menu.Divider />
           <Menu.Item key="5-3" onClick={() => this.handlePrintKarkunsList()}>
             Karkuns List
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item key="5-4" onClick={() => handlePrintAttendanceSheet()}>
+            Attendance Sheet
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Divider />
@@ -397,7 +403,8 @@ export class List extends Component {
 
   render() {
     const { attendanceByMonth } = this.props;
-    const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
+    const filterAttendanceByMonth = filter(attendanceByMonth, attendance => !!attendance.karkun)
+    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, 'karkun.name');
 
     return (
       <Table

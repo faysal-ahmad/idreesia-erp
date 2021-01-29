@@ -181,6 +181,18 @@ class ListContainer extends Component {
     );
   };
 
+  handlePrintAttendanceSheet = () => {
+    const { queryParams, history } = this.props;
+    const {
+      selectedCategoryId,
+      selectedSubCategoryId,
+      selectedMonth,
+    } = queryParams;
+
+    const path = `${paths.attendanceSheetsPrintAttendanceSheetPath}?selectedMonth=${selectedMonth}&selectedCategoryId=${selectedCategoryId}&selectedSubCategoryId=${selectedSubCategoryId}`;
+    history.push(path);
+  };
+
   handleDeleteSelectedAttendances = selectedAttendances => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
@@ -276,6 +288,7 @@ class ListContainer extends Component {
           handleViewMeetingCards={this.handleViewMeetingCards}
           handleViewKarkunCards={this.handleViewKarkunCards}
           handlePrintKarkunsList={this.handlePrintKarkunsList}
+          handlePrintAttendanceSheet={this.handlePrintAttendanceSheet}
           handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
           handleDeleteAllAttendances={this.handleDeleteAllAttendances}
           handleItemSelected={this.handleItemSelected}

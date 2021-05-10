@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",
     "mjml": "^4.6.2",

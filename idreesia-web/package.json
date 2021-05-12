@@ -39,7 +39,7 @@
     "react-to-print": "2.5.0",
     "redux": "^4.0.5",
     "request": "^2.88.2",
-    "simpl-schema": "^1.5.7",
+    "simpl-schema": "^1.10.2",
     "xlsx": "^0.15.5"
   },
   "devDependencies": {

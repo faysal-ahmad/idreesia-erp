@@ -25,7 +25,7 @@
     "googleapis": "^45.0.0",
     "graphql-scalars": "^1.2.2",
     "graphql": "^14.5.3",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",
     "moment": "^2.24.0",

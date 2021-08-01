@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
-    "antd": "^3.26.7",
+    "antd": "^3.26.20",
     "apollo-boost": "^0.4.7",
     "apollo-server-express": "^2.14.2",
     "bcrypt": "^5.0.0",

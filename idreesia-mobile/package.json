@@ -44,7 +44,7 @@
     "redux": "^4.0.4",
     "request": "^2.88.2",
     "simpl-schema": "^1.10.2",
-    "xlsx": "^0.15.5"
+    "xlsx": "^0.17.0"
   },
   "meteor": {
     "mainModule": {

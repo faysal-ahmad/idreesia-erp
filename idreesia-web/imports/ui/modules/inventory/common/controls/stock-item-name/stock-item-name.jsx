@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { PictureOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
@@ -40,7 +41,7 @@ const StockItemName = ({ stockItem, onStockItemNameClicked }) => {
   );
 
   let imageUrl;
-  let avatarNode = <Avatar shape="square" size="large" icon="picture" />;
+  let avatarNode = <Avatar shape="square" size="large" icon={<PictureOutlined />} />;
   if (stockItem.imageId) {
     imageUrl = getDownloadUrl(stockItem.imageId);
     avatarNode = (

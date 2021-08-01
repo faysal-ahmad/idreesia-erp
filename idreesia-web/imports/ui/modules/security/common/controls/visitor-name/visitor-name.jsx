@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { UserOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from '/imports/ui/controls';
@@ -46,7 +47,7 @@ const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }) => {
   ) : null;
 
   let imageUrl;
-  let avatarNode = <Avatar shape="square" size="large" icon="user" />;
+  let avatarNode = <Avatar shape="square" size="large" icon={<UserOutlined />} />;
   if (visitor.imageId) {
     imageUrl = getDownloadUrl(visitor.imageId);
     avatarNode = (

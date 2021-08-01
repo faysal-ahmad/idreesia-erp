@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
 import moment from 'moment';
+import { UserOutlined } from '@ant-design/icons';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
@@ -39,7 +40,7 @@ export const Card = ({ dutyName }) => {
 
   const karkunImage = (
     <div style={ImageContainerStyle}>
-      <Avatar size={128} icon="user" />
+      <Avatar size={128} icon={<UserOutlined />} />
     </div>
   );
 

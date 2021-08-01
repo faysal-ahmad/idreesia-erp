@@ -14,6 +14,7 @@ import './attendance.css';
 import './karkun-cards.css';
 import './mehfil-cards.css';
 import './stay-cards.css';
+import '@ant-design/compatible/assets/index.css';
 
 import App from '../imports/ui/app';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';

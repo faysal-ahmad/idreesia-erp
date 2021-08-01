@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { UserOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
@@ -41,7 +42,7 @@ const PersonName = ({ person, onPersonNameClicked, showLargeImage }) => {
           ? { height: '80px', width: '80px', fontSize: '60px' }
           : {}
       }
-      icon="user"
+      icon={<UserOutlined />}
     />
   );
   if (person.imageId) {

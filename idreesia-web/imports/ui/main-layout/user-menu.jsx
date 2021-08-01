@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
+import { UserOutlined } from '@ant-design/icons';
 
 import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 import {
@@ -79,7 +80,7 @@ const UserMenu = ({ history }) => {
 
   const userName = user.karkun ? user.karkun.name : user.displayName;
 
-  let avatar = <Avatar size="large" icon="user" />;
+  let avatar = <Avatar size="large" icon={<UserOutlined />} />;
   if (user.karkun && user.karkun.imageId) {
     const url = getDownloadUrl(user.karkun.imageId);
     avatar = <Avatar size="large" src={url} />;

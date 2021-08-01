@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { ReadOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
@@ -34,7 +35,7 @@ const WazeefaName = ({ wazeefa, onWazeefaNameClicked }) => {
   );
 
   let imageUrl;
-  let avatarNode = <Avatar shape="square" size="large" icon="read" />;
+  let avatarNode = <Avatar shape="square" size="large" icon={<ReadOutlined />} />;
   if (wazeefa.images && wazeefa.images.length > 0) {
     imageUrl = getDownloadUrl(wazeefa.images[0]._id);
     avatarNode = (

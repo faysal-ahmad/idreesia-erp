@@ -7,7 +7,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         MONGO_URL: 'mongodb://mongo:27017/idreesia-erp',
-        ROOT_URL: 'https://381-mobile-server.ngrok.io',
+        ROOT_URL: 'https://idreesia-erp.com',
         PORT: 3001,
         METEOR_SETTINGS: {
           private: {

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { AuditOutlined, DeleteOutlined, HistoryOutlined, LinkOutlined, PlusCircleOutlined, ThunderboltOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Icon,
   Pagination,
   Popconfirm,
   Row,
@@ -80,19 +80,15 @@ export default class VisitorsList extends Component {
     render: (text, record) => {
       if (record.criminalRecord) {
         return (
-          <Icon
-            type="warning"
+          <WarningTwoTone
             style={StatusStyle}
-            theme="twoTone"
             twoToneColor="red"
           />
         );
       } else if (record.otherNotes) {
         return (
-          <Icon
-            type="warning"
+          <WarningTwoTone
             style={StatusStyle}
-            theme="twoTone"
             twoToneColor="orange"
           />
         );
@@ -169,8 +165,7 @@ export default class VisitorsList extends Component {
 
       const stayHistoryAction = showStayHistoryAction ? (
         <Tooltip title="Stay History">
-          <Icon
-            type="history"
+          <HistoryOutlined
             className="list-actions-icon"
             onClick={() => {
               handleStayHistoryAction(record);
@@ -181,8 +176,7 @@ export default class VisitorsList extends Component {
 
       const mulakaatHistoryAction = showMulakaatHistoryAction ? (
         <Tooltip title="Mulakaat History">
-          <Icon
-            type="thunderbolt"
+          <ThunderboltOutlined
             className="list-actions-icon"
             onClick={() => {
               handleMulakaatHistoryAction(record);
@@ -193,8 +187,7 @@ export default class VisitorsList extends Component {
 
       const imdadRequestsAction = showImdadRequestsAction ? (
         <Tooltip title="Imdad Requests">
-          <Icon
-            type="wallet"
+          <WalletOutlined
             className="list-actions-icon"
             onClick={() => {
               handleImdadRequestsAction(record);
@@ -205,8 +198,7 @@ export default class VisitorsList extends Component {
 
       const auditLogsAction = showAuditLogsAction ? (
         <Tooltip title="Audit Logs">
-          <Icon
-            type="audit"
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogsAction(record);
@@ -218,8 +210,7 @@ export default class VisitorsList extends Component {
       const linkAction =
         showKarkunLinkAction && record.karkunId ? (
           <Tooltip title="Show in Karkuns">
-            <Icon
-              type="link"
+            <LinkOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleKarkunLinkAction(record);
@@ -231,8 +222,7 @@ export default class VisitorsList extends Component {
       const createAction =
         showKarkunCreateAction && !record.karkunId ? (
           <Tooltip title="Create Karkun">
-            <Icon
-              type="plus-circle"
+            <PlusCircleOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleKarkunCreateAction(record);
@@ -251,7 +241,7 @@ export default class VisitorsList extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
+            <DeleteOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       ) : null;

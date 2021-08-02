@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { BarsOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Button, Icon, Table, Tooltip, Pagination } from '/imports/ui/controls';
+import { Button, Table, Tooltip, Pagination } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import ListFilter from './list-filter';
 
@@ -85,8 +86,7 @@ class List extends Component {
       key: 'action',
       render: (text, record) => (
         <Tooltip title="Details">
-          <Icon
-            type="bars"
+          <BarsOutlined
             className="list-actions-icon"
             onClick={() => {
               this.onViewClicked(record);

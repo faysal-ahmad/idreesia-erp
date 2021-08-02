@@ -2,10 +2,22 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import {
+  AppstoreOutlined,
+  BookOutlined,
+  EnvironmentOutlined,
+  FolderOpenOutlined,
+  FormOutlined,
+  LaptopOutlined,
+  PieChartOutlined,
+  ReconciliationOutlined,
+  ShopOutlined,
+  TagsOutlined,
+} from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu, Icon } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -71,130 +83,110 @@ class Sidebar extends Component {
         <Menu.SubMenu
           key={physicalStore._id}
           title={
-            <span>
-              <Icon type="appstore" style={IconStyle} />
-              {physicalStore.name}
-            </span>
+            <>
+              <AppstoreOutlined style={IconStyle} />
+              <span>{physicalStore.name}</span>
+            </>
           }
         >
           <Menu.Item
             parent-key={physicalStore._id}
             key={`stock-items-${physicalStore._id}`}
           >
-            <span>
-              <Icon type="reconciliation" style={IconStyle} />
-              Stock Items
-            </span>
+            <ReconciliationOutlined style={IconStyle} />
+            <span>Stock Items</span>
           </Menu.Item>
           <Menu.Item
             parent-key={physicalStore._id}
             key={`status-dashboard-${physicalStore._id}`}
           >
-            <span>
-              <Icon type="pie-chart" style={IconStyle} />
-              Status Dashboard
-            </span>
+            <PieChartOutlined style={IconStyle} />
+            <span>Status Dashboard</span>
           </Menu.Item>
           <Menu.SubMenu
             key={`forms-${physicalStore._id}`}
             title={
-              <span>
-                <Icon type="folder-open" style={IconStyle} />
-                Data Entry
-              </span>
+              <>
+                <FolderOpenOutlined style={IconStyle} />
+                <span>Data Entry</span>
+              </>
             }
           >
             <Menu.Item
               parent-key={physicalStore._id}
               key={`issuance-forms-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="form" style={IconStyle} />
-                Issuance Forms
-              </span>
+              <FormOutlined style={IconStyle} />
+              <span>Issuance Forms</span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`purchase-forms-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="form" style={IconStyle} />
-                Purchase Forms
-              </span>
+              <FormOutlined style={IconStyle} />
+              <span>Purchase Forms</span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`stock-adjustments-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="form" style={IconStyle} />
-                Stock Adjustments
-              </span>
+              <FormOutlined style={IconStyle} />
+              <span>Stock Adjustments</span>
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.SubMenu
             key={`reports-${physicalStore._id}`}
             title={
-              <span>
-                <Icon type="folder-open" style={IconStyle} />
-                Reports
-              </span>
+              <>
+                <FolderOpenOutlined style={IconStyle} />
+                <span>Reports</span>
+              </>
             }
           >
             <Menu.Item
               parent-key={physicalStore._id}
               key={`issuance-report-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="book" style={IconStyle} />
-                Issuance Report
-              </span>
+              <BookOutlined style={IconStyle} />
+              <span>Issuance Report</span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`purchasing-report-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="book" style={IconStyle} />
-                Purchase Report
-              </span>
+              <BookOutlined style={IconStyle} />
+              <span>Purchase Report</span>
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.SubMenu
             key={`setup-${physicalStore._id}`}
             title={
-              <span>
-                <Icon type="laptop" style={IconStyle} />
-                Setup
-              </span>
+              <>
+                <LaptopOutlined style={IconStyle} />
+                <span>Setup</span>
+              </>
             }
           >
             <Menu.Item
               parent-key={physicalStore._id}
               key={`vendors-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="shop" style={IconStyle} />
-                Vendors
-              </span>
+              <ShopOutlined style={IconStyle} />
+              <span>Vendors</span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`item-categories-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="tags" style={IconStyle} />
-                Item Categories
-              </span>
+              <TagsOutlined style={IconStyle} />
+              <span>Item Categories</span>
             </Menu.Item>
             <Menu.Item
               parent-key={physicalStore._id}
               key={`locations-${physicalStore._id}`}
             >
-              <span>
-                <Icon type="environment" style={IconStyle} />
-                Locations
-              </span>
+              <EnvironmentOutlined style={IconStyle} />
+              <span>Locations</span>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu.SubMenu>

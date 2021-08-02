@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { AuditOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Icon,
   Pagination,
   Popconfirm,
   Table,
@@ -119,8 +119,7 @@ export default class ImdadRequestsList extends Component {
 
       const editAction = showEditAction ? (
         <Tooltip title="Edit">
-          <Icon
-            type="edit"
+          <EditOutlined
             className="list-actions-icon"
             onClick={() => {
               this.props.handleSelectItem(record);
@@ -131,8 +130,7 @@ export default class ImdadRequestsList extends Component {
 
       const auditLogsAction = showAuditLogsAction ? (
         <Tooltip title="Audit Logs">
-          <Icon
-            type="audit"
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogsAction(record);
@@ -151,7 +149,7 @@ export default class ImdadRequestsList extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
+            <DeleteOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       ) : null;

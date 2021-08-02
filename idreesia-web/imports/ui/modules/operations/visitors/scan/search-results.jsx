@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { CheckCircleTwoTone, ExclamationCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Col, Divider, Icon, Row, Spin, Tabs } from '/imports/ui/controls';
+import { Col, Divider, Row, Spin, Tabs } from '/imports/ui/controls';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 
@@ -126,10 +127,8 @@ const SearchResults = props => {
     return (
       <Row type="flex" justify="start" align="middle" gutter={16}>
         <Col>
-          <Icon
+          <ExclamationCircleTwoTone
             style={NoRecordFoundStyle}
-            type="exclamation-circle"
-            theme="twoTone"
             twoToneColor={NoRecordFoundStyle.color}
           />
         </Col>
@@ -145,10 +144,8 @@ const SearchResults = props => {
   const resultNodes = [
     <Row type="flex" justify="center" align="middle" gutter={16}>
       <Col>
-        <Icon
+        <CheckCircleTwoTone
           style={RecordFoundStyle}
-          type="check-circle"
-          theme="twoTone"
           twoToneColor={RecordFoundStyle.color}
         />
       </Col>

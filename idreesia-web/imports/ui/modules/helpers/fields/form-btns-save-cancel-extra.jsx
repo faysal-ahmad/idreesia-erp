@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Form, Row } from '/imports/ui/controls';
@@ -30,7 +31,7 @@ const FormButtonsSaveCancelExtra = ({
         <Button
           size="large"
           type="default"
-          icon="close-circle"
+          icon={<CloseCircleOutlined />}
           onClick={handleCancel}
         >
           Cancel
@@ -39,7 +40,7 @@ const FormButtonsSaveCancelExtra = ({
         <Button
           size="large"
           type="primary"
-          icon="save"
+          icon={<SaveOutlined />}
           htmlType="submit"
           disabled={!allowSubmit || (isFieldsTouched && !isFieldsTouched())}
         >

@@ -2,13 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import FileSaver from 'file-saver';
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  ImportOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 
 import {
   Button,
   Cascader,
   DatePicker,
   Dropdown,
-  Icon,
   Menu,
   Modal,
   Popconfirm,
@@ -121,8 +127,7 @@ export class List extends Component {
         return (
           <div className="list-actions-column">
             <Tooltip key="edit" title="Edit">
-              <Icon
-                type="edit"
+              <EditOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleEditAttendance(record);
@@ -138,7 +143,7 @@ export class List extends Component {
               cancelText="No"
             >
               <Tooltip key="delete" title="Delete">
-                <Icon type="delete" className="list-actions-icon" />
+                <DeleteOutlined className="list-actions-icon" />
               </Tooltip>
             </Popconfirm>
           </div>
@@ -315,15 +320,15 @@ export class List extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
-          <Icon type="plus-circle" />
+          <PlusCircleOutlined />
           Create Missing Attendances
         </Menu.Item>
         <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
-          <Icon type="download" />
+          <DownloadOutlined />
           Download as CSV
         </Menu.Item>
         <Menu.Item key="4" onClick={handleImportFromGoogleSheet}>
-          <Icon type="import" />
+          <ImportOutlined />
           Import from Google Sheets
         </Menu.Item>
         <Menu.Divider />
@@ -351,11 +356,11 @@ export class List extends Component {
         </Menu.SubMenu>
         <Menu.Divider />
         <Menu.Item key="6" onClick={this._handleDeleteSelectedAttendances}>
-          <Icon type="delete" />
+          <DeleteOutlined />
           Delete Selected Attendances
         </Menu.Item>
         <Menu.Item key="7" onClick={this._handleDeleteAllAttendances}>
-          <Icon type="delete" />
+          <DeleteOutlined />
           Delete All Attendances
         </Menu.Item>
       </Menu>

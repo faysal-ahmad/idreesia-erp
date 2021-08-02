@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { UploadOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Icon, Upload, message } from '/imports/ui/controls';
+import { Button, Upload, message } from '/imports/ui/controls';
 
 const UploadAttachment = ({ accept, onUploadFinish, disabled, buttonText }) => (
   <Upload
@@ -21,7 +22,7 @@ const UploadAttachment = ({ accept, onUploadFinish, disabled, buttonText }) => (
     }}
   >
     <Button type="default" disabled={disabled}>
-      <Icon type="upload" />
+      <UploadOutlined />
       {buttonText}
     </Button>
   </Upload>

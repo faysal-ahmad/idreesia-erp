@@ -3,12 +3,21 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { graphql } from 'react-apollo';
 import FileSaver from 'file-saver';
+import {
+  CheckCircleOutlined,
+  CheckCircleTwoTone,
+  DeleteOutlined,
+  EditOutlined,
+  FileExcelOutlined,
+  PlusCircleOutlined,
+  PrinterOutlined,
+  WarningTwoTone,
+} from '@ant-design/icons';
 
 import {
   Button,
   DatePicker,
   Dropdown,
-  Icon,
   Menu,
   Modal,
   Popconfirm,
@@ -75,10 +84,8 @@ export class List extends Component {
 
             return (
               <Tooltip title={tooltip}>
-                <Icon
+                <CheckCircleTwoTone
                   style={IconStyle}
-                  type="check-circle"
-                  theme="twoTone"
                   twoToneColor="#52c41a"
                 />
               </Tooltip>
@@ -87,10 +94,8 @@ export class List extends Component {
 
           return (
             <Tooltip title="Not Approved">
-              <Icon
+              <WarningTwoTone
                 style={IconStyle}
-                type="warning"
-                theme="twoTone"
                 twoToneColor="orange"
               />
             </Tooltip>
@@ -218,8 +223,7 @@ export class List extends Component {
         return (
           <div className="list-actions-column">
             <Tooltip title="Edit">
-              <Icon
-                type="edit"
+              <EditOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleEditSalary(record);
@@ -235,7 +239,7 @@ export class List extends Component {
               cancelText="No"
             >
               <Tooltip title="Delete">
-                <Icon type="delete" className="list-actions-icon" />
+                <DeleteOutlined className="list-actions-icon" />
               </Tooltip>
             </Popconfirm>
           </div>
@@ -408,11 +412,11 @@ export class List extends Component {
       deleteMenuItems = [
         <Menu.Divider key="divider" />,
         <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
-          <Icon type="delete" />
+          <DeleteOutlined />
           Delete Selected Salaries
         </Menu.Item>,
         <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
-          <Icon type="delete" />
+          <DeleteOutlined />
           Delete All Salaries
         </Menu.Item>,
       ];
@@ -421,33 +425,33 @@ export class List extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingSalaries}>
-          <Icon type="plus-circle" />
+          <PlusCircleOutlined />
           Create Missing Salaries
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="2-1" onClick={this._handleApproveSelectedSalaries}>
-          <Icon type="check-circle" />
+          <CheckCircleOutlined />
           Approve Selected Salaries
         </Menu.Item>
         <Menu.Item key="2-2" onClick={handleApproveAllSalaries}>
-          <Icon type="check-circle" />
+          <CheckCircleOutlined />
           Approve All Salaries
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" onClick={this.handleDownloadAsCSV}>
-          <Icon type="file-excel" />
+          <FileExcelOutlined />
           Download as CSV
         </Menu.Item>
         <Menu.Item key="4" onClick={this.handlePrintSalaryReceipts}>
-          <Icon type="printer" />
+          <PrinterOutlined />
           Print Salary Receipts
         </Menu.Item>
         <Menu.Item key="5" onClick={this.handlePrintRashanReceipts}>
-          <Icon type="printer" />
+          <PrinterOutlined />
           Print Rashan Receipts
         </Menu.Item>
         <Menu.Item key="6" onClick={this.handlePrintEidReceipts}>
-          <Icon type="printer" />
+          <PrinterOutlined />
           Print Eid Receipts
         </Menu.Item>
         {deleteMenuItems}

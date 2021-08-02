@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Icon,
   Pagination,
   Popconfirm,
   Table,
@@ -84,7 +84,7 @@ export default class WazaifList extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" className="list-actions-icon" />
+              <DeleteOutlined className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         );

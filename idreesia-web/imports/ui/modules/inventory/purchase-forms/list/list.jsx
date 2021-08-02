@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { CheckSquareOutlined, DeleteOutlined, EditOutlined, FileOutlined } from '@ant-design/icons';
 
 import {
   flowRight,
@@ -15,7 +16,6 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import {
   Button,
-  Icon,
   Pagination,
   Popconfirm,
   Table,
@@ -105,8 +105,7 @@ class List extends Component {
           return (
             <div className="list-actions-column">
               <Tooltip title="Approve">
-                <Icon
-                  type="check-square-o"
+                <CheckSquareOutlined
                   className="list-actions-icon"
                   onClick={() => {
                     this.handleApproveClicked(record);
@@ -114,8 +113,7 @@ class List extends Component {
                 />
               </Tooltip>
               <Tooltip title="Edit">
-                <Icon
-                  type="edit"
+                <EditOutlined
                   className="list-actions-icon"
                   onClick={() => {
                     this.handleEditClicked(record);
@@ -131,7 +129,7 @@ class List extends Component {
                 cancelText="No"
               >
                 <Tooltip title="Delete">
-                  <Icon type="delete" className="list-actions-icon" />
+                  <DeleteOutlined className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
             </div>
@@ -140,8 +138,7 @@ class List extends Component {
 
         return (
           <Tooltip title="View">
-            <Icon
-              type="file"
+            <FileOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleViewClicked(record);

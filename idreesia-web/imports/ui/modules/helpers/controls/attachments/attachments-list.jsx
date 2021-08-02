@@ -2,6 +2,16 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  FileJpgOutlined,
+  FileTextOutlined,
+  FilePdfOutlined,
+  FileExcelOutlined,
+  FileWordOutlined,
+  FileUnknownOutlined,
+} from '@ant-design/icons';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
@@ -9,7 +19,6 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import {
   Col,
   Divider,
-  Icon,
   Modal,
   Row,
   Table,
@@ -59,13 +68,13 @@ class AttachmentsList extends Component {
   attachmentForm;
 
   mimeTypeIconMap = {
-    'image/jpeg': 'file-jpg',
-    'text/html': 'file-text',
-    'application/pdf': 'file-pdf',
+    'image/jpeg': <FileJpgOutlined style={FileIconStyle} />,
+    'text/html': <FileTextOutlined style={FileIconStyle} />,
+    'application/pdf': <FilePdfOutlined style={FileIconStyle} />,
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-      'file-excel',
+      <FileExcelOutlined style={FileIconStyle} />,
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-      'file-word',
+      <FileWordOutlined style={FileIconStyle} />,
   };
 
   columns = [
@@ -74,10 +83,9 @@ class AttachmentsList extends Component {
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => {
-        let iconType = record.mimeType
+        const icon = record.mimeType
           ? this.mimeTypeIconMap[record.mimeType]
-          : 'file-unknown';
-        if (!iconType) iconType = 'file';
+          : <FileUnknownOutlined style={FileIconStyle} />;
 
         return (
           <Row
@@ -89,7 +97,7 @@ class AttachmentsList extends Component {
             }}
           >
             <Col order={1}>
-              <Icon type={iconType} style={FileIconStyle} />
+              {icon}
             </Col>
             <Col order={2} style={NameStyle}>
               {record.name}
@@ -108,8 +116,7 @@ class AttachmentsList extends Component {
       render: (text, record) => (
         <span>
           <Tooltip title="View">
-            <Icon
-              type="edit"
+            <EditOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
@@ -126,7 +133,7 @@ class AttachmentsList extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" className="list-actions-icon" />
+              <DeleteOutlined className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </span>

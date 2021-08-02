@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { compact, find } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 
 import {
-  Icon,
   Row,
   Table,
   Tooltip,
@@ -136,7 +136,7 @@ const Images = ({ wazeefaId }) => {
               }}
             >
               <Tooltip title="Move Down">
-                <Icon type="arrow-down" className="list-actions-icon" />
+                <ArrowDownOutlined className="list-actions-icon" />
               </Tooltip>
             </div>
           ) : null;
@@ -149,7 +149,7 @@ const Images = ({ wazeefaId }) => {
               }}
             >
               <Tooltip title="Move Up">
-                <Icon type="arrow-up" className="list-actions-icon" />
+                <ArrowUpOutlined className="list-actions-icon" />
               </Tooltip>
             </div>
           ) : null;
@@ -165,7 +165,7 @@ const Images = ({ wazeefaId }) => {
               cancelText="No"
             >
               <Tooltip title="Delete">
-                <Icon type="delete" className="list-actions-icon" />
+                <DeleteOutlined className="list-actions-icon" />
               </Tooltip>
             </Popconfirm>
           </span>

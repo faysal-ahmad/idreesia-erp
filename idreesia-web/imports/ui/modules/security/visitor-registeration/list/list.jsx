@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
@@ -12,7 +13,6 @@ import {
   Button,
   Drawer,
   Dropdown,
-  Icon,
   Menu,
   message,
 } from '/imports/ui/controls';
@@ -156,16 +156,16 @@ const List = ({ history, location }) => {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleDownloadSelectedAsCSV}>
-          <Icon type="download" />
+          <DownloadOutlined />
           Download Selected
         </Menu.Item>
         <Menu.Item key="2" onClick={handleDownloadAllAsCSV}>
-          <Icon type="upload" />
+          <UploadOutlined />
           Download All
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" onClick={handleUploadClicked}>
-          <Icon type="upload" />
+          <UploadOutlined />
           Upload CSV Data
         </Menu.Item>
       </Menu>

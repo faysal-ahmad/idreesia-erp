@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
-  Icon,
   Select,
   Table,
   Tooltip,
@@ -65,7 +65,7 @@ class DutyParticipation extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" className="list-actions-icon" />
+              <DeleteOutlined className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </span>

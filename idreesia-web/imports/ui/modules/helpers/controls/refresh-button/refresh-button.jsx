@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { SyncOutlined } from '@ant-design/icons';
 
-import { Icon, Tooltip, message } from '/imports/ui/controls';
+import { Tooltip, message } from '/imports/ui/controls';
 
 const RefreshButton = ({ refreshData }) => {
   if (!refreshData) return null;
   return (
     <Tooltip title="Reload Data">
-      <Icon
-        type="sync"
+      <SyncOutlined
         onClick={event => {
           event.stopPropagation();
           if (refreshData) {

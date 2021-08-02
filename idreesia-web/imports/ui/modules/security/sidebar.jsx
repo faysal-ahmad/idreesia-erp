@@ -1,8 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  AuditOutlined,
+  BarcodeOutlined,
+  BarsOutlined,
+  BookOutlined,
+  FileSearchOutlined,
+  FlagOutlined,
+  HomeOutlined,
+  IdcardOutlined,
+  TeamOutlined,
+  ToolOutlined,
+} from '@ant-design/icons';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Icon, Menu } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -84,113 +96,93 @@ class Sidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="shared-residencs">
-          <span>
-            <Icon type="home" style={IconStyle} />
-            Shared Residences
-          </span>
+          <HomeOutlined style={IconStyle} />
+          <span>Shared Residences</span>
         </Menu.Item>
         <Menu.SubMenu
           key="mehfil-management"
           title={
-            <span>
-              <Icon type="flag" style={IconStyle} />
-              Mehfil Management
-            </span>
+            <>
+              <FlagOutlined style={IconStyle} />
+              <span>Mehfil Management</span>
+            </>
           }
         >
           <Menu.Item key="mehfils">
-            <span>
-              <Icon type="bars" style={IconStyle} />
-              Mehfils
-            </span>
+            <BarsOutlined style={IconStyle} />
+            <span>Mehfils</span>
           </Menu.Item>
           <Menu.Item key="mehfil-card-verification">
-            <span>
-              <Icon type="barcode" style={IconStyle} />
-              Scan Karkun Card
-            </span>
+            <BarcodeOutlined style={IconStyle} />
+            <span>Scan Karkun Card</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu
           key="karkuns"
           title={
-            <span>
-              <Icon type="team" style={IconStyle} />
-              Karkuns
-            </span>
+            <>
+              <TeamOutlined style={IconStyle} />
+              <span>Karkuns</span>
+            </>
           }
         >
           <Menu.Item key="karkun-card-verification">
-            <span>
-              <Icon type="barcode" style={IconStyle} />
-              Card Verification
-            </span>
+            <BarcodeOutlined style={IconStyle} />
+            <span>Card Verification</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu
           key="visitors"
           title={
-            <span>
-              <Icon type="team" style={IconStyle} />
-              Visitors
-            </span>
+            <>
+              <TeamOutlined style={IconStyle} />
+              <span>Visitors</span>
+            </>
           }
         >
           <Menu.Item key="visitor-registration">
-            <span>
-              <Icon type="idcard" style={IconStyle} />
-              Registration
-            </span>
+            <IdcardOutlined style={IconStyle} />
+            <span>Registration</span>
           </Menu.Item>
           <Menu.Item key="visitor-card-verification">
-            <span>
-              <Icon type="barcode" style={IconStyle} />
-              Card Verification
-            </span>
+            <BarcodeOutlined style={IconStyle} />
+            <span>Card Verification</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu
           key="security-reports"
           title={
-            <span>
-              <Icon type="file-search" style={IconStyle} />
-              Reports
-            </span>
+            <>
+              <FileSearchOutlined style={IconStyle} />
+              <span>Reports</span>
+            </>
           }
         >
           <Menu.Item key="visitor-stay-report">
-            <span>
-              <Icon type="book" style={IconStyle} />
-              Visitor Stay Report
-            </span>
+            <BookOutlined style={IconStyle} />
+            <span>Visitor Stay Report</span>
           </Menu.Item>
           <Menu.Item key="team-visit-report">
-            <span>
-              <Icon type="book" style={IconStyle} />
-              Team Visit Report
-            </span>
+            <BookOutlined style={IconStyle} />
+            <span>Team Visit Report</span>
           </Menu.Item>
           <Menu.Item key="mulakaat-report">
-            <span>
-              <Icon type="book" style={IconStyle} />
-              Mulakaat Report
-            </span>
+            <BookOutlined style={IconStyle} />
+            <span>Mulakaat Report</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu
           key="administration"
           title={
-            <span>
-              <Icon type="tool" style={IconStyle} />
-              Administration
-            </span>
+            <>
+              <ToolOutlined style={IconStyle} />
+              <span>Administration</span>
+            </>
           }
         >
           <Menu.Item key="audit-logs">
-            <span>
-              <Icon type="audit" style={IconStyle} />
-              Audit Logs
-            </span>
+            <AuditOutlined style={IconStyle} />
+            <span>Audit Logs</span>
           </Menu.Item>
         </Menu.SubMenu>
       </Menu>

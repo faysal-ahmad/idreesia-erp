@@ -2,8 +2,9 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import ReactToPrint from 'react-to-print';
+import { PrinterOutlined } from '@ant-design/icons';
 
-import { Button, Icon } from '/imports/ui/controls';
+import { Button } from '/imports/ui/controls';
 import { VisitorMulakaatCard } from '/imports/ui/modules/common';
 
 import {
@@ -58,7 +59,7 @@ const MulakaatCardContainer = ({
         <ReactToPrint
           trigger={() => (
             <Button type="primary" size="large">
-              <Icon type="printer" />
+              <PrinterOutlined />
               Print
             </Button>
           )}

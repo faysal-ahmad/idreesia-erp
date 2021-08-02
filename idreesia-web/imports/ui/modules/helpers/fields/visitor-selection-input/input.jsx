@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { EditOutlined } from '@ant-design/icons';
 
-import { Drawer, Icon, Input } from '/imports/ui/controls';
+import { Drawer, Input } from '/imports/ui/controls';
 import VisitorsList from './visitors-list';
 
 const ContainerStyle = {
@@ -65,7 +66,7 @@ export default class CustomInput extends Component {
             type="text"
             value={value ? value.name : ''}
             readOnly
-            addonAfter={<Icon type="edit" onClick={this.handleEditClick} />}
+            addonAfter={<EditOutlined onClick={this.handleEditClick} />}
             placeholder={placeholder}
           />
         </div>

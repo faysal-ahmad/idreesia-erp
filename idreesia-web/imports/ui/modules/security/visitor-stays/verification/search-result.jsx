@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { CloseCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Row, Col, Icon, Spin } from '/imports/ui/controls';
+import { Row, Col, Spin } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import StayCard from '../card/stay-card';
 
@@ -31,10 +32,8 @@ const ScanStatus = ({ message, isError }) => {
   return (
     <Row type="flex" justify="start" align="middle" gutter={16}>
       <Col>
-        <Icon
+        <CloseCircleTwoTone
           style={statusStyle}
-          type="close-circle"
-          theme="twoTone"
           twoToneColor={statusStyle.color}
         />
       </Col>

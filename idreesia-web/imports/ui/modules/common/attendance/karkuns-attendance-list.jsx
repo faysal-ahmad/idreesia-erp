@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { filter, noop, sortBy } from 'meteor/idreesia-common/utilities/lodash';
@@ -9,7 +10,6 @@ import {
   Cascader,
   DatePicker,
   Dropdown,
-  Icon,
   Menu,
   Table,
 } from '/imports/ui/controls';
@@ -324,16 +324,16 @@ export default class KarkunsAttendanceList extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
-          <Icon type="plus-circle" />
+          <PlusCircleOutlined />
           Create Missing Attendances
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="6" onClick={this.handleDeleteSelected}>
-          <Icon type="delete" />
+          <DeleteOutlined />
           Delete Selected Attendances
         </Menu.Item>
         <Menu.Item key="7" onClick={handleDeleteAllAttendances}>
-          <Icon type="delete" />
+          <DeleteOutlined />
           Delete All Attendances
         </Menu.Item>
       </Menu>

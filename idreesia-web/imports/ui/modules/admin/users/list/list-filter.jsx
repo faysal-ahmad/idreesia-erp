@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { SyncOutlined } from '@ant-design/icons';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
@@ -8,7 +9,6 @@ import {
   Button,
   Collapse,
   Form,
-  Icon,
   Row,
   Tooltip,
 } from '/imports/ui/controls';
@@ -73,8 +73,7 @@ const ListFilter = props => {
 
     return (
       <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
+        <SyncOutlined
           onClick={event => {
             event.stopPropagation();
             refreshData();

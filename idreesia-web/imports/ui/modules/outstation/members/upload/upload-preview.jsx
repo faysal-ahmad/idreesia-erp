@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CheckCircleTwoTone, CloseCircleTwoTone, InfoCircleTwoTone } from '@ant-design/icons';
 
 import {
   Button,
-  Icon,
   Table,
   Tooltip,
   notification,
@@ -74,10 +74,8 @@ const columns = [
       if (errors.length > 0) {
         errorsNode = (
           <Tooltip title="Errors">
-            <Icon
-              type="info-circle"
+            <InfoCircleTwoTone
               className="list-actions-icon"
-              theme="twoTone"
               twoToneColor="red"
               onClick={() => {
                 notification.open({
@@ -98,10 +96,8 @@ const columns = [
       } else if (imported === true) {
         importedNode = (
           <Tooltip title={importMessage}>
-            <Icon
-              type="check-circle"
+            <CheckCircleTwoTone
               className="list-actions-icon"
-              theme="twoTone"
               twoToneColor="green"
             />
           </Tooltip>
@@ -109,10 +105,8 @@ const columns = [
       } else if (imported === false) {
         importedNode = (
           <Tooltip title={importMessage}>
-            <Icon
-              type="close-circle"
+            <CloseCircleTwoTone
               className="list-actions-icon"
-              theme="twoTone"
               twoToneColor="red"
             />
           </Tooltip>

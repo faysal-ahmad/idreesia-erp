@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { Icon } from '/imports/ui/controls';
+import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 
 const HeaderStyle = {
   display: 'flex',
@@ -47,14 +46,12 @@ const Header = ({ headerKey, title, sortBy, sortOrder, handleSortChange }) => {
     <div style={HeaderStyle}>
       <span>{title}</span>
       <div style={IconsContainerStyle}>
-        <Icon
+        <SortAscendingOutlined
           style={sortAscendingStyle}
-          type="sort-ascending"
           onClick={handleSortAscendingClicked}
         />
-        <Icon
+        <SortDescendingOutlined
           style={sortDescendingStyle}
-          type="sort-descending"
           onClick={handleSortDescendingClicked}
         />
       </div>

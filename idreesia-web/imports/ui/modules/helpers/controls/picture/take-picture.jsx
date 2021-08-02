@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { InstagramOutlined } from '@ant-design/icons';
 
 import { getUploadUrl } from 'meteor/idreesia-common/utilities';
-import { Button, Icon, Modal, message } from '/imports/ui/controls';
+import { Button, Modal, message } from '/imports/ui/controls';
 import TakePictureForm from './take-picture-form';
 
 export default class TakePicture extends Component {
@@ -77,7 +78,7 @@ export default class TakePicture extends Component {
     return (
       <Fragment>
         <Button type="default" disabled={disabled} onClick={this.updatePicture}>
-          <Icon type="instagram" />
+          <InstagramOutlined />
           {buttonText}
         </Button>
 

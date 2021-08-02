@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { noop } from "lodash";
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 import { Button, Form, Row } from "/imports/ui/controls";
 
@@ -17,7 +18,7 @@ const FormButtonsClose = ({ handleClose }) => (
       <Button
         size="large"
         type="default"
-        icon="close-circle"
+        icon={<CloseCircleOutlined />}
         onClick={handleClose}
       >
         Close

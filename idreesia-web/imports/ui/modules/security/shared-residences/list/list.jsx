@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -10,7 +11,6 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 
 import {
   Button,
-  Icon,
   Pagination,
   Table,
   Tooltip,
@@ -108,8 +108,7 @@ const List = ({ history, location }) => {
         if (record.residentCount === 0) {
           return (
             <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);

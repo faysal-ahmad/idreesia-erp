@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -12,7 +13,6 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   DatePicker,
-  Icon,
   Modal,
   Pagination,
   Table,
@@ -159,7 +159,7 @@ const List = ({ history, location }) => {
             return (
               <div className="list-actions-column">
                 <Tooltip title={`Created by ${createdByName}`}>
-                  <Icon type="info-circle" className="list-actions-icon" />
+                  <InfoCircleOutlined className="list-actions-icon" />
                 </Tooltip>
               </div>
             );

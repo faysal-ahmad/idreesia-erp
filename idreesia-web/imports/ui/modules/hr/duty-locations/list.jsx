@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 class List extends Component {
@@ -32,9 +33,8 @@ class List extends Component {
         if (record.usedCount === 0) {
           return (
             <Tooltip title="Delete">
-              <Icon
+              <DeleteOutlined
                 className="list-actions-icon"
-                type="delete"
                 onClick={() => {
                   this.handleDeleteClicked(record);
                 }}

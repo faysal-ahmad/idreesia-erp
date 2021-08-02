@@ -1,8 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  AuditOutlined,
+  EnvironmentOutlined,
+  FileProtectOutlined,
+  HomeOutlined,
+  LaptopOutlined,
+  MessageOutlined,  
+  SolutionOutlined,
+  TagsOutlined,
+  TeamOutlined,
+  ToolOutlined,
+  UnlockOutlined,
+} from '@ant-design/icons';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Icon, Menu } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -90,89 +103,67 @@ class Sidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">
-          <span>
-            <Icon type="team" style={IconStyle} />
-            Karkuns
-          </span>
+          <TeamOutlined style={IconStyle} />
+          <span>Karkuns</span>
         </Menu.Item>
         <Menu.Item key="members">
-          <span>
-            <Icon type="team" style={IconStyle} />
-            Members
-          </span>
+          <TeamOutlined style={IconStyle} />
+          <span>Members</span>
         </Menu.Item>
         <Menu.Item key="attendance-sheets">
-          <span>
-            <Icon type="solution" style={IconStyle} />
-            Attendance Sheets
-          </span>
+          <SolutionOutlined style={IconStyle} />
+          <span>Attendance Sheets</span>
         </Menu.Item>
         <Menu.Item key="messages">
-          <span>
-            <Icon type="message" style={IconStyle} />
-            Messages
-          </span>
+          <MessageOutlined style={IconStyle} />
+          <span>Messages</span>
         </Menu.Item>
         <Menu.SubMenu
           key="administration"
           title={
-            <span>
-              <Icon type="tool" style={IconStyle} />
-              Administration
-            </span>
+            <>
+              <ToolOutlined style={IconStyle} />
+              <span>Administration</span>
+            </>
           }
         >
           <Menu.Item key="outstation-user-accounts">
-            <span>
-              <Icon type="unlock" style={IconStyle} />
-              Outstation User Accounts
-            </span>
+            <UnlockOutlined style={IconStyle} />
+            <span>Outstation User Accounts</span>
           </Menu.Item>
           <Menu.Item key="portal-user-accounts">
-            <span>
-              <Icon type="unlock" style={IconStyle} />
-              Portal User Accounts
-            </span>
+            <UnlockOutlined style={IconStyle} />
+            <span>Portal User Accounts</span>
           </Menu.Item>
           <Menu.Item key="audit-logs">
-            <span>
-              <Icon type="audit" style={IconStyle} />
-              Audit Logs
-            </span>
+            <AuditOutlined style={IconStyle} />
+            <span>Audit Logs</span>
           </Menu.Item>
           <Menu.Item key="security-logs">
-            <span>
-              <Icon type="file-protect" style={IconStyle} />
-              Security Logs
-            </span>
+            <FileProtectOutlined style={IconStyle} />
+            <span>Security Logs</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu
           key="setup"
           title={
-            <span>
-              <Icon type="laptop" style={IconStyle} />
-              Setup
-            </span>
+            <>
+              <LaptopOutlined style={IconStyle} />
+              <span>Setup</span>
+            </>
           }
         >
           <Menu.Item key="portals">
-            <span>
-              <Icon type="home" style={IconStyle} />
-              Portals
-            </span>
+            <HomeOutlined style={IconStyle} />
+            <span>Portals</span>
           </Menu.Item>
           <Menu.Item key="cities">
-            <span>
-              <Icon type="environment" style={IconStyle} />
-              Cities &amp; Mehfils
-            </span>
+            <EnvironmentOutlined style={IconStyle} />
+            <span>Cities &amp; Mehfils</span>
           </Menu.Item>
           <Menu.Item key="mehfil-duties">
-            <span>
-              <Icon type="tags" style={IconStyle} />
-              Mehfil Duties
-            </span>
+            <TagsOutlined style={IconStyle} />
+            <span>Mehfil Duties</span>
           </Menu.Item>
         </Menu.SubMenu>
       </Menu>

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { EditOutlined, IdcardOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
   Button,
   Pagination,
-  Icon,
   Popconfirm,
   Table,
   Tooltip,
@@ -93,8 +93,7 @@ class List extends Component {
 
       const editAction = (
         <Tooltip title="Edit stay">
-          <Icon
-            type="edit"
+          <EditOutlined
             className="list-actions-icon"
             onClick={() => {
               this.handleEditClicked(record);
@@ -113,15 +112,14 @@ class List extends Component {
           cancelText="No"
         >
           <Tooltip title="Cancel">
-            <Icon type="stop" className="list-actions-icon" />
+            <StopOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       );
 
       const dutyCardAction = record.stayReason ? (
         <Tooltip title="Duty Card">
-          <Icon
-            type="idcard"
+          <IdcardOutlined
             className="list-actions-icon"
             onClick={() => {
               this.handleDutyCardClicked(record);
@@ -133,8 +131,7 @@ class List extends Component {
       return (
         <div className="list-actions-column">
           <Tooltip title="Night Stay Card">
-            <Icon
-              type="solution"
+            <SolutionOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleNightStayCardClicked(record);

@@ -2,11 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
+import { GoogleOutlined } from '@ant-design/icons';
 
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
-import { Button, Form, Icon, Input, message } from './antd-controls';
+import { Button, Form, Input, message } from './antd-controls';
 import { UPDATE_LOGIN_TIME } from './gql';
+
+const IconStyle = {
+  fontSize: '20px',
+};
 
 const loginFormButtonStyle = {
   width: '100%',
@@ -91,7 +96,7 @@ const LoginForm = ({ history, location, form }) => {
           style={loginFormButtonStyle}
           onClick={handleLoginWithGoogle}
         >
-          <Icon type="google" style={{ fontSize: 20 }} />
+          <GoogleOutlined style={IconStyle} />
           Log in with Google
         </Button>
       </Form.Item>

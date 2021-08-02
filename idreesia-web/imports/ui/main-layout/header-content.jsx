@@ -74,11 +74,12 @@ const HeaderContent = ({ history, location, user }) => {
     }
   });
 
-  const handleMenuItemSelected = ({ item /* , key, selectedKeys */ }) => {
-    const moduleName = item.props.children;
-    const modulePath = modulePathsMapping[moduleName];
+  const handleMenuItemSelected = ({ key }) => {
+    const modulePath = modulePathsMapping[key];
     history.push(modulePath);
-    dispatch(setActiveModuleName(moduleName));
+    debugger;
+
+    dispatch(setActiveModuleName(key));
   };
 
   const menuItems = [];
@@ -87,15 +88,15 @@ const HeaderContent = ({ history, location, user }) => {
   if (user) {
     const { pathname } = location;
     const moduleNames = keys(modulePathsMapping);
-    moduleNames.forEach((moduleName, index) => {
+    moduleNames.forEach((moduleName) => {
       const isAccessible = isModuleAccessible(user, moduleName);
       if (isAccessible) {
         const modulePath = modulePathsMapping[moduleName];
         menuItems.push(
-          <Menu.Item key={index.toString()}>{moduleName}</Menu.Item>
+          <Menu.Item key={moduleName}>{moduleName}</Menu.Item>
         );
         if (pathname.startsWith(modulePath)) {
-          selectedMenuItemKey.push(index.toString());
+          selectedMenuItemKey.push(moduleName);
         }
       }
     });

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { UploadOutlined } from '@ant-design/icons';
 
-import { Button, Icon, Upload } from '/imports/ui/controls';
+import { Button, Upload } from '/imports/ui/controls';
 
 export default class InputFile extends Component {
   static propTypes = {
@@ -39,7 +40,7 @@ export default class InputFile extends Component {
         showUploadList={this.props.showUploadList}
       >
         <Button type="default" size="large">
-          <Icon type="upload" />
+          <UploadOutlined />
           {this.props.label || null}
         </Button>
       </Upload>

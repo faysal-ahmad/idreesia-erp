@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { AuditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  Icon,
   Pagination,
   Popconfirm,
   Row,
@@ -176,8 +176,7 @@ export default class KarkunsList extends Component {
 
       const auditLogsAction = showAuditLogsAction ? (
         <Tooltip title="Audit Logs">
-          <Icon
-            type="audit"
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogsAction(record);
@@ -196,7 +195,7 @@ export default class KarkunsList extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
+            <DeleteOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       ) : null;

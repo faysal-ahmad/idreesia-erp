@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from '/imports/ui/controls';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
 import { ALL_PAYMENT_TYPES, REMOVE_PAYMENT_TYPE } from './gql';
@@ -48,8 +49,7 @@ class List extends Component {
         if (record.usedCount === 0) {
           return (
             <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.handleDeleteClicked(record);
@@ -95,7 +95,7 @@ class List extends Component {
           <Button
             size="large"
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             onClick={this.handleNewClicked}
           >
             New Payment Type

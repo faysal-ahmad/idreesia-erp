@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,7 +13,7 @@ import {
   useAllMehfilDuties,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Button, Dropdown, Icon, Menu, message } from '/imports/ui/controls';
+import { Button, Dropdown, Menu, message } from '/imports/ui/controls';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -160,12 +161,12 @@ const List = ({ history, location }) => {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleExportSelected}>
-          <Icon type="download" />
+          <DownloadOutlined />
           Download Selected
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" onClick={handleUploadClicked}>
-          <Icon type="upload" />
+          <UploadOutlined />
           Upload CSV Data
         </Menu.Item>
       </Menu>

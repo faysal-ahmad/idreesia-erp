@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { DeleteOutlined, LikeOutlined } from '@ant-design/icons';
 
 import { noop, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -9,7 +10,6 @@ import {
 } from 'meteor/idreesia-common/constants/communication';
 
 import {
-  Icon,
   Pagination,
   Popconfirm,
   Table,
@@ -145,8 +145,7 @@ export default class MessagesList extends Component {
         if (status === MessageStatus.WAITING_APPROVAL) {
           actions.push(
             <Tooltip key="approve" title="Approve">
-              <Icon
-                type="like"
+              <LikeOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.props.handleApproveItem(record);
@@ -168,7 +167,7 @@ export default class MessagesList extends Component {
               cancelText="No"
             >
               <Tooltip title="Delete">
-                <Icon type="delete" className="list-actions-icon" />
+                <DeleteOutlined className="list-actions-icon" />
               </Tooltip>
             </Popconfirm>
           );

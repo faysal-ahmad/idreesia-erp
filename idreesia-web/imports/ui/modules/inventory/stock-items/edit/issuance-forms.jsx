@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { FileOutlined, EditOutlined } from '@ant-design/icons';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Icon, Table, Tooltip } from '/imports/ui/controls';
+import { Table, Tooltip } from '/imports/ui/controls';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class List extends Component {
@@ -55,29 +56,34 @@ class List extends Component {
       key: 'action',
       render: (text, record) => {
         let tooltipTitle;
-        let iconType;
-        let handler;
+        let icon;
 
         if (!record.approvedOn) {
           tooltipTitle = 'Edit';
-          iconType = 'edit';
-          handler = this.handleEditClicked;
+          icon = (
+            <EditOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                this.handleEditClicked(record);
+              }}
+            />
+          );
         } else {
           tooltipTitle = 'View';
-          iconType = 'file';
-          handler = this.handleViewClicked;
+          icon = (
+            <FileOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                this.handleViewClicked(record);
+              }}
+            />
+          );
         }
 
         return (
           <div className="list-actions-column">
             <Tooltip title={tooltipTitle}>
-              <Icon
-                type={iconType}
-                className="list-actions-icon"
-                onClick={() => {
-                  handler(record);
-                }}
-              />
+              {icon}
             </Tooltip>
           </div>
         );

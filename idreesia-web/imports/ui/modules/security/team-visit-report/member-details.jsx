@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
+import { WarningTwoTone } from '@ant-design/icons';
 
-import { Pagination, Icon, Table } from '/imports/ui/controls';
+import { Pagination, Table } from '/imports/ui/controls';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 
@@ -48,19 +49,15 @@ const columns = [
       const { refVisitor } = record;
       if (refVisitor.criminalRecord) {
         return (
-          <Icon
-            type="warning"
+          <WarningTwoTone
             style={StatusStyle}
-            theme="twoTone"
             twoToneColor="red"
           />
         );
       } else if (refVisitor.otherNotes) {
         return (
-          <Icon
-            type="warning"
+          <WarningTwoTone
             style={StatusStyle}
-            theme="twoTone"
             twoToneColor="orange"
           />
         );

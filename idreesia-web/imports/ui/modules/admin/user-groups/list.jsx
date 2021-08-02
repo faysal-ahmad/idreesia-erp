@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { DeleteOutlined, TeamOutlined } from '@ant-design/icons';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
@@ -12,7 +13,6 @@ import {
 
 import {
   Button,
-  Icon,
   Pagination,
   Popconfirm,
   Table,
@@ -62,7 +62,7 @@ const getColumns = ({ handleDeleteClicked }) => [
     render: (text, record) => (
       <div className="list-actions-column">
         <Tooltip title="Add Users">
-          <Icon type="team" className="list-actions-icon" />
+          <TeamOutlined className="list-actions-icon" />
         </Tooltip>
         <Popconfirm
           title="Are you sure you want to delete this group?"
@@ -73,7 +73,7 @@ const getColumns = ({ handleDeleteClicked }) => [
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
+            <DeleteOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       </div>

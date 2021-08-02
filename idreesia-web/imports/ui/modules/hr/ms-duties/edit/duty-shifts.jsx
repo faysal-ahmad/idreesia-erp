@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
-  Icon,
   Modal,
   Table,
   Tooltip,
@@ -71,9 +71,8 @@ class List extends Component {
         if (record.canDelete) {
           deleteAction = (
             <Tooltip title="Delete">
-              <Icon
+              <DeleteOutlined
                 className="list-actions-icon"
-                type="delete"
                 onClick={() => {
                   this.handleDeleteClicked(record);
                 }}
@@ -85,9 +84,8 @@ class List extends Component {
         return (
           <div className="list-actions-column">
             <Tooltip title="Edit">
-              <Icon
+              <EditOutlined
                 className="list-actions-icon"
-                type="edit"
                 onClick={() => {
                   this.handleEditClicked(record);
                 }}

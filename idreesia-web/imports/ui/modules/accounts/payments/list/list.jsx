@@ -4,6 +4,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { AuditOutlined, DeleteOutlined, EditOutlined, PrinterOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,7 +13,6 @@ import { useAllPaymentTypes } from 'meteor/idreesia-common/hooks/accounts';
 
 import {
   Button,
-  Icon,
   Pagination,
   Table,
   Tooltip,
@@ -154,8 +154,7 @@ const List = ({ history, location }) => {
       render: (text, record) => (
         <div className="list-actions-column">
           <Tooltip title="Edit">
-            <Icon
-              type="edit"
+            <EditOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleEditClicked(record);
@@ -163,8 +162,7 @@ const List = ({ history, location }) => {
             />
           </Tooltip>
           <Tooltip title="Print">
-            <Icon
-              type="printer"
+            <PrinterOutlined
               className="list-actions-icon"
               onClick={() => {
                 handlePrintPaymentReceipts(record);
@@ -172,8 +170,7 @@ const List = ({ history, location }) => {
             />
           </Tooltip>
           <Tooltip title="Audit Logs">
-            <Icon
-              type="audit"
+            <AuditOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleAuditLogsAction(record);
@@ -181,8 +178,7 @@ const List = ({ history, location }) => {
             />
           </Tooltip>
           <Tooltip title="Delete">
-            <Icon
-              type="delete"
+            <DeleteOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleDeleteClicked(record);

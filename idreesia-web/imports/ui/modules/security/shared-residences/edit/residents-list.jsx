@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   Button,
-  Icon,
   Modal,
   Table,
   Tooltip,
@@ -150,17 +150,15 @@ const ResidentsList = ({ sharedResidenceId }) => {
       render: (text, record) => (
         <div className="list-actions-column">
           <Tooltip title="Edit">
-            <Icon
+            <EditOutlined
               className="list-actions-icon"
-              type="edit"
               onClick={() => {
                 handleEditClicked(record);
               }}
             />
           </Tooltip>
           <Tooltip key="delete" title="Delete">
-            <Icon
-              type="delete"
+            <DeleteOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleDeleteClicked(record);

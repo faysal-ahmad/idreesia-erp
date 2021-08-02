@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
+import { LockOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -10,7 +11,7 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { noop, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-import { Button, Icon, Pagination, Table } from '/imports/ui/controls';
+import { Button, Pagination, Table } from '/imports/ui/controls';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
@@ -20,7 +21,7 @@ import { PAGED_USERS } from '../gql';
 const columns = [
   {
     key: 'locked',
-    render: (text, record) => (record.locked ? <Icon type="lock" /> : null),
+    render: (text, record) => (record.locked ? <LockOutlined /> : null),
   },
   {
     title: 'User Name',

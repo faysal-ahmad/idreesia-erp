@@ -2,10 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import {
+  AuditOutlined,
+  RedEnvelopeOutlined,
+  ShopOutlined,
+  SolutionOutlined,
+  TeamOutlined,
+  ToolOutlined,
+  UnlockOutlined,
+} from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu, Icon } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -50,49 +59,37 @@ class Sidebar extends Component {
 
   getMenuItemsForPortal = portalId => [
     <Menu.Item parent-key={portalId} key={`karkuns-${portalId}`}>
-      <span>
-        <Icon type="team" style={IconStyle} />
-        Karkuns
-      </span>
+      <TeamOutlined style={IconStyle} />
+      <span>Karkuns</span>
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`members-${portalId}`}>
-      <span>
-        <Icon type="team" style={IconStyle} />
-        Members
-      </span>
+      <TeamOutlined style={IconStyle} />
+      <span>Members</span>
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`attendance-sheets-${portalId}`}>
-      <span>
-        <Icon type="solution" style={IconStyle} />
-        Attendance Sheets
-      </span>
+      <SolutionOutlined style={IconStyle} />
+      <span>Attendance Sheets</span>
     </Menu.Item>,
     <Menu.Item parent-key={portalId} key={`amaanat-logs-${portalId}`}>
-      <span>
-        <Icon type="red-envelope" style={IconStyle} />
-        Amaanat Logs
-      </span>
+      <RedEnvelopeOutlined style={IconStyle} />
+      <span>Amaanat Logs</span>
     </Menu.Item>,
     <Menu.SubMenu
       key={`administration-${portalId}`}
       title={
-        <span>
-          <Icon type="tool" style={IconStyle} />
-          Administration
-        </span>
+        <>
+          <ToolOutlined style={IconStyle} />
+          <span>Administration</span>
+        </>
       }
     >
       <Menu.Item parent-key={portalId} key={`audit-logs-${portalId}`}>
-        <span>
-          <Icon type="audit" style={IconStyle} />
-          Audit Logs
-        </span>
+        <AuditOutlined style={IconStyle} />
+        <span>Audit Logs</span>
       </Menu.Item>
       <Menu.Item parent-key={portalId} key={`user-accounts-${portalId}`}>
-        <span>
-          <Icon type="unlock" style={IconStyle} />
-          User Accounts
-        </span>
+        <UnlockOutlined style={IconStyle} />
+        <span>User Accounts</span>
       </Menu.Item>
     </Menu.SubMenu>,
   ];
@@ -110,10 +107,10 @@ class Sidebar extends Component {
           <Menu.SubMenu
             key={portal._id}
             title={
-              <span>
-                <Icon type="shop" style={IconStyle} />
-                {portal.name}
-              </span>
+              <>
+                <ShopOutlined style={IconStyle} />
+                <span>{portal.name}</span>
+              </>
             }
           >
             {this.getMenuItemsForPortal(portal._id)}

@@ -2,12 +2,12 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Divider,
-  Icon,
   Table,
   Tooltip,
   Modal,
@@ -86,8 +86,7 @@ class DutyParticipation extends Component {
       render: (text, record) => (
         <span>
           <Tooltip title="Edit">
-            <Icon
-              type="edit"
+            <EditOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
@@ -104,7 +103,7 @@ class DutyParticipation extends Component {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Icon type="delete" className="list-actions-icon" />
+              <DeleteOutlined className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
         </span>

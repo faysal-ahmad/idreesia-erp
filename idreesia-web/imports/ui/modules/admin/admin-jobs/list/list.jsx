@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { capitalize, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 import {
   Button,
-  Icon,
   Pagination,
   Select,
   Table,
@@ -80,8 +80,7 @@ class List extends Component {
           return (
             <div className="list-actions-column">
               <Tooltip title="Delete">
-                <Icon
-                  type="delete"
+                <DeleteOutlined
                   className="list-actions-icon"
                   onClick={() => {
                     this.props.handleDeleteClicked(record._id);

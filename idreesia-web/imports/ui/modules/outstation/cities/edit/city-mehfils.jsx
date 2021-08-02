@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
-  Icon,
   Modal,
   Table,
   Tooltip,
@@ -77,18 +77,16 @@ class List extends Component {
       render: (text, record) => (
         <div className="list-actions-column">
           <Tooltip title="Edit">
-            <Icon
+            <EditOutlined
               className="list-actions-icon"
-              type="edit"
               onClick={() => {
                 this.handleEditClicked(record);
               }}
             />
           </Tooltip>
           <Tooltip title="Delete">
-            <Icon
+            <DeleteOutlined
               className="list-actions-icon"
-              type="delete"
               onClick={() => {
                 this.handleDeleteClicked(record);
               }}

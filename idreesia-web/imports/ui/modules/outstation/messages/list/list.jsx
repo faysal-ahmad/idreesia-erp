@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
+import { DeleteOutlined, LikeOutlined } from '@ant-design/icons';
 
 import {
   MessageStatus,
@@ -14,7 +15,6 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import {
   Button,
-  Icon,
   Pagination,
   Table,
   Tooltip,
@@ -128,8 +128,7 @@ const List = ({ history, location }) => {
         if (status === MessageStatus.WAITING_APPROVAL) {
           actions.push(
             <Tooltip key="approve" title="Approve">
-              <Icon
-                type="like"
+              <LikeOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleApproveItem(record);
@@ -142,8 +141,7 @@ const List = ({ history, location }) => {
         if (status !== MessageStatus.SENDING) {
           actions.push(
             <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteItem(record);

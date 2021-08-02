@@ -1,8 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  AuditOutlined,
+  DollarOutlined,
+  EnvironmentOutlined,
+  LaptopOutlined,
+  MessageOutlined,
+  SolutionOutlined,
+  TagOutlined,
+  TagsOutlined,
+  TeamOutlined,
+  ToolOutlined,
+} from '@ant-design/icons';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu, Icon } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -77,71 +89,55 @@ class Sidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="karkuns">
-          <span>
-            <Icon type="team" style={IconStyle} />
-            Karkuns
-          </span>
+          <TeamOutlined style={IconStyle} />
+          <span>Karkuns</span>
         </Menu.Item>
         <Menu.Item key="salary-sheets">
-          <span>
-            <Icon type="dollar" style={IconStyle} />
-            Salary Sheets
-          </span>
+          <DollarOutlined style={IconStyle} />
+          <span>Salary Sheets</span>
         </Menu.Item>
         <Menu.Item key="attendance-sheets">
-          <span>
-            <Icon type="solution" style={IconStyle} />
-            Attendance Sheets
-          </span>
+          <SolutionOutlined style={IconStyle} />
+          <span>Attendance Sheets</span>
         </Menu.Item>
         <Menu.Item key="messages">
-          <span>
-            <Icon type="message" style={IconStyle} />
-            Messages
-          </span>
+          <MessageOutlined style={IconStyle} />
+          <span>Messages</span>
         </Menu.Item>
         <SubMenu
           key="administration"
           title={
-            <span>
-              <Icon type="tool" style={IconStyle} />
-              Administration
-            </span>
+            <>
+              <ToolOutlined style={IconStyle} />
+              <span>Administration</span>
+            </>
           }
         >
           <Menu.Item key="audit-logs">
-            <span>
-              <Icon type="audit" style={IconStyle} />
-              Audit Logs
-            </span>
+            <AuditOutlined style={IconStyle} />
+            <span>Audit Logs</span>
           </Menu.Item>
         </SubMenu>
         <SubMenu
           key="setup"
           title={
-            <span>
-              <Icon type="laptop" style={IconStyle} />
-              Setup
-            </span>
+            <>
+              <LaptopOutlined style={IconStyle} />
+              <span>Setup</span>
+            </>
           }
         >
           <Menu.Item key="jobs">
-            <span>
-              <Icon type="tag" style={IconStyle} />
-              Jobs
-            </span>
+            <TagOutlined style={IconStyle} />
+            <span>Jobs</span>
           </Menu.Item>
           <Menu.Item key="ms-duties">
-            <span>
-              <Icon type="tags" style={IconStyle} />
-              Duties &amp; Shifts
-            </span>
+            <TagsOutlined style={IconStyle} />
+            <span>Duties &amp; Shifts</span>
           </Menu.Item>
           <Menu.Item key="duty-locations">
-            <span>
-              <Icon type="environment" style={IconStyle} />
-              Duty Locations
-            </span>
+            <EnvironmentOutlined style={IconStyle} />
+            <span>Duty Locations</span>
           </Menu.Item>
         </SubMenu>
       </Menu>

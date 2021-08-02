@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { noop } from 'lodash';
+import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { Button, Form, Row } from '/imports/ui/controls';
 
@@ -17,7 +18,7 @@ const FormButtonsSaveCancel = ({ handleCancel, isFieldsTouched }) => (
       <Button
         size="large"
         type="default"
-        icon="close-circle"
+        icon={<CloseCircleOutlined />}
         onClick={handleCancel}
       >
         Cancel
@@ -26,7 +27,7 @@ const FormButtonsSaveCancel = ({ handleCancel, isFieldsTouched }) => (
       <Button
         size="large"
         type="primary"
-        icon="save"
+        icon={<SaveOutlined />}
         htmlType="submit"
         disabled={isFieldsTouched && !isFieldsTouched()}
       >

@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import numeral from 'numeral';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
-import { Icon, Pagination, Table, Tooltip } from '/imports/ui/controls';
+import { Pagination, Table, Tooltip } from '/imports/ui/controls';
 
 export default class AmaanatLogsList extends Component {
   static propTypes = {
@@ -97,8 +98,7 @@ export default class AmaanatLogsList extends Component {
       render: (text, record) => (
         <div className="list-actions-column">
           <Tooltip title="Edit">
-            <Icon
-              type="edit"
+            <EditOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.props.handleSelectItem(record);
@@ -106,8 +106,7 @@ export default class AmaanatLogsList extends Component {
             />
           </Tooltip>
           <Tooltip title="Delete">
-            <Icon
-              type="delete"
+            <DeleteOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.props.handleDeleteItem(record);

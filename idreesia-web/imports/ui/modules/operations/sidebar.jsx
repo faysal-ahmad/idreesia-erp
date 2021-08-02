@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  BookOutlined,
+  IdcardOutlined,
+  LaptopOutlined,
+  MessageOutlined,
+  MonitorOutlined,
+  ReadOutlined,
+  WalletOutlined,
+} from '@ant-design/icons';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Icon, Menu } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -76,36 +85,28 @@ class Sidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Item key="visitors">
-          <span>
-            <Icon type="idcard" style={IconStyle} />
-            Visitors
-          </span>
+          <IdcardOutlined style={IconStyle} />
+          <span>Visitors</span>
         </Item>
         <Item key="imdad-requests">
-          <span>
-            <Icon type="wallet" style={IconStyle} />
-            Imdad Requests
-          </span>
+          <WalletOutlined style={IconStyle} />
+          <span>Imdad Requests</span>
         </Item>
         <Item key="wazaif">
-          <span>
-            <Icon type="read" style={IconStyle} />
-            Wazaif
-          </span>
+          <ReadOutlined style={IconStyle} />
+          <span>Wazaif</span>
         </Item>
         <Item key="messages">
-          <span>
-            <Icon type="message" style={IconStyle} />
-            Messages
-          </span>
+          <MessageOutlined style={IconStyle} />
+          <span>Messages</span>
         </Item>
         <SubMenu
           key="operations-reports"
           title={
-            <span>
-              <Icon type="book" style={IconStyle} />
-              Reports
-            </span>
+            <>
+              <BookOutlined style={IconStyle} />
+              <span>Reports</span>
+            </>
           }
         >
           <Item key="mulakaat-report">
@@ -121,17 +122,15 @@ class Sidebar extends Component {
         <SubMenu
           key="setup"
           title={
-            <span>
-              <Icon type="laptop" style={IconStyle} />
-              Setup
-            </span>
+            <>
+              <LaptopOutlined style={IconStyle} />
+              <span>Setup</span>
+            </>
           }
         >
           <Item key="imdad-reasons">
-            <span>
-              <Icon type="monitor" style={IconStyle} />
-              Imdad Reasons
-            </span>
+            <MonitorOutlined style={IconStyle} />
+            <span>Imdad Reasons</span>
           </Item>
         </SubMenu>
       </Menu>

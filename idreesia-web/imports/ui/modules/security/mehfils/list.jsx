@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { DeleteOutlined, TeamOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { ALL_MEHFILS, REMOVE_MEHFIL } from './gql';
@@ -48,8 +49,7 @@ class List extends Component {
       render: (text, record) => {
         const karkunsAction = (
           <Tooltip key="karkuns" title="Karkuns">
-            <Icon
-              type="team"
+            <TeamOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleKarkunsClicked(record);
@@ -62,8 +62,7 @@ class List extends Component {
         if (record.karkunCount === 0) {
           deleteAction = (
             <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.handleDeleteClicked(record);

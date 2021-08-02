@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from '/imports/ui/controls';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import { ALL_IMDAD_REASONS, REMOVE_IMDAD_REASON } from './gql';
@@ -48,8 +49,7 @@ class List extends Component {
         if (record.usedCount === 0) {
           return (
             <Tooltip key="delete" title="Delete">
-              <Icon
-                type="delete"
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.handleDeleteClicked(record);

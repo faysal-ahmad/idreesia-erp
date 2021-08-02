@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { filter, find } from 'meteor/idreesia-common/utilities/lodash';
-import { Icon, Table, Tooltip, message } from '/imports/ui/controls';
+import { Table, Tooltip, message } from '/imports/ui/controls';
 import { default as ItemForm } from './item-form';
 
 class ItemsList extends Component {
@@ -159,8 +160,7 @@ class ItemsList extends Component {
         key: 'actions',
         render: (text, record) => (
           <Tooltip title="Delete">
-            <Icon
-              type="delete"
+            <DeleteOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleDeleteClicked(record);

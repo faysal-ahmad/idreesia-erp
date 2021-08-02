@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
+import { DeleteOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 
 import {
   Button,
   DatePicker,
   Pagination,
-  Icon,
   Popconfirm,
   Table,
   Tooltip,
@@ -154,8 +154,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
           return (
             <div className="list-actions-column">
               <Tooltip title="Mulakaat Card">
-                <Icon
-                  type="solution"
+                <SolutionOutlined
                   className="list-actions-icon"
                   onClick={() => {
                     handleCardClicked(record);
@@ -171,7 +170,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
                 cancelText="No"
               >
                 <Tooltip title="Cancel">
-                  <Icon type="stop" className="list-actions-icon" />
+                  <StopOutlined className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
               <Popconfirm
@@ -183,7 +182,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
                 cancelText="No"
               >
                 <Tooltip title="Delete">
-                  <Icon type="delete" className="list-actions-icon" />
+                  <DeleteOutlined className="list-actions-icon" />
                 </Tooltip>
               </Popconfirm>
             </div>

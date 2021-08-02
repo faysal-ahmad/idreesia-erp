@@ -2,10 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import {
+  AuditOutlined,
+  ContainerOutlined,
+  CreditCardOutlined,
+  DollarOutlined,
+  LaptopOutlined,
+  RedEnvelopeOutlined,
+  ToolOutlined,
+} from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu, Icon } from '/imports/ui/controls';
+import { Menu } from '/imports/ui/controls';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
@@ -64,10 +73,10 @@ class Sidebar extends Component {
         <SubMenu
           key={company._id}
           title={
-            <span>
-              <Icon type="credit-card" style={IconStyle} />
-              {company.name}
-            </span>
+            <>
+              <CreditCardOutlined style={IconStyle} />
+              <span>{company.name}</span>
+            </>
           }
         >
           <Item parent-key={company._id} key={`account-heads-${company._id}`}>
@@ -90,50 +99,42 @@ class Sidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Item key="payments">
-          <span>
-            <Icon type="dollar" style={IconStyle} />
-            Payments
-          </span>
+          <DollarOutlined style={IconStyle} />
+          <span>Payments</span>
         </Item>
 
         <Item key="amaanat-logs">
-          <span>
-            <Icon type="red-envelope" style={IconStyle} />
-            Amaanat Logs
-          </span>
+          <RedEnvelopeOutlined style={IconStyle} />
+          <span>Amaanat Logs</span>
         </Item>
 
         {subMenus}
         <SubMenu
           key="administration"
           title={
-            <span>
-              <Icon type="tool" style={IconStyle} />
-              Administration
-            </span>
+            <>
+              <ToolOutlined style={IconStyle} />
+              <span>Administration</span>
+            </>
           }
         >
           <Item key="audit-logs">
-            <span>
-              <Icon type="audit" style={IconStyle} />
-              Audit Logs
-            </span>
+              <AuditOutlined style={IconStyle} />
+              <span>Audit Logs</span>
           </Item>
         </SubMenu>
         <SubMenu
           key="setup"
           title={
-            <span>
-              <Icon type="laptop" style={IconStyle} />
-              Setup
-            </span>
+              <>
+                <LaptopOutlined style={IconStyle} />
+                <span>Setup</span>
+              </>
           }
         >
           <Item key="payment-types">
-            <span>
-              <Icon type="container" style={IconStyle} />
-              Payment Types
-            </span>
+            <ContainerOutlined style={IconStyle} />
+            <span>Payment Types</span>
           </Item>
         </SubMenu>
       </Menu>

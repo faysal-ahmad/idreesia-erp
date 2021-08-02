@@ -2,12 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { graphql } from 'react-apollo';
+import {
+  AuditOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  PrinterOutlined,
+} from '@ant-design/icons';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Dropdown,
-  Icon,
   Menu,
   Pagination,
   Popconfirm,
@@ -187,8 +192,7 @@ class List extends Component {
     render: (text, record) => (
       <div className="list-actions-column">
         <Tooltip title="Print">
-          <Icon
-            type="printer"
+          <PrinterOutlined
             className="list-actions-icon"
             onClick={() => {
               this.props.handlePrintClicked(record);
@@ -196,8 +200,7 @@ class List extends Component {
           />
         </Tooltip>
         <Tooltip title="Audit Log">
-          <Icon
-            type="audit"
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               this.props.handleAuditLogClicked(record);
@@ -213,7 +216,7 @@ class List extends Component {
           cancelText="No"
         >
           <Tooltip title="Delete">
-            <Icon type="delete" className="list-actions-icon" />
+            <DeleteOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       </div>
@@ -307,12 +310,12 @@ class List extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={this.handlePrintSelected}>
-          <Icon type="printer" />
+          <PrinterOutlined />
           Print Selected
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="2" onClick={this.handleExportSelected}>
-          <Icon type="download" />
+          <DownloadOutlined />
           Download Selected
         </Menu.Item>
       </Menu>

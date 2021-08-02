@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
+import { PrinterOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Icon } from '/imports/ui/controls';
+import { Button } from '/imports/ui/controls';
 import DutyCard from './duty-card';
 import StayCard from './stay-card';
 
@@ -50,7 +51,7 @@ class StayCardContainer extends Component {
           <ReactToPrint
             trigger={() => (
               <Button type="primary" size="large">
-                <Icon type="printer" />
+                <PrinterOutlined />
                 Print
               </Button>
             )}

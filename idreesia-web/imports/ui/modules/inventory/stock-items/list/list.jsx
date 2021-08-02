@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   Dropdown,
-  Icon,
   Menu,
   Modal,
   Table,
@@ -187,7 +187,7 @@ class List extends Component {
                   cancelText="No"
                 >
                   <Tooltip title="Delete">
-                    <Icon type="delete" className="list-actions-icon" />
+                    <DeleteOutlined className="list-actions-icon" />
                   </Tooltip>
                 </Popconfirm>
               </div>
@@ -352,7 +352,7 @@ class List extends Component {
       newButton = (
         <Dropdown.Button
           type="primary"
-          icon={<Icon type="down" />}
+          icon={<DownOutlined />}
           onClick={handleNewClicked}
           overlay={menu}
         >

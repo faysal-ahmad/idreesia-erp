@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { UsergroupDeleteOutlined } from '@ant-design/icons';
 
-import { Button, Select, Icon, Table, Tooltip } from '/imports/ui/controls';
+import { Button, Select, Table, Tooltip } from '/imports/ui/controls';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
@@ -84,8 +85,7 @@ export class List extends Component {
         render: (text, record) => (
           <div className="list-actions-column">
             <Tooltip key="delete" title="Remove Karkun">
-              <Icon
-                type="usergroup-delete"
+              <UsergroupDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   const {

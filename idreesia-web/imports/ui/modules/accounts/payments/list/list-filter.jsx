@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { SyncOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   Button,
   Collapse,
   Form,
-  Icon,
   Row,
   Tooltip,
 } from '/imports/ui/controls';
@@ -106,8 +106,7 @@ class ListFilter extends Component {
 
     return (
       <Tooltip title="Reload Data">
-        <Icon
-          type="sync"
+        <SyncOutlined
           onClick={event => {
             event.stopPropagation();
             if (refreshData) refreshData();

@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { WarningTwoTone } from '@ant-design/icons';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
@@ -9,7 +10,6 @@ import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
   Button,
   Pagination,
-  Icon,
   Modal,
   Table,
   message,
@@ -83,19 +83,15 @@ class List extends Component {
       const { refVisitor } = record;
       if (refVisitor.criminalRecord) {
         return (
-          <Icon
-            type="warning"
+          <WarningTwoTone
             style={StatusStyle}
-            theme="twoTone"
             twoToneColor="red"
           />
         );
       } else if (refVisitor.otherNotes) {
         return (
-          <Icon
-            type="warning"
+          <WarningTwoTone
             style={StatusStyle}
-            theme="twoTone"
             twoToneColor="orange"
           />
         );

@@ -7,7 +7,7 @@ Package.describe({
 Package.onUse(api => {
   api.addFiles('private/auth/google.json', 'server', { isAsset: true });
 
-  api.versionsFrom('1.10.1');
+  api.versionsFrom('2.3.2');
   api.use('ecmascript');
   api.use('accounts-password');
   api.use('aldeed:collection2-core', 'server');

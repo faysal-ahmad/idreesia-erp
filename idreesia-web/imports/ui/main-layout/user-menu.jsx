@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { UserOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ import {
   setActiveSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Avatar, Dropdown, Menu, Modal, message } from './antd-controls';
+import { Avatar, Dropdown, Menu } from './antd-controls';
 import ChangePasswordForm from './change-password-form';
 
 const ContainerStyle = {
@@ -24,7 +24,6 @@ const ContainerStyle = {
 const UserMenu = ({ history }) => {
   const dispatch = useDispatch();
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
-  const changePasswordForm = useRef(null);
   const { user, userLoading } = useLoggedInUser();
 
   if (userLoading) return null;
@@ -54,24 +53,8 @@ const UserMenu = ({ history }) => {
     }
   };
 
-  const handleChagePassword = () => {
-    changePasswordForm.current.validateFields(null, (err, values) => {
-      if (!err) {
-        const { oldPassword, newPassword } = values;
-
-        Accounts.changePassword(oldPassword, newPassword, error => {
-          setShowChangePasswordForm(false);
-
-          if (!error) {
-            Meteor.logoutOtherClients();
-            message.success('Your password has been changed.', 5);
-            history.push(location.pathname);
-          } else {
-            message.error(error.message, 5);
-          }
-        });
-      }
-    });
+  const handleChangePasswordSuccess = () => {
+    setShowChangePasswordForm(false);
   };
 
   const handleChangePasswordCancelled = () => {
@@ -106,14 +89,11 @@ const UserMenu = ({ history }) => {
           {avatar}
         </div>
       </Dropdown>
-      <Modal
-        title="Change Password"
-        visible={showChangePasswordForm}
-        onOk={handleChagePassword}
-        onCancel={handleChangePasswordCancelled}
-      >
-        <ChangePasswordForm ref={changePasswordForm} />
-      </Modal>
+      <ChangePasswordForm 
+        showForm={showChangePasswordForm}
+        handlePasswordChanged={handleChangePasswordSuccess}
+        handlePasswordChangeCancelled={handleChangePasswordCancelled}
+      />
     </>
   );
 };

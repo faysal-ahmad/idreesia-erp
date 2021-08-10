@@ -77,8 +77,6 @@ const HeaderContent = ({ history, location, user }) => {
   const handleMenuItemSelected = ({ key }) => {
     const modulePath = modulePathsMapping[key];
     history.push(modulePath);
-    debugger;
-
     dispatch(setActiveModuleName(key));
   };
 

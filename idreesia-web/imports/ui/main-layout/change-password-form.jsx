@@ -1,57 +1,71 @@
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { Form, Input, Modal, message } from './antd-controls';
 
-import { Form, Input } from './antd-controls';
+const itemLayout = {
+  wrapperCol: { span: 14 },
+};
 
-class ChangePasswordForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    form: PropTypes.object,
+const ChangePasswordForm = ({ showForm, handlePasswordChanged, handlePasswordChangeCancelled }) => {
+  const [form] = Form.useForm();
+
+  const handleSubmit = () => {
+    form.validateFields().then(values => {
+      const { oldPassword, newPassword } = values;
+      Accounts.changePassword(oldPassword, newPassword, error => {
+        if (!error) {
+          Meteor.logoutOtherClients();
+          message.success('Your password has been changed.', 5);
+          handlePasswordChanged();
+        } else {
+          message.error(error.message, 5);
+        }
+      })
+    });
   };
 
-  getOldPasswordField() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input your old password.',
-      },
-    ];
-    return getFieldDecorator('oldPassword', { rules })(
-      <Input type="password" placeholder="Old Password" />
-    );
-  }
-
-  getNewPasswordField() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    const rules = [
-      {
-        required: true,
-        message: 'Please input your new password.',
-      },
-    ];
-    return getFieldDecorator('newPassword', { rules })(
-      <Input type="password" placeholder="New Password" />
-    );
-  }
-
-  render() {
-    const itemLayout = {
-      wrapperCol: { span: 14 },
-    };
-
-    return (
-      <Form>
-        <Form.Item {...itemLayout}>{this.getOldPasswordField()}</Form.Item>
-        <Form.Item {...itemLayout}>{this.getNewPasswordField()}</Form.Item>
+  return (
+    <Modal
+      title="Change Password"
+      visible={showForm}
+      onOk={handleSubmit}
+      onCancel={handlePasswordChangeCancelled}
+    >
+      <Form form={form}>
+        <Form.Item
+          {...itemLayout}
+          name="oldPassword"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your old password.',
+            },
+          ]}
+        >
+          <Input type="password" placeholder="Old Password" />
+        </Form.Item>
+        <Form.Item
+          {...itemLayout}
+          name="newPassword"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your new password.',
+            },
+          ]}
+        >
+          <Input type="password" placeholder="New Password" />
+        </Form.Item>
       </Form>
-    );
-  }
+    </Modal>
+  );
 }
 
-export default Form.create()(ChangePasswordForm);
+ChangePasswordForm.propTypes = {
+  showForm: PropTypes.bool,
+  handlePasswordChanged: PropTypes.func,
+  handlePasswordChangeCancelled: PropTypes.func,
+};
+
+export default ChangePasswordForm;

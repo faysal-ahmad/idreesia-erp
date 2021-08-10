@@ -13,28 +13,23 @@ const IconStyle = {
   fontSize: '20px',
 };
 
-const loginFormButtonStyle = {
+const LoginFormButtonStyle = {
   width: '100%',
 };
 
-const LoginForm = ({ history, location, form }) => {
+const LoginForm = ({ history, location }) => {
   const dispatch = useDispatch();
   const [updateLoginTime] = useMutation(UPDATE_LOGIN_TIME);
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (!err) {
-        const { userName, password } = values;
-        Meteor.loginWithPassword(userName, password, error => {
-          if (!error) {
-            history.push(location.pathname);
-            dispatch(setLoggedInUserId(Meteor.userId()));
-            updateLoginTime();
-          } else {
-            message.error(error.message, 5);
-          }
-        });
+  const handleFinish = values => {
+    const { userName, password } = values;
+    Meteor.loginWithPassword(userName, password, error => {
+      if (!error) {
+        history.push(location.pathname);
+        dispatch(setLoggedInUserId(Meteor.userId()));
+        updateLoginTime();
+      } else {
+        message.error(error.message, 5);
       }
     });
   };
@@ -55,45 +50,43 @@ const LoginForm = ({ history, location, form }) => {
     });
   };
 
-  const getUserNameField = () => {
-    const rules = [
-      {
-        required: true,
-        message: 'Please input your username.',
-      },
-    ];
-    return form.getFieldDecorator('userName', { rules })(
-      <Input placeholder="Username" />
-    );
-  };
-
-  const getPasswordField = () => {
-    const rules = [
-      {
-        required: true,
-        message: 'Please input your password.',
-      },
-    ];
-    return form.getFieldDecorator('password', { rules })(
-      <Input type="password" placeholder="Password" />
-    );
-  };
-
   const itemLayout = {
     wrapperCol: { span: 14 },
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Item {...itemLayout}>{getUserNameField()}</Form.Item>
-      <Form.Item {...itemLayout}>{getPasswordField()}</Form.Item>
+    <Form onFinish={handleFinish}>
+      <Form.Item
+        {...itemLayout}
+        name="userName"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your username.',
+          },
+        ]}
+      >
+        <Input placeholder="Username" />
+      </Form.Item>
+      <Form.Item
+        {...itemLayout}
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your password.',
+          },
+        ]}
+      >
+        <Input type="password" placeholder="Password" />
+      </Form.Item>
       <Form.Item {...itemLayout}>
-        <Button type="primary" htmlType="submit" style={loginFormButtonStyle}>
+        <Button type="primary" htmlType="submit" style={LoginFormButtonStyle}>
           Log in
         </Button>
         <Button
           type="primary"
-          style={loginFormButtonStyle}
+          style={LoginFormButtonStyle}
           onClick={handleLoginWithGoogle}
         >
           <GoogleOutlined style={IconStyle} />
@@ -107,7 +100,6 @@ const LoginForm = ({ history, location, form }) => {
 LoginForm.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
-  form: PropTypes.object,
 };
 
-export default Form.create()(LoginForm);
+export default LoginForm;

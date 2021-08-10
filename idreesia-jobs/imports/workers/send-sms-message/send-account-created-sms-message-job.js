@@ -35,9 +35,9 @@ export const worker = (job, callback) => {
 
   let message;
   if (email) {
-    message = `Your account for Idressia ERP has been created. Visit https://381-erp-server.ngrok.io/ and login with your Google Account.`;
+    message = `Your account for Idressia ERP has been created. Visit https://idreesia-erp.com/ and login with your Google Account.`;
   } else {
-    message = `Your account for Idressia ERP has been created with username ${user.username} and password ${password}. Visit https://381-erp-server.ngrok.io/ to login.`;
+    message = `Your account for Idressia ERP has been created with username ${user.username} and password ${password}. Visit https://idreesia-erp.com/ to login.`;
   }
 
   sendSmsMessage(contactNumber, message)

@@ -60,7 +60,7 @@ class EditForm extends Component {
 
   render() {
     const { loading, sharedResidenceById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -72,13 +72,11 @@ class EditForm extends Component {
             required
             requiredMessage="Please input name for the residence."
             initialValue={sharedResidenceById.name}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="address"
             fieldLabel="Address"
             initialValue={sharedResidenceById.address}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

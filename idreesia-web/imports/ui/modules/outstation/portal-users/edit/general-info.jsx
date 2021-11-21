@@ -95,7 +95,7 @@ class GeneralInfo extends Component {
       allPortals,
       allPortalsLoading,
     } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading || allPortalsLoading) return null;
 
     const portalId = outstationPortalUserById.instances[0];
@@ -111,14 +111,12 @@ class GeneralInfo extends Component {
           fieldLabel="User name"
           disabled
           initialValue={outstationPortalUserById.username}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SwitchField
           fieldName="locked"
           fieldLabel="Locked"
           initialValue={outstationPortalUserById.locked}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -126,7 +124,6 @@ class GeneralInfo extends Component {
           fieldLabel="Karkun Name"
           disabled
           initialValue={outstationPortalUserById.karkun.name}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -136,7 +133,6 @@ class GeneralInfo extends Component {
           fieldName="portalId"
           fieldLabel="Portal"
           initialValue={portalId}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancelExtra

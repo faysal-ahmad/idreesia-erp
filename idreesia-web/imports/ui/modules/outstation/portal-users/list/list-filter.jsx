@@ -58,7 +58,6 @@ const ListFilter = props => {
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
-    form: { getFieldDecorator },
     showLocked,
     showUnlocked,
     portalAccess,
@@ -86,7 +85,6 @@ const ListFilter = props => {
               { label: 'Unlocked Users', value: 'unlocked' },
             ]}
             initialValue={status}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={portalsData}
@@ -96,7 +94,6 @@ const ListFilter = props => {
             fieldName="portalAccess"
             fieldLabel="Portal Access"
             fieldLayout={formItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

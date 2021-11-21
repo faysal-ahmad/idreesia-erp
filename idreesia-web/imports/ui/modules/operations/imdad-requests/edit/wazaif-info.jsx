@@ -40,7 +40,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
 
   if (loading) return null;
   const { operationsImdadRequestById } = data;
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -79,25 +79,21 @@ const GeneralInfo = ({ requestId, form, history }) => {
                   fieldName="01"
                   fieldLabel="کلمہ ( فی کل لمحہ )"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="02"
                   fieldLabel="الله"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="03"
                   fieldLabel="لا الہ الا الله"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="04"
                   fieldLabel="صلی الله علیه وسلم"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
               </Col>
               <Col span={10}>
@@ -105,31 +101,26 @@ const GeneralInfo = ({ requestId, form, history }) => {
                   fieldName="05"
                   fieldLabel="استغفرالله"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="06"
                   fieldLabel="آیته الکرسی"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="07"
                   fieldLabel="دعا۶ تعلق"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="08"
                   fieldLabel="دعا۶ وسواس"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
                 <InputNumberField
                   fieldName="09"
                   fieldLabel="سبحان الله وبحمده سبحان الله العظیم"
                   fieldLayout={formItemLayout}
-                  getFieldDecorator={getFieldDecorator}
                 />
               </Col>
             </Row>
@@ -137,7 +128,6 @@ const GeneralInfo = ({ requestId, form, history }) => {
               fieldName="notes"
               fieldLabel="Notes"
               initialValue={operationsImdadRequestById.notes}
-              getFieldDecorator={getFieldDecorator}
             />
           </Panel>
           <Panel header="Pabandi &amp; Raabta" />

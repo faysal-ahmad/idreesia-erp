@@ -55,7 +55,7 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
   };
 
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   return (
     <>
@@ -66,7 +66,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           required
           requiredMessage="Please input the name for the person."
           initialValue={visitor.name}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -75,7 +74,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           required
           requiredMessage="Please input the parent name for the person."
           initialValue={visitor.parentName}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <AgeField
@@ -84,7 +82,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           initialValue={
             visitor.birthDate ? moment(Number(visitor.birthDate)) : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <AutoCompleteField
@@ -94,7 +91,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           required
           requiredMessage="Please input the city for the person."
           initialValue={visitor.city}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <AutoCompleteField
@@ -104,7 +100,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           required
           requiredMessage="Please input the country for the person."
           initialValue={visitor.country}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -112,7 +107,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="Current Address"
           required={false}
           initialValue={visitor.currentAddress}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -120,7 +114,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="Permanent Address"
           required={false}
           initialValue={visitor.permanentAddress}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider />
@@ -131,7 +124,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           required
           requiredMessage="Please specify the Ehad duration for the person."
           initialValue={moment(Number(visitor.ehadDate))}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -140,28 +132,24 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           required
           requiredMessage="Please input the reference name for the person."
           initialValue={visitor.referenceName}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={visitor.cnicNumber}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           initialValue={visitor.contactNumber1}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="contactNumber2"
           fieldLabel="Home Number"
           initialValue={visitor.contactNumber2}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider />
@@ -171,7 +159,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="Education"
           initialValue={visitor.educationalQualification}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -179,7 +166,6 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
           fieldLabel="Means of Earning"
           initialValue={visitor.meansOfEarning}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

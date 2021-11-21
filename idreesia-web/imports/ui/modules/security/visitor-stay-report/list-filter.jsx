@@ -72,7 +72,6 @@ class ListFilter extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       distinctCities,
       queryParams: {
@@ -98,7 +97,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mStartDate.isValid() ? mStartDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -106,7 +104,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
               fieldName="name"
@@ -114,7 +111,6 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={name}
-              getFieldDecorator={getFieldDecorator}
             />
             <AutoCompleteField
               fieldName="city"
@@ -123,7 +119,6 @@ class ListFilter extends Component {
               dataSource={distinctCities}
               initialValue={city}
               required={false}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               data={StayReasons}
@@ -133,7 +128,6 @@ class ListFilter extends Component {
               fieldName="stayReason"
               fieldLabel="Stay Reason"
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               fieldName="additionalInfo"
@@ -157,7 +151,6 @@ class ListFilter extends Component {
               getDataText={({ label }) => label}
               initialValue={additionalInfo}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <Form.Item {...buttonItemLayout}>

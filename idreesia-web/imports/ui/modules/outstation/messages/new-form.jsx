@@ -50,7 +50,7 @@ const NewForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { getFieldDecorator, validateFields, isFieldsTouched } = form;
+  const { validateFields, isFieldsTouched } = form;
   const cityMehfilCascaderData = getCityMehfilCascaderData(
     allCities,
     allCityMehfils
@@ -114,13 +114,11 @@ const NewForm = ({ form, history, location }) => {
           fieldLabel="Message"
           required
           requiredMessage="Please input the message to send."
-          getFieldDecorator={getFieldDecorator}
         />
         <Divider>Karkuns Selection Criteria</Divider>
         <LastTarteebFilterField
           fieldName="lastTarteeb"
           fieldLabel="Last Tarteeb"
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           fieldName="dutyId"
@@ -128,19 +126,16 @@ const NewForm = ({ form, history, location }) => {
           data={allMehfilDuties}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
-          getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
           data={cityMehfilCascaderData}
           fieldName="cityIdMehfilId"
           fieldLabel="City / Mehfil"
-          getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           fieldName="region"
           fieldLabel="Region"
           dataSource={distinctRegions}
-          getFieldDecorator={getFieldDecorator}
         />
         <Divider />
         <FormButtonsSaveCancelExtra

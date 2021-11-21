@@ -62,7 +62,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, userById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     const karkunField = userById.karkunId ? (
@@ -71,7 +71,6 @@ class GeneralInfo extends Component {
         fieldLabel="Karkun Name"
         disabled
         initialValue={userById.karkun ? userById.karkun.name : ''}
-        getFieldDecorator={getFieldDecorator}
       />
     ) : (
       <KarkunSelectionInputField
@@ -79,7 +78,6 @@ class GeneralInfo extends Component {
         fieldLabel="Karkun Name"
         showMsKarkunsList
         showOutstationKarkunsList
-        getFieldDecorator={getFieldDecorator}
       />
     );
 
@@ -90,35 +88,30 @@ class GeneralInfo extends Component {
           fieldLabel="User name"
           disabled
           initialValue={userById.username}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SwitchField
           fieldName="locked"
           fieldLabel="Locked"
           initialValue={userById.locked}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="password"
           fieldLabel="Password"
           type="password"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="email"
           fieldLabel="Google Email"
           initialValue={userById.email}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="displayName"
           fieldLabel="Display Name"
           initialValue={userById.displayName}
-          getFieldDecorator={getFieldDecorator}
         />
 
         {karkunField}

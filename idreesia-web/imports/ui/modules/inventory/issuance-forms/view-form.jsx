@@ -46,9 +46,11 @@ class ViewForm extends Component {
     history.goBack();
   };
 
-  getItemsField() {
-    const { form, issuanceFormById, physicalStoreId } = this.props;
-    const { getFieldDecorator } = form;
+  render() {
+    const { formDataLoading, issuanceFormById, physicalStoreId } = this.props;
+    if (formDataLoading) {
+      return null;
+    }
 
     const rules = [
       {
@@ -56,28 +58,6 @@ class ViewForm extends Component {
         message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator('items', {
-      rules,
-      initialValue: issuanceFormById.items,
-    })(
-      <ItemsList
-        readOnly
-        refForm={form}
-        defaultLabel="Issued"
-        inflowLabel="Returned"
-        outflowLabel="Issued"
-        physicalStoreId={physicalStoreId}
-      />
-    );
-  }
-
-  render() {
-    const { formDataLoading, issuanceFormById } = this.props;
-    if (formDataLoading) {
-      return null;
-    }
-
-    const { getFieldDecorator } = this.props.form;
 
     return (
       <Fragment>
@@ -88,7 +68,6 @@ class ViewForm extends Component {
             initialValue={moment(Number(issuanceFormById.issueDate))}
             required
             requiredMessage="Please input an issue date."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="issuedBy"
@@ -96,7 +75,6 @@ class ViewForm extends Component {
             initialValue={issuanceFormById.refIssuedBy.name}
             required
             requiredMessage="Please input a name in issued by."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="issuedTo"
@@ -104,13 +82,11 @@ class ViewForm extends Component {
             initialValue={issuanceFormById.refIssuedTo.name}
             required
             requiredMessage="Please input a name in issued to."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="handedOverTo"
             fieldLabel="Handed Over To / By"
             initialValue={issuanceFormById.handedOverTo}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="locationId"
@@ -120,19 +96,23 @@ class ViewForm extends Component {
                 ? issuanceFormById.refLocation.name
                 : null
             }
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
             initialValue={issuanceFormById.notes}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <Divider orientation="left">Issued / Returned Items</Divider>
-          <Form.Item {...formItemExtendedLayout}>
-            {this.getItemsField()}
+          <Form.Item name="items" initialValue={issuanceFormById.items} rules={rules} {...formItemExtendedLayout}>
+            <ItemsList
+              readOnly
+              defaultLabel="Issued"
+              inflowLabel="Returned"
+              outflowLabel="Issued"
+              physicalStoreId={physicalStoreId}
+            />
           </Form.Item>
 
           <FormButtonsClose handleClose={this.handleClose} />

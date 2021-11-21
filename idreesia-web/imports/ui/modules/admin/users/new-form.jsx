@@ -79,33 +79,29 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="password"
           fieldLabel="Password"
           type="password"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="email"
           fieldLabel="Google Email"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="displayName"
           fieldLabel="Display name"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <KarkunSelectionInputField
@@ -113,7 +109,6 @@ class NewForm extends Component {
           fieldLabel="Karkun Name"
           showMsKarkunsList
           showOutstationKarkunsList
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

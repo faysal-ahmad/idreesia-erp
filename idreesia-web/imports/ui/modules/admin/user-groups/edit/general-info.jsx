@@ -53,7 +53,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, userGroupById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -61,15 +61,12 @@ class GeneralInfo extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          getFieldDecorator={getFieldDecorator}
           initialValue={userGroupById.name}
         />
 
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          getFieldDecorator={getFieldDecorator}
-          initialValue={userGroupById.description}
         />
 
         <FormButtonsSaveCancel

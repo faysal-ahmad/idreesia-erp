@@ -60,7 +60,7 @@ class NewForm extends Component {
 
   render() {
     const { allCitiesLoading } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (allCitiesLoading) return null;
     const nonPeripheryCities = this.getNonPeripheryCities();
 
@@ -71,7 +71,6 @@ class NewForm extends Component {
           fieldLabel="City Name"
           required
           requiredMessage="Please input a name for the city."
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={nonPeripheryCities}
@@ -79,12 +78,10 @@ class NewForm extends Component {
           getDataText={({ name }) => name}
           fieldName="peripheryOf"
           fieldLabel="Periphery Of"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="region"
           fieldLabel="Region"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="country"
@@ -92,7 +89,6 @@ class NewForm extends Component {
           initialValue="Pakistan"
           required
           requiredMessage="Please input a name for the country."
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

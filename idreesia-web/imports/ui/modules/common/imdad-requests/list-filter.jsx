@@ -64,14 +64,13 @@ const ListFilter = ({
 
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
-  const { getFieldDecorator } = form;
   const statusValues = values(ImdadRequestStatus);
 
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
         <Form layout="horizontal" onSubmit={handleSubmit}>
-          {getCnicNumberFilterField(cnicNumber, getFieldDecorator)}
+          {getCnicNumberFilterField(cnicNumber)}
           <SelectField
             fieldName="status"
             fieldLabel="Status"
@@ -80,10 +79,9 @@ const ListFilter = ({
             getDataValue={val => val}
             getDataText={val => val}
             fieldLayout={formItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
 
-          {getUpdatedBetweenFilterField(updatedBetween, getFieldDecorator)}
+          {getUpdatedBetweenFilterField(updatedBetween)}
           {getFormButtons(handleReset, handleSubmit)}
         </Form>
       </Collapse.Panel>

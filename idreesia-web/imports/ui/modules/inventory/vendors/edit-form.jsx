@@ -67,7 +67,7 @@ class EditForm extends Component {
     const { loading, vendorById } = this.props;
     if (loading) return null;
 
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -78,31 +78,26 @@ class EditForm extends Component {
             initialValue={vendorById.name}
             required
             requiredMessage="Please input a name for the vendor."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="contactPerson"
             fieldLabel="Contact Person"
             initialValue={vendorById.contactPerson}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="contactNumber"
             fieldLabel="Contact Number"
             initialValue={vendorById.contactNumber}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="address"
             fieldLabel="Address"
             initialValue={vendorById.address}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             initialValue={vendorById.notes}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

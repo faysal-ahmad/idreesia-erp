@@ -33,7 +33,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -42,22 +42,18 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the duty shift."
-          getFieldDecorator={getFieldDecorator}
         />
         <TimeField
           fieldName="startTime"
           fieldLabel="Start Time"
-          getFieldDecorator={getFieldDecorator}
         />
         <TimeField
           fieldName="endTime"
           fieldLabel="End Time"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="attendanceSheet"
           fieldLabel="Attendance Sheet"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.props.handleCancel}

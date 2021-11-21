@@ -49,7 +49,6 @@ const ListFilter = props => {
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
-    form: { getFieldDecorator },
     showLocked,
     showUnlocked,
   } = props;
@@ -71,7 +70,6 @@ const ListFilter = props => {
               { label: 'Unlocked Users', value: 'unlocked' },
             ]}
             initialValue={status}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

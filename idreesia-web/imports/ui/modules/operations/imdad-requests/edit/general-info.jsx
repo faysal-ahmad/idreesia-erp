@@ -41,7 +41,7 @@ const GeneralInfo = ({ requestId, form, history }) => {
 
   if (loading || allImdadReasonsLoading) return null;
   const { operationsImdadRequestById } = data;
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -78,7 +78,6 @@ const GeneralInfo = ({ requestId, form, history }) => {
           required
           requiredMessage="Please select a Request Date."
           initialValue={moment(Number(operationsImdadRequestById.requestDate))}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -89,7 +88,6 @@ const GeneralInfo = ({ requestId, form, history }) => {
           fieldLabel="Status"
           allowClear={false}
           initialValue={operationsImdadRequestById.status}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <VisitorSelectionInputField
@@ -98,7 +96,6 @@ const GeneralInfo = ({ requestId, form, history }) => {
           required
           requiredMessage="Please select a Person"
           initialValue={operationsImdadRequestById.visitor}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -110,14 +107,12 @@ const GeneralInfo = ({ requestId, form, history }) => {
           required
           requiredMessage="Please select an Imdad Request Reason."
           initialValue={operationsImdadRequestById.imdadReasonId}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           initialValue={operationsImdadRequestById.notes}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

@@ -51,7 +51,6 @@ const ListFilter = props => {
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
-    form: { getFieldDecorator },
     startDate,
     endDate,
   } = props;
@@ -69,7 +68,6 @@ const ListFilter = props => {
             fieldLayout={formItemLayout}
             required={false}
             initialValue={mStartDate.isValid() ? mStartDate : null}
-            getFieldDecorator={getFieldDecorator}
           />
           <DateField
             fieldName="endDate"
@@ -77,7 +75,6 @@ const ListFilter = props => {
             fieldLayout={formItemLayout}
             required={false}
             initialValue={mEndDate.isValid() ? mEndDate : null}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

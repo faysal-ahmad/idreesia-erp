@@ -104,9 +104,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const {
-      form: { getFieldDecorator, isFieldsTouched },
-    } = this.props;
+    const { form: { isFieldsTouched } } = this.props;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -115,7 +113,6 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -123,13 +120,11 @@ class NewForm extends Component {
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <EhadDurationField
@@ -137,7 +132,6 @@ class NewForm extends Component {
           fieldLabel="Ehad Duration"
           required
           requiredMessage="Please specify the Ehad duration for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -145,19 +139,16 @@ class NewForm extends Component {
           fieldLabel="R/O"
           required
           requiredMessage="Please input the reference name for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider />
@@ -166,7 +157,6 @@ class NewForm extends Component {
           fieldName="contactNumber2"
           fieldLabel="Home Number"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -185,41 +175,35 @@ class NewForm extends Component {
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="emailAddress"
           fieldLabel="Email"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="permanentAddress"
           fieldLabel="Permanent Address"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="educationalQualification"
           fieldLabel="Education"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="meansOfEarning"
           fieldLabel="Means of Earning"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

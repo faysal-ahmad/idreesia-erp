@@ -45,7 +45,7 @@ const NewForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { getFieldDecorator, validateFields, isFieldsTouched } = form;
+  const { validateFields, isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -123,7 +123,6 @@ const NewForm = ({ form, history, location }) => {
           fieldLabel="Message"
           required
           requiredMessage="Please input the message to send."
-          getFieldDecorator={getFieldDecorator}
         />
         <Divider>Karkuns Selection Criteria</Divider>
         <SelectField
@@ -142,13 +141,11 @@ const NewForm = ({ form, history, location }) => {
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
-          getFieldDecorator={getFieldDecorator}
         />
         <LastTarteebFilterField
           fieldName="lastTarteeb"
           fieldLabel="Last Tarteeb"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           mode="multiple"
@@ -159,14 +156,12 @@ const NewForm = ({ form, history, location }) => {
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
           initialValue={[]}
-          getFieldDecorator={getFieldDecorator}
         />
         <TreeMultiSelectField
           data={dutyShiftTreeData}
           fieldName="dutyIdShiftIds"
           fieldLabel="Duties/Shifts"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <Divider />
         <FormButtonsSaveCancelExtra

@@ -34,7 +34,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     const { amaanatLog, cities, cityMehfils } = this.props;
     const cityMehfilCascaderData = getCityMehfilCascaderData(
       cities,
@@ -50,7 +50,6 @@ class EditForm extends Component {
           required
           requiredMessage="Please select a city/mehfil from the list."
           initialValue={[amaanatLog.cityId, amaanatLog.cityMehfilId]}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -59,7 +58,6 @@ class EditForm extends Component {
           required
           requiredMessage="Please select a date for when the amaanat was sent."
           initialValue={moment(Number(amaanatLog.sentDate))}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -69,7 +67,6 @@ class EditForm extends Component {
           requiredMessage="Please input a value for total amount."
           minValue={0}
           initialValue={amaanatLog.totalAmount}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -77,7 +74,6 @@ class EditForm extends Component {
           fieldLabel="Hadia Portion"
           minValue={0}
           initialValue={amaanatLog.hadiaPortion}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -85,7 +81,6 @@ class EditForm extends Component {
           fieldLabel="Sadqa Portion"
           minValue={0}
           initialValue={amaanatLog.sadqaPortion}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -93,7 +88,6 @@ class EditForm extends Component {
           fieldLabel="Zakaat Portion"
           minValue={0}
           initialValue={amaanatLog.zakaatPortion}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -101,7 +95,6 @@ class EditForm extends Component {
           fieldLabel="Langar Portion"
           minValue={0}
           initialValue={amaanatLog.langarPortion}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -109,7 +102,6 @@ class EditForm extends Component {
           fieldLabel="Other Portion"
           minValue={0}
           initialValue={amaanatLog.otherPortion}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -117,7 +109,6 @@ class EditForm extends Component {
           fieldLabel="Other Portion Detail"
           required={false}
           initialValue={amaanatLog.otherPortionDescription}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

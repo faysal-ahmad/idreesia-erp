@@ -52,7 +52,6 @@ class EditForm extends Component {
   render() {
     const {
       salary,
-      form: { getFieldDecorator },
     } = this.props;
 
     return (
@@ -65,7 +64,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.salary}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputNumberField
               fieldName="rashanMadad"
@@ -73,7 +71,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.rashanMadad}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputNumberField
               fieldName="otherDeduction"
@@ -81,7 +78,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.otherDeduction}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputNumberField
               fieldName="arrears"
@@ -89,7 +85,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.arrears}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
           </Col>
           <Col span={10}>
@@ -99,7 +94,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.openingLoan}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputNumberField
               fieldName="loanDeduction"
@@ -107,7 +101,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.loanDeduction}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputNumberField
               fieldName="newLoan"
@@ -115,7 +108,6 @@ class EditForm extends Component {
               minValue={0}
               initialValue={salary.newLoan}
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
           </Col>
         </Row>

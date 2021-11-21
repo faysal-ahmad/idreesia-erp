@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from '/imports/ui/controls';
@@ -9,59 +9,44 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
-export default class Field extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
-
-    portalId: PropTypes.string,
-    showMsKarkunsList: PropTypes.bool,
-    showOutstationKarkunsList: PropTypes.bool,
-    showPortalKarkunsList: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      fieldName,
-      placeholder,
-      disabled,
+const Field = ({
+  fieldName,
+  fieldLabel,
+  placeholder,
+  fieldLayout,
+  initialValue,
+  required,
+  requiredMessage,
+  disabled,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-    } = this.props;
+      message: requiredMessage,
+    },
+  ];
 
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
-
-    return getFieldDecorator(fieldName, {
-      initialValue,
-      rules,
-    })(<Input placeholder={placeholder} disabled={disabled} />);
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Input placeholder={placeholder} disabled={disabled} />
+    </Form.Item>
+  );
 }
+
+Field.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  disabled: PropTypes.bool,
+};
+
+Field.defaultProps = {
+  initialValue: null,
+  fieldLayout: formItemLayout,
+};
+
+export default Field;

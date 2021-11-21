@@ -58,7 +58,7 @@ class GeneralInfo extends Component {
 
   render() {
     const {
-      form: { getFieldDecorator, isFieldsTouched },
+      form: { isFieldsTouched },
       formDataLoading,
       operationsWazeefaById,
     } = this.props;
@@ -72,14 +72,12 @@ class GeneralInfo extends Component {
           required
           requiredMessage="Please input the name for the wazeefa."
           initialValue={operationsWazeefaById.name}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="revisionNumber"
           fieldLabel="Revision Number"
           initialValue={operationsWazeefaById.revisionNumber}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -90,7 +88,6 @@ class GeneralInfo extends Component {
               ? moment(Number(operationsWazeefaById.revisionDate))
               : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

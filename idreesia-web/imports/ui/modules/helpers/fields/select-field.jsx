@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Select, Form } from '/imports/ui/controls';
@@ -18,78 +18,47 @@ const formItemLayout = {
  * fieldLayout: Layout settings for the form field.
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
- * getFieldDecorator: Function from the Form component.
  * initialValue: Initial values to set in the form field.
  * handleValueChanged: Callback for whenever the selected value changes.
  */
-export default class SelectField extends Component {
-  static propTypes = {
-    allowClear: PropTypes.bool,
-    dropdownMatchSelectWidth: PropTypes.bool,
-    mode: PropTypes.string,
-    data: PropTypes.array,
-    getDataValue: PropTypes.func,
-    getDataText: PropTypes.func,
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-    initialValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-    onChange: PropTypes.func,
-  };
+const SelectField = ({
+  allowClear = true,
+  dropdownMatchSelectWidth = true,
+  mode = 'default',
+  data = [],
+  getDataValue = ({ _id }) => _id,
+  getDataText = ({ name }) => name,
+  initialValue = null,
+  fieldLayout = formItemLayout,
+  fieldName,
+  fieldLabel,
+  placeholder,
+  required,
+  requiredMessage,
+  onChange,
+}) => {
+  const options = [];
+  data.forEach(dataObj => {
+    const value = getDataValue(dataObj);
+    const text = getDataText(dataObj);
+    options.push(
+      <Select.Option key={value} value={value}>
+        {text}
+      </Select.Option>
+    );
+  });
 
-  static defaultProps = {
-    allowClear: true,
-    dropdownMatchSelectWidth: true,
-    mode: 'default',
-    data: [],
-    getDataValue: ({ _id }) => _id,
-    getDataText: ({ name }) => name,
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
+  const rules = required
+    ? [
+        {
+          required,
+          message: requiredMessage,
+        },
+      ]
+    : null;
 
-  getField = () => {
-    const {
-      allowClear,
-      dropdownMatchSelectWidth,
-      mode,
-      data,
-      getDataValue,
-      getDataText,
-      fieldName,
-      required,
-      requiredMessage,
-      placeholder,
-      getFieldDecorator,
-      onChange,
-      initialValue,
-    } = this.props;
-
-    const options = [];
-    data.forEach(dataObj => {
-      const value = getDataValue(dataObj);
-      const text = getDataText(dataObj);
-      options.push(
-        <Select.Option key={value} value={value}>
-          {text}
-        </Select.Option>
-      );
-    });
-
-    const rules = required
-      ? [
-          {
-            required,
-            message: requiredMessage,
-          },
-        ]
-      : null;
-
-    return getFieldDecorator(fieldName, { rules, initialValue })(
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <Select
         placeholder={placeholder}
         onChange={onChange}
@@ -99,15 +68,25 @@ export default class SelectField extends Component {
       >
         {options}
       </Select>
-    );
-  };
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+SelectField.propTypes = {
+  allowClear: PropTypes.bool,
+  dropdownMatchSelectWidth: PropTypes.bool,
+  mode: PropTypes.string,
+  data: PropTypes.array,
+  getDataValue: PropTypes.func,
+  getDataText: PropTypes.func,
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  initialValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  onChange: PropTypes.func,
+};
+
+export default SelectField;

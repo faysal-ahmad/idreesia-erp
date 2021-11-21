@@ -57,7 +57,7 @@ class EditForm extends Component {
   render() {
     const { loading, companyById } = this.props;
     if (loading) return null;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -67,19 +67,16 @@ class EditForm extends Component {
           initialValue={companyById.name}
           required
           requiredMessage="Please input a name for the company."
-          getFieldDecorator={getFieldDecorator}
         />
         <SwitchField
           fieldName="importData"
           fieldLabel="Import Data"
           initialValue={companyById.importData}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="connectivitySettings"
           fieldLabel="Connectivity Settings"
           initialValue={companyById.connectivitySettings}
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

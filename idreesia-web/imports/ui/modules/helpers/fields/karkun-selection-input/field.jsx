@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from '/imports/ui/controls';
@@ -9,58 +9,30 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
-export default class Field extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
+const Field = ({
+  fieldName,
+  fieldLabel,
+  placeholder,
+  fieldLayout,
+  initialValue,
+  required,
+  requiredMessage,
+  disabled,
 
-    portalId: PropTypes.string,
-    showMsKarkunsList: PropTypes.bool,
-    showOutstationKarkunsList: PropTypes.bool,
-    showPortalKarkunsList: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    initialValue: null,
-    fieldLayout: formItemLayout,
-    showMsKarkunsList: false,
-    showOutstationKarkunsList: false,
-    showPortalKarkunsList: false,
-  };
-
-  getField() {
-    const {
-      fieldName,
-      placeholder,
-      disabled,
+  portalId,
+  showMsKarkunsList,
+  showOutstationKarkunsList,
+  showPortalKarkunsList,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      portalId,
-      showMsKarkunsList,
-      showOutstationKarkunsList,
-      showPortalKarkunsList,
-    } = this.props;
+      message: requiredMessage,
+    },
+  ];
 
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
-
-    return getFieldDecorator(fieldName, {
-      initialValue,
-      rules,
-    })(
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <Input
         placeholder={placeholder}
         disabled={disabled}
@@ -69,15 +41,32 @@ export default class Field extends Component {
         showOutstationKarkunsList={showOutstationKarkunsList}
         showPortalKarkunsList={showPortalKarkunsList}
       />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+Field.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  disabled: PropTypes.bool,
+
+  portalId: PropTypes.string,
+  showMsKarkunsList: PropTypes.bool,
+  showOutstationKarkunsList: PropTypes.bool,
+  showPortalKarkunsList: PropTypes.bool,
+};
+
+Field.defaultProps = {
+  initialValue: null,
+  fieldLayout: formItemLayout,
+  showMsKarkunsList: false,
+  showOutstationKarkunsList: false,
+  showPortalKarkunsList: false,
+};
+
+export default Field;

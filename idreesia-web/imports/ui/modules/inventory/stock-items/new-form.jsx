@@ -84,7 +84,7 @@ class NewForm extends Component {
       itemCategoriesLoading,
       itemCategoriesByPhysicalStoreId,
     } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (itemCategoriesLoading) return null;
 
     return (
@@ -94,19 +94,16 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the stock item."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="company"
           fieldLabel="Company"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="details"
           fieldLabel="Details"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={itemCategoriesByPhysicalStoreId}
@@ -116,7 +113,6 @@ class NewForm extends Component {
           fieldLabel="Category"
           required
           requiredMessage="Please select an item category."
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={allUnitOfMeasurements}
@@ -126,19 +122,16 @@ class NewForm extends Component {
           fieldLabel="Measurement Unit"
           required
           requiredMessage="Please select a unit of measurement."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           required
           requiredMessage="Please set the current stock level."
           fieldName="currentStockLevel"
           fieldLabel="Current Stock Level"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="minStockLevel"
           fieldLabel="Min Stock Level"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

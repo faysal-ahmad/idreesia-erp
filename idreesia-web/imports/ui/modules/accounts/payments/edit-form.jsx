@@ -36,7 +36,7 @@ const EditForm = ({ form, match, history }) => {
 
   if (loading || allPaymentTypesLoading) return null;
   const { paymentById } = data;
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -91,7 +91,6 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="Voucher Number"
           disabled
           initialValue={paymentById.paymentNumber}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -103,7 +102,6 @@ const EditForm = ({ form, match, history }) => {
           fieldLabel="Payment Type"
           required
           requiredMessage="Please select a Payment Type."
-          getFieldDecorator={getFieldDecorator}
         />
         <DateField
           fieldName="paymentDate"
@@ -111,7 +109,6 @@ const EditForm = ({ form, match, history }) => {
           initialValue={moment(Number(paymentById.paymentDate))}
           required
           requiredMessage="Please select a Payment Date."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="name"
@@ -119,7 +116,6 @@ const EditForm = ({ form, match, history }) => {
           initialValue={paymentById.name}
           required
           requiredMessage="Please enter the Name."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="fatherName"
@@ -127,7 +123,6 @@ const EditForm = ({ form, match, history }) => {
           initialValue={paymentById.fatherName}
           required
           requiredMessage="Please enter the Father Name."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputCnicField
@@ -136,14 +131,12 @@ const EditForm = ({ form, match, history }) => {
           initialValue={paymentById.cnicNumber}
           required
           requiredMessage="Please input a valid CNIC Number."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber"
           fieldLabel="Mobile Number"
           initialValue={paymentById.contactNumber || ''}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -153,14 +146,12 @@ const EditForm = ({ form, match, history }) => {
           required
           requiredMessage="Please enter the Payment Amount."
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
           initialValue={paymentById.description}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

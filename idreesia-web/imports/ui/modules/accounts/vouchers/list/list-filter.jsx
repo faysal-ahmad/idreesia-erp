@@ -52,7 +52,6 @@ class ListFilter extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const { startDate, endDate, voucherNumber } = this.props;
 
     return (
@@ -65,7 +64,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={startDate}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -73,7 +71,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={endDate}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
               fieldName="voucherNumber"
@@ -81,7 +78,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={voucherNumber}
-              getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

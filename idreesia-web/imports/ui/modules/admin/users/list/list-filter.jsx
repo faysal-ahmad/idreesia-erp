@@ -84,7 +84,6 @@ const ListFilter = props => {
   };
 
   const {
-    form: { getFieldDecorator },
     showLocked,
     showUnlocked,
     showActive,
@@ -125,7 +124,6 @@ const ListFilter = props => {
               { label: 'Currently Inactive', value: 'inactive' },
             ]}
             initialValue={status}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={moduleNamesData}
@@ -135,7 +133,6 @@ const ListFilter = props => {
             fieldName="moduleAccess"
             fieldLabel="Module Access"
             fieldLayout={formItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={portalsData}
@@ -145,7 +142,6 @@ const ListFilter = props => {
             fieldName="portalAccess"
             fieldLabel="Portal Access"
             fieldLayout={formItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

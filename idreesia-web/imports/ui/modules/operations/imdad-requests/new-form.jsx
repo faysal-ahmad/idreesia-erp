@@ -64,7 +64,7 @@ const NewForm = ({ form, history, location }) => {
     );
   };
 
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   return (
     <Form layout="horizontal" onSubmit={handleSubmit}>
@@ -73,7 +73,6 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Request Date"
         required
         requiredMessage="Please select a Request Date."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <VisitorSelectionInputField
@@ -81,7 +80,6 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Person"
         required
         requiredMessage="Please select a Person"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <SelectField
@@ -92,13 +90,11 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Request Reason"
         required
         requiredMessage="Please select an Imdad Request Reason."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextAreaField
         fieldName="notes"
         fieldLabel="Notes"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <FormButtonsSaveCancel

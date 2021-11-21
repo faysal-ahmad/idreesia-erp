@@ -90,32 +90,17 @@ class NewForm extends Component {
     );
   };
 
-  getItemsField() {
-    const { form, physicalStoreId } = this.props;
-    const { getFieldDecorator } = form;
+  render() {
+    const { physicalStoreId, locationsLoading, locationsByPhysicalStoreId } = this.props;
+    if (locationsLoading) return null;
 
+    const { isFieldsTouched } = this.props.form;
     const rules = [
       {
         required: true,
         message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator('items', { rules })(
-      <ItemsList
-        refForm={form}
-        defaultLabel="Issued"
-        inflowLabel="Returned"
-        outflowLabel="Issued"
-        physicalStoreId={physicalStoreId}
-      />
-    );
-  }
-
-  render() {
-    const { locationsLoading, locationsByPhysicalStoreId } = this.props;
-    if (locationsLoading) return null;
-
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
@@ -124,7 +109,6 @@ class NewForm extends Component {
           fieldLabel="Issue Date"
           required
           requiredMessage="Please input an issue date."
-          getFieldDecorator={getFieldDecorator}
         />
         <KarkunField
           required
@@ -132,7 +116,6 @@ class NewForm extends Component {
           fieldName="issuedBy"
           fieldLabel="Issued By / Received By"
           placeholder="Issued By / Received By"
-          getFieldDecorator={getFieldDecorator}
           predefinedFilterName={
             PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
           }
@@ -143,7 +126,6 @@ class NewForm extends Component {
           fieldName="issuedTo"
           fieldLabel="Issued To / Returned By"
           placeholder="Issued To / Returned By"
-          getFieldDecorator={getFieldDecorator}
           predefinedFilterName={
             PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
           }
@@ -153,7 +135,6 @@ class NewForm extends Component {
           fieldName="handedOverTo"
           fieldLabel="Handed Over To / By"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <TreeSelectField
@@ -162,17 +143,23 @@ class NewForm extends Component {
           fieldName="locationId"
           fieldLabel="For Location"
           placeholder="Select a Location"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider orientation="left">Issued / Returned Items</Divider>
+        <Form.Item name="items" rules={rules} {...formItemExtendedLayout}>
+          <ItemsList
+            defaultLabel="Issued"
+            inflowLabel="Returned"
+            outflowLabel="Issued"
+            physicalStoreId={physicalStoreId}
+          />
+          </Form.Item>
         <Form.Item {...formItemExtendedLayout}>
           {this.getItemsField()}
         </Form.Item>

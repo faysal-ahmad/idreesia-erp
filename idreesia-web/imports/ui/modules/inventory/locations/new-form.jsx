@@ -61,7 +61,7 @@ class NewForm extends Component {
       return null;
     }
 
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -70,18 +70,15 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the location."
-          getFieldDecorator={getFieldDecorator}
         />
         <TreeSelectField
           data={locationsByPhysicalStoreId}
           fieldName="parentId"
           fieldLabel="Parent Location"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

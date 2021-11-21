@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from '/imports/ui/controls';
@@ -16,52 +16,42 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class AttendanceDetailField extends Component {
-  static propTypes = {
-    forMonth: PropTypes.string,
-    initialValue: PropTypes.object,
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: {},
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      forMonth,
-      initialValue,
-      fieldName,
+const AttendanceDetailField = ({
+  forMonth,
+  initialValue = {},
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  required,
+  requiredMessage,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-    } = this.props;
+      message: requiredMessage,
+    },
+  ];
 
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
-
-    return getFieldDecorator(fieldName, { rules })(
+  return (
+    <Form.Item
+      name={fieldName}
+      label={fieldLabel}
+      {...fieldLayout}
+      rules={rules}
+    >
       <AttendanceDetail forMonth={forMonth} initialValue={initialValue} />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+AttendanceDetailField.propTypes = {
+  forMonth: PropTypes.string,
+  initialValue: PropTypes.object,
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+};
+
+export default AttendanceDetailField;

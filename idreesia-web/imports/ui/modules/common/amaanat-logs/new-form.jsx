@@ -31,7 +31,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     const { cities, cityMehfils } = this.props;
     const cityMehfilCascaderData = getCityMehfilCascaderData(
       cities,
@@ -46,7 +46,6 @@ class NewForm extends Component {
           fieldLabel="City/Mehfil"
           required
           requiredMessage="Please select a city/mehfil from the list."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -54,7 +53,6 @@ class NewForm extends Component {
           fieldLabel="Sent Date"
           required
           requiredMessage="Please select a date for when the amaanat was sent."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -63,49 +61,42 @@ class NewForm extends Component {
           required
           requiredMessage="Please input a value for total amount."
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="hadiaPortion"
           fieldLabel="Hadia Portion"
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="sadqaPortion"
           fieldLabel="Sadqa Portion"
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="zakaatPortion"
           fieldLabel="Zakaat Portion"
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="langarPortion"
           fieldLabel="Langar Portion"
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="otherPortion"
           fieldLabel="Other Portion"
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="otherPortionDescription"
           fieldLabel="Other Portion Detail"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

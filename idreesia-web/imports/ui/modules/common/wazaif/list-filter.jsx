@@ -39,7 +39,6 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
 
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
-  const { getFieldDecorator } = form;
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
@@ -50,7 +49,6 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
             required={false}
             fieldLayout={formItemLayout}
             initialValue={name}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

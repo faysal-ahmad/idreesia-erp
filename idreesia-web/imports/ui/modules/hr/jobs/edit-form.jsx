@@ -55,7 +55,7 @@ class EditForm extends Component {
 
   render() {
     const { loading, jobById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -67,14 +67,12 @@ class EditForm extends Component {
             initialValue={jobById.name}
             required
             requiredMessage="Please input a name for the job."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             disabled
             fieldName="description"
             fieldLabel="Description"
             initialValue={jobById.description}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

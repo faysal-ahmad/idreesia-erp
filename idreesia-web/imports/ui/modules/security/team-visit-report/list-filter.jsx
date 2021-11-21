@@ -61,7 +61,6 @@ class ListFilter extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       distinctTeamNames,
       queryParams: { startDate, endDate, teamName },
@@ -80,7 +79,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mStartDate.isValid() ? mStartDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -88,7 +86,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <AutoCompleteField
               fieldName="teamName"
@@ -97,7 +94,6 @@ class ListFilter extends Component {
               dataSource={distinctTeamNames}
               initialValue={teamName}
               required={false}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <Form.Item {...buttonItemLayout}>

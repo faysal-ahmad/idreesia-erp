@@ -137,7 +137,7 @@ class GeneralInfo extends Component {
     } = this.props;
     if (formDataLoading || portalCitiesLoading) return null;
 
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     const visitorCity = find(
       portalCities,
       city => city.name === portalMemberById.city
@@ -152,7 +152,6 @@ class GeneralInfo extends Component {
             initialValue={portalMemberById.name}
             required
             requiredMessage="Please input the first name for the member."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
@@ -161,7 +160,6 @@ class GeneralInfo extends Component {
             initialValue={portalMemberById.parentName}
             required
             requiredMessage="Please input the parent name for the member."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <AgeField
@@ -172,7 +170,6 @@ class GeneralInfo extends Component {
                 ? moment(Number(portalMemberById.birthDate))
                 : null
             }
-            getFieldDecorator={getFieldDecorator}
           />
 
           <SelectField
@@ -185,7 +182,6 @@ class GeneralInfo extends Component {
             fieldLabel="City / Country"
             required
             requiredMessage="Please select a city for the member."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextAreaField
@@ -193,7 +189,6 @@ class GeneralInfo extends Component {
             fieldLabel="Current Address"
             initialValue={portalMemberById.currentAddress}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextAreaField
@@ -201,7 +196,6 @@ class GeneralInfo extends Component {
             fieldLabel="Permanent Address"
             initialValue={portalMemberById.permanentAddress}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <Divider />
@@ -212,7 +206,6 @@ class GeneralInfo extends Component {
             required
             initialValue={moment(Number(portalMemberById.ehadDate))}
             requiredMessage="Please specify the Ehad duration for the member."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
@@ -221,7 +214,6 @@ class GeneralInfo extends Component {
             initialValue={portalMemberById.referenceName}
             required
             requiredMessage="Please input the referene name for the member."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputCnicField
@@ -229,14 +221,12 @@ class GeneralInfo extends Component {
             fieldLabel="CNIC Number"
             initialValue={portalMemberById.cnicNumber || ''}
             requiredMessage="Please input the CNIC for the member."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
             initialValue={portalMemberById.contactNumber1 || ''}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextField
@@ -244,7 +234,6 @@ class GeneralInfo extends Component {
             fieldLabel="Home Number"
             initialValue={portalMemberById.contactNumber2}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel

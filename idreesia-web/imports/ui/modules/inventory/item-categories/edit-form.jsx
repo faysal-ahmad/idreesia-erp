@@ -66,7 +66,7 @@ class EditForm extends Component {
   render() {
     const { loading, itemCategoryById } = this.props;
     if (loading) return null;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -77,7 +77,6 @@ class EditForm extends Component {
             initialValue={itemCategoryById.name}
             required
             requiredMessage="Please input a name for the item category."
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

@@ -64,7 +64,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { cityByIdLoading, allCitiesLoading, cityById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (cityByIdLoading || allCitiesLoading) return null;
     const nonPeripheryCities = this.getNonPeripheryCities();
 
@@ -77,7 +77,6 @@ class GeneralInfo extends Component {
             initialValue={cityById.name}
             required
             requiredMessage="Please input a name for the city."
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={nonPeripheryCities}
@@ -86,13 +85,11 @@ class GeneralInfo extends Component {
             fieldName="peripheryOf"
             fieldLabel="Periphery Of"
             initialValue={cityById.peripheryOf}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="region"
             fieldLabel="Region"
             initialValue={cityById.region}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="country"
@@ -100,7 +97,6 @@ class GeneralInfo extends Component {
             initialValue={cityById.country}
             required
             requiredMessage="Please input a name for the country."
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

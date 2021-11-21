@@ -52,7 +52,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     const { allCompanies } = this.props;
 
     return (
@@ -65,7 +65,6 @@ class NewForm extends Component {
           fieldLabel="Company"
           required
           requiredMessage="Please select a company."
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

@@ -94,37 +94,22 @@ class NewForm extends Component {
     );
   };
 
-  getItemsField() {
-    const { form, physicalStoreId } = this.props;
-    const { getFieldDecorator } = form;
-
-    const rules = [
-      {
-        required: true,
-        message: 'Please add some items.',
-      },
-    ];
-    return getFieldDecorator('items', { rules })(
-      <ItemsList
-        refForm={form}
-        defaultLabel="Purchased"
-        inflowLabel="Purchased"
-        outflowLabel="Returned"
-        showPrice
-        physicalStoreId={physicalStoreId}
-      />
-    );
-  }
-
   render() {
     const {
       vendorsLoading,
       locationsLoading,
       locationsByPhysicalStoreId,
       vendorsByPhysicalStoreId,
+      physicalStoreId,
     } = this.props;
     if (locationsLoading || vendorsLoading) return null;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
+    const rules = [
+      {
+        required: true,
+        message: 'Please add some items.',
+      },
+    ];
 
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
@@ -133,7 +118,6 @@ class NewForm extends Component {
           fieldLabel="Purchase Date"
           required
           requiredMessage="Please input a purchase date."
-          getFieldDecorator={getFieldDecorator}
         />
         <KarkunField
           required
@@ -141,7 +125,6 @@ class NewForm extends Component {
           fieldName="receivedBy"
           fieldLabel="Received By / Returned By"
           placeholder="Received By / Returned By"
-          getFieldDecorator={getFieldDecorator}
           predefinedFilterName={
             PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
           }
@@ -152,7 +135,6 @@ class NewForm extends Component {
           fieldName="purchasedBy"
           fieldLabel="Purchased By / Returned To"
           placeholder="Purchased By / Returned To"
-          getFieldDecorator={getFieldDecorator}
           predefinedFilterName={
             PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
           }
@@ -164,7 +146,6 @@ class NewForm extends Component {
           getDataText={({ name }) => name}
           fieldName="vendorId"
           fieldLabel="Vendor"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <TreeSelectField
@@ -173,19 +154,23 @@ class NewForm extends Component {
           fieldName="locationId"
           fieldLabel="For Location"
           placeholder="Select a Location"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider orientation="left">Purchased / Returned Items</Divider>
-        <Form.Item {...formItemExtendedLayout}>
-          {this.getItemsField()}
+        <Form.Item name="items" rules={rules} {...formItemExtendedLayout}>
+          <ItemsList
+            defaultLabel="Purchased"
+            inflowLabel="Purchased"
+            outflowLabel="Returned"
+            showPrice
+            physicalStoreId={physicalStoreId}
+          />
         </Form.Item>
 
         <FormButtonsSaveCancel

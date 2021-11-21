@@ -6,7 +6,6 @@ import { Form } from '/imports/ui/controls';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
 const AttachmentForm = props => {
-  const { getFieldDecorator } = props.form;
   const { defaultValues } = props;
 
   return (
@@ -15,14 +14,12 @@ const AttachmentForm = props => {
         fieldName="name"
         fieldLabel="Name"
         initialValue={defaultValues.name}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextField
         fieldName="description"
         fieldLabel="Description"
         initialValue={defaultValues.description}
-        getFieldDecorator={getFieldDecorator}
       />
     </Form>
   );

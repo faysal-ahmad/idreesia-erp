@@ -117,7 +117,6 @@ class ListFilter extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       paymentNumber,
       name,
@@ -150,7 +149,6 @@ class ListFilter extends Component {
         required={false}
         fieldLayout={formItemLayout}
         initialValue={initialValue}
-        getFieldDecorator={getFieldDecorator}
       />
     );
 
@@ -163,7 +161,6 @@ class ListFilter extends Component {
               fieldLabel="Voucher No."
               fieldLayout={formItemLayout}
               initialValue={paymentNumber}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <SelectField
@@ -174,7 +171,6 @@ class ListFilter extends Component {
               fieldName="paymentTypeId"
               fieldLabel="Payment Type"
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <InputTextField
@@ -182,7 +178,6 @@ class ListFilter extends Component {
               fieldLabel="Name"
               fieldLayout={formItemLayout}
               initialValue={name}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <InputCnicField
@@ -190,7 +185,6 @@ class ListFilter extends Component {
               fieldLabel="CNIC Number"
               fieldLayout={formItemLayout}
               initialValue={cnicNumber}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <DateField
@@ -199,7 +193,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mStartDate.isValid() ? mStartDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -207,7 +200,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
 
             {updatedBetweenField}

@@ -130,7 +130,7 @@ class NewForm extends Component {
     } = this.props;
     if (portalLoading || portalCitiesLoading) return null;
 
-    const { getFieldDecorator, isFieldsTouched } = form;
+    const { isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -139,7 +139,6 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -147,13 +146,11 @@ class NewForm extends Component {
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -166,21 +163,18 @@ class NewForm extends Component {
           fieldLabel="City / Country"
           required
           requiredMessage="Please select a city for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="permanentAddress"
           fieldLabel="Permanent Address"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider />
@@ -190,7 +184,6 @@ class NewForm extends Component {
           fieldLabel="Ehad Duration"
           required
           requiredMessage="Please specify the Ehad duration for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -198,28 +191,24 @@ class NewForm extends Component {
           fieldLabel="R/O"
           required
           requiredMessage="Please input the reference name for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           requiredMessage="Please input the CNIC for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           requiredMessage="Please input the mobile number for the member."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="contactNumber2"
           fieldLabel="Home Number"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

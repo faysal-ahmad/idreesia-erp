@@ -87,7 +87,7 @@ class EditForm extends Component {
     const { formDataLoading, stockAdjustmentById } = this.props;
     if (formDataLoading) return null;
 
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -100,7 +100,6 @@ class EditForm extends Component {
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
             initialValue={stockAdjustmentById.refStockItem.formattedName}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <RadioGroupField
@@ -111,7 +110,6 @@ class EditForm extends Component {
               { label: 'Increase by', value: 'inflow' },
               { label: 'Decrease by', value: 'outflow' },
             ]}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputNumberField
@@ -121,7 +119,6 @@ class EditForm extends Component {
             required
             requiredMessage="Please input a value for adjustment quantity."
             minValue={0}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <DateField
@@ -130,7 +127,6 @@ class EditForm extends Component {
             initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
             required
             requiredMessage="Please input an adjustment date."
-            getFieldDecorator={getFieldDecorator}
           />
           <KarkunField
             fieldName="adjustedBy"
@@ -139,7 +135,6 @@ class EditForm extends Component {
             required
             requiredMessage="Please select a name for adjusted By."
             initialValue={stockAdjustmentById.refAdjustedBy}
-            getFieldDecorator={getFieldDecorator}
             predefinedFilterName={
               PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
             }
@@ -150,7 +145,6 @@ class EditForm extends Component {
             fieldLabel="Adjustment Reason"
             initialValue={stockAdjustmentById.adjustmentReason}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsSaveCancel

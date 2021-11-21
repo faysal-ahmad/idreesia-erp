@@ -60,7 +60,7 @@ class GeneralInfo extends Component {
 
   render() {
     const { loading, portalUserById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -70,21 +70,18 @@ class GeneralInfo extends Component {
           fieldLabel="User name"
           disabled
           initialValue={portalUserById.username}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SwitchField
           fieldName="locked"
           fieldLabel="Locked"
           initialValue={portalUserById.locked}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="password"
           fieldLabel="Password"
           type="password"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -92,7 +89,6 @@ class GeneralInfo extends Component {
           fieldLabel="Karkun Name"
           disabled
           initialValue={portalUserById.karkun ? portalUserById.karkun.name : ''}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

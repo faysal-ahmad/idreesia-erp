@@ -66,7 +66,6 @@ class VoucherDetailNewForm extends Component {
 
   render() {
     const { accountHeadsByCompanyId } = this.props;
-    const { getFieldDecorator } = this.props.form;
 
     return (
       <Row type="flex" justify="start" style={RowStyle}>
@@ -79,7 +78,6 @@ class VoucherDetailNewForm extends Component {
             showSearch
             required
             requiredMessage="Please select an account."
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col style={{ width: "300px" }}>
@@ -88,7 +86,6 @@ class VoucherDetailNewForm extends Component {
             placeholder="Description"
             fieldLayout={null}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col>
@@ -97,7 +94,6 @@ class VoucherDetailNewForm extends Component {
             placeholder="Credit"
             fieldLayout={null}
             minValue={0}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col>
@@ -106,7 +102,6 @@ class VoucherDetailNewForm extends Component {
             placeholder="Debit"
             fieldLayout={null}
             minValue={0}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
 

@@ -86,7 +86,6 @@ const ListFilter = ({
 
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
-  const { getFieldDecorator } = form;
   const additionalInfoFilter = showAdditionalInfoFilter ? (
     <SelectField
       fieldName="additionalInfo"
@@ -110,7 +109,6 @@ const ListFilter = ({
       getDataText={({ label }) => label}
       initialValue={additionalInfo}
       fieldLayout={formItemLayout}
-      getFieldDecorator={getFieldDecorator}
     />
   ) : null;
 
@@ -141,7 +139,6 @@ const ListFilter = ({
       getDataText={({ label }) => label}
       initialValue={dataSource}
       fieldLayout={formItemLayout}
-      getFieldDecorator={getFieldDecorator}
     />
   ) : null;
 
@@ -163,7 +160,6 @@ const ListFilter = ({
       required={false}
       fieldLayout={formItemLayout}
       initialValue={initialValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 
@@ -177,7 +173,6 @@ const ListFilter = ({
             required={false}
             fieldLayout={formItemLayout}
             initialValue={name}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputCnicField
             fieldName="cnicNumber"
@@ -186,7 +181,6 @@ const ListFilter = ({
             requiredMessage="Please input a valid CNIC number."
             fieldLayout={formItemLayout}
             initialValue={cnicNumber}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputMobileField
             fieldName="phoneNumber"
@@ -194,7 +188,6 @@ const ListFilter = ({
             required={false}
             fieldLayout={formItemLayout}
             initialValue={phoneNumber}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={distinctCities}
@@ -204,7 +197,6 @@ const ListFilter = ({
             fieldName="city"
             fieldLabel="City"
             fieldLayout={formItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
           <EhadDurationFilterField
             fieldName="ehadDuration"
@@ -212,7 +204,6 @@ const ListFilter = ({
             required={false}
             fieldLayout={formItemLayout}
             initialValue={ehadDuration}
-            getFieldDecorator={getFieldDecorator}
           />
           {additionalInfoFilter}
           {dataSourceFilter}

@@ -28,7 +28,7 @@ class FixSpelling extends Component {
 
   render() {
     const { existingSpelling, form, onCancel } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = form;
+    const { isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -37,14 +37,12 @@ class FixSpelling extends Component {
           fieldLabel="Existing Spelling"
           initialValue={existingSpelling}
           disabled
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
           fieldName="newSpelling"
           fieldLabel="New Spelling"
           required
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

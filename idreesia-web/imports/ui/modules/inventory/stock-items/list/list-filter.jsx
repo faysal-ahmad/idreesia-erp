@@ -68,7 +68,6 @@ class ListFilter extends Component {
   refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       categoryId,
       name,
@@ -89,7 +88,6 @@ class ListFilter extends Component {
               fieldLabel="Category"
               fieldLayout={formItemLayout}
               initialValue={categoryId}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
               fieldName="name"
@@ -97,7 +95,6 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={name}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               fieldName="stockLevel"
@@ -117,7 +114,6 @@ class ListFilter extends Component {
               getDataText={({ label }) => label}
               fieldLayout={formItemLayout}
               initialValue={stockLevel}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               fieldName="verifyDuration"
@@ -141,7 +137,6 @@ class ListFilter extends Component {
               getDataText={({ label }) => label}
               fieldLayout={formItemLayout}
               initialValue={verifyDuration}
-              getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

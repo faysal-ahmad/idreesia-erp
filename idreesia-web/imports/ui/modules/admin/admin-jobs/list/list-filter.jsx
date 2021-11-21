@@ -52,8 +52,6 @@ class ListFilter extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
-
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
@@ -78,7 +76,6 @@ class ListFilter extends Component {
               fieldName="jobType"
               fieldLabel="Job Type"
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               data={[
@@ -92,7 +89,6 @@ class ListFilter extends Component {
               fieldName="status"
               fieldLabel="Status"
               fieldLayout={formItemLayout}
-              getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

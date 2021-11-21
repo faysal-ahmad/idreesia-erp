@@ -72,7 +72,7 @@ class EditForm extends Component {
       stockItemById,
       itemCategoriesByPhysicalStoreId,
     } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading || itemCategoriesLoading) return null;
 
     return (
@@ -84,21 +84,18 @@ class EditForm extends Component {
             initialValue={stockItemById.name}
             required
             requiredMessage="Please input a name for the stock item."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="company"
             fieldLabel="Company"
             initialValue={stockItemById.company}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="details"
             fieldLabel="Details"
             initialValue={stockItemById.details}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={itemCategoriesByPhysicalStoreId}
@@ -109,7 +106,6 @@ class EditForm extends Component {
             required
             requiredMessage="Please select an item category."
             initialValue={stockItemById.categoryId}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             data={allUnitOfMeasurements}
@@ -120,13 +116,11 @@ class EditForm extends Component {
             required
             requiredMessage="Please select a unit of measurement."
             initialValue={stockItemById.unitOfMeasurement}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputNumberField
             fieldName="minStockLevel"
             fieldLabel="Min Stock Level"
             initialValue={stockItemById.minStockLevel}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

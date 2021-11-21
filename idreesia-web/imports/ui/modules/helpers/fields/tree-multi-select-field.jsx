@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { TreeSelect, Form } from '/imports/ui/controls';
@@ -16,53 +16,31 @@ const formItemLayout = {
  * fieldLayout: Layout settings for the form field.
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
- * getFieldDecorator: Function from the Form component.
  * initialValue: Initial values to set in the form field.
  * handleValueChanged: Callback for whenever the selected value changes.
  */
-export default class TreeMultiSelectField extends Component {
-  static propTypes = {
-    data: PropTypes.array,
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-    initialValue: PropTypes.array,
-    skipValue: PropTypes.string,
-    onChange: PropTypes.func,
-  };
+const TreeMultiSelectField = ({
+  data = [],
+  fieldName,
+  fieldLabel,
+  placeholder,
+  fieldLayout = formItemLayout,
+  required,
+  requiredMessage,
+  initialValue = null,
+  onChange,
+}) => {
+  const rules = required
+  ? [
+      {
+        required,
+        message: requiredMessage,
+      },
+    ]
+  : null;
 
-  static defaultProps = {
-    data: [],
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
-
-  getField = () => {
-    const {
-      data,
-      fieldName,
-      required,
-      requiredMessage,
-      placeholder,
-      getFieldDecorator,
-      onChange,
-      initialValue,
-    } = this.props;
-
-    const rules = required
-      ? [
-          {
-            required,
-            message: requiredMessage,
-          },
-        ]
-      : null;
-
-    return getFieldDecorator(fieldName, { rules, initialValue })(
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <TreeSelect
         treeData={data}
         placeholder={placeholder}
@@ -73,15 +51,20 @@ export default class TreeMultiSelectField extends Component {
         showCheckedStrategy={TreeSelect.SHOW_PARENT}
         filterTreeNode={this.filterTreeNode}
       />
-    );
-  };
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+TreeMultiSelectField.propTypes = {
+  data: PropTypes.array,
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  initialValue: PropTypes.array,
+  onChange: PropTypes.func,
+};
+
+export default TreeMultiSelectField;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import { Form } from "/imports/ui/controls";
@@ -16,50 +16,35 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputFileField extends Component {
-  static propTypes = {
-    accept: PropTypes.string,
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      accept,
-      fieldName,
+const InputFileField = ({
+  accept,
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  required,
+  requiredMessage,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-    } = this.props;
+      message: requiredMessage,
+    },
+  ];
 
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
-
-    return getFieldDecorator(fieldName, { rules })(
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} rules={rules} {...fieldLayout}>
       <InputFile accept={accept} />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+InputFileField.propTypes = {
+  accept: PropTypes.string,
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+};
+
+export default InputFileField;

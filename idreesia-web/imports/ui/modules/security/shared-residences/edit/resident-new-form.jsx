@@ -36,37 +36,32 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <VisitorSelectionInputField
           fieldName="resident"
           fieldLabel="Resident"
-          getFieldDecorator={getFieldDecorator}
         />
         <CheckboxField
           fieldName="isOwner"
           fieldLabel="Is Owner"
           initialValue={false}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="roomNumber"
           fieldLabel="Room Number"
-          getFieldDecorator={getFieldDecorator}
         />
         <DateField
           fieldName="fromDate"
           fieldLabel="From Date"
           initialValue={null}
-          getFieldDecorator={getFieldDecorator}
         />
         <DateField
           fieldName="toDate"
           fieldLabel="To Date"
           initialValue={null}
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.props.handleCancel}

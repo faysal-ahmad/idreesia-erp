@@ -71,8 +71,7 @@ class VoucherDetailEditForm extends Component {
   };
 
   render() {
-    const { form, voucherDetail, accountHeadsByCompanyId } = this.props;
-    const { getFieldDecorator } = form;
+    const { voucherDetail, accountHeadsByCompanyId } = this.props;
 
     const accountHead = find(accountHeadsByCompanyId, {
       _id: voucherDetail.accountHeadId,
@@ -90,7 +89,6 @@ class VoucherDetailEditForm extends Component {
             showSearch
             required
             requiredMessage="Please select an account."
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col style={{ width: "280px" }}>
@@ -100,7 +98,6 @@ class VoucherDetailEditForm extends Component {
             initialValue={voucherDetail.description}
             fieldLayout={null}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col>
@@ -110,7 +107,6 @@ class VoucherDetailEditForm extends Component {
             initialValue={voucherDetail.isCredit ? voucherDetail.amount : 0}
             fieldLayout={null}
             minValue={0}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col>
@@ -120,7 +116,6 @@ class VoucherDetailEditForm extends Component {
             initialValue={voucherDetail.isCredit ? 0 : voucherDetail.amount}
             fieldLayout={null}
             minValue={0}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
 

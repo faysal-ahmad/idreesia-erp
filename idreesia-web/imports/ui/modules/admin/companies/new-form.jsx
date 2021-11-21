@@ -49,7 +49,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -58,17 +58,14 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the company."
-          getFieldDecorator={getFieldDecorator}
         />
         <SwitchField
           fieldName="importData"
           fieldLabel="Import Data"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="connectivitySettings"
           fieldLabel="Connectivity Settings"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import InputMask from 'react-input-mask';
 
@@ -18,62 +18,46 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputCnicField extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.any,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: '',
-    required: false,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      fieldName,
-      placeholder,
+const InputCnicField = ({
+  fieldName,
+  fieldLabel,
+  placeholder,
+  fieldLayout = formItemLayout,
+  initialValue = '',
+  required = false,
+  requiredMessage,
+  disabled,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      disabled,
-    } = this.props;
+      message: required ? requiredMessage : '',
+      // pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
+    },
+  ];
 
-    if (!disabled) {
-      const rules = [
-        {
-          required,
-          message: required ? requiredMessage : '',
-          // pattern: /^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$/,
-        },
-      ];
-
-      return getFieldDecorator(fieldName, {
-        initialValue: initialValue || '',
-        rules,
-      })(<InputMask mask="99999-9999999-9" placeholder={placeholder} />);
-    }
-
-    return getFieldDecorator(fieldName, { initialValue: initialValue || '' })(
-      <Input disabled />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      {
+        disabled ? (
+          <Input disabled />
+        ) : (
+          <InputMask mask="99999-9999999-9" placeholder={placeholder} />
+        )
+      }
+    </Form.Item>
+  );
 }
+
+InputCnicField.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.any,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  disabled: PropTypes.bool,
+};
+
+export default InputCnicField;

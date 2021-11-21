@@ -58,7 +58,7 @@ class EditForm extends Component {
 
   render() {
     const { loading, dutyById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -70,13 +70,11 @@ class EditForm extends Component {
             initialValue={dutyById.name}
             required
             requiredMessage="Please input a name for the duty."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="description"
             fieldLabel="Description"
             initialValue={dutyById.description}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

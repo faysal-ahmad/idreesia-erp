@@ -113,7 +113,6 @@ class ListFilter extends Component {
   refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       showVolunteers,
       showEmployees,
@@ -159,7 +158,6 @@ class ListFilter extends Component {
                 { label: 'Employees', value: 'employees' },
               ]}
               initialValue={karkunTypes}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
               fieldName="name"
@@ -167,7 +165,6 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={name}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputCnicField
               fieldName="cnicNumber"
@@ -176,7 +173,6 @@ class ListFilter extends Component {
               requiredMessage="Please input a valid CNIC number."
               fieldLayout={formItemLayout}
               initialValue={cnicNumber}
-              getFieldDecorator={getFieldDecorator}
             />
             <InputTextField
               fieldName="phoneNumber"
@@ -184,7 +180,6 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={phoneNumber}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               fieldName="bloodGroup"
@@ -204,7 +199,6 @@ class ListFilter extends Component {
               getDataText={({ label }) => label}
               fieldLayout={formItemLayout}
               initialValue={bloodGroup}
-              getFieldDecorator={getFieldDecorator}
             />
             <LastTarteebFilterField
               fieldName="lastTarteeb"
@@ -212,7 +206,6 @@ class ListFilter extends Component {
               required={false}
               fieldLayout={formItemLayout}
               initialValue={lastTarteeb}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               fieldName="jobId"
@@ -223,7 +216,6 @@ class ListFilter extends Component {
               getDataText={({ name: _name }) => _name}
               fieldLayout={formItemLayout}
               initialValue={jobId}
-              getFieldDecorator={getFieldDecorator}
             />
             <CascaderField
               data={dutyShiftCascaderData}
@@ -232,7 +224,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               initialValue={[dutyId, dutyShiftId]}
               required={false}
-              getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

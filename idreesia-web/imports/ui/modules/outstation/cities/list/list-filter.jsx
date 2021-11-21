@@ -59,7 +59,6 @@ const ListFilter = props => {
     allCities,
     distinctRegions,
     allPortals,
-    form: { getFieldDecorator },
   } = props;
 
   const nonPeripheryCities = filter(allCities, city => !city.peripheryOf);
@@ -77,7 +76,6 @@ const ListFilter = props => {
             getDataText={({ name: _name }) => _name}
             fieldLayout={formItemLayout}
             initialValue={portalId}
-            getFieldDecorator={getFieldDecorator}
           />
           <AutoCompleteField
             fieldName="region"
@@ -86,7 +84,6 @@ const ListFilter = props => {
             dataSource={distinctRegions}
             initialValue={region}
             required={false}
-            getFieldDecorator={getFieldDecorator}
           />
           <SelectField
             fieldName="portalId"
@@ -97,7 +94,6 @@ const ListFilter = props => {
             getDataText={({ name: _name }) => _name}
             fieldLayout={formItemLayout}
             initialValue={portalId}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

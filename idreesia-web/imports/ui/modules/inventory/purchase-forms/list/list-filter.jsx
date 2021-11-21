@@ -71,7 +71,6 @@ class ListFilter extends Component {
   render() {
     const { vendorsLoading, vendorsByPhysicalStoreId } = this.props;
     if (vendorsLoading) return null;
-    const { getFieldDecorator } = this.props.form;
     const {
       queryParams: {
         startDate,
@@ -101,7 +100,6 @@ class ListFilter extends Component {
                 { label: 'Unapproved', value: 'unapproved' },
               ]}
               initialValue={status}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="startDate"
@@ -109,7 +107,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mStartDate.isValid() ? mStartDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -117,7 +114,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <SelectField
               data={vendorsByPhysicalStoreId}
@@ -127,7 +123,6 @@ class ListFilter extends Component {
               fieldLabel="Vendor"
               fieldLayout={formItemLayout}
               initialValue={vendorId}
-              getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

@@ -112,48 +112,45 @@ const ListFilter = ({
 
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
-  const { getFieldDecorator } = form;
-
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
         <Form layout="horizontal">
-          {showNameFilter ? getNameFilterField(name, getFieldDecorator) : null}
+          {showNameFilter ? getNameFilterField(name) : null}
           {showCnicFilter
-            ? getCnicNumberFilterField(cnicNumber, getFieldDecorator)
+            ? getCnicNumberFilterField(cnicNumber)
             : null}
           {showPhoneNumberFilter
-            ? getPhoneNumberFilterField(phoneNumber, getFieldDecorator)
+            ? getPhoneNumberFilterField(phoneNumber)
             : null}
           {showBloodGroupFilter
-            ? getBloodGroupFilterField(bloodGroup, getFieldDecorator)
+            ? getBloodGroupFilterField(bloodGroup)
             : null}
           {showLastTarteebFilter
-            ? getLastTarteebFilterField(lastTarteeb, getFieldDecorator)
+            ? getLastTarteebFilterField(lastTarteeb)
             : null}
           {showAttendanceFilter
-            ? getAttendanceFilterField(attendance, getFieldDecorator)
+            ? getAttendanceFilterField(attendance)
             : null}
           {showMehfilDutyFilter
-            ? getMehfilDutyFilterField(dutyId, getFieldDecorator, mehfilDuties)
+            ? getMehfilDutyFilterField(dutyId, mehfilDuties)
             : null}
           {showEhadKarkunFilter
-            ? getEhadKarkunFilterField(ehadKarkun, getFieldDecorator)
+            ? getEhadKarkunFilterField(ehadKarkun)
             : null}
           {showCityMehfilFilter
             ? getCityMehfilFilterField(
                 [cityId, cityMehfilId],
-                getFieldDecorator,
                 cities,
                 cityMehfils
               )
             : null}
           {showRegionFilter
-            ? getRegionFilterField(region, getFieldDecorator, regions)
+            ? getRegionFilterField(region, regions)
             : null}
 
           {showUpdatedBetweenFilter
-            ? getUpdatedBetweenFilterField(updatedBetween, getFieldDecorator)
+            ? getUpdatedBetweenFilterField(updatedBetween)
             : null}
           {getFormButtons(handleReset, handleSubmit)}
         </Form>

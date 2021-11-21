@@ -56,7 +56,7 @@ const GeneralInfo = ({
     });
   };
 
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
   return (
     <Fragment>
       <Form layout="horizontal" onSubmit={_handleSubmit}>
@@ -66,7 +66,6 @@ const GeneralInfo = ({
           initialValue={karkun.name}
           required
           requiredMessage="Please input the name for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -75,7 +74,6 @@ const GeneralInfo = ({
           initialValue={karkun.parentName}
           required
           requiredMessage="Please input the parent name for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <AgeField
@@ -84,7 +82,6 @@ const GeneralInfo = ({
           initialValue={
             karkun.birthDate ? moment(Number(karkun.birthDate)) : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <EhadDurationField
@@ -95,7 +92,6 @@ const GeneralInfo = ({
           }
           required
           requiredMessage="Please specify the Ehad duration for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -104,7 +100,6 @@ const GeneralInfo = ({
           initialValue={
             karkun.deathDate ? moment(Number(karkun.deathDate)) : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -113,21 +108,18 @@ const GeneralInfo = ({
           initialValue={karkun.referenceName}
           required
           requiredMessage="Please input the reference name for the karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={karkun.cnicNumber || ''}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           initialValue={karkun.contactNumber1 || ''}
-          getFieldDecorator={getFieldDecorator}
         />
 
         {showCityMehfilField ? (
@@ -138,7 +130,6 @@ const GeneralInfo = ({
             initialValue={[karkun.cityId, karkun.cityMehfilId]}
             required
             requiredMessage="Please select a city/mehfil from the list."
-            getFieldDecorator={getFieldDecorator}
           />
         ) : null}
 
@@ -148,7 +139,6 @@ const GeneralInfo = ({
           fieldName="ehadKarkun"
           fieldLabel="Ehad Karkun"
           initialValue={karkun.ehadKarkun}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -159,7 +149,6 @@ const GeneralInfo = ({
               ? moment(Number(karkun.ehadPermissionDate))
               : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Divider />
@@ -169,7 +158,6 @@ const GeneralInfo = ({
           fieldLabel="Home Number"
           initialValue={karkun.contactNumber2}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -189,7 +177,6 @@ const GeneralInfo = ({
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
           initialValue={karkun.bloodGroup}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -197,7 +184,6 @@ const GeneralInfo = ({
           fieldLabel="Email"
           initialValue={karkun.emailAddress}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -205,7 +191,6 @@ const GeneralInfo = ({
           fieldLabel="Current Address"
           initialValue={karkun.currentAddress}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -213,7 +198,6 @@ const GeneralInfo = ({
           fieldLabel="Permanent Address"
           initialValue={karkun.permanentAddress}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -221,7 +205,6 @@ const GeneralInfo = ({
           fieldLabel="Education"
           initialValue={karkun.educationalQualification}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -229,7 +212,6 @@ const GeneralInfo = ({
           fieldLabel="Means of Earning"
           initialValue={karkun.meansOfEarning}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

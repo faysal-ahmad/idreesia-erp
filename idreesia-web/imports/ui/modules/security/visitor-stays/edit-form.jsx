@@ -93,7 +93,7 @@ class EditForm extends Component {
       allDutyShifts,
       distinctStayAllowedBy,
       distinctTeamNames,
-      form: { getFieldDecorator, isFieldsTouched },
+      form: { isFieldsTouched },
     } = this.props;
 
     if (
@@ -118,7 +118,6 @@ class EditForm extends Component {
           initialValue={moment(Number(visitorStayById.fromDate))}
           required
           requiredMessage="Please select a from date."
-          getFieldDecorator={getFieldDecorator}
         />
         <DateField
           fieldName="toDate"
@@ -126,14 +125,12 @@ class EditForm extends Component {
           initialValue={moment(Number(visitorStayById.toDate))}
           required
           requiredMessage="Please select a to date."
-          getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           fieldName="stayAllowedBy"
           fieldLabel="Stay Allowed By"
           dataSource={distinctStayAllowedBy}
           initialValue={visitorStayById.stayAllowedBy}
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={StayReasons}
@@ -142,7 +139,6 @@ class EditForm extends Component {
           fieldName="stayReason"
           fieldLabel="Stay Reason"
           initialValue={visitorStayById.stayReason}
-          getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
           data={dutyShiftCascaderData}
@@ -150,14 +146,12 @@ class EditForm extends Component {
           fieldName="dutyIdShiftId"
           fieldLabel="Duty Participation"
           initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
-          getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           fieldName="teamName"
           fieldLabel="Team Name"
           dataSource={distinctTeamNames}
           initialValue={visitorStayById.teamName}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSubmit

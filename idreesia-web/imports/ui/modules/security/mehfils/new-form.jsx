@@ -48,7 +48,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -57,14 +57,12 @@ class NewForm extends Component {
           fieldLabel="Mehfil Name"
           required
           requiredMessage="Please input a name for the mehfil."
-          getFieldDecorator={getFieldDecorator}
         />
         <DateField
           fieldName="mehfilDate"
           fieldLabel="Mehfil Date"
           required
           requiredMessage="Please input a date for the mehfil."
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

@@ -180,7 +180,6 @@ class UploadForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const { allCitiesLoading, allCities } = this.props;
     if (allCitiesLoading) return null;
 
@@ -231,7 +230,6 @@ class UploadForm extends Component {
             fieldLabel="City"
             required
             requiredMessage="Please select a city from the list."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputFileField
             accept=".csv"
@@ -239,7 +237,6 @@ class UploadForm extends Component {
             fieldLabel="Members Data"
             required
             requiredMessage="Select CSV file containing members data for upload."
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

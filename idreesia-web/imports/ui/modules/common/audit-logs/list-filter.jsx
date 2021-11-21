@@ -47,7 +47,6 @@ const ListFilter = props => {
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
-    form: { getFieldDecorator },
     entityId,
   } = props;
 
@@ -60,7 +59,6 @@ const ListFilter = props => {
             fieldLabel="Entity ID"
             fieldLayout={formItemLayout}
             initialValue={entityId}
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

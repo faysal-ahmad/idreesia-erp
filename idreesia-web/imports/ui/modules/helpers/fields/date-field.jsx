@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 
@@ -18,51 +18,37 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class DateField extends Component {
-  static propTypes = {
-    allowClear: PropTypes.bool,
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.object,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: moment(),
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      fieldName,
+const DateField = ({
+  allowClear,
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  initialValue = moment(),
+  required,
+  requiredMessage,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      allowClear,
-    } = this.props;
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
-
-    return getFieldDecorator(fieldName, { initialValue, rules })(
+      message: requiredMessage,
+    },
+  ];
+    
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <DatePicker format="DD MMM, YYYY" allowClear={allowClear} />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+DateField.propTypes = {
+  allowClear: PropTypes.bool,
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.object,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+};
+
+export default DateField;

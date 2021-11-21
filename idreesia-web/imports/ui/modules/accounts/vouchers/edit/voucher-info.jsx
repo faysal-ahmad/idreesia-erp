@@ -57,7 +57,7 @@ class VoucherInfo extends Component {
 
   render() {
     const { form, formDataLoading, voucherById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = form;
+    const { isFieldsTouched } = form;
     if (formDataLoading) return null;
 
     return (
@@ -67,7 +67,6 @@ class VoucherInfo extends Component {
           fieldLabel="Voucher Number"
           initialValue={`${voucherById.voucherType} - ${voucherById.voucherNumber}`}
           readOnly
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -77,13 +76,11 @@ class VoucherInfo extends Component {
             Formats.DATE_FORMAT
           )}
           readOnly
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

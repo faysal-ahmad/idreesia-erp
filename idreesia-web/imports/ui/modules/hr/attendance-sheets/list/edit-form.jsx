@@ -40,7 +40,6 @@ class EditForm extends Component {
   render() {
     const {
       attendance,
-      form: { getFieldDecorator },
     } = this.props;
 
     return (
@@ -54,7 +53,6 @@ class EditForm extends Component {
               : {}
           }
           forMonth={attendance.month}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="presentCount"
@@ -62,7 +60,6 @@ class EditForm extends Component {
           initialValue={attendance.presentCount || 0}
           minValue={0}
           maxValue={31}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="lateCount"
@@ -70,7 +67,6 @@ class EditForm extends Component {
           initialValue={attendance.lateCount || 0}
           minValue={0}
           maxValue={31}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="absentCount"
@@ -78,7 +74,6 @@ class EditForm extends Component {
           initialValue={attendance.absentCount || 0}
           minValue={0}
           maxValue={31}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           fieldName="percentage"
@@ -86,7 +81,6 @@ class EditForm extends Component {
           initialValue={attendance.percentage || 0}
           minValue={0}
           maxValue={100}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <Row type="flex" justify="start">

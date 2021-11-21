@@ -46,9 +46,11 @@ class ViewForm extends Component {
     history.goBack();
   };
 
-  getItemsField() {
-    const { form, purchaseFormById, physicalStoreId } = this.props;
-    const { getFieldDecorator } = form;
+  render() {
+    const { formDataLoading, purchaseFormById, physicalStoreId } = this.props;
+    if (formDataLoading) {
+      return null;
+    }
 
     const rules = [
       {
@@ -56,28 +58,6 @@ class ViewForm extends Component {
         message: 'Please add some items.',
       },
     ];
-    return getFieldDecorator('items', {
-      rules,
-      initialValue: purchaseFormById.items,
-    })(
-      <ItemsList
-        refForm={form}
-        defaultLabel="Purchased"
-        inflowLabel="Purchased"
-        outflowLabel="Returned"
-        showPrice
-        physicalStoreId={physicalStoreId}
-      />
-    );
-  }
-
-  render() {
-    const { formDataLoading, purchaseFormById } = this.props;
-    if (formDataLoading) {
-      return null;
-    }
-
-    const { getFieldDecorator } = this.props.form;
 
     return (
       <Fragment>
@@ -88,7 +68,6 @@ class ViewForm extends Component {
             initialValue={moment(Number(purchaseFormById.purchaseDate))}
             required
             requiredMessage="Please input a purchase date."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="vendorId"
@@ -96,7 +75,6 @@ class ViewForm extends Component {
             initialValue={
               purchaseFormById.refVendor ? purchaseFormById.refVendor.name : ''
             }
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="receivedBy"
@@ -104,7 +82,6 @@ class ViewForm extends Component {
             initialValue={purchaseFormById.refReceivedBy.name}
             required
             requiredMessage="Please input a name in received by."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="purchasedBy"
@@ -112,7 +89,6 @@ class ViewForm extends Component {
             initialValue={purchaseFormById.refPurchasedBy.name}
             required
             requiredMessage="Please input a name in purchased by."
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextAreaField
@@ -120,12 +96,17 @@ class ViewForm extends Component {
             fieldLabel="Notes"
             required={false}
             initialValue={purchaseFormById.notes}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <Divider orientation="left">Purchased / Returned Items</Divider>
-          <Form.Item {...formItemExtendedLayout}>
-            {this.getItemsField()}
+          <Form.Item name="items" initialValue={purchaseFormById.items} rules={rules} {...formItemExtendedLayout}>
+            <ItemsList
+              defaultLabel="Purchased"
+              inflowLabel="Purchased"
+              outflowLabel="Returned"
+              showPrice
+              physicalStoreId={physicalStoreId}
+            />
           </Form.Item>
 
           <FormButtonsClose handleClose={this.handleClose} />

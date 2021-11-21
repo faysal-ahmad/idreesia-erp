@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Checkbox, Form } from '/imports/ui/controls';
@@ -7,6 +7,16 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
+
+const options = [
+  { label: 'Saturday', value: 'Sat' },
+  { label: 'Sunday', value: 'Sun' },
+  { label: 'Monday', value: 'Mon' },
+  { label: 'Tuesday', value: 'Tue' },
+  { label: 'Wednesday', value: 'Wed' },
+  { label: 'Thursday', value: 'Thu' },
+  { label: 'Friday', value: 'Fri' },
+];
 
 /**
  * fieldName: Name of the property in which the form field value would be saved.
@@ -17,53 +27,35 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class WeekDaysField extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.array,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: [],
-    fieldLayout: formItemLayout,
-  };
-
-  options = [
-    { label: 'Saturday', value: 'Sat' },
-    { label: 'Sunday', value: 'Sun' },
-    { label: 'Monday', value: 'Mon' },
-    { label: 'Tuesday', value: 'Tue' },
-    { label: 'Wednesday', value: 'Wed' },
-    { label: 'Thursday', value: 'Thu' },
-    { label: 'Friday', value: 'Fri' },
+const WeekDaysField = ({
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  initialValue = [],
+  required,
+  requiredMessage,
+}) => {
+  const rules = [
+    {
+      required,
+      message: requiredMessage,
+    },
   ];
 
-  getField() {
-    const { fieldName, required, requiredMessage, getFieldDecorator, initialValue } = this.props;
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
-
-    return getFieldDecorator(fieldName, { initialValue, rules })(
-      <Checkbox.Group options={this.options} />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Checkbox.Group options={options} />
+    </Form.Item>
+  );
 }
+
+WeekDaysField.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.array,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+};
+
+export default WeekDaysField;

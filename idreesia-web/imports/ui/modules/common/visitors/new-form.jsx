@@ -53,7 +53,7 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
   };
 
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   return (
     <Form layout="horizontal" onSubmit={_handleSubmit}>
@@ -62,7 +62,6 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         fieldLabel="Name"
         required
         requiredMessage="Please input the name for the person."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextField
@@ -70,13 +69,11 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         fieldLabel="S/O"
         required
         requiredMessage="Please input the parent name for the person."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <AgeField
         fieldName="birthDate"
         fieldLabel="Age (years)"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <AutoCompleteField
@@ -85,7 +82,6 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         dataSource={distinctCities}
         required
         requiredMessage="Please input the city for the person."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <AutoCompleteField
@@ -95,21 +91,18 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         initialValue="Pakistan"
         required
         requiredMessage="Please input the country for the person."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextAreaField
         fieldName="currentAddress"
         fieldLabel="Current Address"
         required={false}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextAreaField
         fieldName="permanentAddress"
         fieldLabel="Permanent Address"
         required={false}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <Divider />
@@ -119,7 +112,6 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         fieldLabel="Ehad Duration"
         required
         requiredMessage="Please specify the Ehad duration for the person."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextField
@@ -127,26 +119,22 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         fieldLabel="R/O"
         required
         requiredMessage="Please input the reference name for the person."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputCnicField
         fieldName="cnicNumber"
         fieldLabel="CNIC Number"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputMobileField
         fieldName="contactNumber1"
         fieldLabel="Mobile Number"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextField
         fieldName="contactNumber2"
         fieldLabel="Home Number"
         required={false}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <Divider />
@@ -155,14 +143,12 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
         fieldName="educationalQualification"
         fieldLabel="Education"
         required={false}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextAreaField
         fieldName="meansOfEarning"
         fieldLabel="Means of Earning"
         required={false}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <FormButtonsSaveCancel

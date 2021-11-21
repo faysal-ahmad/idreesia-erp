@@ -24,7 +24,7 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-export function getNameFilterField(fieldValue, getFieldDecorator) {
+export function getNameFilterField(fieldValue) {
   return (
     <InputTextField
       fieldName="name"
@@ -32,12 +32,11 @@ export function getNameFilterField(fieldValue, getFieldDecorator) {
       required={false}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getCnicNumberFilterField(fieldValue, getFieldDecorator) {
+export function getCnicNumberFilterField(fieldValue) {
   return (
     <InputCnicField
       fieldName="cnicNumber"
@@ -46,12 +45,11 @@ export function getCnicNumberFilterField(fieldValue, getFieldDecorator) {
       requiredMessage="Please input a valid CNIC number."
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getPhoneNumberFilterField(fieldValue, getFieldDecorator) {
+export function getPhoneNumberFilterField(fieldValue) {
   return (
     <InputTextField
       fieldName="phoneNumber"
@@ -59,12 +57,11 @@ export function getPhoneNumberFilterField(fieldValue, getFieldDecorator) {
       required={false}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getBloodGroupFilterField(fieldValue, getFieldDecorator) {
+export function getBloodGroupFilterField(fieldValue) {
   return (
     <SelectField
       fieldName="bloodGroup"
@@ -84,12 +81,11 @@ export function getBloodGroupFilterField(fieldValue, getFieldDecorator) {
       getDataText={({ label }) => label}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getEhadKarkunFilterField(fieldValue, getFieldDecorator) {
+export function getEhadKarkunFilterField(fieldValue) {
   return (
     <SelectField
       fieldName="ehadKarkun"
@@ -100,12 +96,11 @@ export function getEhadKarkunFilterField(fieldValue, getFieldDecorator) {
       getDataText={({ label }) => label}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getAttendanceFilterField(fieldValue, getFieldDecorator) {
+export function getAttendanceFilterField(fieldValue) {
   return (
     <AttendanceFilterField
       fieldName="attendance"
@@ -113,12 +108,11 @@ export function getAttendanceFilterField(fieldValue, getFieldDecorator) {
       required={false}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getLastTarteebFilterField(fieldValue, getFieldDecorator) {
+export function getLastTarteebFilterField(fieldValue) {
   return (
     <LastTarteebFilterField
       fieldName="lastTarteeb"
@@ -126,16 +120,11 @@ export function getLastTarteebFilterField(fieldValue, getFieldDecorator) {
       required={false}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getMehfilDutyFilterField(
-  fieldValue,
-  getFieldDecorator,
-  duties
-) {
+export function getMehfilDutyFilterField(fieldValue, duties) {
   return (
     <SelectField
       fieldName="dutyId"
@@ -146,17 +135,11 @@ export function getMehfilDutyFilterField(
       getDataText={({ name: _name }) => _name}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getCityMehfilFilterField(
-  fieldValue,
-  getFieldDecorator,
-  cities,
-  cityMehfils
-) {
+export function getCityMehfilFilterField(fieldValue, cities, cityMehfils) {
   const cityMehfilCascaderData = getCityMehfilCascaderData(cities, cityMehfils);
 
   return (
@@ -166,12 +149,11 @@ export function getCityMehfilFilterField(
       fieldLabel="City/Mehfil"
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getRegionFilterField(fieldValue, getFieldDecorator, regions) {
+export function getRegionFilterField(fieldValue, regions) {
   return (
     <SelectField
       fieldName="region"
@@ -182,12 +164,11 @@ export function getRegionFilterField(fieldValue, getFieldDecorator, regions) {
       getDataText={item => item}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }
 
-export function getUpdatedBetweenFilterField(fieldValue, getFieldDecorator) {
+export function getUpdatedBetweenFilterField(fieldValue) {
   let initialValue;
   if (fieldValue) {
     const dates = JSON.parse(fieldValue);
@@ -205,7 +186,6 @@ export function getUpdatedBetweenFilterField(fieldValue, getFieldDecorator) {
       fieldLabel="Updated"
       fieldLayout={formItemLayout}
       initialValue={initialValue}
-      getFieldDecorator={getFieldDecorator}
     />
   );
 }

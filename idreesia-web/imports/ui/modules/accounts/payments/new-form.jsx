@@ -82,7 +82,7 @@ const NewForm = ({ form, history, location }) => {
     );
   };
 
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   return (
     <Form layout="horizontal" onSubmit={handleSubmit}>
@@ -92,7 +92,6 @@ const NewForm = ({ form, history, location }) => {
         initialValue={data.nextPaymentNumber}
         required
         requiredMessage="Please enter the Voucher Number."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <SelectField
@@ -103,7 +102,6 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Payment Type"
         required
         requiredMessage="Please select a Payment Type."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <DateField
@@ -111,7 +109,6 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Payment Date"
         required
         requiredMessage="Please select a Payment Date."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextField
@@ -119,7 +116,6 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Name"
         required
         requiredMessage="Please enter the Name."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextField
@@ -127,7 +123,6 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="Father Name"
         required
         requiredMessage="Please enter the Father Name."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputCnicField
@@ -135,13 +130,11 @@ const NewForm = ({ form, history, location }) => {
         fieldLabel="CNIC Number"
         required
         requiredMessage="Please input a valid CNIC Number."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputMobileField
         fieldName="contactNumber"
         fieldLabel="Mobile Number"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputNumberField
@@ -150,13 +143,11 @@ const NewForm = ({ form, history, location }) => {
         minValue={0}
         required
         requiredMessage="Please enter the payment amount."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <InputTextAreaField
         fieldName="description"
         fieldLabel="Description"
-        getFieldDecorator={getFieldDecorator}
       />
 
       <FormButtonsSaveCancel

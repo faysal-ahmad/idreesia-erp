@@ -80,7 +80,7 @@ class EditForm extends Component {
     } = this.props;
     if (loading || locationsLoading) return null;
 
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -91,7 +91,6 @@ class EditForm extends Component {
             initialValue={locationById.name}
             required
             requiredMessage="Please input a name for the location."
-            getFieldDecorator={getFieldDecorator}
           />
           <TreeSelectField
             data={locationsByPhysicalStoreId}
@@ -99,13 +98,11 @@ class EditForm extends Component {
             fieldName="parentId"
             fieldLabel="Parent Location"
             initialValue={locationById.parentId}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="description"
             fieldLabel="Description"
             initialValue={locationById.description}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

@@ -87,7 +87,7 @@ class EditForm extends Component {
   render() {
     const { accountHeadByIdLoading, accountHeadById } = this.props;
     const {
-      form: { getFieldDecorator, isFieldsTouched },
+      form: { isFieldsTouched },
     } = this.props;
     if (accountHeadByIdLoading) return null;
 
@@ -99,27 +99,23 @@ class EditForm extends Component {
           initialValue={accountHeadById.name}
           required
           requiredMessage="Please input a name for the account head."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           disabled
           fieldName="type"
           fieldLabel="Type"
           initialValue={accountHeadById.type}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
           initialValue={accountHeadById.description}
-          getFieldDecorator={getFieldDecorator}
         />
         <InputNumberField
           disabled={accountHeadById.hasChildren}
           fieldName="startingBalance"
           fieldLabel="Starting Balance"
           initialValue={accountHeadById.startingBalance}
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

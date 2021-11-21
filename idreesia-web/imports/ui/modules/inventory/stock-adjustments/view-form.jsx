@@ -46,8 +46,6 @@ class ViewForm extends Component {
       return null;
     }
 
-    const { getFieldDecorator } = this.props.form;
-
     let adjustment;
     if (stockAdjustmentById.isInflow) {
       adjustment = `Increased by ${stockAdjustmentById.quantity}`;
@@ -62,32 +60,27 @@ class ViewForm extends Component {
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
             initialValue={stockAdjustmentById.refStockItem.formattedName}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="adjustment"
             fieldLabel="Adjustment"
             initialValue={adjustment}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="adjustedBy"
             fieldLabel="Adjusted By"
             initialValue={stockAdjustmentById.refAdjustedBy.name}
-            getFieldDecorator={getFieldDecorator}
           />
           <DateField
             fieldName="adjustedDate"
             fieldLabel="Adjusted Date"
             initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextAreaField
             fieldName="adjustmentReason"
             fieldLabel="Adjustment Reason"
             initialValue={stockAdjustmentById.adjustmentReason}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <FormButtonsClose handleClose={this.handleClose} />

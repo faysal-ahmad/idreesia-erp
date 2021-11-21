@@ -68,7 +68,7 @@ class EmploymentInfo extends Component {
       hrKarkunById,
       allJobs,
     } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (formDataLoading || allJobsLoading) return null;
 
     return (
@@ -77,7 +77,6 @@ class EmploymentInfo extends Component {
           fieldName="isEmployee"
           fieldLabel="Is Employee"
           initialValue={hrKarkunById.isEmployee || false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -88,7 +87,6 @@ class EmploymentInfo extends Component {
           getDataValue={({ _id }) => _id}
           getDataText={({ name }) => name}
           initialValue={hrKarkunById.jobId}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -99,7 +97,6 @@ class EmploymentInfo extends Component {
               ? moment(Number(hrKarkunById.employmentStartDate))
               : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -110,7 +107,6 @@ class EmploymentInfo extends Component {
               ? moment(Number(hrKarkunById.employmentEndDate))
               : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

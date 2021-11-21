@@ -7,7 +7,6 @@
     "visualize": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor --production --extra-packages bundle-visualizer --settings ./private/env/settings.json"
   },
   "dependencies": {
-    "@ant-design/compatible": "1.0.8",
     "@ant-design/icons": "4.6.2",
     "@babel/runtime": "^7.11.2",
     "antd": "^4.16.9",

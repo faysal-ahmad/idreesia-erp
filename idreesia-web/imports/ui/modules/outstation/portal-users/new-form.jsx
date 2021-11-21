@@ -60,7 +60,7 @@ class NewForm extends Component {
     const {
       allPortals,
       allPortalsLoading,
-      form: { getFieldDecorator, isFieldsTouched },
+      form: { isFieldsTouched },
     } = this.props;
 
     const portalsData = allPortalsLoading
@@ -77,7 +77,6 @@ class NewForm extends Component {
           fieldLabel="User name"
           required
           requiredMessage="Please input the user name."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <KarkunSelectionInputField
@@ -86,7 +85,6 @@ class NewForm extends Component {
           showOutstationKarkunsList
           required
           requiredMessage="Please select a karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <SelectField
@@ -95,7 +93,6 @@ class NewForm extends Component {
           getDataText={({ text }) => text}
           fieldName="portalId"
           fieldLabel="Portal"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

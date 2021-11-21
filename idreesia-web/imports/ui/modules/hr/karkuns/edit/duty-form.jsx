@@ -11,7 +11,6 @@ import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilitie
 import allDutyRoles from '../../all-duty_roles';
 
 const DutyForm = props => {
-  const { getFieldDecorator } = props.form;
   const { defaultValues, allMSDuties, allDutyShifts, allDutyLocations } = props;
   const dutyShiftCascaderData = getDutyShiftCascaderData(
     allMSDuties,
@@ -27,7 +26,6 @@ const DutyForm = props => {
         initialValue={[defaultValues.dutyId, defaultValues.shiftId]}
         required
         requiredMessage="Please select a duty/shift from the list."
-        getFieldDecorator={getFieldDecorator}
       />
 
       <SelectField
@@ -39,7 +37,6 @@ const DutyForm = props => {
         allowClear={false}
         required
         initialValue={defaultValues.role || 'Member'}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <SelectField
@@ -50,7 +47,6 @@ const DutyForm = props => {
         fieldLabel="Location Name"
         required={false}
         initialValue={defaultValues.locationId}
-        getFieldDecorator={getFieldDecorator}
       />
 
       <WeekDaysField
@@ -58,7 +54,6 @@ const DutyForm = props => {
         fieldLabel="Week Days"
         required={false}
         initialValue={defaultValues.daysOfWeek ? defaultValues.daysOfWeek : []}
-        getFieldDecorator={getFieldDecorator}
       />
     </Form>
   );

@@ -16,7 +16,6 @@ const ButtonContainerStyle = {
 };
 
 const ItemForm = ({
-  refForm: { getFieldDecorator },
   physicalStoreId,
   defaultLabel,
   inflowLabel,
@@ -30,7 +29,6 @@ const ItemForm = ({
       fieldLayout={null}
       fieldName="stockItem"
       placeholder="Stock Item"
-      getFieldDecorator={getFieldDecorator}
     />
     <InputNumberField
       fieldName="quantity"
@@ -38,7 +36,6 @@ const ItemForm = ({
       fieldLayout={null}
       minValue={0}
       precision={2}
-      getFieldDecorator={getFieldDecorator}
     />
     {showPrice ? (
       <InputNumberField
@@ -47,7 +44,6 @@ const ItemForm = ({
         fieldLayout={null}
         minValue={0}
         precision={2}
-        getFieldDecorator={getFieldDecorator}
       />
     ) : null}
     <SelectField
@@ -62,7 +58,6 @@ const ItemForm = ({
       initialValue={defaultLabel === inflowLabel ? 'inflow' : 'outflow'}
       fieldLayout={null}
       fieldName="status"
-      getFieldDecorator={getFieldDecorator}
     />
     <Form.Item style={ButtonContainerStyle}>
       <Button type="primary" icon="plus-circle-o" onClick={handleAddItem}>
@@ -73,7 +68,6 @@ const ItemForm = ({
 );
 
 ItemForm.propTypes = {
-  refForm: PropTypes.object,
   physicalStoreId: PropTypes.string,
   stockItems: PropTypes.array,
   defaultLabel: PropTypes.string,

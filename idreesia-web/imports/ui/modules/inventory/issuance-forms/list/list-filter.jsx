@@ -67,7 +67,6 @@ class ListFilter extends Component {
 
   render() {
     const { allLocations } = this.props;
-    const { getFieldDecorator } = this.props.form;
     const {
       queryParams: {
         startDate,
@@ -97,7 +96,6 @@ class ListFilter extends Component {
                 { label: 'Unapproved', value: 'unapproved' },
               ]}
               initialValue={status}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="startDate"
@@ -105,7 +103,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mStartDate.isValid() ? mStartDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -113,7 +110,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <TreeSelectField
               data={allLocations}
@@ -121,7 +117,6 @@ class ListFilter extends Component {
               fieldLabel="Location"
               fieldLayout={formItemLayout}
               initialValue={locationId}
-              getFieldDecorator={getFieldDecorator}
             />
 
             <Form.Item {...buttonItemLayout}>

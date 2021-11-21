@@ -39,7 +39,7 @@ class EditForm extends Component {
 
   render() {
     const { dutyShift } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -50,7 +50,6 @@ class EditForm extends Component {
             initialValue={dutyShift.name}
             required
             requiredMessage="Please input a name for the duty location."
-            getFieldDecorator={getFieldDecorator}
           />
           <TimeField
             fieldName="startTime"
@@ -58,19 +57,16 @@ class EditForm extends Component {
             initialValue={
               dutyShift.startTime ? moment(dutyShift.startTime) : null
             }
-            getFieldDecorator={getFieldDecorator}
           />
           <TimeField
             fieldName="endTime"
             fieldLabel="End Time"
             initialValue={dutyShift.endTime ? moment(dutyShift.endTime) : null}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="attendanceSheet"
             fieldLabel="Attendance Sheet"
             initialValue={dutyShift.attendanceSheet}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.props.handleCancel}

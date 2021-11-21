@@ -51,7 +51,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     const moduleNames = values(ModuleNames);
     const moduleNamesData = moduleNames.map(name => ({
@@ -64,7 +64,6 @@ class NewForm extends Component {
         <InputTextField
           fieldName="name"
           fieldLabel="Group name"
-          getFieldDecorator={getFieldDecorator}
           required
           requiredMessage="Please input a name for the group."
         />
@@ -75,7 +74,6 @@ class NewForm extends Component {
           getDataText={({ text }) => text}
           fieldName="moduleName"
           fieldLabel="Module Name"
-          getFieldDecorator={getFieldDecorator}
           required
           requiredMessage="Please select a module for the group."
         />
@@ -83,7 +81,6 @@ class NewForm extends Component {
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

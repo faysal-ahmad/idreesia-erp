@@ -60,7 +60,6 @@ class ListFilter extends Component {
   refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       queryParams: { startDate, endDate, showApproved, showUnapproved },
     } = this.props;
@@ -84,7 +83,6 @@ class ListFilter extends Component {
                 { label: 'Unapproved', value: 'unapproved' },
               ]}
               initialValue={status}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="startDate"
@@ -92,7 +90,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mStartDate.isValid() ? mStartDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <DateField
               fieldName="endDate"
@@ -100,7 +97,6 @@ class ListFilter extends Component {
               fieldLayout={formItemLayout}
               required={false}
               initialValue={mEndDate.isValid() ? mEndDate : null}
-              getFieldDecorator={getFieldDecorator}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

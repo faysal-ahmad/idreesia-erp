@@ -59,7 +59,7 @@ class Notes extends Component {
 
   render() {
     const { loading, securityVisitorById } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (loading) return null;
 
     return (
@@ -69,7 +69,6 @@ class Notes extends Component {
           fieldLabel="Criminal Record"
           initialValue={securityVisitorById.criminalRecord}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextAreaField
@@ -77,7 +76,6 @@ class Notes extends Component {
           fieldLabel="Other Notes"
           initialValue={securityVisitorById.otherNotes}
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

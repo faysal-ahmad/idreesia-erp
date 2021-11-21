@@ -51,7 +51,7 @@ class NewForm extends Component {
 
   render() {
     const { allCities, allCitiesLoading } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
     if (allCitiesLoading) return null;
 
     return (
@@ -61,7 +61,6 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the portal."
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={allCities}
@@ -70,7 +69,6 @@ class NewForm extends Component {
           mode="tags"
           fieldName="cityIds"
           fieldLabel="Cities"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

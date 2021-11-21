@@ -22,7 +22,6 @@ export default class AccountSelectionField extends Component {
     required: PropTypes.bool,
     showSearch: PropTypes.bool,
     requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
     initialValue: PropTypes.string,
     skipValue: PropTypes.string,
     onChange: PropTypes.func,
@@ -68,17 +67,18 @@ export default class AccountSelectionField extends Component {
     return false;
   };
 
-  getField = () => {
+  render() {
     const {
       data,
-      fieldName,
-      showSearch,
+      initialValue,
       required,
       requiredMessage,
+      fieldLabel,
+      fieldLayout,
+      fieldName,
       placeholder,
-      getFieldDecorator,
       onChange,
-      initialValue,
+      showSearch,
     } = this.props;
 
     const treeNodes = this.getTreeNodes(data, 0);
@@ -91,26 +91,19 @@ export default class AccountSelectionField extends Component {
         ]
       : null;
 
-    return getFieldDecorator(fieldName, { rules, initialValue })(
-      <TreeSelect
-        placeholder={placeholder}
-        onChange={onChange}
-        allowClear
-        showSearch={showSearch}
-        treeDefaultExpandAll
-        filterTreeNode={this.filterTreeNode}
-        style={{ width: "100%" }}
-      >
-        {treeNodes}
-      </TreeSelect>
-    );
-  };
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
     return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
+      <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+        <TreeSelect
+          placeholder={placeholder}
+          onChange={onChange}
+          allowClear
+          showSearch={showSearch}
+          treeDefaultExpandAll
+          filterTreeNode={this.filterTreeNode}
+          style={{ width: "100%" }}
+        >
+          {treeNodes}
+        </TreeSelect>
       </Form.Item>
     );
   }

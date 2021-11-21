@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import { Radio, Form } from "/imports/ui/controls";
@@ -17,61 +17,48 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class RadioGroupField extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.string,
-      })
-    ),
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-  };
+const RadioGroupField = ({
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  initialValue = null,
+  options,
+  required,
+  requiredMessage,
+}) => {
+  const radioOptions = options.map(option => (
+    <Radio key={option.value} value={option.value}>
+      {option.label}
+    </Radio>
+  ));
 
-  static defaultProps = {
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      fieldName,
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      options,
-    } = this.props;
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
+      message: requiredMessage,
+    },
+  ];
 
-    const radioOptions = options.map(option => (
-      <Radio key={option.value} value={option.value}>
-        {option.label}
-      </Radio>
-    ));
-    return getFieldDecorator(fieldName, { initialValue, rules })(
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <Radio.Group options={options}>{radioOptions}</Radio.Group>
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+RadioGroupField.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.string,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.string,
+    })
+  ),
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+};
+
+export default RadioGroupField;

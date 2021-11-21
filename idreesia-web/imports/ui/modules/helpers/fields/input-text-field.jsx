@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import { Input, Form } from "/imports/ui/controls";
@@ -17,59 +17,47 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputTextField extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.any,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    type: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      fieldName,
-      placeholder,
+const InputTextField = ({
+  fieldName,
+  fieldLabel,
+  placeholder,
+  fieldLayout = formItemLayout,
+  initialValue = null,
+  required,
+  requiredMessage,
+  disabled,
+  type,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      disabled,
-      type,
-    } = this.props;
+      message: requiredMessage,
+    },
+  ];
 
-    if (!disabled) {
-      const rules = [
-        {
-          required,
-          message: requiredMessage,
-        },
-      ];
-
-      return getFieldDecorator(fieldName, { initialValue, rules })(
-        <Input type={type} placeholder={placeholder} />
-      );
-    }
-
-    return getFieldDecorator(fieldName, { initialValue })(<Input disabled />);
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      {
+        disabled ? (
+          <Input disabled />
+        ) : (
+          <Input type={type} placeholder={placeholder} />
+        )
+      }
+    </Form.Item>
+  );
 }
+
+InputTextField.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.any,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  disabled: PropTypes.bool,
+  type: PropTypes.string,
+};
+
+export default InputTextField;

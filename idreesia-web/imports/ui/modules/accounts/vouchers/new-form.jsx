@@ -63,7 +63,7 @@ class NewForm extends Component {
 
   render() {
     const { companyLoading, form } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = form;
+    const { isFieldsTouched } = form;
     if (companyLoading) return null;
 
     return (
@@ -93,19 +93,16 @@ class NewForm extends Component {
           initialValue="BPV"
           fieldName="voucherType"
           fieldLabel="Voucher Type"
-          getFieldDecorator={getFieldDecorator}
         />
         <DateField
           fieldName="voucherDate"
           fieldLabel="Voucher Date"
           required
           requiredMessage="Please select a date for the Voucher."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.handleCancel}

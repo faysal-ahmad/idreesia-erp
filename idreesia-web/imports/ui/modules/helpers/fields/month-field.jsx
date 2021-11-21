@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 
@@ -18,54 +18,39 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class MonthField extends Component {
-  static propTypes = {
-    allowClear: PropTypes.bool,
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.object,
-    format: PropTypes.string,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    getFieldDecorator: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: moment(),
-    format: "MM-YYYY",
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      allowClear,
-      fieldName,
+const MonthField = ({
+  allowClear,
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  initialValue = moment(),
+  format = "MM-YYYY",
+  required,
+  requiredMessage,
+}) => {
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      format,
-    } = this.props;
-    const rules = [
-      {
-        required,
-        message: requiredMessage,
-      },
-    ];
+      message: requiredMessage,
+    },
+  ];
 
-    return getFieldDecorator(fieldName, { initialValue, rules })(
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <DatePicker.MonthPicker allowClear={allowClear} format={format} />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+    </Form.Item>
+  );
 }
+
+MonthField.propTypes = {
+  allowClear: PropTypes.bool,
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.object,
+  format: PropTypes.string,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+};
+
+export default MonthField;

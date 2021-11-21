@@ -52,7 +52,7 @@ class NewForm extends Component {
 
   render() {
     const {
-      form: { getFieldDecorator, isFieldsTouched },
+      form: { isFieldsTouched },
     } = this.props;
 
     return (
@@ -62,20 +62,17 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the wazeefa."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
           fieldName="revisionNumber"
           fieldLabel="Revision Number"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
           fieldName="revisionDate"
           fieldLabel="Revision Date"
           initialValue={null}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

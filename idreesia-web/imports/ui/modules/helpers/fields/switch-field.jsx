@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Switch, Form } from '/imports/ui/controls';
@@ -14,44 +14,30 @@ const formItemLayout = {
  * fieldLayout: Layout settings for the form field.
  * initialValue: Initial value for the form field.
  */
-export default class SwitchField extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
-    handleChange: PropTypes.func,
-  };
-
-  static defaultProps = {
-    initialValue: false,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const { fieldName, getFieldDecorator, initialValue } = this.props;
-
-    return getFieldDecorator(fieldName, {
-      initialValue,
-      valuePropName: 'checked',
-    })(
+const SwitchField = ({
+  fieldName,
+  fieldLabel,
+  fieldLayout = formItemLayout,
+  initialValue = false,
+  handleChange,
+}) => (
+    <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} {...fieldLayout}>
       <Switch
         onChange={checked => {
-          if (this.props.handleChange) {
-            this.props.handleChange(checked);
+          if (handleChange) {
+            handleChange(checked);
           }
         }}
       />
-    );
-  }
+    </Form.Item>
+  );
 
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
-}
+SwitchField.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.bool,
+  handleChange: PropTypes.func,
+};
+
+export default SwitchField;

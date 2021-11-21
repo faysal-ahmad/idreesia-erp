@@ -37,7 +37,7 @@ class EditForm extends Component {
 
   render() {
     const { resident } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -47,19 +47,16 @@ class EditForm extends Component {
             fieldLabel="Resident Name"
             disabled
             initialValue={resident.resident.name}
-            getFieldDecorator={getFieldDecorator}
           />
           <CheckboxField
             fieldName="isOwner"
             fieldLabel="Is Owner"
             initialValue={resident.isOwner}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputNumberField
             fieldName="roomNumber"
             fieldLabel="Room Number"
             initialValue={resident.roomNumber}
-            getFieldDecorator={getFieldDecorator}
           />
           <DateField
             fieldName="fromDate"
@@ -67,7 +64,6 @@ class EditForm extends Component {
             initialValue={
               resident.fromDate ? moment(Number(resident.fromDate)) : null
             }
-            getFieldDecorator={getFieldDecorator}
           />
           <DateField
             fieldName="toDate"
@@ -75,7 +71,6 @@ class EditForm extends Component {
             initialValue={
               resident.toDate ? moment(Number(resident.toDate)) : null
             }
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.props.handleCancel}

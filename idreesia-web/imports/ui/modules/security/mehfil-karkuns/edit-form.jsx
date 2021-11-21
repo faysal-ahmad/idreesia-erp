@@ -26,14 +26,13 @@ class EditForm extends Component {
 
   render() {
     const { form, onCancel } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = form;
+    const { isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
         <InputTextField
           fieldName="dutyDetail"
           fieldLabel="Duty Detail"
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

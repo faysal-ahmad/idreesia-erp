@@ -19,7 +19,7 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
     });
   };
 
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   return (
     <Fragment>
@@ -32,7 +32,6 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
               ? moment(Number(karkun.lastTarteebDate))
               : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -40,7 +39,6 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
           fieldLabel="Mehfil Visits"
           placeholder="e.g. 3 days a week"
           initialValue={karkun.mehfilRaabta}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -48,7 +46,6 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
           fieldLabel="Multan Shareef Visits"
           placeholder="e.g. Once every month"
           initialValue={karkun.msRaabta}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -59,7 +56,6 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
               ? moment(Number(karkun.msLastVisitDate))
               : null
           }
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

@@ -53,7 +53,7 @@ class EditForm extends Component {
 
   render() {
     const { cityMehfil } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Fragment>
@@ -64,43 +64,36 @@ class EditForm extends Component {
             initialValue={cityMehfil.name}
             required
             requiredMessage="Please input a name for the mehfil."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="address"
             fieldLabel="Address"
             initialValue={cityMehfil.address}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextField
             fieldName="mehfilStartYear"
             fieldLabel="Start Year"
             initialValue={cityMehfil.mehfilStartYear}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="timingDetails"
             fieldLabel="Timings"
             initialValue={cityMehfil.timingDetails}
-            getFieldDecorator={getFieldDecorator}
           />
           <SwitchField
             fieldName="lcdAvailability"
             fieldLabel="LCD Available"
             initialValue={cityMehfil.lcdAvailability}
-            getFieldDecorator={getFieldDecorator}
           />
           <SwitchField
             fieldName="tabAvailability"
             fieldLabel="Tablet Available"
             initialValue={cityMehfil.tabAvailability}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputTextAreaField
             fieldName="otherMehfilDetails"
             fieldLabel="Other Details"
             initialValue={cityMehfil.otherMehfilDetails}
-            getFieldDecorator={getFieldDecorator}
           />
           <FormButtonsSaveCancel
             handleCancel={this.props.handleCancel}

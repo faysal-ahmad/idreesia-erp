@@ -90,7 +90,7 @@ class NewForm extends Component {
 
   render() {
     const { form, physicalStoreId } = this.props;
-    const { getFieldDecorator, isFieldsTouched } = form;
+    const { isFieldsTouched } = form;
 
     return (
       <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
@@ -100,7 +100,6 @@ class NewForm extends Component {
           fieldLabel="Stock Item Name"
           required
           requiredMessage="Please select a stock item."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <RadioGroupField
@@ -111,7 +110,6 @@ class NewForm extends Component {
             { label: 'Increase by', value: 'inflow' },
             { label: 'Decrease by', value: 'outflow' },
           ]}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputNumberField
@@ -120,7 +118,6 @@ class NewForm extends Component {
           required
           requiredMessage="Please input a value for adjustment quantity."
           minValue={0}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <DateField
@@ -128,7 +125,6 @@ class NewForm extends Component {
           fieldLabel="Adjustment Date"
           required
           requiredMessage="Please input an adjustment date."
-          getFieldDecorator={getFieldDecorator}
         />
         <KarkunField
           fieldName="adjustedBy"
@@ -136,7 +132,6 @@ class NewForm extends Component {
           placeholder="Adjusted By"
           required
           requiredMessage="Please select a name for adjusted By."
-          getFieldDecorator={getFieldDecorator}
           predefinedFilterName={
             PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
           }
@@ -146,7 +141,6 @@ class NewForm extends Component {
           fieldName="adjustmentReason"
           fieldLabel="Adjustment Reason"
           required={false}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

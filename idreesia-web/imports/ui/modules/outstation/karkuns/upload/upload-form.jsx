@@ -194,7 +194,6 @@ class UploadForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const {
       allCitiesLoading,
       allCityMehfilsLoading,
@@ -246,7 +245,6 @@ class UploadForm extends Component {
             fieldLabel="City/Mehfil"
             required
             requiredMessage="Please select a city/mehfil from the list."
-            getFieldDecorator={getFieldDecorator}
           />
           <InputFileField
             accept=".csv"
@@ -254,7 +252,6 @@ class UploadForm extends Component {
             fieldLabel="Karkuns Data"
             required
             requiredMessage="Select CSV file containing karkuns data for upload."
-            getFieldDecorator={getFieldDecorator}
           />
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">

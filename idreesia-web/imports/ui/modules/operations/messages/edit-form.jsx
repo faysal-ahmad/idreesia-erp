@@ -63,7 +63,7 @@ const EditForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { getFieldDecorator, validateFields, isFieldsTouched } = form;
+  const { validateFields, isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -148,7 +148,6 @@ const EditForm = ({ form, history, location }) => {
           required
           requiredMessage="Please input the message to send."
           initialValue={messageBody}
-          getFieldDecorator={getFieldDecorator}
         />
         <Divider>Karkuns Selection Criteria</Divider>
         <SelectField
@@ -168,14 +167,12 @@ const EditForm = ({ form, history, location }) => {
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
           initialValue={_recepientFilter ? _recepientFilter.bloodGroup : null}
-          getFieldDecorator={getFieldDecorator}
         />
         <LastTarteebFilterField
           fieldName="lastTarteeb"
           fieldLabel="Last Tarteeb"
           required={false}
           initialValue={_recepientFilter ? _recepientFilter.lastTarteeb : null}
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           mode="multiple"
@@ -186,7 +183,6 @@ const EditForm = ({ form, history, location }) => {
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
           initialValue={_recepientFilter ? _recepientFilter.jobIds : null}
-          getFieldDecorator={getFieldDecorator}
         />
         <TreeMultiSelectField
           data={dutyShiftTreeData}
@@ -201,7 +197,6 @@ const EditForm = ({ form, history, location }) => {
                 ]
               : []
           }
-          getFieldDecorator={getFieldDecorator}
         />
         <Divider />
         <FormButtonsSaveCancelExtra

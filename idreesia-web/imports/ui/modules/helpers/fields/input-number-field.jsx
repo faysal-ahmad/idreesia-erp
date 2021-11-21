@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { InputNumber, Form } from '/imports/ui/controls';
@@ -17,70 +17,50 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
-export default class InputNumberField extends Component {
-  static propTypes = {
-    fieldName: PropTypes.string,
-    fieldLabel: PropTypes.string,
-    placeholder: PropTypes.string,
-    fieldLayout: PropTypes.object,
-    initialValue: PropTypes.number,
-    minValue: PropTypes.number,
-    maxValue: PropTypes.number,
-    precision: PropTypes.number,
-    required: PropTypes.bool,
-    requiredMessage: PropTypes.string,
-    disabled: PropTypes.bool,
-    getFieldDecorator: PropTypes.func,
-  };
+const InputNumberField = ({
+  fieldName,
+  fieldLabel,
+  placeholder,
+  fieldLayout = formItemLayout,
+  initialValue = null,
+  minValue,
+  maxValue,
+  precision,
+  required,
+  requiredMessage,
+  disabled,
+}) => {
+  const additionalProps = {};
+  if (minValue || minValue === 0) additionalProps.min = minValue;
+  if (maxValue) additionalProps.max = maxValue;
+  if (precision) additionalProps.precision = precision;
 
-  static defaultProps = {
-    initialValue: null,
-    fieldLayout: formItemLayout,
-  };
-
-  getField() {
-    const {
-      fieldName,
-      placeholder,
+  const rules = [
+    {
       required,
-      requiredMessage,
-      getFieldDecorator,
-      initialValue,
-      minValue,
-      maxValue,
-      precision,
-      disabled,
-    } = this.props;
+      message: requiredMessage,
+    },
+  ];
 
-    const additionalProps = {};
-    if (minValue || minValue === 0) additionalProps.min = minValue;
-    if (maxValue) additionalProps.max = maxValue;
-    if (precision) additionalProps.precision = precision;
-
-    if (!disabled) {
-      const rules = [
-        {
-          required,
-          message: requiredMessage,
-        },
-      ];
-
-      return getFieldDecorator(fieldName, { initialValue, rules })(
-        <InputNumber placeholder={placeholder} {...additionalProps} />
-      );
-    }
-
-    return getFieldDecorator(fieldName, { initialValue })(
-      <InputNumber disabled={disabled} />
-    );
-  }
-
-  render() {
-    const { fieldLabel, fieldLayout } = this.props;
-    return (
-      <Form.Item label={fieldLabel} {...fieldLayout}>
-        {this.getField()}
-      </Form.Item>
-    );
-  }
+  return (
+    <Form.Item name={fieldName} label={fieldLabel} rules={rules} initialValue={initialValue} {...fieldLayout}>
+        <InputNumber disabled={disabled} placeholder={placeholder} {...additionalProps} />
+    </Form.Item>
+  );
 }
+
+InputNumberField.propTypes = {
+  fieldName: PropTypes.string,
+  fieldLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  fieldLayout: PropTypes.object,
+  initialValue: PropTypes.number,
+  minValue: PropTypes.number,
+  maxValue: PropTypes.number,
+  precision: PropTypes.number,
+  required: PropTypes.bool,
+  requiredMessage: PropTypes.string,
+  disabled: PropTypes.bool,
+};
+
+export default InputNumberField;

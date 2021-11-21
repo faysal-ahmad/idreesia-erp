@@ -58,7 +58,7 @@ class NewForm extends Component {
   render() {
     const {
       portalId,
-      form: { getFieldDecorator, isFieldsTouched },
+      form: { isFieldsTouched },
     } = this.props;
 
     return (
@@ -68,7 +68,6 @@ class NewForm extends Component {
           fieldLabel="User name"
           required
           requiredMessage="Please input the user name."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <InputTextField
@@ -77,7 +76,6 @@ class NewForm extends Component {
           type="password"
           required
           requiredMessage="Please specify a password for the user."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <KarkunSelectionInputField
@@ -87,7 +85,6 @@ class NewForm extends Component {
           showPortalKarkunsList
           required
           requiredMessage="Please select a karkun."
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSaveCancel

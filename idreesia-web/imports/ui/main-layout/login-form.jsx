@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Form, Input, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
 import { GoogleOutlined } from '@ant-design/icons';
 
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
-import { Button, Form, Input, message } from './antd-controls';
 import { UPDATE_LOGIN_TIME } from './gql';
 
 const IconStyle = {
@@ -57,7 +57,6 @@ const LoginForm = ({ history, location }) => {
   return (
     <Form onFinish={handleFinish}>
       <Form.Item
-        {...itemLayout}
         name="userName"
         rules={[
           {
@@ -69,7 +68,6 @@ const LoginForm = ({ history, location }) => {
         <Input placeholder="Username" />
       </Form.Item>
       <Form.Item
-        {...itemLayout}
         name="password"
         rules={[
           {
@@ -80,7 +78,7 @@ const LoginForm = ({ history, location }) => {
       >
         <Input type="password" placeholder="Password" />
       </Form.Item>
-      <Form.Item {...itemLayout}>
+      <Form.Item>
         <Button type="primary" htmlType="submit" style={LoginFormButtonStyle}>
           Log in
         </Button>

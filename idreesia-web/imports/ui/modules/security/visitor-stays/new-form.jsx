@@ -82,7 +82,6 @@ class NewForm extends Component {
       allDutyShifts,
       distinctStayAllowedBy,
       distinctTeamNames,
-      form: { getFieldDecorator },
     } = this.props;
 
     if (
@@ -105,13 +104,11 @@ class NewForm extends Component {
           fieldLabel="Num of Days"
           initialValue={1}
           minValue={1}
-          getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           fieldName="stayAllowedBy"
           fieldLabel="Stay Allowed By"
           dataSource={distinctStayAllowedBy}
-          getFieldDecorator={getFieldDecorator}
         />
         <SelectField
           data={StayReasons}
@@ -119,20 +116,17 @@ class NewForm extends Component {
           getDataText={({ name }) => name}
           fieldName="stayReason"
           fieldLabel="Stay Reason"
-          getFieldDecorator={getFieldDecorator}
         />
         <CascaderField
           data={dutyShiftCascaderData}
           changeOnSelect={false}
           fieldName="dutyIdShiftId"
           fieldLabel="Duty Participation"
-          getFieldDecorator={getFieldDecorator}
         />
         <AutoCompleteField
           fieldName="teamName"
           fieldLabel="Team Name"
           dataSource={distinctTeamNames}
-          getFieldDecorator={getFieldDecorator}
         />
 
         <FormButtonsSubmit text="Add Stay" />

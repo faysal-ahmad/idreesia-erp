@@ -108,42 +108,25 @@ class EditForm extends Component {
     );
   };
 
-  getItemsField() {
-    const { form, physicalStoreId, issuanceFormById } = this.props;
-    const { getFieldDecorator } = form;
-
-    const rules = [
-      {
-        required: true,
-        message: 'Please add some items.',
-      },
-    ];
-    return getFieldDecorator('items', {
-      rules,
-      initialValue: issuanceFormById.items,
-    })(
-      <ItemsList
-        refForm={form}
-        defaultLabel="Issued"
-        inflowLabel="Returned"
-        outflowLabel="Issued"
-        physicalStoreId={physicalStoreId}
-      />
-    );
-  }
-
   render() {
     const {
       locationsLoading,
       formDataLoading,
       issuanceFormById,
       locationsByPhysicalStoreId,
+      physicalStoreId,
     } = this.props;
     if (locationsLoading || formDataLoading) {
       return null;
     }
 
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
+    const rules = [
+      {
+        required: true,
+        message: 'Please add some items.',
+      },
+    ];
 
     return (
       <Fragment>
@@ -158,7 +141,6 @@ class EditForm extends Component {
             initialValue={moment(Number(issuanceFormById.issueDate))}
             required
             requiredMessage="Please input an issue date."
-            getFieldDecorator={getFieldDecorator}
           />
           <KarkunField
             required
@@ -167,7 +149,6 @@ class EditForm extends Component {
             fieldLabel="Issued By / Received By"
             placeholder="Issued By / Received By"
             initialValue={issuanceFormById.refIssuedBy}
-            getFieldDecorator={getFieldDecorator}
             predefinedFilterName={
               PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
             }
@@ -179,7 +160,6 @@ class EditForm extends Component {
             fieldLabel="Issued To / Returned By"
             placeholder="Issued To / Returned By"
             initialValue={issuanceFormById.refIssuedTo}
-            getFieldDecorator={getFieldDecorator}
             predefinedFilterName={
               PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
             }
@@ -189,7 +169,6 @@ class EditForm extends Component {
             fieldLabel="Handed Over To / By"
             required={false}
             initialValue={issuanceFormById.handedOverTo}
-            getFieldDecorator={getFieldDecorator}
           />
           <TreeSelectField
             data={locationsByPhysicalStoreId}
@@ -198,7 +177,6 @@ class EditForm extends Component {
             fieldLabel="For Location"
             placeholder="Select a Location"
             initialValue={issuanceFormById.locationId}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <InputTextAreaField
@@ -206,12 +184,16 @@ class EditForm extends Component {
             fieldLabel="Notes"
             required={false}
             initialValue={issuanceFormById.notes}
-            getFieldDecorator={getFieldDecorator}
           />
 
           <Divider orientation="left">Issued / Returned Items</Divider>
-          <Form.Item {...formItemExtendedLayout}>
-            {this.getItemsField()}
+          <Form.Item name="items" initialValue={issuanceFormById.items} rules={rules} {...formItemExtendedLayout}>
+            <ItemsList
+              defaultLabel="Issued"
+              inflowLabel="Returned"
+              outflowLabel="Issued"
+              physicalStoreId={physicalStoreId}
+            />
           </Form.Item>
 
           <FormButtonsSaveCancel

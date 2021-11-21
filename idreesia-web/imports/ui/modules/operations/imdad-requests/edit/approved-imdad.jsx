@@ -47,7 +47,7 @@ const ApprovedImdad = ({ requestId, form, history }) => {
   if (loading) return null;
   const { operationsImdadRequestById } = data;
   const approvedImdad = operationsImdadRequestById.approvedImdad || {};
-  const { getFieldDecorator, isFieldsTouched } = form;
+  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
@@ -109,7 +109,6 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 : moment()
             }
             fieldLayout={formMonthItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
         <Col span={10}>
@@ -122,7 +121,6 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 : moment()
             }
             fieldLayout={formMonthItemLayout}
-            getFieldDecorator={getFieldDecorator}
           />
         </Col>
       </Row>
@@ -135,14 +133,12 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 fieldLabel="Medical Expense"
                 initialValue={approvedImdad.oneOffMedical || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="oneOffHouseConstruction"
                 fieldLabel="House Construction"
                 initialValue={approvedImdad.oneOffHouseConstruction || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
             </Col>
             <Col span={10}>
@@ -151,14 +147,12 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 fieldLabel="Marriage Expense"
                 initialValue={approvedImdad.oneOffMarriageExpense || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="oneOffMiscPayment"
                 fieldLabel="Misc. Payment"
                 initialValue={approvedImdad.oneOffMiscPayment || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
             </Col>
           </Row>
@@ -171,21 +165,18 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 fieldLabel="Weekly Payment"
                 initialValue={approvedImdad.fixedRecurringWeeklyPayment || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="fixedRecurringMonthlyPayment"
                 fieldLabel="Monthly Payment"
                 initialValue={approvedImdad.fixedRecurringMonthlyPayment || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="fixedRecurringHouseRent"
                 fieldLabel="House Rent"
                 initialValue={approvedImdad.fixedRecurringHouseRent || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <RadioGroupField
                 fieldName="ration"
@@ -197,7 +188,6 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 ]}
                 initialValue={approvedImdad.ration || 'none'}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
             </Col>
             <Col span={10}>
@@ -206,28 +196,24 @@ const ApprovedImdad = ({ requestId, form, history }) => {
                 fieldLabel="Medical Expenses"
                 initialValue={approvedImdad.fixedRecurringMedical || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="fixedRecurringSchoolFee"
                 fieldLabel="School Fees"
                 initialValue={approvedImdad.fixedRecurringSchoolFee || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="fixedRecurringMilk"
                 fieldLabel="Milk Expense"
                 initialValue={approvedImdad.fixedRecurringMilk || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
               <InputNumberField
                 fieldName="fixedRecurringFuel"
                 fieldLabel="Fuel Expense"
                 initialValue={approvedImdad.fixedRecurringFuel || 0}
                 fieldLayout={formItemLayout}
-                getFieldDecorator={getFieldDecorator}
               />
             </Col>
           </Row>
@@ -237,13 +223,11 @@ const ApprovedImdad = ({ requestId, form, history }) => {
             fieldName="variableRecurringMedical"
             fieldLabel="Medical Expenses"
             initialValue={approvedImdad.variableRecurringMedical || 0}
-            getFieldDecorator={getFieldDecorator}
           />
           <InputNumberField
             fieldName="variableRecurringUtilityBills"
             fieldLabel="Utility Bills"
             initialValue={approvedImdad.variableRecurringUtilityBills || 0}
-            getFieldDecorator={getFieldDecorator}
           />
         </Panel>
       </Collapse>

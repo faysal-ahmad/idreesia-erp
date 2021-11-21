@@ -48,7 +48,7 @@ class NewForm extends Component {
   };
 
   render() {
-    const { getFieldDecorator, isFieldsTouched } = this.props.form;
+    const { isFieldsTouched } = this.props.form;
 
     return (
       <Form layout="horizontal" onSubmit={this.handleSubmit}>
@@ -57,37 +57,30 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the mehfil."
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="address"
           fieldLabel="Address"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextField
           fieldName="mehfilStartYear"
           fieldLabel="Start Year"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="timingDetails"
           fieldLabel="Timings"
-          getFieldDecorator={getFieldDecorator}
         />
         <SwitchField
           fieldName="lcdAvailability"
           fieldLabel="LCD Available"
-          getFieldDecorator={getFieldDecorator}
         />
         <SwitchField
           fieldName="tabAvailability"
           fieldLabel="Tablet Available"
-          getFieldDecorator={getFieldDecorator}
         />
         <InputTextAreaField
           fieldName="otherMehfilDetails"
           fieldLabel="Other Details"
-          getFieldDecorator={getFieldDecorator}
         />
         <FormButtonsSaveCancel
           handleCancel={this.props.handleCancel}

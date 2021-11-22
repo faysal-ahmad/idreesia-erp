@@ -9,7 +9,7 @@ import {
   SecurityOperationType,
   SecurityOperationTypeDisplayName,
 } from 'meteor/idreesia-common/constants/audit';
-import { Pagination, Table } from '/imports/ui/controls';
+import { Pagination, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import PermissionsChangedRenderer from './permissions-changed-renderer';

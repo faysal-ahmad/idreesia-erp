@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { AutoComplete, Form } from "/imports/ui/controls";
+import { AutoComplete, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },

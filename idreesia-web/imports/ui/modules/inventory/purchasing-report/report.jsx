@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import numeral from 'numeral';
+import { Button, DatePicker, Spin, Row, Table } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 import {
   keyBy,
@@ -10,7 +12,6 @@ import {
   reverse,
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, DatePicker, Spin, Row, Table } from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
 const LIST_QUERY = gql`
@@ -212,7 +213,7 @@ const Report = ({
         <Button
           type="primary"
           shape="circle"
-          icon="left"
+          icon={<LeftOutlined />}
           onClick={handleMonthGoBack}
         />
         &nbsp;&nbsp;
@@ -226,7 +227,7 @@ const Report = ({
         <Button
           type="primary"
           shape="circle"
-          icon="right"
+          icon={<RightOutlined />}
           onClick={handleMonthGoForward}
         />
       </div>

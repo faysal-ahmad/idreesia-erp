@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
-import { TreeSelect, Form } from '/imports/ui/controls';
+import { TreeSelect, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },

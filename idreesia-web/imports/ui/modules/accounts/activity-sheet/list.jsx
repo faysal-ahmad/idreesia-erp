@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import numeral from 'numeral';
+import { Button, DatePicker, Drawer, Spin, Table } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 import { filter, flowRight, keyBy } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, DatePicker, Drawer, Spin, Table } from '/imports/ui/controls';
 import {
   WithAccountHeadsByCompany,
   WithAccountMonthlyBalancesByCompany,
@@ -182,7 +183,7 @@ class List extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="left"
+            icon={<LeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
@@ -196,7 +197,7 @@ class List extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="right"
+            icon={<RightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>

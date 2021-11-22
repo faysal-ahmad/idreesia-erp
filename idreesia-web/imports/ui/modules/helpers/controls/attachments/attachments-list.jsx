@@ -25,7 +25,7 @@ import {
   Tooltip,
   Popconfirm,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import {
   TakePicture,
   UploadAttachment,

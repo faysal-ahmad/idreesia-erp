@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
+import { Form, message } from 'antd';
 import {
   WithCompanyId,
   WithCompany,
@@ -155,7 +155,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   WithCompanyId(),
   WithCompany(),
   WithAccountHeadId(),

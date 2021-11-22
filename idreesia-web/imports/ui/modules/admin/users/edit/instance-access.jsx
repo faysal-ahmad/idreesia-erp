@@ -1,6 +1,8 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Button, Row, message } from 'antd';
+import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -9,7 +11,6 @@ import {
   WithAllPhysicalStores,
 } from 'meteor/idreesia-common/composers/admin';
 
-import { Button, Row, message } from '/imports/ui/controls';
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
 import { USER_BY_ID, SET_INSTANCE_ACCESS } from '../gql';
@@ -110,7 +111,7 @@ class InstanceAccess extends Component {
         <Row type="flex" justify="start">
           <Button
             size="large"
-            icon="close-circle"
+            icon={<CloseCircleOutlined />}
             type="default"
             onClick={this.handleCancel}
           >
@@ -119,7 +120,7 @@ class InstanceAccess extends Component {
           &nbsp;
           <Button
             size="large"
-            icon="save"
+            icon={<SaveOutlined />}
             type="primary"
             onClick={this.handleSave}
           >

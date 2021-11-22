@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 import moment from 'moment';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Pagination, Table } from '/imports/ui/controls';
+import { Pagination, Table } from 'antd';
 
 import ListFilter from './list-filter';
 

@@ -4,7 +4,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { AuditOutlined, DeleteOutlined, EditOutlined, PrinterOutlined } from '@ant-design/icons';
+import { AuditOutlined, DeleteOutlined, EditOutlined, PrinterOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -18,7 +18,7 @@ import {
   Tooltip,
   Modal,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
 import ListFilter from './list-filter';
@@ -195,7 +195,7 @@ const List = ({ history, location }) => {
       <Button
         type="primary"
         size="large"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New Payment

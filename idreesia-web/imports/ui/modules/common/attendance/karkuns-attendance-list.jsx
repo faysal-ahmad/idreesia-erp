@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
-
-import { Formats } from 'meteor/idreesia-common/constants';
-import { filter, noop, sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import { CloseCircleOutlined, DeleteOutlined, LeftOutlined, PlusCircleOutlined, RightOutlined, SaveOutlined, SettingOutlined } from '@ant-design/icons';
 import {
   Button,
   Cascader,
@@ -12,7 +9,10 @@ import {
   Dropdown,
   Menu,
   Table,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { Formats } from 'meteor/idreesia-common/constants';
+import { filter, noop, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 const AttendanceContainer = {
@@ -306,13 +306,13 @@ export default class KarkunsAttendanceList extends Component {
     if (isEditing) {
       return (
         <div>
-          <Button icon="close-circle" onClick={this.handleCancelAttendances}>
+          <Button icon={<CloseCircleOutlined />} onClick={this.handleCancelAttendances}>
             Cancel
           </Button>
           &nbsp;
           <Button
             type="primary"
-            icon="save"
+            icon={<SaveOutlined />}
             onClick={this.handleSaveAttendances}
           >
             Save
@@ -341,7 +341,7 @@ export default class KarkunsAttendanceList extends Component {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting">Actions</Button>
+        <Button icon={<SettingOutlined />}>Actions</Button>
       </Dropdown>
     );
   };
@@ -357,7 +357,7 @@ export default class KarkunsAttendanceList extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="left"
+            icon={<LeftOutlined />}
             onClick={() => {
               this.handleMonthGoBack(_month);
             }}
@@ -373,7 +373,7 @@ export default class KarkunsAttendanceList extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="right"
+            icon={<RightOutlined />}
             onClick={() => {
               this.handleMonthGoForward(_month);
             }}

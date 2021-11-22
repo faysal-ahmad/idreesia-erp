@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Row } from 'antd';
 
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
@@ -74,4 +74,4 @@ ListFilter.propTypes = {
   refreshData: PropTypes.func,
 };
 
-export default Form.create({ name: 'wazaifListFilter' })(ListFilter);
+export default ListFilter;

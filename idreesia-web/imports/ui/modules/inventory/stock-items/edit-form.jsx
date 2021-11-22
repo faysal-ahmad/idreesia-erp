@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Tabs } from '/imports/ui/controls';
+import { Tabs } from 'antd';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,

@@ -15,7 +15,7 @@ import {
   WingBlank,
   WhiteSpace,
   SearchResultRow,
-} from '/imports/ui/controls';
+} from 'antd';
 
 import StayHistory from './stay-history';
 import SECURITY_VISITOR_BY_CNIC_OR_CONTACT_NUMBER from '../gql/security-visitor-by-cnic-or-contact-number';

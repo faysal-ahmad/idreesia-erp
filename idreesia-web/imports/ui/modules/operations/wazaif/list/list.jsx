@@ -2,12 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { Button, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Button, message } from '/imports/ui/controls';
 import { WazaifList, WazaifListFilter } from '/imports/ui/modules/common';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
@@ -66,7 +67,7 @@ const List = ({ history, location }) => {
       <div style={ButtonGroupStyle}>
         <Button
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           size="large"
           onClick={handleNewClicked}
         >

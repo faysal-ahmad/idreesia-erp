@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Form } from 'antd';
 
-import { Form } from '/imports/ui/controls';
 import {
   DateField,
   InputTextField,
@@ -75,4 +75,4 @@ WazaifAndRaabta.propTypes = {
   handleCancel: PropTypes.func,
 };
 
-export default Form.create()(WazaifAndRaabta);
+export default WazaifAndRaabta;

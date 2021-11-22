@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Table, Pagination } from '/imports/ui/controls';
+import { Table, Pagination } from 'antd';
 
 const AttendanceContainer = {
   display: 'flex',

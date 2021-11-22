@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { Form } from '/imports/ui/controls';
+import { Form } from 'antd';
 
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
@@ -30,4 +29,4 @@ AttachmentForm.propTypes = {
   defaultValues: PropTypes.object,
 };
 
-export default Form.create()(AttachmentForm);
+export default AttachmentForm;

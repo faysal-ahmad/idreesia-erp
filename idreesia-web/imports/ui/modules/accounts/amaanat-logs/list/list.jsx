@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Button, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -10,7 +12,6 @@ import {
   useAllCities,
   useAllCityMehfils,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Button, message } from '/imports/ui/controls';
 import {
   AmaanatLogsList,
   AmaanatLogsListFilter,
@@ -88,7 +89,7 @@ const List = ({ history, location }) => {
       <Button
         size="large"
         type="primary"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New Amaanat Log

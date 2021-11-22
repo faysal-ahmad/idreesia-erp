@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
@@ -88,7 +88,6 @@ class EditForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithQueryParams(),
   graphql(UPDATE_OUTSTATION_MEHFIL_DUTY, {
     name: 'updateOustationMehfilDuty',

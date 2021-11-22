@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Form, message } from '/imports/ui/controls';
 import {
   DateField,
   SelectField,
@@ -119,7 +119,6 @@ class EmploymentInfo extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(SET_HR_KARKUN_EMPLOYMENT_INFO, {
     name: 'setHrKarkunEmploymentInfo',
     options: {

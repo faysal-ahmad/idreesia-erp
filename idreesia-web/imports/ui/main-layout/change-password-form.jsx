@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Modal, message } from './antd-controls';
+import { Form, Input, Modal, message } from 'antd';
 
 const itemLayout = {
   wrapperCol: { span: 14 },

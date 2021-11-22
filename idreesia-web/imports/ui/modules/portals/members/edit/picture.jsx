@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Row, Col, message } from '/imports/ui/controls';
+import { Row, Col, message } from 'antd';
 import { TakePicture } from '/imports/ui/modules/helpers/controls';
 
 import {

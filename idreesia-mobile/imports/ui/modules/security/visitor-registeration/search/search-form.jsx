@@ -4,9 +4,6 @@ import { createForm, formShape } from 'rc-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEraser } from '@fortawesome/free-solid-svg-icons/faEraser';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
   Button,
   InputItemField,
@@ -14,7 +11,10 @@ import {
   List,
   WhiteSpace,
   WingBlank,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { SecuritySubModulePaths } from '/imports/ui/modules/security';
 
 import SearchResult from './search-result';

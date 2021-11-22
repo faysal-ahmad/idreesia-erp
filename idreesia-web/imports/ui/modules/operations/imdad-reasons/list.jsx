@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from 'antd';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import { ALL_IMDAD_REASONS, REMOVE_IMDAD_REASON } from './gql';
@@ -94,7 +94,7 @@ class List extends Component {
         title={() => (
           <Button
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             size="large"
             onClick={this.handleNewClicked}
           >

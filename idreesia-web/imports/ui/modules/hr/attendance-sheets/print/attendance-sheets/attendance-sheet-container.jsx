@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import ReactToPrint from 'react-to-print';
+import { Button, Divider } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { Button, Divider } from '/imports/ui/controls';
 
 import { ATTENDANCE_BY_MONTH } from '../../gql';
 import AttendanceSheet from './attendance-sheet';
@@ -36,7 +37,7 @@ const AttendanceSheetContainer = ({ history, location }) => {
       <ReactToPrint
         content={() => attendanceSheet.current}
         trigger={() => (
-          <Button size="large" type="primary" icon="printer">
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Data
           </Button>
         )}

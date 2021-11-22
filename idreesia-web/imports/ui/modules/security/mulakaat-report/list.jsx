@@ -3,13 +3,6 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
-import { InfoCircleOutlined } from '@ant-design/icons';
-
-import { Formats } from 'meteor/idreesia-common/constants';
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-
 import {
   Button,
   DatePicker,
@@ -18,7 +11,14 @@ import {
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+import { DeleteOutlined, InfoCircleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+
+import { Formats } from 'meteor/idreesia-common/constants';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 
 import {
@@ -171,7 +171,7 @@ const List = ({ history, location }) => {
         <Button
           type="primary"
           shape="circle"
-          icon="left"
+          icon={<LeftOutlined />}
           onClick={handleDayGoBack}
         />
         &nbsp;&nbsp;
@@ -185,7 +185,7 @@ const List = ({ history, location }) => {
         <Button
           type="primary"
           shape="circle"
-          icon="right"
+          icon={<RightOutlined />}
           onClick={handleDayGoForward}
         />
       </div>
@@ -193,7 +193,7 @@ const List = ({ history, location }) => {
         <Button
           size="large"
           type="primary"
-          icon="delete"
+          icon={<DeleteOutlined />}
           onClick={handleCancelMulakaats}
         >
           Cancel Mulakaats

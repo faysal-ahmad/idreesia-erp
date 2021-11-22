@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputNumberField,
@@ -100,7 +100,6 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(UPDATE_OPERATIONS_WAZEEFA, {
     name: 'updateOperationsWazeefa',
     options: {

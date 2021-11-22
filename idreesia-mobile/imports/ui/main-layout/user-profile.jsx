@@ -7,7 +7,7 @@ import {
   setLoggedInUserId,
   setActiveModuleAndSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
-import { Button, WingBlank } from '/imports/ui/controls';
+import { Button, WingBlank } from 'antd';
 
 const ContainerStyle = {
   width: '300px',

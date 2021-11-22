@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_WAZAIF_AND_RAABTA } from '../gql';

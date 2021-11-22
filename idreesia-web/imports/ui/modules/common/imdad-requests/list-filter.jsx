@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Collapse, Form } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
-import { Collapse, Form } from '/imports/ui/controls';
 import { SelectField } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
@@ -98,4 +98,4 @@ ListFilter.propTypes = {
   refreshData: PropTypes.func,
 };
 
-export default Form.create()(ListFilter);
+export default ListFilter;

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -11,7 +11,7 @@ import {
   Tooltip,
   Popconfirm,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import { WithAllMehfilDuties } from '/imports/ui/modules/outstation/common/composers';
 
 import {
@@ -167,7 +167,7 @@ class DutyParticipation extends Component {
                 &nbsp;&nbsp;
                 <Button
                   type="primary"
-                  icon="plus-circle-o"
+                  icon={<PlusCircleOutlined />}
                   onClick={this.handleAddClicked}
                 >
                   Add Duty

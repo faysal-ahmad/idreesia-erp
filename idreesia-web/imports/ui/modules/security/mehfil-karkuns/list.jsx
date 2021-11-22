@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
-import { UsergroupDeleteOutlined } from '@ant-design/icons';
+import { Button, Select, Table, Tooltip } from 'antd';
+import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
 
-import { Button, Select, Table, Tooltip } from '/imports/ui/controls';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
@@ -169,7 +169,7 @@ export class List extends Component {
     const actions = (
       <div className="list-table-header-section">
         <KarkunSelectionButton
-          icon="usergroup-add"
+          icon={<UsergroupAddOutlined />}
           label="Add Karkuns"
           onSelection={this.onKarkunSelection}
           disabled={isPastMehfil || !dutyName}
@@ -177,7 +177,7 @@ export class List extends Component {
         &nbsp;&nbsp;
         <Button
           disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
-          icon="edit"
+          icon={<EditOutlined />}
           size="large"
           onClick={this.handleEditDutyDetails}
         >
@@ -186,7 +186,7 @@ export class List extends Component {
         &nbsp;&nbsp;
         <Button
           disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
-          icon="printer"
+          icon={<PrinterOutlined />}
           size="large"
           onClick={this.handleViewMehfilCards}
         >

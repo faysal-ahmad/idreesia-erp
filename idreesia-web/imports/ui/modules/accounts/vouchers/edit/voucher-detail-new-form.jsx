@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Button, Col, Form, Row, message } from "antd";
 import { find, flowRight } from "lodash";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
+import { PlusCircleOutlined } from '@ant-design/icons';
 
-import { Button, Col, Form, Row, message } from "/imports/ui/controls";
 import {
   InputTextField,
   InputNumberField,
@@ -108,7 +109,7 @@ class VoucherDetailNewForm extends Component {
         <Form.Item style={ButtonContainerStyle}>
           <Button
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             onClick={this.handleSubmit}
           >
             Add Item
@@ -147,7 +148,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   graphql(formMutation, {
     name: "createVoucherDetail",
     options: {

@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
+import { Col, Collapse, Form, Row, message } from 'antd';
 
-import { Col, Collapse, Form, Row, message } from '/imports/ui/controls';
 import {
   InputNumberField,
   MonthField,
@@ -246,4 +246,4 @@ ApprovedImdad.propTypes = {
   requestId: PropTypes.string,
 };
 
-export default Form.create()(ApprovedImdad);
+export default ApprovedImdad;

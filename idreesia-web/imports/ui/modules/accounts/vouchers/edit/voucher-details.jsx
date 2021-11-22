@@ -11,7 +11,7 @@ import {
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import VoucherDetailNewForm from './voucher-detail-new-form';
 import VoucherDetailEditForm from './voucher-detail-edit-form';
 import { WithAccountHeadsByCompany } from '/imports/ui/modules/accounts/common/composers';

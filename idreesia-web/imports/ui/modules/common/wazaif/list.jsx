@@ -10,7 +10,7 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
 import { WazeefaName } from '/imports/ui/modules/helpers/controls';
 
 export default class WazaifList extends Component {

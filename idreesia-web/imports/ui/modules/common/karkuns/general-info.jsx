@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Divider, Form } from 'antd';
 
-import { Divider, Form } from '/imports/ui/controls';
 import {
   AgeField,
   CascaderField,
@@ -241,4 +241,4 @@ GeneralInfo.defaultProps = {
   showCityMehfilField: false,
 };
 
-export default Form.create()(GeneralInfo);
+export default GeneralInfo;

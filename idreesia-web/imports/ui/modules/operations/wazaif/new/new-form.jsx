@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 import {
   InputTextField,
@@ -85,7 +85,6 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(CREATE_OPERATIONS_WAZEEFA, {
     name: 'createOperationsWazeefa',
     options: {

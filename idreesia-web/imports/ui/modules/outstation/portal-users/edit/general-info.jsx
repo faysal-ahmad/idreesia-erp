@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, Modal, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithAllPortals } from 'meteor/idreesia-common/composers/admin';
-import { Form, Modal, message } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,
@@ -147,7 +147,6 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithAllPortals(),
   graphql(RESET_OUTSTATION_PORTAL_USER_PASSWORD, {
     name: 'resetOutstationPortalUserPassword',

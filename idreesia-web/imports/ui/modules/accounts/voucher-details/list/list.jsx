@@ -6,7 +6,7 @@ import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { Pagination, Table } from "/imports/ui/controls";
+import { Pagination, Table } from "antd";
 
 class List extends Component {
   static propTypes = {

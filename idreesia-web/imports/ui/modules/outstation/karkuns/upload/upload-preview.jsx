@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CheckCircleTwoTone, CloseCircleTwoTone, InfoCircleTwoTone } from '@ant-design/icons';
-
+import { CheckCircleTwoTone, CloseCircleTwoTone, InfoCircleTwoTone, ImportOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Table,
   Tooltip,
   notification,
-} from '/imports/ui/controls';
+} from 'antd';
 
 const columns = [
   {
@@ -147,7 +146,7 @@ const UploadPreview = ({
         <Button
           size="large"
           type="primary"
-          icon="import"
+          icon={<ImportOutlined />}
           disabled={importing}
           onClick={handleStartImport}
         >
@@ -157,7 +156,7 @@ const UploadPreview = ({
         <Button
           size="large"
           type="default"
-          icon="close-circle"
+          icon={<CloseCircleOutlined />}
           onClick={handleCancel}
         >
           Cancel

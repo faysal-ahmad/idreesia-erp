@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import InputMask from 'react-input-mask';
+import { Button, Divider, Row, Col, message } from 'antd';
+import { SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Divider, Row, Col, message } from '/imports/ui/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import { ScanCnic } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
@@ -61,7 +62,7 @@ class Form extends Component {
               </Col>
               <Col order={2}>
                 <Button
-                  icon="search"
+                  icon={<SearchOutlined />}
                   onClick={() => {
                     if (this.manualCnic.value) {
                       this.scanCnic.resetState();
@@ -84,7 +85,7 @@ class Form extends Component {
           <Col order={2}>
             <Button
               size="large"
-              icon="unordered-list"
+              icon={<UnorderedListOutlined />}
               onClick={this.handleSearch}
             >
               Visitors List
@@ -92,7 +93,7 @@ class Form extends Component {
             &nbsp;
             <Button
               size="large"
-              icon="user-add"
+              icon={<UserAddOutlined />}
               type="primary"
               onClick={this.handleNewVisitor}
             >

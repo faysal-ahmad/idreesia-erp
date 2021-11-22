@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Button, Table, Tooltip, message } from 'antd';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Table, Tooltip, message } from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import { ALL_MEHFIL_DUTIES, REMOVE_OUTSTATION_MEHFIL_DUTY } from './gql';
@@ -90,7 +90,7 @@ class List extends Component {
         title={() => (
           <Button
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             onClick={this.handleNewClicked}
           >
             New Duty

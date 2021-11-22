@@ -7,9 +7,10 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   PrinterOutlined,
+  SettingOutlined,
+  PlusCircleOutlined,
+  BarcodeOutlined,
 } from '@ant-design/icons';
-
-import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Dropdown,
@@ -20,7 +21,9 @@ import {
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
@@ -323,7 +326,7 @@ class List extends Component {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting" size="large" />
+        <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );
   };
@@ -355,7 +358,7 @@ class List extends Component {
           <Button
             size="large"
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Karkun
@@ -364,7 +367,7 @@ class List extends Component {
           <Button
             size="large"
             type="secondary"
-            icon="barcode"
+            icon={<BarcodeOutlined />}
             onClick={handleScanClicked}
           >
             Scan Card

@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { List } from '/imports/ui/controls';
+import { List } from 'antd';
 
 const ViewForm = ({ formDataLoading, visitorStayById }) => {
   if (formDataLoading) return null;

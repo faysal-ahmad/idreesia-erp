@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 
-import { Modal, message } from '/imports/ui/controls';
+import { Modal, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithBreadcrumbs,

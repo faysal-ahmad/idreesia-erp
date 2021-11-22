@@ -2,14 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu, message } from 'antd';
+import { DownloadOutlined, UploadOutlined, PlusCircleOutlined, SettingOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Button, Dropdown, Menu, message } from '/imports/ui/controls';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -120,7 +120,7 @@ const List = ({ history, location }) => {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting" size="large" />
+        <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );
   };
@@ -130,7 +130,7 @@ const List = ({ history, location }) => {
       <div style={ButtonGroupStyle}>
         <Button
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           size="large"
           onClick={handleNewClicked}
         >

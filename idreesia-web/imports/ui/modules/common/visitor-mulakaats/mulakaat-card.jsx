@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { Card } from '/imports/ui/controls';
+import { Card } from 'antd';
 import { filter, memoize } from 'meteor/idreesia-common/utilities/lodash';
 
 const HeadStyle = {

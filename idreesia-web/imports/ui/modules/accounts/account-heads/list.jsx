@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Table } from '/imports/ui/controls';
+import { Table } from 'antd';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   WithCompanyId,

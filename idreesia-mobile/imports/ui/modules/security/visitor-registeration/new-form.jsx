@@ -15,7 +15,7 @@ import {
   Switch,
   Toast,
   WhiteSpace,
-} from '/imports/ui/controls';
+} from 'antd';
 
 import CREATE_VISITOR from './gql/create-visitor';
 import CREATE_VISITOR_STAY from './gql/create-visitor-stay';

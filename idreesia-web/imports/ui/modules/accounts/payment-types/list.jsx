@@ -6,7 +6,7 @@ import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from 'antd';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 
 import { ALL_PAYMENT_TYPES, REMOVE_PAYMENT_TYPE } from './gql';

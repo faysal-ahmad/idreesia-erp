@@ -4,7 +4,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
-import { Pagination, Table, Tooltip } from '/imports/ui/controls';
+import { Pagination, Table, Tooltip } from 'antd';
 
 export default class AmaanatLogsList extends Component {
   static propTypes = {

@@ -9,7 +9,7 @@ import {
   useAllCities,
   useAllCityMehfils,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { AmaanatLogsEditForm } from '/imports/ui/modules/common';
 
 import {

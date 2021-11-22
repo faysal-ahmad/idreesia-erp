@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { Button, DatePicker, Spin, Table } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 import {
   flowRight,
@@ -10,7 +12,6 @@ import {
   reverse,
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, DatePicker, Spin, Table } from '/imports/ui/controls';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
 class Report extends Component {
@@ -112,7 +113,7 @@ class Report extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="left"
+            icon={<LeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
@@ -126,7 +127,7 @@ class Report extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="right"
+            icon={<RightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>

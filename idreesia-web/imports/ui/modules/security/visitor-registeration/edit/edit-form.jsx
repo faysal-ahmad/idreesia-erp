@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Tabs } from '/imports/ui/controls';
+import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import Picture from './picture';
 import Notes from './notes';

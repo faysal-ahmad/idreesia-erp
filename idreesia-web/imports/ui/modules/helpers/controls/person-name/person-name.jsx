@@ -4,7 +4,7 @@ import { UserOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Avatar, Modal } from '/imports/ui/controls';
+import { Avatar, Modal } from 'antd';
 
 const NameDivStyle = {
   display: 'flex',

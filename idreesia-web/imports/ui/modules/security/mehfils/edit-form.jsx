@@ -2,10 +2,10 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   DateField,
@@ -86,7 +86,6 @@ class EditForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(UPDATE_MEHFIL, {
     name: 'updateMehfil',
     options: {

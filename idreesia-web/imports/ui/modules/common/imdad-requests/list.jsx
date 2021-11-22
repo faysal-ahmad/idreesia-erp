@@ -9,7 +9,7 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 export default class ImdadRequestsList extends Component {

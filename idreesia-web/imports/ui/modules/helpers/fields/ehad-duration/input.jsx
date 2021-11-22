@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { Input, Select, Row, Col } from '/imports/ui/controls';
+import { Input, Select, Row, Col } from 'antd';
 
 export default class CustomInput extends Component {
   static propTypes = {

@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Form } from 'antd';
 
-import { Form } from '/imports/ui/controls';
 import {
   DateField,
   CheckboxField,
@@ -82,4 +82,4 @@ class EditForm extends Component {
   }
 }
 
-export default Form.create()(EditForm);
+export default EditForm;

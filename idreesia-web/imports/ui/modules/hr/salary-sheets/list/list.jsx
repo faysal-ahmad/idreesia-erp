@@ -11,7 +11,10 @@ import {
   FileExcelOutlined,
   PlusCircleOutlined,
   PrinterOutlined,
+  SettingOutlined,
   WarningTwoTone,
+  LeftOutlined,
+  RightOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -24,7 +27,7 @@ import {
   Select,
   Table,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
 import {
   flowRight,
   keyBy,
@@ -460,7 +463,7 @@ export class List extends Component {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting">Actions</Button>
+        <Button icon={<SettingOutlined />}>Actions</Button>
       </Dropdown>
     );
   };
@@ -475,7 +478,7 @@ export class List extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="left"
+            icon={<LeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
@@ -489,7 +492,7 @@ export class List extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="right"
+            icon={<RightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>

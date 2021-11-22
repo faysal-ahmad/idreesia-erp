@@ -12,7 +12,7 @@ import {
   SecuritySubModuleNames,
   SecuritySubModulePaths,
 } from '/imports/ui/modules/security';
-import { List } from '/imports/ui/controls';
+import { List } from 'antd';
 
 import UserProfile from './user-profile';
 

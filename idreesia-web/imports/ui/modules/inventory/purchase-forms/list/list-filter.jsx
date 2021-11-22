@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Button, Collapse, Form, Row } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   CheckboxGroupField,
@@ -142,7 +141,4 @@ class ListFilter extends Component {
   }
 }
 
-export default flowRight(
-  WithVendorsByPhysicalStore(),
-  Form.create()
-)(ListFilter);
+export default WithVendorsByPhysicalStore()(ListFilter);

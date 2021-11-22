@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,
@@ -110,7 +110,6 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithAllCities(),
   graphql(UPDATE_CITY, {
     name: 'updateCity',

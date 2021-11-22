@@ -4,7 +4,7 @@ import moment from 'moment';
 import { InstagramOutlined } from '@ant-design/icons';
 
 import { getUploadUrl } from 'meteor/idreesia-common/utilities';
-import { Button, Modal, message } from '/imports/ui/controls';
+import { Button, Modal, message } from 'antd';
 import TakePictureForm from './take-picture-form';
 
 export default class TakePicture extends Component {

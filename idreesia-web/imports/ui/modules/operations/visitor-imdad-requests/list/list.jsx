@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Button, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, message } from '/imports/ui/controls';
 import { ImdadRequestsList } from '/imports/ui/modules/common';
 
 import {
@@ -68,7 +69,7 @@ const List = ({ visitorId }) => {
   const getTableHeader = () => (
     <div className="list-table-header">
       <div className="list-table-header-section">
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
           Create Imdad Request
         </Button>
       </div>

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Form } from 'antd';
 
-import { Form } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
@@ -105,4 +105,4 @@ class EditForm extends Component {
   }
 }
 
-export default Form.create()(EditForm);
+export default EditForm;

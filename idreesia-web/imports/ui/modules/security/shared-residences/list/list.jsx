@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { DeleteOutlined } from '@ant-design/icons';
-
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-
 import {
   Button,
   Pagination,
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
+
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import ListFilter from './list-filter';
@@ -129,7 +129,7 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+      <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
         New Shared Residence
       </Button>
       <ListFilter

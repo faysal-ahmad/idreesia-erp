@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Divider, Form } from 'antd';
 
 import {
   useDistinctCities,
   useDistinctCountries,
 } from 'meteor/idreesia-common/hooks/security';
-import { Divider, Form } from '/imports/ui/controls';
 import {
   AgeField,
   AutoCompleteField,
@@ -167,4 +167,4 @@ NewForm.propTypes = {
   handleCancel: PropTypes.func,
 };
 
-export default Form.create()(NewForm);
+export default NewForm;

@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
-import { EditOutlined, IdcardOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
-
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { StayReasons } from 'meteor/idreesia-common/constants/security';
+import { EditOutlined, IdcardOutlined, PlusCircleOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 import {
   Button,
   Pagination,
@@ -15,7 +12,10 @@ import {
   Tooltip,
   Modal,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
 import NewForm from '../new-form';
 import EditForm from '../edit-form';
@@ -239,7 +239,7 @@ class List extends Component {
       return (
         <Button
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           onClick={this.handleNewClicked}
         >
           Add New Stay

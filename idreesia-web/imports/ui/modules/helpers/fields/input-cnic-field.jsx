@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputMask from 'react-input-mask';
 
-import { Input, Form } from '/imports/ui/controls';
+import { Input, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },

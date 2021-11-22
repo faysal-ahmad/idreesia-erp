@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { Col, Row } from '/imports/ui/controls';
+import { Col, Row } from 'antd';
 
 const barcodeOptions = {
   width: 0.9,

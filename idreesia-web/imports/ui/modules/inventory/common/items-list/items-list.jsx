@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { filter, find } from 'meteor/idreesia-common/utilities/lodash';
-import { Table, Tooltip, message } from '/imports/ui/controls';
+import { Table, Tooltip, message } from 'antd';
 import { default as ItemForm } from './item-form';
 
 class ItemsList extends Component {

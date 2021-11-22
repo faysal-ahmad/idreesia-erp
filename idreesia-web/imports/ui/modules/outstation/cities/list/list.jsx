@@ -3,7 +3,14 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Pagination,
+  Table,
+  Tooltip,
+  message,
+} from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { find, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -13,13 +20,6 @@ import {
   useAllPortals,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import {
-  Button,
-  Pagination,
-  Table,
-  Tooltip,
-  message,
-} from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import ListFilter from './list-filter';
@@ -161,7 +161,7 @@ const List = ({ history, location }) => {
         <Button
           size="large"
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New City

@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { SyncOutlined } from '@ant-design/icons';
-
-import { Formats } from 'meteor/idreesia-common/constants';
 import {
   Button,
   Collapse,
   Form,
   Row,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { Formats } from 'meteor/idreesia-common/constants';
 import {
   DateRangeField,
   InputTextField,
@@ -222,4 +222,4 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create()(ListFilter);
+export default ListFilter;

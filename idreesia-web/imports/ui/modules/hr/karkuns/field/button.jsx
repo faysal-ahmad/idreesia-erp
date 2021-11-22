@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Drawer } from '/imports/ui/controls';
+import { Button, Drawer } from 'antd';
 import ListContainer from './list-container';
 
 const ContainerStyle = {

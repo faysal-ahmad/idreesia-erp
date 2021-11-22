@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Button, Collapse, Form, Row } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   DateRangeField,
   InputCnicField,
@@ -254,4 +254,4 @@ ListFilter.defaultProps = {
   distinctCities: [],
 };
 
-export default Form.create({ name: 'visitorsListFilter' })(ListFilter);
+export default ListFilter;

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Input, InputNumber, Select } from 'antd';
 
 import { startCase } from 'meteor/idreesia-common/utilities/lodash';
-import { Input, InputNumber, Select } from '/imports/ui/controls';
 
 const ContainerStyle = {
   display: 'flex',
@@ -85,7 +85,6 @@ export default class CustomInput extends Component {
           />
           <InputNumber
             ref={this.durationInput}
-            allowClear
             value={duration}
             onChange={this.handleDurationChange}
           />

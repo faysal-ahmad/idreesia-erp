@@ -7,7 +7,7 @@ import { faBed } from '@fortawesome/free-solid-svg-icons/faBed';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { Button, List, Toast, WhiteSpace } from '/imports/ui/controls';
+import { Button, List, Toast, WhiteSpace } from 'antd';
 
 import PAGED_VISITOR_STAYS from '../gql/paged-visitor-stays';
 import CREATE_VISITOR_STAY from '../gql/create-visitor-stay';

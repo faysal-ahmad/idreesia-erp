@@ -2,7 +2,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -13,7 +13,7 @@ import {
   Modal,
   Popconfirm,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import {
   WithAllMSDuties,
   WithAllDutyShifts,
@@ -207,7 +207,7 @@ class DutyParticipation extends Component {
           title={() => (
             <Button
               type="primary"
-              icon="plus-circle-o"
+              icon={<PlusCircleOutlined />}
               onClick={this.handleNewClicked}
             >
               New Duty

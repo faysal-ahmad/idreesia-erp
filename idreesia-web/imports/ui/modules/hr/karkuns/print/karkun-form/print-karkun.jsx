@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
+import { Button, Checkbox, Divider } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Checkbox, Divider } from '/imports/ui/controls';
 
 import { HR_KARKUN_BY_ID } from '../../gql';
 import { DetailedForm } from './detailed-form';
@@ -65,7 +66,7 @@ class PrintView extends Component {
             <ReactToPrint
               content={() => this.printViewRef.current}
               trigger={() => (
-                <Button size="large" type="primary" icon="printer">
+                <Button size="large" type="primary" icon={<PrinterOutlined />}>
                   Print
                 </Button>
               )}

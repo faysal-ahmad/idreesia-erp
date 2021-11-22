@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import { useQuery } from '@apollo/react-hooks';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Pagination, Table } from '/imports/ui/controls';
+import { Pagination, Table } from 'antd';
 
 import { PAGED_PAYMENTS_FOR_IMDAD_REQUEST } from '../gql';
 

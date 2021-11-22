@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
+import { Layout } from 'antd';
 import { useSelector } from 'react-redux';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { Layout } from './antd-controls';
 
 const routersMap = {
   [ModuleNames.admin]: React.lazy(() =>

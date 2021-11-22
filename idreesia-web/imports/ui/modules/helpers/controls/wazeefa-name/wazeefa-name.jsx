@@ -4,7 +4,7 @@ import { ReadOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
-import { Avatar, Modal } from '/imports/ui/controls';
+import { Avatar, Modal } from 'antd';
 
 import WazeefaPreview from './wazeefa-preview';
 

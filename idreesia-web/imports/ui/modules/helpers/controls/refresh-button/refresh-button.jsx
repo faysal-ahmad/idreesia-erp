@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { SyncOutlined } from '@ant-design/icons';
 
-import { Tooltip, message } from '/imports/ui/controls';
+import { Tooltip, message } from 'antd';
 
 const RefreshButton = ({ refreshData }) => {
   if (!refreshData) return null;

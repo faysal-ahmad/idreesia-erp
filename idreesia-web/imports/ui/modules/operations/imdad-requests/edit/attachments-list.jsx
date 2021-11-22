@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
 import {

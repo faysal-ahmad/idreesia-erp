@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
-import { Tree } from '/imports/ui/controls';
+import { Tree } from 'antd';
 import { allModulePermissions } from './all-module-permissions';
 
 export default class PermissionSelection extends Component {

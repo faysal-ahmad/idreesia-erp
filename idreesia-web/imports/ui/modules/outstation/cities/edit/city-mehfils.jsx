@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Modal,
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
   CITY_MEHFILS_BY_CITY_ID,
@@ -179,7 +179,7 @@ class List extends Component {
           title={() => (
             <Button
               type="primary"
-              icon="plus-circle-o"
+              icon={<PlusCircleOutlined />}
               onClick={this.handleNewClicked}
             >
               New Mehfil

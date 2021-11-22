@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Barcode from "react-barcode";
 
-import { Button, Col, Row } from "/imports/ui/controls";
+import { Button, Col, Row } from "antd";
 
 export default class DisplayBarcode extends Component {
   static propTypes = {

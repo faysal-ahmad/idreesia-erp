@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { WithPortal } from '/imports/ui/modules/portals/common/composers';
-import { Tabs } from '/imports/ui/controls';
+import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import WazaifAndRaabta from './wazaif-and-raabta';
 import ProfilePicture from './profile-picture';

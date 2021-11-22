@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { WithAllPortals } from 'meteor/idreesia-common/composers/admin';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   KarkunSelectionInputField,
@@ -105,7 +105,6 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithAllPortals(),
   graphql(CREATE_OUTSTATION_PORTAL_USER, {
     name: 'createOutstationPortalUser',

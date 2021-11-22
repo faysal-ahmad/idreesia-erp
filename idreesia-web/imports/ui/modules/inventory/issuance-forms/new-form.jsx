@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
-import { Divider, Form, message } from '/imports/ui/controls';
 import { ItemsList } from '../common/items-list';
 import {
   WithPhysicalStore,
@@ -209,7 +209,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),

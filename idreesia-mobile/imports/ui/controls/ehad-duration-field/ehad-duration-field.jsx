@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { List, Picker } from '/imports/ui/controls';
+import { List, Picker } from 'antd';
 
 function getDurationDataOptions() {
   const yearOptions = [];

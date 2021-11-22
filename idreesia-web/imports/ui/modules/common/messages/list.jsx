@@ -14,7 +14,7 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
 
 const LinkStyle = {
   width: '100%',

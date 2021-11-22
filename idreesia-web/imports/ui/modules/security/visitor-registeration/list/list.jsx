@@ -2,20 +2,26 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
-
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
-import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-
 import {
   Button,
   Drawer,
   Dropdown,
   Menu,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+import {
+  DownloadOutlined,
+  UploadOutlined,
+  PlusCircleOutlined,
+  SettingOutlined,
+  ScanOutlined,
+} from '@ant-design/icons';
+
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
@@ -173,7 +179,7 @@ const List = ({ history, location }) => {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting" size="large" />
+        <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );
   };
@@ -183,14 +189,14 @@ const List = ({ history, location }) => {
       <div style={ButtonGroupStyle}>
         <Button
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           size="large"
           onClick={handleNewClicked}
         >
           New Visitor
         </Button>
         &nbsp;&nbsp;
-        <Button icon="scan" size="large" onClick={handleScanClicked}>
+        <Button icon={<ScanOutlined />} size="large" onClick={handleScanClicked}>
           Scan CNIC
         </Button>
       </div>

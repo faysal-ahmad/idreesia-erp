@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Row, Spin, message } from '/imports/ui/controls';
+import { Row, Spin, message } from 'antd';
 import moment from 'moment';
 
 import { Card } from '../mehfil-cards';

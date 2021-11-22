@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-
-import { Formats } from 'meteor/idreesia-common/constants';
+import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Modal,
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { Formats } from 'meteor/idreesia-common/constants';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 
 import {
@@ -172,7 +172,7 @@ const ResidentsList = ({ sharedResidenceId }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+      <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
         New Resident
       </Button>
     </div>

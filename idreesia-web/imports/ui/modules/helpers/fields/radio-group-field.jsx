@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Radio, Form } from "/imports/ui/controls";
+import { Radio, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },

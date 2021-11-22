@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Form } from 'antd';
 
-import { Form } from '/imports/ui/controls';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 import {
@@ -108,4 +108,4 @@ class NewForm extends Component {
   }
 }
 
-export default Form.create()(NewForm);
+export default NewForm;

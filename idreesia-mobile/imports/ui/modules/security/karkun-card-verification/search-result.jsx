@@ -13,7 +13,7 @@ import {
   WingBlank,
   WhiteSpace,
   SearchResultRow,
-} from '/imports/ui/controls';
+} from 'antd';
 
 import { ATTENDANCE_BY_BARCODE_ID } from './gql';
 

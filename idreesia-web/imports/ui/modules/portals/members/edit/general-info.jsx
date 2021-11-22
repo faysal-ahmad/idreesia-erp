@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { graphql } from 'react-apollo';
+import { Divider, Form, message } from 'antd';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Divider, Form, message } from '/imports/ui/controls';
 import {
   AgeField,
   EhadDurationField,
@@ -248,7 +248,6 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithPortalCities(),
   graphql(UPDATE_PORTAL_MEMBER, {
     name: 'updatePortalMember',

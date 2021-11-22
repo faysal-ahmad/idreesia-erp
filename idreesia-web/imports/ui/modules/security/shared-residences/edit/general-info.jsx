@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
@@ -90,7 +90,6 @@ class EditForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(UPDATE_SHARED_RESIDENCE, {
     name: 'updateSharedResidence',
     options: {

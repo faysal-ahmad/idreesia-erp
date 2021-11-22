@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Form } from "/imports/ui/controls";
+import { Form } from "antd";
 import { InputFile } from "../controls";
 
 const formItemLayout = {

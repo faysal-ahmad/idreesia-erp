@@ -14,7 +14,7 @@ import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Drawer } from '/imports/ui/controls';
+import { Drawer } from 'antd';
 
 import List from './list';
 import MemberDetails from './member-details';

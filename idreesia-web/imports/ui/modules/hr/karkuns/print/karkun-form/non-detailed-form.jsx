@@ -4,7 +4,7 @@ import Barcode from 'react-barcode';
 import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Col, Divider, Row } from '/imports/ui/controls';
+import { Col, Divider, Row } from 'antd';
 import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
 
 const barcodeOptions = {

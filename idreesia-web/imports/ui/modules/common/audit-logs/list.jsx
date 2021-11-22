@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { OperationType } from 'meteor/idreesia-common/constants/audit';
-import { Pagination, Table } from '/imports/ui/controls';
+import { Pagination, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import getFormattedValue from './get-formatted-value';

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Switch, Form } from '/imports/ui/controls';
+import { Switch, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },

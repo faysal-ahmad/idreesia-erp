@@ -6,7 +6,7 @@ import { ExclamationCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Col, Row, Spin, Tabs } from '/imports/ui/controls';
+import { Col, Row, Spin, Tabs } from 'antd';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 

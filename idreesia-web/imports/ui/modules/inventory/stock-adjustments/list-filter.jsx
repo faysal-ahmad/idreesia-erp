@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Button, Collapse, Form, Row } from 'antd';
 
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
@@ -116,4 +116,4 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create()(ListFilter);
+export default ListFilter;

@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Divider, Input, Row, Col } from 'antd';
+import { SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Divider, Input, Row, Col } from '/imports/ui/controls';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 import SearchResults from './search-results';
 
@@ -53,7 +54,7 @@ class Form extends Component {
               </Col>
               <Col order={2}>
                 <Button
-                  icon="search"
+                  icon={<SearchOutlined />}
                   onClick={() => {
                     this.setState({
                       partialCnicNumber: this.manualCnic.state.value,
@@ -66,7 +67,7 @@ class Form extends Component {
           <Col order={2}>
             <Button
               size="large"
-              icon="unordered-list"
+              icon={<UnorderedListOutlined />}
               onClick={this.handleList}
             >
               Visitors List
@@ -74,7 +75,7 @@ class Form extends Component {
             &nbsp;
             <Button
               size="large"
-              icon="user-add"
+              icon={<UserAddOutlined />}
               type="primary"
               onClick={this.handleNewVisitor}
             >

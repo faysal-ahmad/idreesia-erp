@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
+import { Button, DatePicker, Pagination, Table } from 'antd';
+import { LeftOutlined, RightOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Button, DatePicker, Pagination, Table } from '/imports/ui/controls';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
@@ -103,7 +104,7 @@ const List = ({ history, location }) => {
         <Button
           type="primary"
           shape="circle"
-          icon="left"
+          icon={<LeftOutlined />}
           onClick={handleDayGoBack}
         />
         &nbsp;&nbsp;
@@ -117,7 +118,7 @@ const List = ({ history, location }) => {
         <Button
           type="primary"
           shape="circle"
-          icon="right"
+          icon={<RightOutlined />}
           onClick={handleDayGoForward}
         />
       </div>
@@ -125,7 +126,7 @@ const List = ({ history, location }) => {
         <Button
           size="large"
           type="secondary"
-          icon="sync"
+          icon={<SyncOutlined />}
           onClick={() => {
             refetch();
           }}

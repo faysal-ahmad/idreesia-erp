@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -13,7 +13,7 @@ import {
   useAllMehfilDuties,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Button, Dropdown, Menu, message } from '/imports/ui/controls';
+import { Button, Dropdown, Menu, message } from 'antd';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -174,7 +174,7 @@ const List = ({ history, location }) => {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting" size="large" />
+        <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );
   };

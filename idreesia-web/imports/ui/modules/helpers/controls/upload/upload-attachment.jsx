@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { UploadOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Upload, message } from '/imports/ui/controls';
+import { Button, Upload, message } from 'antd';
 
 const UploadAttachment = ({ accept, onUploadFinish, disabled, buttonText }) => (
   <Upload

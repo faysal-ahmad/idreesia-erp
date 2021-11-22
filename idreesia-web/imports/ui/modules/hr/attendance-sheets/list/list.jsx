@@ -8,8 +8,11 @@ import {
   EditOutlined,
   ImportOutlined,
   PlusCircleOutlined,
+  SettingOutlined,
+  PrinterOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from '@ant-design/icons';
-
 import {
   Button,
   Cascader,
@@ -20,7 +23,8 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
+
 import {
   filter,
   flowRight,
@@ -332,7 +336,7 @@ export class List extends Component {
           Import from Google Sheets
         </Menu.Item>
         <Menu.Divider />
-        <Menu.SubMenu key="5" title="Print" icon="printer">
+        <Menu.SubMenu key="5" title="Print" icon={<PrinterOutlined />}>
           <Menu.Item
             key="5-1"
             onClick={() =>
@@ -368,7 +372,7 @@ export class List extends Component {
 
     return (
       <Dropdown overlay={menu}>
-        <Button icon="setting">Actions</Button>
+        <Button icon={<SettingOutlined />}>Actions</Button>
       </Dropdown>
     );
   };
@@ -383,7 +387,7 @@ export class List extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="left"
+            icon={<LeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
@@ -397,7 +401,7 @@ export class List extends Component {
           <Button
             type="primary"
             shape="circle"
-            icon="right"
+            icon={<RightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>

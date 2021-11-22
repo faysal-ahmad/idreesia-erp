@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
+import { Divider, Drawer, Form, message } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import {
@@ -11,7 +12,6 @@ import {
   useAllMehfilDuties,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   CascaderField,
@@ -192,4 +192,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default Form.create()(EditForm);
+export default EditForm;

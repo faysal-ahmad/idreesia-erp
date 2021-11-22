@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Button, Form, Row } from '/imports/ui/controls';
+import { Button, Form, Row } from 'antd';
 import {
   CascaderField,
   DateRangeField,

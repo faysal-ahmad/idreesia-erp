@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { CheckSquareOutlined, DeleteOutlined, EditOutlined, FileOutlined } from '@ant-design/icons';
+import { CheckSquareOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FileOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import {
   flowRight,
@@ -21,7 +21,7 @@ import {
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
@@ -282,7 +282,7 @@ class List extends Component {
       <div className="list-table-header">
         <Button
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           onClick={this.handleNewClicked}
         >
           New Purchase Form
@@ -297,7 +297,7 @@ class List extends Component {
           &nbsp;&nbsp;
           <Tooltip title="Download Selected Data">
             <Button
-              icon="download"
+              icon={<DownloadOutlined />}
               size="large"
               onClick={this.handleExportSelected}
             />

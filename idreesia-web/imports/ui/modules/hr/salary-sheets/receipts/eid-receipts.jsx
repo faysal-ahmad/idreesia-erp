@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
-import { Col, Divider, Row } from '/imports/ui/controls';
+import { Col, Divider, Row } from 'antd';
 
 import { Item } from './item';
 

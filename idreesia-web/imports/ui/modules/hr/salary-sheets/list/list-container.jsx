@@ -9,7 +9,7 @@ import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Modal, message } from '/imports/ui/controls';
+import { Modal, message } from 'antd';
 import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 

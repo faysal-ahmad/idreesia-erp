@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Flex, Modal, WhiteSpace } from '/imports/ui/controls';
+import { Button, Flex, Modal, WhiteSpace } from 'antd';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCameraRetro } from '@fortawesome/free-solid-svg-icons/faCameraRetro';

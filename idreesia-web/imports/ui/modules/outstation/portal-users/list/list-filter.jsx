@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Row } from 'antd';
 
 import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   CheckboxGroupField,
   SelectField,
@@ -121,4 +121,4 @@ ListFilter.propTypes = {
   refreshData: PropTypes.func,
 };
 
-export default Form.create()(ListFilter);
+export default ListFilter;

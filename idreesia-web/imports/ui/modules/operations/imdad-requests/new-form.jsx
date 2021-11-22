@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
+import { Form, message } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useAllImdadReasons } from 'meteor/idreesia-common/hooks/imdad';
-import { Form, message } from '/imports/ui/controls';
 import {
   PAGED_OPERATIONS_IMDAD_REQUESTS,
   CREATE_OPERATIONS_IMDAD_REQUEST,
@@ -111,4 +111,4 @@ NewForm.propTypes = {
   form: PropTypes.object,
 };
 
-export default Form.create()(NewForm);
+export default NewForm;

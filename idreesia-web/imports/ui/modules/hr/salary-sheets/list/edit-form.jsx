@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Col, Form, Row } from 'antd';
+import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { Button, Col, Form, Row } from '/imports/ui/controls';
 import { InputNumberField } from '/imports/ui/modules/helpers/fields';
 
 const formItemLayout = {
@@ -117,13 +118,13 @@ class EditForm extends Component {
             <Button
               size="large"
               type="default"
-              icon="close-circle"
+              icon={<CloseCircleOutlined />}
               onClick={this.props.handleCancel}
             >
               Cancel
             </Button>
             &nbsp;
-            <Button size="large" type="primary" icon="save" htmlType="submit">
+            <Button size="large" type="primary" icon={<SaveOutlined />} htmlType="submit">
               Save
             </Button>
           </Col>
@@ -133,4 +134,4 @@ class EditForm extends Component {
   }
 }
 
-export default Form.create()(EditForm);
+export default EditForm;

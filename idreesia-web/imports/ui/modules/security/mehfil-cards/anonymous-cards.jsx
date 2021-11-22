@@ -6,7 +6,7 @@ import { UserOutlined } from '@ant-design/icons';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
-import { Avatar } from '/imports/ui/controls';
+import { Avatar } from 'antd';
 
 const barcodeOptions = {
   width: 1,

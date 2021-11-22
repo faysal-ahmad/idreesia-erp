@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Row, Col, Spin, message } from '/imports/ui/controls';
+import { Row, Col, Spin, message } from 'antd';
 
 const LabelStyle = {
   fontWeight: 'bold',

@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Row } from 'antd';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   SelectField,
@@ -124,4 +124,4 @@ ListFilter.propTypes = {
   refreshData: PropTypes.func,
 };
 
-export default Form.create({ name: 'citiesListFilter' })(ListFilter);
+export default ListFilter;

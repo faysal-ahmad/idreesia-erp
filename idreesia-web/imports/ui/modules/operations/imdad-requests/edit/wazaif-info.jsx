@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Col, Collapse, Form, Row, message } from 'antd';
 
-import { Col, Collapse, Form, Row, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
 import {
   InputNumberField,
@@ -151,4 +151,4 @@ GeneralInfo.propTypes = {
   form: PropTypes.object,
 };
 
-export default Form.create()(GeneralInfo);
+export default GeneralInfo;

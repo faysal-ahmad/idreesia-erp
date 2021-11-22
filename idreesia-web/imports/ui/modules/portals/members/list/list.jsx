@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
+import { Button, Modal, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { find, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -11,7 +13,6 @@ import {
   usePortal,
   usePortalCities,
 } from 'meteor/idreesia-common/hooks/portals';
-import { Button, Modal, message } from '/imports/ui/controls';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { CREATE_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';
@@ -146,7 +147,7 @@ const List = ({ history, location }) => {
     <div className="list-table-header">
       <Button
         type="primary"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         size="large"
         onClick={handleNewClicked}
       >

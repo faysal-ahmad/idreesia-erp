@@ -4,7 +4,7 @@ import Barcode from 'react-barcode';
 import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Checkbox, Col, Divider, InputNumber, Row } from '/imports/ui/controls';
+import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
 import { EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
 import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
 

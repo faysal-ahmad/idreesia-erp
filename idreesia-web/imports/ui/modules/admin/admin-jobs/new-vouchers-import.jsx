@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
 import { JobTypes } from 'meteor/idreesia-common/constants';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { WithCompanies } from '/imports/ui/modules/accounts/common/composers';
@@ -85,7 +85,6 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithCompanies(),
   WithAdminJobsMutation(),
   WithBreadcrumbs(['Admin', 'Admin Jobs', 'New Vouchers Import'])

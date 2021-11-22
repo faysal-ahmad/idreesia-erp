@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Divider, Row } from '/imports/ui/controls';
+import { Divider, Row } from 'antd';
 import { ScanBarcode } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
 

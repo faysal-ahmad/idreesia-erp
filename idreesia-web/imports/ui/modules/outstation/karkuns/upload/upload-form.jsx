@@ -5,11 +5,12 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 import csv from 'csvtojson';
+import { Button, Descriptions, Form, Row, message } from 'antd';
+import { CloseCircleOutlined, TableOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Descriptions, Form, Row, message } from '/imports/ui/controls';
 import {
   CascaderField,
   InputFileField,
@@ -258,7 +259,7 @@ class UploadForm extends Component {
               <Button
                 size="large"
                 type="default"
-                icon="close-circle"
+                icon={<CloseCircleOutlined />}
                 onClick={this.handleCancel}
               >
                 Cancel
@@ -267,7 +268,7 @@ class UploadForm extends Component {
               <Button
                 size="large"
                 type="primary"
-                icon="table"
+                icon={<TableOutlined />}
                 htmlType="submit"
               >
                 Preview
@@ -281,7 +282,6 @@ class UploadForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithAllCities(),
   WithAllCityMehfils(),
   graphql(IMPORT_OUTSTATION_KARKUN, {

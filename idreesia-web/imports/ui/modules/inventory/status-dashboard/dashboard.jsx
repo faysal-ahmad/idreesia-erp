@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Badge, Descriptions, Spin } from '/imports/ui/controls';
+import { Badge, Descriptions, Spin } from 'antd';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { noop } from "lodash";
 import { CloseCircleOutlined } from '@ant-design/icons';
 
-import { Button, Form, Row } from "/imports/ui/controls";
+import { Button, Form, Row } from "antd";
 
 const buttonItemLayout = {
   wrapperCol: { span: 16, offset: 4 },

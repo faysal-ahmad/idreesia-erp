@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Form, message } from '/imports/ui/controls';
 import { WithCompanyId } from '/imports/ui/modules/accounts/common/composers';
 import {
   InputTextField,
@@ -119,7 +119,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   WithCompanyId(),
   graphql(formMutation, {
     name: 'updateVoucher',

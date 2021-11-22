@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Collapse, Form, Row, Button } from "antd";
 
 import { JobTypes } from "meteor/idreesia-common/constants";
-import { Collapse, Form, Row, Button } from "/imports/ui/controls";
 import { SelectField } from "/imports/ui/modules/helpers/fields";
 
 const ContainerStyle = {
@@ -108,4 +108,4 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create({ name: "vouchersListFilter" })(ListFilter);
+export default ListFilter;

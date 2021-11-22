@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   CascaderField,
@@ -216,7 +216,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ visitorStayId }) => ({ variables: { _id: visitorStayId } }),

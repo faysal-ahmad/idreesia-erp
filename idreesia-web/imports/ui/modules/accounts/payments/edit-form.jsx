@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
 import moment from 'moment';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useAllPaymentTypes } from 'meteor/idreesia-common/hooks/accounts';
-import { Form, message } from '/imports/ui/controls';
 import { AuditInfo } from '/imports/ui/modules/common';
 import { PAYMENT_BY_ID, UPDATE_PAYMENT } from './gql';
 
@@ -163,6 +163,7 @@ const EditForm = ({ form, match, history }) => {
     </>
   );
 };
+
 EditForm.propTypes = {
   history: PropTypes.object,
   match: PropTypes.object,
@@ -170,4 +171,4 @@ EditForm.propTypes = {
   form: PropTypes.object,
 };
 
-export default Form.create()(EditForm);
+export default EditForm;

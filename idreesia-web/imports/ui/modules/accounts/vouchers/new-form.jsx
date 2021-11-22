@@ -6,7 +6,7 @@ import { graphql } from 'react-apollo';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { VoucherType } from 'meteor/idreesia-common/constants/accounts';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
+import { Form, message } from 'antd';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import {
   WithCompanyId,
@@ -139,7 +139,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   WithCompanyId(),
   WithCompany(),
   graphql(formMutation, {

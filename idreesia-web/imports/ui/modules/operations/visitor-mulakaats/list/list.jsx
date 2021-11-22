@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
-import { DeleteOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
-
+import { DeleteOutlined, PlusCircleOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 import {
   Button,
   DatePicker,
@@ -13,7 +12,7 @@ import {
   Tooltip,
   Modal,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 
 import CardContainer from '../card/card-container';
 import {
@@ -206,7 +205,7 @@ const List = ({ visitorId, showNewButton, showActionsColumn }) => {
             &nbsp;&nbsp;
             <Button
               type="primary"
-              icon="plus-circle-o"
+              icon={<PlusCircleOutlined />}
               onClick={handleNewClicked}
             >
               Add Mulakaat

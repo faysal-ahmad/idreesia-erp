@@ -3,14 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { DeleteOutlined, TeamOutlined } from '@ant-design/icons';
-
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import {
-  DEFAULT_PAGE_INDEX_INT,
-  DEFAULT_PAGE_SIZE_INT,
-} from 'meteor/idreesia-common/constants/list-options';
-
+import { DeleteOutlined, TeamOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Pagination,
@@ -18,7 +11,14 @@ import {
   Table,
   Tooltip,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import {
+  DEFAULT_PAGE_INDEX_INT,
+  DEFAULT_PAGE_SIZE_INT,
+} from 'meteor/idreesia-common/constants/list-options';
+
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const listQuery = gql`
@@ -127,7 +127,7 @@ const List = ({ history }) => {
       size="small"
       pagination={false}
       title={() => (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
           New User Group
         </Button>
       )}

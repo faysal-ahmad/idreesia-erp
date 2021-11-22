@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Cascader, Form } from '/imports/ui/controls';
+import { Cascader, Form } from 'antd';
 
 const formItemLayout = {
   labelCol: { span: 6 },

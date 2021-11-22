@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   KarkunSelectionInputField,
@@ -97,7 +97,6 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   WithPortalId(),
   WithPortal(),
   graphql(CREATE_PORTAL_USER, {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { LeftOutlined, RightOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
+import { Button, Slider } from 'antd';
 
-import { Button, Slider } from '/imports/ui/controls';
 import Camera from './camera';
 
 const MinCameraWidth = 350;
@@ -142,10 +143,10 @@ export default class TakePictureForm extends Component {
             />
           </div>
           <div style={{ width: '20px' }} />
-          <Button icon="left" size="large" onClick={this.moveLeft} />
-          <Button icon="right" size="large" onClick={this.moveRight} />
-          <Button icon="up" size="large" onClick={this.moveUp} />
-          <Button icon="down" size="large" onClick={this.moveDown} />
+          <Button icon={<LeftOutlined />} size="large" onClick={this.moveLeft} />
+          <Button icon={<RightOutlined />} size="large" onClick={this.moveRight} />
+          <Button icon={<UpOutlined />} size="large" onClick={this.moveUp} />
+          <Button icon={<DownOutlined />} size="large" onClick={this.moveDown} />
           <div style={{ width: '20px' }} />
           <Button type="default" onClick={this.capture}>
             Capture photo

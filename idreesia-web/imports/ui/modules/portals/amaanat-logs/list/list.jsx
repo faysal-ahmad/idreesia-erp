@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
+import { Button, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,7 +14,6 @@ import {
   usePortalCities,
   usePortalCityMehfils,
 } from 'meteor/idreesia-common/hooks/portals';
-import { Button, message } from '/imports/ui/controls';
 import {
   AmaanatLogsList,
   AmaanatLogsListFilter,
@@ -96,7 +97,7 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+      <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
         New Amaanat Log
       </Button>
       <AmaanatLogsListFilter

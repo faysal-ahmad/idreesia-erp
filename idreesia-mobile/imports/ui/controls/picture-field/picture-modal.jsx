@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Webcam from 'react-webcam';
 
-import { Button, Flex, WhiteSpace } from '/imports/ui/controls';
+import { Button, Flex, WhiteSpace } from 'antd';
 
 const RowStyle = { paddingLeft: '10px', paddingRight: '10px' };
 

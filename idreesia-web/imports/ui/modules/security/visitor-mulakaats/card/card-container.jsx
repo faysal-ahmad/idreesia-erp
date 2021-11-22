@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 import ReactToPrint from 'react-to-print';
 import { PrinterOutlined } from '@ant-design/icons';
 
-import { Button } from '/imports/ui/controls';
+import { Button } from 'antd';
 import { VisitorMulakaatCard } from '/imports/ui/modules/common';
 
 import {

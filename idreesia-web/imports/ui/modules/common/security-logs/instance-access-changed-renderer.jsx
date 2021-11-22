@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { SecurityOperationTypeDisplayName } from 'meteor/idreesia-common/constants/audit';
 
-import { Row } from '/imports/ui/controls';
+import { Row } from 'antd';
 
 const InstanceAccessAdded = {
   color: 'green',

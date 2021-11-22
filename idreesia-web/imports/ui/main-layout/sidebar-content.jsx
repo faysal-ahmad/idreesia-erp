@@ -1,9 +1,9 @@
 import React, { Suspense, useState } from 'react';
 import PropTypes from 'prop-types';
+import { Layout } from 'antd';
 import { useSelector } from 'react-redux';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { Layout } from './antd-controls';
 
 const sidebarsMap = {
   [ModuleNames.admin]: React.lazy(() =>

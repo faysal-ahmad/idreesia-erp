@@ -13,7 +13,7 @@ import {
   Modal,
   Table,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 

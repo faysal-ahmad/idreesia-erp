@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Input, InputNumber, Select } from '/imports/ui/controls';
+import { Input, InputNumber, Select } from 'antd';
 
 const ContainerStyle = {
   display: 'flex',
@@ -71,7 +71,6 @@ export default class CustomInput extends Component {
           </Select>
           <InputNumber
             ref={this.percentageInput}
-            allowClear
             value={percentage}
             onChange={this.handlePercentageChange}
           />

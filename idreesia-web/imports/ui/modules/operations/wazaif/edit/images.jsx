@@ -12,7 +12,7 @@ import {
   Tooltip,
   Popconfirm,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import { UploadAttachment } from '/imports/ui/modules/helpers/controls';
 
 import {

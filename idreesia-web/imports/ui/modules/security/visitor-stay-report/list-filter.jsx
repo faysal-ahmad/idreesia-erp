@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { Collapse, Form, Row, Button } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { Collapse, Form, Row, Button } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   InputTextField,
@@ -171,7 +170,4 @@ class ListFilter extends Component {
   }
 }
 
-export default flowRight(
-  Form.create(),
-  WithDistinctCities()
-)(ListFilter);
+export default WithDistinctCities()(ListFilter);

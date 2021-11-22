@@ -6,7 +6,7 @@ import ReactToPrint from 'react-to-print';
 import { PrinterOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Button } from '/imports/ui/controls';
+import { Button } from 'antd';
 import DutyCard from './duty-card';
 import StayCard from './stay-card';
 

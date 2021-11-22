@@ -6,7 +6,7 @@ import { graphql } from 'react-apollo';
 import { FileOutlined, EditOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Table, Tooltip } from '/imports/ui/controls';
+import { Table, Tooltip } from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 class List extends Component {

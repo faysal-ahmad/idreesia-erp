@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { debounce } from 'meteor/idreesia-common/utilities/lodash';
-import { Col, Input, Row } from '/imports/ui/controls';
+import { Col, Input, Row } from 'antd';
 
 export default class ScanCnic extends Component {
   static propTypes = {

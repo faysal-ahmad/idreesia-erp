@@ -3,6 +3,16 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import ReactToPrint from 'react-to-print';
+import { Button, Divider } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
+import Cards from './cards';
+import AnonymousCards from './anonymous-cards';
 
 const ControlsContainer = {
   display: 'flex',
@@ -10,15 +20,6 @@ const ControlsContainer = {
   justifyContent: 'space-between',
   width: '100%',
 };
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
-import { Button, Divider } from '/imports/ui/controls';
-import Cards from './cards';
-import AnonymousCards from './anonymous-cards';
 
 const mehfilKarkunsByIdsQuery = gql`
   query mehfilKarkunsByIds($ids: String!) {
@@ -62,7 +63,7 @@ const CardsContainer = ({ queryParams: { ids, dutyName }, history }) => {
           <ReactToPrint
             content={() => mehfilCardsRef.current}
             trigger={() => (
-              <Button size="large" type="primary" icon="printer">
+              <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print Cards
               </Button>
             )}

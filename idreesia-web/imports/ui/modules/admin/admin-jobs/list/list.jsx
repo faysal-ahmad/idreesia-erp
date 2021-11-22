@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined } from '@ant-design/icons';
-
-import { capitalize, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { JobTypes } from 'meteor/idreesia-common/constants';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Pagination,
   Select,
   Table,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { capitalize, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { JobTypes } from 'meteor/idreesia-common/constants';
 import ListFilter from './list-filter';
 
 class List extends Component {
@@ -145,7 +145,7 @@ class List extends Component {
           &nbsp;&nbsp;
           <Button
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             onClick={this.handleNewClicked}
           >
             Create Admin Job

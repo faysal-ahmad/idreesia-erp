@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Collapse, Form } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Collapse, Form } from '/imports/ui/controls';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
 import {
@@ -221,4 +221,4 @@ ListFilter.defaultProps = {
   regions: [],
 };
 
-export default Form.create({ name: 'karkunsListFilter' })(ListFilter);
+export default ListFilter;

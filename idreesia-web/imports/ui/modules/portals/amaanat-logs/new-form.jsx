@@ -10,7 +10,7 @@ import {
   usePortalCities,
   usePortalCityMehfils,
 } from 'meteor/idreesia-common/hooks/portals';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { AmaanatLogsNewForm } from '/imports/ui/modules/common';
 
 import { PAGED_PORTAL_AMAANAT_LOGS, CREATE_PORTAL_AMAANAT_LOG } from './gql';

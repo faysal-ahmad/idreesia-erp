@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Col, Form, Row } from '/imports/ui/controls';
+import { Button, Col, Form, Row } from 'antd';
 
 const buttonItemLayout = {
   wrapperCol: { span: 20, offset: 0 },

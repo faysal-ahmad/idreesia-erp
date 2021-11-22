@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { Form } from '/imports/ui/controls';
+import { Form } from 'antd';
 import Input from './input';
 
 const formItemLayout = {

@@ -13,7 +13,7 @@ import {
   List,
   Toast,
   WhiteSpace,
-} from '/imports/ui/controls';
+} from 'antd';
 
 const LoginForm = ({
   history,

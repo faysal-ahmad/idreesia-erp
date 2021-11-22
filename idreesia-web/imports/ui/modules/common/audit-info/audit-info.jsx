@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { List, Typography } from '/imports/ui/controls';
+import { List, Typography } from 'antd';
 
 const ListStyle = {
   backgroundColor: '#F0F2F5',

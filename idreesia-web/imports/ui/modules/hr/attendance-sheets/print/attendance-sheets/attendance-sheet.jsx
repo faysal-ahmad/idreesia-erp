@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Row, Table } from '/imports/ui/controls';
+import { Row, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Tabs, Drawer } from '/imports/ui/controls';
+import { Button, Tabs, Drawer } from 'antd';
 import MSKarkunsList from './ms-karkuns-list';
 import OutstationKarkunsList from './outstation-karkuns-list';
 
@@ -15,7 +15,7 @@ const ContainerStyle = {
 
 export default class SelectionButton extends Component {
   static propTypes = {
-    icon: PropTypes.string,
+    icon: PropTypes.any,
     label: PropTypes.string,
     disabled: PropTypes.bool,
     showMsKarkunsList: PropTypes.bool,

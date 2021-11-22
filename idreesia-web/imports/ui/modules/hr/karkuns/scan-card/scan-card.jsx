@@ -7,7 +7,7 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Divider, Row } from '/imports/ui/controls';
+import { Divider, Row } from 'antd';
 import { ScanBarcode } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
 

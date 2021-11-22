@@ -10,7 +10,7 @@ import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Modal, message } from '/imports/ui/controls';
+import { Modal, message } from 'antd';
 import {
   WithAllJobs,
   WithAllMSDuties,

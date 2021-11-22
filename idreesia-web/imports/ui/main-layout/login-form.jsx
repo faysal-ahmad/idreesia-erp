@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Form, Input, message } from 'antd';
 import { useDispatch } from 'react-redux';
+import { Button, Form, Input, message } from 'antd';
 import { useMutation } from '@apollo/react-hooks';
 import { GoogleOutlined } from '@ant-design/icons';
 
@@ -9,12 +9,12 @@ import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import { UPDATE_LOGIN_TIME } from './gql';
 
-const IconStyle = {
-  fontSize: '20px',
+const FormStyle = {
+  maxWidth: '300px',
 };
 
 const LoginFormButtonStyle = {
-  width: '100%',
+  marginBottom: '10px',
 };
 
 const LoginForm = ({ history, location }) => {
@@ -50,12 +50,8 @@ const LoginForm = ({ history, location }) => {
     });
   };
 
-  const itemLayout = {
-    wrapperCol: { span: 14 },
-  };
-
   return (
-    <Form onFinish={handleFinish}>
+    <Form style={FormStyle} onFinish={handleFinish}>
       <Form.Item
         name="userName"
         rules={[
@@ -79,15 +75,16 @@ const LoginForm = ({ history, location }) => {
         <Input type="password" placeholder="Password" />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" style={LoginFormButtonStyle}>
+        <Button type="primary" htmlType="submit" style={LoginFormButtonStyle} block>
           Log in
         </Button>
         <Button
           type="primary"
           style={LoginFormButtonStyle}
           onClick={handleLoginWithGoogle}
+          block
         >
-          <GoogleOutlined style={IconStyle} />
+          <GoogleOutlined />
           Log in with Google
         </Button>
       </Form.Item>

@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form, message } from '/imports/ui/controls';
+import { Form, message } from 'antd';
 import {
   InputTextField,
   InputTextAreaField,
@@ -72,7 +72,6 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(CREATE_PAYMENT_TYPE, {
     name: 'createPaymentType',
     options: {

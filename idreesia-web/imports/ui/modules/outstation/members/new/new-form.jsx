@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { VisitorsNewForm } from '/imports/ui/modules/common';
 
 import { CREATE_OUTSTATION_MEMBER } from '../gql';

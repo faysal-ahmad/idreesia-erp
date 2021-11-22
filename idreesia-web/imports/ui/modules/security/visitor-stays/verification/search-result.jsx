@@ -7,7 +7,7 @@ import { CloseCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Row, Col, Spin } from '/imports/ui/controls';
+import { Row, Col, Spin } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import StayCard from '../card/stay-card';
 

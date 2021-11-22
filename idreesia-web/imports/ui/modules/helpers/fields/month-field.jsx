@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-import { DatePicker, Form } from "/imports/ui/controls";
+import { DatePicker, Form } from "antd";
 
 const formItemLayout = {
   labelCol: { span: 6 },

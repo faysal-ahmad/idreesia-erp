@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Col, Row } from '/imports/ui/controls';
+import { Col, Row } from 'antd';
 
 const LabelStyle = {
   fontWeight: 'bold',

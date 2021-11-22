@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Divider, Form, message } from '/imports/ui/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   AgeField,
@@ -215,7 +215,6 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  Form.create(),
   graphql(CREATE_HR_KARKUN, {
     name: 'createHrKarkun',
     options: {

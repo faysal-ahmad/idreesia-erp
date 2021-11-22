@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Layout, Menu } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
 
@@ -10,7 +11,6 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
 import { setActiveModuleName } from 'meteor/idreesia-common/action-creators';
-import { Layout, Menu } from './antd-controls';
 import UserMenu from './user-menu';
 import { UPDATE_LAST_ACTIVE_TIME } from './gql';
 

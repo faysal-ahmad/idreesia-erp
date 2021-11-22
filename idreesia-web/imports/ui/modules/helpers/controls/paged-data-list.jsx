@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Pagination, Table } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Pagination, Table } from '/imports/ui/controls';
 
 export default class PagedDataList extends Component {
   static propTypes = {
@@ -65,7 +66,7 @@ export default class PagedDataList extends Component {
 
     return (
       <div className="list-table-header">
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
           {newButtonLabel}
         </Button>
         <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />

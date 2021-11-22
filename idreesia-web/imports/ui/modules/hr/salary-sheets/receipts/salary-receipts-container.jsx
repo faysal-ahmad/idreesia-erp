@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
+import { Button, Divider } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Button, Divider } from '/imports/ui/controls';
 import SalaryReceipts from './salary-receipts';
 
 const SalaryReceiptsContainer = ({
@@ -25,7 +26,7 @@ const SalaryReceiptsContainer = ({
       <ReactToPrint
         content={() => salaryReceiptsRef.current}
         trigger={() => (
-          <Button size="large" type="primary" icon="printer">
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Receipts
           </Button>
         )}

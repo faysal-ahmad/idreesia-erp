@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { EditOutlined } from '@ant-design/icons';
 
-import { Drawer, Input } from '/imports/ui/controls';
+import { Drawer, Input } from 'antd';
 import VisitorsList from './visitors-list';
 
 const ContainerStyle = {

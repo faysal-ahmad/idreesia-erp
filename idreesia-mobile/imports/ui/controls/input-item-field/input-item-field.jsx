@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { InputItem } from '/imports/ui/controls';
+import { InputItem } from 'antd';
 
 const InputItemField = ({
   fieldName,

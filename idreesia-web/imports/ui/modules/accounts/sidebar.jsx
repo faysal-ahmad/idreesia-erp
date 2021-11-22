@@ -14,7 +14,7 @@ import {
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
-import { Menu } from '/imports/ui/controls';
+import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 

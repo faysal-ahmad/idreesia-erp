@@ -5,7 +5,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { AmaanatLogsEditForm } from '/imports/ui/modules/common';
 import {
   usePortal,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Flex, WingBlank, Modal } from '/imports/ui/controls';
+import { Button, Flex, WingBlank, Modal } from 'antd';
 import SearchResult from './search-result';
 import BarcodeScanner from './barcode-scanner';
 

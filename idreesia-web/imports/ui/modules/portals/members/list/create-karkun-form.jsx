@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Col, Divider, Row } from '/imports/ui/controls';
+import { Button, Col, Divider, Row } from 'antd';
 import { SearchResultRow } from '/imports/ui/modules/helpers/controls';
 
 import { FIND_PORTAL_KARKUN_BY_CNIC_OR_CONTACT_NUMBER } from '../gql';

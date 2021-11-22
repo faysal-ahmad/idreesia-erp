@@ -16,7 +16,7 @@ import {
   Pagination,
   Popconfirm,
   message,
-} from '/imports/ui/controls';
+} from 'antd';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
 

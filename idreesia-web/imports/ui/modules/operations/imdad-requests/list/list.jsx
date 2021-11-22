@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
+import { Button, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { Button, message } from '/imports/ui/controls';
 import {
   ImdadRequestsList,
   ImdadRequestsListFilter,
@@ -80,7 +81,7 @@ const List = ({ history, location }) => {
       <Button
         type="primary"
         size="large"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New Imdad Request

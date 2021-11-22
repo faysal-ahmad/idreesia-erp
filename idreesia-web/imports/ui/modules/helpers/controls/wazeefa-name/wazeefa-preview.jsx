@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Col, Divider, Row } from 'antd';
+import { CaretLeftOutlined, CaretRightOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Button, Col, Divider, Row } from '/imports/ui/controls';
 
 const WazeefaPreview = ({ images }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -16,7 +17,7 @@ const WazeefaPreview = ({ images }) => {
             type="secondary"
             shape="circle"
             size="large"
-            icon="caret-left"
+            icon={<CaretLeftOutlined />}
             disabled={selectedIndex === 0}
             onClick={() => {
               setSelectedIndex(selectedIndex - 1);
@@ -28,7 +29,7 @@ const WazeefaPreview = ({ images }) => {
             type="secondary"
             shape="circle"
             size="large"
-            icon="caret-right"
+            icon={<CaretRightOutlined />}
             disabled={selectedIndex === images.length - 1}
             onClick={() => {
               setSelectedIndex(selectedIndex + 1);

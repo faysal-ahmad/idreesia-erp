@@ -4,7 +4,7 @@ import Barcode from "react-barcode";
 import moment from "moment";
 import { find } from "lodash";
 
-import { Card } from "/imports/ui/controls";
+import { Card } from "antd";
 import { StayReasons } from "meteor/idreesia-common/constants/security";
 
 const barcodeOptions = {

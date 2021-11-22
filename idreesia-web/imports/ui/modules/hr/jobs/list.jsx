@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Button, Table, Tooltip, message } from '/imports/ui/controls';
+import { Button, Table, Tooltip, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
 
@@ -90,7 +90,7 @@ class List extends Component {
         title={() => (
           <Button
             type="primary"
-            icon="plus-circle-o"
+            icon={<PlusCircleOutlined />}
             onClick={this.handleNewClicked}
           >
             New Job

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { Button, Flex, WingBlank } from '/imports/ui/controls';
+import { Button, Flex, WingBlank } from 'antd';
 import SearchResult from './search-result';
 
 const ColStyle = { paddingLeft: '10px', paddingRight: '10px' };

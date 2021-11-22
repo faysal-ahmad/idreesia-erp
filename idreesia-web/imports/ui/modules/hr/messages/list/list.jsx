@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Button, Drawer, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import { Button, Drawer, message } from '/imports/ui/controls';
 import { MessagesList, MessagesListFilter } from '/imports/ui/modules/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
@@ -84,7 +85,7 @@ const List = ({ history, location }) => {
       <Button
         size="large"
         type="primary"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New Message

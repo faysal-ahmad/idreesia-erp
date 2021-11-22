@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Form, message } from 'antd';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useAllPaymentTypes } from 'meteor/idreesia-common/hooks/accounts';
-import { Form, message } from '/imports/ui/controls';
 import { NEXT_PAYMENT_NUMBER, PAGED_PAYMENTS, CREATE_PAYMENT } from './gql';
 
 import {
@@ -164,4 +164,4 @@ NewForm.propTypes = {
   form: PropTypes.object,
 };
 
-export default Form.create()(NewForm);
+export default NewForm;

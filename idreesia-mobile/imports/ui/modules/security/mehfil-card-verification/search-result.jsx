@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { ActivityIndicator, List, Toast } from '/imports/ui/controls';
+import { ActivityIndicator, List, Toast } from 'antd';
 import moment from 'moment';
 
 import { Card } from './card';

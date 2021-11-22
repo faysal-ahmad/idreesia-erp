@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Row } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,
@@ -156,7 +155,4 @@ class ListFilter extends Component {
   }
 }
 
-export default flowRight(
-  Form.create({ name: 'itemTypeListFilter' }),
-  WithItemCategoriesByPhysicalStore()
-)(ListFilter);
+export default WithItemCategoriesByPhysicalStore()(ListFilter);

@@ -6,7 +6,7 @@ import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Tabs } from '/imports/ui/controls';
+import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import DutyShifts from './duty-shifts';
 

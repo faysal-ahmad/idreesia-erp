@@ -9,12 +9,12 @@ import { Provider } from 'react-redux';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 
+import 'antd/dist/antd.css';
 import './main.css';
 import './attendance.css';
 import './karkun-cards.css';
 import './mehfil-cards.css';
 import './stay-cards.css';
-import '@ant-design/compatible/assets/index.css';
 
 import App from '../imports/ui/app';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';

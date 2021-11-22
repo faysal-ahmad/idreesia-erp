@@ -10,7 +10,7 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats, Permissions } from 'meteor/idreesia-common/constants';
 
-import { Pagination, Row, Table } from '/imports/ui/controls';
+import { Pagination, Row, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import { PAGED_OUTSTATION_USERS } from '../gql';

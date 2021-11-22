@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { Button, Drawer, message } from 'antd';
+import { ScanOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Button, Drawer, message } from '/imports/ui/controls';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { VisitorMulakaatsList } from '/imports/ui/modules/operations/visitor-mulakaats';
 import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
@@ -113,14 +114,14 @@ const List = ({ history, location }) => {
       <div style={ButtonGroupStyle}>
         <Button
           type="primary"
-          icon="plus-circle-o"
+          icon={<PlusCircleOutlined />}
           size="large"
           onClick={handleNewClicked}
         >
           New Visitor
         </Button>
         &nbsp;&nbsp;
-        <Button icon="scan" size="large" onClick={handleScanClicked}>
+        <Button icon={<ScanOutlined />} size="large" onClick={handleScanClicked}>
           Scan CNIC
         </Button>
       </div>

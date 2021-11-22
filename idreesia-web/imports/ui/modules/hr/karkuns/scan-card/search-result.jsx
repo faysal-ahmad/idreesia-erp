@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Row, Col, Spin, message } from '/imports/ui/controls';
+import { Row, Col, Spin, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import { ATTENDANCE_BY_BARCODE_ID } from '../gql';

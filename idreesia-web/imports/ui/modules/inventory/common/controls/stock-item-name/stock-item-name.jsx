@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { PictureOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Avatar, Modal } from '/imports/ui/controls';
+import { Avatar, Modal } from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
 const NameDivStyle = {

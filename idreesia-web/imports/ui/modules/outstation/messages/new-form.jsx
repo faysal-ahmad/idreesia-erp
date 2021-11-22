@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/react-hooks';
+import { Divider, Drawer, Form, message } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import {
@@ -10,7 +11,6 @@ import {
   useAllMehfilDuties,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Divider, Drawer, Form, message } from '/imports/ui/controls';
 import {
   AutoCompleteField,
   CascaderField,
@@ -165,4 +165,4 @@ NewForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default Form.create()(NewForm);
+export default NewForm;

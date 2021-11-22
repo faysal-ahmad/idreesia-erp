@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 
 import { setDrawerOpen } from 'meteor/idreesia-common/action-creators';
-import { Drawer, NavBar } from '/imports/ui/controls';
+import { Drawer, NavBar } from 'antd';
 import AppRouter from './app-router';
 import DrawerContent from './drawer-content';
 

@@ -5,13 +5,14 @@ import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { LockOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import { Button, Pagination, Table } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { noop, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-import { Button, Pagination, Table } from '/imports/ui/controls';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
@@ -127,7 +128,7 @@ const List = ({ history, location }) => {
       <Button
         size="large"
         type="primary"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New User

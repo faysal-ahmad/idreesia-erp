@@ -2,13 +2,14 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import ReactToPrint from 'react-to-print';
+import { Button, Divider } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import { Button, Divider } from '/imports/ui/controls';
 
 import Cards from './cards';
 import { ATTENDANCE_BY_BARCODE_IDS } from '../../gql';
@@ -30,7 +31,7 @@ const CardsContainer = ({
       <ReactToPrint
         content={() => meetingCardsRef.current}
         trigger={() => (
-          <Button size="large" type="primary" icon="printer">
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Cards
           </Button>
         )}

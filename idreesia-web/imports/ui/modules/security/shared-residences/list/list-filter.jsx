@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Collapse, Form, Row } from 'antd';
 
-import { Button, Collapse, Form, Row } from '/imports/ui/controls';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
@@ -91,4 +91,4 @@ class ListFilter extends Component {
   }
 }
 
-export default Form.create({ name: 'sharedResidencesListFilter' })(ListFilter);
+export default ListFilter;

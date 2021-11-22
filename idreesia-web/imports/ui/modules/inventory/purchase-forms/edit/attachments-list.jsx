@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { flowRight } from "lodash";
 
-import { message } from "/imports/ui/controls";
+import { message } from "antd";
 import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
 

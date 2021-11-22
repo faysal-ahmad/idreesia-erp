@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { WithAllCities } from '/imports/ui/modules/outstation/common/composers';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   SelectField,
@@ -107,7 +107,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   WithAllCities(),
   graphql(formMutation, {
     name: 'updatePortal',

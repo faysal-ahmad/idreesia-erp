@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SyncOutlined } from '@ant-design/icons';
-
-import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
-import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Collapse,
   Form,
   Row,
   Tooltip,
-} from '/imports/ui/controls';
+} from 'antd';
+
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
+import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   CheckboxGroupField,
   SelectField,
@@ -172,4 +172,4 @@ ListFilter.propTypes = {
   refreshData: PropTypes.func,
 };
 
-export default Form.create()(ListFilter);
+export default ListFilter;

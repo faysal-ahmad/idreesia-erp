@@ -4,7 +4,7 @@ import moment from 'moment';
 import { useQuery } from '@apollo/react-hooks';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Table, Pagination } from '/imports/ui/controls';
+import { Table, Pagination } from 'antd';
 import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,

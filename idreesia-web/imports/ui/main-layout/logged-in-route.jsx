@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Layout, Breadcrumb } from 'antd';
 
 import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
-import { Layout, Breadcrumb } from './antd-controls';
 import HeaderContent from './header-content';
 import SidebarContent from './sidebar-content';
 import MainContent from './main-content';

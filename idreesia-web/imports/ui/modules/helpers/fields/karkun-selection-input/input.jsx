@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { EditOutlined } from '@ant-design/icons';
 
-import { Tabs, Drawer, Input } from '/imports/ui/controls';
+import { Tabs, Drawer, Input } from 'antd';
 import MSKarkunsList from './ms-karkuns-list';
 import OutstationKarkunsList from './outstation-karkuns-list';
 import PortalKarkunsList from './portal-karkuns-list';

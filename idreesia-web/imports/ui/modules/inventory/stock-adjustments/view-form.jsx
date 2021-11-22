@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { Form } from 'antd';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Form } from '/imports/ui/controls';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
@@ -122,7 +122,6 @@ const formQuery = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formQuery, {

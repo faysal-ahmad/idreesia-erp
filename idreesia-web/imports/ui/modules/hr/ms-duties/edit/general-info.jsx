@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Form, message } from '/imports/ui/controls';
 import {
   InputTextField,
   InputTextAreaField,
@@ -129,7 +129,6 @@ const formMutation = gql`
 `;
 
 export default flowRight(
-  Form.create(),
   graphql(formMutation, {
     name: 'updateDuty',
     options: {

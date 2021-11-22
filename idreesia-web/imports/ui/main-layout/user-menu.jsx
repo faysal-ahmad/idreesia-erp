@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { Avatar, Dropdown, Menu } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
 
 import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 import {
@@ -11,7 +12,6 @@ import {
   setActiveSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Avatar, Dropdown, Menu } from './antd-controls';
 import ChangePasswordForm from './change-password-form';
 
 const ContainerStyle = {

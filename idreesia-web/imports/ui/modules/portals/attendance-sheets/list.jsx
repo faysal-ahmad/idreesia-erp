@@ -14,7 +14,7 @@ import {
   usePortalCities,
   usePortalCityMehfils,
 } from 'meteor/idreesia-common/hooks/portals';
-import { message } from '/imports/ui/controls';
+import { message } from 'antd';
 import { KarkunsAttendanceList } from '/imports/ui/modules/common';
 
 import {

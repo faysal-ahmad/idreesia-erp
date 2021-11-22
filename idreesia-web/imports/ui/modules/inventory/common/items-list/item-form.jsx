@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Form, Row } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
-import { Button, Form, Row } from '/imports/ui/controls';
 import {
   InputNumberField,
   SelectField,
@@ -60,7 +61,7 @@ const ItemForm = ({
       fieldName="status"
     />
     <Form.Item style={ButtonContainerStyle}>
-      <Button type="primary" icon="plus-circle-o" onClick={handleAddItem}>
+      <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleAddItem}>
         Add Item
       </Button>
     </Form.Item>
@@ -77,4 +78,4 @@ ItemForm.propTypes = {
   handleAddItem: PropTypes.func,
 };
 
-export default Form.create()(ItemForm);
+export default ItemForm;

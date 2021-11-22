@@ -5,7 +5,7 @@ import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
 import { WarningTwoTone } from '@ant-design/icons';
 
-import { Pagination, Table } from '/imports/ui/controls';
+import { Pagination, Table } from 'antd';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 

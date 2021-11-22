@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { UploadOutlined } from '@ant-design/icons';
 
-import { Button, Upload } from '/imports/ui/controls';
+import { Button, Upload } from 'antd';
 
 export default class InputFile extends Component {
   static propTypes = {

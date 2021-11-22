@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
-import { BarsOutlined } from '@ant-design/icons';
+import { BarsOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Button, Table, Tooltip, Pagination } from '/imports/ui/controls';
+import { Button, Table, Tooltip, Pagination } from 'antd';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import ListFilter from './list-filter';
 
@@ -130,7 +130,7 @@ class List extends Component {
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Button type="primary" icon="plus-circle-o" onClick={handleNewClicked}>
+        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
           New Voucher
         </Button>
       );

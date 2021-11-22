@@ -4,7 +4,14 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
-import { DeleteOutlined, LikeOutlined } from '@ant-design/icons';
+import { DeleteOutlined, LikeOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Pagination,
+  Table,
+  Tooltip,
+  message,
+} from 'antd';
 
 import {
   MessageStatus,
@@ -13,13 +20,6 @@ import {
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
-import {
-  Button,
-  Pagination,
-  Table,
-  Tooltip,
-  message,
-} from '/imports/ui/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import ListFilter from './list-filter';
@@ -161,7 +161,7 @@ const List = ({ history, location }) => {
       <Button
         size="large"
         type="primary"
-        icon="plus-circle-o"
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New Message

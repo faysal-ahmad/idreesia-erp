@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Flex } from '/imports/ui/controls';
+import { Button, Flex } from 'antd';
 
 const RowStyle = { paddingLeft: '10px', paddingRight: '10px' };
 

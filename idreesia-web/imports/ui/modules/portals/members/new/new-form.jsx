@@ -27,7 +27,6 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createPortalMember: PropTypes.func,
 
     portal: PropTypes.object,
@@ -36,24 +35,63 @@ class NewForm extends Component {
     portalCitiesLoading: PropTypes.bool,
   };
 
+  formRef = React.createRef();
+
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({
+    name,
+    parentName,
+    cnicNumber,
+    ehadDate,
+    birthDate,
+    referenceName,
+    contactNumber1,
+    contactNumber2,
+    cityCountry,
+    currentAddress,
+    permanentAddress,
+  }) => {
     const {
-      form,
       createPortalMember,
       history,
       portal,
       portalCities,
     } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
+      if (!cnicNumber && !contactNumber1) {
+        this.formRef.current.setFields([
+          {
+            name: "cnicNumber",
+            errors: ['Please input the CNIC or Mobile Number for the member'],
+          },
+          {
+            name: "contactNumber1",
+            errors: ['Please input the CNIC or Mobile Number for the member'],
+          },
+        ]);
+
+        return;
+      }
+
+      const visitorCity = find(
+        portalCities,
+        city => city._id === cityCountry
+      );
+
+      createPortalMember({
+        variables: {
+          portalId: portal._id,
           name,
           parentName,
           cnicNumber,
@@ -62,63 +100,18 @@ class NewForm extends Component {
           referenceName,
           contactNumber1,
           contactNumber2,
-          cityCountry,
+          city: visitorCity.name,
+          country: visitorCity.country,
           currentAddress,
           permanentAddress,
-        }
-      ) => {
-        if (err) return;
-        if (!cnicNumber && !contactNumber1) {
-          form.setFields({
-            cnicNumber: {
-              errors: [
-                new Error(
-                  'Please input the CNIC or Mobile Number for the member'
-                ),
-              ],
-            },
-            contactNumber1: {
-              errors: [
-                new Error(
-                  'Please input the CNIC or Mobile Number for the member'
-                ),
-              ],
-            },
-          });
-
-          return;
-        }
-
-        const visitorCity = find(
-          portalCities,
-          city => city._id === cityCountry
-        );
-
-        createPortalMember({
-          variables: {
-            portalId: portal._id,
-            name,
-            parentName,
-            cnicNumber,
-            ehadDate,
-            birthDate,
-            referenceName,
-            contactNumber1,
-            contactNumber2,
-            city: visitorCity.name,
-            country: visitorCity.country,
-            currentAddress,
-            permanentAddress,
-          },
+        },
+      })
+        .then(({ data: { createPortalMember: newMember } }) => {
+          history.push(paths.membersEditFormPath(portal._id, newMember._id));
         })
-          .then(({ data: { createPortalMember: newMember } }) => {
-            history.push(paths.membersEditFormPath(portal._id, newMember._id));
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+        .catch(error => {
+          message.error(error.message, 5);
+        });
   };
 
   render() {
@@ -126,14 +119,12 @@ class NewForm extends Component {
       portalLoading,
       portalCities,
       portalCitiesLoading,
-      form,
     } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (portalLoading || portalCitiesLoading) return null;
 
-    const { isFieldsTouched } = form;
-
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

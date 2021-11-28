@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -22,7 +22,6 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
@@ -30,48 +29,48 @@ class EditForm extends Component {
     vendorById: PropTypes.object,
     updateVendor: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, vendorById, updateVendor } = this.props;
-    form.validateFields(
-      (err, { name, contactPerson, contactNumber, address, notes }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        updateVendor({
-          variables: {
-            _id: vendorById._id,
-            name,
-            contactPerson,
-            contactNumber,
-            address,
-            notes,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFinish = ({ name, contactPerson, contactNumber, address, notes }) => {
+    const { history, vendorById, updateVendor } = this.props;
+    updateVendor({
+      variables: {
+        _id: vendorById._id,
+        name,
+        contactPerson,
+        contactNumber,
+        address,
+        notes,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, vendorById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
-    const { isFieldsTouched } = this.props.form;
-
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -105,7 +104,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={vendorById} />
-      </Fragment>
+      </>
     );
   }
 }

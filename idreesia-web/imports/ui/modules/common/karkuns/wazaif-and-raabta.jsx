@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Form } from 'antd';
@@ -10,20 +10,16 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
 
-const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
-  const _handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) return;
-      handleSubmit(values);
-    });
-  };
+const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
 
-  const { isFieldsTouched } = form;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
   return (
-    <Fragment>
-      <Form layout="horizontal" onSubmit={_handleSubmit}>
+    <>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <DateField
           fieldName="lastTarteebDate"
           fieldLabel="Last Tarteeb"
@@ -64,14 +60,13 @@ const WazaifAndRaabta = ({ karkun, form, handleSubmit, handleCancel }) => {
         />
       </Form>
       <AuditInfo record={karkun} />
-    </Fragment>
+    </>
   );
 };
 
 WazaifAndRaabta.propTypes = {
-  form: PropTypes.object,
   karkun: PropTypes.object,
-  handleSubmit: PropTypes.func,
+  handleFinish: PropTypes.func,
   handleCancel: PropTypes.func,
 };
 

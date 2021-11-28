@@ -18,11 +18,14 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     dutyLocationById: PropTypes.object,
     updateDutyLocation: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -30,35 +33,34 @@ class EditForm extends Component {
     history.push(paths.dutyLocationsPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, dutyLocationById, updateDutyLocation } = this.props;
-    form.validateFields((err, { name }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateDutyLocation({
-        variables: {
-          id: dutyLocationById._id,
-          name,
-        },
+  handleFinish = ({ name }) => {
+    const { history, dutyLocationById, updateDutyLocation } = this.props;
+    updateDutyLocation({
+      variables: {
+        id: dutyLocationById._id,
+        name,
+      },
+    })
+      .then(() => {
+        history.push(paths.dutyLocationsPath);
       })
-        .then(() => {
-          history.push(paths.dutyLocationsPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, dutyLocationById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
       <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"

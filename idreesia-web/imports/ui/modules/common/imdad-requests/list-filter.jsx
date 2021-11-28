@@ -24,7 +24,6 @@ const ContainerStyle = {
 };
 
 const ListFilter = ({
-  form,
   setPageParams,
   refreshData,
 
@@ -32,24 +31,19 @@ const ListFilter = ({
   status,
   updatedBetween,
 }) => {
-  const handleSubmit = e => {
-    e.preventDefault();
-    const { validateFields } = form;
-    validateFields((err, formValues) => {
-      if (err) return;
-      setPageParams({
-        cnicNumber: formValues.cnicNumber,
-        status: formValues.status,
-        updatedBetween: JSON.stringify([
-          formValues.updatedBetween[0]
-            ? formValues.updatedBetween[0].format(Formats.DATE_FORMAT)
-            : '',
-          formValues.updatedBetween[1]
-            ? formValues.updatedBetween[1].format(Formats.DATE_FORMAT)
-            : '',
-        ]),
-        pageIndex: 0,
-      });
+  const handleFinish = formValues => {
+    setPageParams({
+      cnicNumber: formValues.cnicNumber,
+      status: formValues.status,
+      updatedBetween: JSON.stringify([
+        formValues.updatedBetween[0]
+          ? formValues.updatedBetween[0].format(Formats.DATE_FORMAT)
+          : '',
+        formValues.updatedBetween[1]
+          ? formValues.updatedBetween[1].format(Formats.DATE_FORMAT)
+          : '',
+      ]),
+      pageIndex: 0,
     });
   };
 
@@ -69,7 +63,7 @@ const ListFilter = ({
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           {getCnicNumberFilterField(cnicNumber)}
           <SelectField
             fieldName="status"
@@ -82,7 +76,7 @@ const ListFilter = ({
           />
 
           {getUpdatedBetweenFilterField(updatedBetween)}
-          {getFormButtons(handleReset, handleSubmit)}
+          {getFormButtons(handleReset)}
         </Form>
       </Collapse.Panel>
     </Collapse>
@@ -90,7 +84,6 @@ const ListFilter = ({
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   cnicNumber: PropTypes.string,
   status: PropTypes.string,
   updatedBetween: PropTypes.string,

@@ -17,8 +17,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createPhysicalStore: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -26,31 +29,31 @@ class NewForm extends Component {
     history.push(paths.physicalStoresPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createPhysicalStore, history } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      createPhysicalStore({
-        variables: {
-          name: fieldsValue.name,
-          address: fieldsValue.address,
-        },
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = fieldsValue => {
+    const { createPhysicalStore, history } = this.props;
+    createPhysicalStore({
+      variables: {
+        name: fieldsValue.name,
+        address: fieldsValue.address,
+      },
+    })
+      .then(() => {
+        history.push(paths.physicalStoresPath);
       })
-        .then(() => {
-          history.push(paths.physicalStoresPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

@@ -24,7 +24,6 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     setBreadcrumbs: PropTypes.func,
 
     companyId: PropTypes.string,
@@ -33,41 +32,44 @@ class NewForm extends Component {
     createVoucher: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history, companyId } = this.props;
     history.push(paths.vouchersPath(companyId));
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { companyId, form, history, createVoucher } = this.props;
-    form.validateFields((err, { voucherType, voucherDate, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createVoucher({
-        variables: {
-          companyId,
-          voucherType,
-          voucherDate,
-          description,
-        },
+  handleFinish = ({ voucherType, voucherDate, description }) => {
+    const { companyId, history, createVoucher } = this.props;
+    createVoucher({
+      variables: {
+        companyId,
+        voucherType,
+        voucherDate,
+        description,
+      },
+    })
+      .then(({ data: { createVoucher: newVoucher } }) => {
+        history.push(paths.vouchersEditFormPath(companyId, newVoucher._id));
       })
-        .then(({ data: { createVoucher: newVoucher } }) => {
-          history.push(paths.vouchersEditFormPath(companyId, newVoucher._id));
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { companyLoading, form } = this.props;
-    const { isFieldsTouched } = form;
+    const { companyLoading } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (companyLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <SelectField
           data={[
             {

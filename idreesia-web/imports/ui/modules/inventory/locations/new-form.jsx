@@ -23,7 +23,6 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
@@ -31,40 +30,42 @@ class NewForm extends Component {
     locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.locationsPath(physicalStoreId));
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, physicalStoreId, createLocation, history } = this.props;
-    form.validateFields((err, { name, parentId, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createLocation({
-        variables: { name, physicalStoreId, parentId, description },
+  handleFinish = ({ name, parentId, description }) => {
+    const { physicalStoreId, createLocation, history } = this.props;
+    createLocation({
+      variables: { name, physicalStoreId, parentId, description },
+    })
+      .then(() => {
+        history.push(paths.locationsPath(physicalStoreId));
       })
-        .then(() => {
-          history.push(paths.locationsPath(physicalStoreId));
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { locationsLoading, locationsByPhysicalStoreId } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (locationsLoading) {
       return null;
     }
 
-    const { isFieldsTouched } = this.props.form;
-
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

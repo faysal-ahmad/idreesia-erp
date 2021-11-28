@@ -16,8 +16,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createDuty: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -25,34 +28,33 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createDuty, history } = this.props;
-    form.validateFields((err, { name, description, attendanceSheet }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createDuty({
-        variables: {
-          name,
-          isMehfilDuty: false,
-          description,
-          attendanceSheet,
-        },
+  handleFinish = ({ name, description, attendanceSheet }) => {
+    const { createDuty, history } = this.props;
+    createDuty({
+      variables: {
+        name,
+        isMehfilDuty: false,
+        description,
+        attendanceSheet,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Duty Name"

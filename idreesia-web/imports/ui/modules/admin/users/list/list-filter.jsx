@@ -34,23 +34,16 @@ const ListFilter = props => {
   const { allPortals, allPortalsLoading } = useAllPortals();
   if (allPortalsLoading) return null;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const {
-      setPageParams,
-      form: { validateFields },
-    } = props;
-    validateFields((err, { status, moduleAccess, portalAccess }) => {
-      if (err) return;
-      setPageParams({
-        showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
-        showUnlocked: status.indexOf('unlocked') !== -1 ? 'true' : 'false',
-        showActive: status.indexOf('active') !== -1 ? 'true' : 'false',
-        showInactive: status.indexOf('inactive') !== -1 ? 'true' : 'false',
-        moduleAccess,
-        portalAccess,
-        pageIndex: '0',
-      });
+  const handleFinish = ({ status, moduleAccess, portalAccess }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
+      showUnlocked: status.indexOf('unlocked') !== -1 ? 'true' : 'false',
+      showActive: status.indexOf('active') !== -1 ? 'true' : 'false',
+      showInactive: status.indexOf('inactive') !== -1 ? 'true' : 'false',
+      moduleAccess,
+      portalAccess,
+      pageIndex: '0',
     });
   };
 
@@ -112,7 +105,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           <CheckboxGroupField
             fieldName="status"
             fieldLabel="Status"
@@ -161,7 +154,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   showLocked: PropTypes.string,
   showUnlocked: PropTypes.string,
   showActive: PropTypes.string,

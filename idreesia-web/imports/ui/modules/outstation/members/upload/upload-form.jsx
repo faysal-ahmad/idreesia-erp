@@ -29,7 +29,6 @@ class UploadForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     allCities: PropTypes.array,
     allCitiesLoading: PropTypes.bool,
@@ -42,6 +41,8 @@ class UploadForm extends Component {
     importing: false,
     importData: null,
   };
+
+  formRef = React.createRef();
 
   checkForErrors = jsonArray => {
     jsonArray.forEach((record, index) => {
@@ -101,31 +102,24 @@ class UploadForm extends Component {
     history.goBack();
   };
 
-  handlePreview = e => {
-    e.preventDefault();
-    const { form } = this.props;
-    form.validateFields((err, { cityId, csvData }) => {
-      if (err) return;
-
-      csv()
-        .fromString(csvData)
-        .then(jsonArray => {
-          this.checkForErrors(jsonArray);
-          this.setState({
-            csv: csvData,
-            cityId,
-            importData: jsonArray,
-          });
-        })
-        .catch(error => {
-          message.error(error.message, 5);
+  handlePreview = ({ cityId, csvData }) => {
+    csv()
+      .fromString(csvData)
+      .then(jsonArray => {
+        this.checkForErrors(jsonArray);
+        this.setState({
+          csv: csvData,
+          cityId,
+          importData: jsonArray,
         });
-    });
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   handleCancelPreview = () => {
-    const { form } = this.props;
-    form.resetFields();
+    this.formRef.current.resetFields();
     this.setState({
       csv: null,
       cityId: null,
@@ -222,7 +216,7 @@ class UploadForm extends Component {
           </Descriptions.Item>
         </Descriptions>
         <br />
-        <Form layout="horizontal" onSubmit={this.handlePreview}>
+        <Form ref={this.formRef} layout="horizontal" onFinish={this.handlePreview}>
           <SelectField
             data={allCities}
             getDataValue={({ _id }) => _id}

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -25,7 +25,6 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
@@ -35,40 +34,43 @@ class EditForm extends Component {
     locationsByPhysicalStoreId: PropTypes.array,
     updateLocation: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.locationsPath(physicalStoreId));
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ name, parentId, description }) => {
     const {
-      form,
       history,
       physicalStoreId,
       locationById,
       updateLocation,
     } = this.props;
-    form.validateFields((err, { name, parentId, description }) => {
-      if (err) return;
 
-      updateLocation({
-        variables: {
-          _id: locationById._id,
-          name,
-          physicalStoreId,
-          parentId: parentId || null,
-          description,
-        },
+    updateLocation({
+      variables: {
+        _id: locationById._id,
+        name,
+        physicalStoreId,
+        parentId: parentId || null,
+        description,
+      },
+    })
+      .then(() => {
+        history.push(paths.locationsPath(physicalStoreId));
       })
-        .then(() => {
-          history.push(paths.locationsPath(physicalStoreId));
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -78,13 +80,12 @@ class EditForm extends Component {
       locationById,
       locationsByPhysicalStoreId,
     } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading || locationsLoading) return null;
 
-    const { isFieldsTouched } = this.props.form;
-
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -110,7 +111,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={locationById} />
-      </Fragment>
+      </>
     );
   }
 }

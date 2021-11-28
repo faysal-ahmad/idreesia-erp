@@ -20,11 +20,14 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
     createVendor: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -32,38 +35,35 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, physicalStoreId, createVendor, history } = this.props;
-    form.validateFields(
-      (err, { name, contactPerson, contactNumber, address, notes }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        createVendor({
-          variables: {
-            name,
-            physicalStoreId,
-            contactPerson,
-            contactNumber,
-            address,
-            notes,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFinish = ({ name, contactPerson, contactNumber, address, notes }) => {
+    const { physicalStoreId, createVendor, history } = this.props;
+    createVendor({
+      variables: {
+        name,
+        physicalStoreId,
+        contactPerson,
+        contactNumber,
+        address,
+        notes,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

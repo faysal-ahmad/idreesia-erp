@@ -32,9 +32,11 @@ import {
 import KarkunsPreview from './karkuns-preview';
 import { separateDutyAndShifts } from './helpers';
 
-const EditForm = ({ form, history, location }) => {
+const EditForm = ({ history, location }) => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { messageId } = useParams();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [recepientFilter, setRecepientFilter] = useState(null);
   const [updateOperationsMessage] = useMutation(UPDATE_OPERATIONS_MESSAGE, {
@@ -63,11 +65,13 @@ const EditForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { validateFields, isFieldsTouched } = form;
-
   const handleCancel = () => {
     history.goBack();
   };
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
   const handlePeviewKarkuns = () => {
     const bloodGroup = form.getFieldValue('bloodGroup');
@@ -93,43 +97,33 @@ const EditForm = ({ form, history, location }) => {
     setRecepientFilter(filter);
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    validateFields(
-      (
-        err,
-        { messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }
-      ) => {
-        if (err) return;
-
-        const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
-          dutyIdShiftIds,
-          allMSDuties,
-          allMSDutyShifts
-        );
-
-        updateOperationsMessage({
-          variables: {
-            _id: messageId,
-            messageBody,
-            recepientFilter: {
-              filterTarget: FilterTarget.MS_KARKUNS,
-              bloodGroup,
-              lastTarteeb,
-              jobIds,
-              dutyIds,
-              dutyShiftIds,
-            },
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
+  const handleFinish = ({ messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }) => {
+    const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+      dutyIdShiftIds,
+      allMSDuties,
+      allMSDutyShifts
     );
+
+    updateOperationsMessage({
+      variables: {
+        _id: messageId,
+        messageBody,
+        recepientFilter: {
+          filterTarget: FilterTarget.MS_KARKUNS,
+          bloodGroup,
+          lastTarteeb,
+          jobIds,
+          dutyIds,
+          dutyShiftIds,
+        },
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   const {
@@ -141,7 +135,7 @@ const EditForm = ({ form, history, location }) => {
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={handleSubmit}>
+      <Form form={form} layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <InputTextAreaField
           fieldName="messageBody"
           fieldLabel="Message"
@@ -222,7 +216,6 @@ const EditForm = ({ form, history, location }) => {
 };
 
 EditForm.propTypes = {
-  form: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
 };

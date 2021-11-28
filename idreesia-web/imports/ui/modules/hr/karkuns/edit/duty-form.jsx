@@ -11,14 +11,14 @@ import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilitie
 import allDutyRoles from '../../all-duty_roles';
 
 const DutyForm = props => {
-  const { defaultValues, allMSDuties, allDutyShifts, allDutyLocations } = props;
+  const { form, defaultValues, allMSDuties, allDutyShifts, allDutyLocations } = props;
   const dutyShiftCascaderData = getDutyShiftCascaderData(
     allMSDuties,
     allDutyShifts
   );
 
   return (
-    <Form layout="horizontal">
+    <Form form={form} layout="horizontal">
       <CascaderField
         data={dutyShiftCascaderData}
         fieldName="dutyIdShiftId"

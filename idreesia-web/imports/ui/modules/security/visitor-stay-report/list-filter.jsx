@@ -29,7 +29,6 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     setPageParams: PropTypes.func,
     queryParams: PropTypes.object,
 
@@ -37,24 +36,17 @@ class ListFilter extends Component {
     distinctCities: PropTypes.array,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, setPageParams } = this.props;
-
-    form.validateFields(
-      (err, { startDate, endDate, name, city, stayReason, additionalInfo }) => {
-        if (err) return;
-        setPageParams({
-          startDate,
-          endDate,
-          name,
-          city,
-          stayReason,
-          additionalInfo,
-          pageIndex: 0,
-        });
-      }
-    );
+  handleFinish = ({ startDate, endDate, name, city, stayReason, additionalInfo }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      startDate,
+      endDate,
+      name,
+      city,
+      stayReason,
+      additionalInfo,
+      pageIndex: 0,
+    });
   };
 
   handleReset = () => {
@@ -89,7 +81,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form layout="horizontal" onFinish={this.handleFinish}>
             <DateField
               fieldName="startDate"
               fieldLabel="Start Date"

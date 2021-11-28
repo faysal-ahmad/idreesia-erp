@@ -24,7 +24,6 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     name: PropTypes.string,
     categoryId: PropTypes.string,
     verifyDuration: PropTypes.string,
@@ -35,9 +34,11 @@ class ListFilter extends Component {
     refreshData: PropTypes.func,
   };
 
+  formRef = React.createRef();
+
   handleReset = () => {
-    const { form, setPageParams } = this.props;
-    form.resetFields();
+    const { setPageParams } = this.props;
+    this.formRef.current.resetFields();
     setPageParams({
       pageIndex: 0,
       categoryId: null,
@@ -47,21 +48,15 @@ class ListFilter extends Component {
     });
   };
 
-  handleSubmit = () => {
-    const { form, setPageParams } = this.props;
-
-    form.validateFields(
-      (err, { categoryId, name, verifyDuration, stockLevel }) => {
-        if (err) return;
-        setPageParams({
-          pageIndex: 0,
-          categoryId,
-          name,
-          verifyDuration,
-          stockLevel,
-        });
-      }
-    );
+  handleFinish = ({ categoryId, name, verifyDuration, stockLevel }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      pageIndex: 0,
+      categoryId,
+      name,
+      verifyDuration,
+      stockLevel,
+    });
   };
 
   refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
@@ -78,7 +73,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form layout="horizontal">
+          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
             <SelectField
               data={itemCategoriesByPhysicalStoreId}
               getDataValue={category => category._id}
@@ -143,7 +138,7 @@ class ListFilter extends Component {
                   Reset
                 </Button>
                 &nbsp;
-                <Button type="primary" onClick={this.handleSubmit}>
+                <Button type="primary" htmlType="submit">
                   Search
                 </Button>
               </Row>

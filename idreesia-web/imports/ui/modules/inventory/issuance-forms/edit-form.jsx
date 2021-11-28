@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
@@ -38,7 +38,6 @@ class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -48,64 +47,61 @@ class EditForm extends Component {
     issuanceFormById: PropTypes.object,
     updateIssuanceForm: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({
+    issueDate,
+    issuedBy,
+    issuedTo,
+    handedOverTo,
+    locationId,
+    items,
+    notes,
+  }) => {
     const {
-      form,
       history,
       physicalStoreId,
       updateIssuanceForm,
       issuanceFormById: { _id },
     } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
-          issueDate,
-          issuedBy,
-          issuedTo,
-          handedOverTo,
-          locationId,
-          items,
-          notes,
-        }
-      ) => {
-        if (err) return;
-
-        const updatedItems = items.map(
-          ({ stockItemId, quantity, isInflow }) => ({
-            stockItemId,
-            quantity,
-            isInflow,
-          })
-        );
-        updateIssuanceForm({
-          variables: {
-            _id,
-            issueDate,
-            issuedBy: issuedBy._id,
-            issuedTo: issuedTo._id,
-            handedOverTo,
-            locationId,
-            physicalStoreId,
-            items: updatedItems,
-            notes,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
+    const updatedItems = items.map(
+      ({ stockItemId, quantity, isInflow }) => ({
+        stockItemId,
+        quantity,
+        isInflow,
+      })
     );
+    updateIssuanceForm({
+      variables: {
+        _id,
+        issueDate,
+        issuedBy: issuedBy._id,
+        issuedTo: issuedTo._id,
+        handedOverTo,
+        locationId,
+        physicalStoreId,
+        items: updatedItems,
+        notes,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -116,11 +112,11 @@ class EditForm extends Component {
       locationsByPhysicalStoreId,
       physicalStoreId,
     } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (locationsLoading || formDataLoading) {
       return null;
     }
 
-    const { isFieldsTouched } = this.props.form;
     const rules = [
       {
         required: true,
@@ -129,12 +125,8 @@ class EditForm extends Component {
     ];
 
     return (
-      <Fragment>
-        <Form
-          layout="horizontal"
-          style={FormStyle}
-          onSubmit={this.handleSubmit}
-        >
+      <>
+        <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <DateField
             fieldName="issueDate"
             fieldLabel="Issue Date"
@@ -202,7 +194,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={issuanceFormById} />
-      </Fragment>
+      </>
     );
   }
 }

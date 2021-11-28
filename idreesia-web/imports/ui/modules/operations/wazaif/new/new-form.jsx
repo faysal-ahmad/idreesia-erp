@@ -19,8 +19,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createOperationsWazeefa: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -28,35 +31,32 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, createOperationsWazeefa } = this.props;
-    form.validateFields((err, { name, revisionNumber, revisionDate }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createOperationsWazeefa({
-        variables: {
-          name,
-          revisionNumber,
-          revisionDate,
-        },
+  handleFinish = ({ name, revisionNumber, revisionDate }) => {
+    const { history, createOperationsWazeefa } = this.props;
+    createOperationsWazeefa({
+      variables: {
+        name,
+        revisionNumber,
+        revisionDate,
+      },
+    })
+      .then(({ data: { createOperationsWazeefa: newWazeefa } }) => {
+        history.push(`${paths.wazaifEditFormPath(newWazeefa._id)}`);
       })
-        .then(({ data: { createOperationsWazeefa: newWazeefa } }) => {
-          history.push(`${paths.wazaifEditFormPath(newWazeefa._id)}`);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const {
-      form: { isFieldsTouched },
-    } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

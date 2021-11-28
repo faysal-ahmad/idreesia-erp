@@ -21,18 +21,11 @@ const buttonItemLayout = {
 const ListFilter = props => {
   const { refreshData } = props;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const {
-      setPageParams,
-      form: { validateFields },
-    } = props;
-    validateFields((err, { entityId }) => {
-      if (err) return;
-      setPageParams({
-        entityId,
-        pageIndex: 0,
-      });
+  const handleFinish = ({ entityId }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      entityId,
+      pageIndex: 0,
     });
   };
 
@@ -53,7 +46,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           <InputTextField
             fieldName="entityId"
             fieldLabel="Entity ID"
@@ -78,8 +71,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
-
   entityId: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,

@@ -24,9 +24,11 @@ import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities'
 import { PAGED_OUTSTATION_MESSAGES, CREATE_OUTSTATION_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
 
-const NewForm = ({ form, history, location }) => {
+const NewForm = ({ history, location }) => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [showPreview, setShowPreview] = useState(false);
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [recepientFilter, setRecepientFilter] = useState(null);
   const [createOutstationMessage] = useMutation(CREATE_OUTSTATION_MESSAGE, {
     refetchQueries: [{ query: PAGED_OUTSTATION_MESSAGES }],
@@ -50,7 +52,6 @@ const NewForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { validateFields, isFieldsTouched } = form;
   const cityMehfilCascaderData = getCityMehfilCascaderData(
     allCities,
     allCityMehfils
@@ -59,6 +60,10 @@ const NewForm = ({ form, history, location }) => {
   const handleCancel = () => {
     history.goBack();
   };
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
   const handlePeviewKarkuns = () => {
     const lastTarteeb = form.getFieldValue('lastTarteeb');
@@ -78,37 +83,30 @@ const NewForm = ({ form, history, location }) => {
     setRecepientFilter(filter);
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    validateFields(
-      (err, { messageBody, lastTarteeb, dutyId, cityIdMehfilId, region }) => {
-        if (err) return;
-
-        createOutstationMessage({
-          variables: {
-            messageBody,
-            recepientFilter: {
-              lastTarteeb,
-              dutyId,
-              cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
-              cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
-              region,
-            },
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  const handleFinish = ({ messageBody, lastTarteeb, dutyId, cityIdMehfilId, region }) => {
+    createOutstationMessage({
+      variables: {
+        messageBody,
+        recepientFilter: {
+          lastTarteeb,
+          dutyId,
+          cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
+          cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
+          region,
+        },
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={handleSubmit}>
+      <Form form={form} layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <InputTextAreaField
           fieldName="messageBody"
           fieldLabel="Message"
@@ -160,7 +158,6 @@ const NewForm = ({ form, history, location }) => {
 };
 
 NewForm.propTypes = {
-  form: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
 };

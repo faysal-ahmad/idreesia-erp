@@ -16,30 +16,33 @@ class NewForm extends Component {
   static propTypes = {
     cities: PropTypes.array,
     cityMehfils: PropTypes.array,
-    form: PropTypes.object,
-    handleSubmit: PropTypes.func,
+    handleFinish: PropTypes.func,
     handleCancel: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, handleSubmit } = this.props;
-    form.validateFields((err, values) => {
-      if (err) return;
-      handleSubmit(values);
-    });
+  state = {
+    isFieldsTouched: false,
+  };
+
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = values => {
+    const { handleFinish } = this.props;
+    handleFinish(values);
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
     const { cities, cityMehfils } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     const cityMehfilCascaderData = getCityMehfilCascaderData(
       cities,
       cityMehfils
     );
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <CascaderField
           data={cityMehfilCascaderData}
           fieldName="cityIdMehfilId"

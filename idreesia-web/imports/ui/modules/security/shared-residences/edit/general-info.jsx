@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
@@ -18,12 +18,15 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     sharedResidenceId: PropTypes.string,
     loading: PropTypes.bool,
     sharedResidenceById: PropTypes.object,
     updateSharedResidence: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -31,41 +34,39 @@ class EditForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ name, address }) => {
     const {
-      form,
       history,
       sharedResidenceById,
       updateSharedResidence,
     } = this.props;
-    form.validateFields((err, { name, address }) => {
-      if (err) return;
-
-      updateSharedResidence({
-        variables: {
-          _id: sharedResidenceById._id,
-          name,
-          address,
-        },
+    updateSharedResidence({
+      variables: {
+        _id: sharedResidenceById._id,
+        name,
+        address,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, sharedResidenceById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -84,7 +85,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={sharedResidenceById} />
-      </Fragment>
+      </>
     );
   }
 }

@@ -31,7 +31,6 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -39,61 +38,58 @@ class NewForm extends Component {
     createStockAdjustment: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({
+    stockItem,
+    adjustmentDate,
+    adjustedBy,
+    quantity,
+    adjustment,
+    adjustmentReason,
+  }) => {
     const {
-      form,
       history,
       physicalStoreId,
       createStockAdjustment,
     } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
-          stockItem,
-          adjustmentDate,
-          adjustedBy,
-          quantity,
-          adjustment,
-          adjustmentReason,
-        }
-      ) => {
-        if (err) return;
-
-        const isInflow = adjustment === 'inflow';
-        createStockAdjustment({
-          variables: {
-            physicalStoreId,
-            stockItemId: stockItem._id,
-            adjustmentDate,
-            adjustedBy: adjustedBy._id,
-            quantity,
-            isInflow,
-            adjustmentReason,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+    const isInflow = adjustment === 'inflow';
+    createStockAdjustment({
+      variables: {
+        physicalStoreId,
+        stockItemId: stockItem._id,
+        adjustmentDate,
+        adjustedBy: adjustedBy._id,
+        quantity,
+        isInflow,
+        adjustmentReason,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { form, physicalStoreId } = this.props;
-    const { isFieldsTouched } = form;
+    const { physicalStoreId } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <StockItemField
           physicalStoreId={physicalStoreId}
           fieldName="stockItem"

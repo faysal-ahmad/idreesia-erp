@@ -38,7 +38,7 @@ const NewForm = ({ history, location }) => {
     history.goBack();
   };
 
-  const handleSubmit = ({
+  const handleFinish = ({
     cityIdMehfilId,
     sentDate,
     totalAmount,
@@ -75,7 +75,7 @@ const NewForm = ({ history, location }) => {
     <AmaanatLogsNewForm
       cities={allCities}
       cityMehfils={allCityMehfils}
-      handleSubmit={handleSubmit}
+      handleFinish={handleFinish}
       handleCancel={handleCancel}
     />
   );

@@ -19,11 +19,14 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     companyById: PropTypes.object,
     updateCompany: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -31,36 +34,35 @@ class EditForm extends Component {
     history.push(paths.companiesPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, companyById, updateCompany } = this.props;
-    form.validateFields((err, { name, importData, connectivitySettings }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateCompany({
-        variables: {
-          _id: companyById._id,
-          name,
-          importData,
-          connectivitySettings,
-        },
+  handleFinish = ({ name, importData, connectivitySettings }) => {
+    const { history, companyById, updateCompany } = this.props;
+    updateCompany({
+      variables: {
+        _id: companyById._id,
+        name,
+        importData,
+        connectivitySettings,
+      },
+    })
+      .then(() => {
+        history.push(paths.companiesPath);
       })
-        .then(() => {
-          history.push(paths.companiesPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, companyById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
-    const { isFieldsTouched } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

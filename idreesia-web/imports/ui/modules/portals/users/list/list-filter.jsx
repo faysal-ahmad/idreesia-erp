@@ -21,19 +21,12 @@ const buttonItemLayout = {
 const ListFilter = props => {
   const { refreshData } = props;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const {
-      setPageParams,
-      form: { validateFields },
-    } = props;
-    validateFields((err, { status }) => {
-      if (err) return;
-      setPageParams({
-        showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
-        showUnlocked: status.indexOf('unlocked') !== -1 ? 'true' : 'false',
-        pageIndex: '0',
-      });
+  const handleFinish = ({ status }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
+      showUnlocked: status.indexOf('unlocked') !== -1 ? 'true' : 'false',
+      pageIndex: '0',
     });
   };
 
@@ -48,11 +41,7 @@ const ListFilter = props => {
 
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
-  const {
-    showLocked,
-    showUnlocked,
-  } = props;
-
+  const { showLocked, showUnlocked } = props;
   const status = [];
   if (showLocked === 'true') status.push('locked');
   if (showUnlocked === 'true') status.push('unlocked');
@@ -60,7 +49,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           <CheckboxGroupField
             fieldName="status"
             fieldLabel="Status"
@@ -89,7 +78,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   showLocked: PropTypes.string,
   showUnlocked: PropTypes.string,
   setPageParams: PropTypes.func,

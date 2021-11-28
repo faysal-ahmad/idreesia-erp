@@ -9,27 +9,29 @@ import {
 
 class EditForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     onSave: PropTypes.func,
     onCancel: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, onSave } = this.props;
+  state = {
+    isFieldsTouched: false,
+  };
 
-    form.validateFields((err, { dutyDetail }) => {
-      if (err) return;
-      onSave(dutyDetail);
-    });
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ dutyDetail }) => {
+    const { onSave } = this.props;
+    onSave(dutyDetail);
   };
 
   render() {
-    const { form, onCancel } = this.props;
-    const { isFieldsTouched } = form;
+    const { onCancel } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="dutyDetail"
           fieldLabel="Duty Detail"

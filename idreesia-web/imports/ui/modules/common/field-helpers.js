@@ -190,7 +190,7 @@ export function getUpdatedBetweenFilterField(fieldValue) {
   );
 }
 
-export function getFormButtons(handleReset, handleSubmit) {
+export function getFormButtons(handleReset) {
   return (
     <Form.Item {...buttonItemLayout}>
       <Row type="flex" justify="end">
@@ -198,7 +198,7 @@ export function getFormButtons(handleReset, handleSubmit) {
           Reset
         </Button>
         &nbsp;
-        <Button type="primary" onClick={handleSubmit}>
+        <Button type="primary" htmlType="submit">
           Search
         </Button>
       </Row>

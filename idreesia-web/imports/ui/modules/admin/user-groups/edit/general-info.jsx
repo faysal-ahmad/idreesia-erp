@@ -16,7 +16,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     groupId: PropTypes.string,
@@ -24,40 +23,43 @@ class GeneralInfo extends Component {
     updateUserGroup: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, userGroupById, updateUserGroup } = this.props;
-    form.validateFields((err, { name, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateUserGroup({
-        variables: {
-          _id: userGroupById.user._id,
-          name,
-          description,
-        },
+  handleFinish = ({ name, description }) => {
+    const { history, userGroupById, updateUserGroup } = this.props;
+    updateUserGroup({
+      variables: {
+        _id: userGroupById.user._id,
+        name,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, userGroupById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

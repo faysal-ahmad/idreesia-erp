@@ -12,51 +12,38 @@ const formItemLayout = {
 
 class EditForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     salary: PropTypes.object,
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { salary: salaryObj, form, handleSave } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
-          salary,
-          rashanMadad,
-          openingLoan,
-          loanDeduction,
-          newLoan,
-          otherDeduction,
-          arrears,
-        }
-      ) => {
-        if (err) return;
-
-        handleSave({
-          _id: salaryObj._id,
-          salary: salary || 0,
-          rashanMadad: rashanMadad || 0,
-          openingLoan: openingLoan || 0,
-          loanDeduction: loanDeduction || 0,
-          newLoan: newLoan || 0,
-          otherDeduction: otherDeduction || 0,
-          arrears: arrears || 0,
-        });
-      }
-    );
+  handleFinish = ({
+    salary,
+    rashanMadad,
+    openingLoan,
+    loanDeduction,
+    newLoan,
+    otherDeduction,
+    arrears,
+  }) => {
+    const { salary: salaryObj, handleSave } = this.props;
+    handleSave({
+      _id: salaryObj._id,
+      salary: salary || 0,
+      rashanMadad: rashanMadad || 0,
+      openingLoan: openingLoan || 0,
+      loanDeduction: loanDeduction || 0,
+      newLoan: newLoan || 0,
+      otherDeduction: otherDeduction || 0,
+      arrears: arrears || 0,
+    });
   };
 
   render() {
-    const {
-      salary,
-    } = this.props;
+    const { salary } = this.props;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish}>
         <Row>
           <Col span={10}>
             <InputNumberField

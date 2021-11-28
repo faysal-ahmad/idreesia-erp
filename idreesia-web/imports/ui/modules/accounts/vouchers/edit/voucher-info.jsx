@@ -19,7 +19,6 @@ class VoucherInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     companyId: PropTypes.string,
     formDataLoading: PropTypes.bool,
@@ -28,40 +27,43 @@ class VoucherInfo extends Component {
     updateVoucher: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, companyId, voucherById, updateVoucher } = this.props;
-    form.validateFields((err, { description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateVoucher({
-        variables: {
-          _id: voucherById._id,
-          companyId,
-          description,
-        },
+  handleFinish = ({ description }) => {
+    const { history, companyId, voucherById, updateVoucher } = this.props;
+    updateVoucher({
+      variables: {
+        _id: voucherById._id,
+        companyId,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { form, formDataLoading, voucherById } = this.props;
-    const { isFieldsTouched } = form;
+    const { formDataLoading, voucherById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="voucherNumber"
           fieldLabel="Voucher Number"

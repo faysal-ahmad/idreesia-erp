@@ -17,72 +17,64 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createUser: PropTypes.func,
   };
+
+  state = {
+    isFieldsTouched: false,
+  };
+
+  formRef = React.createRef();
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createUser, history } = this.props;
-    form.validateFields(
-      (err, { karkun, userName, password, email, displayName }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        if ((userName && password) || (email && email.includes('@gmail.com'))) {
-          createUser({
-            variables: {
-              karkunId: karkun ? karkun._id : null,
-              userName,
-              password,
-              email,
-              displayName,
-            },
+  handleFinish = ({ karkun, userName, password, email, displayName }) => {
+    const { createUser, history } = this.props;
+      if ((userName && password) || (email && email.includes('@gmail.com'))) {
+        createUser({
+          variables: {
+            karkunId: karkun ? karkun._id : null,
+            userName,
+            password,
+            email,
+            displayName,
+          },
+        })
+          .then(() => {
+            history.goBack();
           })
-            .then(() => {
-              history.goBack();
-            })
-            .catch(error => {
-              message.error(error.message, 5);
-            });
-        } else {
-          form.setFields({
-            userName: {
-              errors: [
-                new Error(
-                  'Either user name and password, or google email is required to create an account.'
-                ),
-              ],
-            },
-            password: {
-              errors: [
-                new Error(
-                  'Either user name and password, or google email is required to create an account.'
-                ),
-              ],
-            },
-            email: {
-              errors: [
-                new Error(
-                  'Either user name and password, or google email is required to create an account.'
-                ),
-              ],
-            },
+          .catch(error => {
+            message.error(error.message, 5);
           });
-        }
+      } else {
+        this.formRef.current.setFields([
+          {
+            name: 'userName',
+            errors: ['Either user name and password, or google email is required to create an account.'],
+          },
+          {
+            name: 'password',
+            errors: ['Either user name and password, or google email is required to create an account.'],
+          },
+          {
+            name: 'email',
+            errors: ['Either user name and password, or google email is required to create an account.'],
+          },
+        ]);
       }
-    );
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
-
+    const isFieldsTouched = this.state.isFieldsTouched;
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"

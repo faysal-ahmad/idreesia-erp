@@ -23,18 +23,11 @@ const buttonItemLayout = {
 const ListFilter = props => {
   const { refreshData } = props;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const {
-      setPageParams,
-      form: { validateFields },
-    } = props;
-    validateFields((err, { dataSource }) => {
-      if (err) return;
-      setPageParams({
-        dataSource,
-        pageIndex: 0,
-      });
+  const handleFinish = ({ dataSource }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      dataSource,
+      pageIndex: 0,
     });
   };
 
@@ -55,7 +48,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           <SelectField
             fieldName="dataSource"
             fieldLabel="Data Source"
@@ -93,8 +86,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
-
   dataSource: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,

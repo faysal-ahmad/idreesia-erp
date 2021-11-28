@@ -26,7 +26,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     allPortals: PropTypes.array,
     allPortalsLoading: PropTypes.bool,
@@ -36,11 +35,19 @@ class GeneralInfo extends Component {
     updateOutstationPortalUser: PropTypes.func,
     resetOutstationPortalUserPassword: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
+
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
   handlePasswordReset = () => {
     const { userId, resetOutstationPortalUserPassword } = this.props;
@@ -66,26 +73,21 @@ class GeneralInfo extends Component {
     });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, userId, updateOutstationPortalUser } = this.props;
-    form.validateFields((err, { locked, portalId }) => {
-      if (err) return;
-
-      updateOutstationPortalUser({
-        variables: {
-          userId,
-          locked: locked || false,
-          portalId,
-        },
+  handleFinish = ({ locked, portalId }) => {
+    const { history, userId, updateOutstationPortalUser } = this.props;
+    updateOutstationPortalUser({
+      variables: {
+        userId,
+        locked: locked || false,
+        portalId,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -95,7 +97,7 @@ class GeneralInfo extends Component {
       allPortals,
       allPortalsLoading,
     } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading || allPortalsLoading) return null;
 
     const portalId = outstationPortalUserById.instances[0];
@@ -105,7 +107,7 @@ class GeneralInfo extends Component {
     }));
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"

@@ -20,16 +20,17 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     address: PropTypes.string,
     residentName: PropTypes.string,
     setPageParams: PropTypes.func,
     refreshData: PropTypes.func,
   };
 
+  formRef = React.createRef();
+
   handleReset = () => {
-    const { form, setPageParams } = this.props;
-    form.resetFields();
+    const { setPageParams } = this.props;
+    this.formRef.current.resetFields();
     setPageParams({
       pageIndex: 0,
       address: null,
@@ -37,16 +38,12 @@ class ListFilter extends Component {
     });
   };
 
-  handleSubmit = () => {
-    const { form, setPageParams } = this.props;
-
-    form.validateFields((err, { address, residentName }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        address,
-        residentName,
-      });
+  handleFinish = ({ address, residentName }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      pageIndex: 0,
+      address,
+      residentName,
     });
   };
 
@@ -58,7 +55,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form layout="horizontal">
+          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
             <InputTextField
               fieldName="address"
               fieldLabel="Address"
@@ -79,7 +76,7 @@ class ListFilter extends Component {
                   Reset
                 </Button>
                 &nbsp;
-                <Button type="primary" onClick={this.handleSubmit}>
+                <Button type="primary" htmlType="submit">
                   Search
                 </Button>
               </Row>

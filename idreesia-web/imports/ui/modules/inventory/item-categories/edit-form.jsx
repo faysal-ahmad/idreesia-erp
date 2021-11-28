@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -22,7 +22,6 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -30,47 +29,49 @@ class EditForm extends Component {
     itemCategoryById: PropTypes.object,
     updateItemCategory: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.itemCategoriesPath(physicalStoreId));
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ name }) => {
     const {
-      form,
       history,
       physicalStoreId,
       itemCategoryById,
       updateItemCategory,
     } = this.props;
-    form.validateFields((err, { name }) => {
-      if (err) return;
-
-      updateItemCategory({
-        variables: {
-          id: itemCategoryById._id,
-          name,
-        },
+    updateItemCategory({
+      variables: {
+        id: itemCategoryById._id,
+        name,
+      },
+    })
+      .then(() => {
+        history.push(paths.itemCategoriesPath(physicalStoreId));
       })
-        .then(() => {
-          history.push(paths.itemCategoriesPath(physicalStoreId));
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, itemCategoryById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
-    const { isFieldsTouched } = this.props.form;
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -84,7 +85,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={itemCategoryById} />
-      </Fragment>
+      </>
     );
   }
 }

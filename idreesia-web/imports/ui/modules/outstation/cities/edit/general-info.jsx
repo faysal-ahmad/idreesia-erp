@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
@@ -19,7 +19,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     allCitiesLoading: PropTypes.bool,
     allCities: PropTypes.array,
@@ -27,34 +26,37 @@ class GeneralInfo extends Component {
     cityById: PropTypes.object,
     updateCity: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, cityById, updateCity } = this.props;
-    form.validateFields((err, { name, peripheryOf, country, region }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateCity({
-        variables: {
-          _id: cityById._id,
-          name,
-          peripheryOf,
-          country,
-          region,
-        },
+  handleFinish = ({ name, peripheryOf, country, region }) => {
+    const { history, cityById, updateCity } = this.props;
+    updateCity({
+      variables: {
+        _id: cityById._id,
+        name,
+        peripheryOf,
+        country,
+        region,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   getNonPeripheryCities = () => {
@@ -64,13 +66,13 @@ class GeneralInfo extends Component {
 
   render() {
     const { cityByIdLoading, allCitiesLoading, cityById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (cityByIdLoading || allCitiesLoading) return null;
     const nonPeripheryCities = this.getNonPeripheryCities();
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="City Name"
@@ -104,7 +106,7 @@ class GeneralInfo extends Component {
           />
         </Form>
         <AuditInfo record={cityById} />
-      </Fragment>
+      </>
     );
   }
 }

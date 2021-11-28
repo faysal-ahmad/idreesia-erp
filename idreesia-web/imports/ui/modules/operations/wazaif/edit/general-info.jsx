@@ -20,12 +20,15 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     wazeefaId: PropTypes.string,
     operationsWazeefaById: PropTypes.object,
     updateOperationsWazeefa: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -33,39 +36,35 @@ class GeneralInfo extends Component {
     history.push(paths.wazaifPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, wazeefaId, updateOperationsWazeefa } = this.props;
-    form.validateFields((err, { name, revisionNumber, revisionDate }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateOperationsWazeefa({
-        variables: {
-          _id: wazeefaId,
-          name,
-          revisionNumber,
-          revisionDate,
-        },
+  handleFinish = ({ name, revisionNumber, revisionDate }) => {
+    const { history, wazeefaId, updateOperationsWazeefa } = this.props;
+    updateOperationsWazeefa({
+      variables: {
+        _id: wazeefaId,
+        name,
+        revisionNumber,
+        revisionDate,
+      },
+    })
+      .then(() => {
+        history.push(paths.wazaifPath);
       })
-        .then(() => {
-          history.push(paths.wazaifPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const {
-      form: { isFieldsTouched },
-      formDataLoading,
-      operationsWazeefaById,
-    } = this.props;
+    const { formDataLoading, operationsWazeefaById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

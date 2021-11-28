@@ -17,12 +17,15 @@ class Notes extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     visitorId: PropTypes.string,
     securityVisitorById: PropTypes.object,
     updateSecurityVisitorNotes: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -30,40 +33,38 @@ class Notes extends Component {
     history.push(`${paths.visitorRegistrationPath}`);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ criminalRecord, otherNotes }) => {
     const {
-      form,
       history,
       securityVisitorById,
       updateSecurityVisitorNotes,
     } = this.props;
-    form.validateFields((err, { criminalRecord, otherNotes }) => {
-      if (err) return;
-
-      updateSecurityVisitorNotes({
-        variables: {
-          _id: securityVisitorById._id,
-          criminalRecord,
-          otherNotes,
-        },
+    updateSecurityVisitorNotes({
+      variables: {
+        _id: securityVisitorById._id,
+        criminalRecord,
+        otherNotes,
+      },
+    })
+      .then(() => {
+        history.push(`${paths.visitorRegistrationPath}`);
       })
-        .then(() => {
-          history.push(`${paths.visitorRegistrationPath}`);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, securityVisitorById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextAreaField
           fieldName="criminalRecord"
           fieldLabel="Criminal Record"

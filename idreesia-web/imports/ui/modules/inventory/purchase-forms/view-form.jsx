@@ -33,7 +33,6 @@ class ViewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -61,7 +60,7 @@ class ViewForm extends Component {
 
     return (
       <Fragment>
-        <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+        <Form layout="horizontal" style={FormStyle} onFinish={noop}>
           <DateField
             fieldName="purchaseDate"
             fieldLabel="Purchase Date"

@@ -34,7 +34,6 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     allJobs: PropTypes.array,
     allMSDuties: PropTypes.array,
     allDutyShifts: PropTypes.array,
@@ -59,9 +58,11 @@ class ListFilter extends Component {
     cnicNumber: '',
   };
 
+  formRef = React.createRef();
+
   handleReset = () => {
-    const { form, setPageParams } = this.props;
-    form.resetFields();
+    const { setPageParams } = this.props;
+    this.formRef.current.resetFields();
     setPageParams({
       pageIndex: 0,
       name: null,
@@ -76,38 +77,29 @@ class ListFilter extends Component {
     });
   };
 
-  handleSubmit = () => {
-    const { form, setPageParams } = this.props;
-
-    form.validateFields(
-      (
-        err,
-        {
-          name,
-          cnicNumber,
-          phoneNumber,
-          bloodGroup,
-          lastTarteeb,
-          jobId,
-          dutyIdShiftId,
-          karkunType,
-        }
-      ) => {
-        if (err) return;
-        setPageParams({
-          pageIndex: 0,
-          name,
-          cnicNumber,
-          phoneNumber,
-          bloodGroup,
-          lastTarteeb,
-          jobId,
-          dutyId: dutyIdShiftId[0],
-          dutyShiftId: dutyIdShiftId[1],
-          karkunType,
-        });
-      }
-    );
+  handleFinish = ({
+    name,
+    cnicNumber,
+    phoneNumber,
+    bloodGroup,
+    lastTarteeb,
+    jobId,
+    dutyIdShiftId,
+    karkunType,
+  }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      pageIndex: 0,
+      name,
+      cnicNumber,
+      phoneNumber,
+      bloodGroup,
+      lastTarteeb,
+      jobId,
+      dutyId: dutyIdShiftId[0],
+      dutyShiftId: dutyIdShiftId[1],
+      karkunType,
+    });
   };
 
   refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
@@ -148,7 +140,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form layout="horizontal">
+          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
             <CheckboxGroupField
               fieldName="karkunType"
               fieldLabel="Karkun Type"
@@ -231,7 +223,7 @@ class ListFilter extends Component {
                   Reset
                 </Button>
                 &nbsp;
-                <Button type="primary" onClick={this.handleSubmit}>
+                <Button type="primary" htmlType="submit">
                   Search
                 </Button>
               </Row>

@@ -25,7 +25,6 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     setBreadcrumbs: PropTypes.func,
 
     companyId: PropTypes.string,
@@ -34,6 +33,12 @@ class EditForm extends Component {
     accountHeadById: PropTypes.object,
     updateAccountHead: PropTypes.func,
   };
+
+  state = {
+    isFieldsTouched: false,
+  };
+
+  formRef = React.createRef();
 
   componentDidMount() {
     const { company, setBreadcrumbs } = this.props;
@@ -54,45 +59,42 @@ class EditForm extends Component {
     history.push(paths.accountHeadsPath(companyId));
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ name, description, startingBalance }) => {
     const {
-      form,
       history,
       companyId,
       accountHeadById,
       updateAccountHead,
     } = this.props;
-    form.validateFields((err, { name, description, startingBalance }) => {
-      if (err) return;
 
-      updateAccountHead({
-        variables: {
-          _id: accountHeadById._id,
-          companyId,
-          name,
-          description,
-          startingBalance,
-        },
+    updateAccountHead({
+      variables: {
+        _id: accountHeadById._id,
+        companyId,
+        name,
+        description,
+        startingBalance,
+      },
+    })
+      .then(() => {
+        history.push(paths.accountHeadsPath(companyId));
       })
-        .then(() => {
-          history.push(paths.accountHeadsPath(companyId));
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { accountHeadByIdLoading, accountHeadById } = this.props;
-    const {
-      form: { isFieldsTouched },
-    } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (accountHeadByIdLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

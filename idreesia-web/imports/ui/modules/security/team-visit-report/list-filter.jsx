@@ -26,7 +26,6 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     setPageParams: PropTypes.func,
     queryParams: PropTypes.object,
 
@@ -34,18 +33,13 @@ class ListFilter extends Component {
     distinctTeamNames: PropTypes.array,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, setPageParams } = this.props;
-
-    form.validateFields((err, { startDate, endDate, teamName }) => {
-      if (err) return;
-      setPageParams({
-        startDate,
-        endDate,
-        teamName,
-        pageIndex: 0,
-      });
+  handleFinish = ({ startDate, endDate, teamName }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      startDate,
+      endDate,
+      teamName,
+      pageIndex: 0,
     });
   };
 
@@ -71,7 +65,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form layout="horizontal" onFinish={this.handleFinish}>
             <DateField
               fieldName="startDate"
               fieldLabel="Start Date"

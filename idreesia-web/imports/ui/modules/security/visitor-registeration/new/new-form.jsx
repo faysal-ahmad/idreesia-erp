@@ -22,7 +22,7 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = ({
+  handleFinish = ({
     name,
     parentName,
     cnicNumber,
@@ -71,7 +71,7 @@ class NewForm extends Component {
   render() {
     return (
       <VisitorsNewForm
-        handleSubmit={this.handleSubmit}
+        handleFinish={this.handleFinish}
         handleCancel={this.handleCancel}
       />
     );

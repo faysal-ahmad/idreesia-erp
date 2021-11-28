@@ -26,7 +26,6 @@ import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilitie
 
 class NewForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     visitorId: PropTypes.string,
     handleAddItem: PropTypes.func,
     createVisitorStay: PropTypes.func,
@@ -41,35 +40,25 @@ class NewForm extends Component {
     distinctTeamNamesLoading: PropTypes.bool,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, visitorId, handleAddItem, createVisitorStay } = this.props;
-    form.validateFields(
-      (
-        err,
-        { numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, teamName }
-      ) => {
-        if (err) return;
-
-        createVisitorStay({
-          variables: {
-            visitorId,
-            numOfDays,
-            stayReason,
-            stayAllowedBy,
-            dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
-            shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-            teamName,
-          },
-        })
-          .then(({ data: { createVisitorStay: newVisitorStay } }) => {
-            if (handleAddItem) handleAddItem(newVisitorStay);
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, teamName }) => {
+    const { visitorId, handleAddItem, createVisitorStay } = this.props;
+    createVisitorStay({
+      variables: {
+        visitorId,
+        numOfDays,
+        stayReason,
+        stayAllowedBy,
+        dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
+        shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
+        teamName,
+      },
+    })
+      .then(({ data: { createVisitorStay: newVisitorStay } }) => {
+        if (handleAddItem) handleAddItem(newVisitorStay);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -98,7 +87,7 @@ class NewForm extends Component {
     );
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish}>
         <InputNumberField
           fieldName="numOfDays"
           fieldLabel="Num of Days"

@@ -1,19 +1,20 @@
 /* eslint "no-script-url": "off" */
-import React, { Component, Fragment } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Divider,
+  Form,
   Table,
   Tooltip,
   Modal,
   Popconfirm,
   message,
 } from 'antd';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   WithAllMSDuties,
   WithAllDutyShifts,
@@ -28,32 +29,84 @@ import {
   REMOVE_KARKUN_DUTY,
 } from '../gql';
 
-class DutyParticipation extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const DutyParticipation = props => {
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [defaultValues, setDefaultValues] = useState({});
+  const [newDutyForm] = Form.useForm();
+  const [editDutyForm] = Form.useForm();
 
-    karkunId: PropTypes.string,
-    karkunDutiesByKarkunId: PropTypes.array,
-    allMSDuties: PropTypes.array,
-    allDutyShifts: PropTypes.array,
-    allDutyLocations: PropTypes.array,
-    createKarkunDuty: PropTypes.func,
-    updateKarkunDuty: PropTypes.func,
-    removeKarkunDuty: PropTypes.func,
+  const handleNewClicked = () => {
+    setShowNewForm(true);
   };
 
-  state = {
-    showNewForm: false,
-    showEditForm: false,
-    defaultValues: {},
+  const handleEditClicked = record => {
+    setShowEditForm(true);
+    setDefaultValues(record);
   };
 
-  newDutyForm;
-  editDutyForm;
+  const handleDeleteClicked = record => {
+    const { removeKarkunDuty } = props;
+    removeKarkunDuty({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
 
-  columns = [
+  const handleNewDutyFormCancelled = () => {
+    setShowNewForm(false);
+  };
+
+  const handleEditDutyFormCancelled = () => {
+    setShowEditForm(false);
+  };
+
+  const handleNewDutyFormSaved = () => {
+    const { karkunId, createKarkunDuty } = props;
+    newDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }) => {
+      setShowNewForm(false);
+      createKarkunDuty({
+        variables: {
+          karkunId,
+          dutyId: dutyIdShiftId[0],
+          shiftId: dutyIdShiftId[1],
+          locationId,
+          role,
+          daysOfWeek: weekDays,
+        },
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+    });
+  };
+
+  const handleEditDutyFormSaved = () => {
+    const { _id } = defaultValues;
+    const { karkunId, updateKarkunDuty } = props;
+    editDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }) => {
+      setShowEditForm(false);
+      updateKarkunDuty({
+        variables: {
+          _id,
+          karkunId,
+          dutyId: dutyIdShiftId[0],
+          shiftId: dutyIdShiftId[1],
+          locationId,
+          role,
+          daysOfWeek: weekDays,
+        },
+      })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+      });
+  };
+
+  const columns = [
     {
       title: 'Duty Name',
       dataIndex: 'dutyName',
@@ -89,7 +142,7 @@ class DutyParticipation extends Component {
             <EditOutlined
               className="list-actions-icon"
               onClick={() => {
-                this.handleEditClicked(record);
+                handleEditClicked(record);
               }}
             />
           </Tooltip>
@@ -97,7 +150,7 @@ class DutyParticipation extends Component {
           <Popconfirm
             title="Are you sure you want to delete this duty?"
             onConfirm={() => {
-              this.handleDeleteClicked(record);
+              handleDeleteClicked(record);
             }}
             okText="Yes"
             cancelText="No"
@@ -111,153 +164,84 @@ class DutyParticipation extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    this.setState({ showNewForm: true });
-  };
+  const {
+    karkunDutiesByKarkunId,
+    allMSDuties,
+    allDutyShifts,
+    allDutyLocations,
+  } = props;
 
-  handleEditClicked = record => {
-    this.setState({ showEditForm: true, defaultValues: record });
-  };
+  return (
+    <>
+      <Table
+        rowKey="_id"
+        dataSource={karkunDutiesByKarkunId}
+        columns={columns}
+        bordered
+        title={() => (
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={handleNewClicked}
+          >
+            New Duty
+          </Button>
+        )}
+      />
 
-  handleDeleteClicked = record => {
-    const { removeKarkunDuty } = this.props;
-    removeKarkunDuty({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  handleNewDutyFormCancelled = () => {
-    this.setState({ showNewForm: false });
-  };
-
-  handleEditDutyFormCancelled = () => {
-    this.setState({ showEditForm: false });
-  };
-
-  handleNewDutyFormSaved = () => {
-    const { karkunId, createKarkunDuty } = this.props;
-    this.newDutyForm.validateFields(
-      null,
-      (errors, { dutyIdShiftId, locationId, role, weekDays }) => {
-        if (!errors) {
-          this.setState({ showNewForm: false });
-          createKarkunDuty({
-            variables: {
-              karkunId,
-              dutyId: dutyIdShiftId[0],
-              shiftId: dutyIdShiftId[1],
-              locationId,
-              role,
-              daysOfWeek: weekDays,
-            },
-          }).catch(error => {
-            message.error(error.message, 5);
-          });
-        }
-      }
-    );
-  };
-
-  handleEditDutyFormSaved = () => {
-    const { _id } = this.state.defaultValues;
-    const { karkunId, updateKarkunDuty } = this.props;
-    this.editDutyForm.validateFields(
-      null,
-      (errors, { dutyIdShiftId, locationId, role, weekDays }) => {
-        if (!errors) {
-          this.setState({ showEditForm: false });
-          updateKarkunDuty({
-            variables: {
-              _id,
-              karkunId,
-              dutyId: dutyIdShiftId[0],
-              shiftId: dutyIdShiftId[1],
-              locationId,
-              role,
-              daysOfWeek: weekDays,
-            },
-          }).catch(error => {
-            message.error(error.message, 5);
-          });
-        }
-      }
-    );
-  };
-
-  render() {
-    const { showNewForm, showEditForm, defaultValues } = this.state;
-    const {
-      karkunDutiesByKarkunId,
-      allMSDuties,
-      allDutyShifts,
-      allDutyLocations,
-    } = this.props;
-
-    return (
-      <Fragment>
-        <Table
-          rowKey="_id"
-          dataSource={karkunDutiesByKarkunId}
-          columns={this.columns}
-          bordered
-          title={() => (
-            <Button
-              type="primary"
-              icon={<PlusCircleOutlined />}
-              onClick={this.handleNewClicked}
-            >
-              New Duty
-            </Button>
-          )}
+      <Modal
+        visible={showNewForm}
+        title="Add Duty"
+        okText="Save"
+        width={600}
+        destroyOnClose
+        onOk={handleNewDutyFormSaved}
+        onCancel={handleNewDutyFormCancelled}
+      >
+        <DutyForm
+          form={newDutyForm}
+          defaultValues={defaultValues}
+          allMSDuties={allMSDuties}
+          allDutyShifts={allDutyShifts}
+          allDutyLocations={allDutyLocations}
         />
+      </Modal>
 
-        <Modal
-          visible={showNewForm}
-          title="Add Duty"
-          okText="Save"
-          width={600}
-          destroyOnClose
-          onOk={this.handleNewDutyFormSaved}
-          onCancel={this.handleNewDutyFormCancelled}
-        >
-          <DutyForm
-            ref={f => {
-              this.newDutyForm = f;
-            }}
-            defaultValues={defaultValues}
-            allMSDuties={allMSDuties}
-            allDutyShifts={allDutyShifts}
-            allDutyLocations={allDutyLocations}
-          />
-        </Modal>
-
-        <Modal
-          visible={showEditForm}
-          title="Edit Duty"
-          okText="Save"
-          width={600}
-          destroyOnClose
-          onOk={this.handleEditDutyFormSaved}
-          onCancel={this.handleEditDutyFormCancelled}
-        >
-          <DutyForm
-            ref={f => {
-              this.editDutyForm = f;
-            }}
-            defaultValues={defaultValues}
-            allMSDuties={allMSDuties}
-            allDutyShifts={allDutyShifts}
-            allDutyLocations={allDutyLocations}
-          />
-        </Modal>
-      </Fragment>
-    );
-  }
+      <Modal
+        visible={showEditForm}
+        title="Edit Duty"
+        okText="Save"
+        width={600}
+        destroyOnClose
+        onOk={handleEditDutyFormSaved}
+        onCancel={handleEditDutyFormCancelled}
+      >
+        <DutyForm
+          form={editDutyForm}
+          defaultValues={defaultValues}
+          allMSDuties={allMSDuties}
+          allDutyShifts={allDutyShifts}
+          allDutyLocations={allDutyLocations}
+        />
+      </Modal>
+    </>
+  );
 }
+
+DutyParticipation.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  karkunId: PropTypes.string,
+  karkunDutiesByKarkunId: PropTypes.array,
+  allMSDuties: PropTypes.array,
+  allDutyShifts: PropTypes.array,
+  allDutyLocations: PropTypes.array,
+  createKarkunDuty: PropTypes.func,
+  updateKarkunDuty: PropTypes.func,
+  removeKarkunDuty: PropTypes.func,
+};
 
 export default flowRight(
   graphql(KARKUN_DUTIES_BY_KARKUN_ID, {

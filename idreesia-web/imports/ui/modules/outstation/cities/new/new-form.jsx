@@ -18,11 +18,14 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     allCitiesLoading: PropTypes.bool,
     allCities: PropTypes.array,
     createCity: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -30,27 +33,26 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createCity, history } = this.props;
-    form.validateFields((err, { name, peripheryOf, region, country }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createCity({
-        variables: {
-          name,
-          peripheryOf,
-          region,
-          country,
-        },
+  handleFinish = ({ name, peripheryOf, region, country }) => {
+    const { createCity, history } = this.props;
+    createCity({
+      variables: {
+        name,
+        peripheryOf,
+        region,
+        country,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   getNonPeripheryCities = () => {
@@ -60,12 +62,12 @@ class NewForm extends Component {
 
   render() {
     const { allCitiesLoading } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (allCitiesLoading) return null;
     const nonPeripheryCities = this.getNonPeripheryCities();
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="City Name"

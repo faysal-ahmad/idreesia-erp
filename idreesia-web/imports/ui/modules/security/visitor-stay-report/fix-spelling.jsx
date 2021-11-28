@@ -9,29 +9,31 @@ import {
 
 class FixSpelling extends Component {
   static propTypes = {
-    form: PropTypes.object,
     spellingType: PropTypes.string,
     existingSpelling: PropTypes.string,
     onSave: PropTypes.func,
     onCancel: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { spellingType, form, onSave } = this.props;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-    form.validateFields((err, { existingSpelling, newSpelling }) => {
-      if (err) return;
-      onSave(spellingType, existingSpelling, newSpelling);
-    });
+  handleFinish = ({ existingSpelling, newSpelling }) => {
+    const { spellingType, onSave } = this.props;
+    onSave(spellingType, existingSpelling, newSpelling);
   };
 
   render() {
-    const { existingSpelling, form, onCancel } = this.props;
-    const { isFieldsTouched } = form;
+    const { existingSpelling, onCancel } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="existingSpelling"
           fieldLabel="Existing Spelling"

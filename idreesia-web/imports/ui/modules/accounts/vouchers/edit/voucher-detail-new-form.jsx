@@ -21,101 +21,96 @@ const ButtonContainerStyle = {
 
 class VoucherDetailNewForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
-
     companyId: PropTypes.string,
     voucherId: PropTypes.string,
     accountHeadsByCompanyId: PropTypes.array,
     createVoucherDetail: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  formRef = React.createRef();
+
+  handleFinish = ({ accountNumber, creditAmount, debitAmount, description }) => {
     const {
-      form,
       companyId,
       voucherId,
       accountHeadsByCompanyId,
       createVoucherDetail,
     } = this.props;
-    form.validateFields(
-      (err, { accountNumber, creditAmount, debitAmount, description }) => {
-        if (err) return;
 
-        const accountHead = find(accountHeadsByCompanyId, {
-          number: accountNumber,
-        });
-        createVoucherDetail({
-          variables: {
-            companyId,
-            voucherId,
-            accountHeadId: accountHead._id,
-            amount: creditAmount || debitAmount,
-            isCredit: creditAmount !== 0,
-            description,
-          },
-        })
-          .then(() => {
-            form.resetFields();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+    const accountHead = find(accountHeadsByCompanyId, {
+      number: accountNumber,
+    });
+    createVoucherDetail({
+      variables: {
+        companyId,
+        voucherId,
+        accountHeadId: accountHead._id,
+        amount: creditAmount || debitAmount,
+        isCredit: creditAmount !== 0,
+        description,
+      },
+    })
+      .then(() => {
+        this.formRef.current.resetFields();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { accountHeadsByCompanyId } = this.props;
 
     return (
-      <Row type="flex" justify="start" style={RowStyle}>
-        <Col style={{ width: "300px" }}>
-          <AccountSelectionField
-            data={accountHeadsByCompanyId}
-            fieldName="accountNumber"
-            fieldLayout={null}
-            placeholder="Select Account"
-            showSearch
-            required
-            requiredMessage="Please select an account."
-          />
-        </Col>
-        <Col style={{ width: "300px" }}>
-          <InputTextField
-            fieldName="description"
-            placeholder="Description"
-            fieldLayout={null}
-            required={false}
-          />
-        </Col>
-        <Col>
-          <InputNumberField
-            fieldName="creditAmount"
-            placeholder="Credit"
-            fieldLayout={null}
-            minValue={0}
-          />
-        </Col>
-        <Col>
-          <InputNumberField
-            fieldName="debitAmount"
-            placeholder="Debit"
-            fieldLayout={null}
-            minValue={0}
-          />
-        </Col>
+      <Form ref={this.formRef} onFinish={this.handleFinish}>
+        <Row type="flex" justify="start" style={RowStyle}>
+          <Col style={{ width: "300px" }}>
+            <AccountSelectionField
+              data={accountHeadsByCompanyId}
+              fieldName="accountNumber"
+              fieldLayout={null}
+              placeholder="Select Account"
+              showSearch
+              required
+              requiredMessage="Please select an account."
+            />
+          </Col>
+          <Col style={{ width: "300px" }}>
+            <InputTextField
+              fieldName="description"
+              placeholder="Description"
+              fieldLayout={null}
+              required={false}
+            />
+          </Col>
+          <Col>
+            <InputNumberField
+              fieldName="creditAmount"
+              placeholder="Credit"
+              fieldLayout={null}
+              minValue={0}
+            />
+          </Col>
+          <Col>
+            <InputNumberField
+              fieldName="debitAmount"
+              placeholder="Debit"
+              fieldLayout={null}
+              minValue={0}
+            />
+          </Col>
 
-        <Form.Item style={ButtonContainerStyle}>
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={this.handleSubmit}
-          >
-            Add Item
-          </Button>
-        </Form.Item>
-      </Row>
+          <Form.Item style={ButtonContainerStyle}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              htmlType="submit"
+            >
+              Add Item
+            </Button>
+          </Form.Item>
+        </Row>
+      </Form>
     );
   }
 }

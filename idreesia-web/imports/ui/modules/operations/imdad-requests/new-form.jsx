@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
@@ -19,8 +19,9 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const NewForm = ({ form, history, location }) => {
+const NewForm = ({ history, location }) => {
   const dispatch = useDispatch();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { allImdadReasons, allImdadReasonsLoading } = useAllImdadReasons();
   const [createOperationsImdadRequest] = useMutation(
     CREATE_OPERATIONS_IMDAD_REQUEST,
@@ -40,34 +41,29 @@ const NewForm = ({ form, history, location }) => {
     history.goBack();
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields(
-      (err, { requestDate, visitor, imdadReasonId, notes }) => {
-        if (err) return;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
-        createOperationsImdadRequest({
-          variables: {
-            requestDate,
-            visitorId: visitor._id,
-            imdadReasonId,
-            notes,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  const handleFinish = ({ requestDate, visitor, imdadReasonId, notes }) => {
+    createOperationsImdadRequest({
+      variables: {
+        requestDate,
+        visitorId: visitor._id,
+        imdadReasonId,
+        notes,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
-  const { isFieldsTouched } = form;
-
   return (
-    <Form layout="horizontal" onSubmit={handleSubmit}>
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
       <DateField
         fieldName="requestDate"
         fieldLabel="Request Date"
@@ -108,7 +104,6 @@ const NewForm = ({ form, history, location }) => {
 NewForm.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
-  form: PropTypes.object,
 };
 
 export default NewForm;

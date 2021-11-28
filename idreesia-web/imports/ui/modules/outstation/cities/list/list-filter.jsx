@@ -24,10 +24,11 @@ const buttonItemLayout = {
 };
 
 const ListFilter = props => {
+  const [form] = Form.useForm();
   const { refreshData } = props;
 
   const handleReset = () => {
-    const { form, setPageParams } = props;
+    const { setPageParams } = props;
     form.resetFields();
     setPageParams({
       pageIndex: 0,
@@ -37,17 +38,13 @@ const ListFilter = props => {
     });
   };
 
-  const handleSubmit = () => {
-    const { form, setPageParams } = props;
-
-    form.validateFields((err, { peripheryOf, region, portalId }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        peripheryOf,
-        region,
-        portalId,
-      });
+  const handleFinish = ({ peripheryOf, region, portalId }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      pageIndex: 0,
+      peripheryOf,
+      region,
+      portalId,
     });
   };
 
@@ -66,7 +63,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal">
+        <Form form={form} layout="horizontal" onFinish={handleFinish}>
           <SelectField
             fieldName="peripheryOf"
             fieldLabel="Periphery Of"
@@ -101,7 +98,7 @@ const ListFilter = props => {
                 Reset
               </Button>
               &nbsp;
-              <Button type="primary" onClick={handleSubmit}>
+              <Button type="primary" htmlType="submit">
                 Search
               </Button>
             </Row>
@@ -113,7 +110,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   allCities: PropTypes.array,
   distinctRegions: PropTypes.array,
   allPortals: PropTypes.array,

@@ -60,7 +60,7 @@ const EditForm = ({ history, location }) => {
     history.goBack();
   };
 
-  const handleSubmit = ({
+  const handleFinish = ({
     cityIdMehfilId,
     sentDate,
     totalAmount,
@@ -100,7 +100,7 @@ const EditForm = ({ history, location }) => {
       amaanatLog={data.portalAmaanatLogById}
       cities={portalCities}
       cityMehfils={portalCityMehfils}
-      handleSubmit={handleSubmit}
+      handleFinish={handleFinish}
       handleCancel={handleCancel}
     />
   );

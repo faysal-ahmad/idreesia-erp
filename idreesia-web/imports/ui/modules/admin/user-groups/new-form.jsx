@@ -19,8 +19,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createUserGroup: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -28,31 +31,29 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createUserGroup, history } = this.props;
-    form.validateFields((err, { name, moduleName, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createUserGroup({
-        variables: {
-          name,
-          moduleName,
-          description,
-        },
+  handleFinish = ({ name, moduleName, description }) => {
+    const { createUserGroup, history } = this.props;
+    createUserGroup({
+      variables: {
+        name,
+        moduleName,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
-
+    const isFieldsTouched = this.state.isFieldsTouched;
     const moduleNames = values(ModuleNames);
     const moduleNamesData = moduleNames.map(name => ({
       value: name,
@@ -60,7 +61,7 @@ class NewForm extends Component {
     }));
   
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Group name"

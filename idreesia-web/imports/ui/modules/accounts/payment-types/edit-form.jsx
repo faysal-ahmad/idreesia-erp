@@ -23,11 +23,14 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     paymentTypeById: PropTypes.object,
     updatePaymentType: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -35,36 +38,35 @@ class EditForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, paymentTypeById, updatePaymentType } = this.props;
-    form.validateFields((err, { name, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updatePaymentType({
-        variables: {
-          id: paymentTypeById._id,
-          name,
-          description,
-        },
+  handleFinish = ({ name, description }) => {
+    const { history, paymentTypeById, updatePaymentType } = this.props;
+    updatePaymentType({
+      variables: {
+        id: paymentTypeById._id,
+        name,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, paymentTypeById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
       <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Payment Type"

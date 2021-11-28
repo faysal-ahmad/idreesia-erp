@@ -18,7 +18,9 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-const ListFilter = ({ form, setPageParams, refreshData, name }) => {
+const ListFilter = ({ setPageParams, refreshData, name }) => {
+  const [form] = Form.useForm();
+
   const handleReset = () => {
     form.resetFields();
     setPageParams({
@@ -27,13 +29,10 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
     });
   };
 
-  const handleSubmit = () => {
-    form.validateFields((err, values) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        name: values.name,
-      });
+  const handleFinish = values => {
+    setPageParams({
+      pageIndex: 0,
+      name: values.name,
     });
   };
 
@@ -42,7 +41,7 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal">
+        <Form form={form} layout="horizontal" handleFinish={handleFinish}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -56,7 +55,7 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
                 Reset
               </Button>
               &nbsp;
-              <Button type="primary" onClick={handleSubmit}>
+              <Button type="primary" htmlType="submit">
                 Search
               </Button>
             </Row>
@@ -68,7 +67,6 @@ const ListFilter = ({ form, setPageParams, refreshData, name }) => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   name: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,

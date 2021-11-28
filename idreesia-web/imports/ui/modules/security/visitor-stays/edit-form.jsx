@@ -27,7 +27,6 @@ import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilitie
 
 class EditForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     visitorStayId: PropTypes.string,
     handleSaveItem: PropTypes.func,
     updateVisitorStay: PropTypes.func,
@@ -43,42 +42,39 @@ class EditForm extends Component {
     distinctTeamNames: PropTypes.array,
     distinctTeamNamesLoading: PropTypes.bool,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, teamName }) => {
     const {
-      form,
       visitorStayById,
       handleSaveItem,
       updateVisitorStay,
     } = this.props;
-    form.validateFields(
-      (
-        err,
-        { fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, teamName }
-      ) => {
-        if (err) return;
-
-        updateVisitorStay({
-          variables: {
-            _id: visitorStayById._id,
-            fromDate,
-            toDate,
-            stayReason: stayReason || null,
-            stayAllowedBy,
-            dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
-            shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-            teamName,
-          },
-        })
-          .then(() => {
-            if (handleSaveItem) handleSaveItem();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+    updateVisitorStay({
+      variables: {
+        _id: visitorStayById._id,
+        fromDate,
+        toDate,
+        stayReason: stayReason || null,
+        stayAllowedBy,
+        dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
+        shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
+        teamName,
+      },
+    })
+      .then(() => {
+        if (handleSaveItem) handleSaveItem();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -93,8 +89,8 @@ class EditForm extends Component {
       allDutyShifts,
       distinctStayAllowedBy,
       distinctTeamNames,
-      form: { isFieldsTouched },
     } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     if (
       formDataLoading ||
@@ -111,7 +107,7 @@ class EditForm extends Component {
     );
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal"  onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <DateField
           fieldName="fromDate"
           fieldLabel="From Date"

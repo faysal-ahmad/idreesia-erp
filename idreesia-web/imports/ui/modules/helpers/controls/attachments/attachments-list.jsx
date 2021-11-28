@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -12,13 +12,10 @@ import {
   FileWordOutlined,
   FileUnknownOutlined,
 } from '@ant-design/icons';
-
-import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-
 import {
   Col,
   Divider,
+  Form,
   Modal,
   Row,
   Table,
@@ -26,6 +23,10 @@ import {
   Popconfirm,
   message,
 } from 'antd';
+
+import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+
 import {
   TakePicture,
   UploadAttachment,
@@ -42,32 +43,12 @@ const FileIconStyle = {
   fontSize: 30,
 };
 
-class AttachmentsList extends Component {
-  static propTypes = {
-    attachments: PropTypes.array,
-    canTakePicture: PropTypes.bool,
-    canEditAttachments: PropTypes.bool,
-    handleAttachmentAdded: PropTypes.func,
-    handleAttachmentRemoved: PropTypes.func,
-    updateAttachment: PropTypes.func,
-  };
+const AttachmentsList = props => {
+  const [showForm, setShowForm] = useState(false);
+  const [defaultValues, setDefaultValues] = useState({});
+  const [attachmentForm] = Form.useForm();
 
-  static defaultProps = {
-    attachments: [],
-    canTakePicture: false,
-    canEditAttachments: false,
-    handleAttachmentAdded: noop,
-    handleAttachmentRemoved: noop,
-  };
-
-  state = {
-    showForm: false,
-    defaultValues: {},
-  };
-
-  attachmentForm;
-
-  mimeTypeIconMap = {
+  const mimeTypeIconMap = {
     'image/jpeg': <FileJpgOutlined style={FileIconStyle} />,
     'text/html': <FileTextOutlined style={FileIconStyle} />,
     'application/pdf': <FilePdfOutlined style={FileIconStyle} />,
@@ -77,14 +58,49 @@ class AttachmentsList extends Component {
       <FileWordOutlined style={FileIconStyle} />,
   };
 
-  columns = [
+  const handleNameClicked = record => {
+    const url = getDownloadUrl(record._id);
+    window.open(url, '_blank');
+  };
+
+  const handleEditClicked = record => {
+    setShowForm(true);
+    setDefaultValues(record);
+  };
+
+  const handleDeleteClicked = attachmentId => {
+    const { handleAttachmentRemoved } = props;
+    handleAttachmentRemoved(attachmentId);
+  };
+
+  const handleAttachmentFormCancelled = () => {
+    setShowForm(false);
+  };
+
+  const handleAttachmentFormSaved = () => {
+    const { updateAttachment } = props;
+    attachmentForm.validateFields().then(values => {
+      setShowForm(false);
+      updateAttachment({
+        variables: {
+          _id: defaultValues._id,
+          name: values.name,
+          description: values.description,
+        },
+      }).catch(error => {
+        message.error(error.message, 5);
+      });
+    });
+  };
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => {
         const icon = record.mimeType
-          ? this.mimeTypeIconMap[record.mimeType]
+          ? mimeTypeIconMap[record.mimeType]
           : <FileUnknownOutlined style={FileIconStyle} />;
 
         return (
@@ -93,7 +109,7 @@ class AttachmentsList extends Component {
             align="middle"
             gutter={6}
             onClick={() => {
-              this.handleNameClicked(record);
+              handleNameClicked(record);
             }}
           >
             <Col order={1}>
@@ -119,7 +135,7 @@ class AttachmentsList extends Component {
             <EditOutlined
               className="list-actions-icon"
               onClick={() => {
-                this.handleEditClicked(record);
+                handleEditClicked(record);
               }}
             />
           </Tooltip>
@@ -127,7 +143,7 @@ class AttachmentsList extends Component {
           <Popconfirm
             title="Are you sure you want to delete this document?"
             onConfirm={() => {
-              this.handleDeleteClicked(record._id);
+              handleDeleteClicked(record._id);
             }}
             okText="Yes"
             cancelText="No"
@@ -141,99 +157,57 @@ class AttachmentsList extends Component {
     },
   ];
 
-  handleNameClicked = record => {
-    const url = getDownloadUrl(record._id);
-    window.open(url, '_blank');
-  };
+  const {
+    attachments,
+    canTakePicture,
+    canEditAttachments,
+    handleAttachmentAdded,
+  } = props;
 
-  handleEditClicked = record => {
-    this.setState({ showForm: true, defaultValues: record });
-  };
-
-  handleDeleteClicked = attachmentId => {
-    const { handleAttachmentRemoved } = this.props;
-    handleAttachmentRemoved(attachmentId);
-  };
-
-  handleAttachmentFormCancelled = () => {
-    this.setState({ showForm: false });
-  };
-
-  handleAttachmentFormSaved = () => {
-    const { updateAttachment } = this.props;
-    const { defaultValues } = this.state;
-    this.attachmentForm.validateFields(null, (errors, values) => {
-      if (!errors) {
-        this.setState({ showForm: false });
-        updateAttachment({
-          variables: {
-            _id: defaultValues._id,
-            name: values.name,
-            description: values.description,
-          },
-        }).catch(error => {
-          message.error(error.message, 5);
-        });
-      }
-    });
-  };
-
-  render() {
-    const { showForm, defaultValues } = this.state;
-    const {
-      attachments,
-      canTakePicture,
-      canEditAttachments,
-      handleAttachmentAdded,
-    } = this.props;
-
-    return (
-      <Fragment>
-        <Table
-          rowKey="_id"
-          dataSource={attachments}
-          columns={this.columns}
-          bordered
-          title={() => (
-            <Row type="flex" gutter={16}>
-              <Col order={1}>
-                <UploadAttachment
+  return (
+    <>
+      <Table
+        rowKey="_id"
+        dataSource={attachments}
+        columns={columns}
+        bordered
+        title={() => (
+          <Row type="flex" gutter={16}>
+            <Col order={1}>
+              <UploadAttachment
+                enabled={canEditAttachments}
+                buttonText="Upload Attachment"
+                onUploadFinish={handleAttachmentAdded}
+              />
+            </Col>
+            {canTakePicture ? (
+              <Col order={2}>
+                <TakePicture
                   enabled={canEditAttachments}
-                  buttonText="Upload Attachment"
-                  onUploadFinish={handleAttachmentAdded}
+                  buttonText="Capture Image"
+                  onPictureTaken={handleAttachmentAdded}
                 />
               </Col>
-              {canTakePicture ? (
-                <Col order={2}>
-                  <TakePicture
-                    enabled={canEditAttachments}
-                    buttonText="Capture Image"
-                    onPictureTaken={handleAttachmentAdded}
-                  />
-                </Col>
-              ) : null}
-            </Row>
-          )}
+            ) : null}
+          </Row>
+        )}
+      />
+      <Modal
+        visible={showForm}
+        title="Edit Attachment"
+        okText="Save"
+        width={600}
+        destroyOnClose
+        onOk={handleAttachmentFormSaved}
+        onCancel={handleAttachmentFormCancelled}
+      >
+        <AttachmentForm
+          form={attachmentForm}
+          defaultValues={defaultValues}
         />
-        <Modal
-          visible={showForm}
-          title="Edit Attachment"
-          okText="Save"
-          width={600}
-          destroyOnClose
-          onOk={this.handleAttachmentFormSaved}
-          onCancel={this.handleAttachmentFormCancelled}
-        >
-          <AttachmentForm
-            ref={f => {
-              this.attachmentForm = f;
-            }}
-            defaultValues={defaultValues}
-          />
-        </Modal>
-      </Fragment>
-    );
-  }
+      </Modal>
+    </>
+  );
 }
 
 const updateAttachmentMutation = gql`
@@ -250,6 +224,23 @@ const updateAttachmentMutation = gql`
     }
   }
 `;
+
+AttachmentsList.propTypes = {
+  attachments: PropTypes.array,
+  canTakePicture: PropTypes.bool,
+  canEditAttachments: PropTypes.bool,
+  handleAttachmentAdded: PropTypes.func,
+  handleAttachmentRemoved: PropTypes.func,
+  updateAttachment: PropTypes.func,
+};
+
+AttachmentsList.defaultProps = {
+  attachments: [],
+  canTakePicture: false,
+  canEditAttachments: false,
+  handleAttachmentAdded: noop,
+  handleAttachmentRemoved: noop,
+};
 
 export default flowRight(
   graphql(updateAttachmentMutation, {

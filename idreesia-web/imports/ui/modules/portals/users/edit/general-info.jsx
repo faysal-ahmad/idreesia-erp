@@ -21,7 +21,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     portalId: PropTypes.string,
     userId: PropTypes.string,
@@ -29,42 +28,45 @@ class GeneralInfo extends Component {
     portalUserById: PropTypes.object,
     updatePortalUser: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, portalId, userId, updatePortalUser } = this.props;
-    form.validateFields((err, { password, locked }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updatePortalUser({
-        variables: {
-          portalId,
-          userId,
-          password,
-          locked,
-        },
+  handleFinish = ({ password, locked }) => {
+    const { history, portalId, userId, updatePortalUser } = this.props;
+    updatePortalUser({
+      variables: {
+        portalId,
+        userId,
+        password,
+        locked,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, portalUserById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"

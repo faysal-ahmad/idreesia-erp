@@ -5,10 +5,10 @@ import { Form } from 'antd';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
 const AttachmentForm = props => {
-  const { defaultValues } = props;
+  const { form, defaultValues } = props;
 
   return (
-    <Form layout="horizontal">
+    <Form form={form} layout="horizontal">
       <InputTextField
         fieldName="name"
         fieldLabel="Name"

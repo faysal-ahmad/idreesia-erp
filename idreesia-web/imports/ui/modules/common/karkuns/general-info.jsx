@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Divider, Form } from 'antd';
@@ -21,45 +21,40 @@ import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities'
 
 const GeneralInfo = ({
   karkun,
-  form,
-  handleSubmit,
+  handleFinish,
   handleCancel,
   cities,
   cityMehfils,
   showCityMehfilField,
 }) => {
-  const _handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) return;
-      const { cnicNumber, contactNumber1 } = values;
-      if (!cnicNumber && !contactNumber1) {
-        form.setFields({
-          cnicNumber: {
-            errors: [
-              new Error(
-                'Please input the CNIC or Mobile Number for the person'
-              ),
-            ],
-          },
-          contactNumber1: {
-            errors: [
-              new Error(
-                'Please input the CNIC or Mobile Number for the person'
-              ),
-            ],
-          },
-        });
-      } else {
-        handleSubmit(values);
-      }
-    });
+  const [form] = Form.useForm();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
+
+  const _handleFinish = values => {
+    const { cnicNumber, contactNumber1 } = values;
+    if (!cnicNumber && !contactNumber1) {
+      form.setFields([
+        {
+          name: "cnicNumber",
+          errors: ['Please input the CNIC or Mobile Number for the person'],
+        },
+        {
+          name: "contactNumber1",
+          errors: ['Please input the CNIC or Mobile Number for the person'],
+        },
+      ]);
+    } else {
+      handleFinish(values);
+    }
   };
 
-  const { isFieldsTouched } = form;
   return (
-    <Fragment>
-      <Form layout="horizontal" onSubmit={_handleSubmit}>
+    <>
+      <Form form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
@@ -220,14 +215,13 @@ const GeneralInfo = ({
         />
       </Form>
       <AuditInfo record={karkun} />
-    </Fragment>
+    </>
   );
 };
 
 GeneralInfo.propTypes = {
-  form: PropTypes.object,
   karkun: PropTypes.object,
-  handleSubmit: PropTypes.func,
+  handleFinish: PropTypes.func,
   handleCancel: PropTypes.func,
 
   cities: PropTypes.array,

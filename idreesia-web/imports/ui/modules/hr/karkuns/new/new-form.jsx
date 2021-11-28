@@ -23,8 +23,13 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createHrKarkun: PropTypes.func,
+  };
+
+  formRef = React.createRef();
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -32,13 +37,41 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createHrKarkun, history } = this.props;
-    form.validateFields(
-      (
-        err,
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({
+    name,
+    parentName,
+    cnicNumber,
+    contactNumber1,
+    contactNumber2,
+    emailAddress,
+    currentAddress,
+    permanentAddress,
+    bloodGroup,
+    educationalQualification,
+    meansOfEarning,
+    ehadDate,
+    birthDate,
+    referenceName,
+  }) => {
+    const { createHrKarkun, history } = this.props;
+    if (!cnicNumber && !contactNumber1) {
+      this.formRef.current.setFields([
         {
+          name: "cnicNumber",
+          errors: ['Please input the CNIC or Mobile Number for the person'],
+        },
+        {
+          name: "contactNumber1",
+          errors: ['Please input the CNIC or Mobile Number for the person'],
+        },
+      ]);
+    } else {
+      createHrKarkun({
+        variables: {
           name,
           parentName,
           cnicNumber,
@@ -53,61 +86,22 @@ class NewForm extends Component {
           ehadDate,
           birthDate,
           referenceName,
-        }
-      ) => {
-        if (err) return;
-        if (!cnicNumber && !contactNumber1) {
-          form.setFields({
-            cnicNumber: {
-              errors: [
-                new Error(
-                  'Please input the CNIC or Mobile Number for the karkun'
-                ),
-              ],
-            },
-            contactNumber1: {
-              errors: [
-                new Error(
-                  'Please input the CNIC or Mobile Number for the karkun'
-                ),
-              ],
-            },
-          });
-        } else {
-          createHrKarkun({
-            variables: {
-              name,
-              parentName,
-              cnicNumber,
-              contactNumber1,
-              contactNumber2,
-              emailAddress,
-              currentAddress,
-              permanentAddress,
-              bloodGroup,
-              educationalQualification,
-              meansOfEarning,
-              ehadDate,
-              birthDate,
-              referenceName,
-            },
-          })
-            .then(({ data: { createHrKarkun: newKarkun } }) => {
-              history.push(`${paths.karkunsPath}/${newKarkun._id}`);
-            })
-            .catch(error => {
-              message.error(error.message, 5);
-            });
-        }
-      }
-    );
+        },
+      })
+        .then(({ data: { createHrKarkun: newKarkun } }) => {
+          history.push(`${paths.karkunsPath}/${newKarkun._id}`);
+        })
+        .catch(error => {
+          message.error(error.message, 5);
+        });
+    }
   };
 
   render() {
-    const { form: { isFieldsTouched } } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

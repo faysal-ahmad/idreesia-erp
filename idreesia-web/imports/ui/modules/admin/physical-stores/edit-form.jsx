@@ -18,11 +18,14 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     physicalStoreById: PropTypes.object,
     updatePhysicalStore: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -30,40 +33,38 @@ class EditForm extends Component {
     history.push(paths.physicalStoresPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = fieldsValue => {
     const {
-      form,
       history,
       physicalStoreById,
       updatePhysicalStore,
     } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      updatePhysicalStore({
-        variables: {
-          id: physicalStoreById._id,
-          name: fieldsValue.name,
-          address: fieldsValue.address,
-        },
+    updatePhysicalStore({
+      variables: {
+        id: physicalStoreById._id,
+        name: fieldsValue.name,
+        address: fieldsValue.address,
+      },
+    })
+      .then(() => {
+        history.push(paths.physicalStoresPath);
       })
-        .then(() => {
-          history.push(paths.physicalStoresPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, physicalStoreById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
-    const { isFieldsTouched } = this.props.form;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

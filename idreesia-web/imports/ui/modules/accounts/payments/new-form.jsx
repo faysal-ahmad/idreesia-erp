@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -19,8 +19,9 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
-const NewForm = ({ form, history, location }) => {
+const NewForm = ({ history, location }) => {
   const dispatch = useDispatch();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { allPaymentTypes, allPaymentTypesLoading } = useAllPaymentTypes();
   const { data, loading } = useQuery(NEXT_PAYMENT_NUMBER, {
     fetchPolicy: 'no-cache',
@@ -40,52 +41,44 @@ const NewForm = ({ form, history, location }) => {
     history.goBack();
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields(
-      (
-        err,
-        {
-          paymentNumber,
-          name,
-          fatherName,
-          cnicNumber,
-          contactNumber,
-          paymentTypeId,
-          paymentAmount,
-          paymentDate,
-          description,
-        }
-      ) => {
-        if (err) return;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
-        createPayment({
-          variables: {
-            paymentNumber,
-            name,
-            fatherName,
-            cnicNumber,
-            contactNumber,
-            paymentTypeId,
-            paymentAmount,
-            paymentDate,
-            description,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  const handleFinish = ({
+    paymentNumber,
+    name,
+    fatherName,
+    cnicNumber,
+    contactNumber,
+    paymentTypeId,
+    paymentAmount,
+    paymentDate,
+    description,
+  }) => {
+    createPayment({
+      variables: {
+        paymentNumber,
+        name,
+        fatherName,
+        cnicNumber,
+        contactNumber,
+        paymentTypeId,
+        paymentAmount,
+        paymentDate,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
-  const { isFieldsTouched } = form;
-
   return (
-    <Form layout="horizontal" onSubmit={handleSubmit}>
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
       <InputTextField
         fieldName="paymentNumber"
         fieldLabel="Voucher No."
@@ -161,7 +154,6 @@ const NewForm = ({ form, history, location }) => {
 NewForm.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
-  form: PropTypes.object,
 };
 
 export default NewForm;

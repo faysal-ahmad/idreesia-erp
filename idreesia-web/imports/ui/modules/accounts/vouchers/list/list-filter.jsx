@@ -19,16 +19,17 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     startDate: PropTypes.object,
     endDate: PropTypes.object,
     voucherNumber: PropTypes.string,
     setPageParams: PropTypes.func,
   };
 
+  formRef = React.createRef();
+
   handleReset = () => {
-    const { form, setPageParams } = this.props;
-    form.resetFields();
+    const { setPageParams } = this.props;
+    this.formRef.current.resetFields();
     setPageParams({
       pageIndex: 0,
       startDate: null,
@@ -36,18 +37,13 @@ class ListFilter extends Component {
     });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, setPageParams } = this.props;
-
-    form.validateFields((err, { startDate, endDate, voucherNumber }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        startDate,
-        endDate,
-        voucherNumber,
-      });
+  handleFinish = ({ startDate, endDate, voucherNumber }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      pageIndex: 0,
+      startDate,
+      endDate,
+      voucherNumber,
     });
   };
 
@@ -57,7 +53,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
             <DateField
               fieldName="startDate"
               fieldLabel="Start Date"

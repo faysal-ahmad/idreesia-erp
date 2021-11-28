@@ -18,7 +18,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     userId: PropTypes.string,
@@ -26,43 +25,46 @@ class GeneralInfo extends Component {
     updateUser: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, userById, updateUser } = this.props;
-    form.validateFields((err, { password, email, displayName, locked }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      if (email && !email.includes('@gmail.com')) {
-        message.error('This is not a valid Google Email.', 5);
-        return;
-      }
+  handleFinish = ({ password, email, displayName, locked }) => {
+    const { history, userById, updateUser } = this.props;
+    if (email && !email.includes('@gmail.com')) {
+      message.error('This is not a valid Google Email.', 5);
+      return;
+    }
 
-      updateUser({
-        variables: {
-          userId: userById._id,
-          password,
-          email,
-          displayName,
-          locked,
-        },
+    updateUser({
+      variables: {
+        userId: userById._id,
+        password,
+        email,
+        displayName,
+        locked,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, userById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     const karkunField = userById.karkunId ? (
@@ -82,7 +84,7 @@ class GeneralInfo extends Component {
     );
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"

@@ -17,7 +17,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     karkunId: PropTypes.string,
     allCities: PropTypes.array,
@@ -34,7 +33,7 @@ class GeneralInfo extends Component {
     history.goBack();
   };
 
-  handleSubmit = ({
+  handleFinish = ({
     name,
     parentName,
     cnicNumber,
@@ -98,7 +97,7 @@ class GeneralInfo extends Component {
     return (
       <KarkunsGeneralInfo
         karkun={hrKarkunById}
-        handleSubmit={this.handleSubmit}
+        handleFinish={this.handleFinish}
         handleCancel={this.handleCancel}
         showCityMehfilField
         cities={allCities}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Divider, Form } from 'antd';
 
@@ -17,17 +17,20 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const NewForm = ({ form, handleSubmit, handleCancel }) => {
+const NewForm = ({ handleFinish, handleCancel }) => {
+  const [form] = Form.useForm();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { distinctCities, distinctCitiesLoading } = useDistinctCities();
   const {
     distinctCountries,
     distinctCountriesLoading,
   } = useDistinctCountries();
 
-  const _handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) return;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
+
+  const _handleFinish = values => {
       const { cnicNumber, contactNumber1 } = values;
       if (!cnicNumber && !contactNumber1) {
         form.setFields({
@@ -47,16 +50,14 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
           },
         });
       } else {
-        handleSubmit(values);
+        handleFinish(values);
       }
-    });
   };
 
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
-  const { isFieldsTouched } = form;
 
   return (
-    <Form layout="horizontal" onSubmit={_handleSubmit}>
+    <Form form={form} layout="horizontal" onFinish={_handleFinish}  onFieldsChange={handleFieldsChange}>
       <InputTextField
         fieldName="name"
         fieldLabel="Name"
@@ -162,8 +163,7 @@ const NewForm = ({ form, handleSubmit, handleCancel }) => {
 NewForm.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
-  form: PropTypes.object,
-  handleSubmit: PropTypes.func,
+  handleFinish: PropTypes.func,
   handleCancel: PropTypes.func,
 };
 

@@ -17,8 +17,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createSharedResidence: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -26,33 +29,32 @@ class NewForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createSharedResidence, history } = this.props;
-    form.validateFields((err, { name, address, ownerKarkun }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createSharedResidence({
-        variables: {
-          name,
-          address,
-          ownerKarkunId: ownerKarkun ? ownerKarkun._id : null,
-        },
+  handleFinish = ({ name, address, ownerKarkun }) => {
+    const { createSharedResidence, history } = this.props;
+    createSharedResidence({
+      variables: {
+        name,
+        address,
+        ownerKarkunId: ownerKarkun ? ownerKarkun._id : null,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

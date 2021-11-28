@@ -18,8 +18,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createFinancialAccount: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -27,32 +30,32 @@ class NewForm extends Component {
     history.push(paths.financialAccountsPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createFinancialAccount, history } = this.props;
-    form.validateFields((err, { name, importData, connectivitySettings }) => {
-      if (err) return;
-      createFinancialAccount({
-        variables: {
-          name,
-          importData,
-          connectivitySettings,
-        },
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ name, importData, connectivitySettings }) => {
+    const { createFinancialAccount, history } = this.props;
+    createFinancialAccount({
+      variables: {
+        name,
+        importData,
+        connectivitySettings,
+      },
+    })
+      .then(() => {
+        history.push(paths.companiesPath);
       })
-        .then(() => {
-          history.push(paths.companiesPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

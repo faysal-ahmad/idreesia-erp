@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import moment from 'moment';
@@ -29,7 +29,8 @@ import {
   PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
 
-const ApprovedImdad = ({ requestId, form, history }) => {
+const ApprovedImdad = ({ requestId, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [setOperationsApprovedImdad] = useMutation(
     SET_OPERATIONS_APPROVED_IMDAD,
     {
@@ -47,57 +48,54 @@ const ApprovedImdad = ({ requestId, form, history }) => {
   if (loading) return null;
   const { operationsImdadRequestById } = data;
   const approvedImdad = operationsImdadRequestById.approvedImdad || {};
-  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) return;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
-      setOperationsApprovedImdad({
-        variables: {
-          _id: requestId,
-          approvedImdad: {
-            fromMonth: values.fromMonth
-              ? values.fromMonth.format('MM-YYYY')
-              : null,
-            toMonth: values.toMonth ? values.toMonth.format('MM-YYYY') : null,
-            oneOffMedical: values.oneOffMedical || 0,
-            oneOffHouseConstruction: values.oneOffHouseConstruction || 0,
-            oneOffMarriageExpense: values.oneOffMarriageExpense || 0,
-            oneOffMiscPayment: values.oneOffMiscPayment || 0,
-            fixedRecurringWeeklyPayment:
-              values.fixedRecurringWeeklyPayment || 0,
-            fixedRecurringMonthlyPayment:
-              values.fixedRecurringMonthlyPayment || 0,
-            fixedRecurringHouseRent: values.fixedRecurringHouseRent || 0,
-            ration: values.ration || 'none',
-            fixedRecurringMedical: values.fixedRecurringMedical || 0,
-            fixedRecurringSchoolFee: values.fixedRecurringSchoolFee || 0,
-            fixedRecurringMilk: values.fixedRecurringMilk || 0,
-            fixedRecurringFuel: values.fixedRecurringFuel || 0,
-            variableRecurringMedical: values.variableRecurringMedical || 0,
-            variableRecurringUtilityBills:
-              values.variableRecurringUtilityBills || 0,
-          },
+  const handleFinish = values => {
+    setOperationsApprovedImdad({
+      variables: {
+        _id: requestId,
+        approvedImdad: {
+          fromMonth: values.fromMonth
+            ? values.fromMonth.format('MM-YYYY')
+            : null,
+          toMonth: values.toMonth ? values.toMonth.format('MM-YYYY') : null,
+          oneOffMedical: values.oneOffMedical || 0,
+          oneOffHouseConstruction: values.oneOffHouseConstruction || 0,
+          oneOffMarriageExpense: values.oneOffMarriageExpense || 0,
+          oneOffMiscPayment: values.oneOffMiscPayment || 0,
+          fixedRecurringWeeklyPayment:
+            values.fixedRecurringWeeklyPayment || 0,
+          fixedRecurringMonthlyPayment:
+            values.fixedRecurringMonthlyPayment || 0,
+          fixedRecurringHouseRent: values.fixedRecurringHouseRent || 0,
+          ration: values.ration || 'none',
+          fixedRecurringMedical: values.fixedRecurringMedical || 0,
+          fixedRecurringSchoolFee: values.fixedRecurringSchoolFee || 0,
+          fixedRecurringMilk: values.fixedRecurringMilk || 0,
+          fixedRecurringFuel: values.fixedRecurringFuel || 0,
+          variableRecurringMedical: values.variableRecurringMedical || 0,
+          variableRecurringUtilityBills:
+            values.variableRecurringUtilityBills || 0,
         },
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
-  debugger;
   return (
-    <Form layout="horizontal" onSubmit={handleSubmit}>
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
       <Row type="flex">
         <Col span={10}>
           <MonthField
@@ -242,7 +240,6 @@ const ApprovedImdad = ({ requestId, form, history }) => {
 
 ApprovedImdad.propTypes = {
   history: PropTypes.object,
-  form: PropTypes.object,
   requestId: PropTypes.string,
 };
 

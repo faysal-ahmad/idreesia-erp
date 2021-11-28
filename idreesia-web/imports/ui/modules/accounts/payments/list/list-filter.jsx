@@ -34,8 +34,6 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
-
     name: PropTypes.string,
     cnicNumber: PropTypes.string,
     paymentNumber: PropTypes.string,
@@ -48,43 +46,33 @@ class ListFilter extends Component {
     refreshData: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, setPageParams } = this.props;
-
-    form.validateFields(
-      (
-        err,
-        {
-          paymentNumber,
-          name,
-          cnicNumber,
-          paymentTypeId,
-          startDate,
-          endDate,
-          updatedBetween,
-        }
-      ) => {
-        if (err) return;
-        setPageParams({
-          pageIndex: '0',
-          paymentNumber,
-          name,
-          cnicNumber,
-          paymentTypeId,
-          startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
-          endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
-          updatedBetween: JSON.stringify([
-            updatedBetween[0]
-              ? updatedBetween[0].format(Formats.DATE_FORMAT)
-              : '',
-            updatedBetween[1]
-              ? updatedBetween[1].format(Formats.DATE_FORMAT)
-              : '',
-          ]),
-        });
-      }
-    );
+  handleFinish = ({
+    paymentNumber,
+    name,
+    cnicNumber,
+    paymentTypeId,
+    startDate,
+    endDate,
+    updatedBetween,
+  }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      pageIndex: '0',
+      paymentNumber,
+      name,
+      cnicNumber,
+      paymentTypeId,
+      startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
+      endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
+      updatedBetween: JSON.stringify([
+        updatedBetween[0]
+          ? updatedBetween[0].format(Formats.DATE_FORMAT)
+          : '',
+        updatedBetween[1]
+          ? updatedBetween[1].format(Formats.DATE_FORMAT)
+          : '',
+      ]),
+    });
   };
 
   handleReset = () => {
@@ -155,7 +143,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form layout="horizontal" onFinish={this.handleFinish}>
             <InputTextField
               fieldName="paymentNumber"
               fieldLabel="Voucher No."

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -20,7 +20,6 @@ class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
 
     itemCategoriesLoading: PropTypes.bool,
@@ -30,39 +29,38 @@ class EditForm extends Component {
     updateStockItem: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { stockItemById, updateStockItem, form, history } = this.props;
-    form.validateFields(
-      (
-        err,
-        { name, company, details, categoryId, unitOfMeasurement, minStockLevel }
-      ) => {
-        if (err) return;
-        updateStockItem({
-          variables: {
-            _id: stockItemById._id,
-            name,
-            company,
-            details,
-            categoryId,
-            unitOfMeasurement,
-            minStockLevel,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ name, company, details, categoryId, unitOfMeasurement, minStockLevel }) => {
+    const { stockItemById, updateStockItem, history } = this.props;
+    updateStockItem({
+      variables: {
+        _id: stockItemById._id,
+        name,
+        company,
+        details,
+        categoryId,
+        unitOfMeasurement,
+        minStockLevel,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -72,12 +70,12 @@ class EditForm extends Component {
       stockItemById,
       itemCategoriesByPhysicalStoreId,
     } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading || itemCategoriesLoading) return null;
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -128,7 +126,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={stockItemById} />
-      </Fragment>
+      </>
     );
   }
 }

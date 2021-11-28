@@ -10,41 +10,28 @@ import {
 
 class EditForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     attendance: PropTypes.object,
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { attendance, form, handleSave } = this.props;
-    form.validateFields(
-      (
-        err,
-        { attendanceDetails, presentCount, lateCount, absentCount, percentage }
-      ) => {
-        if (err) return;
-
-        handleSave({
-          _id: attendance._id,
-          attendanceDetails: JSON.stringify(attendanceDetails),
-          presentCount: presentCount || 0,
-          lateCount: lateCount || 0,
-          absentCount: absentCount || 0,
-          percentage: percentage || 0,
-        });
-      }
-    );
+  handleFinish = ({ attendanceDetails, presentCount, lateCount, absentCount, percentage }) => {
+    const { attendance, handleSave } = this.props;
+    handleSave({
+      _id: attendance._id,
+      attendanceDetails: JSON.stringify(attendanceDetails),
+      presentCount: presentCount || 0,
+      lateCount: lateCount || 0,
+      absentCount: absentCount || 0,
+      percentage: percentage || 0,
+    });
   };
 
   render() {
-    const {
-      attendance,
-    } = this.props;
+    const { attendance } = this.props;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish}>
         <AttendanceDetailField
           fieldName="attendanceDetails"
           fieldLabel="Attendance Details"

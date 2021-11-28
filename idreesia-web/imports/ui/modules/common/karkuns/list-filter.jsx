@@ -25,7 +25,6 @@ const ContainerStyle = {
 };
 
 const ListFilter = ({
-  form,
   setPageParams,
   refreshData,
 
@@ -60,7 +59,6 @@ const ListFilter = ({
   regions,
 }) => {
   const handleReset = () => {
-    form.resetFields();
     setPageParams({
       pageIndex: '0',
       name: null,
@@ -80,33 +78,30 @@ const ListFilter = ({
     });
   };
 
-  const handleSubmit = () => {
-    form.validateFields((err, values) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: '0',
-        name: values.name,
-        cnicNumber: values.cnicNumber,
-        phoneNumber: values.phoneNumber,
-        bloodGroup: values.bloodGroup,
-        lastTarteeb: values.lastTarteeb,
-        attendance: values.attendance,
-        jobId: values.jobId,
-        dutyId: values.dutyId,
-        dutyShiftId: values.dutyShiftId,
-        ehadKarkun: values.ehadKarkun,
-        cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
-        cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
-        region: values.region,
-        updatedBetween: JSON.stringify([
-          values.updatedBetween[0]
-            ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
-            : '',
-          values.updatedBetween[1]
-            ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
-            : '',
-        ]),
-      });
+  const handleFinish = values => {
+    setPageParams({
+      pageIndex: '0',
+      name: values.name,
+      cnicNumber: values.cnicNumber,
+      phoneNumber: values.phoneNumber,
+      bloodGroup: values.bloodGroup,
+      lastTarteeb: values.lastTarteeb,
+      attendance: values.attendance,
+      jobId: values.jobId,
+      dutyId: values.dutyId,
+      dutyShiftId: values.dutyShiftId,
+      ehadKarkun: values.ehadKarkun,
+      cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
+      cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
+      region: values.region,
+      updatedBetween: JSON.stringify([
+        values.updatedBetween[0]
+          ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
+          : '',
+        values.updatedBetween[1]
+          ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
+          : '',
+      ]),
     });
   };
 
@@ -115,7 +110,7 @@ const ListFilter = ({
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal">
+        <Form layout="horizontal" onFinish={handleFinish}>
           {showNameFilter ? getNameFilterField(name) : null}
           {showCnicFilter
             ? getCnicNumberFilterField(cnicNumber)
@@ -152,7 +147,7 @@ const ListFilter = ({
           {showUpdatedBetweenFilter
             ? getUpdatedBetweenFilterField(updatedBetween)
             : null}
-          {getFormButtons(handleReset, handleSubmit)}
+          {getFormButtons(handleReset)}
         </Form>
       </Collapse.Panel>
     </Collapse>
@@ -160,7 +155,6 @@ const ListFilter = ({
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   name: PropTypes.string,
   cnicNumber: PropTypes.string,
   phoneNumber: PropTypes.string,

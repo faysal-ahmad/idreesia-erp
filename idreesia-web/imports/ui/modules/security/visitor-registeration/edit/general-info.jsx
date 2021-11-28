@@ -14,7 +14,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     visitorId: PropTypes.string,
@@ -27,7 +26,7 @@ class GeneralInfo extends Component {
     history.push(`${paths.visitorRegistrationListPath}`);
   };
 
-  handleSubmit = ({
+  handleFinish = ({
     name,
     parentName,
     cnicNumber,
@@ -78,7 +77,7 @@ class GeneralInfo extends Component {
     return (
       <VisitorsGeneralInfo
         visitor={securityVisitorById}
-        handleSubmit={this.handleSubmit}
+        handleFinish={this.handleFinish}
         handleCancel={this.handleCancel}
       />
     );

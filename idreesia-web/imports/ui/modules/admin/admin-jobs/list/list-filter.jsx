@@ -20,15 +20,16 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
     jobType: PropTypes.string,
     status: PropTypes.string,
     setPageParams: PropTypes.func,
   };
 
+  formRef = React.createRef();
+
   handleReset = () => {
-    const { form, setPageParams } = this.props;
-    form.resetFields();
+    const { setPageParams } = this.props;
+    this.formRef.current.resetFields();
     setPageParams({
       pageIndex: 0,
       jobType: null,
@@ -36,18 +37,13 @@ class ListFilter extends Component {
     });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, setPageParams } = this.props;
-
-    form.validateFields((err, { jobType, status, voucherNumber }) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        jobType,
-        status,
-        voucherNumber,
-      });
+  handleFinish = ({ jobType, status, voucherNumber }) => {
+    const { setPageParams } = this.props;
+    setPageParams({
+      pageIndex: 0,
+      jobType,
+      status,
+      voucherNumber,
     });
   };
 
@@ -55,7 +51,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1">
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
             <SelectField
               data={[
                 {

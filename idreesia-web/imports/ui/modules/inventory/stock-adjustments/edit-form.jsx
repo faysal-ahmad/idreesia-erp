@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
@@ -33,7 +33,6 @@ class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -42,60 +41,53 @@ class EditForm extends Component {
     updateStockAdjustment: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ adjustmentDate, adjustedBy, quantity, adjustment, adjustmentReason }) => {
     const {
-      form,
       history,
       updateStockAdjustment,
       stockAdjustmentById: { _id },
     } = this.props;
-    form.validateFields(
-      (
-        err,
-        { adjustmentDate, adjustedBy, quantity, adjustment, adjustmentReason }
-      ) => {
-        if (err) return;
 
-        const isInflow = adjustment === 'inflow';
-        updateStockAdjustment({
-          variables: {
-            _id,
-            adjustmentDate,
-            adjustedBy: adjustedBy._id,
-            quantity,
-            isInflow,
-            adjustmentReason,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+    const isInflow = adjustment === 'inflow';
+    updateStockAdjustment({
+      variables: {
+        _id,
+        adjustmentDate,
+        adjustedBy: adjustedBy._id,
+        quantity,
+        isInflow,
+        adjustmentReason,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { formDataLoading, stockAdjustmentById } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading) return null;
 
-    const { isFieldsTouched } = this.props.form;
-
     return (
-      <Fragment>
-        <Form
-          layout="horizontal"
-          style={FormStyle}
-          onSubmit={this.handleSubmit}
-        >
+      <>
+        <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
@@ -153,7 +145,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={stockAdjustmentById} />
-      </Fragment>
+      </>
     );
   }
 }

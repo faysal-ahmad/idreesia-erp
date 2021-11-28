@@ -10,33 +10,33 @@ import {
 
 class NewForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, handleSave } = this.props;
-    form.validateFields(
-      (err, { name, startTime, endTime, attendanceSheet }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        handleSave({
-          name,
-          startTime,
-          endTime,
-          attendanceSheet,
-        });
-      }
-    );
+  handleFinish = ({ name, startTime, endTime, attendanceSheet }) => {
+    const { handleSave } = this.props;
+    handleSave({
+      name,
+      startTime,
+      endTime,
+      attendanceSheet,
+    });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

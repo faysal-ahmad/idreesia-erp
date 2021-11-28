@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
 import moment from 'moment';
@@ -21,8 +21,9 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
-const EditForm = ({ form, match, history }) => {
+const EditForm = ({ match, history }) => {
   const dispatch = useDispatch();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { paymentId } = match.params;
   const { allPaymentTypes, allPaymentTypesLoading } = useAllPaymentTypes();
   const [updatePayment] = useMutation(UPDATE_PAYMENT);
@@ -36,56 +37,49 @@ const EditForm = ({ form, match, history }) => {
 
   if (loading || allPaymentTypesLoading) return null;
   const { paymentById } = data;
-  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields(
-      (
-        err,
-        {
-          name,
-          fatherName,
-          cnicNumber,
-          contactNumber,
-          paymentTypeId,
-          paymentAmount,
-          paymentDate,
-          description,
-        }
-      ) => {
-        if (err) return;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
-        updatePayment({
-          variables: {
-            _id: paymentById._id,
-            name,
-            fatherName,
-            cnicNumber,
-            contactNumber,
-            paymentAmount,
-            paymentTypeId,
-            paymentDate,
-            description,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  const handleFinish = ({
+    name,
+    fatherName,
+    cnicNumber,
+    contactNumber,
+    paymentTypeId,
+    paymentAmount,
+    paymentDate,
+    description,
+  }) => {
+    updatePayment({
+      variables: {
+        _id: paymentById._id,
+        name,
+        fatherName,
+        cnicNumber,
+        contactNumber,
+        paymentAmount,
+        paymentTypeId,
+        paymentDate,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={handleSubmit}>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <InputNumberField
           fieldName="paymentNumber"
           fieldLabel="Voucher Number"
@@ -168,7 +162,6 @@ EditForm.propTypes = {
   history: PropTypes.object,
   match: PropTypes.object,
   location: PropTypes.object,
-  form: PropTypes.object,
 };
 
 export default EditForm;

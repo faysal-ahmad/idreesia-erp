@@ -17,9 +17,12 @@ class UploadForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     importSecurityVisitorsCsvData: PropTypes.func,
+  };
+  
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -27,37 +30,36 @@ class UploadForm extends Component {
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, importSecurityVisitorsCsvData, history } = this.props;
-    form.validateFields((err, { csv }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      importSecurityVisitorsCsvData({
-        variables: {
-          csvData: csv,
-        },
+  handleFinish = ({ csv }) => {
+    const { importSecurityVisitorsCsvData, history } = this.props;
+    importSecurityVisitorsCsvData({
+      variables: {
+        csvData: csv,
+      },
+    })
+      .then(response => {
+        const result = JSON.parse(response.data.importCsvData);
+        message.success(
+          `${result.imported} records were imported. ${result.ignored} were ignored.`
+        );
       })
-        .then(response => {
-          const result = JSON.parse(response.data.importCsvData);
-          message.success(
-            `${result.imported} records were imported. ${result.ignored} were ignored.`
-          );
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        })
-        .finally(() => {
-          history.goBack();
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      })
+      .finally(() => {
+        history.goBack();
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputFileField
           accept=".csv"
           fieldName="csv"

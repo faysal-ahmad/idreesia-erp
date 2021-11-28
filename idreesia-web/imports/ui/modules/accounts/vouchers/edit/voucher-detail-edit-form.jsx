@@ -20,8 +20,6 @@ const ButtonContainerStyle = {
 
 class VoucherDetailEditForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
-
     voucherDetail: PropTypes.object,
     accountHeadsByCompanyId: PropTypes.array,
     handleCloseForm: PropTypes.func,
@@ -33,41 +31,33 @@ class VoucherDetailEditForm extends Component {
     handleCloseForm();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFinish = ({ accountNumber, creditAmount, debitAmount, description }) => {
     const {
-      form,
       handleCloseForm,
       voucherDetail,
       accountHeadsByCompanyId,
       updateVoucherDetail,
     } = this.props;
-    form.validateFields(
-      (err, { accountNumber, creditAmount, debitAmount, description }) => {
-        if (err) return;
-
-        const accountHead = find(accountHeadsByCompanyId, {
-          number: accountNumber,
-        });
-        updateVoucherDetail({
-          variables: {
-            _id: voucherDetail._id,
-            companyId: voucherDetail.companyId,
-            voucherId: voucherDetail.voucherId,
-            accountHeadId: accountHead._id,
-            amount: creditAmount || debitAmount,
-            isCredit: creditAmount !== 0,
-            description,
-          },
-        })
-          .then(() => {
-            handleCloseForm();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+    const accountHead = find(accountHeadsByCompanyId, {
+      number: accountNumber,
+    });
+    updateVoucherDetail({
+      variables: {
+        _id: voucherDetail._id,
+        companyId: voucherDetail.companyId,
+        voucherId: voucherDetail.voucherId,
+        accountHeadId: accountHead._id,
+        amount: creditAmount || debitAmount,
+        isCredit: creditAmount !== 0,
+        description,
+      },
+    })
+      .then(() => {
+        handleCloseForm();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -78,56 +68,58 @@ class VoucherDetailEditForm extends Component {
     });
 
     return (
-      <Row type="flex" justify="start" style={RowStyle}>
-        <Col style={{ width: "280px" }}>
-          <AccountSelectionField
-            data={accountHeadsByCompanyId}
-            fieldName="accountNumber"
-            fieldLayout={null}
-            placeholder="Select Account"
-            initialValue={accountHead.number}
-            showSearch
-            required
-            requiredMessage="Please select an account."
-          />
-        </Col>
-        <Col style={{ width: "280px" }}>
-          <InputTextField
-            fieldName="description"
-            placeholder="Description"
-            initialValue={voucherDetail.description}
-            fieldLayout={null}
-            required={false}
-          />
-        </Col>
-        <Col>
-          <InputNumberField
-            fieldName="creditAmount"
-            placeholder="Credit"
-            initialValue={voucherDetail.isCredit ? voucherDetail.amount : 0}
-            fieldLayout={null}
-            minValue={0}
-          />
-        </Col>
-        <Col>
-          <InputNumberField
-            fieldName="debitAmount"
-            placeholder="Debit"
-            initialValue={voucherDetail.isCredit ? 0 : voucherDetail.amount}
-            fieldLayout={null}
-            minValue={0}
-          />
-        </Col>
+      <Form onFinish={this.handleFinish}>
+        <Row type="flex" justify="start" style={RowStyle}>
+          <Col style={{ width: "280px" }}>
+            <AccountSelectionField
+              data={accountHeadsByCompanyId}
+              fieldName="accountNumber"
+              fieldLayout={null}
+              placeholder="Select Account"
+              initialValue={accountHead.number}
+              showSearch
+              required
+              requiredMessage="Please select an account."
+            />
+          </Col>
+          <Col style={{ width: "280px" }}>
+            <InputTextField
+              fieldName="description"
+              placeholder="Description"
+              initialValue={voucherDetail.description}
+              fieldLayout={null}
+              required={false}
+            />
+          </Col>
+          <Col>
+            <InputNumberField
+              fieldName="creditAmount"
+              placeholder="Credit"
+              initialValue={voucherDetail.isCredit ? voucherDetail.amount : 0}
+              fieldLayout={null}
+              minValue={0}
+            />
+          </Col>
+          <Col>
+            <InputNumberField
+              fieldName="debitAmount"
+              placeholder="Debit"
+              initialValue={voucherDetail.isCredit ? 0 : voucherDetail.amount}
+              fieldLayout={null}
+              minValue={0}
+            />
+          </Col>
 
-        <Form.Item style={ButtonContainerStyle}>
-          <Button type="primary" onClick={this.handleSubmit}>
-            Update
-          </Button>
-          <Button type="secondary" onClick={this.handleCancel}>
-            Cancel
-          </Button>
-        </Form.Item>
-      </Row>
+          <Form.Item style={ButtonContainerStyle}>
+            <Button type="primary" htmlType="submit">
+              Update
+            </Button>
+            <Button type="secondary" onClick={this.handleCancel}>
+              Cancel
+            </Button>
+          </Form.Item>
+        </Row>
+      </Form>
     );
   }
 }

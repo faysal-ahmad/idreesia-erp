@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Col, Collapse, Form, Row, message } from 'antd';
@@ -23,7 +23,8 @@ import {
   PAGED_OPERATIONS_IMDAD_REQUESTS,
 } from '../gql';
 
-const GeneralInfo = ({ requestId, form, history }) => {
+const GeneralInfo = ({ requestId, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [updateOperationsImdadRequest] = useMutation(
     UPDATE_OPERATIONS_IMDAD_REQUEST,
     {
@@ -40,37 +41,35 @@ const GeneralInfo = ({ requestId, form, history }) => {
 
   if (loading) return null;
   const { operationsImdadRequestById } = data;
-  const { isFieldsTouched } = form;
 
   const handleCancel = () => {
     history.goBack();
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, { imdadReasonId, status, notes }) => {
-      if (err) return;
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
-      updateOperationsImdadRequest({
-        variables: {
-          _id: requestId,
-          imdadReasonId,
-          status,
-          notes,
-        },
+  const handleFinish = ({ imdadReasonId, status, notes }) => {
+    updateOperationsImdadRequest({
+      variables: {
+        _id: requestId,
+        imdadReasonId,
+        status,
+        notes,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={handleSubmit}>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <Collapse>
           <Panel header="Wazaif Details">
             <Row type="flex">
@@ -148,7 +147,6 @@ GeneralInfo.propTypes = {
   history: PropTypes.object,
   match: PropTypes.object,
   location: PropTypes.object,
-  form: PropTypes.object,
 };
 
 export default GeneralInfo;

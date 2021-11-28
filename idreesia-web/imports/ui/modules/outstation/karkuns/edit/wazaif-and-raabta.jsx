@@ -16,7 +16,6 @@ class WazaifAndRaabta extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
@@ -29,7 +28,7 @@ class WazaifAndRaabta extends Component {
     history.goBack();
   };
 
-  handleSubmit = ({
+  handleFinish = ({
     lastTarteebDate,
     mehfilRaabta,
     msRaabta,
@@ -68,7 +67,7 @@ class WazaifAndRaabta extends Component {
     return (
       <KarkunsWazaifAndRaabta
         karkun={outstationKarkunById}
-        handleSubmit={this.handleSubmit}
+        handleFinish={this.handleFinish}
         handleCancel={this.handleCancel}
       />
     );

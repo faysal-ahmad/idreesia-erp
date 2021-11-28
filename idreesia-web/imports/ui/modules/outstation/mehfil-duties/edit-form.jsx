@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
@@ -22,48 +22,50 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     dutyById: PropTypes.object,
     updateOustationMehfilDuty: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
+
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, dutyById, updateOustationMehfilDuty } = this.props;
-    form.validateFields((err, { name, description }) => {
-      if (err) return;
-
-      updateOustationMehfilDuty({
-        variables: {
-          _id: dutyById._id,
-          name,
-          description,
-        },
+  handleFinish = ({ name, description }) => {
+    const { history, dutyById, updateOustationMehfilDuty } = this.props;
+    updateOustationMehfilDuty({
+      variables: {
+        _id: dutyById._id,
+        name,
+        description,
+      },
+    })
+      .then(() => {
+        history.goBack();
       })
-        .then(() => {
-          history.goBack();
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, dutyById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Duty Name"
@@ -82,7 +84,7 @@ class EditForm extends Component {
           />
         </Form>
         <AuditInfo record={dutyById} />
-      </Fragment>
+      </>
     );
   }
 }

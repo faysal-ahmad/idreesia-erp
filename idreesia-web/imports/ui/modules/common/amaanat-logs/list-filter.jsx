@@ -24,21 +24,14 @@ const buttonItemLayout = {
 const ListFilter = props => {
   const { refreshData } = props;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const {
-      setPageParams,
-      form: { validateFields },
-    } = props;
-    validateFields((err, { cityIdMehfilId, startDate, endDate }) => {
-      if (err) return;
-      setPageParams({
-        cityId: cityIdMehfilId[0],
-        cityMehfilId: cityIdMehfilId[1],
-        startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
-        endDate: endDate ? startDate.format(Formats.DATE_FORMAT) : null,
-        pageIndex: 0,
-      });
+  const handleFinish = ({ cityIdMehfilId, startDate, endDate }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      cityId: cityIdMehfilId[0],
+      cityMehfilId: cityIdMehfilId[1],
+      startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
+      endDate: endDate ? startDate.format(Formats.DATE_FORMAT) : null,
+      pageIndex: 0,
     });
   };
 
@@ -71,7 +64,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           <CascaderField
             data={cityMehfilCascaderData}
             fieldName="cityIdMehfilId"
@@ -111,7 +104,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   cities: PropTypes.array,
   cityMehfils: PropTypes.array,
 

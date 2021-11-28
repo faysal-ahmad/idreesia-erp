@@ -25,20 +25,13 @@ const buttonItemLayout = {
 const ListFilter = props => {
   const { refreshData } = props;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const {
-      setPageParams,
-      form: { validateFields },
-    } = props;
-    validateFields((err, { startDate, endDate, source }) => {
-      if (err) return;
-      setPageParams({
-        startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
-        endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
-        source,
-        pageIndex: 0,
-      });
+  const handleFinish = ({ startDate, endDate, source }) => {
+    const { setPageParams } = props;
+    setPageParams({
+      startDate: startDate ? startDate.format(Formats.DATE_FORMAT) : null,
+      endDate: endDate ? endDate.format(Formats.DATE_FORMAT) : null,
+      source,
+      pageIndex: 0,
     });
   };
 
@@ -93,7 +86,7 @@ const ListFilter = props => {
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onSubmit={handleSubmit}>
+        <Form layout="horizontal" onFinish={handleFinish}>
           <DateField
             fieldName="startDate"
             fieldLabel="Start Date"
@@ -127,7 +120,6 @@ const ListFilter = props => {
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
   source: PropTypes.string,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Divider, Form } from 'antd';
@@ -19,47 +19,48 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
 
-const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
+const GeneralInfo = ({ visitor, handleFinish, handleCancel }) => {
+  const [form] = Form.useForm();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { distinctCities, distinctCitiesLoading } = useDistinctCities();
   const {
     distinctCountries,
     distinctCountriesLoading,
   } = useDistinctCountries();
 
-  const _handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) return;
-      const { cnicNumber, contactNumber1 } = values;
-      if (!cnicNumber && !contactNumber1) {
-        form.setFields({
-          cnicNumber: {
-            errors: [
-              new Error(
-                'Please input the CNIC or Mobile Number for the person'
-              ),
-            ],
-          },
-          contactNumber1: {
-            errors: [
-              new Error(
-                'Please input the CNIC or Mobile Number for the person'
-              ),
-            ],
-          },
-        });
-      } else {
-        handleSubmit(values);
-      }
-    });
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
+
+  const _handleFinish = values => {
+    const { cnicNumber, contactNumber1 } = values;
+    if (!cnicNumber && !contactNumber1) {
+      form.setFields({
+        cnicNumber: {
+          errors: [
+            new Error(
+              'Please input the CNIC or Mobile Number for the person'
+            ),
+          ],
+        },
+        contactNumber1: {
+          errors: [
+            new Error(
+              'Please input the CNIC or Mobile Number for the person'
+            ),
+          ],
+        },
+      });
+    } else {
+      handleFinish(values);
+    }
   };
 
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
-  const { isFieldsTouched } = form;
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={_handleSubmit}>
+      <Form form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
@@ -179,9 +180,8 @@ const GeneralInfo = ({ visitor, form, handleSubmit, handleCancel }) => {
 };
 
 GeneralInfo.propTypes = {
-  form: PropTypes.object,
   visitor: PropTypes.object,
-  handleSubmit: PropTypes.func,
+  handleFinish: PropTypes.func,
   handleCancel: PropTypes.func,
 };
 

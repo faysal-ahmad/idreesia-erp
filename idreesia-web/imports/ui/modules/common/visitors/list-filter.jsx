@@ -30,7 +30,6 @@ const buttonItemLayout = {
 };
 
 const ListFilter = ({
-  form,
   setPageParams,
   refreshData,
   name,
@@ -45,6 +44,8 @@ const ListFilter = ({
   showDataSourceFilter,
   distinctCities,
 }) => {
+  const [form] = Form.useForm();
+
   const handleReset = () => {
     form.resetFields();
     setPageParams({
@@ -60,27 +61,24 @@ const ListFilter = ({
     });
   };
 
-  const handleSubmit = () => {
-    form.validateFields((err, values) => {
-      if (err) return;
-      setPageParams({
-        pageIndex: 0,
-        name: values.name,
-        cnicNumber: values.cnicNumber,
-        phoneNumber: values.phoneNumber,
-        city: values.city,
-        ehadDuration: values.ehadDuration,
-        additionalInfo: values.additionalInfo,
-        dataSource: values.dataSource,
-        updatedBetween: JSON.stringify([
-          values.updatedBetween[0]
-            ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
-            : '',
-          values.updatedBetween[1]
-            ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
-            : '',
-        ]),
-      });
+  const handleFinish = values => {
+    setPageParams({
+      pageIndex: 0,
+      name: values.name,
+      cnicNumber: values.cnicNumber,
+      phoneNumber: values.phoneNumber,
+      city: values.city,
+      ehadDuration: values.ehadDuration,
+      additionalInfo: values.additionalInfo,
+      dataSource: values.dataSource,
+      updatedBetween: JSON.stringify([
+        values.updatedBetween[0]
+          ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
+          : '',
+        values.updatedBetween[1]
+          ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
+          : '',
+      ]),
     });
   };
 
@@ -166,7 +164,7 @@ const ListFilter = ({
   return (
     <Collapse style={ContainerStyle}>
       <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal">
+        <Form form={form} layout="horizontal" onFinish={handleFinish}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -214,7 +212,7 @@ const ListFilter = ({
                 Reset
               </Button>
               &nbsp;
-              <Button type="primary" onClick={handleSubmit}>
+              <Button type="primary" htmlType="submit">
                 Search
               </Button>
             </Row>
@@ -226,7 +224,6 @@ const ListFilter = ({
 };
 
 ListFilter.propTypes = {
-  form: PropTypes.object,
   showAdditionalInfoFilter: PropTypes.bool,
   showDataSourceFilter: PropTypes.bool,
 

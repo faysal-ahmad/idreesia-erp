@@ -25,8 +25,10 @@ import { PAGED_HR_MESSAGES, CREATE_HR_MESSAGE } from './gql';
 import KarkunsPreview from './karkuns-preview';
 import { separateDutyAndShifts } from './helpers';
 
-const NewForm = ({ form, history, location }) => {
+const NewForm = ({ history, location }) => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [recepientFilter, setRecepientFilter] = useState(null);
   const [createHrMessage] = useMutation(CREATE_HR_MESSAGE, {
@@ -45,11 +47,13 @@ const NewForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { validateFields, isFieldsTouched } = form;
-
   const handleCancel = () => {
     history.goBack();
   };
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
   const handlePeviewKarkuns = () => {
     const bloodGroup = form.getFieldValue('bloodGroup');
@@ -75,49 +79,39 @@ const NewForm = ({ form, history, location }) => {
     setRecepientFilter(filter);
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    validateFields(
-      (
-        err,
-        { messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }
-      ) => {
-        if (err) return;
-
-        const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
-          dutyIdShiftIds,
-          allMSDuties,
-          allMSDutyShifts
-        );
-
-        createHrMessage({
-          variables: {
-            messageBody,
-            recepientFilter: {
-              filterTarget: FilterTarget.MS_KARKUNS,
-              bloodGroup,
-              lastTarteeb,
-              jobIds,
-              dutyIds,
-              dutyShiftIds,
-            },
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
+  const handleFinish = ({ messageBody, bloodGroup, lastTarteeb, jobIds, dutyIdShiftIds }) => {
+    const { dutyIds, dutyShiftIds } = separateDutyAndShifts(
+      dutyIdShiftIds,
+      allMSDuties,
+      allMSDutyShifts
     );
+
+    createHrMessage({
+      variables: {
+        messageBody,
+        recepientFilter: {
+          filterTarget: FilterTarget.MS_KARKUNS,
+          bloodGroup,
+          lastTarteeb,
+          jobIds,
+          dutyIds,
+          dutyShiftIds,
+        },
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   const dutyShiftTreeData = getDutyShiftTreeData(allMSDuties, allMSDutyShifts);
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={handleSubmit}>
+      <Form form={form} layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <InputTextAreaField
           fieldName="messageBody"
           fieldLabel="Message"
@@ -186,7 +180,6 @@ const NewForm = ({ form, history, location }) => {
 };
 
 NewForm.propTypes = {
-  form: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
 };

@@ -12,34 +12,34 @@ import {
 
 class NewForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, handleSave } = this.props;
-    form.validateFields(
-      (err, { resident, isOwner, roomNumber, fromDate, toDate }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        handleSave({
-          residentId: resident._id,
-          isOwner,
-          roomNumber,
-          fromDate,
-          toDate,
-        });
-      }
-    );
+  handleFinish = ({ resident, isOwner, roomNumber, fromDate, toDate }) => {
+    const { handleSave } = this.props;
+    handleSave({
+      residentId: resident._id,
+      isOwner,
+      roomNumber,
+      fromDate,
+      toDate,
+    });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <VisitorSelectionInputField
           fieldName="resident"
           fieldLabel="Resident"

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { graphql } from 'react-apollo';
@@ -30,7 +30,6 @@ class GeneralInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     portalId: PropTypes.string,
     memberId: PropTypes.string,
@@ -40,26 +39,66 @@ class GeneralInfo extends Component {
     portalCitiesLoading: PropTypes.bool,
     updatePortalMember: PropTypes.func,
   };
+  
+  formRef = React.createRef();
+
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history, portalId } = this.props;
     history.push(`${paths.membersPath(portalId)}`);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({
+    name,
+    parentName,
+    cnicNumber,
+    ehadDate,
+    birthDate,
+    referenceName,
+    contactNumber1,
+    contactNumber2,
+    cityCountry,
+    currentAddress,
+    permanentAddress,
+  }) => {
     const {
-      form,
       history,
       portalId,
       portalMemberById,
       portalCities,
       updatePortalMember,
     } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
+      if (!cnicNumber && !contactNumber1) {
+        this.formRef.current.setFields([
+          {
+            name: "cnicNumber",
+            errors: ['Please input the CNIC or Mobile Number for the member'],
+          },
+          {
+            name: "contactNumber1",
+            errors: ['Please input the CNIC or Mobile Number for the member'],
+          },
+        ]);
+
+        return;
+      }
+
+      const visitorCity = find(
+        portalCities,
+        city => city._id === cityCountry
+      );
+
+      updatePortalMember({
+        variables: {
+          portalId,
+          _id: portalMemberById._id,
           name,
           parentName,
           cnicNumber,
@@ -68,64 +107,18 @@ class GeneralInfo extends Component {
           referenceName,
           contactNumber1,
           contactNumber2,
-          cityCountry,
+          city: visitorCity.name,
+          country: visitorCity.country,
           currentAddress,
           permanentAddress,
-        }
-      ) => {
-        if (err) return;
-        if (!cnicNumber && !contactNumber1) {
-          form.setFields({
-            cnicNumber: {
-              errors: [
-                new Error(
-                  'Please input the CNIC or Mobile Number for the member'
-                ),
-              ],
-            },
-            contactNumber1: {
-              errors: [
-                new Error(
-                  'Please input the CNIC or Mobile Number for the member'
-                ),
-              ],
-            },
-          });
-
-          return;
-        }
-
-        const visitorCity = find(
-          portalCities,
-          city => city._id === cityCountry
-        );
-
-        updatePortalMember({
-          variables: {
-            portalId,
-            _id: portalMemberById._id,
-            name,
-            parentName,
-            cnicNumber,
-            ehadDate,
-            birthDate,
-            referenceName,
-            contactNumber1,
-            contactNumber2,
-            city: visitorCity.name,
-            country: visitorCity.country,
-            currentAddress,
-            permanentAddress,
-          },
+        },
+      })
+        .then(() => {
+          history.push(paths.membersPath(portalId));
         })
-          .then(() => {
-            history.push(paths.membersPath(portalId));
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+        .catch(error => {
+          message.error(error.message, 5);
+        });
   };
 
   render() {
@@ -135,17 +128,17 @@ class GeneralInfo extends Component {
       portalCities,
       portalCitiesLoading,
     } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading || portalCitiesLoading) return null;
 
-    const { isFieldsTouched } = this.props.form;
     const visitorCity = find(
       portalCities,
       city => city.name === portalMemberById.city
     );
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -242,7 +235,7 @@ class GeneralInfo extends Component {
           />
         </Form>
         <AuditInfo record={portalMemberById} />
-      </Fragment>
+      </>
     );
   }
 }

@@ -24,7 +24,6 @@ class PrintView extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,

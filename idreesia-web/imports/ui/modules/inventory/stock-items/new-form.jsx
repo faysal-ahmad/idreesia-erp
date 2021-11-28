@@ -25,7 +25,6 @@ class NewForm extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
     match: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -33,50 +32,48 @@ class NewForm extends Component {
     itemCategoriesByPhysicalStoreId: PropTypes.array,
     createStockItem: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, physicalStoreId, createStockItem } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
-          name,
-          company,
-          details,
-          categoryId,
-          unitOfMeasurement,
-          minStockLevel,
-          currentStockLevel,
-        }
-      ) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        createStockItem({
-          variables: {
-            name,
-            company,
-            details,
-            categoryId,
-            unitOfMeasurement,
-            physicalStoreId,
-            minStockLevel,
-            currentStockLevel,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFinish = ({
+    name,
+    company,
+    details,
+    categoryId,
+    unitOfMeasurement,
+    minStockLevel,
+    currentStockLevel,
+  }) => {
+    const { history, physicalStoreId, createStockItem } = this.props;
+    createStockItem({
+      variables: {
+        name,
+        company,
+        details,
+        categoryId,
+        unitOfMeasurement,
+        physicalStoreId,
+        minStockLevel,
+        currentStockLevel,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -84,11 +81,11 @@ class NewForm extends Component {
       itemCategoriesLoading,
       itemCategoriesByPhysicalStoreId,
     } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (itemCategoriesLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Name"

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import gql from 'graphql-tag';
@@ -27,7 +27,6 @@ class ViewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -54,8 +53,8 @@ class ViewForm extends Component {
     }
 
     return (
-      <Fragment>
-        <Form layout="horizontal" style={FormStyle} onSubmit={noop}>
+      <>
+        <Form layout="horizontal" style={FormStyle} onFinish={noop}>
           <InputTextField
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
@@ -86,7 +85,7 @@ class ViewForm extends Component {
           <FormButtonsClose handleClose={this.handleClose} />
         </Form>
         <AuditInfo record={stockAdjustmentById} />
-      </Fragment>
+      </>
     );
   }
 }

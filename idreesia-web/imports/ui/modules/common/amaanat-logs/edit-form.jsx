@@ -19,22 +19,20 @@ class EditForm extends Component {
     cityMehfils: PropTypes.array,
     amaanatLog: PropTypes.object,
 
-    form: PropTypes.object,
-    handleSubmit: PropTypes.func,
+    handleFinish: PropTypes.func,
     handleCancel: PropTypes.func,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, handleSubmit } = this.props;
-    form.validateFields((err, values) => {
-      if (err) return;
-      handleSubmit(values);
-    });
+  state = {
+    isFieldsTouched: false,
   };
 
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     const { amaanatLog, cities, cityMehfils } = this.props;
     const cityMehfilCascaderData = getCityMehfilCascaderData(
       cities,
@@ -42,7 +40,7 @@ class EditForm extends Component {
     );
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.props.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <CascaderField
           data={cityMehfilCascaderData}
           fieldName="cityIdMehfilId"

@@ -19,11 +19,14 @@ class EditForm extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     loading: PropTypes.bool,
     jobById: PropTypes.object,
     updateJob: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -31,36 +34,35 @@ class EditForm extends Component {
     history.push(paths.jobsPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, jobById, updateJob } = this.props;
-    form.validateFields((err, { name, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      updateJob({
-        variables: {
-          id: jobById._id,
-          name,
-          description,
-        },
+  handleFinish = ({ name, description }) => {
+    const { history, jobById, updateJob } = this.props;
+    updateJob({
+      variables: {
+        id: jobById._id,
+        name,
+        description,
+      },
+    })
+      .then(() => {
+        history.push(paths.jobsPath);
       })
-        .then(() => {
-          history.push(paths.jobsPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
     const { loading, jobById } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
     return (
       <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Job Name"

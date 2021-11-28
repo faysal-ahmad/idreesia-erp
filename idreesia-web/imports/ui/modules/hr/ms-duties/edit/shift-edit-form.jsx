@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Form } from 'antd';
@@ -11,39 +11,38 @@ import {
 
 class EditForm extends Component {
   static propTypes = {
-    form: PropTypes.object,
-
     dutyShift: PropTypes.object,
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, dutyShift, handleSave } = this.props;
-    form.validateFields(
-      (err, { name, startTime, endTime, attendanceSheet }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        handleSave({
-          _id: dutyShift._id,
-          dutyId: dutyShift.dutyId,
-          name,
-          startTime,
-          endTime,
-          attendanceSheet,
-        });
-      }
-    );
+  handleFinish = ({ name, startTime, endTime, attendanceSheet }) => {
+    const { dutyShift, handleSave } = this.props;
+    handleSave({
+      _id: dutyShift._id,
+      dutyId: dutyShift.dutyId,
+      name,
+      startTime,
+      endTime,
+      attendanceSheet,
+    });
   };
 
   render() {
     const { dutyShift } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Fragment>
-        <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <>
+        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -73,7 +72,7 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-      </Fragment>
+      </>
     );
   }
 }

@@ -17,8 +17,11 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     createJob: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -26,32 +29,31 @@ class NewForm extends Component {
     history.push(paths.jobsPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createJob, history } = this.props;
-    form.validateFields((err, { name, description }) => {
-      if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-      createJob({
-        variables: {
-          name,
-          description,
-        },
+  handleFinish = ({ name, description }) => {
+    const { createJob, history } = this.props;
+    createJob({
+      variables: {
+        name,
+        description,
+      },
+    })
+      .then(() => {
+        history.push(paths.jobsPath);
       })
-        .then(() => {
-          history.push(paths.jobsPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
           fieldName="name"
           fieldLabel="Job Name"

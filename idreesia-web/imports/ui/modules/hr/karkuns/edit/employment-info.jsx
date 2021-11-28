@@ -20,7 +20,6 @@ class EmploymentInfo extends Component {
     match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
@@ -30,35 +29,36 @@ class EmploymentInfo extends Component {
     setHrKarkunEmploymentInfo: PropTypes.func,
   };
 
+  state = {
+    isFieldsTouched: false,
+  };
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, karkunId, setHrKarkunEmploymentInfo } = this.props;
-    form.validateFields(
-      (err, { isEmployee, jobId, employmentStartDate, employmentEndDate }) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        setHrKarkunEmploymentInfo({
-          variables: {
-            _id: karkunId,
-            isEmployee,
-            jobId,
-            employmentStartDate,
-            employmentEndDate,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFinish = ({ isEmployee, jobId, employmentStartDate, employmentEndDate }) => {
+    const { history, karkunId, setHrKarkunEmploymentInfo } = this.props;
+    setHrKarkunEmploymentInfo({
+      variables: {
+        _id: karkunId,
+        isEmployee,
+        jobId,
+        employmentStartDate,
+        employmentEndDate,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -68,11 +68,11 @@ class EmploymentInfo extends Component {
       hrKarkunById,
       allJobs,
     } = this.props;
-    const { isFieldsTouched } = this.props.form;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading || allJobsLoading) return null;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <SwitchField
           fieldName="isEmployee"
           fieldLabel="Is Employee"

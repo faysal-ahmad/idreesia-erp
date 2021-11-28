@@ -20,10 +20,13 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     companiesListLoading: PropTypes.bool,
     allCompanies: PropTypes.array,
     createAdminJob: PropTypes.func,
+  };
+
+  state = {
+    isFieldsTouched: false,
   };
 
   handleCancel = () => {
@@ -31,37 +34,37 @@ class NewForm extends Component {
     history.push(paths.adminJobsPath);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, createAdminJob, history } = this.props;
-    form.validateFields((err, { companyId, importForMonth }) => {
-      if (err) return;
-      const jobType = JobTypes.VOUCHERS_IMPORT;
-      const jobDetails = {
-        companyId,
-        importForMonth: importForMonth.format(Formats.DATE_FORMAT),
-      };
-      createAdminJob({
-        variables: {
-          jobType,
-          jobDetails: JSON.stringify(jobDetails),
-        },
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
+
+  handleFinish = ({ companyId, importForMonth }) => {
+    const { createAdminJob, history } = this.props;
+    const jobType = JobTypes.VOUCHERS_IMPORT;
+    const jobDetails = {
+      companyId,
+      importForMonth: importForMonth.format(Formats.DATE_FORMAT),
+    };
+    createAdminJob({
+      variables: {
+        jobType,
+        jobDetails: JSON.stringify(jobDetails),
+      },
+    })
+      .then(() => {
+        history.push(paths.adminJobsPath);
       })
-        .then(() => {
-          history.push(paths.adminJobsPath);
-        })
-        .catch(error => {
-          message.error(error.message, 5);
-        });
-    });
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
-    const { isFieldsTouched } = this.props.form;
     const { allCompanies } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <SelectField
           data={allCompanies}
           getDataValue={({ _id }) => _id}

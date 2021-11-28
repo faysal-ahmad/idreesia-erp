@@ -25,25 +25,18 @@ const buttonItemLayout = {
 
 class ListFilter extends Component {
   static propTypes = {
-    form: PropTypes.object,
-
     refreshPage: PropTypes.func,
     refreshData: PropTypes.func,
     queryParams: PropTypes.object,
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, refreshPage } = this.props;
-
-    form.validateFields((err, { approvalStatus, startDate, endDate }) => {
-      if (err) return;
-      refreshPage({
-        approvalStatus,
-        startDate,
-        endDate,
-        pageIndex: 0,
-      });
+  handleFinish = ({ approvalStatus, startDate, endDate }) => {
+    const { refreshPage } = this.props;
+    refreshPage({
+      approvalStatus,
+      startDate,
+      endDate,
+      pageIndex: 0,
     });
   };
 
@@ -73,7 +66,7 @@ class ListFilter extends Component {
     return (
       <Collapse style={ContainerStyle}>
         <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form layout="horizontal" onSubmit={this.handleSubmit}>
+          <Form layout="horizontal" onFinish={this.handleFinish}>
             <CheckboxGroupField
               fieldName="approvalStatus"
               fieldLabel="Status"

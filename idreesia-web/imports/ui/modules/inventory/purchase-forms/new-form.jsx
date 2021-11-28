@@ -38,7 +38,6 @@ class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    form: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
 
@@ -48,50 +47,48 @@ class NewForm extends Component {
     locationsByPhysicalStoreId: PropTypes.array,
     createPurchaseForm: PropTypes.func,
   };
+  
+  state = {
+    isFieldsTouched: false,
+  };
 
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form, history, physicalStoreId, createPurchaseForm } = this.props;
-    form.validateFields(
-      (
-        err,
-        {
-          purchaseDate,
-          locationId,
-          vendorId,
-          receivedBy,
-          purchasedBy,
-          items,
-          notes,
-        }
-      ) => {
-        if (err) return;
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
+  }
 
-        createPurchaseForm({
-          variables: {
-            purchaseDate,
-            locationId,
-            vendorId,
-            receivedBy: receivedBy._id,
-            purchasedBy: purchasedBy._id,
-            physicalStoreId,
-            items,
-            notes,
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  handleFinish = ({
+    purchaseDate,
+    locationId,
+    vendorId,
+    receivedBy,
+    purchasedBy,
+    items,
+    notes,
+  }) => {
+    const { history, physicalStoreId, createPurchaseForm } = this.props;
+    createPurchaseForm({
+      variables: {
+        purchaseDate,
+        locationId,
+        vendorId,
+        receivedBy: receivedBy._id,
+        purchasedBy: purchasedBy._id,
+        physicalStoreId,
+        items,
+        notes,
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   render() {
@@ -102,8 +99,9 @@ class NewForm extends Component {
       vendorsByPhysicalStoreId,
       physicalStoreId,
     } = this.props;
+    const isFieldsTouched = this.state.isFieldsTouched;
     if (locationsLoading || vendorsLoading) return null;
-    const { isFieldsTouched } = this.props.form;
+
     const rules = [
       {
         required: true,
@@ -112,7 +110,7 @@ class NewForm extends Component {
     ];
 
     return (
-      <Form layout="horizontal" style={FormStyle} onSubmit={this.handleSubmit}>
+      <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <DateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"

@@ -29,10 +29,12 @@ import {
 } from './gql';
 import KarkunsPreview from './karkuns-preview';
 
-const EditForm = ({ form, history, location }) => {
+const EditForm = ({ history, location }) => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { messageId } = useParams();
   const [showPreview, setShowPreview] = useState(false);
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [recepientFilter, setRecepientFilter] = useState(null);
   const [updateOutstationMessage] = useMutation(UPDATE_OUTSTATION_MESSAGE, {
     refetchQueries: [{ query: PAGED_OUTSTATION_MESSAGES }],
@@ -62,7 +64,6 @@ const EditForm = ({ form, history, location }) => {
     return null;
   }
 
-  const { validateFields, isFieldsTouched } = form;
   const cityMehfilCascaderData = getCityMehfilCascaderData(
     allCities,
     allCityMehfils
@@ -71,6 +72,10 @@ const EditForm = ({ form, history, location }) => {
   const handleCancel = () => {
     history.goBack();
   };
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  }
 
   const handlePeviewKarkuns = () => {
     const lastTarteeb = form.getFieldValue('lastTarteeb');
@@ -90,33 +95,26 @@ const EditForm = ({ form, history, location }) => {
     setRecepientFilter(filter);
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    validateFields(
-      (err, { messageBody, lastTarteeb, dutyId, cityIdMehfilId, region }) => {
-        if (err) return;
-
-        updateOutstationMessage({
-          variables: {
-            _id: messageId,
-            messageBody,
-            recepientFilter: {
-              lastTarteeb,
-              dutyId,
-              cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
-              cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
-              region,
-            },
-          },
-        })
-          .then(() => {
-            history.goBack();
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      }
-    );
+  const handleFinish = ({ messageBody, lastTarteeb, dutyId, cityIdMehfilId, region }) => {
+    updateOutstationMessage({
+      variables: {
+        _id: messageId,
+        messageBody,
+        recepientFilter: {
+          lastTarteeb,
+          dutyId,
+          cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
+          cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
+          region,
+        },
+      },
+    })
+      .then(() => {
+        history.goBack();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   const {
@@ -127,7 +125,7 @@ const EditForm = ({ form, history, location }) => {
 
   return (
     <>
-      <Form layout="horizontal" onSubmit={handleSubmit}>
+      <Form form={form} layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
         <InputTextAreaField
           fieldName="messageBody"
           fieldLabel="Message"
@@ -187,7 +185,6 @@ const EditForm = ({ form, history, location }) => {
 };
 
 EditForm.propTypes = {
-  form: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
 };

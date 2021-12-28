@@ -24,7 +24,6 @@ import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
-import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
@@ -39,7 +38,6 @@ const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const visitorsList = useRef(null);
   const [showStayList, setShowStayList] = useState(false);
-  const [showMulakaatList, setShowMulakaatList] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState(null);
   const { queryParams, setPageParams } = useQueryParams({
     history,
@@ -127,18 +125,8 @@ const List = ({ history, location }) => {
     setVisitorIdForList(visitor._id);
   };
 
-  const handleMulakaatHistoryAction = visitor => {
-    setShowMulakaatList(true);
-    setVisitorIdForList(visitor._id);
-  };
-
   const handleStayListClose = () => {
     setShowStayList(false);
-    setVisitorIdForList(null);
-  };
-
-  const handleMulakaatListClose = () => {
-    setShowMulakaatList(false);
     setVisitorIdForList(null);
   };
 
@@ -241,14 +229,12 @@ const List = ({ history, location }) => {
         showPhoneNumbersColumn
         showCityCountryColumn
         showStayHistoryAction
-        showMulakaatHistoryAction
         showAuditLogsAction
         showDeleteAction
         listHeader={getTableHeader}
         handleSelectItem={handleSelectItem}
         handleDeleteItem={handleDeleteItem}
         handleStayHistoryAction={handleStayHistoryAction}
-        handleMulakaatHistoryAction={handleMulakaatHistoryAction}
         handleAuditLogsAction={handleAuditLogsAction}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}
@@ -262,18 +248,6 @@ const List = ({ history, location }) => {
         visible={showStayList}
       >
         <VisitorStaysList
-          showNewButton
-          showActionsColumn
-          visitorId={visitorIdForList}
-        />
-      </Drawer>
-      <Drawer
-        title="Mulakaat History"
-        width={400}
-        onClose={handleMulakaatListClose}
-        visible={showMulakaatList}
-      >
-        <VisitorMulakaatsList
           showNewButton
           showActionsColumn
           visitorId={visitorIdForList}

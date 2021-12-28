@@ -78,11 +78,6 @@ class Sidebar extends Component {
         history.push(paths.teamVisitReportPath);
         break;
 
-      case 'mulakaat-report':
-        setActiveSubModuleName(SubModuleNames.mulakaatReport);
-        history.push(paths.mulakaatReportPath);
-        break;
-
       default:
         break;
     }
@@ -165,10 +160,6 @@ class Sidebar extends Component {
           <Menu.Item key="team-visit-report">
             <BookOutlined style={IconStyle} />
             <span>Team Visit Report</span>
-          </Menu.Item>
-          <Menu.Item key="mulakaat-report">
-            <BookOutlined style={IconStyle} />
-            <span>Mulakaat Report</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu

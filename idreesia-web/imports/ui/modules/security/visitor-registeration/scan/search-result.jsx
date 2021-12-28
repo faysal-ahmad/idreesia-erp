@@ -8,7 +8,6 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Row, Spin, Tabs } from 'antd';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
-import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 
 import { SECURITY_VISITOR_BY_CNIC } from '../gql';
 
@@ -129,13 +128,6 @@ const SearchResult = props => {
             <VisitorStaysList
               visitorId={_id}
               showDutyColumn
-              showNewButton
-              showActionsColumn
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Mulakaat History" key="2">
-            <VisitorMulakaatsList
-              visitorId={_id}
               showNewButton
               showActionsColumn
             />

@@ -62,11 +62,6 @@ class Sidebar extends Component {
         history.push(paths.newEhadReportPath);
         break;
 
-      case 'mulakaat-report':
-        setActiveSubModuleName(SubModuleNames.mulakaatReport);
-        history.push(paths.mulakaatReportPath);
-        break;
-
       case 'imdad-request-report':
         setActiveSubModuleName(SubModuleNames.imdadRequestReport);
         history.push(paths.imdadRequestReportPath);
@@ -109,9 +104,6 @@ class Sidebar extends Component {
             </>
           }
         >
-          <Item key="mulakaat-report">
-            <span>Mulakaat Report</span>
-          </Item>
           <Item key="new-ehad-report">
             <span>New Ehad Report</span>
           </Item>

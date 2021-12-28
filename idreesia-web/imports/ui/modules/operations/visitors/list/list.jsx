@@ -11,7 +11,6 @@ import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
-import { VisitorMulakaatsList } from '/imports/ui/modules/operations/visitor-mulakaats';
 import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
@@ -26,7 +25,6 @@ const ButtonGroupStyle = {
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const visitorsList = useRef(null);
-  const [showMulakaatList, setShowMulakaatList] = useState(false);
   const [showImdadRequests, setShowImdadRequests] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState(null);
   const { queryParams, setPageParams } = useQueryParams({
@@ -89,16 +87,6 @@ const List = ({ history, location }) => {
     history.push(paths.visitorsScanFormPath);
   };
 
-  const handleMulakaatHistoryAction = visitor => {
-    setShowMulakaatList(true);
-    setVisitorIdForList(visitor._id);
-  };
-
-  const handleMulakaatListClose = () => {
-    setShowMulakaatList(false);
-    setVisitorIdForList(null);
-  };
-
   const handleImdadRequestsAction = visitor => {
     setShowImdadRequests(true);
     setVisitorIdForList(visitor._id);
@@ -157,32 +145,18 @@ const List = ({ history, location }) => {
         showCnicColumn
         showPhoneNumbersColumn
         showCityCountryColumn
-        showMulakaatHistoryAction
         showImdadRequestsAction
         showLookupAction={false}
         showDeleteAction
         listHeader={getTableHeader}
         handleSelectItem={handleSelectItem}
         handleDeleteItem={handleDeleteItem}
-        handleMulakaatHistoryAction={handleMulakaatHistoryAction}
         handleImdadRequestsAction={handleImdadRequestsAction}
         setPageParams={setPageParams}
         pageIndex={numPageIndex}
         pageSize={numPageSize}
         pagedData={pagedOperationsVisitors}
       />
-      <Drawer
-        title="Mulakaat History"
-        width={400}
-        onClose={handleMulakaatListClose}
-        visible={showMulakaatList}
-      >
-        <VisitorMulakaatsList
-          showNewButton
-          showActionsColumn
-          visitorId={visitorIdForList}
-        />
-      </Drawer>
       <Drawer
         title="Imdad Requests"
         width={400}

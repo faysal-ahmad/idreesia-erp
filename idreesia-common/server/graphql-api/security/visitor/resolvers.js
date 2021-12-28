@@ -6,12 +6,10 @@ import { personToVisitor, processCsvData, visitorToPerson } from './helpers';
 export default {
   Query: {
     pagedSecurityVisitors(obj, { filter }) {
-      return People.searchPeople(filter)
-        .then(result => ({
-          data: result.data.map(person => personToVisitor(person)),
-          totalResults: result.totalResults,
-        }))
-        .catch(error => console.log(error));
+      return People.searchPeople(filter).then(result => ({
+        data: result.data.map(person => personToVisitor(person)),
+        totalResults: result.totalResults,
+      }));
     },
 
     securityVisitorById(obj, { _id }) {

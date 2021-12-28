@@ -23,7 +23,6 @@ import { VisitorCardVerificationForm } from './visitor-stays';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
 import { TeamVisitReport } from './team-visit-report';
-import { MulakaatReport } from './mulakaat-report';
 
 const Router = () => (
   <Switch>
@@ -82,7 +81,6 @@ const Router = () => (
 
     <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
     <Route path={paths.teamVisitReportPath} component={TeamVisitReport} />
-    <Route path={paths.mulakaatReportPath} component={MulakaatReport} />
   </Switch>
 );
 

@@ -8,7 +8,6 @@ const SubModuleNames = {
   sharedResidences: 'Shared Residences',
   visitorStayReport: "Visitor's Stay Report",
   teamVisitReport: 'Team Visit Report',
-  mulakaatReport: 'Mulakaat Report',
   auditLogs: 'Audit Logs',
 };
 

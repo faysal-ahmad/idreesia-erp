@@ -41,7 +41,6 @@ export default class SubModulePaths {
   // *************************************************************************************
   static visitorStayReportPath = `${ModulePaths.security}/visitor-stay-report`;
   static teamVisitReportPath = `${ModulePaths.security}/team-visit-report`;
-  static mulakaatReportPath = `${ModulePaths.security}/mulakaat-report`;
 
   // ******************************************************************************
   // Shared Residences

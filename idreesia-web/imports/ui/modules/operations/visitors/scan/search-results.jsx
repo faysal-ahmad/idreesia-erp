@@ -7,7 +7,6 @@ import { CheckCircleTwoTone, ExclamationCircleTwoTone } from '@ant-design/icons'
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row, Spin, Tabs } from 'antd';
-import { VisitorMulakaatsList } from '/imports/ui/modules/security/visitor-mulakaats';
 import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 
 import { OPERATIONS_VISITORS_BY_CNIC } from '../gql';
@@ -92,14 +91,7 @@ const SearchResult = ({ visitor }) => {
       </Col>
       <Col order={2} span={16}>
         <Tabs defaultActiveKey="1">
-          <Tabs.TabPane tab="Mulakaat History" key="1">
-            <VisitorMulakaatsList
-              visitorId={_id}
-              showNewButton
-              showActionsColumn
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Imdad Requests" key="2">
+          <Tabs.TabPane tab="Imdad Requests" key="1">
             <VisitorImdadRequestsList visitorId={_id} />
           </Tabs.TabPane>
         </Tabs>

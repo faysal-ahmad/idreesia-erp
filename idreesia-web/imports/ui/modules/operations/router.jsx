@@ -19,7 +19,6 @@ import {
   ImdadRequestsNewForm,
   ImdadRequestsEditForm,
 } from './imdad-requests';
-import { MulakaatReport } from './mulakaat-report';
 import { NewEhadReport } from './new-ehad-report';
 import { ImdadRequestReport } from './imdad-request-report';
 
@@ -60,7 +59,6 @@ const Router = () => (
     />
     <Route path={paths.imdadRequestsPath} component={ImdadRequestsList} />
 
-    <Route path={paths.mulakaatReportPath} component={MulakaatReport} />
     <Route path={paths.newEhadReportPath} component={NewEhadReport} />
     <Route path={paths.imdadRequestReportPath} component={ImdadRequestReport} />
   </Switch>

@@ -34,9 +34,6 @@ import MessageResolvers from './common/message/resolvers';
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 
-import VisitorMulakaatSchema from './common/visitor-mulakaat/visitor-mulakaat.graphql';
-import VisitorMulakaatResolvers from './common/visitor-mulakaat/resolvers';
-
 import WazeefaSchema from './common/wazeefa/wazeefa.graphql';
 import WazeefaResolvers from './common/wazeefa/resolvers';
 
@@ -70,9 +67,6 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 import VisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
 import VisitorStayResolvers from './security/visitor-stay/resolvers';
 
-import SecurityVisitorMulakaatSchema from './security/visitor-mulakaat/visitor-mulakaat.graphql';
-import SecurityVisitorMulakaatResolvers from './security/visitor-mulakaat/resolvers';
-
 import SharedResidenceSchema from './security/shared-residence/shared-residence.graphql';
 import SharedResidenceResolvers from './security/shared-residence/resolvers';
 
@@ -87,9 +81,6 @@ import OperationsMessageResolvers from './operations/message/resolvers';
 
 import OperationsWazeefaSchema from './operations/wazeefa/wazeefa.graphql';
 import OperationsWazeefaResolvers from './operations/wazeefa/resolvers';
-
-import OperationsVisitorMulakaatSchema from './operations/visitor-mulakaat/visitor-mulakaat.graphql';
-import OperationsVisitorMulakaatResolvers from './operations/visitor-mulakaat/resolvers';
 
 import ImdadReasonSchema from './operations/imdad-reason/imdad-reason.graphql';
 import ImdadReasonResolvers from './operations/imdad-reason/resolvers';
@@ -269,7 +260,6 @@ const typeDefs = [
   KarkunSchema,
   MessageSchema,
   VisitorSchema,
-  VisitorMulakaatSchema,
   WazeefaSchema,
   AdminJobSchema,
   UserSchema,
@@ -280,13 +270,11 @@ const typeDefs = [
   MehfilKarkunSchema,
   SecurityVisitorSchema,
   VisitorStaySchema,
-  SecurityVisitorMulakaatSchema,
   SharedResidenceSchema,
 
   OperationsVisitorSchema,
   OperationsMessageSchema,
   OperationsWazeefaSchema,
-  OperationsVisitorMulakaatSchema,
   OperationsImdadRequestSchema,
 
   HRAuditLogSchema,
@@ -356,7 +344,6 @@ const resolvers = merge(
   KarkunResolvers,
   MessageResolvers,
   VisitorResolvers,
-  VisitorMulakaatResolvers,
   WazeefaResolvers,
   AdminJobResolvers,
   UserResolvers,
@@ -367,13 +354,11 @@ const resolvers = merge(
   MehfilKarkunResolvers,
   SecurityVisitorResolvers,
   VisitorStayResolvers,
-  SecurityVisitorMulakaatResolvers,
   SharedResidenceResolvers,
 
   OperationsVisitorResolvers,
   OperationsMessageResolvers,
   OperationsWazeefaResolvers,
-  OperationsVisitorMulakaatResolvers,
   OperationsImdadRequestResolvers,
 
   HRAuditLogResolvers,

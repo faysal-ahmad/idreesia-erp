@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AuditOutlined, DeleteOutlined, HistoryOutlined, LinkOutlined, PlusCircleOutlined, ThunderboltOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
+import { AuditOutlined, DeleteOutlined, HistoryOutlined, LinkOutlined, PlusCircleOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -25,7 +25,6 @@ export default class VisitorsList extends Component {
     showCityCountryColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
     showStayHistoryAction: PropTypes.bool,
-    showMulakaatHistoryAction: PropTypes.bool,
     showImdadRequestsAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
     showKarkunLinkAction: PropTypes.bool,
@@ -35,7 +34,6 @@ export default class VisitorsList extends Component {
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
     handleStayHistoryAction: PropTypes.func,
-    handleMulakaatHistoryAction: PropTypes.func,
     handleImdadRequestsAction: PropTypes.func,
     handleAuditLogsAction: PropTypes.func,
     handleKarkunLinkAction: PropTypes.func,
@@ -53,7 +51,6 @@ export default class VisitorsList extends Component {
   static defaultProps = {
     showDeleteAction: false,
     showStayHistoryAction: false,
-    showMulakaatHistoryAction: false,
     showImdadRequestsAction: false,
     showAuditLogsAction: false,
     showKarkunLinkAction: false,
@@ -62,7 +59,6 @@ export default class VisitorsList extends Component {
     handleSelectItem: noop,
     handleDeleteItem: noop,
     handleStayHistoryAction: noop,
-    handleMulakaatHistoryAction: noop,
     handleImdadRequestsAction: noop,
     handleAuditLogsAction: noop,
     handleKarkunLinkAction: noop,
@@ -149,14 +145,12 @@ export default class VisitorsList extends Component {
       const {
         showDeleteAction,
         showStayHistoryAction,
-        showMulakaatHistoryAction,
         showImdadRequestsAction,
         showAuditLogsAction,
         showKarkunLinkAction,
         showKarkunCreateAction,
         handleDeleteItem,
         handleStayHistoryAction,
-        handleMulakaatHistoryAction,
         handleImdadRequestsAction,
         handleAuditLogsAction,
         handleKarkunLinkAction,
@@ -169,17 +163,6 @@ export default class VisitorsList extends Component {
             className="list-actions-icon"
             onClick={() => {
               handleStayHistoryAction(record);
-            }}
-          />
-        </Tooltip>
-      ) : null;
-
-      const mulakaatHistoryAction = showMulakaatHistoryAction ? (
-        <Tooltip title="Mulakaat History">
-          <ThunderboltOutlined
-            className="list-actions-icon"
-            onClick={() => {
-              handleMulakaatHistoryAction(record);
             }}
           />
         </Tooltip>
@@ -249,7 +232,6 @@ export default class VisitorsList extends Component {
       return (
         <div className="list-actions-column">
           {stayHistoryAction}
-          {mulakaatHistoryAction}
           {imdadRequestsAction}
           {auditLogsAction}
           {linkAction}
@@ -268,7 +250,6 @@ export default class VisitorsList extends Component {
       showCityCountryColumn,
       showDeleteAction,
       showStayHistoryAction,
-      showMulakaatHistoryAction,
       showAuditLogsAction,
       showKarkunLinkAction,
       showKarkunCreateAction,
@@ -296,7 +277,6 @@ export default class VisitorsList extends Component {
     if (
       showDeleteAction ||
       showStayHistoryAction ||
-      showMulakaatHistoryAction ||
       showKarkunLinkAction ||
       showAuditLogsAction ||
       showKarkunCreateAction

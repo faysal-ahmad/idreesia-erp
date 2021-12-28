@@ -26,9 +26,10 @@ class AuditLogs extends AggregatableCollection {
       operationType,
       operationBy,
       operationTime,
-      auditValues: auditValues
-        ? this.getAuditValues(auditValues, existingEntity)
-        : null,
+      auditValues:
+        existingEntity && auditValues
+          ? this.getAuditValues(auditValues, existingEntity)
+          : auditValues,
     });
   }
 
@@ -36,7 +37,7 @@ class AuditLogs extends AggregatableCollection {
     const _auditValues = [];
 
     forOwn(auditValues, (value, key) => {
-      const changedFrom = existingEntity ? existingEntity[key] : null;
+      const changedFrom = existingEntity ? get(existingEntity, key) : null;
 
       if (changedFrom || value) {
         _auditValues.push(

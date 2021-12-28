@@ -1,6 +1,8 @@
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import {
+  Attachments,
+  People,
+} from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -20,24 +22,24 @@ export default {
   Query: {
     distinctCities() {
       const distincFunction = Meteor.wrapAsync(
-        Visitors.rawCollection().distinct,
-        Visitors.rawCollection()
+        People.rawCollection().distinct,
+        People.rawCollection()
       );
 
-      return compact(distincFunction('city'));
+      return compact(distincFunction('visitorData.city'));
     },
 
     distinctCountries() {
       const distincFunction = Meteor.wrapAsync(
-        Visitors.rawCollection().distinct,
-        Visitors.rawCollection()
+        People.rawCollection().distinct,
+        People.rawCollection()
       );
 
-      return compact(distincFunction('country'));
+      return compact(distincFunction('visitorData.country'));
     },
 
     pagedVisitors(obj, { filter }) {
-      return Visitors.searchVisitors(filter);
+      return People.searchVisitors(filter);
     },
   },
 
@@ -66,13 +68,13 @@ export default {
       }
 
       const date = new Date();
-      const count = Visitors.update(
+      const count = People.update(
         {
-          city: { $eq: existingSpelling },
+          'visitorsData.city': { $eq: existingSpelling },
         },
         {
           $set: {
-            city: newSpelling,
+            'visitorsData.city': newSpelling,
             updatedAt: date,
             updatedBy: user._id,
           },

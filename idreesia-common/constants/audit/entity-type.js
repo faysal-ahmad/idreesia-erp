@@ -1,5 +1,6 @@
 const EntityType = {
   USER: 'user',
+  PERSON: 'person',
   KARKUN: 'karkun',
   VISITOR: 'visitor',
   PAYMENT: 'payment',

@@ -1,38 +1,50 @@
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
-import { processCsvData } from './helpers';
+import { personToVisitor, processCsvData, visitorToPerson } from './helpers';
 
 export default {
   Query: {
     pagedSecurityVisitors(obj, { filter }) {
-      return Visitors.searchVisitors(filter);
+      return People.searchPeople(filter)
+        .then(result => ({
+          data: result.data.map(person => personToVisitor(person)),
+          totalResults: result.totalResults,
+        }))
+        .catch(error => console.log(error));
     },
 
     securityVisitorById(obj, { _id }) {
-      return Visitors.findOne(_id);
+      const person = People.findOne(_id);
+      return personToVisitor(person);
     },
 
     securityVisitorByCnic(obj, { cnicNumbers }) {
       if (cnicNumbers.length > 0) {
-        return Visitors.findOne({
+        const person = People.findOne({
           cnicNumber: { $in: cnicNumbers },
         });
+        return personToVisitor(person);
       }
 
       return null;
     },
 
     securityVisitorByCnicOrContactNumber(obj, { cnicNumber, contactNumber }) {
-      return Visitors.findByCnicOrContactNumber(cnicNumber, contactNumber);
+      const person = People.findByCnicOrContactNumber(
+        cnicNumber,
+        contactNumber
+      );
+      return personToVisitor(person);
     },
   },
 
   Mutation: {
     createSecurityVisitor(obj, values, { user }) {
-      return Visitors.createVisitor(
+      const person = visitorToPerson(values);
+      return People.createVisitor(
         {
-          ...values,
+          ...person,
           dataSource: DataSource.SECURITY,
         },
         user
@@ -40,19 +52,22 @@ export default {
     },
 
     updateSecurityVisitor(obj, values, { user }) {
-      return Visitors.updateVisitor(values, user);
+      const person = visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
 
     deleteSecurityVisitor(obj, { _id }) {
-      return Visitors.remove(_id);
+      return People.remove(_id);
     },
 
     setSecurityVisitorImage(obj, values, { user }) {
-      return Visitors.updateVisitor(values, user);
+      const person = visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
 
     updateSecurityVisitorNotes(obj, values, { user }) {
-      return Visitors.updateVisitor(values, user);
+      const person = visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
 
     importSecurityVisitorsCsvData(obj, { csvData }, { user }) {

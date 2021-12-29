@@ -1,11 +1,13 @@
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import {
   PurchaseForms,
   StockItems,
   Vendors,
   Locations,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  Attachments,
+  People,
+} from 'meteor/idreesia-common/server/collections/common';
 import {
   hasInstanceAccess,
   hasOnePermission,
@@ -35,29 +37,36 @@ export default {
       }
       return null;
     },
-    refReceivedBy: purchaseForm =>
-      Karkuns.findOne({
+    refReceivedBy: purchaseForm => {
+      const person = People.findOne({
         _id: { $eq: purchaseForm.receivedBy },
-      }),
-    refPurchasedBy: purchaseForm =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refPurchasedBy: purchaseForm => {
+      const person = People.findOne({
         _id: { $eq: purchaseForm.purchasedBy },
-      }),
-    refCreatedBy: purchaseForm =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refCreatedBy: purchaseForm => {
+      const person = People.findOne({
         _id: { $eq: purchaseForm.createdBy },
-      }),
-    refUpdatedBy: purchaseForm =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refUpdatedBy: purchaseForm => {
+      const person = People.findOne({
         _id: { $eq: purchaseForm.updatedBy },
-      }),
+      });
+      return People.personToKarkun(person);
+    },
     refApprovedBy: purchaseForm => {
-      if (purchaseForm.approvedBy) {
-        return Karkuns.findOne({
-          _id: { $eq: purchaseForm.approvedBy },
-        });
-      }
-      return null;
+      if (!purchaseForm.approvedBy) return null;
+      const person = People.findOne({
+        _id: { $eq: purchaseForm.approvedBy },
+      });
+      return People.personToKarkun(person);
     },
     refVendor: purchaseForm =>
       Vendors.findOne({

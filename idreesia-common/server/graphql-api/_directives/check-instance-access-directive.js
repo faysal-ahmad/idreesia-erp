@@ -7,7 +7,7 @@ import { hasInstanceAccess } from 'meteor/idreesia-common/server/graphql-api/sec
 export default class CheckInstanceAccessDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const { resolve = defaultFieldResolver } = field;
-    const { instanceIdArgName } = this.args;
+    const { instanceIdArgName, dataFieldName = 'data' } = this.args;
 
     field.resolve = async (...params) => {
       const [, args, context, info] = params;
@@ -21,7 +21,7 @@ export default class CheckInstanceAccessDirective extends SchemaDirectiveVisitor
         if (info.parentType.name === 'Query') {
           if (info.fieldName.startsWith('paged')) {
             return {
-              data: [],
+              [dataFieldName]: [],
               totalResults: 0,
             };
           }

@@ -1,28 +1,28 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
-import { personToVisitor, processCsvData, visitorToPerson } from './helpers';
+import { processCsvData } from './helpers';
 
 export default {
   Query: {
     pagedSecurityVisitors(obj, { filter }) {
       return People.searchPeople(filter).then(result => ({
-        data: result.data.map(person => personToVisitor(person)),
+        data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
       }));
     },
 
     securityVisitorById(obj, { _id }) {
       const person = People.findOne(_id);
-      return personToVisitor(person);
+      return People.personToVisitor(person);
     },
 
     securityVisitorByCnic(obj, { cnicNumbers }) {
       if (cnicNumbers.length > 0) {
         const person = People.findOne({
-          cnicNumber: { $in: cnicNumbers },
+          'sharedData.cnicNumber': { $in: cnicNumbers },
         });
-        return personToVisitor(person);
+        return People.personToVisitor(person);
       }
 
       return null;
@@ -33,13 +33,13 @@ export default {
         cnicNumber,
         contactNumber
       );
-      return personToVisitor(person);
+      return People.personToVisitor(person);
     },
   },
 
   Mutation: {
     createSecurityVisitor(obj, values, { user }) {
-      const person = visitorToPerson(values);
+      const person = People.visitorToPerson(values);
       return People.createVisitor(
         {
           ...person,
@@ -50,7 +50,7 @@ export default {
     },
 
     updateSecurityVisitor(obj, values, { user }) {
-      const person = visitorToPerson(values);
+      const person = People.visitorToPerson(values);
       return People.updatePerson(person, user);
     },
 
@@ -59,12 +59,12 @@ export default {
     },
 
     setSecurityVisitorImage(obj, values, { user }) {
-      const person = visitorToPerson(values);
+      const person = People.visitorToPerson(values);
       return People.updatePerson(person, user);
     },
 
     updateSecurityVisitorNotes(obj, values, { user }) {
-      const person = visitorToPerson(values);
+      const person = People.visitorToPerson(values);
       return People.updatePerson(person, user);
     },
 

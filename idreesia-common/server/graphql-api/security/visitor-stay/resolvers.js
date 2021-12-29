@@ -5,10 +5,8 @@ import {
   Duties,
   DutyShifts,
 } from 'meteor/idreesia-common/server/collections/hr';
-import {
-  Visitors,
-  VisitorStays,
-} from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 
 import { getVisitorStays, getTeamVisits } from './queries';
 
@@ -23,7 +21,7 @@ export default {
       return moment().isAfter(toDate);
     },
     refVisitor: visitorStay =>
-      Visitors.findOne({
+      People.findOne({
         _id: { $eq: visitorStay.visitorId },
       }),
     dutyName: visitorStay => {

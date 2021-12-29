@@ -1,7 +1,5 @@
-import {
-  Attendances,
-  Karkuns,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 
 export function createMonthlyAttendance(portalId, formattedMonth, user) {
@@ -9,12 +7,13 @@ export function createMonthlyAttendance(portalId, formattedMonth, user) {
   const portal = Portals.findOne(portalId);
 
   // Get all the karkuns for the portal
-  const karkuns = Karkuns.find({
-    cityId: { $in: portal.cityIds },
+  const people = People.find({
+    isKarkun: true,
+    'karkunData.cityId': { $in: portal.cityIds },
   }).fetch();
 
   const date = new Date();
-  karkuns.forEach(({ _id }) => {
+  people.forEach(({ _id }) => {
     // Create a new attendance if one does not exist for this karkun combination
     const existingAttendance = Attendances.findOne({
       karkunId: _id,

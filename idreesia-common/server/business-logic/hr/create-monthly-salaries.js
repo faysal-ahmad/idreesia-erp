@@ -1,9 +1,6 @@
 import moment from 'moment';
-
-import {
-  Salaries,
-  Karkuns,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 
 export function getMonthlySalaryValues(prevMonthSalary) {
   if (!prevMonthSalary) {
@@ -49,14 +46,14 @@ export function createMonthlySalaries(
   user
 ) {
   let counter = 0;
-  // Get all the karkuns who are employees and have a job assigned to them
-  const karkuns = Karkuns.find({
+  // Get all the people who are employees and have a job assigned to them
+  const people = People.find({
     isEmployee: true,
-    jobId: { $exists: true, $ne: null },
+    'employeeData.jobId': { $exists: true, $ne: null },
   }).fetch();
 
   const date = new Date();
-  karkuns.forEach(({ _id, jobId, employmentEndDate }) => {
+  people.forEach(({ _id, employeeData: { jobId, employmentEndDate } }) => {
     // Ensure that this karkun is a current employee
     let isCurrentEmployee = true;
     if (employmentEndDate) {

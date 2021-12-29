@@ -26,7 +26,7 @@ const mapUser = user => ({
   username: user.username,
   email: get(user, 'emails.0.address', null),
   displayName: user.displayName,
-  karkunId: user.karkunId,
+  personId: user.personId,
   locked: user.locked,
   lastLoggedInAt: user.lastLoggedInAt,
   lastActiveAt: user.lastActiveAt,
@@ -146,7 +146,7 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
   const initialPipeline = [
     {
       $match: {
-        karkunId: { $exists: true, $ne: null },
+        personId: { $exists: true, $ne: null },
         $or: [
           {
             permissions: {
@@ -191,7 +191,7 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
 // Used from Admin/Outstation/Portals.
 // *******************************************************************
 Users.createUser = (
-  { userName, password, email, displayName, karkunId },
+  { userName, password, email, displayName, personId },
   user,
   dataSource,
   dataSourceDetail = null
@@ -203,10 +203,10 @@ Users.createUser = (
     }
   }
 
-  if (karkunId) {
-    const existingUser = Users.findOne({ karkunId });
+  if (personId) {
+    const existingUser = Users.findOne({ personId });
     if (existingUser) {
-      throw new Error(`This karkun already has a user account.`);
+      throw new Error(`This person already has a user account.`);
     }
   }
 
@@ -221,7 +221,7 @@ Users.createUser = (
       $set: {
         email,
         displayName,
-        karkunId,
+        personId,
       },
     });
   } else if (email) {
@@ -232,7 +232,7 @@ Users.createUser = (
     Users.update(newUserId, {
       $set: {
         displayName,
-        karkunId,
+        personId,
       },
     });
   }

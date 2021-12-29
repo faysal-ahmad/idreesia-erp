@@ -2,7 +2,7 @@ import csv from 'csvtojson';
 import moment from 'moment';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 const NAME_COLUMN = 'Name';
 const PARENT_NAME_COLUMN = 'S/O';
@@ -23,23 +23,30 @@ function processJsonRecord(jsonRecord, date, user) {
     const referenceName = jsonRecord[REFERENCE_COLUMN];
 
     if (!cnicNumber && !phoneNumber) return false;
-    if (cnicNumber && Visitors.isCnicInUse(cnicNumber)) return false;
-    if (phoneNumber && Visitors.isContactNumberInUse(phoneNumber)) return false;
+    if (cnicNumber && People.isCnicInUse(cnicNumber)) return false;
+    if (phoneNumber && People.isContactNumberInUse(phoneNumber)) return false;
 
     const ehadDurationYears = toInteger(ehadDuration);
     const ehadDate = moment()
       .subtract(ehadDurationYears, 'years')
       .toDate();
 
-    Visitors.insert({
-      name,
-      parentName,
-      cnicNumber,
-      ehadDate,
-      referenceName,
-      contactNumber1: phoneNumber,
-      city,
-      country: 'Pakistan',
+    People.insert({
+      isEmployee: false,
+      isKarkun: false,
+      userid: null,
+      sharedData: {
+        name,
+        parentName,
+        cnicNumber,
+        ehadDate,
+        referenceName,
+        contactNumber1: phoneNumber,
+      },
+      visitorData: {
+        city,
+        country: 'Pakistan',
+      },
       createdAt: date,
       createdBy: user._id,
       updatedAt: date,
@@ -82,63 +89,4 @@ export async function processCsvData(csvData, date, user) {
 
     return JSON.stringify(result);
   });
-}
-
-export function visitorToPerson(visitor) {
-  return {
-    _id: visitor._id,
-    dataSource: visitor.dataSource,
-    sharedData: {
-      name: visitor.name,
-      parentName: visitor.parentName,
-      cnicNumber: visitor.cnicNumber,
-      ehadDate: visitor.ehadDate,
-      birthDate: visitor.birthDate,
-      referenceName: visitor.referenceName,
-      contactNumber1: visitor.contactNumber1,
-      contactNumber2: visitor.contactNumber2,
-      currentAddress: visitor.currentAddress,
-      permanentAddress: visitor.permanentAddress,
-      educationalQualification: visitor.educationalQualification,
-      meansOfEarning: visitor.meansOfEarning,
-    },
-    visitorData: {
-      city: visitor.city,
-      country: visitor.country,
-    },
-  };
-}
-
-export function personToVisitor(person) {
-  return {
-    _id: person._id,
-    dataSource: person.dataSource,
-    createdAt: person.createdAt,
-    createdBy: person.createdBy,
-    updatedAt: person.updatedAt,
-    updatedBy: person.updatedBy,
-
-    name: person.sharedData.name,
-    parentName: person.sharedData.parentName,
-    cnicNumber: person.sharedData.cnicNumber,
-    ehadDate: person.sharedData.ehadDate,
-    birthDate: person.sharedData.birthDate,
-    referenceName: person.sharedData.referenceName,
-    contactNumber1: person.sharedData.contactNumber1,
-    contactNumber2: person.sharedData.contactNumber2,
-    contactNumber1Subscribed: person.sharedData.contactNumber1Subscribed,
-    contactNumber2Subscribed: person.sharedData.contactNumber2Subscribed,
-    currentAddress: person.sharedData.currentAddress,
-    permanentAddress: person.sharedData.permanentAddress,
-    educationalQualification: person.sharedData.educationalQualification,
-    meansOfEarning: person.sharedData.meansOfEarning,
-    imageId: person.sharedData.imageId,
-
-    city: person.visitorData?.city,
-    country: person.visitorData?.country,
-    criminalRecord: person.visitorData?.criminalRecord,
-    otherNotes: person.visitorData?.otherNotes,
-
-    karkunId: person.karkunData?.karkunId,
-  };
 }

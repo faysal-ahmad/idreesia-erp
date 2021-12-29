@@ -23,11 +23,6 @@ export default new SimpleSchema({
   referenceName: {
     type: String,
   },
-  // TODO: remove this
-  address: {
-    type: String,
-    optional: true,
-  },
   currentAddress: {
     type: String,
     optional: true,

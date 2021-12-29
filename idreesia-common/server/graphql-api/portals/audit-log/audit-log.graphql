@@ -1,3 +1,5 @@
 extend type Query {
   pagedPortalAuditLogs(portalId: String!, filter: AuditLogFilter): PagedAuditLogType
+  @checkPermissions(permissions: [PORTALS_VIEW_AUDIT_LOGS])
+  @checkInstanceAccess(instanceIdArgName: "portalId")
 }

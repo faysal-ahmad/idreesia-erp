@@ -1,4 +1,3 @@
-import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 import {
   IssuanceForms,
   PurchaseForms,
@@ -6,13 +5,6 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 
 export function canDeleteKarkun(karkunId) {
-  const salaryRecordCount = Salaries.find({ karkunId }).count();
-  if (salaryRecordCount > 0) {
-    throw new Error(
-      'This Karkun cannot be deleted as it is being referenced by salary data.'
-    );
-  }
-
   const issuedByCount = IssuanceForms.find({
     issuedBy: { $eq: karkunId },
   }).count();

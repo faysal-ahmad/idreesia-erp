@@ -4,7 +4,7 @@ import {
   PaymentTypes,
 } from 'meteor/idreesia-common/server/collections/accounts';
 import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
@@ -52,7 +52,7 @@ export default {
     pagedPaymentsForImdadRequest(obj, { imdadRequestId, filter }) {
       const imdadRequest = ImdadRequests.findOne(imdadRequestId);
       const { visitorId } = imdadRequest;
-      const visitor = Visitors.findOne(visitorId);
+      const visitor = People.findOne(visitorId);
       if (!visitor.cnicNumber) {
         return {
           data: [],

@@ -1,7 +1,5 @@
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import {
   canDeleteKarkun,
   deleteKarkun,
@@ -12,12 +10,14 @@ import { getKarkuns } from './queries';
 export default {
   Query: {
     hrKarkunById(obj, { _id }) {
-      return Karkuns.findOne(_id);
+      const person = People.findOne(_id);
+      return People.personToKarkun(person);
     },
 
     hrKarkunsById(obj, { _ids }) {
       const idsArray = _ids.split(',');
-      return Karkuns.find({ _id: { $in: idsArray } }).fetch();
+      const people = People.find({ _id: { $in: idsArray } }).fetch();
+      return people.map(person => People.personToKarkun(person));
     },
 
     pagedHrKarkuns(obj, { filter }) {
@@ -27,49 +27,22 @@ export default {
 
   Mutation: {
     createHrKarkun(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
       const multanCity = Cities.getMultanCity();
-      return Karkuns.createKarkun(
-        {
-          cityId: multanCity._id,
-          ...values,
-        },
-        user
-      );
+      const personValues = People.karkunToPerson({
+        ...values,
+        cityId: multanCity._id,
+      });
+      const person = People.createPerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
     updateHrKarkun(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      return Karkuns.updateKarkun(values, user);
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
-    deleteHrKarkun(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to delete Karkuns in the System.'
-        );
-      }
-
+    deleteHrKarkun(obj, { _id }) {
       if (canDeleteKarkun(_id)) {
         return deleteKarkun(_id);
       }
@@ -78,63 +51,31 @@ export default {
     },
 
     setHrKarkunWazaifAndRaabta(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      return Karkuns.updateKarkun(values, user);
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
     setHrKarkunEmploymentInfo(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_EMPLOYEES])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      return Karkuns.updateKarkun(values, user);
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
     setHrKarkunProfileImage(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      return Karkuns.updateKarkun(values, user);
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
     addHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      return Karkuns.addAttachment({ _id, attachmentId }, user);
+      const person = People.addAttachment({ _id, attachmentId }, user);
+      return People.personToKarkun(person);
     },
 
     removeHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      return Karkuns.removeAttachment({ _id, attachmentId }, user);
+      const person = People.removeAttachment({ _id, attachmentId }, user);
+      return People.personToKarkun(person);
     },
   },
 };

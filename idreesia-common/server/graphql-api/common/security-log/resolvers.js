@@ -1,33 +1,33 @@
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 export default {
   SecurityLogType: {
     userName: securityLogType => {
       const user = Users.findOneUser(securityLogType.userId);
-      const karkun = user.karkunId ? Karkuns.findOne(user.karkunId) : null;
-      if (karkun) return karkun.name;
+      const person = user.personId ? People.findOne(user.personId) : null;
+      if (person) return person.sharedData.name;
       return user.displayName;
     },
 
     userImageId: securityLogType => {
       const user = Users.findOneUser(securityLogType.userId);
-      const karkun = user.karkunId ? Karkuns.findOne(user.karkunId) : null;
-      if (karkun) return karkun.imageId;
+      const person = user.personId ? People.findOne(user.personId) : null;
+      if (person) return person.sharedData.imageId;
       return null;
     },
 
     operationByName: securityLogType => {
       const user = Users.findOneUser(securityLogType.operationBy);
-      const karkun = user.karkunId ? Karkuns.findOne(user.karkunId) : null;
-      if (karkun) return karkun.name;
+      const person = user.personId ? People.findOne(user.personId) : null;
+      if (person) return person.sharedData.name;
       return user.displayName;
     },
 
     operationByImageId: securityLogType => {
       const user = Users.findOneUser(securityLogType.operationBy);
-      const karkun = user.karkunId ? Karkuns.findOne(user.karkunId) : null;
-      if (karkun) return karkun.imageId;
+      const person = user.personId ? People.findOne(user.personId) : null;
+      if (person) return person.sharedData.imageId;
       return null;
     },
   },

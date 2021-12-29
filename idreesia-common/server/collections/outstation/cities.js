@@ -3,7 +3,7 @@ import { AggregatableCollection } from 'meteor/idreesia-common/server/collection
 import { City as CitySchema } from 'meteor/idreesia-common/server/schemas/outstation';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 class Cities extends AggregatableCollection {
   constructor(name = 'outstation-cities', options = {}) {
@@ -87,7 +87,7 @@ class Cities extends AggregatableCollection {
     if (cityMehfil) return false;
 
     // Check that there are currently no karkuns assigned to this city
-    const karkun = Karkuns.findOne({ cityId });
+    const karkun = People.findOne({ 'karkunData.cityId': cityId });
     if (karkun) return false;
 
     return true;

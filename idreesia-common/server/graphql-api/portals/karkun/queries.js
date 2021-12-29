@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 
 const bloodGroupValueConversion = {
@@ -36,7 +36,7 @@ export function getPortalKarkuns(portalId, params) {
   if (name) {
     if (name.length === 1) {
       pipeline.push({
-        $match: { name: { $regex: `^${name}` } },
+        $match: { 'sharedData.name': { $regex: `^${name}` } },
       });
     } else {
       pipeline.push({
@@ -47,14 +47,14 @@ export function getPortalKarkuns(portalId, params) {
 
   pipeline.push({
     $match: {
-      cityId: { $in: portal.cityIds },
+      'karkunData.cityId': { $in: portal.cityIds },
     },
   });
 
   if (cnicNumber) {
     pipeline.push({
       $match: {
-        cnicNumber: { $eq: cnicNumber },
+        'sharedData.cnicNumber': { $eq: cnicNumber },
       },
     });
   }
@@ -62,7 +62,10 @@ export function getPortalKarkuns(portalId, params) {
   if (phoneNumber) {
     pipeline.push({
       $match: {
-        $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
+        $or: [
+          { 'sharedData.contactNumber1': phoneNumber },
+          { 'sharedData.contactNumber2': phoneNumber },
+        ],
       },
     });
   }
@@ -71,7 +74,7 @@ export function getPortalKarkuns(portalId, params) {
     const convertedBloodGroupValue = bloodGroupValueConversion[bloodGroup];
     pipeline.push({
       $match: {
-        bloodGroup: { $eq: convertedBloodGroupValue },
+        'sharedData.bloodGroup': { $eq: convertedBloodGroupValue },
       },
     });
   }
@@ -80,7 +83,7 @@ export function getPortalKarkuns(portalId, params) {
     const ehadKarkunValue = ehadKarkun === 'true';
     pipeline.push({
       $match: {
-        ehadKarkun: { $eq: ehadKarkunValue },
+        'karkunData.ehadKarkun': { $eq: ehadKarkunValue },
       },
     });
   }
@@ -95,8 +98,8 @@ export function getPortalKarkuns(portalId, params) {
       pipeline.push({
         $match: {
           $or: [
-            { lastTarteebDate: { $exists: false } },
-            { lastTarteebDate: { $lte: moment(date).toDate() } },
+            { 'karkunData.lastTarteebDate': { $exists: false } },
+            { 'karkunData.lastTarteebDate': { $lte: moment(date).toDate() } },
           ],
         },
       });
@@ -106,13 +109,13 @@ export function getPortalKarkuns(portalId, params) {
   if (cityId) {
     pipeline.push({
       $match: {
-        cityId: { $eq: cityId },
+        'karkunData.cityId': { $eq: cityId },
       },
     });
   } else {
     pipeline.push({
       $match: {
-        cityId: { $exists: true },
+        'karkunData.cityId': { $exists: true },
       },
     });
   }
@@ -120,7 +123,7 @@ export function getPortalKarkuns(portalId, params) {
   if (cityMehfilId) {
     pipeline.push({
       $match: {
-        cityMehfilId: { $eq: cityMehfilId },
+        'karkunData.cityMehfilId': { $eq: cityMehfilId },
       },
     });
   }
@@ -157,11 +160,14 @@ export function getPortalKarkuns(portalId, params) {
     { $limit: nPageSize },
   ]);
 
-  const karkuns = Karkuns.aggregate(resultsPipeline).toArray();
-  const totalResults = Karkuns.aggregate(countingPipeline).toArray();
+  const people = People.aggregate(resultsPipeline).toArray();
+  const totalResults = People.aggregate(countingPipeline).toArray();
 
-  return Promise.all([karkuns, totalResults]).then(results => ({
-    karkuns: results[0],
-    totalResults: get(results[1], ['0', 'total'], 0),
-  }));
+  return Promise.all([people, totalResults]).then(results => {
+    const karkuns = results[0].map(person => People.personToKarkun(person));
+    return {
+      karkuns,
+      totalResults: get(results[1], ['0', 'total'], 0),
+    };
+  });
 }

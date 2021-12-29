@@ -1,6 +1,6 @@
 import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -12,7 +12,8 @@ export default {
   UserType: {
     karkun: userType => {
       if (!userType.karkunId) return null;
-      return Karkuns.findOne(userType.karkunId);
+      const person = People.findOne(userType.personId);
+      return People.personToKarkun(person);
     },
 
     portal: userType =>
@@ -57,8 +58,8 @@ export default {
       idsToSearch.forEach(_id => {
         const user = Users.findOne(_id);
         if (user.karkunId) {
-          const karkun = Karkuns.findOne(user.karkunId);
-          names.push(karkun.name);
+          const person = People.findOne(user.personId);
+          names.push(person.sharedData.name);
         } else {
           names.push(user.displayName);
         }

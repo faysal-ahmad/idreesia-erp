@@ -1,10 +1,7 @@
 import moment from 'moment';
 
-import {
-  Salaries,
-  Karkuns,
-  Jobs,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Salaries, Jobs } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
   Formats,
@@ -15,10 +12,12 @@ import { getPagedSalariesByKarkun } from './queries';
 
 export default {
   SalaryType: {
-    karkun: salaryType =>
-      Karkuns.findOne({
+    karkun: salaryType => {
+      const person = People.findOne({
         _id: { $eq: salaryType.karkunId },
-      }),
+      });
+      return People.personToKarkun(person);
+    },
     job: salaryType => {
       if (!salaryType.jobId) return null;
       return Jobs.findOne({
@@ -27,9 +26,10 @@ export default {
     },
     approver: salaryType => {
       if (!salaryType.approvedBy) return null;
-      return Karkuns.findOne({
+      const person = People.findOne({
         _id: { $eq: salaryType.approvedBy },
       });
+      return People.personToKarkun(person);
     },
   },
 

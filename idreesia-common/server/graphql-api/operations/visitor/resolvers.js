@@ -1,27 +1,42 @@
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
     pagedOperationsVisitors(obj, { filter }) {
-      return Visitors.searchVisitors(filter);
+      return People.searchPeople(filter).then(result => ({
+        data: result.data.map(person => People.personToVisitor(person)),
+        totalResults: result.totalResults,
+      }));
     },
 
     operationsVisitorById(obj, { _id }) {
-      return Visitors.findOne(_id);
+      const person = People.findOne(_id);
+      return People.personToVisitor(person);
     },
 
     operationsVisitorsByCnic(obj, { cnicNumbers, partialCnicNumber }) {
       if (cnicNumbers.length > 0) {
-        return Visitors.find({
+        const person = People.findOne({
           cnicNumber: { $in: cnicNumbers },
+        });
+        return People.personToVisitor(person);
+      }
+
+      if (cnicNumbers.length > 0) {
+        const people = People.find({
+          'sharedData.cnicNumber': { $in: cnicNumbers },
         }).fetch();
+        return people.map(person => People.personToVisitor(person));
       }
 
       if (partialCnicNumber) {
-        return Visitors.find({
-          cnicNumber: { $regex: new RegExp(`-${partialCnicNumber}-`, 'i') },
+        const people = People.find({
+          'sharedData.cnicNumber': {
+            $regex: new RegExp(`-${partialCnicNumber}-`, 'i'),
+          },
         }).fetch();
+        return people.map(person => People.personToVisitor(person));
       }
 
       return null;
@@ -30,9 +45,10 @@ export default {
 
   Mutation: {
     createOperationsVisitor(obj, values, { user }) {
-      return Visitors.createVisitor(
+      const person = People.visitorToPerson(values);
+      return People.createVisitor(
         {
-          ...values,
+          ...person,
           dataSource: DataSource.OPERATIONS,
         },
         user
@@ -40,15 +56,17 @@ export default {
     },
 
     updateOperationsVisitor(obj, values, { user }) {
-      return Visitors.updateVisitor(values, user);
+      const person = People.visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
 
     deleteOperationsVisitor(obj, { _id }) {
-      return Visitors.remove(_id);
+      return People.remove(_id);
     },
 
     setOperationsVisitorImage(obj, values, { user }) {
-      return Visitors.updateVisitor(values, user);
+      const person = People.visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
   },
 };

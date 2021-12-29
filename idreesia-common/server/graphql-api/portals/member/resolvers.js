@@ -1,4 +1,4 @@
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getPortalMembers } from './queries';
@@ -10,93 +10,35 @@ export default {
     },
 
     portalMemberById(obj, { _id }) {
-      return Visitors.findOne(_id);
+      const person = People.findOne(_id);
+      return People.personToVisitor(person);
     },
   },
 
   Mutation: {
-    createPortalMember(
-      obj,
-      {
-        portalId,
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-        imageData,
-      },
-      { user }
-    ) {
-      return Visitors.createVisitor(
+    createPortalMember(obj, values, { user }) {
+      const { portalId } = values;
+      const personValues = People.visitorToPerson(values);
+      const person = People.createPerson(
         {
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-          imageData,
+          ...personValues,
           dataSource: `${DataSource.PORTAL}-${portalId}`,
         },
         user
       );
+      return People.personToVisitor(person);
     },
 
-    updatePortalMember(
-      obj,
-      {
-        _id,
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
-        contactNumber1,
-        contactNumber2,
-        emailAddress,
-        address,
-        city,
-        country,
-      },
-      { user }
-    ) {
-      return Visitors.updateVisitor(
-        {
-          _id,
-          name,
-          parentName,
-          cnicNumber,
-          ehadDate,
-          birthDate,
-          referenceName,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          address,
-          city,
-          country,
-        },
-        user
-      );
+    updatePortalMember(obj, values, { user }) {
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
 
-    setPortalMemberImage(obj, { _id, imageId }, { user }) {
-      return Visitors.updateVisitor({ _id, imageId }, user);
+    setPortalMemberImage(obj, values, { user }) {
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
   },
 };

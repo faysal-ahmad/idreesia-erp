@@ -1,5 +1,5 @@
 import { Random } from 'meteor/random';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Mehfils,
   MehfilKarkuns,
@@ -7,8 +7,11 @@ import {
 
 export default {
   MehfilKarkunType: {
-    karkun: mehfilKarkunType => Karkuns.findOne(mehfilKarkunType.karkunId),
     mehfil: mehfilKarkunType => Mehfils.findOne(mehfilKarkunType.mehfilId),
+    karkun: mehfilKarkunType => {
+      const person = People.findOne(mehfilKarkunType.karkunId);
+      return People.personToKarkun(person);
+    },
   },
 
   Query: {

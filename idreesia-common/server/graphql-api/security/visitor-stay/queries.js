@@ -2,10 +2,8 @@ import { parse } from 'query-string';
 import moment from 'moment';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  Visitors,
-  VisitorStays,
-} from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
   DEFAULT_PAGE_INDEX,
@@ -35,7 +33,7 @@ async function getVisitorIdsByNameSearch(name) {
     { $limit: 50 },
   ];
 
-  const visitors = await Visitors.aggregate(pipeline).toArray();
+  const visitors = await People.aggregate(pipeline).toArray();
   return visitors.map(({ _id }) => _id);
 }
 
@@ -104,7 +102,7 @@ export async function getVisitorStays(queryString) {
 
   pipeline.push({
     $lookup: {
-      from: Visitors._name,
+      from: People._name,
       localField: 'visitorId',
       foreignField: '_id',
       as: 'visitor',

@@ -1,267 +1,75 @@
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getPortalKarkuns } from './queries';
 
 export default {
   Query: {
-    portalKarkunById(obj, { portalId, _id }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_KARKUNS,
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        return null;
-      }
-
-      return Karkuns.findOne(_id);
+    portalKarkunById(obj, { _id }) {
+      const person = People.findOne(_id);
+      return People.personToKarkun(person);
     },
 
-    pagedPortalKarkuns(obj, { portalId, filter }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_KARKUNS,
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        return {
-          karkuns: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedPortalKarkuns(obj, { portalId, filter }) {
       return getPortalKarkuns(portalId, filter);
     },
 
-    findPortalKarkunByCnicOrContactNumber(
-      obj,
-      { portalId, cnicNumber, contactNumber },
-      { user }
-    ) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_KARKUNS,
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        return null;
-      }
-
-      let karkun = null;
+    findPortalKarkunByCnicOrContactNumber(obj, { cnicNumber, contactNumber }) {
+      let person = null;
 
       if (cnicNumber) {
-        karkun = Karkuns.findOne({
-          cnicNumber: { $eq: cnicNumber },
+        person = People.findOne({
+          'sharedData.cnicNumber': { $eq: cnicNumber },
         });
       }
 
-      if (karkun) return karkun;
+      if (person) return People.personToKarkun(person);
 
       if (contactNumber) {
-        karkun = Karkuns.findOne({
+        person = People.findOne({
           $or: [
-            { contactNumber1: contactNumber },
-            { contactNumber2: contactNumber },
+            { 'sharedData.contactNumber1': contactNumber },
+            { 'sharedData.contactNumber2': contactNumber },
           ],
         });
       }
 
-      return karkun;
+      if (person) return People.personToKarkun(person);
+      return null;
     },
   },
 
   Mutation: {
-    createPortalKarkun(obj, { portalId, memberId, cityId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in this Mehfil Portal.'
-        );
-      }
-
-      const member = Visitors.findOne(memberId);
-
-      if (member.cnicNumber) {
-        const existingKarkun = Karkuns.findOne({
-          cnicNumber: { $eq: member.cnicNumber },
-        });
-        if (existingKarkun) {
-          throw new Error(
-            `This CNIC number is already set for ${existingKarkun.name}.`
-          );
-        }
-      }
-
-      const date = new Date();
-      let updateImageId = null;
-      // If an imageId is passed when creating a karkun, then clone that image
-      // and use the id of the newly cloned image as imageId for this karkun
-      if (member.imageId) {
-        const image = Attachments.findOne(member.imageId);
-        updateImageId = Attachments.insert({
-          name: image.name,
-          description: image.description,
-          mimeType: image.mimeType,
-          data: image.data,
-          createdAt: date,
-          createdBy: user._id,
-          updatedAt: date,
-          updatedBy: user._id,
-        });
-      }
-
-      const karkun = Karkuns.createKarkun(
+    createPortalKarkun(obj, values, { user }) {
+      const { portalId } = values;
+      const personValues = People.visitorToPerson(values);
+      const person = People.createPerson(
         {
-          name: member.name,
-          parentName: member.parentName,
-          cnicNumber: member.cnicNumber,
-          contactNumber1: member.contactNumber1,
-          contactNumber2: member.contactNumber2,
-          cityId,
-          ehadDate: member.ehadDate,
-          birthDate: member.birthDate,
-          referenceName: member.referenceName,
-          imageId: updateImageId,
+          ...personValues,
+          dataSource: `${DataSource.PORTAL}-${portalId}`,
         },
         user
       );
 
-      Visitors.update(memberId, {
-        $set: {
-          karkunId: karkun._id,
-        },
-      });
-
-      return karkun;
-    },
-
-    linkPortalKarkun(obj, { portalId, memberId, karkunId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in this Mehfil Portal.'
-        );
-      }
-
-      // Before linking this karkun to the member, make sure that this karkun
-      // is not already linked to another member.
-      const karkunMember = Visitors.findOne({ karkunId });
-      if (karkunMember) {
-        throw new Error(
-          'This Karkun is already linked to another Member in the system.'
-        );
-      }
-
-      Visitors.update(memberId, {
-        $set: {
-          karkunId,
-        },
-      });
-
-      return Karkuns.findOne(karkunId);
+      return People.personToKarkun(person);
     },
 
     updatePortalKarkun(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      const { portalId } = values;
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in this Mehfil Portal.'
-        );
-      }
-
-      return Karkuns.updateKarkun(values, user);
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
-    setPortalKarkunWazaifAndRaabta(
-      obj,
-      { portalId, _id, lastTarteebDate, mehfilRaabta, msRaabta },
-      { user }
-    ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in this Mehfil Portal.'
-        );
-      }
-
-      return Karkuns.updateKarkun(
-        { _id, lastTarteebDate, mehfilRaabta, msRaabta },
-        user
-      );
+    setPortalKarkunWazaifAndRaabta(obj, values, { user }) {
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
 
-    setPortalKarkunProfileImage(obj, { portalId, _id, imageId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Karkuns in this Mehfil Portal.'
-        );
-      }
-
-      // If the user already has another image attached, then remove that attachment
-      // since it will now become orphaned.
-      const existingKarkun = Karkuns.findOne(_id);
-      if (existingKarkun.imageId) {
-        Attachments.remove(existingKarkun.imageId);
-      }
-
-      return Karkuns.updateKarkun({ _id, imageId }, user);
+    setPortalKarkunProfileImage(obj, values, { user }) {
+      const personValues = People.karkunToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToKarkun(person);
     },
   },
 };

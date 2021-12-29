@@ -33,14 +33,24 @@ type PagedSharedResidenceType {
 
 extend type Query {
   allSharedResidences: [SharedResidenceType]
+  @checkPermissions(permissions: [SECURITY_VIEW_SHARED_RESIDENCES, SECURITY_MANAGE_SHARED_RESIDENCES])
+
   pagedSharedResidences(queryString: String): PagedSharedResidenceType
+  @checkPermissions(permissions: [SECURITY_VIEW_SHARED_RESIDENCES, SECURITY_MANAGE_SHARED_RESIDENCES])
+
   sharedResidenceById(_id: String!): SharedResidenceType
+  @checkPermissions(permissions: [SECURITY_VIEW_SHARED_RESIDENCES, SECURITY_MANAGE_SHARED_RESIDENCES])
 }
 
 extend type Mutation {
   createSharedResidence(name: String!, address: String): SharedResidenceType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
+
   updateSharedResidence(_id: String!, name: String!, address: String): SharedResidenceType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
+
   removeSharedResidence(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
 
   createResident(
     sharedResidenceId: String!
@@ -50,6 +60,7 @@ extend type Mutation {
     fromDate: String
     toDate: String
   ): SharedResidenceResidentType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
 
   updateResident(
     _id: String!
@@ -58,9 +69,14 @@ extend type Mutation {
     fromDate: String
     toDate: String
   ): SharedResidenceResidentType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
 
   removeResident(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
 
   addSharedResidenceAttachment(_id: String!, attachmentId: String!): SharedResidenceType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
+
   removeSharedResidenceAttachment(_id: String!, attachmentId: String!): SharedResidenceType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SHARED_RESIDENCES])
 }

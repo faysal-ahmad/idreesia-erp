@@ -1,7 +1,5 @@
-import {
-  Attendances,
-  Karkuns,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
@@ -46,19 +44,19 @@ export default {
         return [];
       }
 
-      let karkuns = [];
+      let people = [];
       if (!cityMehfilId) {
-        karkuns = Karkuns.find({
-          cityId: { $eq: cityId },
+        people = People.find({
+          'karkunData.cityId': { $eq: cityId },
         }).fetch();
       } else {
-        karkuns = Karkuns.find({
-          cityId: { $eq: cityId },
-          cityMehfilId: { $eq: cityMehfilId },
+        people = People.find({
+          'karkunData.cityId': { $eq: cityId },
+          'karkunData.cityMehfilId': { $eq: cityMehfilId },
         }).fetch();
       }
 
-      const karkunIds = karkuns.map(({ _id }) => _id);
+      const karkunIds = people.map(({ _id }) => _id);
       return Attendances.find({
         month,
         karkunId: { $in: karkunIds },

@@ -3,9 +3,9 @@ import request from 'request';
 import { google } from 'googleapis';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Attendances,
-  Karkuns,
   Jobs,
   Duties,
   DutyShifts,
@@ -21,10 +21,12 @@ import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   AttendanceType: {
-    karkun: attendanceType =>
-      Karkuns.findOne({
+    karkun: attendanceType => {
+      const person = People.findOne({
         _id: { $eq: attendanceType.karkunId },
-      }),
+      });
+      return People.personToKarkun(person);
+    },
     job: attendanceType => {
       if (!attendanceType.jobId) return null;
       return Jobs.findOne({

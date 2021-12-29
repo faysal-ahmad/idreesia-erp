@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import {
   IssuanceForms,
@@ -37,7 +37,7 @@ function buildPipeline(params) {
   if (name) {
     if (name.length === 1) {
       pipeline.push({
-        $match: { name: { $regex: `^${name}` } },
+        $match: { 'sharedData.name': { $regex: `^${name}` } },
       });
     } else {
       pipeline.push({
@@ -48,7 +48,7 @@ function buildPipeline(params) {
 
   pipeline.push({
     $match: {
-      cityId: { $eq: multanCity._id },
+      'karkunData.cityId': { $eq: multanCity._id },
     },
   });
 
@@ -60,12 +60,14 @@ function buildPipeline(params) {
   } else if (showVolunteers === 'true' && showEmployees === 'false') {
     pipeline.push({
       $match: {
+        isKarkun: true,
         isEmployee: { $ne: true },
       },
     });
   } else if (showVolunteers === 'false' && showEmployees === 'true') {
     pipeline.push({
       $match: {
+        isKarkun: false,
         isEmployee: { $eq: true },
       },
     });
@@ -74,7 +76,7 @@ function buildPipeline(params) {
   if (cnicNumber) {
     pipeline.push({
       $match: {
-        cnicNumber: { $eq: cnicNumber },
+        'sharedData.cnicNumber': { $eq: cnicNumber },
       },
     });
   }
@@ -82,7 +84,10 @@ function buildPipeline(params) {
   if (phoneNumber) {
     pipeline.push({
       $match: {
-        $or: [{ contactNumber1: phoneNumber }, { contactNumber2: phoneNumber }],
+        $or: [
+          { 'sharedData.contactNumber1': phoneNumber },
+          { 'sharedData.contactNumber2': phoneNumber },
+        ],
       },
     });
   }
@@ -90,7 +95,7 @@ function buildPipeline(params) {
   if (phoneNumbers) {
     pipeline.push({
       $match: {
-        contactNumber1: { $in: phoneNumbers },
+        'sharedData.contactNumber1': { $in: phoneNumbers },
       },
     });
   }
@@ -99,7 +104,7 @@ function buildPipeline(params) {
     const convertedBloodGroupValue = BloodGroups[bloodGroup];
     pipeline.push({
       $match: {
-        bloodGroup: { $eq: convertedBloodGroupValue },
+        'sharedData.bloodGroup': { $eq: convertedBloodGroupValue },
       },
     });
   }
@@ -108,7 +113,7 @@ function buildPipeline(params) {
     const ehadKarkunValue = ehadKarkun === 'true';
     pipeline.push({
       $match: {
-        ehadKarkun: { $eq: ehadKarkunValue },
+        'karkunData.ehadKarkun': { $eq: ehadKarkunValue },
       },
     });
   }
@@ -123,8 +128,8 @@ function buildPipeline(params) {
       pipeline.push({
         $match: {
           $or: [
-            { lastTarteebDate: { $exists: false } },
-            { lastTarteebDate: { $lte: moment(date).toDate() } },
+            { 'karkunData.lastTarteebDate': { $exists: false } },
+            { 'karkunData.lastTarteebDate': { $lte: moment(date).toDate() } },
           ],
         },
       });
@@ -134,7 +139,7 @@ function buildPipeline(params) {
   if (jobId) {
     pipeline.push({
       $match: {
-        jobId: { $eq: jobId },
+        'karkunData.jobId': { $eq: jobId },
       },
     });
   }
@@ -208,7 +213,8 @@ function buildPipeline(params) {
 
 export function getKarkunsWithoutPagination(params) {
   const pipeline = buildPipeline(params);
-  return Karkuns.aggregate(pipeline).toArray();
+  const people = People.aggregate(pipeline).toArray();
+  return people.map(person => People.personToKarkun(person));
 }
 
 export function getKarkunsByFilter(params) {
@@ -227,13 +233,16 @@ export function getKarkunsByFilter(params) {
     { $limit: nPageSize },
   ]);
 
-  const karkuns = Karkuns.aggregate(resultsPipeline).toArray();
-  const totalResults = Karkuns.aggregate(countingPipeline).toArray();
+  const people = People.aggregate(resultsPipeline).toArray();
+  const totalResults = People.aggregate(countingPipeline).toArray();
 
-  return Promise.all([karkuns, totalResults]).then(results => ({
-    karkuns: results[0],
-    totalResults: get(results[1], ['0', 'total'], 0),
-  }));
+  return Promise.all([people, totalResults]).then(results => {
+    const karkuns = results[0].map(person => People.personToKarkun(person));
+    return {
+      karkuns,
+      totalResults: get(results[1], ['0', 'total'], 0),
+    };
+  });
 }
 
 function getKarkunsByPredefinedFilter(params) {
@@ -308,13 +317,16 @@ function getKarkunsByPredefinedFilter(params) {
     { $limit: nPageSize },
   ]);
 
-  const karkuns = Karkuns.aggregate(resultsPipeline).toArray();
-  const totalResults = Karkuns.aggregate(countingPipeline).toArray();
+  const people = People.aggregate(resultsPipeline).toArray();
+  const totalResults = People.aggregate(countingPipeline).toArray();
 
-  return Promise.all([karkuns, totalResults]).then(results => ({
-    karkuns: results[0],
-    totalResults: get(results[1], ['0', 'total'], 0),
-  }));
+  return Promise.all([people, totalResults]).then(results => {
+    const karkuns = results[0].map(person => People.personToKarkun(person));
+    return {
+      karkuns,
+      totalResults: get(results[1], ['0', 'total'], 0),
+    };
+  });
 }
 
 export function getKarkuns(params) {

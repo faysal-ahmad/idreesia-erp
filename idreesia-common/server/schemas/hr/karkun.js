@@ -3,11 +3,6 @@ import SimpleSchema from 'simpl-schema';
 import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
-  // Points to login account if one exists for this karkun
-  userId: {
-    type: String,
-    optional: true,
-  },
   name: {
     type: String,
   },

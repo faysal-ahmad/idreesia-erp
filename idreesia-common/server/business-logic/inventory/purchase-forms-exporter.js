@@ -1,7 +1,7 @@
 import moment from 'moment';
 import XLSX from 'xlsx';
 
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Locations,
   PurchaseForms,
@@ -19,8 +19,8 @@ export function exportPurchaseForms(purchaseFormIdsString) {
       'DD MMM, YYYY'
     );
 
-    const karkun = Karkuns.findOne(purchaseForm.purchasedBy);
-    const purchasedBy = karkun.name;
+    const person = People.findOne(purchaseForm.purchasedBy);
+    const purchasedBy = person.sharedData.name;
 
     let locationName = '';
     if (purchaseForm.locationId) {

@@ -1,11 +1,11 @@
 import {
-  Visitors,
   SharedResidences,
   SharedResidenceResidents,
 } from 'meteor/idreesia-common/server/collections/security';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import {
+  Attachments,
+  People,
+} from 'meteor/idreesia-common/server/collections/common';
 
 import { getSharedResidences } from './queries';
 
@@ -30,8 +30,10 @@ export default {
   },
 
   SharedResidenceResidentType: {
-    resident: sharedResidenceResidentType =>
-      Visitors.findOne(sharedResidenceResidentType.residentId),
+    resident: sharedResidenceResidentType => {
+      const person = People.findOne(sharedResidenceResidentType.residentId);
+      return People.personToVisitor(person);
+    },
   },
 
   Query: {
@@ -39,48 +41,17 @@ export default {
       return SharedResidences.find({}).fetch();
     },
 
-    pagedSharedResidences(obj, { queryString }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_SHARED_RESIDENCES,
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        return {
-          totalResults: 0,
-          data: [],
-        };
-      }
-
+    pagedSharedResidences(obj, { queryString }) {
       return getSharedResidences(queryString);
     },
 
-    sharedResidenceById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_VIEW_SHARED_RESIDENCES,
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        return null;
-      }
-
+    sharedResidenceById(obj, { _id }) {
       return SharedResidences.findOne(_id);
     },
   },
 
   Mutation: {
     createSharedResidence(obj, { name, address }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
       const date = new Date();
       const sharedResidenceId = SharedResidences.insert({
         name,
@@ -95,16 +66,6 @@ export default {
     },
 
     updateSharedResidence(obj, { _id, name, address }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
       const date = new Date();
       SharedResidences.update(_id, {
         $set: {
@@ -118,18 +79,8 @@ export default {
       return SharedResidences.findOne(_id);
     },
 
-    removeSharedResidence(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
-      const residentsCount = Visitors.find({
+    removeSharedResidence(obj, { _id }) {
+      const residentsCount = SharedResidenceResidents.find({
         sharedResidenceId: { $eq: _id },
       }).count();
 
@@ -147,16 +98,6 @@ export default {
       { sharedResidenceId, residentId, isOwner, roomNumber, fromDate, toDate },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
       const date = new Date();
       const sharedResidenceResidentId = SharedResidenceResidents.insert({
         sharedResidenceId,
@@ -179,16 +120,6 @@ export default {
       { _id, isOwner, roomNumber, fromDate, toDate },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
       const date = new Date();
       SharedResidenceResidents.update(_id, {
         $set: {
@@ -204,31 +135,11 @@ export default {
       return SharedResidenceResidents.findOne(_id);
     },
 
-    removeResident(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
+    removeResident(obj, { _id }) {
       return SharedResidenceResidents.remove(_id);
     },
 
     addSharedResidenceAttachment(obj, { _id, attachmentId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
       const date = new Date();
       SharedResidences.update(_id, {
         $addToSet: {
@@ -244,16 +155,6 @@ export default {
     },
 
     removeSharedResidenceAttachment(obj, { _id, attachmentId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Shared Residences in the System.'
-        );
-      }
-
       const date = new Date();
       SharedResidences.update(_id, {
         $pull: {

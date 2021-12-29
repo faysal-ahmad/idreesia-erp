@@ -1,13 +1,13 @@
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 
 // We want to ensure that the karkun belongs to a city that
 // is contained in the portal.
 export function isKarkunInPortal(karkunId, portalId) {
-  const karkun = Karkuns.findOne(karkunId);
+  const person = People.findOne(karkunId);
   const portal = Portals.findOne(portalId);
 
-  const karkunCityId = karkun.cityId;
+  const karkunCityId = person.karkunData?.cityId;
   const portalCities = portal.cityIds || [];
 
   if (portalCities.indexOf(karkunCityId) === -1) return false;
@@ -15,10 +15,9 @@ export function isKarkunInPortal(karkunId, portalId) {
 }
 
 export function isKarkunSubscribed(karkunId) {
-  const karkun = Karkuns.findOne(karkunId);
-  if (karkun.contactNumber1Subscribed || karkun.contactNumber2Subscribed) {
-    return true;
-  }
-
-  return true;
+  const person = People.findOne(karkunId);
+  return (
+    person.sharedData.contactNumber1Subscribed ||
+    person.sharedData.contactNumber2Subscribed
+  );
 }

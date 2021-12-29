@@ -1,6 +1,9 @@
 extend type Query {
   outstationKarkunById(_id: String!): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_VIEW_KARKUNS, OUTSTATION_MANAGE_KARKUNS])
+
   pagedOutstationKarkuns(filter: KarkunFilter): PagedKarkunType
+  @checkPermissions(permissions: [OUTSTATION_VIEW_KARKUNS, OUTSTATION_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
@@ -19,6 +22,7 @@ extend type Mutation {
     msRaabta: String
     msLastVisitDate: String
   ): String
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 
   updateOutstationKarkun(
     _id: String!
@@ -41,13 +45,16 @@ extend type Mutation {
     ehadKarkun: Boolean
     ehadPermissionDate: String
   ): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 
   deleteOutstationKarkun(_id: String!): Int
+  @checkPermissions(permissions: [OUTSTATION_DELETE_DATA])
 
   setOutstationKarkunEhadDuty(
     _id: String!
     ehadKarkun: Boolean!
   ): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 
   setOutstationKarkunWazaifAndRaabta(
     _id: String!
@@ -56,6 +63,8 @@ extend type Mutation {
     msRaabta: String
     msLastVisitDate: String
   ): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 
   setOutstationKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 }

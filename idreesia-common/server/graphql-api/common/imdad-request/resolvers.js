@@ -1,5 +1,7 @@
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  Attachments,
+  People,
+} from 'meteor/idreesia-common/server/collections/common';
 
 export default {
   ImdadRequestType: {
@@ -11,6 +13,6 @@ export default {
 
       return [];
     },
-    visitor: imdadRequestType => Visitors.findOne(imdadRequestType.visitorId),
+    visitor: imdadRequestType => People.findOne(imdadRequestType.visitorId),
   },
 };

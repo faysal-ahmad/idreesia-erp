@@ -1,6 +1,9 @@
 extend type Query {
-  outstationMemberById(_id: String!): VisitorType
   pagedOutstationMembers(filter: VisitorFilter): PagedVisitorType
+  @checkPermissions(permissions: [OUTSTATION_VIEW_MEMBERS, OUTSTATION_MANAGE_MEMBERS])
+
+  outstationMemberById(_id: String!): VisitorType
+  @checkPermissions(permissions: [OUTSTATION_VIEW_MEMBERS, OUTSTATION_MANAGE_MEMBERS])
 }
 
 extend type Mutation {
@@ -14,6 +17,7 @@ extend type Mutation {
     birthDate: String
     referenceName: String
   ): String
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_MEMBERS])
 
   createOutstationMember(
     name: String!
@@ -32,6 +36,7 @@ extend type Mutation {
     meansOfEarning: String
     imageData: String
   ): VisitorType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_MEMBERS])
 
   updateOutstationMember(
     _id: String!
@@ -45,12 +50,16 @@ extend type Mutation {
     contactNumber2: String
     city: String
     country: String
-  currentAddress: String
-  permanentAddress: String
-  educationalQualification: String
-  meansOfEarning: String
+    currentAddress: String
+    permanentAddress: String
+    educationalQualification: String
+    meansOfEarning: String
   ): VisitorType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_MEMBERS])
 
   deleteOutstationMember(_id: String!): Int
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_MEMBERS])
+
   setOutstationMemberImage(_id: String!, imageId: String!): VisitorType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_MEMBERS])
 }

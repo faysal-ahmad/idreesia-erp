@@ -4,6 +4,10 @@ extend type Mutation {
     karkunId: String!
     dutyId: String!
   ): KarkunDutyType
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
+  @checkInstanceAccess(instanceIdArgName: "portalId")
 
   removePortalKarkunDuty(portalId: String!, _id: String!): Int
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
+  @checkInstanceAccess(instanceIdArgName: "portalId")
 }

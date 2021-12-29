@@ -1,4 +1,4 @@
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   StockAdjustments,
   StockItems,
@@ -19,23 +19,30 @@ export default {
       StockItems.findOne({
         _id: { $eq: stockAdjustment.stockItemId },
       }),
-    refAdjustedBy: stockAdjustment =>
-      Karkuns.findOne({
+    refAdjustedBy: stockAdjustment => {
+      const person = People.findOne({
         _id: { $eq: stockAdjustment.adjustedBy },
-      }),
-    refCreatedBy: stockAdjustment =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refCreatedBy: stockAdjustment => {
+      const person = People.findOne({
         _id: { $eq: stockAdjustment.createdBy },
-      }),
-    refUpdatedBy: stockAdjustment =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refUpdatedBy: stockAdjustment => {
+      const person = People.findOne({
         _id: { $eq: stockAdjustment.updatedBy },
-      }),
+      });
+      return People.personToKarkun(person);
+    },
     refApprovedBy: stockAdjustment => {
-      if (stockAdjustment.approvedBy) return null;
-      return Karkuns.findOne({
+      if (!stockAdjustment.approvedBy) return null;
+      const person = People.findOne({
         _id: { $eq: stockAdjustment.approvedBy },
       });
+      return People.personToKarkun(person);
     },
   },
   Query: {

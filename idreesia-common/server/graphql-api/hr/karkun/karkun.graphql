@@ -1,7 +1,12 @@
 extend type Query {
   hrKarkunById(_id: String!): KarkunType
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
   hrKarkunsById(_ids: String!): [KarkunType]
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES], dataFieldName: "karkuns")
 }
 
 extend type Mutation {
@@ -23,6 +28,7 @@ extend type Mutation {
     birthDate: String
     referenceName: String
   ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   updateHrKarkun(
     _id: String!
@@ -44,8 +50,10 @@ extend type Mutation {
     deathDate: String
     referenceName: String
   ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
+  @checkPermissions(permissions: [HR_DELETE_DATA])
 
   setHrKarkunWazaifAndRaabta(
     _id: String!
@@ -53,6 +61,7 @@ extend type Mutation {
     mehfilRaabta: String
     msRaabta: String
   ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   setHrKarkunEmploymentInfo(
     _id: String!
@@ -61,8 +70,14 @@ extend type Mutation {
     employmentStartDate: String
     employmentEndDate: String
   ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   setHrKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
   addHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
   removeHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }

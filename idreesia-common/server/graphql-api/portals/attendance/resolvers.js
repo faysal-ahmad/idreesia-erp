@@ -1,14 +1,9 @@
 import moment from 'moment';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  Attendances,
-  Karkuns,
-} from 'meteor/idreesia-common/server/collections/hr';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
+import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
   Formats,
   Permissions as PermissionConstants,
@@ -18,73 +13,30 @@ import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   Query: {
-    portalAttendanceById(obj, { portalId, _id }, { user }) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_KARKUNS,
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-          PermissionConstants.PORTALS_DELETE_DATA,
-        ])
-      ) {
-        return null;
-      }
-
+    portalAttendanceById(obj, { _id }) {
       return Attendances.findOne(_id);
     },
 
-    pagedPortalAttendanceByKarkun(
-      obj,
-      { portalId, karkunId, queryString },
-      { user }
-    ) {
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_KARKUNS,
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-          PermissionConstants.PORTALS_DELETE_DATA,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
+    pagedPortalAttendanceByKarkun(obj, { karkunId, queryString }) {
       return getPagedAttendanceByKarkun(karkunId, queryString);
     },
 
-    portalAttendanceByMonth(
-      obj,
-      { portalId, month, cityId, cityMehfilId },
-      { user }
-    ) {
+    portalAttendanceByMonth(obj, { month, cityId, cityMehfilId }) {
       if (!cityId) return [];
 
-      if (
-        hasInstanceAccess(user._id, portalId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_VIEW_KARKUNS,
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-          PermissionConstants.PORTALS_DELETE_DATA,
-        ])
-      ) {
-        return [];
-      }
-
-      let karkuns = [];
+      let people = [];
       if (!cityMehfilId) {
-        karkuns = Karkuns.find({
-          cityId: { $eq: cityId },
+        people = People.find({
+          'karkunData.cityId': { $eq: cityId },
         }).fetch();
       } else {
-        karkuns = Karkuns.find({
-          cityId: { $eq: cityId },
-          cityMehfilId: { $eq: cityMehfilId },
+        people = People.find({
+          'karkunData.cityId': { $eq: cityId },
+          'karkunData.cityMehfilId': { $eq: cityMehfilId },
         }).fetch();
       }
 
-      const karkunIds = karkuns.map(({ _id }) => _id);
+      const karkunIds = people.map(({ _id }) => _id);
       return Attendances.find({
         month,
         karkunId: { $in: karkunIds },
@@ -94,30 +46,12 @@ export default {
 
   Mutation: {
     createPortalAttendances(obj, { portalId, month }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-          PermissionConstants.PORTALS_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Attendances in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Attendances in this Mehfil Portal.'
-        );
-      }
-
       return createMonthlyAttendance(portalId, month, user);
     },
 
     updatePortalAttendance(
       obj,
       {
-        portalId,
         _id,
         attendanceDetails,
         presentCount,
@@ -127,23 +61,6 @@ export default {
       },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-          PermissionConstants.PORTALS_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Attendances in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to manage Attendances in this Mehfil Portal.'
-        );
-      }
-
       const date = new Date();
       Attendances.update(_id, {
         $set: {
@@ -160,7 +77,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    deletePortalAttendances(obj, { portalId, month, ids }, { user }) {
+    deletePortalAttendances(obj, { month, ids }, { user }) {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(`01-${month}`, Formats.DATE_FORMAT);
 
@@ -170,23 +87,6 @@ export default {
       ) {
         throw new Error(
           'You do not have permission to remove Attendances for past months in the System.'
-        );
-      }
-
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.PORTALS_MANAGE_KARKUNS,
-          PermissionConstants.PORTALS_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to remove Attendances in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to remove Attendances in this Mehfil Portal.'
         );
       }
 
@@ -195,11 +95,7 @@ export default {
       });
     },
 
-    deleteAllPortalAttendances(
-      obj,
-      { portalId, month, cityId, cityMehfilId },
-      { user }
-    ) {
+    deleteAllPortalAttendances(obj, { month, cityId, cityMehfilId }, { user }) {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(`01-${month}`, Formats.DATE_FORMAT);
 
@@ -212,33 +108,19 @@ export default {
         );
       }
 
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.PORTALS_DELETE_DATA])
-      ) {
-        throw new Error(
-          'You do not have permission to remove Attendances in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user._id, portalId) === false) {
-        throw new Error(
-          'You do not have permission to remove Attendances in this Mehfil Portal.'
-        );
-      }
-
-      let karkuns = [];
+      let people = [];
       if (!cityMehfilId) {
-        karkuns = Karkuns.find({
-          cityId: { $eq: cityId },
+        people = People.find({
+          'karkunData.cityId': { $eq: cityId },
         }).fetch();
       } else {
-        karkuns = Karkuns.find({
-          cityId: { $eq: cityId },
-          cityMehfilId: { $eq: cityMehfilId },
+        people = People.find({
+          'karkunData.cityId': { $eq: cityId },
+          'karkunData.cityMehfilId': { $eq: cityMehfilId },
         }).fetch();
       }
 
-      const karkunIds = karkuns.map(({ _id }) => _id);
+      const karkunIds = people.map(({ _id }) => _id);
       return Attendances.remove({
         month,
         karkunId: { $in: karkunIds },

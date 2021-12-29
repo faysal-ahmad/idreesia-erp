@@ -3,8 +3,7 @@ import {
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -12,13 +11,15 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 export default {
   CityType: {
     karkunCount: cityType =>
-      Karkuns.find({
-        cityId: cityType._id,
+      People.find({
+        isKarkun: true,
+        'karkunData.cityId': cityType._id,
       }).count(),
 
     memberCount: cityType =>
-      Visitors.find({
-        city: cityType.name,
+      People.find({
+        isKarkun: false,
+        'visitorsData.city': cityType.name,
       }).count(),
 
     mehfils: cityType =>

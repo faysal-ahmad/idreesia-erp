@@ -1,4 +1,4 @@
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Locations,
   IssuanceForms,
@@ -25,29 +25,36 @@ export default {
       }
       return null;
     },
-    refIssuedBy: issuanceForm =>
-      Karkuns.findOne({
+    refIssuedBy: issuanceForm => {
+      const person = People.findOne({
         _id: { $eq: issuanceForm.issuedBy },
-      }),
-    refIssuedTo: issuanceForm =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refIssuedTo: issuanceForm => {
+      const person = People.findOne({
         _id: { $eq: issuanceForm.issuedTo },
-      }),
-    refCreatedBy: issuanceForm =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refCreatedBy: issuanceForm => {
+      const person = People.findOne({
         _id: { $eq: issuanceForm.createdBy },
-      }),
-    refUpdatedBy: issuanceForm =>
-      Karkuns.findOne({
+      });
+      return People.personToKarkun(person);
+    },
+    refUpdatedBy: issuanceForm => {
+      const person = People.findOne({
         _id: { $eq: issuanceForm.updatedBy },
-      }),
+      });
+      return People.personToKarkun(person);
+    },
     refApprovedBy: issuanceForm => {
-      if (issuanceForm.approvedBy) {
-        return Karkuns.findOne({
-          _id: { $eq: issuanceForm.approvedBy },
-        });
-      }
-      return null;
+      if (!issuanceForm.approvedBy) return null;
+      const person = People.findOne({
+        _id: { $eq: issuanceForm.approvedBy },
+      });
+      return People.personToKarkun(person);
     },
   },
   Query: {

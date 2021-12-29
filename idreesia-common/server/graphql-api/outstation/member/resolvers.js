@@ -1,38 +1,19 @@
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedOutstationMembers(obj, { filter }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_VIEW_MEMBERS,
-          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
-      return Visitors.searchVisitors(filter);
+    pagedOutstationMembers(obj, { filter }) {
+      return People.searchPeople(filter).then(result => ({
+        data: result.data.map(person => People.personToVisitor(person)),
+        totalResults: result.totalResults,
+      }));
     },
 
-    outstationMemberById(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_VIEW_MEMBERS,
-          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        ])
-      ) {
-        return null;
-      }
-
-      return Visitors.findOne(_id);
+    outstationMemberById(obj, { _id }) {
+      const person = People.findOne(_id);
+      return People.personToVisitor(person);
     },
   },
 
@@ -51,41 +32,29 @@ export default {
       },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
       // Check if we already have an existing visitor coresponding to these values
       // Create a new visitor corresponding to this member if one is not found
-      const existingVisitor = Visitors.findByCnicOrContactNumber(
+      const existingPerson = People.findByCnicOrContactNumber(
         cnicNumber,
         contactNumber1
       );
 
-      if (!existingVisitor) {
+      if (!existingPerson) {
         const city = Cities.findOne(cityId);
-        Visitors.createVisitor(
-          {
-            name,
-            parentName,
-            cnicNumber,
-            contactNumber1,
-            city: city.name,
-            country: city.country,
-            ehadDate,
-            birthDate,
-            referenceName,
-            dataSource: DataSource.OUTSTATION,
-          },
-          user
-        );
+        const person = People.visitorToPerson({
+          name,
+          parentName,
+          cnicNumber,
+          contactNumber1,
+          city: city.name,
+          country: city.country,
+          ehadDate,
+          birthDate,
+          referenceName,
+          dataSource: DataSource.OUTSTATION,
+        });
 
+        People.createPerson(person, user);
         return 'New member created.';
       }
 
@@ -93,20 +62,10 @@ export default {
     },
 
     createOutstationMember(obj, values, { user }) {
-      if (
-        user &&
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
-      return Visitors.createVisitor(
+      const person = People.visitorToPerson(values);
+      return People.createVisitor(
         {
-          ...values,
+          ...person,
           dataSource: DataSource.OUTSTATION,
         },
         user
@@ -114,45 +73,17 @@ export default {
     },
 
     updateOutstationMember(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
-      return Visitors.updateVisitor(values, user);
+      const person = People.visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
 
-    deleteOutstationMember(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to delete Members in the System.'
-        );
-      }
-
-      return Visitors.remove(_id);
+    deleteOutstationMember(obj, { _id }) {
+      return People.remove(_id);
     },
 
     setOutstationMemberImage(obj, values, { user }) {
-      if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Members in the System.'
-        );
-      }
-
-      return Visitors.updateVisitor(values, user);
+      const person = People.visitorToPerson(values);
+      return People.updatePerson(person, user);
     },
   },
 };

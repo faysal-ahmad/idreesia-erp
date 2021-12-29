@@ -1,12 +1,13 @@
-import { Jobs, Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Jobs } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   JobType: {
     usedCount: jobType =>
-      Karkuns.find({
-        jobId: { $eq: jobType._id },
+      People.find({
+        'employeeData.jobId': { $eq: jobType._id },
       }).count(),
   },
 

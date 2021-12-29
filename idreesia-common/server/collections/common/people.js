@@ -90,13 +90,68 @@ class People extends AggregatableCollection {
     AuditLogs.createAuditLog(
       {
         entityId: _id,
-        entityType: EntityType.VISITOR,
+        entityType: EntityType.PERSON,
         operationType: OperationType.UPDATE,
         operationBy: user._id,
         operationTime: date,
         auditValues: changedValues,
       },
       existingPerson
+    );
+
+    return this.findOne(_id);
+  }
+
+  addAttachment({ _id, attachmentId }, user) {
+    const date = new Date();
+    this.update(_id, {
+      $addToSet: {
+        'karkunData.attachmentIds': attachmentId,
+      },
+      $set: {
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+    });
+
+    AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityType.PERSON,
+      operationType: OperationType.UPDATE,
+      operationBy: user._id,
+      operationTime: date,
+      auditValues: { attachmentId },
+    });
+
+    return this.findOne(_id);
+  }
+
+  removeAttachment({ _id, attachmentId }, user) {
+    const date = new Date();
+    this.update(_id, {
+      $pull: {
+        'karkunData.attachmentIds': attachmentId,
+      },
+      $set: {
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+    });
+
+    Attachments.removeAttachment(attachmentId);
+
+    AuditLogs.createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityType.PERSON,
+        operationType: OperationType.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: { attachmentId: null },
+      },
+      {
+        attachmentId,
+      }
     );
 
     return this.findOne(_id);
@@ -152,6 +207,9 @@ class People extends AggregatableCollection {
     switch (key) {
       case 'ehadDate':
       case 'birthDate':
+      case 'lastTarteebDate':
+      case 'employmentStartDate':
+      case 'employmentEndDate':
         isChanged = !moment(existingValue).isSame(moment(newValue));
         break;
 
@@ -200,6 +258,7 @@ class People extends AggregatableCollection {
       cnicNumber,
       phoneNumber,
       city,
+      cityNames,
       ehadDuration,
       ehadDate,
       additionalInfo,
@@ -246,6 +305,12 @@ class People extends AggregatableCollection {
       pipeline.push({
         $match: {
           'visitorData.city': { $eq: city },
+        },
+      });
+    } else if (cityNames) {
+      pipeline.push({
+        $match: {
+          'visitorData.city': { $in: cityNames },
         },
       });
     }
@@ -406,6 +471,157 @@ class People extends AggregatableCollection {
         `This contact number is already set for ${person.sharedData.name}.`
       );
     }
+  }
+
+  // **************************************************************
+  // Conversion Functions
+  // **************************************************************
+  personToVisitor(person) {
+    return {
+      _id: person._id,
+      dataSource: person.dataSource,
+      createdAt: person.createdAt,
+      createdBy: person.createdBy,
+      updatedAt: person.updatedAt,
+      updatedBy: person.updatedBy,
+
+      name: person.sharedData.name,
+      parentName: person.sharedData.parentName,
+      cnicNumber: person.sharedData.cnicNumber,
+      ehadDate: person.sharedData.ehadDate,
+      birthDate: person.sharedData.birthDate,
+      referenceName: person.sharedData.referenceName,
+      contactNumber1: person.sharedData.contactNumber1,
+      contactNumber2: person.sharedData.contactNumber2,
+      contactNumber1Subscribed: person.sharedData.contactNumber1Subscribed,
+      contactNumber2Subscribed: person.sharedData.contactNumber2Subscribed,
+      currentAddress: person.sharedData.currentAddress,
+      permanentAddress: person.sharedData.permanentAddress,
+      educationalQualification: person.sharedData.educationalQualification,
+      meansOfEarning: person.sharedData.meansOfEarning,
+      imageId: person.sharedData.imageId,
+
+      city: person.visitorData?.city,
+      country: person.visitorData?.country,
+      criminalRecord: person.visitorData?.criminalRecord,
+      otherNotes: person.visitorData?.otherNotes,
+
+      karkunId: person.karkunData?.karkunId,
+    };
+  }
+
+  visitorToPerson(visitor) {
+    return {
+      _id: visitor._id,
+      dataSource: visitor.dataSource,
+      sharedData: {
+        name: visitor.name,
+        parentName: visitor.parentName,
+        cnicNumber: visitor.cnicNumber,
+        ehadDate: visitor.ehadDate,
+        birthDate: visitor.birthDate,
+        referenceName: visitor.referenceName,
+        contactNumber1: visitor.contactNumber1,
+        contactNumber2: visitor.contactNumber2,
+        currentAddress: visitor.currentAddress,
+        permanentAddress: visitor.permanentAddress,
+        educationalQualification: visitor.educationalQualification,
+        meansOfEarning: visitor.meansOfEarning,
+      },
+      visitorData: {
+        city: visitor.city,
+        country: visitor.country,
+      },
+    };
+  }
+
+  personToKarkun(person) {
+    return {
+      _id: person._id,
+      dataSource: person.dataSource,
+      createdAt: person.createdAt,
+      createdBy: person.createdBy,
+      updatedAt: person.updatedAt,
+      updatedBy: person.updatedBy,
+
+      name: person.sharedData.name,
+      parentName: person.sharedData.parentName,
+      cnicNumber: person.sharedData.cnicNumber,
+      ehadDate: person.sharedData.ehadDate,
+      birthDate: person.sharedData.birthDate,
+      deathDate: person.sharedData.deathDate,
+      referenceName: person.sharedData.referenceName,
+      contactNumber1: person.sharedData.contactNumber1,
+      contactNumber2: person.sharedData.contactNumber2,
+      contactNumber1Subscribed: person.sharedData.contactNumber1Subscribed,
+      contactNumber2Subscribed: person.sharedData.contactNumber2Subscribed,
+      emailAddress: person.sharedData.emailAddress,
+      currentAddress: person.sharedData.currentAddress,
+      permanentAddress: person.sharedData.permanentAddress,
+      bloodGroup: person.sharedData.bloodGroup,
+      educationalQualification: person.sharedData.educationalQualification,
+      meansOfEarning: person.sharedData.meansOfEarning,
+      imageId: person.sharedData.imageId,
+
+      cityId: person.karkunData?.cityId,
+      cityMehfilId: person.karkunData?.cityMehfilId,
+      ehadKarkun: person.karkunData?.ehadKarkun,
+      ehadPermissionDate: person.karkunData?.ehadPermissionDate,
+      lastTarteebDate: person.karkunData?.lastTarteebDate,
+      mehfilRaabta: person.karkunData?.mehfilRaabta,
+      msRaabta: person.karkunData?.msRaabta,
+      msLastVisitDate: person.karkunData?.msLastVisitDate,
+      attachmentIds: person.karkunData?.attachmentIds,
+
+      isEmployee: person.isEmployee,
+      jobId: person.employeeData?.jobId,
+      employmentStartDate: person.employeeData?.employmentStartDate,
+      employmentEndDate: person.employeeData?.employmentEndDate,
+    };
+  }
+
+  karkunToPerson(karkun) {
+    return {
+      _id: karkun._id,
+      isKarkun: true,
+      isEmployee: karkun.isEmployee,
+      sharedData: {
+        name: karkun.name,
+        parentName: karkun.parentName,
+        cnicNumber: karkun.cnicNumber,
+        ehadDate: karkun.ehadDate,
+        birthDate: karkun.birthDate,
+        deathDate: karkun.deathDate,
+        referenceName: karkun.referenceName,
+        contactNumber1: karkun.contactNumber1,
+        contactNumber2: karkun.contactNumber2,
+        contactNumber1Subscribed: karkun.contactNumber1Subscribed,
+        contactNumber2Subscribed: karkun.contactNumber2Subscribed,
+        emailAddress: karkun.emailAddress,
+        currentAddress: karkun.currentAddress,
+        permanentAddress: karkun.permanentAddress,
+        bloodGroup: karkun.bloodGroup,
+        educationalQualification: karkun.educationalQualification,
+        meansOfEarning: karkun.meansOfEarning,
+        imageId: karkun.imageId,
+      },
+      karkunData: {
+        cityId: karkun.cityId,
+        cityMehfilId: karkun.cityMehfilId,
+        ehadKarkun: karkun.ehadKarkun,
+        ehadPermissionDate: karkun.ehadPermissionDate,
+        lastTarteebDate: karkun.lastTarteebDate,
+        mehfilRaabta: karkun.mehfilRaabta,
+        msRaabta: karkun.msRaabta,
+        msLastVisitDate: karkun.msLastVisitDate,
+        attachmentIds: karkun.attachmentIds,
+      },
+      employeeData: {
+        jobId: karkun.jobId,
+        employmentStartDate: karkun.employmentStartDate,
+        employmentEndDate: karkun.employmentEndDate,
+      },
+    };
   }
 }
 

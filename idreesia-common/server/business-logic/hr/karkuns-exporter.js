@@ -1,21 +1,20 @@
 import XLSX from 'xlsx';
-
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 export function exportKarkuns(karkunIdsString) {
   const karkunIds = karkunIdsString.split(',');
-  const karkuns = Karkuns.find({
+  const people = People.find({
     _id: { $in: karkunIds },
   }).fetch();
 
   let index = 1;
-  const sheetData = karkuns.map(karkun => ({
+  const sheetData = people.map(person => ({
     'No.': index++,
-    Name: karkun.name,
-    'S/O': karkun.parentName,
-    CNIC: karkun.cnicNumber,
-    'Mobile No.': karkun.contactNumber1,
-    'Blood Group': karkun.bloodGroup,
+    Name: person.sharedData.name,
+    'S/O': person.sharedData.parentName,
+    CNIC: person.sharedData.cnicNumber,
+    'Mobile No.': person.sharedData.contactNumber1,
+    'Blood Group': person.sharedData.bloodGroup,
   }));
 
   const ws = XLSX.utils.json_to_sheet(sheetData);

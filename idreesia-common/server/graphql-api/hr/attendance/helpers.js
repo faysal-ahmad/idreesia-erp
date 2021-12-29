@@ -2,9 +2,9 @@ import { Random } from 'meteor/random';
 import csv from 'csvtojson';
 
 import { round } from 'meteor/idreesia-common/utilities/lodash';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Attendances,
-  Karkuns,
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
 
@@ -49,20 +49,20 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
 
     if (!karkunCnic && !phoneNumber) return;
 
-    let karkun;
+    let person;
     if (karkunCnic) {
-      karkun = Karkuns.findOne({
-        cnicNumber: { $eq: karkunCnic },
+      person = People.findOne({
+        'sharedData.cnicNumber': { $eq: karkunCnic },
       });
     } else {
-      karkun = Karkuns.findOne({
-        contactNumber1: { $eq: phoneNumber },
+      person = People.findOne({
+        'sharedData.contactNumber1': { $eq: phoneNumber },
       });
     }
 
-    if (!karkun) {
+    if (!person) {
       throw new Error(
-        `Could not find a karkun with name '${karkunName}' against CNIC '${karkunCnic}' or contact number '${phoneNumber}'.`
+        `Could not find a person with name '${karkunName}' against CNIC '${karkunCnic}' or contact number '${phoneNumber}'.`
       );
     }
 
@@ -71,13 +71,13 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     let karkunDuty;
     if (shiftId) {
       karkunDuty = KarkunDuties.findOne({
-        karkunId: karkun._id,
+        karkunId: person._id,
         dutyId,
         shiftId,
       });
     } else {
       karkunDuty = KarkunDuties.findOne({
-        karkunId: karkun._id,
+        karkunId: person._id,
         dutyId,
       });
     }
@@ -88,20 +88,20 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     // then update that, otherwise insert a new one.
     let attendance = shiftId
       ? Attendances.findOne({
-          karkunId: karkun._id,
+          karkunId: person._id,
           dutyId,
           shiftId,
           month,
         })
       : Attendances.findOne({
-          karkunId: karkun._id,
+          karkunId: person._id,
           dutyId,
           month,
         });
 
     if (!attendance) {
       const attendanceId = Attendances.insert({
-        karkunId: karkun._id,
+        karkunId: person._id,
         dutyId,
         shiftId,
         month,

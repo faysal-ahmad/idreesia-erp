@@ -15,8 +15,7 @@ export function getPortalMembers(portalId, queryString) {
       cityNames,
     },
     {
-      excludeKarkuns: true,
-      excludeEmployees: true,
+      includeVisitors: true,
     }
   ).then(result => ({
     data: result.data.map(person => People.personToVisitor(person)),

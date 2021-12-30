@@ -16,7 +16,7 @@ export default {
         cityIds: portal.cityIds,
       };
       return People.searchPeople(updatedFilter, {
-        excludeVisitors: true,
+        includeKarkuns: true,
       }).then(result => ({
         karkuns: result.data.map(person => People.personToKarkun(person)),
         totalResults: result.totalResults,

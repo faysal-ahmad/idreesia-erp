@@ -7,8 +7,7 @@ export default {
   Query: {
     pagedSecurityVisitors(obj, { filter }) {
       return People.searchPeople(filter, {
-        excludeKarkuns: true,
-        excludeEmployees: true,
+        includeVisitors: true,
       }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,

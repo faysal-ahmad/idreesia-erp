@@ -12,7 +12,12 @@ import {
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  get,
+  forOwn,
+  keys,
+  isNil,
+} from 'meteor/idreesia-common/utilities/lodash';
 
 class People extends AggregatableCollection {
   constructor(name = 'common-people', options = {}) {
@@ -253,9 +258,15 @@ class People extends AggregatableCollection {
   // **************************************************************
   buildSearchPipline(params = {}, flags = {}) {
     const pipeline = [];
-    const excludeKarkuns = flags.excludeKarkuns || false;
-    const excludeEmployees = flags.excludeEmployees || false;
-    const excludeVisitors = flags.excludeVisitors || false;
+    const includeKarkuns = isNil(flags.includeKarkuns)
+      ? false
+      : flags.includeKarkuns;
+    const includeEmployees = isNil(flags.includeEmployees)
+      ? false
+      : flags.includeEmployees;
+    const includeVisitors = isNil(flags.includeVisitors)
+      ? false
+      : flags.includeVisitors;
     const multanCity = Cities.findOne({ name: 'Multan', country: 'Pakistan' });
 
     const {
@@ -385,11 +396,7 @@ class People extends AggregatableCollection {
     // ************************************
     // Add criteria for visitor data fields
     // ************************************
-    if (excludeVisitors) {
-      pipeline.push({
-        $match: { isVisitor: false },
-      });
-    } else {
+    if (includeVisitors) {
       if (city) {
         pipeline.push({
           $match: {
@@ -440,11 +447,7 @@ class People extends AggregatableCollection {
     // ************************************
     // Add criteria for karkun data fields
     // ************************************
-    if (excludeKarkuns) {
-      pipeline.push({
-        $match: { isKarkun: false },
-      });
-    } else {
+    if (includeKarkuns) {
       if (ehadKarkun) {
         const ehadKarkunValue = ehadKarkun === 'true';
         pipeline.push({
@@ -579,9 +582,30 @@ class People extends AggregatableCollection {
     // ************************************
     // Add criteria for employee data fields
     // ************************************
-    if (excludeEmployees) {
+
+    // ************************************
+    // Add filters against passed flags
+    // ************************************
+    const conditions = [];
+    if (includeKarkuns) {
+      conditions.push({ isKarkun: true });
+    }
+    if (includeEmployees) {
+      conditions.push({ isEmployee: true });
+    }
+    if (includeVisitors) {
+      conditions.push({ isVisitor: true });
+    }
+
+    if (conditions.length === 1) {
       pipeline.push({
-        $match: { isEmployee: false },
+        $match: conditions[0],
+      });
+    } else if (conditions.length > 1) {
+      pipeline.push({
+        $match: {
+          $or: conditions,
+        },
       });
     }
 
@@ -590,10 +614,11 @@ class People extends AggregatableCollection {
 
   /**
    * flags contains the following
-   * - excludeKarkuns - defaults to false
-   * - excludeEmployees - defaults to false
-   * - excludeVisitors - defaults to false
-   * - paginatedResults - - defaults to true
+   * - includeKarkuns - defaults to false
+   * - includeEmployees - defaults to false
+   * - includeVisitors - defaults to false
+   * - includeKarkunsAndEmployees - defaults to false
+   * - paginatedResults - defaults to true
    */
   searchPeople(params = {}, flags = {}) {
     const pipeline = this.buildSearchPipline(params, flags);

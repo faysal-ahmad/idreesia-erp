@@ -41,7 +41,8 @@ export default {
 
     pagedOutstationKarkunMessageRecepients(obj, { recepientFilter }) {
       return People.searchPeople(recepientFilter, {
-        excludeVisitors: true,
+        includeKarkuns: true,
+        includeEmployees: true,
       }).then(result => ({
         karkuns: result.data.map(person => People.personToKarkun(person)),
         totalResults: result.totalResults,
@@ -50,8 +51,7 @@ export default {
 
     pagedVisitorMessageRecepients(obj, { recepientFilter }) {
       return People.searchPeople(recepientFilter, {
-        excludeKarkuns: true,
-        excludeEmployees: true,
+        includeVisitors: true,
       }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,

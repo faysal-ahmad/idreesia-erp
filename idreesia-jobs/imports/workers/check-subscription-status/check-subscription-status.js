@@ -1,18 +1,20 @@
 import request from 'request';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 const regex = RegExp('^[0-9+]{4}-[0-9+]{7}$');
 const baseUri = 'http://sms.aimztra.com:7080/smsprocessor/subs_info.htm';
 const transformPhoneNumber = phoneNumber =>
   `92${phoneNumber.substring(1, 4)}${phoneNumber.substring(5)}`;
 
-export default function checkSubscriptionStatus(karkun) {
+export default function checkSubscriptionStatus(person) {
   const {
-    contactNumber1,
-    contactNumber1Subscribed,
-    contactNumber2,
-    contactNumber2Subscribed,
-  } = karkun;
+    sharedData: {
+      contactNumber1,
+      contactNumber1Subscribed,
+      contactNumber2,
+      contactNumber2Subscribed,
+    },
+  } = person;
 
   const promises = [];
   if (contactNumber1Subscribed !== true && regex.test(contactNumber1)) {
@@ -31,9 +33,9 @@ export default function checkSubscriptionStatus(karkun) {
           resolve(numberSubscribed);
         });
       }).then(subscribed => {
-        Karkuns.update(karkun._id, {
+        People.update(person._id, {
           $set: {
-            contactNumber1Subscribed: subscribed,
+            'sharedData.contactNumber1Subscribed': subscribed,
           },
         });
       })
@@ -56,9 +58,9 @@ export default function checkSubscriptionStatus(karkun) {
           resolve(numberSubscribed);
         });
       }).then(subscribed => {
-        Karkuns.update(karkun._id, {
+        People.update(person._id, {
           $set: {
-            contactNumber2Subscribed: subscribed,
+            'sharedData.contactNumber2Subscribed': subscribed,
           },
         });
       })

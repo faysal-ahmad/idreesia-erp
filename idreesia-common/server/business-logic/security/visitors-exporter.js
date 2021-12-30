@@ -1,27 +1,28 @@
 import XLSX from 'xlsx';
 
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 export function exportVisitors(visitorIdsString) {
-  let visitors;
+  let people;
 
   if (visitorIdsString === 'all') {
-    visitors = Visitors.find().fetch();
+    people = People.find({ isVisitor: true }).fetch();
   } else {
     const visitorIds = visitorIdsString.split(',');
-    visitors = Visitors.find({
+    people = People.find({
       _id: { $in: visitorIds },
+      isVisitor: true,
     }).fetch();
   }
 
   let index = 1;
-  const sheetData = visitors.map(visitor => ({
+  const sheetData = people.map(person => ({
     'No.': index++,
-    Name: visitor.name,
-    'S/O': visitor.parentName,
-    CNIC: visitor.cnicNumber,
-    'Mobile No.': visitor.contactNumber1,
-    'City/Country': `${visitor.city}, ${visitor.country}`,
+    Name: person.sharedData.name,
+    'S/O': person.sharedData.parentName,
+    CNIC: person.sharedData.cnicNumber,
+    'Mobile No.': person.sharedData.contactNumber1,
+    'City/Country': `${person.visitorData?.city}, ${person.visitorData?.country}`,
   }));
 
   const ws = XLSX.utils.json_to_sheet(sheetData);

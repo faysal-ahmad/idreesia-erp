@@ -57,7 +57,7 @@ export default {
       const idsToSearch = compact(ids);
       idsToSearch.forEach(_id => {
         const user = Users.findOne(_id);
-        if (user.karkunId) {
+        if (user.personId) {
           const person = People.findOne(user.personId);
           names.push(person.sharedData.name);
         } else {

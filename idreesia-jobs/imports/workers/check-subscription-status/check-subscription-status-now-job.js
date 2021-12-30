@@ -1,6 +1,6 @@
 /* eslint "no-console": "off" */
 import { JobTypes } from 'meteor/idreesia-common/constants';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 import Jobs from '/imports/collections/jobs';
 import checkSubscriptionStatus from './check-subscription-status';
@@ -8,10 +8,9 @@ import checkSubscriptionStatus from './check-subscription-status';
 export const worker = (job, callback) => {
   console.log(`--> Checking Subscription Status of Karkun`, job.data);
   const { karkunId } = job.data;
+  const person = People.findOne(karkunId);
 
-  const karkun = Karkuns.findOne(karkunId);
-
-  return checkSubscriptionStatus(karkun)
+  return checkSubscriptionStatus(person)
     .then(() => {
       console.log(`--> Finished Checking Subscription Status of Karkun.`);
     })

@@ -1,30 +1,35 @@
 /* eslint "no-console": "off" */
 import { JobTypes } from 'meteor/idreesia-common/constants';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 import Jobs from '/imports/collections/jobs';
 import checkSubscriptionStatus from './check-subscription-status';
 
 export const worker = (job, callback) => {
-  const karkuns = Karkuns.find({
-    $or: [
+  const people = People.find({
+    $and: [
       {
-        contactNumber1: { $exists: true, $ne: null },
-        contactNumber1Subscribed: { $ne: true },
+        $or: [{ isKarkun: true }, { isEmployee: true }],
       },
       {
-        contactNumber2: { $exists: true, $ne: null },
-        contactNumber2Subscribed: { $ne: true },
+        $or: [
+          {
+            'sharedData.contactNumber1': { $exists: true, $ne: null },
+            'sharedData.contactNumber1Subscribed': { $ne: true },
+          },
+          {
+            'sharedData.contactNumber2': { $exists: true, $ne: null },
+            'sharedData.contactNumber2Subscribed': { $ne: true },
+          },
+        ],
       },
     ],
   }).fetch();
-  console.log(
-    `--> Checking Subscription Status for ${karkuns.length} Karkuns.`
-  );
+  console.log(`--> Checking Subscription Status for ${people.length} Karkuns.`);
 
-  return karkuns
+  return people
     .reduce(
-      (p, karkun) => p.then(() => checkSubscriptionStatus(karkun)),
+      (p, person) => p.then(() => checkSubscriptionStatus(person)),
       Promise.resolve()
     )
     .then(() => {

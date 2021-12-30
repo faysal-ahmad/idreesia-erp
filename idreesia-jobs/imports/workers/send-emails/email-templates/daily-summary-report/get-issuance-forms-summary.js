@@ -6,7 +6,7 @@ import {
   IssuanceForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 export default function getIssuanceFormsSummary(physicalStoreId, date) {
   const issuanceForms = IssuanceForms.getUpdatedForDate(physicalStoreId, date);
@@ -15,7 +15,7 @@ export default function getIssuanceFormsSummary(physicalStoreId, date) {
     const location = issuanceForm.locationId
       ? Locations.findOne(issuanceForm.locationId)
       : null;
-    const issuedTo = Karkuns.findOne(issuanceForm.issuedTo);
+    const issuedTo = People.findOne(issuanceForm.issuedTo);
     const formattedDate = moment(issuanceForm.issueDate).format('DD-MM-YYYY');
     const items = map(
       issuanceForm.items,
@@ -31,7 +31,7 @@ export default function getIssuanceFormsSummary(physicalStoreId, date) {
       <tr style="border:2px solid #ecedee">
         <td style="border:2px solid #ecedee; padding:0 15px;">${formattedDate}</td>
         <td style="border:2px solid #ecedee; padding:0 15px;">${
-          issuedTo.name
+          issuedTo.sharedData.name
         }</td>
         <td style="border:2px solid #ecedee; padding:0 15px;">${
           location ? location.name : ''

@@ -1,6 +1,6 @@
 /* eslint "no-console": "off" */
 import { JobTypes } from 'meteor/idreesia-common/constants';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 
 import Jobs from '/imports/collections/jobs';
@@ -11,14 +11,14 @@ export const worker = (job, callback) => {
   const { userId, password } = job.data;
 
   const user = Users.findOneUser(userId);
-  if (!user.karkunId) {
+  if (!user.personId) {
     job.done();
     if (callback) {
       callback();
     }
   }
 
-  const karkun = Karkuns.findOne(user.karkunId);
+  const karkun = People.findOne(user.personId);
   let contactNumber;
   if (karkun.contactNumber1Subscribed) {
     contactNumber = karkun.contactNumber1;

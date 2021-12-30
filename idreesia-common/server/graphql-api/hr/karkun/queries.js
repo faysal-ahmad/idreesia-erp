@@ -61,14 +61,20 @@ function buildPipeline(params) {
     pipeline.push({
       $match: {
         isKarkun: true,
-        isEmployee: { $ne: true },
+        isEmployee: false,
       },
     });
   } else if (showVolunteers === 'false' && showEmployees === 'true') {
     pipeline.push({
       $match: {
         isKarkun: false,
-        isEmployee: { $eq: true },
+        isEmployee: true,
+      },
+    });
+  } else {
+    pipeline.push({
+      $match: {
+        isVisitor: false,
       },
     });
   }

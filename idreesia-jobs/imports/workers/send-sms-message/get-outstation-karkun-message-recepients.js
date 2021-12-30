@@ -1,10 +1,11 @@
-import { getOutstationKarkunsWithoutPagination } from 'meteor/idreesia-common/server/graphql-api/outstation/karkun/queries';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 export default function getOutstationMessageRecepients(recepientFilter) {
-  return getOutstationKarkunsWithoutPagination(recepientFilter).then(
-    karkuns => ({
-      karkuns,
-      visitors: [],
-    })
-  );
+  return People.searchPeople(recepientFilter, {
+    excludeVisitors: true,
+    paginatedResults: false,
+  }).then(people => ({
+    karkuns: people.map(person => People.personToKarkun(person)),
+    visitors: [],
+  }));
 }

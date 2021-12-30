@@ -15,6 +15,10 @@ export default new SimpleSchema({
     type: Boolean,
     optional: false,
   },
+  isVisitor: {
+    type: Boolean,
+    optional: false,
+  },
   userId: {
     type: String,
     optional: true,

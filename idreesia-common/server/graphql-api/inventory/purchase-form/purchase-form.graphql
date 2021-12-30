@@ -14,9 +14,6 @@ type PurchaseForm {
   refLocation: Location
   refReceivedBy: KarkunType
   refPurchasedBy: KarkunType
-  refCreatedBy: KarkunType
-  refUpdatedBy: KarkunType
-  refApprovedBy: KarkunType
   refVendor: Vendor
 
   createdAt: String

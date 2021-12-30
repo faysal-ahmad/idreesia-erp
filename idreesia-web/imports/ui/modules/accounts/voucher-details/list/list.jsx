@@ -29,7 +29,7 @@ class List extends Component {
 
   dateColumn = {
     title: "Date",
-    dataIndex: "refVoucher.voucherDate",
+    dataIndex: ['refVoucher', 'voucherDate'],
     key: "refVoucher.voucherDate",
     render: text => {
       const date = moment(Number(text));
@@ -39,7 +39,7 @@ class List extends Component {
 
   descriptionColumn = {
     title: "Description",
-    dataIndex: "refVoucher.description",
+    dataIndex: ['refVoucher' ,'description'],
     key: "refVoucher.description",
   };
 

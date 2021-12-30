@@ -11,6 +11,7 @@ Migrations.add({
     const peopleCollection = People.rawCollection();
     peopleCollection.createIndex({ isEmployee: 1 }, { background: false });
     peopleCollection.createIndex({ isKarkun: 1 }, { background: false });
+    peopleCollection.createIndex({ isVisitor: 1 }, { background: false });
     peopleCollection.createIndex({ userId: 1 }, { background: false });
     peopleCollection.createIndex({ 'sharedData.name': 'text' });
     peopleCollection.createIndex(
@@ -79,6 +80,7 @@ Migrations.add({
         _id: visitor._id,
         isEmployee: karkun?.isEmployee || false,
         isKarkun: !!karkun,
+        isVisitor: true,
         userId: karkun?.userId || null,
         createdAt: karkun?.createdAt || visitor.createdAt,
         createdBy: karkun?.createdBy || visitor.createdBy,
@@ -96,10 +98,12 @@ Migrations.add({
           contactNumber2: karkun?.contactNumber2 || visitor.contactNumber2,
           contactNumber1Subscribed:
             karkun?.contactNumber1Subscribed ||
-            visitor.contactNumber1Subscribed,
+            visitor.contactNumber1Subscribed ||
+            false,
           contactNumber2Subscribed:
             karkun?.contactNumber2Subscribed ||
-            visitor.contactNumber2Subscribed,
+            visitor.contactNumber2Subscribed ||
+            false,
           emailAddress: karkun?.emailAddress,
           bloodGroup: karkun?.bloodGroup,
           educationalQualification:
@@ -155,6 +159,7 @@ Migrations.add({
           _id: karkun._id,
           isEmployee: karkun.isEmployee || false,
           isKarkun: true,
+          isVisitor: false,
           userId: karkun?.userId || null,
           createdAt: karkun.createdAt,
           createdBy: karkun.createdBy,
@@ -169,8 +174,8 @@ Migrations.add({
             permanentAddress: karkun.permanentAddress,
             contactNumber1: karkun.contactNumber1,
             contactNumber2: karkun.contactNumber2,
-            contactNumber1Subscribed: karkun.contactNumber1Subscribed,
-            contactNumber2Subscribed: karkun.contactNumber2Subscribed,
+            contactNumber1Subscribed: karkun.contactNumber1Subscribed || false,
+            contactNumber2Subscribed: karkun.contactNumber2Subscribed || false,
             emailAddress: karkun.emailAddress,
             bloodGroup: karkun.bloodGroup,
             educationalQualification: karkun.educationalQualification,

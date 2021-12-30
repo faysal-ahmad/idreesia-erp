@@ -39,8 +39,7 @@ import './35-move-wazaif-to-operations';
 import './36-rename-fields-in-visitor';
 import './37-create-mehfil-portals';
 import './38-karkuns-visitors-to-people';
-import './39-create-people-indexes';
-import './40-update-karkun-references';
+import './39-update-karkun-references';
 
 Migrations.config({
   log: true,

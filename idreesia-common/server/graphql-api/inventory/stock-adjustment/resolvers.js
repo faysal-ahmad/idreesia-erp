@@ -25,25 +25,6 @@ export default {
       });
       return People.personToKarkun(person);
     },
-    refCreatedBy: stockAdjustment => {
-      const person = People.findOne({
-        _id: { $eq: stockAdjustment.createdBy },
-      });
-      return People.personToKarkun(person);
-    },
-    refUpdatedBy: stockAdjustment => {
-      const person = People.findOne({
-        _id: { $eq: stockAdjustment.updatedBy },
-      });
-      return People.personToKarkun(person);
-    },
-    refApprovedBy: stockAdjustment => {
-      if (!stockAdjustment.approvedBy) return null;
-      const person = People.findOne({
-        _id: { $eq: stockAdjustment.approvedBy },
-      });
-      return People.personToKarkun(person);
-    },
   },
   Query: {
     stockAdjustmentsByStockItem(

@@ -68,7 +68,7 @@ const columns = [
   },
   {
     title: 'Name',
-    dataIndex: 'refVisitor.name',
+    dataIndex: ['refVisitor', 'name'],
     key: 'refVisitor.name',
     render: (text, record) => (
       <VisitorName

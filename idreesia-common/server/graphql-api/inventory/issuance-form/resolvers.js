@@ -37,25 +37,6 @@ export default {
       });
       return People.personToKarkun(person);
     },
-    refCreatedBy: issuanceForm => {
-      const person = People.findOne({
-        _id: { $eq: issuanceForm.createdBy },
-      });
-      return People.personToKarkun(person);
-    },
-    refUpdatedBy: issuanceForm => {
-      const person = People.findOne({
-        _id: { $eq: issuanceForm.updatedBy },
-      });
-      return People.personToKarkun(person);
-    },
-    refApprovedBy: issuanceForm => {
-      if (!issuanceForm.approvedBy) return null;
-      const person = People.findOne({
-        _id: { $eq: issuanceForm.approvedBy },
-      });
-      return People.personToKarkun(person);
-    },
   },
   Query: {
     issuanceFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {

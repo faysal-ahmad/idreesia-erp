@@ -114,7 +114,7 @@ class List extends Component {
           handleSortChange={this.handleSortChange}
         />
       ),
-      dataIndex: 'refVisitor.name',
+      dataIndex: ['refVisitor', 'name'],
       key: 'refVisitor.name',
       render: (text, record) => (
         <VisitorName

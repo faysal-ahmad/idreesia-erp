@@ -49,25 +49,6 @@ export default {
       });
       return People.personToKarkun(person);
     },
-    refCreatedBy: purchaseForm => {
-      const person = People.findOne({
-        _id: { $eq: purchaseForm.createdBy },
-      });
-      return People.personToKarkun(person);
-    },
-    refUpdatedBy: purchaseForm => {
-      const person = People.findOne({
-        _id: { $eq: purchaseForm.updatedBy },
-      });
-      return People.personToKarkun(person);
-    },
-    refApprovedBy: purchaseForm => {
-      if (!purchaseForm.approvedBy) return null;
-      const person = People.findOne({
-        _id: { $eq: purchaseForm.approvedBy },
-      });
-      return People.personToKarkun(person);
-    },
     refVendor: purchaseForm =>
       Vendors.findOne({
         _id: { $eq: purchaseForm.vendorId },

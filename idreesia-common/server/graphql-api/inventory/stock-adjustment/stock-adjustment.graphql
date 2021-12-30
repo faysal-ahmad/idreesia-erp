@@ -10,9 +10,6 @@ type StockAdjustment {
 
   refStockItem: StockItem
   refAdjustedBy: KarkunType
-  refCreatedBy: KarkunType
-  refUpdatedBy: KarkunType
-  refApprovedBy: KarkunType
 
   createdAt: String
   createdBy: String

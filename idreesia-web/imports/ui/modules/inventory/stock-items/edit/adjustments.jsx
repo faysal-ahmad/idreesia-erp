@@ -41,7 +41,7 @@ class List extends Component {
     },
     {
       title: 'Adjusted By',
-      dataIndex: 'refAdjustedBy.name',
+      dataIndex: ['refAdjustedBy', 'name'],
       key: 'adjustedBy',
     },
     {

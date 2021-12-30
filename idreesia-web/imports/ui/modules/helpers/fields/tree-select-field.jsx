@@ -67,7 +67,7 @@ const TreeSelectField = ({
     return false;
   };
 
-  const treeNodes = this.getTreeNodes(data, null);
+  const treeNodes = getTreeNodes(data, null);
   const rules = required
     ? [
         {

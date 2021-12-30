@@ -81,13 +81,13 @@ export default class ImdadRequestsList extends Component {
   cnicNumberColumn = {
     title: 'CNIC Number',
     key: 'visitor.cnicNumber',
-    dataIndex: 'visitor.cnicNumber',
+    dataIndex: ['visitor', 'cnicNumber'],
   };
 
   mobileNumberColumn = {
     title: 'Mobile No.',
     key: 'visitor.contactNumber1',
-    dataIndex: 'visitor.contactNumber1',
+    dataIndex: ['visitor', 'contactNumber1'],
   };
 
   cityCountryColumn = {

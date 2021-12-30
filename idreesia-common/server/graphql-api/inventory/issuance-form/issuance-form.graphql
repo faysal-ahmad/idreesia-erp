@@ -12,9 +12,6 @@ type IssuanceForm {
   refLocation: Location
   refIssuedBy: KarkunType
   refIssuedTo: KarkunType
-  refCreatedBy: KarkunType
-  refUpdatedBy: KarkunType
-  refApprovedBy: KarkunType
 
   createdAt: String
   createdBy: String

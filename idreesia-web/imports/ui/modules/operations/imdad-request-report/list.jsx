@@ -83,12 +83,12 @@ const List = ({ history, location }) => {
       {
         title: 'CNIC Number',
         key: 'visitor.cnicNumber',
-        dataIndex: 'visitor.cnicNumber',
+        dataIndex: ['visitor', 'cnicNumber'],
       },
       {
         title: 'Mobile No.',
         key: 'visitor.contactNumber1',
-        dataIndex: 'visitor.contactNumber1',
+        dataIndex: ['visitor', 'contactNumber1'],
       },
       {
         title: 'City / Country',

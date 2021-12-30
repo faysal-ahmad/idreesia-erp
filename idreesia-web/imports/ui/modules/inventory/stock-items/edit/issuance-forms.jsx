@@ -31,12 +31,12 @@ class List extends Component {
     },
     {
       title: 'Issued To',
-      dataIndex: 'refIssuedTo.name',
+      dataIndex: ['refIssuedTo', 'name'],
       key: 'refIssuedTo.name',
     },
     {
       title: 'For Location',
-      dataIndex: 'refLocation.name',
+      dataIndex: ['refLocation', 'name'],
       key: 'refLocation.name',
     },
     {

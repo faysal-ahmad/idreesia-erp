@@ -66,12 +66,12 @@ class List extends Component {
     },
     {
       title: 'Purchased By',
-      dataIndex: 'refPurchasedBy.name',
+      dataIndex: ['refPurchasedBy', 'name'],
       key: 'refPurchasedByName',
     },
     {
       title: 'For Location',
-      dataIndex: 'refLocation.name',
+      dataIndex: ['refLocation', 'name'],
       key: 'refLocationName',
     },
     {

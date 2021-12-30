@@ -41,7 +41,7 @@ export class List extends Component {
     const columns = [
       {
         title: 'Name',
-        dataIndex: 'karkun.name',
+        dataIndex: ['karkun', 'name'],
         key: 'karkun.name',
         render: (text, record) => (
           <KarkunName karkun={record.karkun} onKarkunNameClicked={() => {}} />
@@ -49,17 +49,17 @@ export class List extends Component {
       },
       {
         title: 'City',
-        dataIndex: 'karkun.city.name',
+        dataIndex: ['karkun', 'city', 'name'],
         key: 'karkun.city.name',
       },
       {
         title: 'CNIC',
-        dataIndex: 'karkun.cnicNumber',
+        dataIndex: ['karkun', 'cnicNumber'],
         key: 'karkun.cnicNumber',
       },
       {
         title: 'Mobile No.',
-        dataIndex: 'karkun.contactNumber1',
+        dataIndex: ['karkun', 'contactNumber1'],
         key: 'karkun.contactNumber1',
       },
       {

@@ -134,7 +134,7 @@ class List extends Component {
           if (record.verifiedOn) {
             const now = moment();
             const lastVerified = moment(Number(record.verifiedOn));
-            const duration = moment.duration(now.diff(lastVerified)).months();
+            const duration = moment.duration(now.diff(lastVerified)).asMonths();
             tooltip = `Stock level verified on ${lastVerified.format(
               Formats.DATE_FORMAT
             )}`;

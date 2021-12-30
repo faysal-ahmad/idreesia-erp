@@ -16,6 +16,7 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+    return;
   }
 
   const karkun = People.findOne(user.personId);
@@ -31,6 +32,7 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+    return;
   }
 
   const message = `Your password for Idressia ERP has been reset to ${password}`;

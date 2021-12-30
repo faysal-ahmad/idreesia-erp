@@ -16,6 +16,7 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+    return;
   }
 
   const person = People.findOne(user.personId);
@@ -31,6 +32,7 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+    return;
   }
 
   let message;

@@ -10,7 +10,7 @@ import sendSmsMessage from './send-sms-message';
 
 export const worker = (job, callback) => {
   console.log(`--> Sending Login SMS Messages`, job.data);
-  const { userId } = job.data;
+  const { userId, loginTime } = job.data;
 
   const user = Users.findOneUser(userId);
   if (!user.personId) {
@@ -18,13 +18,14 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+    return;
   }
 
   const person = People.findOne(user.personId);
   let contactNumber;
-  if (person.sharedData.contactNumber1Subscribed) {
+  if (person?.sharedData?.contactNumber1Subscribed) {
     contactNumber = person.sharedData.contactNumber1;
-  } else if (person.sharedData.contactNumber2Subscribed) {
+  } else if (person?.sharedData?.contactNumber2Subscribed) {
     contactNumber = person.sharedData.contactNumber2;
   }
 
@@ -33,10 +34,28 @@ export const worker = (job, callback) => {
     if (callback) {
       callback();
     }
+    return;
   }
 
-  const timeStamp = moment().format(Formats.DATE_TIME_FORMAT);
-  const message = `You successfully logged into Idressia ERP at ${timeStamp}`;
+  const mNow = moment();
+  const mLoginTime = moment(loginTime);
+  const duration = moment.duration(mNow.diff(mLoginTime)).asDays();
+
+  if (duration > 2) {
+    console.log(
+      `--> Ignored sending Login SMS message as it is too old.`,
+      job.data
+    );
+    job.done();
+    if (callback) {
+      callback();
+    }
+    return;
+  }
+
+  const message = `You successfully logged into Idressia ERP at ${mLoginTime.format(
+    Formats.DATE_TIME_FORMAT
+  )}`;
   sendSmsMessage(contactNumber, message)
     .then(() => {
       console.log(`--> Finished sending Login SMS Messages`, job.data);

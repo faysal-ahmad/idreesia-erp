@@ -40,7 +40,7 @@ class NewForm extends Component {
       if ((userName && password) || (email && email.includes('@gmail.com'))) {
         createUser({
           variables: {
-            karkunId: karkun ? karkun._id : null,
+            personId: karkun ? karkun._id : null,
             userName,
             password,
             email,

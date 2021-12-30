@@ -67,7 +67,7 @@ class GeneralInfo extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
     if (loading) return null;
 
-    const karkunField = userById.karkunId ? (
+    const karkunField = userById.personId ? (
       <InputTextField
         fieldName="karkunName"
         fieldLabel="Karkun Name"

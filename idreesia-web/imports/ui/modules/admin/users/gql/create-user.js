@@ -6,14 +6,14 @@ const CREATE_USER = gql`
     $password: String
     $email: String
     $displayName: String
-    $karkunId: String
+    $personId: String
   ) {
     createUser(
       userName: $userName
       password: $password
       email: $email
       displayName: $displayName
-      karkunId: $karkunId
+      personId: $personId
     ) {
       _id
     }

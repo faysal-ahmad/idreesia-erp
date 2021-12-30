@@ -20,7 +20,7 @@ const UPDATE_USER = gql`
       email
       displayName
       locked
-      karkunId
+      personId
       karkun {
         _id
         name

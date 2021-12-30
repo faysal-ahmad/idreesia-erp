@@ -9,8 +9,17 @@ export function getPortalMembers(portalId, queryString) {
   const cityNames = cities.map(city => city.name);
 
   const params = parse(queryString);
-  return People.searchPeople({
-    ...params,
-    cityNames,
-  });
+  return People.searchPeople(
+    {
+      ...params,
+      cityNames,
+    },
+    {
+      excludeKarkuns: true,
+      excludeEmployees: true,
+    }
+  ).then(result => ({
+    data: result.data.map(person => People.personToVisitor(person)),
+    totalResults: result.totalResults,
+  }));
 }

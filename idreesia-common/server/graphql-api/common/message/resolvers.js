@@ -1,7 +1,6 @@
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getKarkunsByFilter as getMSKarkuns } from 'meteor/idreesia-common/server/graphql-api/hr/karkun/queries';
-import { getOutstationKarkuns } from 'meteor/idreesia-common/server/graphql-api/outstation/karkun/queries';
 
 export default {
   MessageType: {
@@ -41,11 +40,19 @@ export default {
     },
 
     pagedOutstationKarkunMessageRecepients(obj, { recepientFilter }) {
-      return getOutstationKarkuns(recepientFilter);
+      return People.searchPeople(recepientFilter, {
+        excludeVisitors: true,
+      }).then(result => ({
+        karkuns: result.data.map(person => People.personToKarkun(person)),
+        totalResults: result.totalResults,
+      }));
     },
 
     pagedVisitorMessageRecepients(obj, { recepientFilter }) {
-      return People.searchPeople(recepientFilter).then(result => ({
+      return People.searchPeople(recepientFilter, {
+        excludeKarkuns: true,
+        excludeEmployees: true,
+      }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
       }));

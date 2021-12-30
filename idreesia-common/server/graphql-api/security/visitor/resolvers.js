@@ -6,7 +6,10 @@ import { processCsvData } from './helpers';
 export default {
   Query: {
     pagedSecurityVisitors(obj, { filter }) {
-      return People.searchPeople(filter).then(result => ({
+      return People.searchPeople(filter, {
+        excludeKarkuns: true,
+        excludeEmployees: true,
+      }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
       }));

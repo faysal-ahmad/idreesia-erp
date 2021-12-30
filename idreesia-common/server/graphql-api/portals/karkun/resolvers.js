@@ -1,7 +1,6 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { DataSource } from 'meteor/idreesia-common/constants';
-
-import { getPortalKarkuns } from './queries';
 
 export default {
   Query: {
@@ -11,7 +10,17 @@ export default {
     },
 
     pagedPortalKarkuns(obj, { portalId, filter }) {
-      return getPortalKarkuns(portalId, filter);
+      const portal = Portals.findOne(portalId);
+      const updatedFilter = {
+        ...filter,
+        cityIds: portal.cityIds,
+      };
+      return People.searchPeople(updatedFilter, {
+        excludeVisitors: true,
+      }).then(result => ({
+        karkuns: result.data.map(person => People.personToKarkun(person)),
+        totalResults: result.totalResults,
+      }));
     },
 
     findPortalKarkunByCnicOrContactNumber(obj, { cnicNumber, contactNumber }) {

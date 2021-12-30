@@ -1,16 +1,17 @@
 import moment from 'moment';
-
 import { Formats } from 'meteor/idreesia-common/constants';
+import { BloodGroups } from 'meteor/idreesia-common/constants/hr';
+import {
+  EntityType,
+  OperationType,
+} from 'meteor/idreesia-common/constants/audit';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Person as PersonSchema } from 'meteor/idreesia-common/server/schemas/people';
 import {
   AuditLogs,
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
-import {
-  EntityType,
-  OperationType,
-} from 'meteor/idreesia-common/constants/audit';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
 
 class People extends AggregatableCollection {
@@ -250,35 +251,42 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Query Functions
   // **************************************************************
-  searchPeople(params = {}) {
+  buildSearchPipline(params = {}, flags = {}) {
     const pipeline = [];
+    const excludeKarkuns = flags.excludeKarkuns || false;
+    const excludeEmployees = flags.excludeEmployees || false;
+    const excludeVisitors = flags.excludeVisitors || false;
+    const multanCity = Cities.findOne({ name: 'Multan', country: 'Pakistan' });
 
     const {
       name,
       cnicNumber,
       phoneNumber,
-      city,
-      cityNames,
-      ehadDuration,
+      bloodGroup,
       ehadDate,
-      additionalInfo,
+      ehadDuration,
       dataSource,
       updatedBetween,
-      pageIndex = '0',
-      pageSize = '20',
+      // visitor related fields
+      city,
+      cityNames,
+      additionalInfo,
+      // karkun related fields
+      lastTarteeb,
+      attendance,
+      dutyId,
+      ehadKarkun,
+      cityId,
+      cityIds,
+      cityMehfilId,
     } = params;
 
+    // ************************************
+    // Add criteria for shared data fields
+    // ************************************
     if (name) {
       pipeline.push({
         $match: { $text: { $search: name } },
-      });
-    }
-
-    if (dataSource) {
-      pipeline.push({
-        $match: {
-          dataSource: { $regex: new RegExp(`^${dataSource}`, 'i') },
-        },
       });
     }
 
@@ -301,16 +309,11 @@ class People extends AggregatableCollection {
       });
     }
 
-    if (city) {
+    if (bloodGroup) {
+      const convertedBloodGroupValue = BloodGroups[bloodGroup];
       pipeline.push({
         $match: {
-          'visitorData.city': { $eq: city },
-        },
-      });
-    } else if (cityNames) {
-      pipeline.push({
-        $match: {
-          'visitorData.city': { $in: cityNames },
+          'sharedData.bloodGroup': { $eq: convertedBloodGroupValue },
         },
       });
     }
@@ -344,34 +347,12 @@ class People extends AggregatableCollection {
       }
     }
 
-    if (additionalInfo) {
-      if (additionalInfo === 'has-notes') {
-        pipeline.push({
-          $match: {
-            'visitorData.otherNotes': { $exists: true, $nin: ['', null] },
-          },
-        });
-      } else if (additionalInfo === 'has-criminal-record') {
-        pipeline.push({
-          $match: {
-            'visitorData.criminalRecord': { $exists: true, $nin: ['', null] },
-          },
-        });
-      } else if (additionalInfo === 'has-notes-or-criminal-record') {
-        pipeline.push({
-          $match: {
-            $or: [
-              { 'visitorData.otherNotes': { $exists: true, $nin: ['', null] } },
-              {
-                'visitorData.criminalRecord': {
-                  $exists: true,
-                  $nin: ['', null],
-                },
-              },
-            ],
-          },
-        });
-      }
+    if (dataSource) {
+      pipeline.push({
+        $match: {
+          dataSource: { $regex: new RegExp(`^${dataSource}`, 'i') },
+        },
+      });
     }
 
     if (updatedBetween) {
@@ -401,25 +382,248 @@ class People extends AggregatableCollection {
       }
     }
 
-    const countingPipeline = pipeline.concat({
-      $count: 'total',
-    });
+    // ************************************
+    // Add criteria for visitor data fields
+    // ************************************
+    if (excludeVisitors) {
+      pipeline.push({
+        $match: { isVisitor: false },
+      });
+    } else {
+      if (city) {
+        pipeline.push({
+          $match: {
+            'visitorData.city': { $eq: city },
+          },
+        });
+      } else if (cityNames) {
+        pipeline.push({
+          $match: {
+            'visitorData.city': { $in: cityNames },
+          },
+        });
+      }
 
-    const nPageIndex = parseInt(pageIndex, 10);
-    const nPageSize = parseInt(pageSize, 10);
-    const resultsPipeline = pipeline.concat([
-      { $sort: { 'sharedData.name': 1 } },
-      { $skip: nPageIndex * nPageSize },
-      { $limit: nPageSize },
-    ]);
+      if (additionalInfo) {
+        if (additionalInfo === 'has-notes') {
+          pipeline.push({
+            $match: {
+              'visitorData.otherNotes': { $exists: true, $nin: ['', null] },
+            },
+          });
+        } else if (additionalInfo === 'has-criminal-record') {
+          pipeline.push({
+            $match: {
+              'visitorData.criminalRecord': { $exists: true, $nin: ['', null] },
+            },
+          });
+        } else if (additionalInfo === 'has-notes-or-criminal-record') {
+          pipeline.push({
+            $match: {
+              $or: [
+                {
+                  'visitorData.otherNotes': { $exists: true, $nin: ['', null] },
+                },
+                {
+                  'visitorData.criminalRecord': {
+                    $exists: true,
+                    $nin: ['', null],
+                  },
+                },
+              ],
+            },
+          });
+        }
+      }
+    }
 
-    const people = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    // ************************************
+    // Add criteria for karkun data fields
+    // ************************************
+    if (excludeKarkuns) {
+      pipeline.push({
+        $match: { isKarkun: false },
+      });
+    } else {
+      if (ehadKarkun) {
+        const ehadKarkunValue = ehadKarkun === 'true';
+        pipeline.push({
+          $match: {
+            'karkunData.ehadKarkun': { $eq: ehadKarkunValue },
+          },
+        });
+      }
 
-    return Promise.all([people, totalResults]).then(results => ({
-      data: results[0],
-      totalResults: get(results[1], ['0', 'total'], 0),
-    }));
+      if (lastTarteeb) {
+        const { scale, duration } = JSON.parse(lastTarteeb);
+        if (duration) {
+          const date = moment()
+            .startOf('day')
+            .subtract(duration, scale);
+
+          pipeline.push({
+            $match: {
+              $or: [
+                { 'karkunData.lastTarteebDate': { $exists: false } },
+                {
+                  'karkunData.lastTarteebDate': { $lte: moment(date).toDate() },
+                },
+              ],
+            },
+          });
+        }
+      }
+
+      if (attendance) {
+        const { criteria, percentage } = JSON.parse(attendance);
+        if (percentage) {
+          const month = moment()
+            .subtract(1, 'month')
+            .startOf('month');
+
+          const criteriaCondition =
+            criteria === 'less-than'
+              ? {
+                  $lte: ['$percentage', percentage],
+                }
+              : {
+                  $gte: ['$percentage', percentage],
+                };
+
+          pipeline.push({
+            $lookup: {
+              from: 'hr-attendances',
+              let: { karkun_id: '$_id' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        {
+                          $eq: ['$karkunId', '$$karkun_id'],
+                        },
+                        {
+                          $eq: ['$month', month.format('MM-YYYY')],
+                        },
+                        criteriaCondition,
+                      ],
+                    },
+                  },
+                },
+              ],
+              as: 'attendances',
+            },
+          });
+
+          pipeline.push({
+            $match: {
+              $expr: {
+                $gte: [{ $size: '$attendances' }, 1],
+              },
+            },
+          });
+        }
+      }
+
+      // We want to return karkuns from multan only when they
+      // are asked for explicitly, otherwise filter them out.
+      if (cityId) {
+        pipeline.push({
+          $match: {
+            'karkunData.cityId': { $eq: cityId },
+          },
+        });
+      } else if (cityIds) {
+        pipeline.push({
+          $match: {
+            'karkunData.cityId': { $in: cityIds },
+          },
+        });
+      } else {
+        pipeline.push({
+          $match: {
+            'karkunData.cityId': { $ne: multanCity._id },
+          },
+        });
+      }
+
+      if (cityMehfilId) {
+        pipeline.push({
+          $match: {
+            'karkunData.cityMehfilId': { $eq: cityMehfilId },
+          },
+        });
+      }
+
+      if (dutyId) {
+        pipeline.push({
+          $lookup: {
+            from: 'hr-karkun-duties',
+            localField: '_id',
+            foreignField: 'karkunId',
+            as: 'duties',
+          },
+        });
+        pipeline.push({
+          $match: {
+            duties: {
+              $elemMatch: {
+                dutyId: { $eq: dutyId },
+              },
+            },
+          },
+        });
+      }
+    }
+
+    // ************************************
+    // Add criteria for employee data fields
+    // ************************************
+    if (excludeEmployees) {
+      pipeline.push({
+        $match: { isEmployee: false },
+      });
+    }
+
+    return pipeline;
+  }
+
+  /**
+   * flags contains the following
+   * - excludeKarkuns - defaults to false
+   * - excludeEmployees - defaults to false
+   * - excludeVisitors - defaults to false
+   * - paginatedResults - - defaults to true
+   */
+  searchPeople(params = {}, flags = {}) {
+    const pipeline = this.buildSearchPipline(params, flags);
+    const { pageIndex = '0', pageSize = '20' } = params;
+    const paginatedResults = flags.paginatedResults || true;
+
+    if (paginatedResults) {
+      const countingPipeline = pipeline.concat({
+        $count: 'total',
+      });
+
+      const nPageIndex = parseInt(pageIndex, 10);
+      const nPageSize = parseInt(pageSize, 10);
+      const resultsPipeline = pipeline.concat([
+        { $sort: { 'sharedData.name': 1 } },
+        { $skip: nPageIndex * nPageSize },
+        { $limit: nPageSize },
+      ]);
+
+      const people = this.aggregate(resultsPipeline).toArray();
+      const totalResults = this.aggregate(countingPipeline).toArray();
+
+      return Promise.all([people, totalResults]).then(results => ({
+        data: results[0],
+        totalResults: get(results[1], ['0', 'total'], 0),
+      }));
+    }
+
+    // Return the full results without pagination
+    return this.aggregate(pipeline).toArray();
   }
 
   // **************************************************************

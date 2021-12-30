@@ -4,8 +4,6 @@ import {
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
 
-import { getOutstationKarkuns } from './queries';
-
 export default {
   Query: {
     outstationKarkunById(obj, { _id }) {
@@ -14,7 +12,12 @@ export default {
     },
 
     pagedOutstationKarkuns(obj, { filter }) {
-      return getOutstationKarkuns(filter);
+      return People.searchPeople(filter, {
+        excludeVisitors: true,
+      }).then(result => ({
+        karkuns: result.data.map(person => People.personToKarkun(person)),
+        totalResults: result.totalResults,
+      }));
     },
   },
 

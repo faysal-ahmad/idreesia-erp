@@ -22,7 +22,7 @@ export default {
 
     paymentById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
           PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
         ])
@@ -35,7 +35,7 @@ export default {
 
     pagedPayments(obj, { filter }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
           PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
         ])
@@ -70,9 +70,7 @@ export default {
   Mutation: {
     createPayment(obj, values, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS])
       ) {
         throw new Error(
           'You do not have permission to manage Payments in the System.'
@@ -84,9 +82,7 @@ export default {
 
     updatePayment(obj, values, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS])
       ) {
         throw new Error(
           'You do not have permission to manage Payments in the System.'
@@ -98,9 +94,7 @@ export default {
 
     removePayment(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS])
       ) {
         throw new Error(
           'You do not have permission to manage Payments in the System.'

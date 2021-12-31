@@ -34,7 +34,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
@@ -49,7 +49,7 @@ export default {
     pagedStockAdjustments(obj, { physicalStoreId, queryString }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
@@ -66,7 +66,7 @@ export default {
 
     stockAdjustmentById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
@@ -98,7 +98,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -144,7 +144,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
@@ -215,7 +215,7 @@ export default {
 
     approveStockAdjustment(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
         ])
       ) {
@@ -246,7 +246,7 @@ export default {
     },
 
     removeStockAdjustment(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in the System.'
         );

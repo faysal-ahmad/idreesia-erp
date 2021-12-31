@@ -9,7 +9,7 @@ export default {
   Query: {
     allPhysicalStores(obj, params, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
         ])
       ) {
@@ -24,7 +24,7 @@ export default {
     allAccessiblePhysicalStores(obj, params, { user }) {
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
-        user._id,
+        user,
         physicalStores
       );
       return filteredPhysicalStores;
@@ -32,7 +32,7 @@ export default {
 
     physicalStoreById(obj, { id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
         ])
       ) {
@@ -48,7 +48,7 @@ export default {
   Mutation: {
     createPhysicalStore(obj, { name, address }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
         ])
       ) {
@@ -72,7 +72,7 @@ export default {
 
     updatePhysicalStore(obj, { id, name, address }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
         ])
       ) {

@@ -7,9 +7,7 @@ export default {
   Query: {
     pagedAccountsAuditLogs(obj, { filter }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_VIEW_AUDIT_LOGS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_VIEW_AUDIT_LOGS])
       ) {
         return {
           data: [],

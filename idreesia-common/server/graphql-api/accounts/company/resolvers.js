@@ -9,7 +9,7 @@ export default {
   Query: {
     allCompanies(obj, params, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_COMPANIES,
           PermissionConstants.ADMIN_MANAGE_COMPANIES,
         ])
@@ -22,13 +22,13 @@ export default {
 
     allAccessibleCompanies(obj, params, { user }) {
       const companies = Companies.find({}).fetch();
-      const filteredCompanies = filterByInstanceAccess(user._id, companies);
+      const filteredCompanies = filterByInstanceAccess(user, companies);
       return filteredCompanies;
     },
 
     companyById(obj, { id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_COMPANIES,
           PermissionConstants.ADMIN_MANAGE_COMPANIES,
         ])
@@ -43,9 +43,7 @@ export default {
   Mutation: {
     createCompany(obj, { name, importData, connectivitySettings }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_COMPANIES,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
           'You do not have permission to manage Companies in the System.'
@@ -72,9 +70,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_COMPANIES,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
         throw new Error(
           'You do not have permission to manage Companies in the System.'

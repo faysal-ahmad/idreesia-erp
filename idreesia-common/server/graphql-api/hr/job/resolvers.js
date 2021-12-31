@@ -22,9 +22,7 @@ export default {
 
   Mutation: {
     createJob(obj, { name, description }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
         );
@@ -44,9 +42,7 @@ export default {
     },
 
     updateJob(obj, { id, name, description }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
         );
@@ -66,9 +62,7 @@ export default {
     },
 
     removeJob(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
         );

@@ -36,7 +36,7 @@ export default {
   Query: {
     salariesByMonth(obj, { month, jobId }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
           PermissionConstants.HR_DELETE_EMPLOYEES,
@@ -63,7 +63,7 @@ export default {
 
     salariesByIds(obj, { ids }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
@@ -80,7 +80,7 @@ export default {
 
     pagedSalariesByKarkun(obj, { queryString }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
           PermissionConstants.HR_DELETE_EMPLOYEES,
@@ -98,7 +98,7 @@ export default {
   Mutation: {
     createSalaries(obj, { month }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
           PermissionConstants.HR_DELETE_EMPLOYEES,
         ])
@@ -139,7 +139,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
           PermissionConstants.HR_DELETE_EMPLOYEES,
         ])
@@ -174,9 +174,7 @@ export default {
     },
 
     approveSalaries(obj, { month, ids }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_SALARIES])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_APPROVE_SALARIES])) {
         throw new Error(
           'You do not have permission to approve salaries in the System.'
         );
@@ -203,9 +201,7 @@ export default {
     },
 
     approveAllSalaries(obj, { month }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_APPROVE_SALARIES])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_APPROVE_SALARIES])) {
         throw new Error(
           'You do not have permission to approve salaries in the System.'
         );
@@ -236,7 +232,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_EMPLOYEES])
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
@@ -244,7 +240,7 @@ export default {
       }
 
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
           PermissionConstants.HR_DELETE_EMPLOYEES,
         ])
@@ -265,7 +261,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_EMPLOYEES])
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
@@ -273,7 +269,7 @@ export default {
       }
 
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
           PermissionConstants.HR_DELETE_EMPLOYEES,
         ])

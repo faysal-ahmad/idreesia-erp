@@ -113,7 +113,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -160,7 +160,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -196,7 +196,7 @@ export default {
 
     verifyStockItemLevel(obj, { _id, physicalStoreId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -222,7 +222,7 @@ export default {
     },
 
     removeStockItem(obj, { _id, physicalStoreId }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
         );
@@ -269,7 +269,7 @@ export default {
 
     setStockItemImage(obj, { _id, imageId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -290,7 +290,7 @@ export default {
 
     mergeStockItems(obj, { ids, physicalStoreId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -309,7 +309,7 @@ export default {
 
     recalculateStockLevels(obj, { ids, physicalStoreId }, { user }) {
       if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
+        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'

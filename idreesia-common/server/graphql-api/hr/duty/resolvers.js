@@ -54,9 +54,7 @@ export default {
       { name, isMehfilDuty, description, attendanceSheet },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
         );
@@ -78,9 +76,7 @@ export default {
     },
 
     updateDuty(obj, { id, name, description, attendanceSheet }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
         );
@@ -101,9 +97,7 @@ export default {
     },
 
     removeDuty(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
         );

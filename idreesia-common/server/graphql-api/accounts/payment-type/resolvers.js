@@ -25,7 +25,7 @@ export default {
   Mutation: {
     createPaymentType(obj, { name, description }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
         ])
       ) {
@@ -49,7 +49,7 @@ export default {
 
     updatePaymentType(obj, { _id, name, description }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
         ])
       ) {
@@ -73,7 +73,7 @@ export default {
 
     removePaymentType(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
         ])
       ) {

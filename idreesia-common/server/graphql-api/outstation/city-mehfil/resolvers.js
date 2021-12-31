@@ -58,7 +58,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
         ])
       ) {
@@ -102,7 +102,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
         ])
       ) {
@@ -132,7 +132,7 @@ export default {
 
     removeCityMehfil(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
         ])
       ) {

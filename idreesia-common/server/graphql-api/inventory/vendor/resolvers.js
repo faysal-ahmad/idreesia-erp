@@ -41,9 +41,7 @@ export default {
       { name, physicalStoreId, contactPerson, contactNumber, address, notes },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
         );
@@ -77,9 +75,7 @@ export default {
       { _id, name, contactPerson, contactNumber, address, notes },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
         );
@@ -112,9 +108,7 @@ export default {
     },
 
     removeVendor(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
         );

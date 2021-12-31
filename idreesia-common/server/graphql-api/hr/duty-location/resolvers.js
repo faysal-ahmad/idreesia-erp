@@ -24,9 +24,7 @@ export default {
 
   Mutation: {
     createDutyLocation(obj, { name }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Locations Setup Data in the System.'
         );
@@ -45,9 +43,7 @@ export default {
     },
 
     updateDutyLocation(obj, { id, name }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Locations Setup Data in the System.'
         );
@@ -66,9 +62,7 @@ export default {
     },
 
     removeDutyLocation(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Locations Setup Data in the System.'
         );

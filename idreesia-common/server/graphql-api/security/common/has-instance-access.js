@@ -1,5 +1,5 @@
 export default function hasInstanceAccess(user, instanceId) {
-  if (!user) return false;
+  if (!user || user.locked) return false;
 
   if (user.username === 'erp-admin') return true;
 

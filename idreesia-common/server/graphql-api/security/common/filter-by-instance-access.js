@@ -1,7 +1,5 @@
-export default function filterByInstanceAccess(userId, instanceObjects) {
-  const user = Meteor.users.findOne(userId);
-  if (!user) return [];
-
+export default function filterByInstanceAccess(user, instanceObjects) {
+  if (!user || user.locked) return false;
   if (user.username === 'erp-admin') return instanceObjects;
 
   const { instances: userInstances } = user;

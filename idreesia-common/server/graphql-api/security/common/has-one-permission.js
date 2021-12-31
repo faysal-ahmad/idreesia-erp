@@ -1,5 +1,4 @@
-export default function hasOnePermission(userId, permissions) {
-  const user = Meteor.users.findOne(userId);
+export default function hasOnePermission(user, permissions) {
   if (!user || user.locked) return false;
 
   if (user.username === 'erp-admin') return true;

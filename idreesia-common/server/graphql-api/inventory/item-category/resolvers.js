@@ -38,9 +38,7 @@ export default {
 
   Mutation: {
     createItemCategory(obj, { name, physicalStoreId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
         );
@@ -66,9 +64,7 @@ export default {
     },
 
     updateItemCategory(obj, { id, name }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
         );
@@ -97,9 +93,7 @@ export default {
     },
 
     removeItemCategory(obj, { _id, physicalStoreId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.IN_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
         );

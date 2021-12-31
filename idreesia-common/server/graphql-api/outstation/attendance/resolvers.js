@@ -13,7 +13,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_KARKUNS,
           PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
           PermissionConstants.OUTSTATION_DELETE_DATA,
@@ -35,7 +35,7 @@ export default {
       if (!cityId) return [];
 
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_KARKUNS,
           PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
           PermissionConstants.OUTSTATION_DELETE_DATA,

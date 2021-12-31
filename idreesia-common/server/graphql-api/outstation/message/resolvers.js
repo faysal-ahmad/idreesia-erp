@@ -14,7 +14,7 @@ export default {
   Query: {
     outstationMessageById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_MESSAGES,
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
@@ -31,7 +31,7 @@ export default {
 
     pagedOutstationMessages(obj, { filter }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_MESSAGES,
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
@@ -50,7 +50,7 @@ export default {
   Mutation: {
     createOutstationMessage(obj, { messageBody, recepientFilter }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
         ])
@@ -81,7 +81,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
         ])
@@ -124,7 +124,7 @@ export default {
 
     approveOutstationMessage(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
         ])
       ) {
@@ -157,9 +157,7 @@ export default {
 
     deleteOutstationMessage(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_DELETE_DATA,
-        ])
+        !hasOnePermission(user, [PermissionConstants.OUTSTATION_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to delete Messages in the System.'

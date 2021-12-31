@@ -42,7 +42,7 @@ export default {
     issuanceFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -57,7 +57,7 @@ export default {
     issuanceFormsByMonth(obj, { physicalStoreId, month }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -72,7 +72,7 @@ export default {
     pagedIssuanceForms(obj, { physicalStoreId, queryString }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -89,7 +89,7 @@ export default {
 
     issuanceFormById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
@@ -122,7 +122,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
@@ -181,7 +181,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
           PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
         ])
@@ -245,9 +245,7 @@ export default {
 
     approveIssuanceForm(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.IN_APPROVE_ISSUANCE_FORMS])
       ) {
         throw new Error(
           'You do not have permission to approve Issuance Forms in the System.'
@@ -276,7 +274,7 @@ export default {
     },
 
     removeIssuanceForm(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in the System.'
         );

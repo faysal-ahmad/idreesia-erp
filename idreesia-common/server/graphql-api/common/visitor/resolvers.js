@@ -46,9 +46,7 @@ export default {
   Mutation: {
     fixCitySpelling(obj, { existingSpelling, newSpelling }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.SECURITY_MANAGE_VISITORS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.SECURITY_MANAGE_VISITORS])
       ) {
         throw new Error(
           'You do not have permission to manage Visitors in the System.'

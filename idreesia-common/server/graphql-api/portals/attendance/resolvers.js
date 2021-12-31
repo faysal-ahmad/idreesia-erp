@@ -83,7 +83,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.PORTALS_DELETE_DATA])
+        !hasOnePermission(user, [PermissionConstants.PORTALS_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove Attendances for past months in the System.'
@@ -101,7 +101,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.PORTALS_DELETE_DATA])
+        !hasOnePermission(user, [PermissionConstants.PORTALS_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove Attendances for past months in the System.'

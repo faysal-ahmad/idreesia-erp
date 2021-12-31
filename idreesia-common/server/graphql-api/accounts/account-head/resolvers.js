@@ -19,7 +19,7 @@ export default {
   Query: {
     accountHeadById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
         ])
@@ -35,7 +35,7 @@ export default {
     accountHeadsByCompanyId(obj, { companyId }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
         ])
@@ -55,7 +55,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
         ])
       ) {

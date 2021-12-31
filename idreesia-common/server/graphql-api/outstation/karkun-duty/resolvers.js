@@ -6,9 +6,7 @@ export default {
   Mutation: {
     createOutstationKarkunDuty(obj, { karkunId, dutyId }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.OUTSTATION_MANAGE_KARKUNS])
       ) {
         throw new Error(
           'You do not have permission to manage Outstation Karkun Duties in the System.'
@@ -35,9 +33,7 @@ export default {
 
     removeOutstationKarkunDuty(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.OUTSTATION_MANAGE_KARKUNS])
       ) {
         throw new Error(
           'You do not have permission to manage Outstation Karkun Duties in the System.'

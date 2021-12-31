@@ -9,7 +9,7 @@ export default {
   Query: {
     pagedAdminJobs(obj, { jobType, status, pageIndex, pageSize }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_ADMIN_JOBS,
           PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS,
         ])
@@ -27,9 +27,7 @@ export default {
   Mutation: {
     createAdminJob(obj, { jobType, jobDetails }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS])
       ) {
         throw new Error(
           'You do not have permission to manage Admin Jobs in the System.'
@@ -59,9 +57,7 @@ export default {
 
     removeAdminJob(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS])
       ) {
         throw new Error(
           'You do not have permission to manage Admin Jobs in the System.'

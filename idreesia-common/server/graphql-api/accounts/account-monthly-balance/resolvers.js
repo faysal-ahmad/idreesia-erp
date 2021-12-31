@@ -14,7 +14,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_ACTIVTY_SHEET,
         ])
       ) {

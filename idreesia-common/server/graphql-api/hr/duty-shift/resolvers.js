@@ -49,9 +49,7 @@ export default {
       { name, dutyId, startTime, endTime, attendanceSheet },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Shifts Setup Data in the System.'
         );
@@ -78,9 +76,7 @@ export default {
       { _id, name, dutyId, startTime, endTime, attendanceSheet },
       { user }
     ) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Shifts Setup Data in the System.'
         );
@@ -103,9 +99,7 @@ export default {
     },
 
     removeDutyShift(obj, { _id }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_SETUP_DATA])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Shifts Setup Data in the System.'
         );

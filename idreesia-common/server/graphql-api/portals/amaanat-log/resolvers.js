@@ -6,18 +6,11 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 import getAmaanatLogs from './queries';
 
-const userHasPortalLevelAccess = user => {
-  if (
-    !hasOnePermission(user._id, [
-      PermissionConstants.PORTALS_VIEW_AMAANAT_LOGS,
-      PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
-    ])
-  ) {
-    return false;
-  }
-
-  return true;
-};
+const userHasPortalLevelAccess = user =>
+  hasOnePermission(user, [
+    PermissionConstants.PORTALS_VIEW_AMAANAT_LOGS,
+    PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
+  ]);
 
 export default {
   Query: {

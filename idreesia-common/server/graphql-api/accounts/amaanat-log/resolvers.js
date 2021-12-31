@@ -23,7 +23,7 @@ export default {
   Query: {
     accountsAmaanatLogById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
@@ -36,7 +36,7 @@ export default {
 
     pagedAccountsAmaanatLogs(obj, { filter }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
@@ -69,7 +69,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
@@ -117,7 +117,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {
@@ -154,7 +154,7 @@ export default {
 
     removeAccountsAmaanatLog(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
         ])
       ) {

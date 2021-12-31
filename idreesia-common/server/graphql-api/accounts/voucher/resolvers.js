@@ -29,7 +29,7 @@ export default {
     pagedVouchers(obj, { companyId, queryString }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -45,7 +45,7 @@ export default {
 
     voucherById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -66,9 +66,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'
@@ -96,9 +94,7 @@ export default {
     updateVoucher(obj, { _id, companyId, description }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'
@@ -126,9 +122,7 @@ export default {
     addVoucherAttachment(obj, { _id, companyId, attachmentId }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'
@@ -158,9 +152,7 @@ export default {
     removeVoucherAttachment(obj, { _id, companyId, attachmentId }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'

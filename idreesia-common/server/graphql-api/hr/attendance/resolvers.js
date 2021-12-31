@@ -50,7 +50,7 @@ export default {
   Query: {
     attendanceById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
@@ -64,7 +64,7 @@ export default {
 
     pagedAttendanceByKarkun(obj, { queryString }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
@@ -81,7 +81,7 @@ export default {
       if (!categoryId) return [];
 
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
@@ -122,7 +122,7 @@ export default {
 
     attendanceByBarcodeId(obj, { barcodeId }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
@@ -139,7 +139,7 @@ export default {
 
     attendanceByBarcodeIds(obj, { barcodeIds }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
@@ -158,7 +158,7 @@ export default {
   Mutation: {
     createAttendances(obj, { month }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
         ])
@@ -188,7 +188,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
         ])
@@ -215,9 +215,7 @@ export default {
     },
 
     importAttendances(obj, { month, dutyId, shiftId }, { user }) {
-      if (
-        !hasOnePermission(user._id, [PermissionConstants.HR_MANAGE_KARKUNS])
-      ) {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
         throw new Error(
           'You do not have permission to manage attendances in the System.'
         );
@@ -282,7 +280,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove attendances for past months in the System.'
@@ -290,7 +288,7 @@ export default {
       }
 
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
         ])
@@ -311,7 +309,7 @@ export default {
 
       if (
         passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user._id, [PermissionConstants.HR_DELETE_DATA])
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove attendances for past months in the System.'
@@ -319,7 +317,7 @@ export default {
       }
 
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
         ])

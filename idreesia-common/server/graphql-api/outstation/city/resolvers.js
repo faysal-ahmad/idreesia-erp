@@ -72,7 +72,7 @@ export default {
   Mutation: {
     createCity(obj, { name, peripheryOf, country, region }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
         ])
       ) {
@@ -114,7 +114,7 @@ export default {
 
     updateCity(obj, { _id, name, peripheryOf, country, region }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
         ])
       ) {
@@ -160,9 +160,7 @@ export default {
 
     removeCity(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.OUTSTATION_DELETE_DATA,
-        ])
+        !hasOnePermission(user, [PermissionConstants.OUTSTATION_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to delete City in the System.'

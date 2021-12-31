@@ -26,7 +26,7 @@ export default class CheckPermissionsDirective extends SchemaDirectiveVisitor {
         return permissionValue;
       });
 
-      if (!hasOnePermission(user._id, permissionValues)) {
+      if (!hasOnePermission(user, permissionValues)) {
         if (info.parentType.name === 'Query') {
           if (info.fieldName.startsWith('paged')) {
             return {

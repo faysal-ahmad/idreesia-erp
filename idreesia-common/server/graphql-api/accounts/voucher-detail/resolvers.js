@@ -30,7 +30,7 @@ export default {
     voucherDetailById(obj, { _id, companyId }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -47,7 +47,7 @@ export default {
     voucherDetailsByVoucherId(obj, { companyId, voucherId }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -77,7 +77,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -109,9 +109,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'
@@ -150,9 +148,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'
@@ -184,9 +180,7 @@ export default {
     removeVoucherDetail(obj, { _id, companyId }, { user }) {
       if (
         hasInstanceAccess(user, companyId) === false ||
-        !hasOnePermission(user._id, [
-          PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
       ) {
         throw new Error(
           'You do not have permission to manage Vouchers in the System.'

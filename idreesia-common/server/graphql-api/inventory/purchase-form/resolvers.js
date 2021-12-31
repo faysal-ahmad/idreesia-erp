@@ -58,7 +58,7 @@ export default {
     purchaseFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -73,7 +73,7 @@ export default {
     purchaseFormsByMonth(obj, { physicalStoreId, month }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -88,7 +88,7 @@ export default {
     pagedPurchaseForms(obj, { physicalStoreId, queryString }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -105,7 +105,7 @@ export default {
 
     purchaseFormById(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -138,7 +138,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -197,7 +197,7 @@ export default {
       { user }
     ) {
       if (
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -261,9 +261,7 @@ export default {
 
     approvePurchaseForm(obj, { _id }, { user }) {
       if (
-        !hasOnePermission(user._id, [
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
+        !hasOnePermission(user, [PermissionConstants.IN_APPROVE_PURCHASE_FORMS])
       ) {
         throw new Error(
           'You do not have permission to approve Purchase Forms in the System.'
@@ -294,7 +292,7 @@ export default {
     addFormAttachment(obj, { _id, physicalStoreId, attachmentId }, { user }) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -331,7 +329,7 @@ export default {
     ) {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user._id, [
+        !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
         ])
@@ -360,7 +358,7 @@ export default {
     },
 
     removePurchaseForm(obj, { _id }, { user }) {
-      if (!hasOnePermission(user._id, [PermissionConstants.IN_DELETE_DATA])) {
+      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in the System.'
         );

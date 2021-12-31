@@ -29,7 +29,7 @@ export default {
   Query: {
     voucherDetailById(obj, { _id, companyId }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
@@ -46,7 +46,7 @@ export default {
 
     voucherDetailsByVoucherId(obj, { companyId, voucherId }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
@@ -76,7 +76,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
@@ -108,7 +108,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -149,7 +149,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -183,7 +183,7 @@ export default {
 
     removeVoucherDetail(obj, { _id, companyId }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])

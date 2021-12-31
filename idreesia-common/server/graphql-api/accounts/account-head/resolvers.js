@@ -28,14 +28,13 @@ export default {
       }
 
       const accountHead = AccountHeads.findOne({ _id });
-      if (hasInstanceAccess(user._id, accountHead.companyId) === false)
-        return null;
+      if (hasInstanceAccess(user, accountHead.companyId) === false) return null;
       return accountHead;
     },
 
     accountHeadsByCompanyId(obj, { companyId }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
@@ -55,7 +54,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
         ])

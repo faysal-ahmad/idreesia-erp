@@ -63,7 +63,7 @@ export default {
 
   Query: {
     pagedStockItems(obj, { physicalStoreId, queryString }, { user }) {
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         return {
           data: [],
           totalResults: 0,
@@ -75,7 +75,7 @@ export default {
 
     stockItemById(obj, { _id }, { user }) {
       const stockItem = StockItems.findOne(_id);
-      if (hasInstanceAccess(user._id, stockItem.physicalStoreId) === false) {
+      if (hasInstanceAccess(user, stockItem.physicalStoreId) === false) {
         return null;
       }
       return stockItem;
@@ -83,7 +83,7 @@ export default {
 
     stockItemsById(obj, { physicalStoreId, _ids }, { user }) {
       if (!_ids || _ids.length === 0) return [];
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
+      if (hasInstanceAccess(user, physicalStoreId) === false) return [];
 
       return StockItems.find({
         _id: { $in: _ids },
@@ -92,7 +92,7 @@ export default {
     },
 
     statistics(obj, { physicalStoreId }, { user }) {
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) return null;
+      if (hasInstanceAccess(user, physicalStoreId) === false) return null;
       return getStatistics(physicalStoreId);
     },
   },
@@ -120,7 +120,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Items in this Physical Store.'
         );
@@ -170,7 +170,7 @@ export default {
       const existingStockItem = StockItems.findOne(_id);
       if (
         !existingStockItem ||
-        hasInstanceAccess(user._id, existingStockItem.physicalStoreId) === false
+        hasInstanceAccess(user, existingStockItem.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -203,7 +203,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Items in this Physical Store.'
         );
@@ -228,7 +228,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Items in this Physical Store.'
         );
@@ -297,7 +297,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Items in this Physical Store.'
         );
@@ -316,7 +316,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Items in this Physical Store.'
         );

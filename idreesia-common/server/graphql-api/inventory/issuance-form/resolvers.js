@@ -41,7 +41,7 @@ export default {
   Query: {
     issuanceFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -56,7 +56,7 @@ export default {
 
     issuanceFormsByMonth(obj, { physicalStoreId, month }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -71,7 +71,7 @@ export default {
 
     pagedIssuanceForms(obj, { physicalStoreId, queryString }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -99,7 +99,7 @@ export default {
       }
 
       const issuanceForm = IssuanceForms.findOne(_id);
-      if (hasInstanceAccess(user._id, issuanceForm.physicalStoreId) === false) {
+      if (hasInstanceAccess(user, issuanceForm.physicalStoreId) === false) {
         return null;
       }
       return issuanceForm;
@@ -132,7 +132,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in this Physical Store.'
         );
@@ -191,7 +191,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in this Physical Store.'
         );
@@ -257,8 +257,7 @@ export default {
       const existingIssuanceForm = IssuanceForms.findOne(_id);
       if (
         !existingIssuanceForm ||
-        hasInstanceAccess(user._id, existingIssuanceForm.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingIssuanceForm.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to approve Issuance Forms in this Physical Store.'
@@ -286,8 +285,7 @@ export default {
       const existingIssuanceForm = IssuanceForms.findOne(_id);
       if (
         !existingIssuanceForm ||
-        hasInstanceAccess(user._id, existingIssuanceForm.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingIssuanceForm.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in this Physical Store.'

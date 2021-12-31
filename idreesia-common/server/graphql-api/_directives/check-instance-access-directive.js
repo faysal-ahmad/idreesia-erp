@@ -17,7 +17,7 @@ export default class CheckInstanceAccessDirective extends SchemaDirectiveVisitor
         throw new Error(`Instance ID value not recevied for ${info.fieldName}`);
       }
 
-      if (hasInstanceAccess(user._id, instanceId) === false) {
+      if (hasInstanceAccess(user, instanceId) === false) {
         if (info.parentType.name === 'Query') {
           if (info.fieldName.startsWith('paged')) {
             return {

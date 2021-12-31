@@ -28,7 +28,7 @@ export default {
   Query: {
     pagedVouchers(obj, { companyId, queryString }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
@@ -54,7 +54,7 @@ export default {
       }
 
       const voucher = Vouchers.findOne(_id);
-      if (hasInstanceAccess(user._id, voucher.companyId) === false) return null;
+      if (hasInstanceAccess(user, voucher.companyId) === false) return null;
       return voucher;
     },
   },
@@ -65,7 +65,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -95,7 +95,7 @@ export default {
 
     updateVoucher(obj, { _id, companyId, description }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -125,7 +125,7 @@ export default {
 
     addVoucherAttachment(obj, { _id, companyId, attachmentId }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])
@@ -157,7 +157,7 @@ export default {
 
     removeVoucherAttachment(obj, { _id, companyId, attachmentId }, { user }) {
       if (
-        hasInstanceAccess(user._id, companyId) === false ||
+        hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
         ])

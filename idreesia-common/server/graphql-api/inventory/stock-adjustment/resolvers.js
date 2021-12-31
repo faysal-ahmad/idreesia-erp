@@ -33,7 +33,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -48,7 +48,7 @@ export default {
 
     pagedStockAdjustments(obj, { physicalStoreId, queryString }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -76,9 +76,7 @@ export default {
       }
 
       const stockAdjustment = StockAdjustments.findOne(_id);
-      if (
-        hasInstanceAccess(user._id, stockAdjustment.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, stockAdjustment.physicalStoreId) === false) {
         return null;
       }
       return stockAdjustment;
@@ -110,7 +108,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in this Physical Store.'
         );
@@ -159,8 +157,7 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in this Physical Store.'
@@ -230,8 +227,7 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to approve Stock Adjustments in this Physical Store.'
@@ -259,8 +255,7 @@ export default {
       const existingAdjustment = StockAdjustments.findOne(_id);
       if (
         !existingAdjustment ||
-        hasInstanceAccess(user._id, existingAdjustment.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in this Physical Store.'

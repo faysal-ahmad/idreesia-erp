@@ -57,7 +57,7 @@ export default {
   Query: {
     purchaseFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
@@ -72,7 +72,7 @@ export default {
 
     purchaseFormsByMonth(obj, { physicalStoreId, month }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
@@ -87,7 +87,7 @@ export default {
 
     pagedPurchaseForms(obj, { physicalStoreId, queryString }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
@@ -115,7 +115,7 @@ export default {
       }
 
       const purchaseForm = PurchaseForms.findOne(_id);
-      if (hasInstanceAccess(user._id, purchaseForm.physicalStoreId) === false) {
+      if (hasInstanceAccess(user, purchaseForm.physicalStoreId) === false) {
         return null;
       }
       return purchaseForm;
@@ -148,7 +148,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in this Physical Store.'
         );
@@ -207,7 +207,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in this Physical Store.'
         );
@@ -273,8 +273,7 @@ export default {
       const existingPurchaseForm = PurchaseForms.findOne(_id);
       if (
         !existingPurchaseForm ||
-        hasInstanceAccess(user._id, existingPurchaseForm.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingPurchaseForm.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to approve Purchase Forms in this Physical Store.'
@@ -294,7 +293,7 @@ export default {
 
     addFormAttachment(obj, { _id, physicalStoreId, attachmentId }, { user }) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -331,7 +330,7 @@ export default {
       { user }
     ) {
       if (
-        hasInstanceAccess(user._id, physicalStoreId) === false ||
+        hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user._id, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
           PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
@@ -370,8 +369,7 @@ export default {
       const existingPurchaseForm = PurchaseForms.findOne(_id);
       if (
         !existingPurchaseForm ||
-        hasInstanceAccess(user._id, existingPurchaseForm.physicalStoreId) ===
-          false
+        hasInstanceAccess(user, existingPurchaseForm.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in this Physical Store.'

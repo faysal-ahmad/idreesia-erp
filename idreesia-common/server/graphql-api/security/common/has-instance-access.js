@@ -1,5 +1,4 @@
-export default function hasInstanceAccess(userId, instanceId) {
-  const user = Meteor.users.findOne(userId);
+export default function hasInstanceAccess(user, instanceId) {
   if (!user) return false;
 
   if (user.username === 'erp-admin') return true;

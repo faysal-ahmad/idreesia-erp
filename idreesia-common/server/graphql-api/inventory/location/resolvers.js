@@ -37,14 +37,14 @@ export default {
   Query: {
     locationById(obj, { _id }, { user }) {
       const location = Locations.findOne(_id);
-      if (hasInstanceAccess(user._id, location.physicalStoreId) === false) {
+      if (hasInstanceAccess(user, location.physicalStoreId) === false) {
         return null;
       }
       return location;
     },
 
     locationsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) return [];
+      if (hasInstanceAccess(user, physicalStoreId) === false) return [];
       return Locations.find(
         {
           physicalStoreId: { $eq: physicalStoreId },
@@ -68,7 +68,7 @@ export default {
         );
       }
 
-      if (hasInstanceAccess(user._id, physicalStoreId) === false) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in this Physical Store.'
         );
@@ -101,7 +101,7 @@ export default {
       const existingLocation = Locations.findOne(_id);
       if (
         !existingLocation ||
-        hasInstanceAccess(user._id, existingLocation.physicalStoreId) === false
+        hasInstanceAccess(user, existingLocation.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in this Physical Store.'
@@ -134,7 +134,7 @@ export default {
       const existingLocation = Locations.findOne(_id);
       if (
         !existingLocation ||
-        hasInstanceAccess(user._id, existingLocation.physicalStoreId) === false
+        hasInstanceAccess(user, existingLocation.physicalStoreId) === false
       ) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in this Physical Store.'

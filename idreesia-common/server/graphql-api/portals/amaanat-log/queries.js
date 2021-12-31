@@ -1,14 +1,12 @@
 import moment from 'moment';
-import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AmaanatLogs } from 'meteor/idreesia-common/server/collections/accounts';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-export default function getAmaanatLogs(portalId, queryString) {
+export default function getAmaanatLogs(portalId, params) {
   const portal = Portals.findOne(portalId);
-  const params = parse(queryString);
   const pipeline = [];
 
   const {

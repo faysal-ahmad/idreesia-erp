@@ -4,6 +4,7 @@ import {
   canDeleteKarkun,
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getKarkuns } from './queries';
 
@@ -30,7 +31,9 @@ export default {
       const multanCity = Cities.getMultanCity();
       const personValues = People.karkunToPerson({
         ...values,
+        isKarkun: true,
         cityId: multanCity._id,
+        dataSource: DataSource.HR,
       });
       const person = People.createPerson(personValues, user);
       return People.personToKarkun(person);

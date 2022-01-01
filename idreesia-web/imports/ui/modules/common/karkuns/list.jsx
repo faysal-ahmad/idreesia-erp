@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AuditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { AuditOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -29,10 +29,12 @@ export default class KarkunsList extends Component {
     showMehfilCityColumn: PropTypes.bool,
     showDeleteAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
+    showRemoveAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
     handleDeleteItem: PropTypes.func,
+    handleRemoveItem: PropTypes.func,
     handleAuditLogsAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
@@ -45,10 +47,13 @@ export default class KarkunsList extends Component {
   };
 
   static defaultProps = {
+    showRemoveAction: false,
+    showDeleteAction: false,
     showAuditLogsAction: false,
 
     handleSelectItem: noop,
     handleDeleteItem: noop,
+    handleRemoveItem: noop,
     handleAuditLogsAction: noop,
     listHeader: () => null,
   };
@@ -170,8 +175,10 @@ export default class KarkunsList extends Component {
       const {
         showAuditLogsAction,
         showDeleteAction,
+        showRemoveAction,
         handleAuditLogsAction,
         handleDeleteItem,
+        handleRemoveItem,
       } = this.props;
 
       const auditLogsAction = showAuditLogsAction ? (
@@ -187,7 +194,7 @@ export default class KarkunsList extends Component {
 
       const deleteAction = showDeleteAction ? (
         <Popconfirm
-          title="Are you sure you want to delete this karkun?"
+          title="Are you sure you want to delete the data for this karkun?"
           onConfirm={() => {
             handleDeleteItem(record);
           }}
@@ -200,8 +207,24 @@ export default class KarkunsList extends Component {
         </Popconfirm>
       ) : null;
 
+      const removeAction = showRemoveAction ? (
+        <Popconfirm
+          title="Are you sure you want to remove this person from karkuns?"
+          onConfirm={() => {
+            handleRemoveItem(record);
+          }}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="Remove from karkuns">
+            <MinusCircleOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
+      ) : null;
+
       return (
         <div className="list-actions-column">
+          {removeAction}
           {auditLogsAction}
           {deleteAction}
         </div>

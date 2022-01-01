@@ -16,7 +16,7 @@ const UPDATE_PORTAL_USER = gql`
       _id
       username
       locked
-      karkunId
+      personId
       karkun {
         _id
         name

@@ -17,6 +17,7 @@ const PAGED_PORTAL_MEMBERS = gql`
         referenceName
         imageId
         karkunId
+        isKarkun
       }
     }
   }

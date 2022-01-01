@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
-import { KarkunsEditForm, KarkunsList } from './karkuns';
+import { KarkunsNewForm, KarkunsEditForm, KarkunsList } from './karkuns';
 import { MembersNewForm, MembersEditForm, MembersList } from './members';
 import { AttendanceSheetsList } from './attendance-sheets';
 import {
@@ -15,6 +15,10 @@ import { AuditLogsList } from './audit-logs';
 
 const Router = () => (
   <Switch>
+    <Route
+      path={paths.karkunsNewFormPath()}
+      component={KarkunsNewForm}
+    />
     <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath()} component={KarkunsList} />
 

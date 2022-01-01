@@ -10,14 +10,17 @@ export default new SimpleSchema({
   isEmployee: {
     type: Boolean,
     optional: false,
+    defaultValue: false,
   },
   isKarkun: {
     type: Boolean,
     optional: false,
+    defaultValue: false,
   },
   isVisitor: {
     type: Boolean,
     optional: false,
+    defaultValue: true,
   },
   userId: {
     type: String,

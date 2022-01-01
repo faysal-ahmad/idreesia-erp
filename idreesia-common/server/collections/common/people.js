@@ -13,10 +13,11 @@ import {
 } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import {
-  get,
   forOwn,
-  keys,
+  get,
   isNil,
+  keys,
+  omitBy,
 } from 'meteor/idreesia-common/utilities/lodash';
 
 class People extends AggregatableCollection {
@@ -72,9 +73,10 @@ class People extends AggregatableCollection {
       return this.findOne(_id);
     }
 
-    const {
-      sharedData: { cnicNumber, contactNumber1, contactNumber2, imageId },
-    } = changedValues;
+    const cnicNumber = changedValues['sharedData.cnicNumber'];
+    const contactNumber1 = changedValues['sharedData.contactNumber1'];
+    const contactNumber2 = changedValues['sharedData.contactNumber2'];
+    const imageId = changedValues['sharedData.imageId'];
     if (cnicNumber) this.checkCnicNotInUse(cnicNumber, _id);
     if (contactNumber1) this.checkContactNotInUse(contactNumber1, _id);
     if (contactNumber2) this.checkContactNotInUse(contactNumber2, _id);
@@ -736,12 +738,14 @@ class People extends AggregatableCollection {
       otherNotes: person.visitorData?.otherNotes,
 
       karkunId: person.karkunData?.karkunId,
+      isKarkun: person.isKarkun,
     };
   }
 
   visitorToPerson(visitor) {
     return {
       _id: visitor._id,
+      isVisitor: true,
       dataSource: visitor.dataSource,
       sharedData: {
         name: visitor.name,
@@ -810,10 +814,13 @@ class People extends AggregatableCollection {
   }
 
   karkunToPerson(karkun) {
-    return {
+    const city = karkun.cityId ? Cities.findOne(karkun.cityId) : null;
+
+    let person = {
       _id: karkun._id,
       isKarkun: true,
       isEmployee: karkun.isEmployee,
+      dataSource: karkun.dataSource,
       sharedData: {
         name: karkun.name,
         parentName: karkun.parentName,
@@ -850,7 +857,20 @@ class People extends AggregatableCollection {
         employmentStartDate: karkun.employmentStartDate,
         employmentEndDate: karkun.employmentEndDate,
       },
+      visitorData: city
+        ? {
+            city: city.name,
+            country: city.country,
+          }
+        : null,
     };
+
+    person.sharedData = omitBy(person.sharedData, isNil);
+    person.karkunData = omitBy(person.karkunData, isNil);
+    person.employeeData = omitBy(person.employeeData, isNil);
+    person.visitorData = omitBy(person.visitorData, isNil);
+    person = omitBy(person, isNil);
+    return person;
   }
 }
 

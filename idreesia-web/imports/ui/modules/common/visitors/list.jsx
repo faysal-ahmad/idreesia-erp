@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AuditOutlined, DeleteOutlined, HistoryOutlined, LinkOutlined, PlusCircleOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
+import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -27,7 +27,6 @@ export default class VisitorsList extends Component {
     showStayHistoryAction: PropTypes.bool,
     showImdadRequestsAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
-    showKarkunLinkAction: PropTypes.bool,
     showKarkunCreateAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
@@ -36,7 +35,6 @@ export default class VisitorsList extends Component {
     handleStayHistoryAction: PropTypes.func,
     handleImdadRequestsAction: PropTypes.func,
     handleAuditLogsAction: PropTypes.func,
-    handleKarkunLinkAction: PropTypes.func,
     handleKarkunCreateAction: PropTypes.func,
     setPageParams: PropTypes.func,
 
@@ -53,7 +51,6 @@ export default class VisitorsList extends Component {
     showStayHistoryAction: false,
     showImdadRequestsAction: false,
     showAuditLogsAction: false,
-    showKarkunLinkAction: false,
     showKarkunCreateAction: false,
 
     handleSelectItem: noop,
@@ -61,7 +58,6 @@ export default class VisitorsList extends Component {
     handleStayHistoryAction: noop,
     handleImdadRequestsAction: noop,
     handleAuditLogsAction: noop,
-    handleKarkunLinkAction: noop,
     handleKarkunCreateAction: noop,
     listHeader: () => null,
   };
@@ -147,13 +143,11 @@ export default class VisitorsList extends Component {
         showStayHistoryAction,
         showImdadRequestsAction,
         showAuditLogsAction,
-        showKarkunLinkAction,
         showKarkunCreateAction,
         handleDeleteItem,
         handleStayHistoryAction,
         handleImdadRequestsAction,
         handleAuditLogsAction,
-        handleKarkunLinkAction,
         handleKarkunCreateAction,
       } = this.props;
 
@@ -190,33 +184,25 @@ export default class VisitorsList extends Component {
         </Tooltip>
       ) : null;
 
-      const linkAction =
-        showKarkunLinkAction && record.karkunId ? (
-          <Tooltip title="Show in Karkuns">
-            <LinkOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                handleKarkunLinkAction(record);
-              }}
-            />
-          </Tooltip>
-        ) : null;
-
       const createAction =
-        showKarkunCreateAction && !record.karkunId ? (
-          <Tooltip title="Create Karkun">
-            <PlusCircleOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                handleKarkunCreateAction(record);
-              }}
-            />
+        showKarkunCreateAction && !record.isKarkun ? (
+          <Popconfirm
+            title="Are you sure you want to add this person to karkuns?"
+            onConfirm={() => {
+              handleKarkunCreateAction(record);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+          <Tooltip title="Add to karkuns">
+            <PlusCircleOutlined className="list-actions-icon" />
           </Tooltip>
+        </Popconfirm>
         ) : null;
 
       const deleteAction = showDeleteAction ? (
         <Popconfirm
-          title="Are you sure you want to delete this item?"
+          title="Are you sure you want to delete the data for this person?"
           onConfirm={() => {
             handleDeleteItem(record);
           }}
@@ -234,7 +220,6 @@ export default class VisitorsList extends Component {
           {stayHistoryAction}
           {imdadRequestsAction}
           {auditLogsAction}
-          {linkAction}
           {createAction}
           {deleteAction}
         </div>
@@ -251,7 +236,6 @@ export default class VisitorsList extends Component {
       showDeleteAction,
       showStayHistoryAction,
       showAuditLogsAction,
-      showKarkunLinkAction,
       showKarkunCreateAction,
     } = this.props;
 
@@ -277,7 +261,6 @@ export default class VisitorsList extends Component {
     if (
       showDeleteAction ||
       showStayHistoryAction ||
-      showKarkunLinkAction ||
       showAuditLogsAction ||
       showKarkunCreateAction
     ) {

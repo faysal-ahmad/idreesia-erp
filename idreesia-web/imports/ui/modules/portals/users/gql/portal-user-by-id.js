@@ -8,7 +8,7 @@ const PORTAL_USER_BY_ID = gql`
       locked
       instances
       permissions
-      karkunId
+      personId
       karkun {
         _id
         name

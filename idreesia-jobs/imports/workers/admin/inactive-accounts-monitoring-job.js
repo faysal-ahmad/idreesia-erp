@@ -26,7 +26,7 @@ export const worker = (job, callback) => {
           'days'
         );
         if (diff > 30) {
-          Users.lockAccount({ userId: user.id }, adminUser, DataSource.JOBS);
+          Users.lockAccount({ userId: user._id }, adminUser, DataSource.JOBS);
         }
       }
     });

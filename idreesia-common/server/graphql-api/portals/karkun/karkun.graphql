@@ -1,14 +1,14 @@
 extend type Query {
   portalKarkunById(portalId: String!, _id: String!): KarkunType
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS])
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   pagedPortalKarkuns(portalId: String!, filter: KarkunFilter): PagedKarkunType
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS], dataFieldName: "karkuns")
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS], dataFieldName: "karkuns")
   @checkInstanceAccess(instanceIdArgName: "portalId", dataFieldName: "karkuns")
 
   findPortalKarkunByCnicOrContactNumber(portalId: String!, cnicNumber: String, contactNumber: String): KarkunType
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS])
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }
 
@@ -32,7 +32,7 @@ extend type Mutation {
     birthDate: String
     referenceName: String
   ): KarkunType
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   updatePortalKarkun(
@@ -55,7 +55,7 @@ extend type Mutation {
     birthDate: String
     referenceName: String
   ): KarkunType
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   setPortalKarkunWazaifAndRaabta(
@@ -66,10 +66,24 @@ extend type Mutation {
     msRaabta: String
     msLastVisitDate: String
   ): KarkunType
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   setPortalKarkunProfileImage(portalId: String!, _id: String!, imageId: String!): KarkunType
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS])
+  @checkInstanceAccess(instanceIdArgName: "portalId")
+
+  addPortalKarkun(
+    portalId: String!
+    _id: String!
+  ): KarkunType
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
+  @checkInstanceAccess(instanceIdArgName: "portalId")
+
+  removePortalKarkun(
+    portalId: String!
+    _id: String!
+  ): Int
   @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }

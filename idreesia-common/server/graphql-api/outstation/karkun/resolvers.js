@@ -3,6 +3,7 @@ import {
   canDeleteKarkun,
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
@@ -33,7 +34,11 @@ export default {
 
       if (!existingPerson) {
         // Create a karkun from using the passed values
-        const personValues = People.karkunToPerson(values);
+        const personValues = People.karkunToPerson({
+          ...values,
+          isKarkun: true,
+          dataSource: DataSource.OUTSTATION,
+        });
         People.createPerson(personValues, user);
         return 'New karkun created.';
       }

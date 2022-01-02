@@ -1,20 +1,11 @@
 /* eslint "no-console": "off" */
 import { JobTypes } from 'meteor/idreesia-common/constants';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
-import {
-  FilterTarget,
-  MessageStatus,
-} from 'meteor/idreesia-common/constants/communication';
+import { MessageStatus } from 'meteor/idreesia-common/constants/communication';
 
 import Jobs from '/imports/collections/jobs';
 import sendSmsMessage from './send-sms-message';
-import getMsKarkunMessageRecepients from './get-ms-karkun-message-recepients';
-import getOutstationKarkunMessageRecepients from './get-outstation-karkun-message-recepients';
-
-const MessageRecepientsEvaluator = {
-  [FilterTarget.MS_KARKUNS]: getMsKarkunMessageRecepients,
-  [FilterTarget.OUTSTATION_KARKUNS]: getOutstationKarkunMessageRecepients,
-};
 
 export const worker = (job, callback) => {
   console.log(`--> Sending SMS Messages`, job.data);
@@ -30,8 +21,9 @@ export const worker = (job, callback) => {
     return Promise.resolve();
   }
 
-  const { recepientFilters } = message;
-  if (!recepientFilters || recepientFilters.length === 0) {
+  const karkunIds = message.karkunIds || [];
+  const visitorIds = message.visitorIds || [];
+  if (karkunIds.length === 0 && visitorIds.length === 0) {
     console.error(`Message has no defined recepients.`);
     job.done();
     if (callback) {
@@ -47,45 +39,36 @@ export const worker = (job, callback) => {
     },
   });
 
-  const karkunIds = [];
-  const visitorIds = [];
   const phoneNumbers = [];
   const succeededPhoneNumbers = [];
   const failedPhoneNumbers = [];
 
-  const recepientFilter = recepientFilters[0];
-  const getMessageRecepients =
-    MessageRecepientsEvaluator[recepientFilter.filterTarget];
-  return getMessageRecepients(recepientFilter)
-    .then(({ karkuns, visitors }) => {
-      karkuns.forEach(({ _id, contactNumber1 }) => {
-        if (contactNumber1) {
-          karkunIds.push(_id);
-          phoneNumbers.push(contactNumber1);
-        }
-      });
+  const recepientIds = karkunIds.concat(visitorIds);
+  const people = People.find({
+    _id: { $in: recepientIds },
+  });
 
-      visitors.forEach(({ _id, contactNumber1 }) => {
-        if (contactNumber1) {
-          visitorIds.push(_id);
-          phoneNumbers.push(contactNumber1);
-        }
-      });
+  people.forEach(({ _id, sharedData: { contactNumber1 } }) => {
+    if (contactNumber1) {
+      karkunIds.push(_id);
+      phoneNumbers.push(contactNumber1);
+    }
+  });
 
-      return phoneNumbers.reduce(
-        (p, phoneNumber) =>
-          p
-            .then(() => sendSmsMessage(phoneNumber, message.messageBody))
-            .then(result => {
-              if (result.messageSent) {
-                succeededPhoneNumbers.push(result.phoneNumber);
-              } else {
-                failedPhoneNumbers.push(result.phoneNumber);
-              }
-            }),
-        Promise.resolve()
-      );
-    })
+  return phoneNumbers
+    .reduce(
+      (p, phoneNumber) =>
+        p
+          .then(() => sendSmsMessage(phoneNumber, message.messageBody))
+          .then(result => {
+            if (result.messageSent) {
+              succeededPhoneNumbers.push(result.phoneNumber);
+            } else {
+              failedPhoneNumbers.push(result.phoneNumber);
+            }
+          }),
+      Promise.resolve()
+    )
     .then(() => {
       console.log(
         `--> Finished sending ${phoneNumbers.length} SMS Messages`,
@@ -93,8 +76,6 @@ export const worker = (job, callback) => {
       );
       Messages.update(messageId, {
         $set: {
-          karkunIds,
-          visitorIds,
           succeededPhoneNumbers,
           failedPhoneNumbers,
           status: MessageStatus.COMPLETED,

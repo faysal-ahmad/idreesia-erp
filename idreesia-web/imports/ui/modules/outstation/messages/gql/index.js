@@ -20,3 +20,6 @@ export {
 export {
   default as PAGED_OUTSTATION_KARKUN_MESSAGE_RECEPIENTS,
 } from './paged-outstation-karkun-message-recepiets';
+export {
+  default as PAGED_OUTSTATION_KARKUN_MESSAGE_RECEPIENTS_BY_RESULT,
+} from './paged-outstation-karkun-message-recepiets-by-result';

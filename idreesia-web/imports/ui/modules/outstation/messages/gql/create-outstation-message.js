@@ -14,7 +14,7 @@ const CREATE_OUTSTATION_MESSAGE = gql`
       messageBody
       recepientFilters {
         lastTarteeb
-        dutyId
+        dutyIds
         cityId
         cityMehfilId
         region

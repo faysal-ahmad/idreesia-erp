@@ -1,3 +1,4 @@
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -60,19 +61,30 @@ export default {
         );
       }
 
-      const date = new Date();
-      const messageId = Messages.insert({
-        source: MessageSource.OUTSTATION,
-        messageBody,
-        recepientFilters: [recepientFilter],
-        status: MessageStatus.WAITING_APPROVAL,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
+      return People.searchPeople(recepientFilter, {
+        includeKarkuns: true,
+        paginatedResults: false,
+      })
+        .then(people => {
+          const karkunIds = people.map(person => person._id);
+          const date = new Date();
+          const messageId = Messages.insert({
+            source: MessageSource.OUTSTATION,
+            messageBody,
+            recepientFilters: [recepientFilter],
+            status: MessageStatus.WAITING_APPROVAL,
+            karkunIds,
+            createdAt: date,
+            createdBy: user._id,
+            updatedAt: date,
+            updatedBy: user._id,
+          });
 
-      return Messages.findOne(messageId);
+          return Messages.findOne(messageId);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
 
     updateOutstationMessage(

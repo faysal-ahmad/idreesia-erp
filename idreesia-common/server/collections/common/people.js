@@ -275,6 +275,7 @@ class People extends AggregatableCollection {
       name,
       cnicNumber,
       phoneNumber,
+      phoneNumbers,
       bloodGroup,
       ehadDate,
       ehadDuration,
@@ -288,10 +289,15 @@ class People extends AggregatableCollection {
       lastTarteeb,
       attendance,
       dutyId,
+      dutyIds,
       ehadKarkun,
       cityId,
       cityIds,
       cityMehfilId,
+      region,
+      // employee related fields
+      jobId,
+      jobIds,
     } = params;
 
     // ************************************
@@ -317,6 +323,15 @@ class People extends AggregatableCollection {
           $or: [
             { 'sharedData.contactNumber1': phoneNumber },
             { 'sharedData.contactNumber2': phoneNumber },
+          ],
+        },
+      });
+    } else if (phoneNumbers) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'sharedData.contactNumber1': { $in: phoneNumbers } },
+            { 'sharedData.contactNumber2': { $in: phoneNumbers } },
           ],
         },
       });
@@ -544,6 +559,14 @@ class People extends AggregatableCollection {
             'karkunData.cityId': { $in: cityIds },
           },
         });
+      } else if (region) {
+        const regionCities = Cities.find({ region });
+        const regionCityIds = regionCities.map(({ _id }) => _id);
+        pipeline.push({
+          $match: {
+            'karkunData.cityId': { $in: regionCityIds },
+          },
+        });
       } else {
         pipeline.push({
           $match: {
@@ -560,7 +583,7 @@ class People extends AggregatableCollection {
         });
       }
 
-      if (dutyId) {
+      if (dutyId || (dutyIds && dutyIds.length > 0)) {
         pipeline.push({
           $lookup: {
             from: 'hr-karkun-duties',
@@ -569,11 +592,13 @@ class People extends AggregatableCollection {
             as: 'duties',
           },
         });
+
+        const dutyIdsToSearch = dutyId ? [dutyId] : dutyIds;
         pipeline.push({
           $match: {
             duties: {
               $elemMatch: {
-                dutyId: { $eq: dutyId },
+                dutyId: { $in: dutyIdsToSearch },
               },
             },
           },
@@ -584,6 +609,19 @@ class People extends AggregatableCollection {
     // ************************************
     // Add criteria for employee data fields
     // ************************************
+    if (jobId) {
+      pipeline.push({
+        $match: {
+          'employeeData.jobId': { $eq: jobId },
+        },
+      });
+    } else if (jobIds && jobIds.length > 0) {
+      pipeline.push({
+        $match: {
+          'employeeData.jobId': { $in: jobIds },
+        },
+      });
+    }
 
     // ************************************
     // Add filters against passed flags
@@ -625,7 +663,9 @@ class People extends AggregatableCollection {
   searchPeople(params = {}, flags = {}) {
     const pipeline = this.buildSearchPipline(params, flags);
     const { pageIndex = '0', pageSize = '20' } = params;
-    const paginatedResults = flags.paginatedResults || true;
+    const paginatedResults = !isNil(flags.paginatedResults)
+      ? flags.paginatedResults
+      : true;
 
     if (paginatedResults) {
       const countingPipeline = pipeline.concat({

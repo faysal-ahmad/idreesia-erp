@@ -42,7 +42,7 @@ const FormButtonsSaveCancelExtra = ({
           type="primary"
           icon={<SaveOutlined />}
           htmlType="submit"
-          disabled={!allowSubmit || (isFieldsTouched && !isFieldsTouched())}
+          disabled={!allowSubmit || !isFieldsTouched}
         >
           Save
         </Button>
@@ -57,7 +57,7 @@ FormButtonsSaveCancelExtra.propTypes = {
   handleExtra: PropTypes.func,
   handleCancel: PropTypes.func,
   itemLayout: PropTypes.object,
-  isFieldsTouched: PropTypes.func,
+  isFieldsTouched: PropTypes.bool,
 };
 
 FormButtonsSaveCancelExtra.defaultProps = {

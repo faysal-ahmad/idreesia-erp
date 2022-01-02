@@ -15,7 +15,7 @@ const UPDATE_OUTSTATION_MESSAGE = gql`
       messageBody
       recepientFilters {
         lastTarteeb
-        dutyId
+        dutyIds
         cityId
         cityMehfilId
         region

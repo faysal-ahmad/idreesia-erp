@@ -85,7 +85,10 @@ extend type Query {
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES], dataFieldName: "karkuns")
 
   pagedOutstationKarkunMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedKarkunType
-  @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES], dataFieldName: "karkuns")
+  @checkPermissions(permissions: [OUTSTATION_VIEW_MESSAGES, OUTSTATION_MANAGE_MESSAGES, OUTSTATION_APPROVE_MESSAGES], dataFieldName: "karkuns")
+
+  pagedOutstationKarkunMessageRecepientsByResult(recepientsByResultFilter: MessageRecepientByResultFilter!): PagedKarkunType
+  @checkPermissions(permissions: [OUTSTATION_VIEW_MESSAGES, OUTSTATION_MANAGE_MESSAGES, OUTSTATION_APPROVE_MESSAGES], dataFieldName: "karkuns")
 
   pagedVisitorMessageRecepients(recepientFilter: MessageRecepientFilter!): PagedVisitorType
   @checkPermissions(permissions: [HR_VIEW_MESSAGES, HR_MANAGE_MESSAGES, HR_APPROVE_MESSAGES])

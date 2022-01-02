@@ -1,3 +1,4 @@
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
 import {
   MessageSource,
@@ -5,8 +6,6 @@ import {
 } from 'meteor/idreesia-common/constants/communication';
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
 import { JobTypes } from 'meteor/idreesia-common/constants';
-
-import { getKarkunsWithoutPagination } from 'meteor/idreesia-common/server/graphql-api/hr/karkun/queries';
 
 export default {
   Query: {
@@ -23,8 +22,11 @@ export default {
 
   Mutation: {
     createOperationsMessage(obj, { messageBody, recepientFilter }, { user }) {
-      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
-        const karkunIds = karkuns.map(karkun => karkun._id);
+      return People.searchPeople(recepientFilter, {
+        includeKarkuns: true,
+        paginatedResults: false,
+      }).then(people => {
+        const karkunIds = people.map(person => person._id);
         const date = new Date();
         const messageId = Messages.insert({
           source: MessageSource.OPERATIONS,
@@ -59,8 +61,11 @@ export default {
         );
       }
 
-      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
-        const karkunIds = karkuns.map(karkun => karkun._id);
+      return People.searchPeople(recepientFilter, {
+        includeKarkuns: true,
+        paginatedResults: false,
+      }).then(people => {
+        const karkunIds = people.map(person => person._id);
         const date = new Date();
         Messages.update(
           {

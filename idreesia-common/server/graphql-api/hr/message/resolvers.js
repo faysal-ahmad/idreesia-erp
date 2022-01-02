@@ -1,12 +1,12 @@
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import {
   MessageSource,
   MessageStatus,
 } from 'meteor/idreesia-common/constants/communication';
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
 import { JobTypes } from 'meteor/idreesia-common/constants';
-
-import { getKarkunsWithoutPagination } from '../karkun/queries';
 
 export default {
   Query: {
@@ -27,8 +27,22 @@ export default {
 
   Mutation: {
     createHrMessage(obj, { messageBody, recepientFilter }, { user }) {
-      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
-        const karkunIds = karkuns.map(karkun => karkun._id);
+      const multanCity = Cities.findOne({
+        name: 'Multan',
+        country: 'Pakistan',
+      });
+
+      return People.searchPeople(
+        {
+          ...recepientFilter,
+          cityId: multanCity._id,
+        },
+        {
+          includeKarkuns: true,
+          paginatedResults: false,
+        }
+      ).then(people => {
+        const karkunIds = people.map(person => person._id);
         const date = new Date();
         const messageId = Messages.insert({
           source: MessageSource.HR,
@@ -59,8 +73,22 @@ export default {
         );
       }
 
-      return getKarkunsWithoutPagination(recepientFilter).then(karkuns => {
-        const karkunIds = karkuns.map(karkun => karkun._id);
+      const multanCity = Cities.findOne({
+        name: 'Multan',
+        country: 'Pakistan',
+      });
+
+      return People.searchPeople(
+        {
+          ...recepientFilter,
+          cityId: multanCity._id,
+        },
+        {
+          includeKarkuns: true,
+          paginatedResults: false,
+        }
+      ).then(people => {
+        const karkunIds = people.map(person => person._id);
         const date = new Date();
         Messages.update(
           {

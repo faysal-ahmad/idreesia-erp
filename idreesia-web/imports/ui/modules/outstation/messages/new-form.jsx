@@ -5,6 +5,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { Divider, Drawer, Form, message } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { FilterTarget } from 'meteor/idreesia-common/constants/communication';
 import {
   useAllCities,
   useAllCityMehfils,
@@ -67,13 +68,13 @@ const NewForm = ({ history, location }) => {
 
   const handlePeviewKarkuns = () => {
     const lastTarteeb = form.getFieldValue('lastTarteeb');
-    const dutyId = form.getFieldValue('dutyId');
+    const dutyIds = form.getFieldValue('dutyIds');
     const cityIdMehfilId = form.getFieldValue('cityIdMehfilId');
     const region = form.getFieldValue('region');
 
     const filter = {
       lastTarteeb,
-      dutyId,
+      dutyIds,
       cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
       cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
       region,
@@ -83,13 +84,14 @@ const NewForm = ({ history, location }) => {
     setRecepientFilter(filter);
   };
 
-  const handleFinish = ({ messageBody, lastTarteeb, dutyId, cityIdMehfilId, region }) => {
+  const handleFinish = ({ messageBody, lastTarteeb, dutyIds, cityIdMehfilId, region }) => {
     createOutstationMessage({
       variables: {
         messageBody,
         recepientFilter: {
+          filterTarget: FilterTarget.OUTSTATION_KARKUNS,
           lastTarteeb,
-          dutyId,
+          dutyIds,
           cityId: cityIdMehfilId ? cityIdMehfilId[0] : null,
           cityMehfilId: cityIdMehfilId ? cityIdMehfilId[1] : null,
           region,
@@ -119,11 +121,14 @@ const NewForm = ({ history, location }) => {
           fieldLabel="Last Tarteeb"
         />
         <SelectField
-          fieldName="dutyId"
-          fieldLabel="Duty"
+          mode="multiple"
+          fieldName="dutyIds"
+          fieldLabel="Duties"
+          required={false}
           data={allMehfilDuties}
           getDataValue={({ _id }) => _id}
           getDataText={({ name: _name }) => _name}
+          initialValue={[]}
         />
         <CascaderField
           data={cityMehfilCascaderData}

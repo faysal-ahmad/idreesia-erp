@@ -14,10 +14,6 @@ const PAGED_OUTSTATION_KARKUN_MESSAGE_RECEPIENTS = gql`
         contactNumber2
         lastTarteebDate
         imageId
-        job {
-          _id
-          name
-        }
         duties {
           _id
           dutyId
@@ -25,6 +21,15 @@ const PAGED_OUTSTATION_KARKUN_MESSAGE_RECEPIENTS = gql`
           dutyName
           shiftName
           role
+        }
+        city {
+          _id
+          name
+          country
+        }
+        cityMehfil {
+          _id
+          name
         }
       }
     }

@@ -17,7 +17,7 @@ const FormButtonsSubmit = ({ text, isFieldsTouched }) => (
         size="large"
         type="primary"
         htmlType="submit"
-        disabled={isFieldsTouched && !isFieldsTouched()}
+        disabled={!isFieldsTouched}
       >
         {text}
       </Button>
@@ -27,7 +27,7 @@ const FormButtonsSubmit = ({ text, isFieldsTouched }) => (
 
 FormButtonsSubmit.propTypes = {
   text: PropTypes.string,
-  isFieldsTouched: PropTypes.func,
+  isFieldsTouched: PropTypes.bool,
 };
 
 FormButtonsSubmit.defaultProps = {

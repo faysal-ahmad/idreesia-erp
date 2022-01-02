@@ -217,13 +217,7 @@ function buildPipeline(params) {
   return pipeline;
 }
 
-export function getKarkunsWithoutPagination(params) {
-  const pipeline = buildPipeline(params);
-  const people = People.aggregate(pipeline).toArray();
-  return people.map(person => People.personToKarkun(person));
-}
-
-export function getKarkunsByFilter(params) {
+function getKarkunsByFilter(params) {
   const pipeline = buildPipeline(params);
   const { pageIndex = '0', pageSize = '20' } = params;
 

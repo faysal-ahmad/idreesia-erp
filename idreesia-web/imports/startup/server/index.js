@@ -10,10 +10,12 @@ import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { apolloErrorFormatter } from './apollo-error-formatter';
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError: apolloErrorFormatter,
   schemaDirectives: {
     checkPermissions: CheckPermissionsDirective,
     checkInstanceAccess: CheckInstanceAccessDirective,

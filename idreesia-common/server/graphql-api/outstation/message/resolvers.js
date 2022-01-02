@@ -64,27 +64,23 @@ export default {
       return People.searchPeople(recepientFilter, {
         includeKarkuns: true,
         paginatedResults: false,
-      })
-        .then(people => {
-          const karkunIds = people.map(person => person._id);
-          const date = new Date();
-          const messageId = Messages.insert({
-            source: MessageSource.OUTSTATION,
-            messageBody,
-            recepientFilters: [recepientFilter],
-            status: MessageStatus.WAITING_APPROVAL,
-            karkunIds,
-            createdAt: date,
-            createdBy: user._id,
-            updatedAt: date,
-            updatedBy: user._id,
-          });
-
-          return Messages.findOne(messageId);
-        })
-        .catch(error => {
-          console.log(error);
+      }).then(people => {
+        const karkunIds = people.map(person => person._id);
+        const date = new Date();
+        const messageId = Messages.insert({
+          // source: MessageSource.OUTSTATION,
+          messageBody,
+          recepientFilters: [recepientFilter],
+          status: MessageStatus.WAITING_APPROVAL,
+          karkunIds,
+          createdAt: date,
+          createdBy: user._id,
+          updatedAt: date,
+          updatedBy: user._id,
         });
+
+        return Messages.findOne(messageId);
+      });
     },
 
     updateOutstationMessage(

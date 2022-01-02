@@ -1,14 +1,10 @@
 extend type Query {
-  portalAttendanceById(portalId: String!, _id: String!): AttendanceType
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_DELETE_DATA])
-  @checkInstanceAccess(instanceIdArgName: "portalId")
-
   pagedPortalAttendanceByKarkun(
     portalId: String!
     karkunId: String!
     queryString: String
   ): PagedAttendanceType
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   portalAttendanceByMonth(
@@ -17,7 +13,7 @@ extend type Query {
     cityId: String
     cityMehfilId: String
   ): [AttendanceType]
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }
 
@@ -26,7 +22,7 @@ extend type Mutation {
     portalId: String!
     month: String!
   ): Int
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   updatePortalAttendance(
@@ -36,16 +32,15 @@ extend type Mutation {
     presentCount: Int
     lateCount: Int
     absentCount: Int
+    msVisitCount: Int
     percentage: Int
   ): AttendanceType
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   deletePortalAttendances(portalId: String!, month: String!, ids: [String]!): Int
-  @checkPermissions(permissions: [PORTALS_DELETE_DATA])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   deleteAllPortalAttendances(portalId: String!, month: String!, cityId: String, cityMehfilId: String): Int
-  @checkPermissions(permissions: [PORTALS_DELETE_DATA])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }

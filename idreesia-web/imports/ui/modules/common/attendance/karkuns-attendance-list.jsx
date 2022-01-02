@@ -64,6 +64,7 @@ export default class KarkunsAttendanceList extends Component {
     pr: 'ant-calendar-cell attendance-date-linear attendance-present',
     la: 'ant-calendar-cell attendance-date-linear attendance-late',
     ab: 'ant-calendar-cell attendance-date-linear attendance-absent',
+    ms: 'ant-calendar-cell attendance-date-linear attendance-ms',
     none: 'ant-calendar-cell attendance-date-linear attendance-none',
   };
 
@@ -188,7 +189,8 @@ export default class KarkunsAttendanceList extends Component {
     if (!curentVal) newAttendanceValue = 'pr';
     else if (curentVal === 'pr') newAttendanceValue = 'la';
     else if (curentVal === 'la') newAttendanceValue = 'ab';
-    else if (curentVal === 'ab') newAttendanceValue = null;
+    else if (curentVal === 'ab') newAttendanceValue = 'ms';
+    else if (curentVal === 'ms') newAttendanceValue = null;
 
     const updatedAttendanceDetails = Object.assign({}, attendanceDetails, {
       [day]: newAttendanceValue,

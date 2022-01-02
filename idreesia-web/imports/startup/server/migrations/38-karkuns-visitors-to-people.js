@@ -3,6 +3,7 @@ import { keyBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 
 Migrations.add({
   version: 38,
@@ -155,6 +156,7 @@ Migrations.add({
     // already been inserted.
     karkuns.forEach(karkun => {
       if (karkunsInsertedMap[karkun._id] !== true) {
+        const city = Cities.findOne(karkun.cityId);
         const person = {
           _id: karkun._id,
           isEmployee: karkun.isEmployee || false,
@@ -196,6 +198,10 @@ Migrations.add({
             ehadKarkun: karkun.ehadKarkun,
             ehadPermissionDate: karkun.ehadPermissionDate,
             attachmentIds: karkun.attachmentIds,
+          },
+          visitorData: {
+            city: city?.name,
+            country: city?.country,
           },
         };
 

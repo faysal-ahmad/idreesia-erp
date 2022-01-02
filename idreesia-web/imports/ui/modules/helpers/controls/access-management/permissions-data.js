@@ -413,6 +413,14 @@ export const portalsPermissionsData = {
           title: 'Manage Karkuns',
           key: PermissionConstants.PORTALS_MANAGE_KARKUNS,
         },
+        {
+          title: 'View Mehfil Karkuns',
+          key: PermissionConstants.PORTALS_VIEW_MEHFIL_KARKUNS,
+        },
+        {
+          title: 'Manage Mehfil Karkuns',
+          key: PermissionConstants.PORTALS_MANAGE_MEHFIL_KARKUNS,
+        },
       ],
     },
     {
@@ -440,6 +448,14 @@ export const portalsPermissionsData = {
         {
           title: 'Manage Amaanat Logs',
           key: PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
+        },
+        {
+          title: 'View Mehfil Amaanat Logs',
+          key: PermissionConstants.PORTALS_VIEW_MEHFIL_AMAANAT_LOGS,
+        },
+        {
+          title: 'Manage Mehfil Amaanat Logs',
+          key: PermissionConstants.PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS,
         },
       ],
     },

@@ -20,8 +20,7 @@ import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { PAGED_PORTAL_AUDIT_LOGS } from '../gql';
 
 const EntityTypeDisplayNames = {
-  [EntityType.KARKUN]: 'Karkun',
-  [EntityType.VISITOR]: 'Member',
+  [EntityType.PERSON]: 'Person',
 };
 
 const List = ({ history, location }) => {
@@ -65,13 +64,7 @@ const List = ({ history, location }) => {
 
   const getAuditLogEntityRenderer = auditLog => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
-    if (entityType === EntityType.KARKUN) {
-      return (
-        <Link to={paths.karkunsEditFormPath(portalId, _entityId)}>
-          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
-        </Link>
-      );
-    } else if (entityType === EntityType.VISITOR) {
+    if (entityType === EntityType.PERSON) {
       return (
         <Link to={paths.membersEditFormPath(portalId, _entityId)}>
           {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}

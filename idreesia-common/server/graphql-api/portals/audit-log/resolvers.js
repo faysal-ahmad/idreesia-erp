@@ -5,7 +5,7 @@ export default {
   Query: {
     pagedPortalAuditLogs(obj, { filter }) {
       const updatedFilter = Object.assign({}, filter, {
-        entityTypes: [EntityType.VISITOR, EntityType.KARKUN],
+        entityTypes: [EntityType.PERSON],
       });
 
       return AuditLogs.searchAuditLogs(updatedFilter);

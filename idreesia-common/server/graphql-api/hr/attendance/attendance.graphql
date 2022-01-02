@@ -9,6 +9,7 @@ type AttendanceType {
   presentCount: Int
   lateCount: Int
   absentCount: Int
+  msVisitCount: Int
   percentage: Float
   meetingCardBarcodeId: String
 

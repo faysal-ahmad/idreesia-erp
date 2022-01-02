@@ -11,25 +11,60 @@ import {
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/portals/create-monthly-attendance';
 import { getPagedAttendanceByKarkun } from './queries';
 
+const userHasPortalLevelAccess = user =>
+  hasOnePermission(user, [
+    PermissionConstants.PORTALS_VIEW_KARKUNS,
+    PermissionConstants.PORTALS_MANAGE_KARKUNS,
+  ]);
+
+const userCanAccessCityMehfilData = (cityMehfilId, user) => {
+  if (!userHasPortalLevelAccess(user)) {
+    const userPerson = People.findOne(user.personId);
+    if (
+      !userPerson?.karkunData?.cityMehfilId ||
+      userPerson?.karkunData?.cityMehfilId !== cityMehfilId
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const userCanAccessKarkunData = (karkunId, user) => {
+  const karkunPerson = People.findOne(karkunId);
+  return userCanAccessCityMehfilData(
+    karkunPerson?.karkunData?.cityMehfilId,
+    user
+  );
+};
+
 export default {
   Query: {
-    portalAttendanceById(obj, { _id }) {
-      return Attendances.findOne(_id);
+    pagedPortalAttendanceByKarkun(obj, { karkunId, queryString }, { user }) {
+      if (userCanAccessKarkunData(karkunId, user)) {
+        return getPagedAttendanceByKarkun(karkunId, queryString);
+      }
+
+      return {
+        attendance: [],
+        totalResults: 0,
+      };
     },
 
-    pagedPortalAttendanceByKarkun(obj, { karkunId, queryString }) {
-      return getPagedAttendanceByKarkun(karkunId, queryString);
-    },
-
-    portalAttendanceByMonth(obj, { month, cityId, cityMehfilId }) {
+    portalAttendanceByMonth(obj, { month, cityId, cityMehfilId }, { user }) {
       if (!cityId) return [];
 
       let people = [];
-      if (!cityMehfilId) {
+      if (!cityMehfilId && userHasPortalLevelAccess(user)) {
+        // If the user has portal level access, return him the data
+        // for the city.
         people = People.find({
           'karkunData.cityId': { $eq: cityId },
         }).fetch();
-      } else {
+      }
+
+      if (cityMehfilId && userCanAccessCityMehfilData(cityMehfilId, user)) {
         people = People.find({
           'karkunData.cityId': { $eq: cityId },
           'karkunData.cityMehfilId': { $eq: cityMehfilId },
@@ -57,6 +92,7 @@ export default {
         presentCount,
         lateCount,
         absentCount,
+        msVisitCount,
         percentage,
       },
       { user }
@@ -68,6 +104,7 @@ export default {
           presentCount: toInteger(presentCount),
           lateCount: toInteger(lateCount),
           absentCount: toInteger(absentCount),
+          msVisitCount: toInteger(msVisitCount),
           percentage: toInteger(percentage),
           updatedAt: date,
           updatedBy: user._id,

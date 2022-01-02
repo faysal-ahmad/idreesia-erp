@@ -29,6 +29,10 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  msVisitCount: {
+    type: Number,
+    optional: true,
+  },
   presentCount: {
     type: Number,
     optional: true,

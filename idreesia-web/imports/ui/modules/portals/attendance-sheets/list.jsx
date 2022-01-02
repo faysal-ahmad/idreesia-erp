@@ -147,14 +147,16 @@ const List = ({ history, location }) => {
       let presentCount = 0;
       let lateCount = 0;
       let absentCount = 0;
+      let msVisitCount = 0;
       values(attendanceDetails).forEach(val => {
         if (val === 'pr') presentCount++;
         if (val === 'la') lateCount++;
         if (val === 'ab') absentCount++;
+        if (val === 'ms') msVisitCount++;
       });
 
-      const total = presentCount + lateCount + absentCount;
-      const percentage = Math.round(((presentCount + lateCount) / total) * 100);
+      const total = presentCount + lateCount + absentCount + msVisitCount;
+      const percentage = Math.round(((presentCount + lateCount + msVisitCount) / total) * 100);
 
       return updatePortalAttendance({
         variables: {
@@ -164,6 +166,7 @@ const List = ({ history, location }) => {
           presentCount,
           lateCount,
           absentCount,
+          msVisitCount,
           percentage,
         },
       });

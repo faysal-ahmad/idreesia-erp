@@ -15,6 +15,7 @@ const attendanceStyles = {
   pr: 'ant-calendar-cell attendance-date-linear attendance-present',
   la: 'ant-calendar-cell attendance-date-linear attendance-late',
   ab: 'ant-calendar-cell attendance-date-linear attendance-absent',
+  ms: 'ant-calendar-cell attendance-date-linear attendance-ms',
   none: 'ant-calendar-cell attendance-date-linear attendance-none',
 };
 

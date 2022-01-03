@@ -68,7 +68,7 @@ export default {
         const karkunIds = people.map(person => person._id);
         const date = new Date();
         const messageId = Messages.insert({
-          // source: MessageSource.OUTSTATION,
+          source: MessageSource.OUTSTATION,
           messageBody,
           recepientFilters: [recepientFilter],
           status: MessageStatus.WAITING_APPROVAL,

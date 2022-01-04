@@ -10,7 +10,7 @@ jobs:
       - checkout:
           path: ~/idreesia-erp
 
-      - run: "curl https://install.meteor.com | /bin/sh"
+      - run: "npm install -g meteor"
 
       - restore_cache:
           key: web-dependencies-{{ checksum "package.json" }}
@@ -49,7 +49,7 @@ jobs:
       - checkout:
           path: ~/idreesia-erp
 
-      - run: "curl https://install.meteor.com | /bin/sh"
+      - run: "npm install -g meteor"
 
       - restore_cache:
           key: web-dependencies-{{ checksum "package.json" }}
@@ -88,7 +88,7 @@ jobs:
       - checkout:
           path: ~/idreesia-erp
 
-      - run: "curl https://install.meteor.com | /bin/sh"
+      - run: "npm install -g meteor"
 
       - restore_cache:
           key: web-dependencies-{{ checksum "package.json" }}

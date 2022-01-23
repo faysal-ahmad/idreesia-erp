@@ -20,10 +20,12 @@ export default {
       const toDate = moment(Number(visitorStay.toDate)).hour(18);
       return moment().isAfter(toDate);
     },
-    refVisitor: visitorStay =>
-      People.findOne({
+    refVisitor: visitorStay => {
+      const person = People.findOne({
         _id: { $eq: visitorStay.visitorId },
-      }),
+      });
+      return People.personToVisitor(person);
+    },
     dutyName: visitorStay => {
       if (!visitorStay.dutyId) return null;
       const duty = Duties.findOne(visitorStay.dutyId);

@@ -228,7 +228,7 @@ function getKarkunsByFilter(params) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { name: 1 } },
+    { $sort: { 'sharedData.name': 1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
@@ -312,7 +312,7 @@ function getKarkunsByPredefinedFilter(params) {
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
   const resultsPipeline = pipeline.concat([
-    { $sort: { name: 1 } },
+    { $sort: { 'sharedData.name': 1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

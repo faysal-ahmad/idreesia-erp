@@ -47,14 +47,15 @@ export default {
 
   Mutation: {
     createOperationsVisitor(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.createVisitor(
+      const personValues = People.visitorToPerson(values);
+      const person = People.createPerson(
         {
-          ...person,
+          ...personValues,
           dataSource: DataSource.OPERATIONS,
         },
         user
       );
+      return People.personToVisitor(person);
     },
 
     updateOperationsVisitor(obj, values, { user }) {

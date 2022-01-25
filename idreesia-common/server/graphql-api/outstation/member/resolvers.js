@@ -64,14 +64,15 @@ export default {
     },
 
     createOutstationMember(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.createVisitor(
+      const personValues = People.visitorToPerson(values);
+      const person = People.createPerson(
         {
-          ...person,
+          ...personValues,
           dataSource: DataSource.OUTSTATION,
         },
         user
       );
+      return People.personToVisitor(person);
     },
 
     updateOutstationMember(obj, values, { user }) {

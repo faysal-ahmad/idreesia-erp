@@ -39,14 +39,6 @@ class NewForm extends Component {
     distinctTeamNames: PropTypes.array,
     distinctTeamNamesLoading: PropTypes.bool,
   };
-  
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
 
   handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, teamName }) => {
     const { visitorId, handleAddItem, createVisitorStay } = this.props;
@@ -89,14 +81,13 @@ class NewForm extends Component {
     )
       return null;
 
-      const isFieldsTouched = this.state.isFieldsTouched;
       const dutyShiftCascaderData = getDutyShiftCascaderData(
       allMSDuties,
       allDutyShifts
     );
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+      <Form layout="horizontal" onFinish={this.handleFinish}>
         <InputNumberField
           fieldName="numOfDays"
           fieldLabel="Num of Days"
@@ -129,7 +120,7 @@ class NewForm extends Component {
 
         <FormButtonsSubmit
           text="Add Stay"
-          isFieldsTouched={isFieldsTouched}
+          isFieldsTouched
         />
       </Form>
     );

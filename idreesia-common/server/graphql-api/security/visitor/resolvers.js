@@ -53,8 +53,9 @@ export default {
     },
 
     updateSecurityVisitor(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
 
     deleteSecurityVisitor(obj, { _id }) {
@@ -62,13 +63,15 @@ export default {
     },
 
     setSecurityVisitorImage(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
 
     updateSecurityVisitorNotes(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
 
     importSecurityVisitorsCsvData(obj, { csvData }, { user }) {

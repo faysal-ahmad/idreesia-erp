@@ -76,8 +76,9 @@ export default {
     },
 
     updateOutstationMember(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
 
     deleteOutstationMember(obj, { _id }) {
@@ -85,8 +86,9 @@ export default {
     },
 
     setOutstationMemberImage(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
   },
 };

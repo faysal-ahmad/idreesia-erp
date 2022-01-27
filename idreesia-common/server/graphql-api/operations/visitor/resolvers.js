@@ -59,8 +59,9 @@ export default {
     },
 
     updateOperationsVisitor(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
 
     deleteOperationsVisitor(obj, { _id }) {
@@ -68,8 +69,9 @@ export default {
     },
 
     setOperationsVisitorImage(obj, values, { user }) {
-      const person = People.visitorToPerson(values);
-      return People.updatePerson(person, user);
+      const personValues = People.visitorToPerson(values);
+      const person = People.updatePerson(personValues, user);
+      return People.personToVisitor(person);
     },
   },
 };

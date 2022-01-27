@@ -783,7 +783,7 @@ class People extends AggregatableCollection {
   }
 
   visitorToPerson(visitor) {
-    return {
+    let person = {
       _id: visitor._id,
       isVisitor: true,
       dataSource: visitor.dataSource,
@@ -796,16 +796,24 @@ class People extends AggregatableCollection {
         referenceName: visitor.referenceName,
         contactNumber1: visitor.contactNumber1,
         contactNumber2: visitor.contactNumber2,
+        contactNumber1Subscribed: visitor.contactNumber1Subscribed,
+        contactNumber2Subscribed: visitor.contactNumber2Subscribed,
         currentAddress: visitor.currentAddress,
         permanentAddress: visitor.permanentAddress,
         educationalQualification: visitor.educationalQualification,
         meansOfEarning: visitor.meansOfEarning,
+        imageId: visitor.imageId,
       },
       visitorData: {
         city: visitor.city,
         country: visitor.country,
       },
     };
+
+    person.sharedData = omitBy(person.sharedData, isNil);
+    person.visitorData = omitBy(person.visitorData, isNil);
+    person = omitBy(person, isNil);
+    return person;
   }
 
   personToKarkun(person) {

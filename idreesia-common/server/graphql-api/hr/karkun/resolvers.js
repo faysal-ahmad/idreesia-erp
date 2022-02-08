@@ -32,8 +32,13 @@ export default {
       const personValues = People.karkunToPerson({
         ...values,
         isKarkun: true,
+        isVisitor: true,
         cityId: multanCity._id,
         dataSource: DataSource.HR,
+        visitorData: {
+          city: multanCity.name,
+          country: multanCity.country,
+        },
       });
       const person = People.createPerson(personValues, user);
       return People.personToKarkun(person);

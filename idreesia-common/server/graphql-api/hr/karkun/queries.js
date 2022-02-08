@@ -74,7 +74,7 @@ function buildPipeline(params) {
   } else {
     pipeline.push({
       $match: {
-        isVisitor: false,
+        $or: [{ isKarkun: true }, { isEmployee: true }],
       },
     });
   }

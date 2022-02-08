@@ -121,6 +121,7 @@ export default {
         {
           ...personValues,
           isKarkun: true,
+          isVisitor: true,
           dataSource: `${DataSource.PORTAL}-${portalId}`,
         },
         user

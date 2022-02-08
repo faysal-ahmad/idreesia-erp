@@ -37,6 +37,7 @@ export default {
         const personValues = People.karkunToPerson({
           ...values,
           isKarkun: true,
+          isVisitor: true,
           dataSource: DataSource.OUTSTATION,
         });
         People.createPerson(personValues, user);

@@ -807,6 +807,8 @@ class People extends AggregatableCollection {
       visitorData: {
         city: visitor.city,
         country: visitor.country,
+        criminalRecord: visitor.criminalRecord,
+        otherNotes: visitor.otherNotes,
       },
     };
 

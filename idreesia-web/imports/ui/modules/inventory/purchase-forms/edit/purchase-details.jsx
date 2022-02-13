@@ -54,6 +54,8 @@ class EditForm extends Component {
     isFieldsTouched: false,
   };
 
+  formRef = React.createRef();
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
@@ -131,7 +133,7 @@ class EditForm extends Component {
 
     return (
       <>
-        <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <DateField
             fieldName="purchaseDate"
             fieldLabel="Purchase Date"
@@ -189,11 +191,12 @@ class EditForm extends Component {
           <Divider orientation="left">Purchased / Returned Items</Divider>
           <Form.Item name="items" initialValue={purchaseFormById.items} rules={rules} {...formItemExtendedLayout}>
             <ItemsList
+              showPrice
               defaultLabel="Purchased"
               inflowLabel="Purchased"
               outflowLabel="Returned"
-              showPrice
               physicalStoreId={physicalStoreId}
+              refForm={this.formRef.current}
             />
           </Form.Item>
 

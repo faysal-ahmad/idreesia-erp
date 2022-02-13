@@ -48,6 +48,8 @@ class NewForm extends Component {
     isFieldsTouched: false,
   };
 
+  formRef = React.createRef();
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
@@ -100,7 +102,7 @@ class NewForm extends Component {
     ];
 
     return (
-      <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+      <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <DateField
           fieldName="issueDate"
           fieldLabel="Issue Date"
@@ -155,10 +157,8 @@ class NewForm extends Component {
             inflowLabel="Returned"
             outflowLabel="Issued"
             physicalStoreId={physicalStoreId}
+            refForm={this.formRef.current}
           />
-          </Form.Item>
-        <Form.Item {...formItemExtendedLayout}>
-          {this.getItemsField()}
         </Form.Item>
 
         <FormButtonsSaveCancel

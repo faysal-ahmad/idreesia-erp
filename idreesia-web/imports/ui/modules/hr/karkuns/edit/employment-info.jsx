@@ -48,7 +48,7 @@ class EmploymentInfo extends Component {
       variables: {
         _id: karkunId,
         isEmployee,
-        jobId,
+        jobId: jobId || null,
         employmentStartDate,
         employmentEndDate,
       },

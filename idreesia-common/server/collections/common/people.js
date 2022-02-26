@@ -16,6 +16,7 @@ import {
   forOwn,
   get,
   isNil,
+  isUndefined,
   keys,
   omitBy,
 } from 'meteor/idreesia-common/utilities/lodash';
@@ -169,8 +170,21 @@ class People extends AggregatableCollection {
   // values have actually changed.
   getChangedValues(_id, newPerson, existingPerson) {
     const changedValues = {};
+    const topLevelProps = ['isVisitor', 'isKarkun', 'isEmployee', 'userId'];
+    topLevelProps.forEach(prop => {
+      const newValue = newPerson[prop];
+      if (
+        !isNil(newValue) &&
+        this.isValueChanged(prop, newValue, existingPerson?.[prop])
+      ) {
+        changedValues[prop] = newValue;
+      }
+    });
+
     forOwn(newPerson.sharedData, (newValue, key) => {
-      if (this.isValueChanged(key, newValue, existingPerson.sharedData[key])) {
+      if (
+        this.isValueChanged(key, newValue, existingPerson?.sharedData?.[key])
+      ) {
         changedValues[`sharedData.${key}`] = newValue;
       }
     });
@@ -178,7 +192,7 @@ class People extends AggregatableCollection {
     if (newPerson.karkunData) {
       forOwn(newPerson.karkunData, (newValue, key) => {
         if (
-          this.isValueChanged(key, newValue, existingPerson.karkunData[key])
+          this.isValueChanged(key, newValue, existingPerson?.karkunData?.[key])
         ) {
           changedValues[`karkunData.${key}`] = newValue;
         }
@@ -188,7 +202,7 @@ class People extends AggregatableCollection {
     if (newPerson.visitorData) {
       forOwn(newPerson.visitorData, (newValue, key) => {
         if (
-          this.isValueChanged(key, newValue, existingPerson.visitorData[key])
+          this.isValueChanged(key, newValue, existingPerson?.visitorData?.[key])
         ) {
           changedValues[`visitorData.${key}`] = newValue;
         }
@@ -198,7 +212,11 @@ class People extends AggregatableCollection {
     if (newPerson.employeeData) {
       forOwn(newPerson.employeeData, (newValue, key) => {
         if (
-          this.isValueChanged(key, newValue, existingPerson.employeeData[key])
+          this.isValueChanged(
+            key,
+            newValue,
+            existingPerson?.employeeData?.[key]
+          )
         ) {
           changedValues[`employeeData.${key}`] = newValue;
         }
@@ -209,7 +227,7 @@ class People extends AggregatableCollection {
   }
 
   isValueChanged(key, newValue, existingValue) {
-    if (!existingValue && !newValue) return false;
+    if (isNil(existingValue) && isNil(newValue)) return false;
     let isChanged;
 
     switch (key) {
@@ -915,11 +933,11 @@ class People extends AggregatableCollection {
         : null,
     };
 
-    person.sharedData = omitBy(person.sharedData, isNil);
-    person.karkunData = omitBy(person.karkunData, isNil);
-    person.employeeData = omitBy(person.employeeData, isNil);
-    person.visitorData = omitBy(person.visitorData, isNil);
-    person = omitBy(person, isNil);
+    person.sharedData = omitBy(person.sharedData, isUndefined);
+    person.karkunData = omitBy(person.karkunData, isUndefined);
+    person.employeeData = omitBy(person.employeeData, isUndefined);
+    person.visitorData = omitBy(person.visitorData, isUndefined);
+    person = omitBy(person, isUndefined);
     return person;
   }
 }

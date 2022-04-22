@@ -1,11 +1,5 @@
 version: "3"
 services:
-  nginx:
-    build:
-      context: ./containers/nginx
-    ports:
-      - "80:80"
-
   mongo:
     build:
       context: ./containers/mongo
@@ -26,7 +20,7 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=fairly long password
     depends_on:
       - mongo
-  
+
   web:
     build:
       context: ./idreesia-web

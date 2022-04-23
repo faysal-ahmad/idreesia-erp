@@ -26,17 +26,7 @@ export default class CheckPermissionsDirective extends SchemaDirectiveVisitor {
         return permissionValue;
       });
 
-      let hasPermission = false;
-
-      if (user.username === 'erp-admin') {
-        hasPermission = true;
-      } else if (!user || user.locked) {
-        hasPermission = false;
-      } else {
-        hasPermission = hasOnePermission(user, permissionValues);
-      }
-
-      if (!hasPermission) {
+      if (hasOnePermission(user, permissionValues) === false) {
         if (info.parentType.name === 'Query') {
           if (info.fieldName.startsWith('paged')) {
             return {

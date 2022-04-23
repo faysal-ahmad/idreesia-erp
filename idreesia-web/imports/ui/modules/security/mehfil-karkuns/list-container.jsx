@@ -5,10 +5,14 @@ import { graphql } from 'react-apollo';
 import { Modal, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithBreadcrumbs,
+  WithDynamicBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+import {
+  WithMehfilId,
+  WithMehfil,
+} from '/imports/ui/modules/security/common/composers';
 
 import List from './list';
 import EditForm from './edit-form';
@@ -184,5 +188,12 @@ export default flowRight(
   graphql(SET_DUTY_DETAIL, { name: 'setDutyDetail' }),
   graphql(REMOVE_MEHFIL_KARKUN, { name: 'removeMehfilKarkun' }),
   WithQueryParams(),
-  WithBreadcrumbs(['Security', 'Mehfils', 'Karkun Duties'])
+  WithMehfilId(),
+  WithMehfil(),
+  WithDynamicBreadcrumbs(({ mehfil }) => {
+    if (mehfil) {
+      return `Security, Mehfils, ${mehfil.name}, Karkun Duties`;
+    }
+    return `Security, Mehfils, Karkun Duties`;
+  })
 )(ListContainer);

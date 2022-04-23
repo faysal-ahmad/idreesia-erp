@@ -1,7 +1,7 @@
 export default function hasOnePermission(user, permissions) {
-  if (!user || user.locked) return false;
-
   if (user.username === 'erp-admin') return true;
+
+  if (!user || user.locked === true) return false;
 
   const { permissions: userPermissions } = user;
   if (!userPermissions) return false;
@@ -10,9 +10,7 @@ export default function hasOnePermission(user, permissions) {
   permissions.forEach(permission => {
     if (userPermissions.indexOf(permission) !== -1) {
       retVal = true;
-      return false;
     }
-    return true;
   });
 
   return retVal;

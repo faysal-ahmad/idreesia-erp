@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Button, Select, Table, Tooltip } from 'antd';
 import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
 
+import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
@@ -36,6 +37,14 @@ export class List extends Component {
   state = {
     selectedRows: [],
   };
+
+  getIsPastMehfil = mehfilById => {
+    const mehfilDate = moment(Number(mehfilById.mehfilDate));
+    return moment().diff(
+      moment(mehfilDate, Formats.DATE_FORMAT),
+      'days'
+      ) > 30;
+  }
 
   getColumns = isPastMehfil => {
     const columns = [
@@ -145,8 +154,7 @@ export class List extends Component {
   getTableHeader = () => {
     const { mehfilById, dutyName } = this.props;
     const { selectedRows } = this.state;
-    const mehfilDate = moment(Number(mehfilById.mehfilDate));
-    const isPastMehfil = moment().isAfter(mehfilDate);
+    const isPastMehfil = this.getIsPastMehfil(mehfilById);
 
     const options = MehfilDuties.map(duty => (
       <Select.Option key={duty._id} value={duty._id}>
@@ -185,7 +193,7 @@ export class List extends Component {
         </Button>
         &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
+          disabled={isPastMehfil}
           icon={<PrinterOutlined />}
           size="large"
           onClick={this.handleViewMehfilCards}
@@ -212,9 +220,7 @@ export class List extends Component {
     } = this.props;
     if (mehfilLoading || mehfilKarkunsLoading) return null;
 
-    const mehfilDate = moment(Number(mehfilById.mehfilDate));
-    const isPastMehfil = moment().isAfter(mehfilDate);
-
+    const isPastMehfil = this.getIsPastMehfil(mehfilById);
     const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId, 'karkun.name');
 
     return (
@@ -244,6 +250,7 @@ export default flowRight(
       ...data,
     }),
     options: ({ mehfilId, dutyName }) => ({
+      fetchPolicy: "cache-and-network",
       variables: {
         mehfilId,
         dutyName,

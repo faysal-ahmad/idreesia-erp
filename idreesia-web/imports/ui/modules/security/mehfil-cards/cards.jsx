@@ -23,8 +23,12 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-export const Card = ({ mehfilKarkun }) => {
+export const Card = ({ mehfilKarkun, showDutyNameInUrdu }) => {
   const mehfilDuty = find(MehfilDuties, { _id: mehfilKarkun.dutyName });
+  let cardHeading = '';
+  if (mehfilDuty) {
+    cardHeading = showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name;
+  }
 
   const karkunImage = mehfilKarkun.karkun.image ? (
     <img
@@ -38,7 +42,7 @@ export const Card = ({ mehfilKarkun }) => {
   return (
     <div key={mehfilKarkun._id} className="mehfil_card">
       <div className="mehfil_card_heading">
-        {mehfilDuty ? mehfilDuty.name : ''}
+        {cardHeading}
       </div>
       {mehfilKarkun.dutyDetail ? (
         <div className="mehfil_card_subheading">{mehfilKarkun.dutyDetail}</div>
@@ -54,20 +58,22 @@ export const Card = ({ mehfilKarkun }) => {
 
 Card.propTypes = {
   mehfilKarkun: PropTypes.object,
+  showDutyNameInUrdu: PropTypes.bool,
 };
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Cards extends Component {
   static propTypes = {
     mehfilKarkunsByIds: PropTypes.array,
+    showDutyNameInUrdu: PropTypes.bool,
   };
 
   render() {
-    const { mehfilKarkunsByIds } = this.props;
+    const { mehfilKarkunsByIds, showDutyNameInUrdu } = this.props;
     if (!mehfilKarkunsByIds) return null;
 
     const cards = mehfilKarkunsByIds.map((mehfilKarkun, index) => (
-      <Card key={index} mehfilKarkun={mehfilKarkun} />
+      <Card key={index} mehfilKarkun={mehfilKarkun} showDutyNameInUrdu={showDutyNameInUrdu} />
     ));
 
     let index = 0;

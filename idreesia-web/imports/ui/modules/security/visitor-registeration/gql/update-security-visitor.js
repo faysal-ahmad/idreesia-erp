@@ -5,7 +5,7 @@ const UPDATE_SECURITY_VISITOR = gql`
     $_id: String!
     $name: String!
     $parentName: String!
-    $cnicNumber: String!
+    $cnicNumber: String
     $ehadDate: String!
     $birthDate: String
     $referenceName: String!

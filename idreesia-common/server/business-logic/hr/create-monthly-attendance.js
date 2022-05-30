@@ -14,7 +14,7 @@ export function createMonthlyAttendance(formattedMonth, user) {
   }).fetch();
 
   const date = new Date();
-  people.forEach(({ _id, jobId }) => {
+  people.forEach(({ _id, employeeData: { jobId } }) => {
     // Create a new attendance if one does not exist for this karkun/month/job combination
     const existingAttendance = Attendances.findOne({
       karkunId: _id,

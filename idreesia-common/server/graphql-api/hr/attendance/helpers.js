@@ -36,7 +36,10 @@ function getAttendanceValues(jsonRecord) {
     presentCount,
     absentCount,
     lateCount: 0,
-    percentage: round((presentCount / (presentCount + absentCount)) * 100),
+    percentage:
+      presentCount + absentCount !== 0
+        ? round((presentCount / (presentCount + absentCount)) * 100)
+        : 0,
     attendanceDetails: JSON.stringify(attendanceDetails),
   };
 }

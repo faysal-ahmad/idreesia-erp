@@ -79,7 +79,6 @@ export default {
     },
 
     attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
-      console.log('attendanceByMonth called');
       if (!categoryId) return [];
 
       if (

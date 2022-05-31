@@ -296,21 +296,21 @@ class ListContainer extends Component {
           allMSDuties={allMSDuties}
           allDutyShifts={allDutyShifts}
         />
-        <Modal
-          title="Update Attendance"
-          visible={this.state.showEditForm}
-          onCancel={this.handleEditAttendanceCancel}
-          width={500}
-          footer={null}
-        >
-          {this.state.showEditForm ? (
+        {this.state.showEditForm ? (
+          <Modal
+            title="Update Attendance"
+            visible={this.state.showEditForm}
+            onCancel={this.handleEditAttendanceCancel}
+            width={500}
+            footer={null}
+          >
             <EditForm
               attendance={this.state.attendance}
               handleSave={this.handleEditAttendanceSave}
               handleCancel={this.handleEditAttendanceCancel}
             />
-          ) : null}
-        </Modal>
+          </Modal>
+        ) : null}
       </>
     );
   }

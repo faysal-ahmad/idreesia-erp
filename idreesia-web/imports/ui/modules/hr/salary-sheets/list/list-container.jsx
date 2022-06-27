@@ -309,21 +309,21 @@ class ListContainer extends Component {
           handleItemSelected={this.handleItemSelected}
           allJobs={allJobs}
         />
-        <Modal
-          title="Update Salary"
-          visible={this.state.showEditForm}
-          onCancel={this.handleEditSalaryCancel}
-          width={520}
-          footer={null}
-        >
           {this.state.showEditForm ? (
-            <EditForm
-              salary={this.state.salary}
-              handleSave={this.handleEditSalarySave}
-              handleCancel={this.handleEditSalaryCancel}
-            />
+            <Modal
+              title="Update Salary"
+              visible={this.state.showEditForm}
+              onCancel={this.handleEditSalaryCancel}
+              width={520}
+              footer={null}
+            >
+              <EditForm
+                salary={this.state.salary}
+                handleSave={this.handleEditSalarySave}
+                handleCancel={this.handleEditSalaryCancel}
+              />
+            </Modal>
           ) : null}
-        </Modal>
       </>
     );
   }

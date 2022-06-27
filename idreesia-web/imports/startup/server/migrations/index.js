@@ -40,6 +40,7 @@ import './36-rename-fields-in-visitor';
 import './37-create-mehfil-portals';
 import './38-karkuns-visitors-to-people';
 import './39-update-karkun-references';
+import './40-security-mehfil-duties';
 
 Migrations.config({
   log: true,

@@ -1,12 +1,12 @@
 import gql from 'graphql-tag';
 
 const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
-  query mehfilKarkunsByMehfilId($mehfilId: String!, $dutyName: String) {
-    mehfilKarkunsByMehfilId(mehfilId: $mehfilId, dutyName: $dutyName) {
+  query mehfilKarkunsByMehfilId($mehfilId: String!, $dutyId: String) {
+    mehfilKarkunsByMehfilId(mehfilId: $mehfilId, dutyId: $dutyId) {
       _id
       mehfilId
       karkunId
-      dutyName
+      dutyId
       dutyDetail
       dutyCardBarcodeId
       karkun {

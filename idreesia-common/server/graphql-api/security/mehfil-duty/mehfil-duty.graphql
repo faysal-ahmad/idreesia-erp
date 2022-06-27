@@ -1,0 +1,27 @@
+type MehfilDutyType {	
+  _id: String	
+  name: String	
+  urduName: String	
+  usedCount: Int	
+
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
+
+extend type Query {	
+  allSecurityMehfilDuties: [MehfilDutyType]	
+  securityMehfilDutyById(id: String!): MehfilDutyType	
+}	
+
+extend type Mutation {	
+  createSecurityMehfilDuty(name: String!, urduName: String!): MehfilDutyType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
+  updateSecurityMehfilDuty(id: String!, name: String!, urduName: String!): MehfilDutyType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
+  removeSecurityMehfilDuty(_id: String!): Int	
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+}

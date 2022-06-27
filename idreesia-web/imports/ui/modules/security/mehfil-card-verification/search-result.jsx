@@ -56,7 +56,7 @@ const formQuery = gql`
       _id
       mehfilId
       karkunId
-      dutyName
+      dutyId
       dutyDetail
       dutyCardBarcodeId
       mehfil {

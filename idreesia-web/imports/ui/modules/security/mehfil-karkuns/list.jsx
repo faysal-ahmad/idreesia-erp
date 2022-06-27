@@ -7,11 +7,9 @@ import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOut
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
-import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { KarkunSelectionButton } from '/imports/ui/modules/helpers/controls';
 
-import { MEHFIL_BY_ID } from '/imports/ui/modules/security/mehfils/gql';
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
 
 const SelectStyle = {
@@ -20,11 +18,12 @@ const SelectStyle = {
 
 export class List extends Component {
   static propTypes = {
-    dutyName: PropTypes.string,
+    dutyId: PropTypes.string,
+    mehfilId: PropTypes.string,
+    mehfilById: PropTypes.object,
+    allSecurityMehfilDuties: PropTypes.array,
     setPageParams: PropTypes.func,
 
-    mehfilLoading: PropTypes.bool,
-    mehfilById: PropTypes.object,
     mehfilKarkunsLoading: PropTypes.bool,
     mehfilKarkunsByMehfilId: PropTypes.array,
     refetchMehfilKarkuns: PropTypes.func,
@@ -46,7 +45,7 @@ export class List extends Component {
       ) > 30;
   }
 
-  getColumns = isPastMehfil => {
+  getColumns = (isPastMehfil, allSecurityMehfilDuties) => {
     const columns = [
       {
         title: 'Name',
@@ -73,12 +72,11 @@ export class List extends Component {
       },
       {
         title: 'Duty Name',
-        dataIndex: 'dutyName',
-        key: 'dutyName',
+        dataIndex: 'dutyId',
+        key: 'dutyId',
         render: text => {
-          debugger;
-          const duty = MehfilDuties.find(mehfilDuty => mehfilDuty._id === text);
-          return duty.name;
+          const duty = allSecurityMehfilDuties.find(mehfilDuty => mehfilDuty._id === text);
+          return duty?.name;
         },
       },
       {
@@ -123,7 +121,7 @@ export class List extends Component {
   handleSelectionChange = value => {
     const { setPageParams } = this.props;
     setPageParams({
-      dutyName: value,
+      dutyId: value,
     });
     this.setState({
       selectedRows: [],
@@ -152,11 +150,11 @@ export class List extends Component {
   };
 
   getTableHeader = () => {
-    const { mehfilById, dutyName } = this.props;
+    const { mehfilById, allSecurityMehfilDuties, dutyId } = this.props;
     const { selectedRows } = this.state;
     const isPastMehfil = this.getIsPastMehfil(mehfilById);
 
-    const options = MehfilDuties.map(duty => (
+    const options = allSecurityMehfilDuties.map(duty => (
       <Select.Option key={duty._id} value={duty._id}>
         {duty.name}
       </Select.Option>
@@ -164,7 +162,7 @@ export class List extends Component {
 
     const dutySelector = (
       <Select
-        defaultValue={dutyName}
+        defaultValue={dutyId}
         style={SelectStyle}
         onChange={this.handleSelectionChange}
         allowClear
@@ -180,7 +178,7 @@ export class List extends Component {
           icon={<UsergroupAddOutlined />}
           label="Add Karkuns"
           onSelection={this.onKarkunSelection}
-          disabled={isPastMehfil || !dutyName}
+          disabled={isPastMehfil || !dutyId}
         />
         &nbsp;&nbsp;
         <Button
@@ -213,13 +211,14 @@ export class List extends Component {
 
   render() {
     const {
-      mehfilLoading,
       mehfilById,
       mehfilKarkunsLoading,
       mehfilKarkunsByMehfilId,
+      allSecurityMehfilDuties,
     } = this.props;
-    if (mehfilLoading || mehfilKarkunsLoading) return null;
+    if (mehfilKarkunsLoading) return null;
 
+    debugger;
     const isPastMehfil = this.getIsPastMehfil(mehfilById);
     const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId, 'karkun.name');
 
@@ -228,7 +227,7 @@ export class List extends Component {
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
-        columns={this.getColumns(isPastMehfil)}
+        columns={this.getColumns(isPastMehfil, allSecurityMehfilDuties)}
         rowSelection={!isPastMehfil ? this.rowSelection : null}
         dataSource={sortedMehfilKarkuns}
         pagination={false}
@@ -239,21 +238,17 @@ export class List extends Component {
 }
 
 export default flowRight(
-  graphql(MEHFIL_BY_ID, {
-    props: ({ data }) => ({ mehfilLoading: data.loading, ...data }),
-    options: ({ mehfilId }) => ({ variables: { _id: mehfilId } }),
-  }),
   graphql(MEHFIL_KARKUNS_BY_MEHFIL_ID, {
     props: ({ data }) => ({
       mehfilKarkunsLoading: data.loading,
       refetchMehfilKarkuns: data.refetch,
       ...data,
     }),
-    options: ({ mehfilId, dutyName }) => ({
+    options: ({ mehfilId, dutyId }) => ({
       fetchPolicy: "cache-and-network",
       variables: {
         mehfilId,
-        dutyName,
+        dutyId,
       },
     }),
   })

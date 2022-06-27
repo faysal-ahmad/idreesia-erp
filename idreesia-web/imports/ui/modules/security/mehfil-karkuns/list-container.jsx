@@ -12,6 +12,7 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import {
   WithMehfilId,
   WithMehfil,
+  WithAllMehfilDuties,
 } from '/imports/ui/modules/security/common/composers';
 
 import List from './list';
@@ -27,6 +28,10 @@ class ListContainer extends Component {
     addMehfilKarkun: PropTypes.func,
     setDutyDetail: PropTypes.func,
     removeMehfilKarkun: PropTypes.func,
+    mehfilLoading: PropTypes.bool,
+    mehfilById: PropTypes.object,
+    allSecurityMehfilDutiesLoading: PropTypes.bool,
+    allSecurityMehfilDuties: PropTypes.array,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -42,13 +47,13 @@ class ListContainer extends Component {
 
   setPageParams = newParams => {
     const { queryParams, history, location } = this.props;
-    const { dutyName } = newParams;
+    const { dutyId } = newParams;
 
-    let dutyNameVal;
-    if (newParams.hasOwnProperty('dutyName')) dutyNameVal = dutyName || '';
-    else dutyNameVal = queryParams.dutyName || '';
+    let dutyIdVal;
+    if (newParams.hasOwnProperty('dutyId')) dutyIdVal = dutyId || '';
+    else dutyIdVal = queryParams.dutyId || '';
 
-    const path = `${location.pathname}?dutyName=${dutyNameVal}`;
+    const path = `${location.pathname}?dutyId=${dutyIdVal}`;
     history.push(path);
   };
 
@@ -56,7 +61,7 @@ class ListContainer extends Component {
     const {
       match,
       addMehfilKarkun,
-      queryParams: { dutyName },
+      queryParams: { dutyId },
     } = this.props;
 
     const { mehfilId } = match.params;
@@ -65,7 +70,7 @@ class ListContainer extends Component {
       variables: {
         mehfilId,
         karkunId,
-        dutyName,
+        dutyId,
       },
     })
       .then(() => {
@@ -95,14 +100,14 @@ class ListContainer extends Component {
     const {
       history,
       match,
-      queryParams: { dutyName },
+      queryParams: { dutyId },
     } = this.props;
     const { mehfilId } = match.params;
     const ids = selectedRows.map(row => row._id);
     const idsString = ids.join(',');
     const path = `${paths.mehfilsKarkunCardsPath(
       mehfilId
-    )}?dutyName=${dutyName}&ids=${idsString}`;
+    )}?dutyId=${dutyId}&ids=${idsString}`;
     history.push(path);
   };
 
@@ -144,13 +149,18 @@ class ListContainer extends Component {
 
   render() {
     const {
+      queryParams: { dutyId },
       match,
-      queryParams: { dutyName },
+      mehfilLoading,
+      mehfilById,
+      allSecurityMehfilDutiesLoading,
+      allSecurityMehfilDuties,
     } = this.props;
-
     const { mehfilId } = match.params;
-    const { showEditForm } = this.state;
 
+    if (mehfilLoading || allSecurityMehfilDutiesLoading) return null;
+
+    const { showEditForm } = this.state;
     const editForm = showEditForm ? (
       <EditForm
         onSave={this.handleEditMehfilKarkunSave}
@@ -161,8 +171,10 @@ class ListContainer extends Component {
     return (
       <>
         <List
+          dutyId={dutyId}
           mehfilId={mehfilId}
-          dutyName={dutyName}
+          mehfilById={mehfilById}
+          allSecurityMehfilDuties={allSecurityMehfilDuties}
           setPageParams={this.setPageParams}
           handleAddMehfilKarkun={this.handleAddMehfilKarkun}
           handleEditMehfilKarkun={this.handleEditMehfilKarkun}
@@ -187,12 +199,13 @@ export default flowRight(
   graphql(ADD_MEHFIL_KARKUN, { name: 'addMehfilKarkun' }),
   graphql(SET_DUTY_DETAIL, { name: 'setDutyDetail' }),
   graphql(REMOVE_MEHFIL_KARKUN, { name: 'removeMehfilKarkun' }),
+  WithAllMehfilDuties(),
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),
-  WithDynamicBreadcrumbs(({ mehfil }) => {
-    if (mehfil) {
-      return `Security, Mehfils, ${mehfil.name}, Karkun Duties`;
+  WithDynamicBreadcrumbs(({ mehfilById }) => {
+    if (mehfilById) {
+      return `Security, Mehfils, ${mehfilById.name}, Karkun Duties`;
     }
     return `Security, Mehfils, Karkun Duties`;
   })

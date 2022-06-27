@@ -5,6 +5,7 @@ import { default as paths } from './submodule-paths';
 import { MehfilCardVerificationForm } from './mehfil-card-verification';
 import { KarkunVerificationForm } from './karkun-verification';
 import { MehfilsNewForm, MehfilsEditForm, MehfilsList } from './mehfils';
+import { MehfilDutiesNewForm, MehfilDutiesEditForm, MehfilDutiesList } from './mehfil-duties';
 import { MehfilKarkunsList } from './mehfil-karkuns';
 import { MehfilCards } from './mehfil-cards';
 import {
@@ -31,6 +32,10 @@ const Router = () => (
     <Route path={paths.mehfilsNewFormPath} component={MehfilsNewForm} />
     <Route path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
     <Route path={paths.mehfilsPath} component={MehfilsList} />
+
+    <Route path={paths.mehfilDutiesNewFormPath} component={MehfilDutiesNewForm} />
+    <Route path={paths.mehfilDutiesEditFormPath()} component={MehfilDutiesEditForm} />
+    <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
 
     <Route
       path={paths.mehfilCardVerificationPath}

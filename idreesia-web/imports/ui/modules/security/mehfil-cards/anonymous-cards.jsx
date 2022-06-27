@@ -4,8 +4,6 @@ import Barcode from 'react-barcode';
 import moment from 'moment';
 import { UserOutlined } from '@ant-design/icons';
 
-import { find } from 'meteor/idreesia-common/utilities/lodash';
-import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
 import { Avatar } from 'antd';
 
 const barcodeOptions = {
@@ -36,8 +34,6 @@ const ImageContainerStyle = {
 };
 
 export const Card = ({ dutyName }) => {
-  const mehfilDuty = find(MehfilDuties, { _id: dutyName });
-
   const karkunImage = (
     <div style={ImageContainerStyle}>
       <Avatar size={128} icon={<UserOutlined />} />
@@ -47,7 +43,7 @@ export const Card = ({ dutyName }) => {
   return (
     <div className="mehfil_card">
       <div className="mehfil_card_heading">
-        {mehfilDuty ? mehfilDuty.name : ''}
+        {dutyName}
       </div>
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">381 Karkun</h1>
@@ -65,11 +61,13 @@ Card.propTypes = {
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Cards extends Component {
   static propTypes = {
-    dutyName: PropTypes.string,
+    mehfilDuty: PropTypes.object,
+    showDutyNameInUrdu: PropTypes.bool,
   };
 
   render() {
-    const { dutyName } = this.props;
+    const { mehfilDuty, showDutyNameInUrdu } = this.props;
+    const dutyName = showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name;
 
     const cards = [];
     for (let i = 0; i < 9; i++) {

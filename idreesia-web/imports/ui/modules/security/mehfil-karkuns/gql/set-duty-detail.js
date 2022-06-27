@@ -6,7 +6,7 @@ const SET_DUTY_DETAIL = gql`
       _id
       mehfilId
       karkunId
-      dutyName
+      dutyId
       dutyDetail
       dutyCardBarcodeId
     }

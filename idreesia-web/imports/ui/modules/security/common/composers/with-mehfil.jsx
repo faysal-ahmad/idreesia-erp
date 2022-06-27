@@ -6,7 +6,7 @@ import { graphql } from "react-apollo";
 export default () => WrappedComponent => {
   const WithMehfil = props => {
     const { mehfilById, ...rest } = props;
-    return <WrappedComponent mehfil={mehfilById} {...rest} />;
+    return <WrappedComponent mehfilById={mehfilById} {...rest} />;
   };
 
   WithMehfil.propTypes = {
@@ -20,6 +20,11 @@ export default () => WrappedComponent => {
       mehfilById(_id: $_id) {
         _id
         name
+        mehfilDate
+        createdAt
+        createdBy
+        updatedAt
+        updatedBy
       }
     }
   `;

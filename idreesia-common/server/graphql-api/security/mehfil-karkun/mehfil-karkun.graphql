@@ -2,12 +2,13 @@ type MehfilKarkunType {
   _id: String
   mehfilId: String
   karkunId: String
-  dutyName: String
+  dutyId: String
   dutyDetail: String
   dutyCardBarcodeId: String
 
   karkun: KarkunType
   mehfil: MehfilType
+  duty: MehfilDutyType
 
   createdAt: String
   createdBy: String
@@ -16,7 +17,7 @@ type MehfilKarkunType {
 }
 
 extend type Query {
-  mehfilKarkunsByMehfilId(mehfilId: String!, dutyName: String): [MehfilKarkunType]
+  mehfilKarkunsByMehfilId(mehfilId: String!, dutyId: String): [MehfilKarkunType]
   @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
 
   mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
@@ -27,7 +28,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyName: String!): MehfilKarkunType
+  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyId: String!): MehfilKarkunType
   @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
 
   setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]

@@ -1,4 +1,5 @@
 export { default as Mehfil } from './mehfil';
+export { default as MehfilDuty } from './mehfil-duty';
 export { default as MehfilKarkun } from './mehfil-karkun';
 export { default as SharedResidence } from './shared-residence';
 export {

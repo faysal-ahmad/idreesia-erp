@@ -18,6 +18,12 @@ export default class SubModulePaths {
     return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-cards`;
   }
 
+  static mehfilDutiesPath = `${ModulePaths.security}/mehfil-duties`;
+  static mehfilDutiesNewFormPath = `${SubModulePaths.mehfilDutiesPath}/new`;
+  static mehfilDutiesEditFormPath(mehfilDutyId = ':mehfilDutyId') {
+    return `${SubModulePaths.mehfilDutiesPath}/${mehfilDutyId}`;
+  }
+
   // *************************************************************************************
   // Card Verification Routes
   // *************************************************************************************

@@ -3,11 +3,13 @@ import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Mehfils,
   MehfilKarkuns,
+  MehfilDuties,
 } from 'meteor/idreesia-common/server/collections/security';
 
 export default {
   MehfilKarkunType: {
     mehfil: mehfilKarkunType => Mehfils.findOne(mehfilKarkunType.mehfilId),
+    duty: mehfilKarkunType => MehfilDuties.findOne(mehfilKarkunType.dutyId),
     karkun: mehfilKarkunType => {
       const person = People.findOne(mehfilKarkunType.karkunId);
       return People.personToKarkun(person);
@@ -15,9 +17,9 @@ export default {
   },
 
   Query: {
-    mehfilKarkunsByMehfilId(obj, { mehfilId, dutyName }) {
-      if (dutyName) {
-        return MehfilKarkuns.find({ mehfilId, dutyName }).fetch();
+    mehfilKarkunsByMehfilId(obj, { mehfilId, dutyId }) {
+      if (dutyId) {
+        return MehfilKarkuns.find({ mehfilId, dutyId }).fetch();
       }
 
       return MehfilKarkuns.find({ mehfilId }).fetch();
@@ -38,11 +40,11 @@ export default {
   },
 
   Mutation: {
-    addMehfilKarkun(obj, { mehfilId, karkunId, dutyName }, { user }) {
+    addMehfilKarkun(obj, { mehfilId, karkunId, dutyId }, { user }) {
       const existingMehfilKarkun = MehfilKarkuns.findOne({
         mehfilId,
         karkunId,
-        dutyName,
+        dutyId,
       });
 
       if (existingMehfilKarkun) return existingMehfilKarkun;
@@ -51,7 +53,7 @@ export default {
       const mehfilKarkunId = MehfilKarkuns.insert({
         mehfilId,
         karkunId,
-        dutyName,
+        dutyId,
         dutyCardBarcodeId: Random.id(8),
         createdAt: date,
         createdBy: user._id,

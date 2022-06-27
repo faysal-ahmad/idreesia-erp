@@ -9,6 +9,8 @@ import {
   FlagOutlined,
   HomeOutlined,
   IdcardOutlined,
+  LaptopOutlined,
+  TagsOutlined,
   TeamOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
@@ -36,6 +38,11 @@ class Sidebar extends Component {
       case 'mehfils':
         setActiveSubModuleName(SubModuleNames.mehfils);
         history.push(paths.mehfilsPath);
+        break;
+
+      case 'mehfil-duties':
+        setActiveSubModuleName(SubModuleNames.mehfilDuties);
+        history.push(paths.mehfilDutiesPath);
         break;
 
       case 'mehfil-card-verification':
@@ -160,6 +167,20 @@ class Sidebar extends Component {
           <Menu.Item key="team-visit-report">
             <BookOutlined style={IconStyle} />
             <span>Team Visit Report</span>
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu
+          key="setup"
+          title={
+            <>
+              <LaptopOutlined style={IconStyle} />
+              <span>Setup</span>
+            </>
+          }
+        >
+          <Menu.Item key="mehfil-duties">
+            <TagsOutlined style={IconStyle} />
+            <span>Mehfil Duties</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu

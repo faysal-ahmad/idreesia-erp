@@ -14,6 +14,7 @@ import {
 import {
   WithMehfilId,
   WithMehfil,
+  WithAllMehfilDuties,
 } from '/imports/ui/modules/security/common/composers';
 
 import Cards from './cards';
@@ -38,9 +39,14 @@ const mehfilKarkunsByIdsQuery = gql`
       _id
       mehfilId
       karkunId
-      dutyName
+      dutyId
       dutyDetail
       dutyCardBarcodeId
+      duty {
+        _id
+        name
+        urduName
+      }
       karkun {
         _id
         name
@@ -53,14 +59,15 @@ const mehfilKarkunsByIdsQuery = gql`
   }
 `;
 
-const CardsContainer = ({ queryParams: { ids, dutyName }, history }) => {
+const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehfilDutiesLoading, allSecurityMehfilDuties }) => {
   const mehfilCardsRef = useRef(null);
   const [showDutyNameInUrdu, setShowDutyNameInUrdu] = useState(false);
   const { data, loading } = useQuery(mehfilKarkunsByIdsQuery, {
     variables: { ids },
   });
 
-  if (loading) return null;
+  if (loading || allSecurityMehfilDutiesLoading) return null;
+  const mehfilDuty = allSecurityMehfilDuties.find(duty => duty._id === dutyId);
 
   const cards = ids ? (
     <Cards
@@ -69,7 +76,11 @@ const CardsContainer = ({ queryParams: { ids, dutyName }, history }) => {
       showDutyNameInUrdu={showDutyNameInUrdu}
     />
   ) : (
-    <AnonymousCards ref={mehfilCardsRef} dutyName={dutyName} />
+    <AnonymousCards
+      ref={mehfilCardsRef}
+      mehfilDuty={mehfilDuty}
+      showDutyNameInUrdu={showDutyNameInUrdu}
+    />
   );
 
   const cardShowDutyNameInUrdu = (
@@ -119,9 +130,12 @@ CardsContainer.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
   queryParams: PropTypes.object,
+  allSecurityMehfilDutiesLoading: PropTypes.bool,
+  allSecurityMehfilDuties: PropTypes.array,
 };
 
 export default flowRight(
+  WithAllMehfilDuties(),
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),

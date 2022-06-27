@@ -4,17 +4,13 @@ const ADD_MEHFIL_KARKUN = gql`
   mutation addMehfilKarkun(
     $mehfilId: String!
     $karkunId: String!
-    $dutyName: String!
+    $dutyId: String!
   ) {
-    addMehfilKarkun(
-      mehfilId: $mehfilId
-      karkunId: $karkunId
-      dutyName: $dutyName
-    ) {
+    addMehfilKarkun(mehfilId: $mehfilId, karkunId: $karkunId, dutyId: $dutyId) {
       _id
       mehfilId
       karkunId
-      dutyName
+      dutyId
       dutyDetail
       dutyCardBarcodeId
     }

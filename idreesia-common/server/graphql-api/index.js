@@ -55,20 +55,23 @@ import UserGroupResolvers from './admin/user-group/resolvers';
 import SecurityAuditLogSchema from './security/audit-log/audit-log.graphql';
 import SecurityAuditLogResolvers from './security/audit-log/resolvers';
 
-import MehfilSchema from './security/mehfil/mehfil.graphql';
-import MehfilResolvers from './security/mehfil/resolvers';
+import SecurityMehfilSchema from './security/mehfil/mehfil.graphql';
+import SecurityMehfilResolvers from './security/mehfil/resolvers';
 
-import MehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun.graphql';
-import MehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
+import SecurityMehfilDutySchema from './security/mehfil-duty/mehfil-duty.graphql';
+import SecurityMehfilDutyResolvers from './security/mehfil-duty/resolvers';
+
+import SecurityMehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun.graphql';
+import SecurityMehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
 
 import SecurityVisitorSchema from './security/visitor/visitor.graphql';
 import SecurityVisitorResolvers from './security/visitor/resolvers';
 
-import VisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
-import VisitorStayResolvers from './security/visitor-stay/resolvers';
+import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
+import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
 
-import SharedResidenceSchema from './security/shared-residence/shared-residence.graphql';
-import SharedResidenceResolvers from './security/shared-residence/resolvers';
+import SecuritySharedResidenceSchema from './security/shared-residence/shared-residence.graphql';
+import SecuritySharedResidenceResolvers from './security/shared-residence/resolvers';
 
 /**
  * Schema and Resolvers for the Operations module
@@ -266,11 +269,12 @@ const typeDefs = [
   UserGroupSchema,
 
   SecurityAuditLogSchema,
-  MehfilSchema,
-  MehfilKarkunSchema,
+  SecurityMehfilSchema,
+  SecurityMehfilDutySchema,
+  SecurityMehfilKarkunSchema,
   SecurityVisitorSchema,
-  VisitorStaySchema,
-  SharedResidenceSchema,
+  SecurityVisitorStaySchema,
+  SecuritySharedResidenceSchema,
 
   OperationsVisitorSchema,
   OperationsMessageSchema,
@@ -350,11 +354,12 @@ const resolvers = merge(
   UserGroupResolvers,
 
   SecurityAuditLogResolvers,
-  MehfilResolvers,
-  MehfilKarkunResolvers,
+  SecurityMehfilResolvers,
+  SecurityMehfilDutyResolvers,
+  SecurityMehfilKarkunResolvers,
   SecurityVisitorResolvers,
-  VisitorStayResolvers,
-  SharedResidenceResolvers,
+  SecurityVisitorStayResolvers,
+  SecuritySharedResidenceResolvers,
 
   OperationsVisitorResolvers,
   OperationsMessageResolvers,

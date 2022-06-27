@@ -3,20 +3,10 @@ import SimpleSchema from 'simpl-schema';
 import { identifiable, timestamps } from '../common';
 
 export default new SimpleSchema({
-  mehfilId: {
+  name: {
     type: String,
   },
-  karkunId: {
-    type: String,
-  },
-  dutyId: {
-    type: String,
-  },
-  dutyDetail: {
-    type: String,
-    optional: true,
-  },
-  dutyCardBarcodeId: {
+  urduName: {
     type: String,
   },
 })

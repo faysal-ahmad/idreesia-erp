@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
 
-import { find } from 'meteor/idreesia-common/utilities/lodash';
-import { MehfilDuties } from 'meteor/idreesia-common/constants/security';
-
 const barcodeOptions = {
   width: 1,
   height: 20,
@@ -24,7 +21,7 @@ const ContainerStyle = {
 };
 
 export const Card = ({ mehfilKarkun, showDutyNameInUrdu }) => {
-  const mehfilDuty = find(MehfilDuties, { _id: mehfilKarkun.dutyName });
+  const mehfilDuty = mehfilKarkun.duty;
   let cardHeading = '';
   if (mehfilDuty) {
     cardHeading = showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name;

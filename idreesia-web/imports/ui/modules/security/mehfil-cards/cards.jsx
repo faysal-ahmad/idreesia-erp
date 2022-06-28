@@ -27,9 +27,9 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }) => {
     cardHeading = showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name;
   }
 
-  const karkunImage = mehfilKarkun.karkun.image ? (
+  const karkunImage = mehfilKarkun.karkun.sharedData.image ? (
     <img
-      src={`data:image/jpeg;base64,${mehfilKarkun.karkun.image.data}`}
+      src={`data:image/jpeg;base64,${mehfilKarkun.karkun.sharedData.image.data}`}
       style={{ maxHeight: '100%', width: 'auto' }}
     />
   ) : (
@@ -45,7 +45,7 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }) => {
         <div className="mehfil_card_subheading">{mehfilKarkun.dutyDetail}</div>
       ) : null}
       <div className="mehfil_card_picture">{karkunImage}</div>
-      <h1 className="mehfil_card_name">{mehfilKarkun.karkun.name}</h1>
+      <h1 className="mehfil_card_name">{mehfilKarkun.karkun.sharedData.name}</h1>
       <div className="mehfil_card_barcode">
         <Barcode value={mehfilKarkun.dutyCardBarcodeId} {...barcodeOptions} />
       </div>

@@ -49,10 +49,27 @@ const mehfilKarkunsByIdsQuery = gql`
       }
       karkun {
         _id
-        name
-        image {
-          _id
-          data
+        sharedData {
+          name
+          imageId
+          cnicNumber
+          contactNumber1
+          contactNumber2
+          image {
+            _id
+            data
+          }
+        }
+        visitorData {
+          city
+          country
+        }
+        karkunData {
+          city {
+            _id
+            name
+            country
+          }
         }
       }
     }

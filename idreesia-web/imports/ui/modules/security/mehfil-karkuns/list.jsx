@@ -247,7 +247,6 @@ export class List extends Component {
 
     const isPastMehfil = this.getIsPastMehfil(mehfilById);
     const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId, 'karkun.sharedData.name');
-    debugger;
 
     return (
       <Table

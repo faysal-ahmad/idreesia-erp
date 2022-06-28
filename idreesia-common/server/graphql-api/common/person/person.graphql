@@ -74,18 +74,7 @@ input PersonFilter {
   name: String
   cnicNumber: String
   phoneNumber: String
-  bloodGroup: String
-  lastTarteeb: String
-  attendance: String
-  isEmployee: Boolean
-  jobId: String
-  dutyId: String
-  ehadKarkun: String
-  dutyShiftId: String
-  cityId: String
-  cityMehfilId: String
-  region: String
-  updatedBetween: String
+  city: String
   pageIndex: String
   pageSize: String
 }

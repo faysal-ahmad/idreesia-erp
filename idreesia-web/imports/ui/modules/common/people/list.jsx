@@ -37,6 +37,11 @@ export default class PeopleList extends Component {
   };
 
   static defaultProps = {
+    showSelectionColumn: false,
+    showCategoryColumn: false,
+    showCnicColumn: false,
+    showPhoneNumbersColumn: false,
+    showCityCountryColumn: false,
     showDeleteAction: false,
     showAuditLogsAction: false,
 

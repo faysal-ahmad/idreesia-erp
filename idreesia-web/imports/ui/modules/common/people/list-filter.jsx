@@ -1,17 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { Button, Collapse, Form, Row } from 'antd';
 
-import { Formats } from 'meteor/idreesia-common/constants';
+import { WithDistinctCities } from 'meteor/idreesia-common/composers/security';
 
 import {
-  DateRangeField,
   InputCnicField,
   InputMobileField,
   InputTextField,
   SelectField,
-  EhadDurationFilterField,
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
@@ -35,8 +32,6 @@ const ListFilter = ({
   cnicNumber,
   phoneNumber,
   city,
-  ehadDuration,
-  updatedBetween,
   distinctCities,
 }) => {
   const [form] = Form.useForm();
@@ -49,54 +44,20 @@ const ListFilter = ({
       cnicNumber: '',
       phoneNumber: '',
       city: '',
-      ehadDuration: '',
-      dataSource: '',
-      updatedBetween: JSON.stringify(['', '']),
     });
   };
 
   const handleFinish = values => {
     setPageParams({
-      pageIndex: 0,
+      pageIndex: '0',
       name: values.name,
       cnicNumber: values.cnicNumber,
       phoneNumber: values.phoneNumber,
       city: values.city,
-      ehadDuration: values.ehadDuration,
-      dataSource: values.dataSource,
-      updatedBetween: JSON.stringify([
-        values.updatedBetween[0]
-          ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
-          : '',
-        values.updatedBetween[1]
-          ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
-          : '',
-      ]),
     });
   };
 
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
-
-  let initialValue;
-  if (updatedBetween) {
-    const dates = updatedBetween ? JSON.parse(updatedBetween) : null;
-    initialValue = [
-      dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
-      dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
-    ];
-  } else {
-    initialValue = [null, null];
-  }
-
-  const updatedBetweenField = (
-    <DateRangeField
-      fieldName="updatedBetween"
-      fieldLabel="Updated"
-      required={false}
-      fieldLayout={formItemLayout}
-      initialValue={initialValue}
-    />
-  );
 
   return (
     <Collapse style={ContainerStyle}>
@@ -133,14 +94,6 @@ const ListFilter = ({
             fieldLabel="City"
             fieldLayout={formItemLayout}
           />
-          <EhadDurationFilterField
-            fieldName="ehadDuration"
-            fieldLabel="Ehad Duration"
-            required={false}
-            fieldLayout={formItemLayout}
-            initialValue={ehadDuration}
-          />
-          {updatedBetweenField}
           <Form.Item {...buttonItemLayout}>
             <Row type="flex" justify="end">
               <Button type="default" onClick={handleReset}>
@@ -165,18 +118,19 @@ ListFilter.propTypes = {
   city: PropTypes.string,
   ehadDuration: PropTypes.string,
   updatedBetween: PropTypes.string,
-  distinctCities: PropTypes.array,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
+
+  distinctCitiesLoading: PropTypes.bool,
+  distinctCities: PropTypes.array,
 };
 
 ListFilter.defaultProps = {
+  name: '',
   cnicNumber: '',
   phoneNumber: '',
   city: '',
-  additionalInfo: null,
-  ehadDuration: null,
   distinctCities: [],
 };
 
-export default ListFilter;
+export default WithDistinctCities()(ListFilter);

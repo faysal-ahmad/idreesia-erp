@@ -12,16 +12,25 @@ export default () => WrappedComponent => {
   };
 
   const withAllSecurityMehfilDutiesQuery = gql`
-    query allSecurityMehfilDuties {
-      allSecurityMehfilDuties {
+    query allSecurityMehfilDuties($mehfilId: String) {
+      allSecurityMehfilDuties(mehfilId: $mehfilId) {
         _id
         name
         urduName
+        overallUsedCount	
+        mehfilUsedCount	
       }
     }
   `;
 
   return graphql(withAllSecurityMehfilDutiesQuery, {
-    props: ({ data }) => ({ allSecurityMehfilDutiesLoading: data.loading, ...data }),
+    props: ({ data }) => ({ 
+      allSecurityMehfilDutiesLoading: data.loading,
+      refetchAllSecurityMehfilDuties: data.refetch,
+      ...data,
+    }),
+    options: ({ mehfilId }) => ({
+      variables: { mehfilId },
+    }),
   })(WithAllMehfilDuties);
 };

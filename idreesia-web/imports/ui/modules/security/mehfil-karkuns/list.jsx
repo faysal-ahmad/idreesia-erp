@@ -183,7 +183,7 @@ export class List extends Component {
 
     const options = allSecurityMehfilDuties.map(duty => (
       <Select.Option key={duty._id} value={duty._id}>
-        {duty.name}
+        {`${duty.name} - ${duty.mehfilUsedCount}`}
       </Select.Option>
     ));
 

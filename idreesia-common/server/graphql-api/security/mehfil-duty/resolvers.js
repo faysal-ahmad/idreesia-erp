@@ -5,10 +5,20 @@ import {
 
 export default {
   MehfilDutyType: {
-    usedCount: mehfilDutyType =>
+    overallUsedCount: mehfilDutyType =>
       MehfilKarkuns.find({
         dutyId: { $eq: mehfilDutyType._id },
       }).count(),
+    mehfilUsedCount: (mehfilDutyType, args, context, info) => {
+      const mehfilId = info?.variableValues?.mehfilId;
+      if (mehfilId) {
+        return MehfilKarkuns.find({
+          mehfilId,
+          dutyId: { $eq: mehfilDutyType._id },
+        }).count();
+      }
+      return 0;
+    },
   },
 
   Query: {

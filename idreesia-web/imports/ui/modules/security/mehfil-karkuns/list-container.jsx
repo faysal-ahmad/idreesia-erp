@@ -32,6 +32,7 @@ class ListContainer extends Component {
     mehfilById: PropTypes.object,
     allSecurityMehfilDutiesLoading: PropTypes.bool,
     allSecurityMehfilDuties: PropTypes.array,
+    refetchAllSecurityMehfilDuties: PropTypes.func,
 
     match: PropTypes.object,
     history: PropTypes.object,
@@ -61,6 +62,7 @@ class ListContainer extends Component {
     const {
       match,
       addMehfilKarkun,
+      refetchAllSecurityMehfilDuties,
       queryParams: { dutyId },
     } = this.props;
 
@@ -75,6 +77,7 @@ class ListContainer extends Component {
     })
       .then(() => {
         refetchQuery();
+        refetchAllSecurityMehfilDuties();
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -82,7 +85,7 @@ class ListContainer extends Component {
   };
 
   handleRemoveMehfilKarkun = (mehfilKarkunId, refetchQuery) => {
-    const { removeMehfilKarkun } = this.props;
+    const { removeMehfilKarkun, refetchAllSecurityMehfilDuties } = this.props;
     removeMehfilKarkun({
       variables: {
         _id: mehfilKarkunId,
@@ -90,6 +93,7 @@ class ListContainer extends Component {
     })
       .then(() => {
         refetchQuery();
+        refetchAllSecurityMehfilDuties();
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -199,10 +203,10 @@ export default flowRight(
   graphql(ADD_MEHFIL_KARKUN, { name: 'addMehfilKarkun' }),
   graphql(SET_DUTY_DETAIL, { name: 'setDutyDetail' }),
   graphql(REMOVE_MEHFIL_KARKUN, { name: 'removeMehfilKarkun' }),
-  WithAllMehfilDuties(),
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),
+  WithAllMehfilDuties(),
   WithDynamicBreadcrumbs(({ mehfilById }) => {
     if (mehfilById) {
       return `Security, Mehfils, ${mehfilById.name}, Karkun Duties`;

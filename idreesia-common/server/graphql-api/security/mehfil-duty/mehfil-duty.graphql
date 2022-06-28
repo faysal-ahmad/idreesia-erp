@@ -2,7 +2,8 @@ type MehfilDutyType {
   _id: String	
   name: String	
   urduName: String	
-  usedCount: Int	
+  overallUsedCount: Int	
+  mehfilUsedCount: Int	
 
   createdAt: String	
   createdBy: String	
@@ -11,7 +12,7 @@ type MehfilDutyType {
 }	
 
 extend type Query {	
-  allSecurityMehfilDuties: [MehfilDutyType]	
+  allSecurityMehfilDuties(mehfilId: String): [MehfilDutyType]	
   securityMehfilDutyById(id: String!): MehfilDutyType	
 }	
 

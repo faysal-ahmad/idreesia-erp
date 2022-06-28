@@ -35,7 +35,7 @@ class List extends Component {
     {
       key: 'action',
       render: (text, record) => {
-        if (record.usedCount === 0) {
+        if (record.overallUsedCount === 0) {
           return (
             <Tooltip title="Delete">
               <DeleteOutlined
@@ -98,7 +98,7 @@ const listQuery = gql`
       _id
       name
       urduName
-      usedCount
+      overallUsedCount
     }
   }
 `;

@@ -66,10 +66,12 @@ const formQuery = gql`
       }
       karkun {
         _id
-        name
-        image {
-          _id
-          data
+        sharedData {
+          name
+          image {
+            _id
+            data
+          }
         }
       }
     }

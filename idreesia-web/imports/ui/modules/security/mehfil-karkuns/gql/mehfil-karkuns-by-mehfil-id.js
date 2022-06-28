@@ -11,13 +11,23 @@ const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
       dutyCardBarcodeId
       karkun {
         _id
-        name
-        imageId
-        cnicNumber
-        contactNumber1
-        city {
-          _id
+        sharedData {
           name
+          imageId
+          cnicNumber
+          contactNumber1
+          contactNumber2
+        }
+        visitorData {
+          city
+          country
+        }
+        karkunData {
+          city {
+            _id
+            name
+            country
+          }
         }
       }
     }

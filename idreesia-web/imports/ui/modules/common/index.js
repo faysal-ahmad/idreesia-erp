@@ -27,6 +27,9 @@ export {
 export { default as MessagesList } from './messages/list';
 export { default as MessagesListFilter } from './messages/list-filter';
 
+export { default as PeopleList } from './people/list';
+export { default as PeopleListFilter } from './people/list-filter';
+
 export { default as WazaifList } from './wazaif/list';
 export { default as WazaifListFilter } from './wazaif/list-filter';
 

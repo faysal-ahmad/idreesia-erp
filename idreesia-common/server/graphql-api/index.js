@@ -31,6 +31,9 @@ import KarkunResolvers from './common/karkun/resolvers';
 import MessageSchema from './common/message/message.graphql';
 import MessageResolvers from './common/message/resolvers';
 
+import PersonSchema from './common/person/person.graphql';
+import PersonResolvers from './common/person/resolvers';
+
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 
@@ -262,6 +265,7 @@ const typeDefs = [
   ImdadRequestSchema,
   KarkunSchema,
   MessageSchema,
+  PersonSchema,
   VisitorSchema,
   WazeefaSchema,
   AdminJobSchema,
@@ -347,6 +351,7 @@ const resolvers = merge(
   ImdadRequestResolvers,
   KarkunResolvers,
   MessageResolvers,
+  PersonResolvers,
   VisitorResolvers,
   WazeefaResolvers,
   AdminJobResolvers,

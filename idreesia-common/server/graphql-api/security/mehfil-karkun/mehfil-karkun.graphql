@@ -6,7 +6,7 @@ type MehfilKarkunType {
   dutyDetail: String
   dutyCardBarcodeId: String
 
-  karkun: KarkunType
+  karkun: PersonType
   mehfil: MehfilType
   duty: MehfilDutyType
 

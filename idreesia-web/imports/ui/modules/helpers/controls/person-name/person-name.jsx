@@ -95,6 +95,7 @@ PersonName.propTypes = {
   showLargeImage: PropTypes.bool,
   onPersonNameClicked: PropTypes.func,
   person: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     imageId: PropTypes.string,
     image: PropTypes.object,

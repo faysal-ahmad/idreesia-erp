@@ -10,10 +10,7 @@ export default {
   MehfilKarkunType: {
     mehfil: mehfilKarkunType => Mehfils.findOne(mehfilKarkunType.mehfilId),
     duty: mehfilKarkunType => MehfilDuties.findOne(mehfilKarkunType.dutyId),
-    karkun: mehfilKarkunType => {
-      const person = People.findOne(mehfilKarkunType.karkunId);
-      return People.personToKarkun(person);
-    },
+    karkun: mehfilKarkunType => People.findOne(mehfilKarkunType.karkunId),
   },
 
   Query: {

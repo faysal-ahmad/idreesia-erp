@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import moment from 'moment';
-import { Button, Select, Table, Tooltip } from 'antd';
+import { Button, Row, Select, Table, Tooltip } from 'antd';
 import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
-import { KarkunName } from '/imports/ui/modules/hr/common/controls';
-import { KarkunSelectionButton } from '/imports/ui/modules/helpers/controls';
+import { PersonName, PeopleSelectionButton } from '/imports/ui/modules/helpers/controls';
 
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
 
@@ -49,27 +48,55 @@ export class List extends Component {
     const columns = [
       {
         title: 'Name',
-        dataIndex: ['karkun', 'name'],
         key: 'karkun.name',
-        render: (text, record) => (
-          <KarkunName karkun={record.karkun} onKarkunNameClicked={() => {}} />
-        ),
+        render: (text, record) => {
+          const personNameData = {
+            _id: record._id,
+            name: record.karkun.sharedData.name,
+            imageId: record.karkun.sharedData.imageId,
+            image: record.karkun.sharedData.image,
+          };
+    
+          return (
+            <PersonName
+              person={personNameData}
+              onPersonNameClicked={() => {}}
+            />
+          );
+        },
       },
       {
         title: 'City',
-        dataIndex: ['karkun', 'city', 'name'],
-        key: 'karkun.city.name',
+        key: 'cityCountry',
+        render: (text, record) => {
+          if (record.karkun.isKarkun && record.karkun.karkunData?.city) {
+            return record.karkun.karkunData.city.name;
+          } else if (record.karkun.visitorData?.city) {
+            return record.karkun.visitorData?.city;
+          }
+
+          return '';
+        },
       },
       {
         title: 'CNIC',
-        dataIndex: ['karkun', 'cnicNumber'],
-        key: 'karkun.cnicNumber',
+        key: 'cnicNumber',
+        render: (text, record) => record.karkun.sharedData?.cnicNumber,
       },
       {
-        title: 'Mobile No.',
-        dataIndex: ['karkun', 'contactNumber1'],
-        key: 'karkun.contactNumber1',
-      },
+        title: 'Contact No.',
+        key: 'contactNumbers',
+        render: (text, record) => {
+          const numbers = [];
+          if (record.karkun.sharedData?.contactNumber1)
+            numbers.push(<Row key="1">{record.karkun.sharedData?.contactNumber1}</Row>);
+          if (record.karkun.sharedData.contactNumber2)
+            numbers.push(<Row key="2">{record.karkun.sharedData?.contactNumber2}</Row>);
+    
+          if (numbers.length === 0) return '';
+          return <>{numbers}</>;
+        },
+          },
       {
         title: 'Duty Name',
         dataIndex: 'dutyId',
@@ -174,7 +201,7 @@ export class List extends Component {
 
     const actions = (
       <div className="list-table-header-section">
-        <KarkunSelectionButton
+        <PeopleSelectionButton
           icon={<UsergroupAddOutlined />}
           label="Add Karkuns"
           onSelection={this.onKarkunSelection}
@@ -218,9 +245,9 @@ export class List extends Component {
     } = this.props;
     if (mehfilKarkunsLoading) return null;
 
-    debugger;
     const isPastMehfil = this.getIsPastMehfil(mehfilById);
-    const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId, 'karkun.name');
+    const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId, 'karkun.sharedData.name');
+    debugger;
 
     return (
       <Table

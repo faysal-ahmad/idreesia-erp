@@ -675,7 +675,6 @@ class People extends AggregatableCollection {
    * - includeKarkuns - defaults to false
    * - includeEmployees - defaults to false
    * - includeVisitors - defaults to false
-   * - includeKarkunsAndEmployees - defaults to false
    * - paginatedResults - defaults to true
    */
   searchPeople(params = {}, flags = {}) {

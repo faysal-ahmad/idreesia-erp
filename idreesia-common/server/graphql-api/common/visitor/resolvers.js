@@ -3,6 +3,7 @@ import {
   Attachments,
   People,
 } from 'meteor/idreesia-common/server/collections/common';
+import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -39,7 +40,7 @@ export default {
     },
 
     pagedVisitors(obj, { filter }) {
-      return People.searchVisitors(filter);
+      return Visitors.searchVisitors(filter);
     },
   },
 

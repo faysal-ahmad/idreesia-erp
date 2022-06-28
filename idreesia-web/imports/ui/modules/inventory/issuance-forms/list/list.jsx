@@ -72,7 +72,6 @@ class List extends Component {
       dataIndex: ['refIssuedTo','name'],
       key: 'refIssuedTo.name',
       render: (text, record) => {
-        debugger;
         if (record.handedOverTo) {
           return `${record.handedOverTo} - [on behalf of ${text}]`;
         }

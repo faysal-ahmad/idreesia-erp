@@ -1,0 +1,100 @@
+type PersonSharedDataType {
+  name: String
+  parentName: String
+  cnicNumber: String
+  birthDate: String
+  currentAddress: String
+  permanentAddress: String
+  contactNumber1: String
+  contactNumber2: String
+  contactNumber1Subscribed: Boolean
+  contactNumber2Subscribed: Boolean
+  emailAddress: String
+  bloodGroup: String
+  educationalQualification: String
+  meansOfEarning: String
+  ehadDate: String
+  deathDate: String
+  referenceName: String
+  imageId: String
+
+  image: Attachment
+}
+
+type PersonVisitorDataType {
+  city: String
+  country: String
+  criminalRecord: String
+  otherNotes: String
+}
+
+type PersonKarkunDataType {
+  cityId: String
+  cityMehfilId: String
+  ehadKarkun: Boolean
+  ehadPermissionDate: String
+  lastTarteebDate: String
+  mehfilRaabta: String
+  msRaabta: String
+  msLastVisitDate: String
+  attachmentIds: [String]
+
+  city: CityType
+  cityMehfil: CityMehfilType
+  duties: [KarkunDutyType]
+  attachments: [Attachment]
+}
+
+type PersonEmployeeDataType {
+  jobId: String
+  employmentStartDate: String
+  employmentEndDate: String
+
+  job: JobType
+}
+
+type PersonType {
+  _id: String
+  isEmployee: Boolean
+  isVisitor: Boolean
+  isKarkun: Boolean
+  userId: String
+  dataSource: String
+  sharedData: PersonSharedDataType
+  visitorData: PersonVisitorDataType
+  karkunData: PersonKarkunDataType
+  employeeData: PersonEmployeeDataType
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+input PersonFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  lastTarteeb: String
+  attendance: String
+  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  ehadKarkun: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+  updatedBetween: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedPeopleType {
+  totalResults: Int
+  data: [PersonType]
+}
+
+extend type Query {
+  pagedPeople(filter: PersonFilter): PagedPeopleType
+}

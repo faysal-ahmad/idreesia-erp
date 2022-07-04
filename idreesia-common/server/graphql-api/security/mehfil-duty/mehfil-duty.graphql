@@ -18,11 +18,11 @@ extend type Query {
 
 extend type Mutation {	
   createSecurityMehfilDuty(name: String!, urduName: String!): MehfilDutyType	
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
   updateSecurityMehfilDuty(id: String!, name: String!, urduName: String!): MehfilDutyType	
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
   removeSecurityMehfilDuty(_id: String!): Int	
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }

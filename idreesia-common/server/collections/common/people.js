@@ -287,7 +287,6 @@ class People extends AggregatableCollection {
     const includeVisitors = isNil(flags.includeVisitors)
       ? false
       : flags.includeVisitors;
-    const multanCity = Cities.findOne({ name: 'Multan', country: 'Pakistan' });
 
     const {
       name,
@@ -583,12 +582,6 @@ class People extends AggregatableCollection {
         pipeline.push({
           $match: {
             'karkunData.cityId': { $in: regionCityIds },
-          },
-        });
-      } else {
-        pipeline.push({
-          $match: {
-            'karkunData.cityId': { $ne: multanCity._id },
           },
         });
       }

@@ -21,6 +21,18 @@ class Permissions extends Component {
     setPermissions: PropTypes.func,
   };
 
+  state = {
+    permissionsChanged: false,
+    selectedPermissions: null,
+  };
+
+  handlePermissionSelectionChange = updatedPermissions => {
+    this.setState({
+      permissionsChanged: true,
+      selectedPermissions: updatedPermissions,
+    })
+  }
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
@@ -29,12 +41,10 @@ class Permissions extends Component {
   handleSave = e => {
     e.preventDefault();
     const { history, userById, setPermissions } = this.props;
-    const permissions = this.permissionSelection.getSelectedPermissions();
-
     setPermissions({
       variables: {
         userId: userById._id,
-        permissions,
+        permissions: this.state.selectedPermissions,
       },
     })
       .then(() => {
@@ -53,9 +63,7 @@ class Permissions extends Component {
       <Fragment>
         <PermissionSelection
           securityEntity={userById}
-          ref={ps => {
-            this.permissionSelection = ps;
-          }}
+          onChange={this.handlePermissionSelectionChange}
         />
         <br />
         <br />
@@ -73,6 +81,7 @@ class Permissions extends Component {
             size="large"
             icon={<SaveOutlined />}
             type="primary"
+            disabled={!this.state.permissionsChanged}
             onClick={this.handleSave}
           >
             Save

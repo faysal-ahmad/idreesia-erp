@@ -10,6 +10,11 @@ import { DataSource, JobTypes } from 'meteor/idreesia-common/constants';
 
 export default {
   UserType: {
+    person: userType => {
+      if (!userType.personId) return null;
+      return People.findOne(userType.personId);
+    },
+
     karkun: userType => {
       if (!userType.personId) return null;
       const person = People.findOne(userType.personId);

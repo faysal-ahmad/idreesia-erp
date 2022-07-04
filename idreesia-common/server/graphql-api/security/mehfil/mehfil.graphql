@@ -22,11 +22,11 @@ extend type Query {
 
 extend type Mutation {
   createMehfil(name: String!, mehfilDate: String!): MehfilType
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
   updateMehfil(_id: String!, name: String!, mehfilDate: String): MehfilType
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
   removeMehfil(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }

@@ -59,6 +59,14 @@ export default class SubModulePaths {
     return `${SubModulePaths.sharedResidencesPath}/${sharedResidenceId}`;
   }
 
+  // *************************************************************************************
+  // Security Users Routes
+  // *************************************************************************************
+  static securityUsersPath = `${ModulePaths.security}/security-users`;
+  static securityUsersEditFormPath(userId = ':userId') {
+    return `${SubModulePaths.securityUsersPath}/${userId}`;
+  }
+
   // ******************************************************************************
   // Audit Logs
   // ******************************************************************************

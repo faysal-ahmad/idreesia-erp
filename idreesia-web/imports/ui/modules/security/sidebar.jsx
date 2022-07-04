@@ -13,6 +13,7 @@ import {
   TagsOutlined,
   TeamOutlined,
   ToolOutlined,
+  UnlockOutlined,
 } from '@ant-design/icons';
 
 import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
@@ -70,6 +71,11 @@ class Sidebar extends Component {
         history.push(paths.visitorCardVerificationPath);
         break;
 
+      case 'security-user-accounts':
+        setActiveSubModuleName(SubModuleNames.securityUsers);
+        history.push(paths.securityUsersPath);
+        break;
+  
       case 'audit-logs':
         setActiveSubModuleName(SubModuleNames.auditLogs);
         history.push(paths.auditLogsPath);
@@ -192,6 +198,10 @@ class Sidebar extends Component {
             </>
           }
         >
+          <Menu.Item key="security-user-accounts">
+            <UnlockOutlined style={IconStyle} />
+            <span>Security User Accounts</span>
+          </Menu.Item>
           <Menu.Item key="audit-logs">
             <AuditOutlined style={IconStyle} />
             <span>Audit Logs</span>

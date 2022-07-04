@@ -1,6 +1,6 @@
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-export const adminPermissionsData = {
+export const AdminPermissionsData = {
   title: 'Admin',
   key: 'module-admin',
   children: [
@@ -69,7 +69,7 @@ export const adminPermissionsData = {
   ],
 };
 
-export const accountsPermissionsData = {
+export const AccountsPermissionsData = {
   title: 'Accounts',
   key: 'module-accounts',
   children: [
@@ -148,7 +148,7 @@ export const accountsPermissionsData = {
   ],
 };
 
-export const hrPermissionsData = {
+export const HrPermissionsData = {
   title: 'HR',
   key: 'module-hr',
   children: [
@@ -217,7 +217,7 @@ export const hrPermissionsData = {
   ],
 };
 
-export const inventoryPermissionsData = {
+export const InventoryPermissionsData = {
   title: 'Inventory',
   key: 'module-inventory',
   children: [
@@ -300,7 +300,7 @@ export const inventoryPermissionsData = {
   ],
 };
 
-export const outstationPermissionsData = {
+export const OutstationPermissionsData = {
   title: 'Outstation',
   key: 'module-outstation',
   children: [
@@ -375,7 +375,7 @@ export const outstationPermissionsData = {
   ],
 };
 
-export const portalsPermissionsData = {
+export const PortalsPermissionsData = {
   title: 'Portals',
   key: 'module-portals',
   children: [
@@ -462,21 +462,23 @@ export const portalsPermissionsData = {
   ],
 };
 
-export const securityPermissionsData = {
+export const SecurityPermissionsData = {
   title: 'Security',
   key: 'module-security',
   children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.SECURITY_DELETE_DATA,
-    },
-    {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.SECURITY_MANAGE_SETUP_DATA,
-    },
-    {
-      title: 'View Audit Logs',
-      key: PermissionConstants.SECURITY_VIEW_AUDIT_LOGS,
+      title: 'Shared Residences',
+      key: 'module-security-shared-residences',
+      children: [
+        {
+          title: 'View Shared Residences',
+          key: PermissionConstants.SECURITY_VIEW_SHARED_RESIDENCES,
+        },
+        {
+          title: 'Manage Shared Residences',
+          key: PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
+        },
+      ],
     },
     {
       title: 'Mehfils',
@@ -497,20 +499,6 @@ export const securityPermissionsData = {
       key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
     },
     {
-      title: 'Shared Residences',
-      key: 'module-security-shared-residences',
-      children: [
-        {
-          title: 'View Shared Residences',
-          key: PermissionConstants.SECURITY_VIEW_SHARED_RESIDENCES,
-        },
-        {
-          title: 'Manage Shared Residences',
-          key: PermissionConstants.SECURITY_MANAGE_SHARED_RESIDENCES,
-        },
-      ],
-    },
-    {
       title: 'Visitor Registration',
       key: 'module-security-visitor-registration',
       children: [
@@ -524,10 +512,42 @@ export const securityPermissionsData = {
         },
       ],
     },
+    {
+      title: 'Setup',
+      key: 'module-security-setup',
+      children: [
+        {
+          title: 'Manage Setup Data',
+          key: PermissionConstants.SECURITY_MANAGE_SETUP_DATA,
+        },
+      ],
+    },
+    {
+      title: 'Administration',
+      key: 'module-security-administration',
+      children: [
+        {
+          title: 'View Users',
+          key: PermissionConstants.SECURITY_VIEW_USERS,
+        },
+        {
+          title: 'Manage Users',
+          key: PermissionConstants.SECURITY_MANAGE_USERS,
+        },
+        {
+          title: 'Delete Data',
+          key: PermissionConstants.SECURITY_DELETE_DATA,
+        },
+        {
+          title: 'View Audit Logs',
+          key: PermissionConstants.SECURITY_VIEW_AUDIT_LOGS,
+        },
+      ],
+    },
   ],
 };
 
-export const operationsPermissionsData = {
+export const OperationsPermissionsData = {
   title: 'Operations',
   key: 'module-operations',
   children: [

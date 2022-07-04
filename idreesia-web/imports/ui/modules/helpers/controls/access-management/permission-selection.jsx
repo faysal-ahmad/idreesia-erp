@@ -1,81 +1,56 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Tree } from 'antd';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
-import { Tree } from 'antd';
-import { allModulePermissions } from './all-module-permissions';
 
-export default class PermissionSelection extends Component {
-  static propTypes = {
-    permissions: PropTypes.array,
-    securityEntity: PropTypes.object,
-  };
+import { AllModulePermissions } from './all-module-permissions';
 
-  static defaultProps = {
-    permissions: allModulePermissions,
-  };
+const PermissionSelection = ({ permissions, securityEntity, onChange }) => {
+  const [initDone, setInitDone] = useState(false);
+  const [autoExpandParent, setAutoExpandParent] = useState(false);
+  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [checkedKeys, setCheckedKeys] = useState([]);
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { securityEntity } = nextProps;
-    if (securityEntity && !prevState.initDone) {
-      return {
-        initDone: true,
-        checkedKeys: securityEntity.permissions,
-      };
+  useEffect(() => {
+    if (securityEntity && !initDone) {
+      setInitDone(true);
+      setCheckedKeys(securityEntity.permissions);
     }
+  }, [securityEntity]);
 
-    return null;
-  }
-
-  state = {
-    initDone: false,
-    expandedKeys: [],
-    checkedKeys: [],
+  const onExpand = keys => {
+    setExpandedKeys(keys);
+    setAutoExpandParent(false);
   };
 
-  onExpand = expandedKeys => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
+  const onCheck = keys => {
+    setCheckedKeys(keys);
+    const selectedPermissions = filter(keys, key => !key.startsWith('module-'));
+    onChange(selectedPermissions);
   };
-
-  onCheck = checkedKeys => {
-    this.setState({ checkedKeys });
-  };
-
-  renderTreeNodes = data =>
-    data.map(item => {
-      if (item.children) {
-        return (
-          <Tree.TreeNode title={item.title} key={item.key} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </Tree.TreeNode>
-        );
-      }
-
-      return <Tree.TreeNode {...item} />;
-    });
-
-  getSelectedPermissions = () => {
-    const { checkedKeys } = this.state;
-    const permissions = filter(checkedKeys, key => !key.startsWith('module-'));
-    return permissions;
-  };
-
-  render() {
-    const { permissions } = this.props;
-    return (
-      <Tree
-        checkable
-        onExpand={this.onExpand}
-        expandedKeys={this.state.expandedKeys}
-        autoExpandParent={this.state.autoExpandParent}
-        onCheck={this.onCheck}
-        checkedKeys={this.state.checkedKeys}
-      >
-        {this.renderTreeNodes(permissions)}
-      </Tree>
-    );
-  }
+  
+  return (
+    <Tree
+      checkable
+      onExpand={onExpand}
+      expandedKeys={expandedKeys}
+      autoExpandParent={autoExpandParent}
+      onCheck={onCheck}
+      checkedKeys={checkedKeys}
+      treeData={permissions}
+    />
+  );
 }
+
+PermissionSelection.propTypes = {
+  permissions: PropTypes.array,
+  securityEntity: PropTypes.object,
+  onChange: PropTypes.func,
+};
+
+PermissionSelection.defaultProps = {
+  permissions: AllModulePermissions,
+};
+
+export default PermissionSelection;

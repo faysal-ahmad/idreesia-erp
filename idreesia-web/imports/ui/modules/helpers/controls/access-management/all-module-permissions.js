@@ -1,21 +1,21 @@
 import {
-  adminPermissionsData,
-  accountsPermissionsData,
-  hrPermissionsData,
-  inventoryPermissionsData,
-  outstationPermissionsData,
-  portalsPermissionsData,
-  securityPermissionsData,
-  operationsPermissionsData,
+  AdminPermissionsData,
+  AccountsPermissionsData,
+  HrPermissionsData,
+  InventoryPermissionsData,
+  OutstationPermissionsData,
+  PortalsPermissionsData,
+  SecurityPermissionsData,
+  OperationsPermissionsData,
 } from './permissions-data';
 
-export const allModulePermissions = [
-  adminPermissionsData,
-  accountsPermissionsData,
-  hrPermissionsData,
-  inventoryPermissionsData,
-  outstationPermissionsData,
-  portalsPermissionsData,
-  securityPermissionsData,
-  operationsPermissionsData,
+export const AllModulePermissions = [
+  AdminPermissionsData,
+  AccountsPermissionsData,
+  HrPermissionsData,
+  InventoryPermissionsData,
+  OutstationPermissionsData,
+  PortalsPermissionsData,
+  SecurityPermissionsData,
+  OperationsPermissionsData,
 ];

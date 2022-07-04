@@ -12,6 +12,7 @@ type UserType {
   instances: [String]
   groups: [String]
 
+  person: PersonType
   karkun: KarkunType
   portal: PortalType
 }

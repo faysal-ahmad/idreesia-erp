@@ -121,6 +121,8 @@ const Permissions = {
   SECURITY_DELETE_DATA: 'security-delete-data',
   SECURITY_MANAGE_SETUP_DATA: 'security-manage-setup-data',
   SECURITY_VIEW_AUDIT_LOGS: 'security-view-audit-logs',
+  SECURITY_VIEW_USERS: 'security-view-users',
+  SECURITY_MANAGE_USERS: 'security-manage-users',
 
   SECURITY_VIEW_KARKUN_VERIFICATION: 'security-view-karkun-verification',
   SECURITY_VIEW_VISITORS: 'security-view-visitors',

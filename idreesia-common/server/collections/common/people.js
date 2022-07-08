@@ -562,8 +562,6 @@ class People extends AggregatableCollection {
         }
       }
 
-      // We want to return karkuns from multan only when they
-      // are asked for explicitly, otherwise filter them out.
       if (cityId) {
         pipeline.push({
           $match: {

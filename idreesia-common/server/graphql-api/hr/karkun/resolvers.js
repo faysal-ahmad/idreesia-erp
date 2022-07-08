@@ -6,8 +6,6 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/hr';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
-import { getKarkuns } from './queries';
-
 export default {
   Query: {
     hrKarkunById(obj, { _id }) {
@@ -22,7 +20,24 @@ export default {
     },
 
     pagedHrKarkuns(obj, { filter }) {
-      return getKarkuns(filter);
+      const multanCity = Cities.findOne({
+        name: 'Multan',
+        country: 'Pakistan',
+      });
+      return People.searchPeople(
+        {
+          ...filter,
+          cityId: multanCity._id,
+        },
+        {
+          includeVisitors: filter.showVolunteers === 'true',
+          includeKarkuns: filter.showVolunteers === 'true',
+          includeEmployees: filter.showEmployees === 'true',
+        }
+      ).then(result => ({
+        karkuns: result.data.map(person => People.personToKarkun(person)),
+        totalResults: result.totalResults,
+      }));
     },
   },
 

@@ -6,36 +6,41 @@ import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
 import { AllModulePermissions } from './all-module-permissions';
 
-const PermissionSelection = ({ permissions, securityEntity, onChange }) => {
+const PermissionSelection = ({ permissions, securityEntity, onChange, readOnly }) => {
   const [initDone, setInitDone] = useState(false);
-  const [autoExpandParent, setAutoExpandParent] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [checkedKeys, setCheckedKeys] = useState([]);
 
   useEffect(() => {
     if (securityEntity && !initDone) {
+      const filteredPermissions = securityEntity.permissions.filter(
+        permission => permission.startsWith('security')
+      );
       setInitDone(true);
-      setCheckedKeys(securityEntity.permissions);
+      setCheckedKeys(filteredPermissions);
+      setExpandedKeys(filteredPermissions);
+      debugger;
     }
   }, [securityEntity]);
 
   const onExpand = keys => {
     setExpandedKeys(keys);
-    setAutoExpandParent(false);
   };
 
   const onCheck = keys => {
-    setCheckedKeys(keys);
-    const selectedPermissions = filter(keys, key => !key.startsWith('module-'));
-    onChange(selectedPermissions);
+    if (!readOnly) {
+      setCheckedKeys(keys);
+      const selectedPermissions = filter(keys, key => !key.startsWith('module-'));
+      onChange(selectedPermissions);
+    }
   };
   
   return (
     <Tree
       checkable
+      autoExpandParent
       onExpand={onExpand}
       expandedKeys={expandedKeys}
-      autoExpandParent={autoExpandParent}
       onCheck={onCheck}
       checkedKeys={checkedKeys}
       treeData={permissions}
@@ -44,12 +49,14 @@ const PermissionSelection = ({ permissions, securityEntity, onChange }) => {
 }
 
 PermissionSelection.propTypes = {
+  readOnly: PropTypes.bool,
   permissions: PropTypes.array,
   securityEntity: PropTypes.object,
   onChange: PropTypes.func,
 };
 
 PermissionSelection.defaultProps = {
+  readOnly: false,
   permissions: AllModulePermissions,
 };
 

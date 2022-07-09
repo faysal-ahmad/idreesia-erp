@@ -9,28 +9,14 @@ import { LockOutlined } from '@ant-design/icons';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats, Permissions } from 'meteor/idreesia-common/constants';
+import { Formats } from 'meteor/idreesia-common/constants';
 
 import { Pagination, Row, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { PermissionSelection, SecurityPermissionsData } from '/imports/ui/modules/helpers/controls/access-management';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_USERS } from '../gql';
-
-const permissionDisplayText = {
-  [Permissions.SECURITY_DELETE_DATA]: 'Delete Data',
-  [Permissions.SECURITY_MANAGE_SETUP_DATA]: 'Manaage Setup Data',
-  [Permissions.SECURITY_VIEW_AUDIT_LOGS]: 'View Audit Logs',
-  [Permissions.SECURITY_VIEW_USERS]: 'View Users',
-  [Permissions.SECURITY_MANAGE_USERS]: 'Manage Users',
-  [Permissions.SECURITY_VIEW_KARKUN_VERIFICATION]: 'Karkun Verification',
-  [Permissions.SECURITY_VIEW_VISITORS]: 'View Visitors',
-  [Permissions.SECURITY_MANAGE_VISITORS]: 'Manaage Visitors',
-  [Permissions.SECURITY_VIEW_SHARED_RESIDENCES]: 'View Shared Residences',
-  [Permissions.SECURITY_MANAGE_SHARED_RESIDENCES]: 'View Shared Residences',
-  [Permissions.SECURITY_VIEW_MEHFILS]: 'View Mehfils',
-  [Permissions.SECURITY_MANAGE_MEHFILS]: 'Manage Mehfils',
-};
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -112,19 +98,15 @@ const List = ({ history, location }) => {
     },
     {
       title: 'Permissions',
-      dataIndex: 'permissions',
       key: 'permissions',
-      render: permissions => {
-        const items = [];
-        permissions.forEach(permission => {
-          const text = permissionDisplayText[permission];
-          if (text) {
-            items.push(<li key={permission}>{text}</li>);
-          }
-        });
-
-        return <ul>{items}</ul>;
-      },
+      render: (text, record) => (
+        <PermissionSelection
+          readOnly
+          permissions={[SecurityPermissionsData]}
+          securityEntity={record}
+          onChange={() => {}}
+        />
+      ),
     },
   ];
 

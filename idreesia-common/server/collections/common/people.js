@@ -307,6 +307,7 @@ class People extends AggregatableCollection {
       attendance,
       dutyId,
       dutyIds,
+      dutyShiftId,
       ehadKarkun,
       cityId,
       cityIds,
@@ -612,6 +613,18 @@ class People extends AggregatableCollection {
             },
           },
         });
+
+        if (dutyShiftId) {
+          pipeline.push({
+            $match: {
+              duties: {
+                $elemMatch: {
+                  shiftId: { $eq: dutyShiftId },
+                },
+              },
+            },
+          });
+        }
       }
     }
 

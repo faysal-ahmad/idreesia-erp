@@ -16,6 +16,7 @@ export const MEHFIL_KARKUNS_BY_IDS = gql`
       }
       karkun {
         _id
+        isKarkun
         sharedData {
           name
           cnicNumber
@@ -24,6 +25,17 @@ export const MEHFIL_KARKUNS_BY_IDS = gql`
           image {
             _id
             data
+          }
+        }
+        visitorData {
+          city
+          country
+        }
+        karkunData {
+          city {
+            _id
+            name
+            country
           }
         }
       }

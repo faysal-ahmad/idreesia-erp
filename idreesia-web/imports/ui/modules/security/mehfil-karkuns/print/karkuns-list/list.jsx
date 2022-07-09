@@ -30,6 +30,20 @@ export class List extends Component {
     },
   };
 
+  cityColumn = {
+    title: 'City',
+    key: 'cityCountry',
+    render: (text, record) => {
+      if (record.karkun.isKarkun && record.karkun.karkunData?.city) {
+        return record.karkun.karkunData.city.name;
+      } else if (record.karkun.visitorData?.city) {
+        return record.karkun.visitorData?.city;
+      }
+
+      return '';
+    },
+  };
+
   cnicColumn = {
     title: 'CNIC Number',
     key: 'cnicNumber',
@@ -52,8 +66,8 @@ export class List extends Component {
   };
 
   dutiesColumn = {
-    title: 'Duty Name',
-    key: 'dutyName',
+    title: 'Duty Details',
+    key: 'dutyDetails',
     render: (text, record) => (
       <>
         <Row>{record.duty.name}</Row>
@@ -66,6 +80,7 @@ export class List extends Component {
     const columns = [
       this.nameColumn,
       this.cnicColumn,
+      this.cityColumn,
       this.phoneNumberColumn,
       this.dutiesColumn,
     ];

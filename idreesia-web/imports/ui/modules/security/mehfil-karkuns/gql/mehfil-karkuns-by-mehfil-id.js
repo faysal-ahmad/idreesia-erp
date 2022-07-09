@@ -11,6 +11,7 @@ export const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
       dutyCardBarcodeId
       karkun {
         _id
+        isKarkun
         sharedData {
           name
           imageId

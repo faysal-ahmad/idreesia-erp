@@ -29,7 +29,8 @@ export class List extends Component {
     handleAddMehfilKarkun: PropTypes.func,
     handleEditMehfilKarkun: PropTypes.func,
     handleRemoveMehfilKarkun: PropTypes.func,
-    handleViewMehfilCards: PropTypes.func,
+    handleViewPrintCards: PropTypes.func,
+    handleViewPrintList: PropTypes.func,
   };
 
   state = {
@@ -96,7 +97,7 @@ export class List extends Component {
           if (numbers.length === 0) return '';
           return <>{numbers}</>;
         },
-          },
+      },
       {
         title: 'Duty Name',
         dataIndex: 'dutyId',
@@ -163,11 +164,19 @@ export class List extends Component {
     }
   };
 
-  handleViewMehfilCards = () => {
-    const { handleViewMehfilCards } = this.props;
+  handleViewPrintCards = () => {
+    const { handleViewPrintCards } = this.props;
     const { selectedRows } = this.state;
-    if (handleViewMehfilCards) {
-      handleViewMehfilCards(selectedRows);
+    if (handleViewPrintCards) {
+      handleViewPrintCards(selectedRows);
+    }
+  };
+
+  handleViewPrintList = () => {
+    const { handleViewPrintList } = this.props;
+    const { selectedRows } = this.state;
+    if (handleViewPrintList) {
+      handleViewPrintList(selectedRows);
     }
   };
 
@@ -221,9 +230,18 @@ export class List extends Component {
           disabled={isPastMehfil}
           icon={<PrinterOutlined />}
           size="large"
-          onClick={this.handleViewMehfilCards}
+          onClick={this.handleViewPrintCards}
         >
           Print Cards
+        </Button>
+        &nbsp;&nbsp;
+        <Button
+          disabled={isPastMehfil}
+          icon={<PrinterOutlined />}
+          size="large"
+          onClick={this.handleViewPrintList}
+        >
+          Print List
         </Button>
       </div>
     );

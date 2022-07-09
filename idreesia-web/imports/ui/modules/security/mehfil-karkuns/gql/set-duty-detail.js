@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const SET_DUTY_DETAIL = gql`
+export const SET_DUTY_DETAIL = gql`
   mutation setDutyDetail($ids: [String]!, $dutyDetail: String!) {
     setDutyDetail(ids: $ids, dutyDetail: $dutyDetail) {
       _id
@@ -12,5 +12,3 @@ const SET_DUTY_DETAIL = gql`
     }
   }
 `;
-
-export default SET_DUTY_DETAIL;

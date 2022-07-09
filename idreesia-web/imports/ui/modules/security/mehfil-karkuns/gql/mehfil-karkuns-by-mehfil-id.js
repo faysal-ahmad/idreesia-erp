@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
+export const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
   query mehfilKarkunsByMehfilId($mehfilId: String!, $dutyId: String) {
     mehfilKarkunsByMehfilId(mehfilId: $mehfilId, dutyId: $dutyId) {
       _id
@@ -33,5 +33,3 @@ const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`
     }
   }
 `;
-
-export default MEHFIL_KARKUNS_BY_MEHFIL_ID;

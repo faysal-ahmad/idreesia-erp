@@ -59,7 +59,7 @@ Card.propTypes = {
 };
 
 // eslint-disable-next-line react/prefer-stateless-function
-export default class Cards extends Component {
+export class NamedCards extends Component {
   static propTypes = {
     mehfilKarkunsByIds: PropTypes.array,
     showDutyNameInUrdu: PropTypes.bool,

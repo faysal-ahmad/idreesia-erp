@@ -14,8 +14,12 @@ export default class SubModulePaths {
     return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkuns`;
   }
 
-  static mehfilsKarkunCardsPath(mehfilId = ':mehfilId') {
-    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-cards`;
+  static mehfilsKarkunPrintCardsPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-print-cards`;
+  }
+
+  static mehfilsKarkunPrintListPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-print-list`;
   }
 
   static mehfilDutiesPath = `${ModulePaths.security}/mehfil-duties`;

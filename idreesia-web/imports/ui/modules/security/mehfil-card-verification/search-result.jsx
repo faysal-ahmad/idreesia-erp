@@ -7,7 +7,7 @@ import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Spin, message } from 'antd';
 import moment from 'moment';
 
-import { Card } from '../mehfil-cards';
+import { Card } from '../mehfil-karkuns/print/karkun-cards/named-cards';
 
 const SearchResult = props => {
   const { barcode, loading, mehfilKarkunByBarcodeId } = props;

@@ -16,7 +16,10 @@ export default {
   Query: {
     mehfilKarkunsByMehfilId(obj, { mehfilId, dutyId }) {
       if (dutyId) {
-        return MehfilKarkuns.find({ mehfilId, dutyId }).fetch();
+        return MehfilKarkuns.find(
+          { mehfilId, dutyId },
+          { $sort: { dutyId: 1 } }
+        ).fetch();
       }
 
       return MehfilKarkuns.find({ mehfilId }).fetch();

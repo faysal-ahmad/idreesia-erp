@@ -100,7 +100,7 @@ class ListContainer extends Component {
       });
   };
 
-  handleViewMehfilCards = selectedRows => {
+  handleViewPrintCards = selectedRows => {
     const {
       history,
       match,
@@ -109,7 +109,22 @@ class ListContainer extends Component {
     const { mehfilId } = match.params;
     const ids = selectedRows.map(row => row._id);
     const idsString = ids.join(',');
-    const path = `${paths.mehfilsKarkunCardsPath(
+    const path = `${paths.mehfilsKarkunPrintCardsPath(
+      mehfilId
+    )}?dutyId=${dutyId}&ids=${idsString}`;
+    history.push(path);
+  };
+
+  handleViewPrintList = selectedRows => {
+    const {
+      history,
+      match,
+      queryParams: { dutyId },
+    } = this.props;
+    const { mehfilId } = match.params;
+    const ids = selectedRows.map(row => row._id);
+    const idsString = ids.join(',');
+    const path = `${paths.mehfilsKarkunPrintListPath(
       mehfilId
     )}?dutyId=${dutyId}&ids=${idsString}`;
     history.push(path);
@@ -183,7 +198,8 @@ class ListContainer extends Component {
           handleAddMehfilKarkun={this.handleAddMehfilKarkun}
           handleEditMehfilKarkun={this.handleEditMehfilKarkun}
           handleRemoveMehfilKarkun={this.handleRemoveMehfilKarkun}
-          handleViewMehfilCards={this.handleViewMehfilCards}
+          handleViewPrintCards={this.handleViewPrintCards}
+          handleViewPrintList={this.handleViewPrintList}
         />
         <Modal
           title="Edit Duty Details"

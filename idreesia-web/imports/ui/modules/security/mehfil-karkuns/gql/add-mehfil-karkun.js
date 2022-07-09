@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const ADD_MEHFIL_KARKUN = gql`
+export const ADD_MEHFIL_KARKUN = gql`
   mutation addMehfilKarkun(
     $mehfilId: String!
     $karkunId: String!
@@ -16,5 +16,3 @@ const ADD_MEHFIL_KARKUN = gql`
     }
   }
 `;
-
-export default ADD_MEHFIL_KARKUN;

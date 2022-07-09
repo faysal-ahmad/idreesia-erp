@@ -6,8 +6,11 @@ import { MehfilCardVerificationForm } from './mehfil-card-verification';
 import { KarkunVerificationForm } from './karkun-verification';
 import { MehfilsNewForm, MehfilsEditForm, MehfilsList } from './mehfils';
 import { MehfilDutiesNewForm, MehfilDutiesEditForm, MehfilDutiesList } from './mehfil-duties';
-import { MehfilKarkunsList } from './mehfil-karkuns';
-import { MehfilCards } from './mehfil-cards';
+import {
+  MehfilKarkunsList,
+  MehfilKarkunsPrintCards,
+  MehfilKarkunsPrintList,
+} from './mehfil-karkuns';
 import {
   VisitorRegistrationScanForm,
   VisitorRegistrationNewForm,
@@ -29,7 +32,8 @@ import { TeamVisitReport } from './team-visit-report';
 const Router = () => (
   <Switch>
     <Route path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
-    <Route path={paths.mehfilsKarkunCardsPath()} component={MehfilCards} />
+    <Route path={paths.mehfilsKarkunPrintCardsPath()} component={MehfilKarkunsPrintCards} />
+    <Route path={paths.mehfilsKarkunPrintListPath()} component={MehfilKarkunsPrintList} />
     <Route path={paths.mehfilsNewFormPath} component={MehfilsNewForm} />
     <Route path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
     <Route path={paths.mehfilsPath} component={MehfilsList} />

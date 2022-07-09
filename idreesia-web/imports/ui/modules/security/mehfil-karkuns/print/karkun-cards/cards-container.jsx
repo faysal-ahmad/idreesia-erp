@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import ReactToPrint from 'react-to-print';
 import { Button, Checkbox, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -17,8 +16,9 @@ import {
   WithAllMehfilDuties,
 } from '/imports/ui/modules/security/common/composers';
 
-import Cards from './cards';
-import AnonymousCards from './anonymous-cards';
+import { NamedCards } from './named-cards';
+import { AnonymousCards } from './anonymous-cards';
+import { MEHFIL_KARKUNS_BY_IDS } from '../../gql'
 
 const ControlsContainer = {
   display: 'flex',
@@ -33,38 +33,10 @@ const InputControlsContainer = {
   justifyContent: 'flex-start',
 };
 
-const mehfilKarkunsByIdsQuery = gql`
-  query mehfilKarkunsByIds($ids: String!) {
-    mehfilKarkunsByIds(ids: $ids) {
-      _id
-      mehfilId
-      karkunId
-      dutyId
-      dutyDetail
-      dutyCardBarcodeId
-      duty {
-        _id
-        name
-        urduName
-      }
-      karkun {
-        _id
-        sharedData {
-          name
-          image {
-            _id
-            data
-          }
-        }
-      }
-    }
-  }
-`;
-
 const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehfilDutiesLoading, allSecurityMehfilDuties }) => {
-  const mehfilCardsRef = useRef(null);
+  const cardsRef = useRef(null);
   const [showDutyNameInUrdu, setShowDutyNameInUrdu] = useState(false);
-  const { data, loading } = useQuery(mehfilKarkunsByIdsQuery, {
+  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS, {
     variables: { ids },
   });
 
@@ -72,14 +44,14 @@ const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehf
   const mehfilDuty = allSecurityMehfilDuties.find(duty => duty._id === dutyId);
 
   const cards = ids ? (
-    <Cards
-      ref={mehfilCardsRef}
+    <NamedCards
+      ref={cardsRef}
       mehfilKarkunsByIds={data.mehfilKarkunsByIds}
       showDutyNameInUrdu={showDutyNameInUrdu}
     />
   ) : (
     <AnonymousCards
-      ref={mehfilCardsRef}
+      ref={cardsRef}
       mehfilDuty={mehfilDuty}
       showDutyNameInUrdu={showDutyNameInUrdu}
     />
@@ -99,7 +71,7 @@ const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehf
       <div style={ControlsContainer}>
         <div>
           <ReactToPrint
-            content={() => mehfilCardsRef.current}
+            content={() => cardsRef.current}
             trigger={() => (
               <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print Cards
@@ -136,15 +108,15 @@ CardsContainer.propTypes = {
   allSecurityMehfilDuties: PropTypes.array,
 };
 
-export default flowRight(
+export const MehfilKarkunsPrintCards = flowRight(
   WithAllMehfilDuties(),
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),
   WithDynamicBreadcrumbs(({ mehfil }) => {
     if (mehfil) {
-      return `Security, Mehfils, ${mehfil.name}, Mehfil Cards`;
+      return `Security, Mehfils, ${mehfil.name}, Print Karkun Cards`;
     }
-    return `Security, Mehfils, Mehfil Cards`;
+    return `Security, Mehfils, Print Karkun Cards`;
   })
 )(CardsContainer);

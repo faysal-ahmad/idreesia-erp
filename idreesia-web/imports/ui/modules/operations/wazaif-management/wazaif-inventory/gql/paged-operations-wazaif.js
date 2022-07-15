@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const PAGED_OPERATIONS_WAZAIF = gql`
+export const PAGED_OPERATIONS_WAZAIF = gql`
   query pagedOperationsWazaif($filter: WazaifFilter) {
     pagedOperationsWazaif(filter: $filter) {
       totalResults
@@ -9,6 +9,7 @@ const PAGED_OPERATIONS_WAZAIF = gql`
         name
         revisionNumber
         revisionDate
+        currentStockLevel
         imageIds
         images {
           _id
@@ -18,5 +19,3 @@ const PAGED_OPERATIONS_WAZAIF = gql`
     }
   }
 `;
-
-export default PAGED_OPERATIONS_WAZAIF;

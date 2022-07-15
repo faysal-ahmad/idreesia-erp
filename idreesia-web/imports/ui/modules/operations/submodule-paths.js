@@ -32,10 +32,10 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Wazaif Routes
   // *************************************************************************************
-  static wazaifPath = `${ModulePaths.operations}/wazaif`;
-  static wazaifNewFormPath = `${SubModulePaths.wazaifPath}/new`;
-  static wazaifEditFormPath(wazeefaId = ':wazeefaId') {
-    return `${SubModulePaths.wazaifPath}/${wazeefaId}`;
+  static wazaifInventoryPath = `${ModulePaths.operations}/wazaif-inventory`;
+  static wazaifInventoryNewFormPath = `${SubModulePaths.wazaifInventoryPath}/new`;
+  static wazaifInventoryEditFormPath(wazeefaId = ':wazeefaId') {
+    return `${SubModulePaths.wazaifInventoryPath}/${wazeefaId}`;
   }
 
   // *************************************************************************************

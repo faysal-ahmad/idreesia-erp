@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const SET_OPERATIONS_WAZEEFA_IMAGE = gql`
+export const SET_OPERATIONS_WAZEEFA_IMAGE = gql`
   mutation setOperationsWazeefaImage($_id: String!, $imageIds: [String]!) {
     setOperationsWazeefaImage(_id: $_id, imageIds: $imageIds) {
       _id
@@ -11,5 +11,3 @@ const SET_OPERATIONS_WAZEEFA_IMAGE = gql`
     }
   }
 `;
-
-export default SET_OPERATIONS_WAZEEFA_IMAGE;

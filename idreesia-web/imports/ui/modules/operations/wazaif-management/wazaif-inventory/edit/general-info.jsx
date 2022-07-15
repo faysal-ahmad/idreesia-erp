@@ -1,25 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import moment from 'moment';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 import {
   InputTextField,
   InputNumberField,
   DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
-import { CREATE_OPERATIONS_WAZEEFA } from '../gql';
+import { UPDATE_OPERATIONS_WAZEEFA, OPERATIONS_WAZEEFA_BY_ID } from '../gql';
 
-class NewForm extends Component {
+class GeneralInfo extends Component {
   static propTypes = {
+    match: PropTypes.object,
     history: PropTypes.object,
     location: PropTypes.object,
-    createOperationsWazeefa: PropTypes.func,
+
+    formDataLoading: PropTypes.bool,
+    wazeefaId: PropTypes.string,
+    operationsWazeefaById: PropTypes.object,
+    updateOperationsWazeefa: PropTypes.func,
   };
   
   state = {
@@ -28,7 +33,7 @@ class NewForm extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.goBack();
+    history.push(paths.wazaifInventoryPath);
   };
 
   handleFieldsChange = () => {
@@ -36,16 +41,17 @@ class NewForm extends Component {
   }
 
   handleFinish = ({ name, revisionNumber, revisionDate }) => {
-    const { history, createOperationsWazeefa } = this.props;
-    createOperationsWazeefa({
+    const { history, wazeefaId, updateOperationsWazeefa } = this.props;
+    updateOperationsWazeefa({
       variables: {
+        _id: wazeefaId,
         name,
         revisionNumber,
         revisionDate,
       },
     })
-      .then(({ data: { createOperationsWazeefa: newWazeefa } }) => {
-        history.push(`${paths.wazaifEditFormPath(newWazeefa._id)}`);
+      .then(() => {
+        history.push(paths.wazaifInventoryPath);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -53,7 +59,9 @@ class NewForm extends Component {
   };
 
   render() {
+    const { formDataLoading, operationsWazeefaById } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
+    if (formDataLoading) return null;
 
     return (
       <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
@@ -62,17 +70,23 @@ class NewForm extends Component {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the wazeefa."
+          initialValue={operationsWazeefaById.name}
         />
 
         <InputNumberField
           fieldName="revisionNumber"
           fieldLabel="Revision Number"
+          initialValue={operationsWazeefaById.revisionNumber}
         />
 
         <DateField
           fieldName="revisionDate"
           fieldLabel="Revision Date"
-          initialValue={null}
+          initialValue={
+            operationsWazeefaById.revisionDate
+              ? moment(Number(operationsWazeefaById.revisionDate))
+              : null
+          }
         />
 
         <FormButtonsSaveCancel
@@ -85,11 +99,14 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  graphql(CREATE_OPERATIONS_WAZEEFA, {
-    name: 'createOperationsWazeefa',
+  graphql(UPDATE_OPERATIONS_WAZEEFA, {
+    name: 'updateOperationsWazeefa',
     options: {
       refetchQueries: ['pagedOperationsWazaif'],
     },
   }),
-  WithBreadcrumbs(['Operations', 'Wazaif', 'New'])
-)(NewForm);
+  graphql(OPERATIONS_WAZEEFA_BY_ID, {
+    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
+    options: ({ wazeefaId }) => ({ variables: { _id: wazeefaId } }),
+  })
+)(GeneralInfo);

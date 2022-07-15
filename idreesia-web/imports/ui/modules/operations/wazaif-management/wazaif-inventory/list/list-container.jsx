@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -9,10 +9,11 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { WazaifList, WazaifListFilter } from '/imports/ui/modules/common';
+import { WazaifListFilter } from '/imports/ui/modules/common';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
-import { PAGED_OPERATIONS_WAZAIF, DELETE_OPERATIONS_WAZEEFA } from '../gql';
+import WazaifList from './list';
+import { PAGED_OPERATIONS_WAZAIF, DELETE_OPERATIONS_WAZEEFA, SET_OPERATIONS_WAZEEFA_STOCK_LEVEL } from '../gql';
 
 const ButtonGroupStyle = {
   display: 'flex',
@@ -20,9 +21,8 @@ const ButtonGroupStyle = {
   alignItems: 'center',
 };
 
-const List = ({ history, location }) => {
+const ListContainer = ({ history, location }) => {
   const dispatch = useDispatch();
-  const wazaifList = useRef(null);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -30,18 +30,19 @@ const List = ({ history, location }) => {
   });
 
   const [deleteOperationsWzeefa] = useMutation(DELETE_OPERATIONS_WAZEEFA);
-  const { data, refetch } = useQuery(PAGED_OPERATIONS_WAZAIF, {
+  const [setOperationsWazeefaStockLevel] = useMutation(SET_OPERATIONS_WAZEEFA_STOCK_LEVEL);
+   const { data, refetch } = useQuery(PAGED_OPERATIONS_WAZAIF, {
     variables: { filter: queryParams },
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Operations', 'Wazaif', 'List']));
+    dispatch(setBreadcrumbs(['Operations', 'Wazaif Management', 'Wazaif Inventory']));
   }, [location]);
 
   const { name, pageIndex, pageSize } = queryParams;
 
   const handleSelectItem = wazeefa => {
-    history.push(paths.wazaifEditFormPath(wazeefa._id));
+    history.push(paths.wazaifInventoryEditFormPath(wazeefa._id));
   };
 
   const handleDeleteItem = record => {
@@ -59,8 +60,21 @@ const List = ({ history, location }) => {
   };
 
   const handleNewClicked = () => {
-    history.push(paths.wazaifNewFormPath);
+    history.push(paths.wazaifInventoryNewFormPath);
   };
+
+  const handleSetStockLevel = (wazeefaId, currentStockLevel) => setOperationsWazeefaStockLevel({
+      variables: {
+        _id: wazeefaId,
+        currentStockLevel,
+      },
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
 
   const getTableHeader = () => (
     <div className="list-table-header">
@@ -94,24 +108,22 @@ const List = ({ history, location }) => {
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
-    <>
-      <WazaifList
-        ref={wazaifList}
-        listHeader={getTableHeader}
-        handleSelectItem={handleSelectItem}
-        handleDeleteItem={handleDeleteItem}
-        setPageParams={setPageParams}
-        pageIndex={numPageIndex}
-        pageSize={numPageSize}
-        pagedData={pagedOperationsWazaif}
-      />
-    </>
+    <WazaifList
+      listHeader={getTableHeader}
+      handleSelectItem={handleSelectItem}
+      handleDeleteItem={handleDeleteItem}
+      handleSetStockLevel={handleSetStockLevel}
+      setPageParams={setPageParams}
+      pageIndex={numPageIndex}
+      pageSize={numPageSize}
+      pagedData={pagedOperationsWazaif}
+    />
   );
 };
 
-List.propTypes = {
+ListContainer.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
 };
 
-export default List;
+export default ListContainer;

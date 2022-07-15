@@ -1,12 +1,14 @@
 import gql from 'graphql-tag';
 
-const CREATE_OPERATIONS_WAZEEFA = gql`
-  mutation createOperationsWazeefa(
+export const UPDATE_OPERATIONS_WAZEEFA = gql`
+  mutation updateOperationsWazeefa(
+    $_id: String!
     $name: String!
     $revisionNumber: Int
     $revisionDate: String
   ) {
-    createOperationsWazeefa(
+    updateOperationsWazeefa(
+      _id: $_id
       name: $name
       revisionNumber: $revisionNumber
       revisionDate: $revisionDate
@@ -18,5 +20,3 @@ const CREATE_OPERATIONS_WAZEEFA = gql`
     }
   }
 `;
-
-export default CREATE_OPERATIONS_WAZEEFA;

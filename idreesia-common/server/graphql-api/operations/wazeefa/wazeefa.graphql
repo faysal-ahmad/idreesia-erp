@@ -11,6 +11,7 @@ extend type Mutation {
     name: String!
     revisionNumber: Int
     revisionDate: String
+    currentStockLevel: Int
   ): WazeefaType
   @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
 
@@ -19,6 +20,20 @@ extend type Mutation {
     name: String!
     revisionNumber: Int
     revisionDate: String
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+
+  setOperationsWazeefaStockLevel(
+    _id: String!
+    currentStockLevel: Int
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+
+  setOperationsWazeefaDetails(
+    _id: String!
+    packetCount: Int
+    subCartonCount: Int
+    cartonCount: Int
   ): WazeefaType
   @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
 

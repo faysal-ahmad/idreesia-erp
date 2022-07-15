@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const OPERATIONS_WAZEEFA_BY_ID = gql`
+export const OPERATIONS_WAZEEFA_BY_ID = gql`
   query operationsWazeefaById($_id: String!) {
     operationsWazeefaById(_id: $_id) {
       _id
@@ -13,6 +13,13 @@ const OPERATIONS_WAZEEFA_BY_ID = gql`
         name
         mimeType
       }
+      wazeefaDetail {
+        packetCount
+        subCartonCount
+        cartonCount
+      }
+      currentStockLevel
+      stockVerifiedOn
       createdAt
       createdBy
       updatedAt
@@ -20,5 +27,3 @@ const OPERATIONS_WAZEEFA_BY_ID = gql`
     }
   }
 `;
-
-export default OPERATIONS_WAZEEFA_BY_ID;

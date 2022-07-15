@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   BookOutlined,
+  FormOutlined,
   IdcardOutlined,
   LaptopOutlined,
   MessageOutlined,
   MonitorOutlined,
   ReadOutlined,
+  ReconciliationOutlined,
   WalletOutlined,
 } from '@ant-design/icons';
 
@@ -42,9 +44,9 @@ class Sidebar extends Component {
         history.push(paths.imdadRequestsPath);
         break;
 
-      case 'wazaif':
-        setActiveSubModuleName(SubModuleNames.wazaif);
-        history.push(paths.wazaifPath);
+      case 'wazaif-inventory':
+        setActiveSubModuleName(SubModuleNames.wazaifInventory);
+        history.push(paths.wazaifInventoryPath);
         break;
 
       case 'messages':
@@ -87,14 +89,28 @@ class Sidebar extends Component {
           <WalletOutlined style={IconStyle} />
           <span>Imdad Requests</span>
         </Item>
-        <Item key="wazaif">
-          <ReadOutlined style={IconStyle} />
-          <span>Wazaif</span>
-        </Item>
         <Item key="messages">
           <MessageOutlined style={IconStyle} />
           <span>Messages</span>
         </Item>
+        <SubMenu
+          key="wazaif-management"
+          title={
+            <>
+              <ReadOutlined style={IconStyle} />
+              <span>Wazaif Management</span>
+            </>
+          }
+        >
+          <Item key="wazaif-inventory">
+            <ReconciliationOutlined style={IconStyle} />
+            <span>Wazaif Inventory</span>
+          </Item>
+          <Item key="order-fulfilment">
+            <FormOutlined style={IconStyle} />
+            <span>Order Fulfilment</span>
+          </Item>
+        </SubMenu>
         <SubMenu
           key="operations-reports"
           title={

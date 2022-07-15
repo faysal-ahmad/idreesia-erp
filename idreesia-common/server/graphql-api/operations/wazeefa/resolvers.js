@@ -1,6 +1,6 @@
 import { Wazaif } from 'meteor/idreesia-common/server/collections/wazaif-management';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
-import { without } from 'meteor/idreesia-common/utilities/lodash';
+import { without, isNil } from 'meteor/idreesia-common/utilities/lodash';
 
 export default {
   Query: {
@@ -16,7 +16,7 @@ export default {
   Mutation: {
     createOperationsWazeefa(
       obj,
-      { name, revisionNumber, revisionDate },
+      { name, revisionNumber, revisionDate, currentStockLevel },
       { user }
     ) {
       const date = new Date();
@@ -24,6 +24,7 @@ export default {
         name,
         revisionNumber,
         revisionDate,
+        currentStockLevel,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -48,6 +49,45 @@ export default {
           updatedBy: user._id,
         },
       });
+
+      return Wazaif.findOne(_id);
+    },
+
+    setOperationsWazeefaDetails(
+      obj,
+      { _id, packetCount, subCartonCount, cartonCount },
+      { user }
+    ) {
+      const date = new Date();
+      Wazaif.update(_id, {
+        $set: {
+          wazeefaDetail: {
+            packetCount,
+            subCartonCount,
+            cartonCount,
+          },
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Wazaif.findOne(_id);
+    },
+
+    setOperationsWazeefaStockLevel(obj, { _id, currentStockLevel }, { user }) {
+      const existingWazeefa = Wazaif.findOne(_id);
+      const canUpdateStockLevel = isNil(existingWazeefa.currentStockLevel);
+
+      if (canUpdateStockLevel) {
+        const date = new Date();
+        Wazaif.update(_id, {
+          $set: {
+            currentStockLevel,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        });
+      }
 
       return Wazaif.findOne(_id);
     },

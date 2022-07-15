@@ -1,9 +1,18 @@
+type WazeefaDetailType {
+  packetCount: Int
+  subCartonCount: Int
+  cartonCount: Int
+}
+
 type WazeefaType {
   _id: String
   name: String
   revisionNumber: Int
   revisionDate: String
   imageIds: [String]
+  wazeefaDetail: WazeefaDetailType
+  currentStockLevel: Int
+  stockVerifiedOn: String
 
   images: [Attachment]
 

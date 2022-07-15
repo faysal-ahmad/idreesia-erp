@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  InputTextField,
   InputNumberField,
-  DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
-import { UPDATE_OPERATIONS_WAZEEFA, OPERATIONS_WAZEEFA_BY_ID } from '../gql';
+import { SET_OPERATIONS_WAZEEFA_DETAILS, OPERATIONS_WAZEEFA_BY_ID } from '../gql';
 
-class GeneralInfo extends Component {
+class Specifications extends Component {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
@@ -24,7 +21,7 @@ class GeneralInfo extends Component {
     formDataLoading: PropTypes.bool,
     wazeefaId: PropTypes.string,
     operationsWazeefaById: PropTypes.object,
-    updateOperationsWazeefa: PropTypes.func,
+    setOperationsWazeefaDetails: PropTypes.func,
   };
   
   state = {
@@ -33,25 +30,25 @@ class GeneralInfo extends Component {
 
   handleCancel = () => {
     const { history } = this.props;
-    history.push(paths.wazaifPath);
+    history.push(paths.wazaifInventoryPath);
   };
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ name, revisionNumber, revisionDate }) => {
-    const { history, wazeefaId, updateOperationsWazeefa } = this.props;
-    updateOperationsWazeefa({
+  handleFinish = ({ packetCount, subCartonCount, cartonCount }) => {
+    const { history, wazeefaId, setOperationsWazeefaDetails } = this.props;
+    setOperationsWazeefaDetails({
       variables: {
         _id: wazeefaId,
-        name,
-        revisionNumber,
-        revisionDate,
+        packetCount,
+        subCartonCount,
+        cartonCount,
       },
     })
       .then(() => {
-        history.push(paths.wazaifPath);
+        history.push(paths.wazaifInventoryPath);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -65,28 +62,22 @@ class GeneralInfo extends Component {
 
     return (
       <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input the name for the wazeefa."
-          initialValue={operationsWazeefaById.name}
+        <InputNumberField
+          fieldName="packetCount"
+          fieldLabel="Packet Count"
+          initialValue={operationsWazeefaById?.wazeefaDetail?.packetCount}
         />
 
         <InputNumberField
-          fieldName="revisionNumber"
-          fieldLabel="Revision Number"
-          initialValue={operationsWazeefaById.revisionNumber}
+          fieldName="subCartonCount"
+          fieldLabel="Sub-carton Count"
+          initialValue={operationsWazeefaById?.wazeefaDetail?.subCartonCount}
         />
 
-        <DateField
-          fieldName="revisionDate"
-          fieldLabel="Revision Date"
-          initialValue={
-            operationsWazeefaById.revisionDate
-              ? moment(Number(operationsWazeefaById.revisionDate))
-              : null
-          }
+        <InputNumberField
+          fieldName="cartonCount"
+          fieldLabel="Carton Count"
+          initialValue={operationsWazeefaById?.wazeefaDetail?.cartonCount}
         />
 
         <FormButtonsSaveCancel
@@ -99,8 +90,8 @@ class GeneralInfo extends Component {
 }
 
 export default flowRight(
-  graphql(UPDATE_OPERATIONS_WAZEEFA, {
-    name: 'updateOperationsWazeefa',
+  graphql(SET_OPERATIONS_WAZEEFA_DETAILS, {
+    name: 'setOperationsWazeefaDetails',
     options: {
       refetchQueries: ['pagedOperationsWazaif'],
     },
@@ -109,4 +100,4 @@ export default flowRight(
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ wazeefaId }) => ({ variables: { _id: wazeefaId } }),
   })
-)(GeneralInfo);
+)(Specifications);

@@ -4,8 +4,10 @@ import PropTypes from 'prop-types';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { Tabs } from 'antd';
+
 import GeneralInfo from './general-info';
 import Images from './images';
+import Specifications from './specifications';
 
 const EditForm = props => {
   const wazeefaId = get(props, ['match', 'params', 'wazeefaId'], null);
@@ -17,6 +19,9 @@ const EditForm = props => {
       <Tabs.TabPane tab="Images" key="2">
         <Images wazeefaId={wazeefaId} {...props} />
       </Tabs.TabPane>
+      <Tabs.TabPane tab="Specifications" key="3">
+        <Specifications wazeefaId={wazeefaId} {...props} />
+      </Tabs.TabPane>
     </Tabs>
   );
 };
@@ -27,4 +32,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Operations', 'Wazaif', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['Operations', 'Wazaif Management', 'Wazaif Inventory', 'Edit'])(EditForm);

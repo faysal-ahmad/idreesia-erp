@@ -1,5 +1,5 @@
 export default function filterByInstanceAccess(user, instanceObjects) {
-  if (!user || user.locked) return false;
+  if (!user || user.locked) return [];
   if (user.username === 'erp-admin') return instanceObjects;
 
   const { instances: userInstances } = user;

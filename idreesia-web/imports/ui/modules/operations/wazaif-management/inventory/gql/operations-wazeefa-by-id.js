@@ -19,7 +19,7 @@ export const OPERATIONS_WAZEEFA_BY_ID = gql`
         cartonCount
       }
       currentStockLevel
-      stockVerifiedOn
+      stockReconciledOn
       createdAt
       createdBy
       updatedAt

@@ -12,7 +12,7 @@ type WazeefaType {
   imageIds: [String]
   wazeefaDetail: WazeefaDetailType
   currentStockLevel: Int
-  stockVerifiedOn: String
+  stockReconciledOn: String
 
   images: [Attachment]
 

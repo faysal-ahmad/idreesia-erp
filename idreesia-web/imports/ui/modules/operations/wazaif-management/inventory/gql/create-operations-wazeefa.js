@@ -18,6 +18,7 @@ export const CREATE_OPERATIONS_WAZEEFA = gql`
       revisionNumber
       revisionDate
       currentStockLevel
+      stockReconciledOn
     }
   }
 `;

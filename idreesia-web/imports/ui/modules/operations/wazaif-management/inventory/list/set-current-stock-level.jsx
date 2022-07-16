@@ -4,6 +4,7 @@ import { Form } from 'antd';
 
 import {
   InputNumberField,
+  InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -14,8 +15,8 @@ const SetCurrentStockLevel = ({ wazeefa, onSave, onCancel }) => {
     setIsFieldsTouched(true);
   }
 
-  const handleFinish = ({ newValue }) => {
-    onSave(wazeefa._id, newValue);
+  const handleFinish = ({ newValue, adjustmentReason }) => {
+    onSave(wazeefa._id, newValue, adjustmentReason);
   };
 
   return (
@@ -31,6 +32,11 @@ const SetCurrentStockLevel = ({ wazeefa, onSave, onCancel }) => {
         fieldName="newValue"
         fieldLabel="New Stock Level"
         required
+      />
+
+      <InputTextField
+        fieldName="adjustmentReason"
+        fieldLabel="Adjustment Reason"
       />
 
       <FormButtonsSaveCancel

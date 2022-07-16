@@ -38,6 +38,8 @@ export default class SubModulePaths {
     return `${SubModulePaths.wazaifInventoryPath}/${wazeefaId}`;
   }
 
+  static wazaifStockAdjustmentPath = `${ModulePaths.operations}/wazaif-stock-adjustments`;
+
   // *************************************************************************************
   // Imdad Requests Routes
   // *************************************************************************************

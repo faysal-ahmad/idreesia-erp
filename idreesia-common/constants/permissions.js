@@ -61,8 +61,9 @@ const Permissions = {
   OP_VIEW_VISITORS: 'operations-view-visitors',
   OP_MANAGE_VISITORS: 'operations-manage-visitors',
 
-  OP_VIEW_WAZAIF: 'operations-view-wazaif',
-  OP_MANAGE_WAZAIF: 'operations-manage-wazaif',
+  OP_VIEW_WAZAIF_DATA: 'operations-view-wazaif-data',
+  OP_MANAGE_WAZAIF_DATA: 'operations-manage-wazaif-data',
+  OP_APPROVE_WAZAIF_DATA: 'operations-approve-wazaif-data',
 
   OP_VIEW_MESSAGES: 'operations-view-messages',
   OP_MANAGE_MESSAGES: 'operations-manage-messages',

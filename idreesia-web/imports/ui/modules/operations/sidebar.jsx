@@ -52,6 +52,11 @@ class Sidebar extends Component {
         history.push(paths.wazaifInventoryPath);
         break;
 
+      case 'wazaif-stock-adjustments':
+        setActiveSubModuleName(SubModuleNames.wazaifStockAdjustments);
+        history.push(paths.wazaifStockAdjustmentPath);
+        break;
+
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
@@ -117,17 +122,17 @@ class Sidebar extends Component {
         >
           <Item key="wazaif-inventory">
             <ReconciliationOutlined style={IconStyle} />
-            <span>Wazaif Inventory</span>
+            <span>Inventory</span>
           </Item>
-          <Item key="delivery-orders">
+          <Item key="wazaif-delivery-orders">
             <FileDoneOutlined style={IconStyle} />
             <span>Delivery Orders</span>
           </Item>
-          <Item key="print-orders">
+          <Item key="wazaif-print-orders">
             <FileImageOutlined style={IconStyle} />
             <span>Printing Orders</span>
           </Item>
-          <Item key="stock-adjustments">
+          <Item key="wazaif-stock-adjustments">
             <FileExclamationOutlined style={IconStyle} />
             <span>Stock Adjustments</span>
           </Item>

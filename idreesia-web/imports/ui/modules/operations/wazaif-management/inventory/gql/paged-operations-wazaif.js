@@ -10,6 +10,7 @@ export const PAGED_OPERATIONS_WAZAIF = gql`
         revisionNumber
         revisionDate
         currentStockLevel
+        stockReconciledOn
         imageIds
         images {
           _id

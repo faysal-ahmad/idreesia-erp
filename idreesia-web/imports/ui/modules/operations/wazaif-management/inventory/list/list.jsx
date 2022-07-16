@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ReconciliationOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -16,9 +16,31 @@ import { WazeefaName } from '/imports/ui/modules/helpers/controls';
 
 import SetCurrentStockLevelForm from './set-current-stock-level';
 
-const LinkStyle = {
-  width: '100%',
+const OrderLevel = {
+  display: 'flex',
+  justifyContent: 'center',
   color: '#1890FF',
+  cursor: 'pointer',
+};
+
+const StockLevelVerificationOk = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: '#1890FF',
+  cursor: 'pointer',
+};
+
+const StockLevelVerificationWarning = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: 'orange',
+  cursor: 'pointer',
+};
+
+const StockLevelVerificationError = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: 'red',
   cursor: 'pointer',
 };
 
@@ -67,40 +89,87 @@ const List = ({
     title: 'Current Stock',
     dataIndex: 'currentStockLevel',
     key: 'currentStockLevel',
-    width: 150,
-    render: (text, record) => (
-      <div
-        style={LinkStyle}
-        onClick={() => {
-          setSelectedWazeefa(record);
-          setShowCurrentStockLevelForm(true);
-        }}
-      >
+    width: 120,
+    render: (text, record) => {
+      const stockLevel = text || 0;
+      let style = StockLevelVerificationError;
+      let tooltip = `Stock level has never been reconciled.`;
+
+      if (record.stockReconciledOn) {
+        const now = moment();
+        const lastVerified = moment(Number(record.stockReconciledOn));
+        const duration = moment.duration(now.diff(lastVerified)).asMonths();
+        tooltip = `Stock level reconciled on ${lastVerified.format(
+          Formats.DATE_FORMAT
+        )}`;
+        if (duration < 3) {
+          style = StockLevelVerificationOk;
+        } else if (duration < 6) {
+          style = StockLevelVerificationWarning;
+        } else if (duration >= 6) {
+          style = StockLevelVerificationError;
+        }
+      }
+
+      return (
+        <Tooltip title={tooltip}>
+          <div
+            style={style}
+            onClick={() => {
+              setSelectedWazeefa(record);
+              setShowCurrentStockLevelForm(true);
+            }}
+          >
+            {stockLevel}
+          </div>
+        </Tooltip>
+      );
+    },
+
+  };
+
+  const deliveryOrdersColumn = {
+    title: 'Delivery Orders',
+    dataIndex: 'deliveryOrders',
+    key: 'deliveryOrders',
+    width: 120,
+    render: text => (
+      <div style={OrderLevel}>
         {text || 0}
       </div>
     ),
-  };
-
-  const unfulfilledOrdersColumn = {
-    title: 'Unfulfilled Orders',
-    dataIndex: 'unfulfilledOrders',
-    key: 'unfulfilledOrders',
-    width: 150,
-    render: text => text || 0,
   };
 
   const printOrdersColumn = {
     title: 'Print Orders',
     dataIndex: 'printOrders',
     key: 'printOrders',
-    width: 150,
-    render: text => text || 0,
+    width: 120,
+    render: text => (
+      <div style={OrderLevel}>
+        {text || 0}
+      </div>
+    ),
   };
 
   const actionsColumn = () => ({
       key: 'action',
       width: 80,
       render: (text, record) => {
+        const reconcileAction = (
+          <Popconfirm
+            title="Are you sure you want to mark this item as reconciled?"
+            onConfirm={() => {
+              // handleDeleteItem(record);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Reconcile">
+              <ReconciliationOutlined className="list-actions-icon" />
+            </Tooltip>
+          </Popconfirm>
+        );
         const deleteAction = (
           <Popconfirm
             title="Are you sure you want to delete this item?"
@@ -115,8 +184,12 @@ const List = ({
             </Tooltip>
           </Popconfirm>
         );
-
-        return <div className="list-actions-column">{deleteAction}</div>;
+        return (
+          <div className="list-actions-column">
+            {reconcileAction}
+            {deleteAction}
+          </div>
+        );
       },
     });
 
@@ -125,7 +198,7 @@ const List = ({
     revisionNumberColumn,
     revisionDateColumn,
     currentStockColumn,
-    unfulfilledOrdersColumn,
+    deliveryOrdersColumn,
     printOrdersColumn,
     actionsColumn(),
   ];
@@ -137,10 +210,10 @@ const List = ({
     });
   };
 
-  const handleSetCurrentStockLevelSave = (wazeefaId, stockLevel) => {
+  const handleSetCurrentStockLevelSave = (wazeefaId, stockLevel, adjustmentReason) => {
     setSelectedWazeefa(null);
     setShowCurrentStockLevelForm(false);
-    handleSetStockLevel(wazeefaId, stockLevel);
+    handleSetStockLevel(wazeefaId, stockLevel, adjustmentReason);
   }
 
   const handleSetCurrentStockLevelClose = () => {

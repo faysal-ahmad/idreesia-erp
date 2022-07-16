@@ -36,7 +36,7 @@ const ListContainer = ({ history, location }) => {
   });
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(['Operations', 'Wazaif Management', 'Wazaif Inventory']));
+    dispatch(setBreadcrumbs(['Operations', 'Wazaif Management', 'Inventory']));
   }, [location]);
 
   const { name, pageIndex, pageSize } = queryParams;
@@ -63,10 +63,11 @@ const ListContainer = ({ history, location }) => {
     history.push(paths.wazaifInventoryNewFormPath);
   };
 
-  const handleSetStockLevel = (wazeefaId, currentStockLevel) => setOperationsWazeefaStockLevel({
+  const handleSetStockLevel = (wazeefaId, currentStockLevel, adjustmentReason) => setOperationsWazeefaStockLevel({
       variables: {
         _id: wazeefaId,
         currentStockLevel,
+        adjustmentReason,
       },
     })
       .then(() => {

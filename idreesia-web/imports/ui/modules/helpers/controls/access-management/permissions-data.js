@@ -610,12 +610,16 @@ export const OperationsPermissionsData = {
       key: 'module-operations-wazaif',
       children: [
         {
-          title: 'View Wazaif',
-          key: PermissionConstants.OP_VIEW_WAZAIF,
+          title: 'View Wazaif Data',
+          key: PermissionConstants.OP_VIEW_WAZAIF_DATA,
         },
         {
-          title: 'Manage Wazaif',
-          key: PermissionConstants.OP_MANAGE_WAZAIF,
+          title: 'Manage Wazaif Data',
+          key: PermissionConstants.OP_MANAGE_WAZAIF_DATA,
+        },
+        {
+          title: 'Approve Wazaif Data',
+          key: PermissionConstants.OP_APPROVE_WAZAIF_DATA,
         },
       ],
     },

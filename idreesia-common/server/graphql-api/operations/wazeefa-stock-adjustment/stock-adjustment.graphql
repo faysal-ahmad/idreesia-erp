@@ -1,0 +1,41 @@
+type WazeefaStockAdjustment {
+  _id: String
+  wazeefaId: String
+  adjustmentDate: String
+  adjustedBy: String
+  quantity: Int
+  adjustmentReason: String
+
+  refWazeefa: WazeefaType
+  refAdjustedBy: PersonType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedWazaifStockAdjustment {
+  totalResults: Int
+  data: [WazeefaStockAdjustment]
+}
+
+extend type Query {
+  wazeefaStockAdjustmentById(_id: String!): WazeefaStockAdjustment
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  pagedWazaifStockAdjustments(
+    queryString: String
+  ): PagedWazaifStockAdjustment
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+}
+
+extend type Mutation {
+  approveWazeefaStockAdjustment(_id: String!): WazeefaStockAdjustment
+  @checkPermissions(permissions: [OP_APPROVE_WAZAIF_DATA])
+
+  removeWazeefaStockAdjustment(_id: String!): Int
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+}

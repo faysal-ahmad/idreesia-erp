@@ -8,7 +8,8 @@ import {
   VisitorsList,
 } from './visitors';
 
-import { WazaifInventoryList, WazaifInventoryNewForm, WazaifInventoryEditForm } from './wazaif-management/wazaif-inventory';
+import { WazaifInventoryList, WazaifInventoryNewForm, WazaifInventoryEditForm } from './wazaif-management/inventory';
+import { WazaifStockAdjustmentsList } from './wazaif-management/stock-adjustments';
 
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import {
@@ -41,6 +42,7 @@ const Router = () => (
     <Route path={paths.wazaifInventoryNewFormPath} component={WazaifInventoryNewForm} />
     <Route path={paths.wazaifInventoryEditFormPath()} component={WazaifInventoryEditForm} />
     <Route path={paths.wazaifInventoryPath} component={WazaifInventoryList} />
+    <Route path={paths.wazaifStockAdjustmentPath} component={WazaifStockAdjustmentsList} />
 
     <Route
       path={paths.imdadReasonsNewFormPath}

@@ -35,7 +35,7 @@ export default new SimpleSchema({
     type: Number,
     optional: true,
   },
-  stockVerifiedOn: {
+  stockReconciledOn: {
     type: Date,
     optional: true,
   },

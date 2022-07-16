@@ -1,4 +1,7 @@
-import { Wazaif } from 'meteor/idreesia-common/server/collections/wazaif-management';
+import {
+  Wazaif,
+  StockAdjustments,
+} from 'meteor/idreesia-common/server/collections/wazaif-management';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { without, isNil } from 'meteor/idreesia-common/utilities/lodash';
 
@@ -25,10 +28,19 @@ export default {
         revisionNumber,
         revisionDate,
         currentStockLevel,
+        stockReconciledOn: date,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
         updatedBy: user._id,
+      });
+
+      StockAdjustments.insert({
+        wazeefaId,
+        adjustmentDate: date,
+        adjustedBy: user._id,
+        quantity: currentStockLevel,
+        adjustmentReason: 'Set initial stock level',
       });
 
       return Wazaif.findOne(wazeefaId);
@@ -74,20 +86,48 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    setOperationsWazeefaStockLevel(obj, { _id, currentStockLevel }, { user }) {
+    setOperationsWazeefaStockLevel(
+      obj,
+      { _id, currentStockLevel, adjustmentReason },
+      { user }
+    ) {
       const existingWazeefa = Wazaif.findOne(_id);
       const canUpdateStockLevel = isNil(existingWazeefa.currentStockLevel);
 
-      if (canUpdateStockLevel) {
-        const date = new Date();
-        Wazaif.update(_id, {
-          $set: {
-            currentStockLevel,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        });
-      }
+      const date = new Date();
+      Wazaif.update(_id, {
+        $set: {
+          currentStockLevel,
+          stockReconciledOn: canUpdateStockLevel
+            ? date
+            : existingWazeefa.canUpdateStockLevel,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      StockAdjustments.insert({
+        wazeefaId: _id,
+        adjustmentDate: date,
+        adjustedBy: user._id,
+        quantity: canUpdateStockLevel
+          ? currentStockLevel
+          : currentStockLevel - existingWazeefa.currentStockLevel,
+        adjustmentReason,
+      });
+
+      return Wazaif.findOne(_id);
+    },
+
+    setOperationsWazeefaStockLevelReconciled(obj, { _id }, { user }) {
+      const date = new Date();
+      Wazaif.update(_id, {
+        $set: {
+          stockReconciledOn: date,
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
 
       return Wazaif.findOne(_id);
     },

@@ -1,9 +1,9 @@
 extend type Query {
   pagedOperationsWazaif(filter: WazaifFilter): PagedWazeefaType
-  @checkPermissions(permissions: [OP_VIEW_WAZAIF, OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 
   operationsWazeefaById(_id: String!): WazeefaType
-  @checkPermissions(permissions: [OP_VIEW_WAZAIF, OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 }
 
 extend type Mutation {
@@ -13,7 +13,7 @@ extend type Mutation {
     revisionDate: String
     currentStockLevel: Int
   ): WazeefaType
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 
   updateOperationsWazeefa(
     _id: String!
@@ -21,13 +21,19 @@ extend type Mutation {
     revisionNumber: Int
     revisionDate: String
   ): WazeefaType
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 
   setOperationsWazeefaStockLevel(
     _id: String!
     currentStockLevel: Int
+    adjustmentReason: String
   ): WazeefaType
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  setOperationsWazeefaStockLevelReconciled(
+    _id: String!
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_APPROVE_WAZAIF_DATA])
 
   setOperationsWazeefaDetails(
     _id: String!
@@ -35,14 +41,14 @@ extend type Mutation {
     subCartonCount: Int
     cartonCount: Int
   ): WazeefaType
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 
   deleteOperationsWazeefa(_id: String!): Int
   @checkPermissions(permissions: [OP_DELETE_DATA])
 
   setOperationsWazeefaImage(_id: String!, imageIds: [String]!): WazeefaType
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 
   removeOperationsWazeefaImage(_id: String!, imageId: String!): WazeefaType
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF])
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
 }

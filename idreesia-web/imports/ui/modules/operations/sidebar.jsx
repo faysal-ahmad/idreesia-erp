@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
+  BarsOutlined,
   BookOutlined,
-  FormOutlined,
+  FileDoneOutlined,
+  FileExclamationOutlined,
+  FileImageOutlined,
   IdcardOutlined,
   LaptopOutlined,
   MessageOutlined,
@@ -85,14 +88,24 @@ class Sidebar extends Component {
           <IdcardOutlined style={IconStyle} />
           <span>Visitors</span>
         </Item>
-        <Item key="imdad-requests">
-          <WalletOutlined style={IconStyle} />
-          <span>Imdad Requests</span>
-        </Item>
         <Item key="messages">
           <MessageOutlined style={IconStyle} />
           <span>Messages</span>
         </Item>
+        <SubMenu
+          key="imdad-management"
+          title={
+            <>
+              <WalletOutlined style={IconStyle} />
+              <span>Imdad Management</span>
+            </>
+          }
+        >
+          <Item key="imdad-requests">
+            <BarsOutlined style={IconStyle} />
+            <span>Imdad Requests</span>
+          </Item>
+        </SubMenu>
         <SubMenu
           key="wazaif-management"
           title={
@@ -106,9 +119,17 @@ class Sidebar extends Component {
             <ReconciliationOutlined style={IconStyle} />
             <span>Wazaif Inventory</span>
           </Item>
-          <Item key="order-fulfilment">
-            <FormOutlined style={IconStyle} />
-            <span>Order Fulfilment</span>
+          <Item key="delivery-orders">
+            <FileDoneOutlined style={IconStyle} />
+            <span>Delivery Orders</span>
+          </Item>
+          <Item key="print-orders">
+            <FileImageOutlined style={IconStyle} />
+            <span>Printing Orders</span>
+          </Item>
+          <Item key="stock-adjustments">
+            <FileExclamationOutlined style={IconStyle} />
+            <span>Stock Adjustments</span>
           </Item>
         </SubMenu>
         <SubMenu

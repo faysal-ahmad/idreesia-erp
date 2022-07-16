@@ -15,14 +15,15 @@ import {
   ImdadReasonsNewForm,
   ImdadReasonsEditForm,
   ImdadReasonsList,
-} from './imdad-reasons';
+} from './imdad-management/imdad-reasons';
 import {
   ImdadRequestsList,
   ImdadRequestsNewForm,
   ImdadRequestsEditForm,
-} from './imdad-requests';
+} from './imdad-management/imdad-requests';
+import { ImdadRequestReport } from './imdad-management/imdad-request-report';
+
 import { NewEhadReport } from './new-ehad-report';
-import { ImdadRequestReport } from './imdad-request-report';
 
 import { default as paths } from './submodule-paths';
 

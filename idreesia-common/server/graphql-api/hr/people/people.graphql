@@ -1,0 +1,95 @@
+extend type Query {
+  hrPersonById(_id: String!): PersonType
+  @checkPermissions(permissions: [HR_VIEW_PEOPLE, HR_MANAGE_PEOPLE, HR_MANAGE_EMPLOYEES])
+
+  hrPeopleByIds(_ids: String!): [PersonType]
+  @checkPermissions(permissions: [HR_VIEW_PEOPLE, HR_MANAGE_PEOPLE, HR_MANAGE_EMPLOYEES])
+
+  pagedHrPeople(filter: PersonFilter): PagedPeopleType
+  @checkPermissions(permissions: [HR_VIEW_PEOPLE, HR_MANAGE_PEOPLE, HR_MANAGE_EMPLOYEES])
+}
+
+extend type Mutation {
+  createHrPerson(
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    cityId: String
+    cityMehfilId: String
+    permanentAddress: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    birthDate: String
+    referenceName: String
+  ): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_PEOPLE, HR_MANAGE_EMPLOYEES])
+
+  updateHrPerson(
+    _id: String!
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    permanentAddress: String
+    cityId: String
+    cityMehfilId: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    birthDate: String
+    deathDate: String
+    referenceName: String
+  ): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_PEOPLE, HR_MANAGE_EMPLOYEES])
+
+  deleteHrPerson(_id: String!): Int
+  @checkPermissions(permissions: [HR_DELETE_DATA])
+
+  setHrPersonKarkunFlag(
+    _id: String!
+    isKarkun: Boolean
+  ): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
+  setHrPersonEmployeeFlag(
+    _id: String!
+    isEmployee: Boolean
+  ): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  setHrPersonWazaifAndRaabta(
+    _id: String!
+    lastTarteebDate: String
+    mehfilRaabta: String
+    msRaabta: String
+  ): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_PEOPLE])
+
+  setHrPersonEmploymentInfo(
+    _id: String!
+    isEmployee: Boolean!
+    jobId: String
+    employmentStartDate: String
+    employmentEndDate: String
+  ): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  setHrPersonProfileImage(_id: String!, imageId: String!): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_PEOPLE])
+
+  addHrPersonAttachment(_id: String!, attachmentId: String!): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_PEOPLE])
+
+  removeHrPersonAttachment(_id: String!, attachmentId: String!): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_PEOPLE])
+}

@@ -1,1 +1,1 @@
-export { default as WazaifStockAdjustmentsList } from './list';
+export { default as WazaifStockAdjustmentsList } from './list/list';

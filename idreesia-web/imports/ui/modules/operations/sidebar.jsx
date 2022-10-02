@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   BarsOutlined,
   BookOutlined,
+  ContainerOutlined,
   FileDoneOutlined,
   FileExclamationOutlined,
   FileImageOutlined,
@@ -11,7 +12,6 @@ import {
   MessageOutlined,
   MonitorOutlined,
   ReadOutlined,
-  ReconciliationOutlined,
   WalletOutlined,
 } from '@ant-design/icons';
 
@@ -57,6 +57,11 @@ class Sidebar extends Component {
         history.push(paths.wazaifStockAdjustmentPath);
         break;
 
+      case 'wazaif-delivery-orders':
+        setActiveSubModuleName(SubModuleNames.wazaifDeliveryOrders);
+        history.push(paths.wazaifDeliveryOrdersPath);
+        break;
+  
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
@@ -121,7 +126,7 @@ class Sidebar extends Component {
           }
         >
           <Item key="wazaif-inventory">
-            <ReconciliationOutlined style={IconStyle} />
+            <ContainerOutlined style={IconStyle} />
             <span>Inventory</span>
           </Item>
           <Item key="wazaif-delivery-orders">

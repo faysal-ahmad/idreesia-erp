@@ -21,6 +21,18 @@ export default class SubModulePaths {
   static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
 
   // ******************************************************************************
+  // People
+  // ******************************************************************************
+  static peoplePath = `${ModulePaths.hr}/people`;
+  static personNewFormPath = `${SubModulePaths.peoplePath}/new`;
+  static personScanCardPath = `${SubModulePaths.peoplePath}/scan-card`;
+  static personPrintPath = (personId = ':personId') =>
+    `${SubModulePaths.peoplePath}/print/${personId}`;
+  static peoplePrintListPath = `${SubModulePaths.peoplePath}/print-list`;
+  static personEditFormPath = (personId = ':personId') =>
+    `${SubModulePaths.peoplePath}/${personId}`;
+
+  // ******************************************************************************
   // Karkuns
   // ******************************************************************************
   static karkunsPath = `${ModulePaths.hr}/karkuns`;

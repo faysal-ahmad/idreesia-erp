@@ -37,9 +37,6 @@ import PersonResolvers from './common/person/resolvers';
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 
-import WazeefaSchema from './common/wazeefa/wazeefa.graphql';
-import WazeefaResolvers from './common/wazeefa/resolvers';
-
 /**
  * Schema and Resolvers for the Admin module
  */
@@ -88,8 +85,14 @@ import OperationsVisitorResolvers from './operations/visitor/resolvers';
 import OperationsMessageSchema from './operations/message/message.graphql';
 import OperationsMessageResolvers from './operations/message/resolvers';
 
-import OperationsWazeefaSchema from './operations/wazeefa/wazeefa.graphql';
-import OperationsWazeefaResolvers from './operations/wazeefa/resolvers';
+import OperationsWazeefaSchema from './operations/wazaif/wazeefa/wazeefa.graphql';
+import OperationsWazeefaResolvers from './operations/wazaif/wazeefa/resolvers';
+
+import OperationsWazeefaDeliveryOrderSchema from './operations/wazaif/delivery-order/delivery-order.graphql';
+import OperationsWazeefaDeliveryOrderResolvers from './operations/wazaif/delivery-order/resolvers';
+
+import OperationsWazeefaStockAdjustmentSchema from './operations/wazaif/stock-adjustment/stock-adjustment.graphql';
+import OperationsWazeefaStockAdjustmentResolvers from './operations/wazaif/stock-adjustment/resolvers';
 
 import ImdadReasonSchema from './operations/imdad-reason/imdad-reason.graphql';
 import ImdadReasonResolvers from './operations/imdad-reason/resolvers';
@@ -270,7 +273,6 @@ const typeDefs = [
   MessageSchema,
   PersonSchema,
   VisitorSchema,
-  WazeefaSchema,
   AdminJobSchema,
   UserSchema,
   UserGroupSchema,
@@ -287,6 +289,8 @@ const typeDefs = [
   OperationsVisitorSchema,
   OperationsMessageSchema,
   OperationsWazeefaSchema,
+  OperationsWazeefaDeliveryOrderSchema,
+  OperationsWazeefaStockAdjustmentSchema,
   OperationsImdadRequestSchema,
 
   HRAuditLogSchema,
@@ -342,8 +346,6 @@ const typeDefs = [
   PaymentTypeSchema,
   PaymentSchema,
   AccountsAmaanatLogSchema,
-
-  WazeefaSchema,
 ];
 
 const resolvers = merge(
@@ -357,7 +359,6 @@ const resolvers = merge(
   MessageResolvers,
   PersonResolvers,
   VisitorResolvers,
-  WazeefaResolvers,
   AdminJobResolvers,
   UserResolvers,
   UserGroupResolvers,
@@ -374,6 +375,8 @@ const resolvers = merge(
   OperationsVisitorResolvers,
   OperationsMessageResolvers,
   OperationsWazeefaResolvers,
+  OperationsWazeefaDeliveryOrderResolvers,
+  OperationsWazeefaStockAdjustmentResolvers,
   OperationsImdadRequestResolvers,
 
   HRAuditLogResolvers,
@@ -428,9 +431,7 @@ const resolvers = merge(
   AccountMonthlyBalanceResolvers,
   PaymentTypeResolvers,
   PaymentResolvers,
-  AccountsAmaanatLogResolvers,
-
-  WazeefaResolvers
+  AccountsAmaanatLogResolvers
 );
 
 export { typeDefs, resolvers };

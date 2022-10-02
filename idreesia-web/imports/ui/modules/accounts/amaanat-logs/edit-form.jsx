@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
+import { message } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import {
   useAllCities,
   useAllCityMehfils,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { message } from 'antd';
 import { AmaanatLogsEditForm } from '/imports/ui/modules/common';
 
 import {

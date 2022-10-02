@@ -94,7 +94,7 @@ export default class CustomInput extends Component {
         <div style={ContainerStyle}>
           <Input
             type="text"
-            value={value ? value.name : ''}
+            value={value ? value.name || value.sharedData.name : ''}
             readOnly
             addonAfter={<EditOutlined onClick={this.handleEditClick} />}
             placeholder={placeholder}

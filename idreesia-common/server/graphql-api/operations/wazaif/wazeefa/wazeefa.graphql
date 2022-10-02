@@ -1,0 +1,94 @@
+type WazeefaDetailType {
+  packetCount: Int
+  subCartonCount: Int
+  cartonCount: Int
+}
+
+type WazeefaType {
+  _id: String
+  name: String
+  revisionNumber: Int
+  revisionDate: String
+  imageIds: [String]
+  wazeefaDetail: WazeefaDetailType
+  currentStockLevel: Int
+  stockReconciledOn: String
+
+  deliveryOrders: Int
+  formattedName: String
+  images: [Attachment]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedWazeefaType {
+  totalResults: Int
+  data: [WazeefaType]
+}
+
+input WazaifFilter {
+  name: String
+  pageIndex: String
+  pageSize: String
+}
+
+extend type Query {
+  pagedOperationsWazaif(filter: WazaifFilter): PagedWazeefaType
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  operationsWazeefaById(_id: String!): WazeefaType
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  operationsWazaifById(_ids: [String]!): [WazeefaType]
+  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+}
+
+extend type Mutation {
+  createOperationsWazeefa(
+    name: String!
+    revisionNumber: Int
+    revisionDate: String
+    currentStockLevel: Int
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  updateOperationsWazeefa(
+    _id: String!
+    name: String!
+    revisionNumber: Int
+    revisionDate: String
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  setOperationsWazeefaStockLevel(
+    _id: String!
+    currentStockLevel: Int
+    adjustmentReason: String
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  setOperationsWazeefaStockLevelReconciled(
+    _id: String!
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_APPROVE_WAZAIF_DATA])
+
+  setOperationsWazeefaDetails(
+    _id: String!
+    packetCount: Int
+    subCartonCount: Int
+    cartonCount: Int
+  ): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  deleteOperationsWazeefa(_id: String!): Int
+  @checkPermissions(permissions: [OP_DELETE_DATA])
+
+  setOperationsWazeefaImage(_id: String!, imageIds: [String]!): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+
+  removeOperationsWazeefaImage(_id: String!, imageId: String!): WazeefaType
+  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+}

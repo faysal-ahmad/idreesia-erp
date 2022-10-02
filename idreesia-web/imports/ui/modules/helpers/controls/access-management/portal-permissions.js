@@ -1,3 +1,3 @@
-import { portalsPermissionsData } from './permissions-data';
+import { PortalsPermissionsData } from './permissions-data';
 
-export const portalPermissions = portalsPermissionsData.children;
+export const portalPermissions = PortalsPermissionsData.children;

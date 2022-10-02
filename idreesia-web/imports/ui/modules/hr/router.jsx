@@ -11,6 +11,14 @@ import {
   DutyLocationsList,
 } from './duty-locations';
 import {
+  PersonNewForm,
+  PersonEditForm,
+  PeopleList,
+  PersonScanCard,
+  PersonPrintView,
+  PeoplePrintView,
+} from './people';
+import {
   KarkunsNewForm,
   KarkunsEditForm,
   KarkunsList,
@@ -58,6 +66,13 @@ const Router = () => (
     <Route path={paths.karkunsPrintPath()} component={KarkunPrintView} />
     <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath} component={KarkunsList} />
+
+    <Route path={paths.personNewFormPath} component={PersonNewForm} />
+    <Route path={paths.personScanCardPath} component={PersonScanCard} />
+    <Route path={paths.peoplePrintListPath} component={PeoplePrintView} />
+    <Route path={paths.personPrintPath()} component={PersonPrintView} />
+    <Route path={paths.personEditFormPath()} component={PersonEditForm} />
+    <Route path={paths.peoplePath} component={PeopleList} />
 
     <Route
       path={paths.attendanceSheetsMeetingCardsPath}

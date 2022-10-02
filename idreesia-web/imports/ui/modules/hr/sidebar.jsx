@@ -66,6 +66,11 @@ class Sidebar extends Component {
         history.push(paths.karkunsPath);
         break;
 
+      case 'people':
+        setActiveSubModuleName(SubModuleNames.people);
+        history.push(paths.peoplePath);
+        break;
+  
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
@@ -88,6 +93,10 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
+        <Menu.Item key="people">
+          <TeamOutlined style={IconStyle} />
+          <span>People</span>
+        </Menu.Item>
         <Menu.Item key="karkuns">
           <TeamOutlined style={IconStyle} />
           <span>Karkuns</span>
@@ -104,20 +113,6 @@ class Sidebar extends Component {
           <MessageOutlined style={IconStyle} />
           <span>Messages</span>
         </Menu.Item>
-        <SubMenu
-          key="administration"
-          title={
-            <>
-              <ToolOutlined style={IconStyle} />
-              <span>Administration</span>
-            </>
-          }
-        >
-          <Menu.Item key="audit-logs">
-            <AuditOutlined style={IconStyle} />
-            <span>Audit Logs</span>
-          </Menu.Item>
-        </SubMenu>
         <SubMenu
           key="setup"
           title={
@@ -138,6 +133,20 @@ class Sidebar extends Component {
           <Menu.Item key="duty-locations">
             <EnvironmentOutlined style={IconStyle} />
             <span>Duty Locations</span>
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu
+          key="administration"
+          title={
+            <>
+              <ToolOutlined style={IconStyle} />
+              <span>Administration</span>
+            </>
+          }
+        >
+          <Menu.Item key="audit-logs">
+            <AuditOutlined style={IconStyle} />
+            <span>Audit Logs</span>
           </Menu.Item>
         </SubMenu>
       </Menu>

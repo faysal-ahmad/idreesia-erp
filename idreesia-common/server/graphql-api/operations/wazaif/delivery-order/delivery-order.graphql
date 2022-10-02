@@ -1,0 +1,77 @@
+type WazeefaWithQuantity {
+  wazeefaId: String
+  formattedName: String
+  packets: Int
+  wazaifCount: Int
+}
+
+input WazeefaWithQuantityInput {
+  wazeefaId: String
+  formattedName: String
+  packets: Int
+  wazaifCount: Int
+}
+
+type WazaifDeliveryOrderType {
+  _id: String
+  cityId: String
+  cityMehfilId: String
+  requestedDate: String
+  requestedBy: String
+  deliveryDate: String
+  deliveredTo: String
+  items: [WazeefaWithQuantity]
+  status: String
+  notes: String
+
+  refCity: CityType
+  refCityMehfil: CityMehfilType
+  refRequestedBy: PersonType
+  refDeliveredTo: PersonType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedWazaifDeliveryOrderType {
+  totalResults: Int
+  data: [WazaifDeliveryOrderType]
+}
+
+extend type Query {
+  wazaifDeliveryOrderById(_id: String!): WazaifDeliveryOrderType
+  pagedWazaifDeliveryOrders(
+    queryString: String
+  ): PagedWazaifDeliveryOrderType
+}
+
+extend type Mutation {
+  createWazaifDeliveryOrder(
+    cityId: String!
+    cityMehfilId: String
+    requestedDate: String!
+    requestedBy: String!
+    deliveryDate: String
+    deliveredTo: String
+    items: [WazeefaWithQuantityInput]
+    status: String
+    notes: String
+  ): WazaifDeliveryOrderType
+
+  updateWazaifDeliveryOrder(
+    _id: String!
+    cityId: String!
+    cityMehfilId: String
+    requestedDate: String!
+    requestedBy: String!
+    deliveryDate: String
+    deliveredTo: String
+    items: [WazeefaWithQuantityInput]
+    status: String
+    notes: String
+  ): WazaifDeliveryOrderType
+
+  removeWazaifDeliveryOrder(_id: String!): Int
+}

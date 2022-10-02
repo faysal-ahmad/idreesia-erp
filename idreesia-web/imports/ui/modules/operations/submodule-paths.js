@@ -40,6 +40,12 @@ export default class SubModulePaths {
 
   static wazaifStockAdjustmentPath = `${ModulePaths.operations}/wazaif-stock-adjustments`;
 
+  static wazaifDeliveryOrdersPath = `${ModulePaths.operations}/wazaif-delivery-orders`;
+  static wazaifDeliveryOrdersNewFormPath = `${SubModulePaths.wazaifDeliveryOrdersPath}/new`;
+  static wazaifDeliveryOrdersEditFormPath(orderId = ':orderId') {
+    return `${SubModulePaths.wazaifDeliveryOrdersPath}/${orderId}`;
+  }
+
   // *************************************************************************************
   // Imdad Requests Routes
   // *************************************************************************************

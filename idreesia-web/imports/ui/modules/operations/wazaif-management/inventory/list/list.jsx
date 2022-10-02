@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { DeleteOutlined, ReconciliationOutlined } from '@ant-design/icons';
-
-import { Formats } from 'meteor/idreesia-common/constants';
-import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Modal,
   Pagination,
@@ -12,6 +9,9 @@ import {
   Table,
   Tooltip,
 } from 'antd';
+
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { WazeefaName } from '/imports/ui/modules/helpers/controls';
 
 import SetCurrentStockLevelForm from './set-current-stock-level';

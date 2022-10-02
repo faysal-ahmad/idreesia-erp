@@ -1,6 +1,8 @@
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
 export default function getCityMehfilCascaderData(allCities, allMehfils) {
+  if (!allCities || !allMehfils) return null;
+
   const data = allCities.map(city => {
     const cityMehfils = filter(
       allMehfils,

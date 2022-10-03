@@ -15,6 +15,11 @@ import {
   WazaifDeliveryOrdersNewForm,
   WazaifDeliveryOrdersEditForm,
 } from './wazaif-management/delivery-orders';
+import {
+  WazaifVendorsList,
+  WazaifVendorsNewForm,
+  WazaifVendorsEditForm,
+} from './wazaif-management/vendors';
 
 import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import {
@@ -53,6 +58,10 @@ const Router = () => (
     <Route path={paths.wazaifDeliveryOrdersNewFormPath} component={WazaifDeliveryOrdersNewForm} />
     <Route path={paths.wazaifDeliveryOrdersEditFormPath()} component={WazaifDeliveryOrdersEditForm} />
     <Route path={paths.wazaifDeliveryOrdersPath} component={WazaifDeliveryOrdersList} />
+
+    <Route path={paths.wazaifVendorsNewFormPath} component={WazaifVendorsNewForm} />
+    <Route path={paths.wazaifVendorsEditFormPath()} component={WazaifVendorsEditForm} />
+    <Route path={paths.wazaifVendorsPath} component={WazaifVendorsList} />
 
     <Route
       path={paths.imdadReasonsNewFormPath}

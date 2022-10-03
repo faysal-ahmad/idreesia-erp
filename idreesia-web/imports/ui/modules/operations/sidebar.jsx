@@ -12,6 +12,7 @@ import {
   MessageOutlined,
   MonitorOutlined,
   ReadOutlined,
+  ShopOutlined,
   WalletOutlined,
 } from '@ant-design/icons';
 
@@ -61,7 +62,12 @@ class Sidebar extends Component {
         setActiveSubModuleName(SubModuleNames.wazaifDeliveryOrders);
         history.push(paths.wazaifDeliveryOrdersPath);
         break;
-  
+
+      case 'wazaif-printing-vendors':
+        setActiveSubModuleName(SubModuleNames.wazaifVendors);
+        history.push(paths.wazaifVendorsPath);
+        break;
+
       case 'messages':
         setActiveSubModuleName(SubModuleNames.messages);
         history.push(paths.messagesPath);
@@ -115,6 +121,20 @@ class Sidebar extends Component {
             <BarsOutlined style={IconStyle} />
             <span>Imdad Requests</span>
           </Item>
+          <SubMenu
+            key="setup"
+            title={
+              <>
+                <LaptopOutlined style={IconStyle} />
+                <span>Setup</span>
+              </>
+            }
+          >
+            <Item key="imdad-reasons">
+              <MonitorOutlined style={IconStyle} />
+              <span>Imdad Reasons</span>
+            </Item>
+          </SubMenu>
         </SubMenu>
         <SubMenu
           key="wazaif-management"
@@ -141,6 +161,20 @@ class Sidebar extends Component {
             <FileExclamationOutlined style={IconStyle} />
             <span>Stock Adjustments</span>
           </Item>
+          <SubMenu
+            key="wazaif-setup"
+            title={
+              <>
+                <LaptopOutlined style={IconStyle} />
+                <span>Setup</span>
+              </>
+            }
+          >
+            <Item key="wazaif-printing-vendors">
+              <ShopOutlined style={IconStyle} />
+              <span>Vendors</span>
+            </Item>
+          </SubMenu>
         </SubMenu>
         <SubMenu
           key="operations-reports"
@@ -156,20 +190,6 @@ class Sidebar extends Component {
           </Item>
           <Item key="imdad-request-report">
             <span>Imdad Request Report</span>
-          </Item>
-        </SubMenu>
-        <SubMenu
-          key="setup"
-          title={
-            <>
-              <LaptopOutlined style={IconStyle} />
-              <span>Setup</span>
-            </>
-          }
-        >
-          <Item key="imdad-reasons">
-            <MonitorOutlined style={IconStyle} />
-            <span>Imdad Reasons</span>
           </Item>
         </SubMenu>
       </Menu>

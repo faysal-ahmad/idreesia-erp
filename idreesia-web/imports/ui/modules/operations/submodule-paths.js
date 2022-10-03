@@ -46,6 +46,12 @@ export default class SubModulePaths {
     return `${SubModulePaths.wazaifDeliveryOrdersPath}/${orderId}`;
   }
 
+  static wazaifVendorsPath = `${ModulePaths.operations}/vendors`;
+  static wazaifVendorsNewFormPath = `${SubModulePaths.wazaifVendorsPath}/new`;
+  static wazaifVendorsEditFormPath(vendorId = ':vendorId') {
+    return `${SubModulePaths.wazaifVendorsPath}/${vendorId}`;
+  }
+
   // *************************************************************************************
   // Imdad Requests Routes
   // *************************************************************************************

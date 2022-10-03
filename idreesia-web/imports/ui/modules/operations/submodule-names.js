@@ -9,6 +9,7 @@ const SubModuleNames = {
   wazaifDeliveryOrders: 'Wazaif Delivery Orders',
   wazaifPrintingOrders: 'Wazaif Printing Orders',
   wazaifStockAdjustments: 'Wazaif Stock Adjustments',
+  wazaifVendors: 'Wazaif Vendors',
 };
 
 export default SubModuleNames;

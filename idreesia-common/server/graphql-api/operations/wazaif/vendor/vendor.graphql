@@ -1,0 +1,41 @@
+type WazaifVendor {
+  _id: String
+  name: String
+  contactPerson: String
+  contactNumber: String
+  address: String
+  notes: String
+
+  usageCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  wazaifVendorById(_id: String!): WazaifVendor
+  allWazaifVendors: [WazaifVendor]
+}
+
+extend type Mutation {
+  createWazaifVendor(
+    name: String!
+    contactPerson: String
+    contactNumber: String
+    address: String
+    notes: String
+  ): WazaifVendor
+
+  updateWazaifVendor(
+    _id: String!
+    name: String
+    contactPerson: String
+    contactNumber: String
+    address: String
+    notes: String
+  ): WazaifVendor
+
+  removeWazaifVendor(_id: String!): Int
+}

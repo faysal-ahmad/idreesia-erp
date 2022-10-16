@@ -28,7 +28,7 @@
     "lodash": "^4.17.21",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "multer": "^1.4.1",
     "prop-types": "^15.7.2",
     "quagga": "^0.12.1",

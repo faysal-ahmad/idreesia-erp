@@ -13,6 +13,7 @@ export const PAGED_OPERATIONS_WAZAIF = gql`
         deliveryOrders
         printingOrders
         stockReconciledOn
+        isBeingUsed
         imageIds
         images {
           _id

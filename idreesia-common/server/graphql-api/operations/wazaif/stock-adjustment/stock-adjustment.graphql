@@ -24,18 +24,18 @@ type PagedWazaifStockAdjustment {
 
 extend type Query {
   wazeefaStockAdjustmentById(_id: String!): WazeefaStockAdjustment
-  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+  @checkPermissions(permissions: [OP_WAZAIF_VIEW_DATA, OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
 
   pagedWazaifStockAdjustments(
     queryString: String
   ): PagedWazaifStockAdjustment
-  @checkPermissions(permissions: [OP_VIEW_WAZAIF_DATA, OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+  @checkPermissions(permissions: [OP_WAZAIF_VIEW_DATA, OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
 }
 
 extend type Mutation {
   approveWazeefaStockAdjustment(_id: String!): WazeefaStockAdjustment
-  @checkPermissions(permissions: [OP_APPROVE_WAZAIF_DATA])
+  @checkPermissions(permissions: [OP_WAZAIF_APPROVE_DATA])
 
   removeWazeefaStockAdjustment(_id: String!): Int
-  @checkPermissions(permissions: [OP_MANAGE_WAZAIF_DATA, OP_APPROVE_WAZAIF_DATA])
+  @checkPermissions(permissions: [OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
 }

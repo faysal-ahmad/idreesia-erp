@@ -16,7 +16,10 @@ type WazaifVendor {
 
 extend type Query {
   wazaifVendorById(_id: String!): WazaifVendor
+  @checkPermissions(permissions: [OP_WAZAIF_VIEW_SETUP_DATA, OP_WAZAIF_MANAGE_SETUP_DATA])
+
   allWazaifVendors: [WazaifVendor]
+  @checkPermissions(permissions: [OP_WAZAIF_VIEW_SETUP_DATA, OP_WAZAIF_MANAGE_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -27,6 +30,7 @@ extend type Mutation {
     address: String
     notes: String
   ): WazaifVendor
+  @checkPermissions(permissions: [OP_WAZAIF_MANAGE_SETUP_DATA])
 
   updateWazaifVendor(
     _id: String!
@@ -36,6 +40,8 @@ extend type Mutation {
     address: String
     notes: String
   ): WazaifVendor
+  @checkPermissions(permissions: [OP_WAZAIF_MANAGE_SETUP_DATA])
 
   removeWazaifVendor(_id: String!): Int
+  @checkPermissions(permissions: [OP_WAZAIF_MANAGE_SETUP_DATA])
 }

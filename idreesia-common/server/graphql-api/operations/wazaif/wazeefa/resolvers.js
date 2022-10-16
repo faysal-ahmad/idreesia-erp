@@ -76,6 +76,35 @@ export default {
 
       return packetCount;
     },
+    isBeingUsed: wazeefaType => {
+      const printingOrdersCount = PrintingOrders.find({
+        items: {
+          $elemMatch: {
+            wazeefaId: { $eq: wazeefaType._id },
+          },
+        },
+      }).count();
+
+      const deliveryOrdersCount = DeliveryOrders.find({
+        items: {
+          $elemMatch: {
+            wazeefaId: { $eq: wazeefaType._id },
+          },
+        },
+      }).count();
+
+      const stockAdjustmentsCount = StockAdjustments.find({
+        items: {
+          $elemMatch: {
+            wazeefaId: { $eq: wazeefaType._id },
+          },
+        },
+      }).count();
+
+      const usageCount =
+        printingOrdersCount + deliveryOrdersCount + stockAdjustmentsCount;
+      return usageCount > 0;
+    },
   },
 
   Query: {

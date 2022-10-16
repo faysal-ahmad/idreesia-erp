@@ -156,6 +156,7 @@ const List = ({
       key: 'action',
       width: 80,
       render: (text, record) => {
+        const { isBeingUsed } = record;
         const reconcileAction = (
           <Popconfirm
             title="Are you sure you want to mark this item as reconciled?"
@@ -170,7 +171,7 @@ const List = ({
             </Tooltip>
           </Popconfirm>
         );
-        const deleteAction = (
+        const deleteAction = isBeingUsed ? null : (
           <Popconfirm
             title="Are you sure you want to delete this item?"
             onConfirm={() => {

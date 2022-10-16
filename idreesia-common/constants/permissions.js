@@ -61,16 +61,20 @@ const Permissions = {
   OP_VIEW_VISITORS: 'operations-view-visitors',
   OP_MANAGE_VISITORS: 'operations-manage-visitors',
 
-  OP_VIEW_WAZAIF_DATA: 'operations-view-wazaif-data',
-  OP_MANAGE_WAZAIF_DATA: 'operations-manage-wazaif-data',
-  OP_APPROVE_WAZAIF_DATA: 'operations-approve-wazaif-data',
-
   OP_VIEW_MESSAGES: 'operations-view-messages',
   OP_MANAGE_MESSAGES: 'operations-manage-messages',
   OP_APPROVE_MESSAGES: 'operations-approve-messages',
 
   OP_VIEW_IMDAD_REQUESTS: 'operations-view-imdad-requests',
   OP_MANAGE_IMDAD_REQUESTS: 'operations-manage-imdad-requests',
+
+  OP_WAZAIF_VIEW_DATA: 'operations-wazaif-view-data',
+  OP_WAZAIF_MANAGE_DATA: 'operations-wazaif-manage-data',
+  OP_WAZAIF_APPROVE_DATA: 'operations-wazaif-approve-data',
+  OP_WAZAIF_VIEW_SETUP_DATA: 'operations-wazaif-view-setup-data',
+  OP_WAZAIF_MANAGE_SETUP_DATA: 'operations-wazaif-manage-setup-data',
+  OP_WAZAIF_VIEW_SECURITY_DATA: 'operations-wazaif-view-security-data',
+  OP_WAZAIF_MANAGE_SECURITY_DATA: 'operations-wazaif-manage-security-data',
 
   // ****************************************************************************************
   // Outstation Module

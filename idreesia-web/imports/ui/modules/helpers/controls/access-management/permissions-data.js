@@ -610,16 +610,50 @@ export const OperationsPermissionsData = {
       key: 'module-operations-wazaif',
       children: [
         {
-          title: 'View Wazaif Data',
-          key: PermissionConstants.OP_VIEW_WAZAIF_DATA,
+          title: 'Wazaif Data',
+          key: 'module-operations-wazaif-data',
+          children: [
+            {
+              title: 'View Wazaif Data',
+              key: PermissionConstants.OP_WAZAIF_VIEW_DATA,
+            },
+            {
+              title: 'Manage Wazaif Data',
+              key: PermissionConstants.OP_WAZAIF_MANAGE_DATA,
+            },
+            {
+              title: 'Approve Wazaif Data',
+              key: PermissionConstants.OP_WAZAIF_APPROVE_DATA,
+            },
+          ],
         },
         {
-          title: 'Manage Wazaif Data',
-          key: PermissionConstants.OP_MANAGE_WAZAIF_DATA,
+          title: 'Wazaif Setup Data',
+          key: 'module-operations-wazaif-setup-data',
+          children: [
+            {
+              title: 'View Wazaif Setup Data',
+              key: PermissionConstants.OP_WAZAIF_VIEW_SETUP_DATA,
+            },
+            {
+              title: 'Manage Wazaif Setup Data',
+              key: PermissionConstants.OP_WAZAIF_MANAGE_SETUP_DATA,
+            },
+          ],
         },
         {
-          title: 'Approve Wazaif Data',
-          key: PermissionConstants.OP_APPROVE_WAZAIF_DATA,
+          title: 'Wazaif Security Data',
+          key: 'module-operations-wazaif-security-data',
+          children: [
+            {
+              title: 'View Wazaif Security Data',
+              key: PermissionConstants.OP_WAZAIF_VIEW_SECURITY_DATA,
+            },
+            {
+              title: 'Manage Wazaif Security Data',
+              key: PermissionConstants.OP_WAZAIF_MANAGE_SECURITY_DATA,
+            },
+          ],
         },
       ],
     },

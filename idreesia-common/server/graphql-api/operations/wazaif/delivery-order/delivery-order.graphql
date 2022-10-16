@@ -28,9 +28,12 @@ type PagedWazaifDeliveryOrderType {
 
 extend type Query {
   wazaifDeliveryOrderById(_id: String!): WazaifDeliveryOrderType
+  @checkPermissions(permissions: [OP_WAZAIF_VIEW_DATA, OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
+
   pagedWazaifDeliveryOrders(
     queryString: String
   ): PagedWazaifDeliveryOrderType
+  @checkPermissions(permissions: [OP_WAZAIF_VIEW_DATA, OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
 }
 
 extend type Mutation {
@@ -45,6 +48,7 @@ extend type Mutation {
     status: String
     notes: String
   ): WazaifDeliveryOrderType
+  @checkPermissions(permissions: [OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
 
   updateWazaifDeliveryOrder(
     _id: String!
@@ -58,6 +62,8 @@ extend type Mutation {
     status: String
     notes: String
   ): WazaifDeliveryOrderType
+  @checkPermissions(permissions: [OP_WAZAIF_MANAGE_DATA, OP_WAZAIF_APPROVE_DATA])
 
   removeWazaifDeliveryOrder(_id: String!): Int
+  @checkPermissions(permissions: [OP_WAZAIF_APPROVE_DATA])
 }

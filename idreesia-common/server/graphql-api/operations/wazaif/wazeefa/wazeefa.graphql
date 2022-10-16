@@ -15,6 +15,7 @@ type WazeefaType {
   stockReconciledOn: String
 
   deliveryOrders: Int
+  printingOrders: Int
   formattedName: String
   images: [Attachment]
 
@@ -33,6 +34,20 @@ input WazaifFilter {
   name: String
   pageIndex: String
   pageSize: String
+}
+
+type WazeefaWithQuantity {
+  wazeefaId: String
+  formattedName: String
+  packets: Int
+  wazaifCount: Int
+}
+
+input WazeefaWithQuantityInput {
+  wazeefaId: String
+  formattedName: String
+  packets: Int
+  wazaifCount: Int
 }
 
 extend type Query {

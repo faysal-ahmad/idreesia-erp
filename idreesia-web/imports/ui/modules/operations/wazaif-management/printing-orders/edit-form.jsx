@@ -6,23 +6,18 @@ import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { WithAllWazaifVendors } from 'meteor/idreesia-common/composers/wazaif';
 import {
-  WithAllCities,
-  WithAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/composers';
-import {
-  CascaderField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 import { AuditInfo } from '/imports/ui/modules/common';
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 
 import { ItemsList } from '../common/items-list';
-import { WAZAIF_DELIVERY_ORDER_BY_ID, UPDATE_WAZAIF_DELIVERY_ORDER } from './gql';
+import { WAZAIF_PRINTING_ORDER_BY_ID, UPDATE_WAZAIF_PRINTING_ORDER } from './gql';
 
 const FormStyle = {
   width: '800px',
@@ -36,13 +31,11 @@ const formItemExtendedLayout = {
 class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
-    allCities: PropTypes.array,
-    allCitiesLoading: PropTypes.bool,
-    allCityMehfils: PropTypes.array,
-    allCityMehfilsLoading: PropTypes.bool,
+    allWazaifVendors: PropTypes.array,
+    allWazaifVendorsLoading: PropTypes.bool,
     formDataLoading: PropTypes.bool,
-    updateWazaifDeliveryOrder: PropTypes.func,
-    wazaifDeliveryOrderById: PropTypes.object,
+    updateWazaifPrintingOrder: PropTypes.func,
+    wazaifPrintingOrderById: PropTypes.object,
   };
 
   state = {
@@ -61,30 +54,29 @@ class EditForm extends Component {
   }
 
   handleFinish = ({
-    cityIdMehfilId,
-    requestedDate,
-    requestedBy,
+    vendorId,
+    orderDate,
+    orderedBy,
     deliveryDate,
-    deliveredTo,
+    receivedBy,
     items,
     notes,
     status,
   }) => {
     const {
       history,
-      updateWazaifDeliveryOrder,
-      wazaifDeliveryOrderById: { _id },
+      updateWazaifPrintingOrder,
+      wazaifPrintingOrderById: { _id },
     } = this.props;
 
-    updateWazaifDeliveryOrder({
+    updateWazaifPrintingOrder({
       variables: {
         _id,
-        cityId: cityIdMehfilId[0],
-        cityMehfilId: cityIdMehfilId[1],
-        requestedDate,
-        requestedBy: requestedBy._id,
+        vendorId,
+        orderDate,
+        orderedBy: orderedBy._id,
         deliveryDate,
-        deliveredTo: deliveredTo?._id,
+        receivedBy: receivedBy?._id,
         items,
         notes,
         status,
@@ -100,15 +92,13 @@ class EditForm extends Component {
 
   render() {
     const {
-      allCitiesLoading,
-      allCities,
-      allCityMehfilsLoading,
-      allCityMehfils,
+      allWazaifVendorsLoading,
+      allWazaifVendors,
       formDataLoading,
-      wazaifDeliveryOrderById,
+      wazaifPrintingOrderById,
     } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (formDataLoading || allCitiesLoading || allCityMehfilsLoading) return null;
+    if (formDataLoading || allWazaifVendorsLoading) return null;
 
     const rules = [
       {
@@ -117,7 +107,7 @@ class EditForm extends Component {
       },
     ];
 
-    const wazaifItems = wazaifDeliveryOrderById.items.map(item => ({
+    const wazaifItems = wazaifPrintingOrderById.items.map(item => ({
       wazeefaId: item.wazeefaId,
       formattedName: item.formattedName,
       packets: item.packets,
@@ -128,48 +118,49 @@ class EditForm extends Component {
       <>
         <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
           <DateField
-            fieldName="requestedDate"
-            fieldLabel="Requested Date"
-            initialValue={moment(Number(wazaifDeliveryOrderById.requestedDate))}
+            fieldName="orderDate"
+            fieldLabel="Ordered Date"
+            initialValue={moment(Number(wazaifPrintingOrderById.orderDate))}
             required
-            requiredMessage="Please input a value for requested date."
+            requiredMessage="Please input a value for ordered date."
           />
-          <CascaderField
-            data={getCityMehfilCascaderData(allCities, allCityMehfils)}
-            fieldName="cityIdMehfilId"
-            fieldLabel="For City/Mehfil"
-            initialValue={[wazaifDeliveryOrderById.cityId, wazaifDeliveryOrderById.cityMehfilId]}
-            required
-            requiredMessage="Please select a city/mehfil from the list."
+          <SelectField
+            data={allWazaifVendors}
+            getDataValue={({ _id }) => _id}
+            getDataText={({ name }) => name}
+            initialValue={wazaifPrintingOrderById.vendorId}
+            allowClear
+            fieldName="vendorId"
+            fieldLabel="Vendor"
           />
           <KarkunField
             required
-            requiredMessage="Please select a karkun name for Requested By."
-            fieldName="requestedBy"
-            fieldLabel="Requested By"
-            placeholder="Requested By"
-            initialValue={wazaifDeliveryOrderById.refRequestedBy}
+            requiredMessage="Please select a karkun name for Ordered By."
+            fieldName="orderedBy"
+            fieldLabel="Ordered By"
+            placeholder="Ordered By"
+            initialValue={wazaifPrintingOrderById.refOrderedBy}
           />
           <DateField
             fieldName="deliveryDate"
             fieldLabel="Delivery Date"
             initialValue={
-              wazaifDeliveryOrderById.deliveryDate
-                ? moment(Number(wazaifDeliveryOrderById.deliveryDate))
+              wazaifPrintingOrderById.deliveryDate
+                ? moment(Number(wazaifPrintingOrderById.deliveryDate))
                 : null
             }
           />
           <KarkunField
-            fieldName="deliveredTo"
-            fieldLabel="Delivered To"
-            placeholder="Delivered To"
-            initialValue={wazaifDeliveryOrderById.refDeliveredTo}
+            fieldName="receivedBy"
+            fieldLabel="Received By"
+            placeholder="Received By"
+            initialValue={wazaifPrintingOrderById.refReceivedBy}
           />
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
-            initialValue={wazaifDeliveryOrderById.notes}
+            initialValue={wazaifPrintingOrderById.notes}
           />
 
           <SelectField
@@ -186,7 +177,7 @@ class EditForm extends Component {
             getDataValue={({ value }) => value}
             getDataText={({ text }) => text}
             allowClear={false}
-            initialValue={wazaifDeliveryOrderById.status}
+            initialValue={wazaifPrintingOrderById.status}
             fieldName="status"
             fieldLabel="Status"
           />
@@ -201,29 +192,28 @@ class EditForm extends Component {
             isFieldsTouched={isFieldsTouched}
           />
         </Form>
-        <AuditInfo record={wazaifDeliveryOrderById} />
+        <AuditInfo record={wazaifPrintingOrderById} />
       </>
     );
   }
 }
 
 export default flowRight(
-  WithAllCities(),
-  WithAllCityMehfils(),
-  graphql(UPDATE_WAZAIF_DELIVERY_ORDER, {
-    name: 'updateWazaifDeliveryOrder',
+  WithAllWazaifVendors(),
+  graphql(UPDATE_WAZAIF_PRINTING_ORDER, {
+    name: 'updateWazaifPrintingOrder',
     options: {
       refetchQueries: [
-        'pagedWazaifDeliveryOrders',
+        'pagedWazaifPrintingOrders',
       ],
     },
   }),
-  graphql(WAZAIF_DELIVERY_ORDER_BY_ID, {
+  graphql(WAZAIF_PRINTING_ORDER_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { orderId } = match.params;
       return { variables: { _id: orderId } };
     },
   }),
-  WithBreadcrumbs(['Operations', 'Wazaif Management', 'Edit Delivery Order'])
+  WithBreadcrumbs(['Operations', 'Wazaif Management', 'Edit Printing Order'])
 )(EditForm);

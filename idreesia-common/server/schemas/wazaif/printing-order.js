@@ -3,10 +3,6 @@ import { identifiable, timestamps } from '../common';
 import WazeefaWithQuantity from './wazeefa-with-quantity';
 
 export default new SimpleSchema({
-  wazeefaId: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id,
-  },
   vendorId: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,

@@ -5,22 +5,17 @@ import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { WithAllWazaifVendors } from 'meteor/idreesia-common/composers/wazaif';
 import {
-  WithAllCities,
-  WithAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/composers';
-import {
-  CascaderField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 import { ItemsList } from '../common/items-list';
-import { CREATE_WAZAIF_DELIVERY_ORDER } from './gql';
+import { CREATE_WAZAIF_PRINTING_ORDER } from './gql';
 
 const FormStyle = {
   width: '800px',
@@ -34,11 +29,9 @@ const formItemExtendedLayout = {
 class NewForm extends Component {
   static propTypes = {
     history: PropTypes.object,
-    allCities: PropTypes.array,
-    allCitiesLoading: PropTypes.bool,
-    allCityMehfils: PropTypes.array,
-    allCityMehfilsLoading: PropTypes.bool,
-    createWazaifDeliveryOrder: PropTypes.func,
+    allWazaifVendors: PropTypes.array,
+    allWazaifVendorsLoading: PropTypes.bool,
+    createWazaifPrintingOrder: PropTypes.func,
   };
 
   state = {
@@ -57,24 +50,23 @@ class NewForm extends Component {
   }
 
   handleFinish = ({
-    cityIdMehfilId,
-    requestedDate,
-    requestedBy,
+    vendorId,
+    orderDate,
+    orderedBy,
     deliveryDate,
-    deliveredTo,
+    receivedBy,
     items,
     notes,
     status,
   }) => {
-    const { history, createWazaifDeliveryOrder } = this.props;
-    createWazaifDeliveryOrder({
+    const { history, createWazaifPrintingOrder } = this.props;
+    createWazaifPrintingOrder({
       variables: {
-        cityId: cityIdMehfilId[0],
-        cityMehfilId: cityIdMehfilId[1],
-        requestedDate,
-        requestedBy: requestedBy._id,
+        vendorId,
+        orderDate,
+        orderedBy: orderedBy._id,
         deliveryDate,
-        deliveredTo: deliveredTo?._id,
+        receivedBy: receivedBy?._id,
         items,
         notes,
         status,
@@ -90,13 +82,11 @@ class NewForm extends Component {
 
   render() {
     const {
-      allCitiesLoading,
-      allCities,
-      allCityMehfilsLoading,
-      allCityMehfils,
+      allWazaifVendorsLoading,
+      allWazaifVendors,
     } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (allCitiesLoading || allCityMehfilsLoading) return null;
+    if (allWazaifVendorsLoading) return null;
 
     const rules = [
       {
@@ -108,33 +98,35 @@ class NewForm extends Component {
     return (
       <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <DateField
-          fieldName="requestedDate"
-          fieldLabel="Requested Date"
+          fieldName="orderDate"
+          fieldLabel="Ordered Date"
           required
-          requiredMessage="Please input a value for requested date."
+          requiredMessage="Please input a value for ordered date."
         />
-        <CascaderField
-          data={getCityMehfilCascaderData(allCities, allCityMehfils)}
-          fieldName="cityIdMehfilId"
-          fieldLabel="For City/Mehfil"
-          required
-          requiredMessage="Please select a city/mehfil from the list."
+        <SelectField
+          data={allWazaifVendors}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          allowClear
+          fieldName="vendorId"
+          fieldLabel="Vendor"
         />
         <KarkunField
           required
-          requiredMessage="Please select a karkun name for Requested By."
-          fieldName="requestedBy"
-          fieldLabel="Requested By"
-          placeholder="Requested By"
+          requiredMessage="Please select a karkun name for Ordered By."
+          fieldName="orderedBy"
+          fieldLabel="Ordered By"
+          placeholder="Ordered By"
         />
         <DateField
           fieldName="deliveryDate"
           fieldLabel="Delivery Date"
+          initialValue={null}
         />
         <KarkunField
-          fieldName="deliveredTo"
-          fieldLabel="Delivered To"
-          placeholder="Delivered To"
+          fieldName="receivedBy"
+          fieldLabel="Received By"
+          placeholder="Received By"
         />
 
         <InputTextAreaField
@@ -177,15 +169,14 @@ class NewForm extends Component {
 }
 
 export default flowRight(
-  WithAllCities(),
-  WithAllCityMehfils(),
-  graphql(CREATE_WAZAIF_DELIVERY_ORDER, {
-    name: 'createWazaifDeliveryOrder',
+  WithAllWazaifVendors(),
+  graphql(CREATE_WAZAIF_PRINTING_ORDER, {
+    name: 'createWazaifPrintingOrder',
     options: {
       refetchQueries: [
-        'pagedWazaifDeliveryOrders',
+        'pagedWazaifPrintingOrders',
       ],
     },
   }),
-  WithBreadcrumbs(['Operations', 'Wazaif Management', 'New Delivery Order'])
+  WithBreadcrumbs(['Operations', 'Wazaif Management', 'New Printing Order'])
 )(NewForm);

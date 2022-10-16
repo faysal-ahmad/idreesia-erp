@@ -9,10 +9,10 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { WazaifListFilter } from '/imports/ui/modules/common';
 import { OperationsSubModulePaths as paths } from '/imports/ui/modules/operations';
 
 import WazaifList from './list';
+import WazaifListFilter from './list-filter';
 import { PAGED_OPERATIONS_WAZAIF, DELETE_OPERATIONS_WAZEEFA, SET_OPERATIONS_WAZEEFA_STOCK_LEVEL } from '../gql';
 
 const ButtonGroupStyle = {

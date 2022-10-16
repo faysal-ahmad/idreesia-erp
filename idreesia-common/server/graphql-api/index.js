@@ -91,6 +91,9 @@ import OperationsWazeefaResolvers from './operations/wazaif/wazeefa/resolvers';
 import OperationsWazeefaDeliveryOrderSchema from './operations/wazaif/delivery-order/delivery-order.graphql';
 import OperationsWazeefaDeliveryOrderResolvers from './operations/wazaif/delivery-order/resolvers';
 
+import OperationsWazeefaPrintingOrderSchema from './operations/wazaif/printing-order/printing-order.graphql';
+import OperationsWazeefaPrintingOrderResolvers from './operations/wazaif/printing-order/resolvers';
+
 import OperationsWazeefaStockAdjustmentSchema from './operations/wazaif/stock-adjustment/stock-adjustment.graphql';
 import OperationsWazeefaStockAdjustmentResolvers from './operations/wazaif/stock-adjustment/resolvers';
 
@@ -293,6 +296,7 @@ const typeDefs = [
   OperationsMessageSchema,
   OperationsWazeefaSchema,
   OperationsWazeefaDeliveryOrderSchema,
+  OperationsWazeefaPrintingOrderSchema,
   OperationsWazeefaStockAdjustmentSchema,
   OperationsWazeefaVendorSchema,
   OperationsImdadRequestSchema,
@@ -380,6 +384,7 @@ const resolvers = merge(
   OperationsMessageResolvers,
   OperationsWazeefaResolvers,
   OperationsWazeefaDeliveryOrderResolvers,
+  OperationsWazeefaPrintingOrderResolvers,
   OperationsWazeefaStockAdjustmentResolvers,
   OperationsWazeefaVendorResolvers,
   OperationsImdadRequestResolvers,

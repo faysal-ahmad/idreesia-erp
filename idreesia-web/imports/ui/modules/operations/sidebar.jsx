@@ -63,6 +63,11 @@ class Sidebar extends Component {
         history.push(paths.wazaifDeliveryOrdersPath);
         break;
 
+      case 'wazaif-printing-orders':
+        setActiveSubModuleName(SubModuleNames.wazaifPrintingOrders);
+        history.push(paths.wazaifPrintingOrdersPath);
+        break;
+  
       case 'wazaif-printing-vendors':
         setActiveSubModuleName(SubModuleNames.wazaifVendors);
         history.push(paths.wazaifVendorsPath);
@@ -153,7 +158,7 @@ class Sidebar extends Component {
             <FileDoneOutlined style={IconStyle} />
             <span>Delivery Orders</span>
           </Item>
-          <Item key="wazaif-print-orders">
+          <Item key="wazaif-printing-orders">
             <FileImageOutlined style={IconStyle} />
             <span>Printing Orders</span>
           </Item>

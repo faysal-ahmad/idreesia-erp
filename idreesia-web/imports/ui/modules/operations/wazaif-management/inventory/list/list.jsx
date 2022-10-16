@@ -142,8 +142,8 @@ const List = ({
 
   const printOrdersColumn = {
     title: 'Print Orders',
-    dataIndex: 'printOrders',
-    key: 'printOrders',
+    dataIndex: 'printingOrders',
+    key: 'printingOrders',
     width: 120,
     render: text => (
       <div style={OrderLevel}>

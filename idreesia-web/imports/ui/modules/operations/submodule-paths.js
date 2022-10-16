@@ -46,6 +46,12 @@ export default class SubModulePaths {
     return `${SubModulePaths.wazaifDeliveryOrdersPath}/${orderId}`;
   }
 
+  static wazaifPrintingOrdersPath = `${ModulePaths.operations}/wazaif-printing-orders`;
+  static wazaifPrintingOrdersNewFormPath = `${SubModulePaths.wazaifPrintingOrdersPath}/new`;
+  static wazaifPrintingOrdersEditFormPath(orderId = ':orderId') {
+    return `${SubModulePaths.wazaifPrintingOrdersPath}/${orderId}`;
+  }
+
   static wazaifVendorsPath = `${ModulePaths.operations}/vendors`;
   static wazaifVendorsNewFormPath = `${SubModulePaths.wazaifVendorsPath}/new`;
   static wazaifVendorsEditFormPath(vendorId = ':vendorId') {

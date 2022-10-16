@@ -2,17 +2,17 @@ import moment from 'moment';
 import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
-import { DeliveryOrders } from 'meteor/idreesia-common/server/collections/wazaif';
+import { PrintingOrders } from 'meteor/idreesia-common/server/collections/wazaif';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-export default function getWazaifDeliveryOrders(queryString) {
+export default function getWazaifPrintingOrders(queryString) {
   const params = parse(queryString);
   const pipeline = [];
 
   const {
     showPending,
     showCompleted,
-    cityMehfilId,
+    vendorId,
     startDate,
     endDate,
     pageIndex = '0',
@@ -38,10 +38,10 @@ export default function getWazaifDeliveryOrders(queryString) {
     });
   }
 
-  if (cityMehfilId) {
+  if (vendorId) {
     pipeline.push({
       $match: {
-        cityMehfilId: { $eq: cityMehfilId },
+        vendorId: { $eq: vendorId },
       },
     });
   }
@@ -49,7 +49,7 @@ export default function getWazaifDeliveryOrders(queryString) {
   if (startDate) {
     pipeline.push({
       $match: {
-        requestedDate: {
+        orderedDate: {
           $gte: moment(startDate, Formats.DATE_FORMAT)
             .startOf('day')
             .toDate(),
@@ -60,7 +60,7 @@ export default function getWazaifDeliveryOrders(queryString) {
   if (endDate) {
     pipeline.push({
       $match: {
-        requestedDate: {
+        orderedDate: {
           $lte: moment(endDate, Formats.DATE_FORMAT)
             .endOf('day')
             .toDate(),
@@ -81,10 +81,10 @@ export default function getWazaifDeliveryOrders(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const deliveryOrders = DeliveryOrders.aggregate(resultsPipeline).toArray();
-  const totalResults = DeliveryOrders.aggregate(countingPipeline).toArray();
+  const printingOrders = PrintingOrders.aggregate(resultsPipeline).toArray();
+  const totalResults = PrintingOrders.aggregate(countingPipeline).toArray();
 
-  return Promise.all([deliveryOrders, totalResults]).then(results => ({
+  return Promise.all([printingOrders, totalResults]).then(results => ({
     data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));

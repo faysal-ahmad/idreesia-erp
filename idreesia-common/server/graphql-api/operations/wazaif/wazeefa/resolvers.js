@@ -2,6 +2,7 @@ import moment from 'moment';
 import {
   Wazaif,
   DeliveryOrders,
+  PrintingOrders,
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/wazaif';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
@@ -44,6 +45,28 @@ export default {
 
       deliveryOrders.forEach(deliveryOrder => {
         const { items } = deliveryOrder;
+        items.forEach(item => {
+          if (item.wazeefaId === wazeefaType._id) {
+            packetCount += item.packets;
+          }
+        });
+      });
+
+      return packetCount;
+    },
+    printingOrders: wazeefaType => {
+      let packetCount = 0;
+      const printingOrders = PrintingOrders.find({
+        status: { $eq: 'pending' },
+        items: {
+          $elemMatch: {
+            wazeefaId: { $eq: wazeefaType._id },
+          },
+        },
+      });
+
+      printingOrders.forEach(printingOrder => {
+        const { items } = printingOrder;
         items.forEach(item => {
           if (item.wazeefaId === wazeefaType._id) {
             packetCount += item.packets;

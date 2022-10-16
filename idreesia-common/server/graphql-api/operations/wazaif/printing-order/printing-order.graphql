@@ -1,0 +1,59 @@
+type WazaifPrintingOrderType {
+  _id: String
+  vendorId: String
+  orderDate: String
+  orderedBy: String
+  deliveryDate: String
+  receivedBy: String
+  items: [WazeefaWithQuantity]
+  status: String
+  notes: String
+
+  refVendor: WazaifVendor
+  refOrderedBy: PersonType
+  refReceivedBy: PersonType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedWazaifPrintingOrderType {
+  totalResults: Int
+  data: [WazaifPrintingOrderType]
+}
+
+extend type Query {
+  wazaifPrintingOrderById(_id: String!): WazaifPrintingOrderType
+  pagedWazaifPrintingOrders(
+    queryString: String
+  ): PagedWazaifPrintingOrderType
+}
+
+extend type Mutation {
+  createWazaifPrintingOrder(
+    vendorId: String!
+    orderDate: String
+    orderedBy: String!
+    deliveryDate: String
+    receivedBy: String
+    items: [WazeefaWithQuantityInput]
+    status: String
+    notes: String
+  ): WazaifPrintingOrderType
+
+  updateWazaifPrintingOrder(
+    _id: String!
+    vendorId: String!
+    orderDate: String
+    orderedBy: String!
+    deliveryDate: String
+    receivedBy: String
+    items: [WazeefaWithQuantityInput]
+    status: String
+    notes: String
+  ): WazaifPrintingOrderType
+
+  removeWazaifPrintingOrder(_id: String!): Int
+}

@@ -3,7 +3,10 @@ import {
   Cities,
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
-import { DeliveryOrders } from 'meteor/idreesia-common/server/collections/wazaif';
+import {
+  DeliveryOrders,
+  Wazaif,
+} from 'meteor/idreesia-common/server/collections/wazaif';
 
 import getWazaifDeliveryOrders from './queries';
 
@@ -73,6 +76,10 @@ export default {
         updatedBy: user._id,
       });
 
+      items.forEach(({ wazeefaId, packets }) => {
+        Wazaif.decreaseStockLevel(wazeefaId, packets);
+      });
+
       return DeliveryOrders.findOne(deliveryOrderId);
     },
 
@@ -93,6 +100,18 @@ export default {
       { user }
     ) {
       const date = new Date();
+      const existingOrder = DeliveryOrders.findOne(_id);
+      const { items: existingItems } = existingOrder;
+      // Undo the effect of all previous items
+      existingItems.forEach(({ wazeefaId, packets }) => {
+        Wazaif.increaseStockLevel(wazeefaId, packets);
+      });
+
+      // Apply the effect of new incoming items
+      items.forEach(({ wazeefaId, packets }) => {
+        Wazaif.decreaseStockLevel(wazeefaId, packets);
+      });
+
       DeliveryOrders.update(
         {
           _id: { $eq: _id },
@@ -120,6 +139,13 @@ export default {
     },
 
     removeWazaifDeliveryOrder(obj, { _id }) {
+      const existingOrder = DeliveryOrders.findOne(_id);
+      const { items: existingItems } = existingOrder;
+      // Undo the effect of all previous items
+      existingItems.forEach(({ wazeefaId, packets }) => {
+        Wazaif.increaseStockLevel(wazeefaId, packets);
+      });
+
       return DeliveryOrders.remove(_id);
     },
   },

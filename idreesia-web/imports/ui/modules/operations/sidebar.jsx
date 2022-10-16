@@ -13,6 +13,8 @@ import {
   MonitorOutlined,
   ReadOutlined,
   ShopOutlined,
+  ToolOutlined,
+  UnlockOutlined,
   WalletOutlined,
 } from '@ant-design/icons';
 
@@ -71,6 +73,11 @@ class Sidebar extends Component {
       case 'wazaif-printing-vendors':
         setActiveSubModuleName(SubModuleNames.wazaifVendors);
         history.push(paths.wazaifVendorsPath);
+        break;
+
+      case 'wazaif-user-accounts':
+        setActiveSubModuleName(SubModuleNames.wazaifUsers);
+        history.push(paths.wazaifUsersPath);
         break;
 
       case 'messages':
@@ -178,6 +185,20 @@ class Sidebar extends Component {
             <Item key="wazaif-printing-vendors">
               <ShopOutlined style={IconStyle} />
               <span>Vendors</span>
+            </Item>
+          </SubMenu>
+          <SubMenu
+            key="wazaif-administration"
+            title={
+              <>
+                <ToolOutlined style={IconStyle} />
+                <span>Administration</span>
+              </>
+            }
+          >
+            <Item key="wazaif-user-accounts">
+              <UnlockOutlined style={IconStyle} />
+              <span>User Accounts</span>
             </Item>
           </SubMenu>
         </SubMenu>

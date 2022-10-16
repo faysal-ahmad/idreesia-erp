@@ -7,6 +7,7 @@ import {
   PortalsPermissionsData,
   SecurityPermissionsData,
   OperationsPermissionsData,
+  OperationsWazaifPermissionsData,
 } from './permissions-data';
 
 export const AllModulePermissions = [
@@ -18,4 +19,5 @@ export const AllModulePermissions = [
   PortalsPermissionsData,
   SecurityPermissionsData,
   OperationsPermissionsData,
+  OperationsWazaifPermissionsData,
 ];

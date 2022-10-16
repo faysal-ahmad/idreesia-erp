@@ -9,4 +9,5 @@ export {
   PortalsPermissionsData,
   SecurityPermissionsData,
   OperationsPermissionsData,
+  OperationsWazaifPermissionsData,
 } from './permissions-data';

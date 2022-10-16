@@ -13,13 +13,9 @@ const PermissionSelection = ({ permissions, securityEntity, onChange, readOnly }
 
   useEffect(() => {
     if (securityEntity && !initDone) {
-      const filteredPermissions = securityEntity.permissions.filter(
-        permission => permission.startsWith('security')
-      );
       setInitDone(true);
-      setCheckedKeys(filteredPermissions);
-      setExpandedKeys(filteredPermissions);
-      debugger;
+      setCheckedKeys(securityEntity.permissions);
+      setExpandedKeys(securityEntity.permissions);
     }
   }, [securityEntity]);
 

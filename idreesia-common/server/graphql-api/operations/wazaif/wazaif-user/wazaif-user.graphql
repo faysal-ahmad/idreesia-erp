@@ -1,0 +1,11 @@
+extend type Query {
+  pagedOperationsWazaifUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [OP_WAZAIF_VIEW_SECURITY_DATA, OP_WAZAIF_MANAGE_SECURITY_DATA])
+}
+
+extend type Mutation {
+  setOperationsWazaifUserPermissions(
+    userId: String!
+    permissions: [String]!
+  ): UserType @checkPermissions(permissions: [OP_WAZAIF_MANAGE_SECURITY_DATA])
+}

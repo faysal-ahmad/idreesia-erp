@@ -141,6 +141,41 @@ Users.searchUsers = params => {
   }));
 };
 
+Users.searchOperationsWazaifUsers = params => {
+  const { pageIndex = '0', pageSize = '20' } = params;
+  const initialPipeline = [
+    {
+      $match: {
+        personId: { $exists: true, $ne: null },
+        permissions: {
+          $elemMatch: { $regex: `^operations-wazaif` },
+        },
+      },
+    },
+  ];
+
+  const pipeline = initialPipeline.concat(buildPipeline(params));
+  const countingPipeline = pipeline.concat({
+    $count: 'total',
+  });
+
+  const nPageIndex = parseInt(pageIndex, 10);
+  const nPageSize = parseInt(pageSize, 10);
+  const resultsPipeline = pipeline.concat([
+    { $sort: { username: 1 } },
+    { $skip: nPageIndex * nPageSize },
+    { $limit: nPageSize },
+  ]);
+
+  const users = aggregate(resultsPipeline).toArray();
+  const totalResults = aggregate(countingPipeline).toArray();
+
+  return Promise.all([users, totalResults]).then(results => ({
+    totalResults: get(results[1], ['0', 'total'], 0),
+    data: results[0].map(user => mapUser(user)),
+  }));
+};
+
 Users.searchOutstationPortalUsers = (params, portalIds) => {
   const { pageIndex = '0', pageSize = '20' } = params;
   const initialPipeline = [

@@ -81,8 +81,8 @@ export default function getWazaifPrintingOrders(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const printingOrders = PrintingOrders.aggregate(resultsPipeline).toArray();
-  const totalResults = PrintingOrders.aggregate(countingPipeline).toArray();
+  const printingOrders = PrintingOrders.aggregate(resultsPipeline);
+  const totalResults = PrintingOrders.aggregate(countingPipeline);
 
   return Promise.all([printingOrders, totalResults]).then(results => ({
     data: results[0],

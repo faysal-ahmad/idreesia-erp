@@ -4,15 +4,18 @@ import { createAttachment } from './utilities';
 
 export default {
   Query: {
-    attachmentsById(obj, { ids }) {
-      return Attachments.find({
+    attachmentsById: async (obj, { ids }) =>
+      Attachments.find({
         _id: { $in: ids },
-      }).fetch();
-    },
+      }).fetch(),
   },
 
   Mutation: {
-    createAttachment(obj, { name, description, mimeType, data }, { user }) {
+    createAttachment: async (
+      obj,
+      { name, description, mimeType, data },
+      { user }
+    ) => {
       const attachmentId = createAttachment(
         { name, description, mimeType, data },
         { user }
@@ -21,7 +24,7 @@ export default {
       return Attachments.findOne(attachmentId);
     },
 
-    updateAttachment(obj, { _id, name, description }, { user }) {
+    updateAttachment: async (obj, { _id, name, description }, { user }) => {
       const date = new Date();
       Attachments.update(_id, {
         $set: {

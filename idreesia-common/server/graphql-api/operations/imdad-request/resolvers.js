@@ -5,17 +5,19 @@ import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
 
 export default {
   Query: {
-    operationsImdadRequestById(obj, { _id }) {
-      return ImdadRequests.findOne(_id);
-    },
+    operationsImdadRequestById: async (obj, { _id }) =>
+      ImdadRequests.findOne(_id),
 
-    pagedOperationsImdadRequests(obj, { filter }) {
-      return ImdadRequests.getPagedData(filter);
-    },
+    pagedOperationsImdadRequests: async (obj, { filter }) =>
+      ImdadRequests.getPagedData(filter),
   },
 
   Mutation: {
-    createOperationsVisitorImdadRequest(obj, { visitorId }, { user }) {
+    createOperationsVisitorImdadRequest: async (
+      obj,
+      { visitorId },
+      { user }
+    ) => {
       if (!ImdadRequests.isImdadRequestAllowed(visitorId)) {
         throw new Error(
           'Visitor already has submitted an imdad request in the last 30 days.'
@@ -39,34 +41,28 @@ export default {
       return ImdadRequests.findOne(imdadRequestId);
     },
 
-    createOperationsImdadRequest(obj, values, { user }) {
-      return ImdadRequests.createImdadRequest(
+    createOperationsImdadRequest: async (obj, values, { user }) =>
+      ImdadRequests.createImdadRequest(
         {
           dataSource: DataSource.ACCOUNTS,
           ...values,
         },
         user
-      );
-    },
+      ),
 
-    updateOperationsImdadRequest(obj, values, { user }) {
-      return ImdadRequests.updateImdadRequest(values, user);
-    },
+    updateOperationsImdadRequest: async (obj, values, { user }) =>
+      ImdadRequests.updateImdadRequest(values, user),
 
-    deleteOperationsImdadRequest(obj, { _id }) {
-      return ImdadRequests.remove(_id);
-    },
+    deleteOperationsImdadRequest: async (obj, { _id }) =>
+      ImdadRequests.remove(_id),
 
-    setOperationsApprovedImdad(obj, values, { user }) {
-      return ImdadRequests.updateImdadRequest(values, user);
-    },
+    setOperationsApprovedImdad: async (obj, values, { user }) =>
+      ImdadRequests.updateImdadRequest(values, user),
 
-    addOperationsImdadRequestAttachment(obj, values, { user }) {
-      return ImdadRequests.addAttachment(values, user);
-    },
+    addOperationsImdadRequestAttachment: async (obj, values, { user }) =>
+      ImdadRequests.addAttachment(values, user),
 
-    removeOperationsImdadRequestAttachment(obj, values, { user }) {
-      return ImdadRequests.removeAttachment(values, user);
-    },
+    removeOperationsImdadRequestAttachment: async (obj, values, { user }) =>
+      ImdadRequests.removeAttachment(values, user),
   },
 };

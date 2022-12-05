@@ -5,40 +5,40 @@ import {
 
 export default {
   ItemWithQuantity: {
-    stockItemName: item => {
+    stockItemName: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.formattedName;
     },
-    stockItemImageId: item => {
+    stockItemImageId: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.imageId;
     },
-    categoryName: item => {
+    categoryName: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       const itemCategory = ItemCategories.findOne(stockItem.categoryId);
       return itemCategory.name;
     },
-    unitOfMeasurement: item => {
+    unitOfMeasurement: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.unitOfMeasurement;
     },
   },
 
   ItemWithQuantityAndPrice: {
-    stockItemName: item => {
+    stockItemName: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.formattedName;
     },
-    stockItemImageId: item => {
+    stockItemImageId: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.imageId;
     },
-    categoryName: item => {
+    categoryName: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       const itemCategory = ItemCategories.findOne(stockItem.categoryId);
       return itemCategory.name;
     },
-    unitOfMeasurement: item => {
+    unitOfMeasurement: async item => {
       const stockItem = StockItems.findOne(item.stockItemId);
       return stockItem.unitOfMeasurement;
     },

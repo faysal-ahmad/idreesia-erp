@@ -9,26 +9,26 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   KarkunDutyType: {
-    duty: karkunDutyType => Duties.findOne(karkunDutyType.dutyId),
-    shift: karkunDutyType => {
+    duty: async karkunDutyType => Duties.findOne(karkunDutyType.dutyId),
+    shift: async karkunDutyType => {
       if (!karkunDutyType.shiftId) return null;
       return DutyShifts.findOne(karkunDutyType.shiftId);
     },
-    location: karkunDutyType => {
+    location: async karkunDutyType => {
       if (!karkunDutyType.locationId) return null;
       return DutyLocations.findOne(karkunDutyType.locationId);
     },
 
-    dutyName: karkunDutyType => {
+    dutyName: async karkunDutyType => {
       const duty = Duties.findOne(karkunDutyType.dutyId);
       return duty ? duty.name : null;
     },
-    shiftName: karkunDutyType => {
+    shiftName: async karkunDutyType => {
       if (!karkunDutyType.shiftId) return null;
       const shift = DutyShifts.findOne(karkunDutyType.shiftId);
       return shift ? shift.name : null;
     },
-    locationName: karkunDutyType => {
+    locationName: async karkunDutyType => {
       if (!karkunDutyType.locationId) return null;
       const location = DutyLocations.findOne(karkunDutyType.locationId);
       return location ? location.name : null;
@@ -36,22 +36,19 @@ export default {
   },
 
   Query: {
-    karkunDutiesByKarkunId(obj, { karkunId }) {
-      return KarkunDuties.find({
+    karkunDutiesByKarkunId: async (obj, { karkunId }) =>
+      KarkunDuties.find({
         karkunId: { $eq: karkunId },
-      }).fetch();
-    },
-    karkunDutyById(obj, { _id }) {
-      return KarkunDuties.findOne(_id);
-    },
+      }).fetch(),
+    karkunDutyById: async (obj, { _id }) => KarkunDuties.findOne(_id),
   },
 
   Mutation: {
-    createKarkunDuty(
+    createKarkunDuty: async (
       obj,
       { karkunId, dutyId, role, shiftId, locationId, daysOfWeek },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
         throw new Error(
           'You do not have permission to manage Karkun Duties in the System.'
@@ -80,11 +77,11 @@ export default {
       return KarkunDuties.findOne(karkunDutyId);
     },
 
-    updateKarkunDuty(
+    updateKarkunDuty: async (
       obj,
       { _id, karkunId, dutyId, shiftId, locationId, role, daysOfWeek },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
         throw new Error(
           'You do not have permission to manage Karkun Duties in the System.'
@@ -114,7 +111,7 @@ export default {
       return KarkunDuties.findOne(_id);
     },
 
-    removeKarkunDuty(obj, { _id }, { user }) {
+    removeKarkunDuty: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
         throw new Error(
           'You do not have permission to manage Karkun Duties in the System.'

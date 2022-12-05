@@ -68,8 +68,8 @@ class Messages extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const messages = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const messages = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([messages, totalResults]).then(results => ({
       data: results[0],

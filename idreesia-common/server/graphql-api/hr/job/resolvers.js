@@ -5,23 +5,19 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   JobType: {
-    usedCount: jobType =>
+    usedCount: async jobType =>
       People.find({
         'employeeData.jobId': { $eq: jobType._id },
       }).count(),
   },
 
   Query: {
-    allJobs() {
-      return Jobs.find({}, { sort: { name: 1 } }).fetch();
-    },
-    jobById(obj, { id }) {
-      return Jobs.findOne(id);
-    },
+    allJobs: async () => Jobs.find({}, { sort: { name: 1 } }).fetch(),
+    jobById: async (obj, { id }) => Jobs.findOne(id),
   },
 
   Mutation: {
-    createJob(obj, { name, description }, { user }) {
+    createJob: async (obj, { name, description }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
@@ -41,7 +37,7 @@ export default {
       return Jobs.findOne(jobId);
     },
 
-    updateJob(obj, { id, name, description }, { user }) {
+    updateJob: async (obj, { id, name, description }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
@@ -61,7 +57,7 @@ export default {
       return Jobs.findOne(id);
     },
 
-    removeJob(obj, { _id }, { user }) {
+    removeJob: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'

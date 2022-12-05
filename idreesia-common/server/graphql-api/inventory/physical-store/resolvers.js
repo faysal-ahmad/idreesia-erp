@@ -7,7 +7,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Query: {
-    allPhysicalStores(obj, params, { user }) {
+    allPhysicalStores: async (obj, params, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
@@ -21,7 +21,7 @@ export default {
       return PhysicalStores.find({}).fetch();
     },
 
-    allAccessiblePhysicalStores(obj, params, { user }) {
+    allAccessiblePhysicalStores: async (obj, params, { user }) => {
       const physicalStores = PhysicalStores.find({}).fetch();
       const filteredPhysicalStores = filterByInstanceAccess(
         user,
@@ -30,7 +30,7 @@ export default {
       return filteredPhysicalStores;
     },
 
-    physicalStoreById(obj, { id }, { user }) {
+    physicalStoreById: async (obj, { id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
@@ -46,7 +46,7 @@ export default {
   },
 
   Mutation: {
-    createPhysicalStore(obj, { name, address }, { user }) {
+    createPhysicalStore: async (obj, { name, address }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
@@ -70,7 +70,7 @@ export default {
       return PhysicalStores.findOne(physicalStoreId);
     },
 
-    updatePhysicalStore(obj, { id, name, address }, { user }) {
+    updatePhysicalStore: async (obj, { id, name, address }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,

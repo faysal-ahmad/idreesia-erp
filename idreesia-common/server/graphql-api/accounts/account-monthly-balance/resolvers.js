@@ -7,11 +7,11 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Query: {
-    accountMonthlyBalancesByCompanyId(
+    accountMonthlyBalancesByCompanyId: async (
       obj,
       { monthString, companyId },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [

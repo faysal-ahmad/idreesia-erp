@@ -5,28 +5,25 @@ import {
 
 export default {
   MehfilType: {
-    karkunCount: mehfilType =>
+    karkunCount: async mehfilType =>
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
       }).count(),
-    mehfilKarkuns: mehfilType =>
+    mehfilKarkuns: async mehfilType =>
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
       }).fetch(),
   },
 
   Query: {
-    allMehfils() {
-      return Mehfils.find({}, { sort: { mehfilDate: -1 } }).fetch();
-    },
+    allMehfils: async () =>
+      Mehfils.find({}, { sort: { mehfilDate: -1 } }).fetch(),
 
-    mehfilById(obj, { _id }) {
-      return Mehfils.findOne(_id);
-    },
+    mehfilById: async (obj, { _id }) => Mehfils.findOne(_id),
   },
 
   Mutation: {
-    createMehfil(obj, { name, mehfilDate }, { user }) {
+    createMehfil: async (obj, { name, mehfilDate }, { user }) => {
       const date = new Date();
       const mehfilId = Mehfils.insert({
         name,
@@ -40,7 +37,7 @@ export default {
       return Mehfils.findOne(mehfilId);
     },
 
-    updateMehfil(obj, { _id, name, mehfilDate }, { user }) {
+    updateMehfil: async (obj, { _id, name, mehfilDate }, { user }) => {
       const date = new Date();
       Mehfils.update(_id, {
         $set: {
@@ -54,7 +51,7 @@ export default {
       return Mehfils.findOne(_id);
     },
 
-    removeMehfil(obj, { _id }) {
+    removeMehfil: async (obj, { _id }) => {
       const karkunCount = MehfilKarkuns.find({
         mehfilId: { $eq: _id },
       }).count();

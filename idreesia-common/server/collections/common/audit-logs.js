@@ -89,8 +89,8 @@ class AuditLogs extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const auditLogs = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const auditLogs = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([auditLogs, totalResults]).then(results => ({
       data: results[0],

@@ -12,19 +12,19 @@ import { getPagedSalariesByKarkun } from './queries';
 
 export default {
   SalaryType: {
-    karkun: salaryType => {
+    karkun: async salaryType => {
       const person = People.findOne({
         _id: { $eq: salaryType.karkunId },
       });
       return People.personToKarkun(person);
     },
-    job: salaryType => {
+    job: async salaryType => {
       if (!salaryType.jobId) return null;
       return Jobs.findOne({
         _id: { $eq: salaryType.jobId },
       });
     },
-    approver: salaryType => {
+    approver: async salaryType => {
       if (!salaryType.approvedBy) return null;
       const person = People.findOne({
         _id: { $eq: salaryType.approvedBy },
@@ -34,7 +34,7 @@ export default {
   },
 
   Query: {
-    salariesByMonth(obj, { month, jobId }, { user }) {
+    salariesByMonth: async (obj, { month, jobId }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
@@ -61,7 +61,7 @@ export default {
       }).fetch();
     },
 
-    salariesByIds(obj, { ids }, { user }) {
+    salariesByIds: async (obj, { ids }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -78,7 +78,7 @@ export default {
       }).fetch();
     },
 
-    pagedSalariesByKarkun(obj, { queryString }, { user }) {
+    pagedSalariesByKarkun: async (obj, { queryString }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
@@ -96,7 +96,7 @@ export default {
   },
 
   Mutation: {
-    createSalaries(obj, { month }, { user }) {
+    createSalaries: async (obj, { month }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
@@ -124,7 +124,7 @@ export default {
       );
     },
 
-    updateSalary(
+    updateSalary: async (
       obj,
       {
         _id,
@@ -137,7 +137,7 @@ export default {
         rashanMadad,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
@@ -173,7 +173,7 @@ export default {
       return Salaries.findOne(_id);
     },
 
-    approveSalaries(obj, { month, ids }, { user }) {
+    approveSalaries: async (obj, { month, ids }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_APPROVE_SALARIES])) {
         throw new Error(
           'You do not have permission to approve salaries in the System.'
@@ -200,7 +200,7 @@ export default {
       );
     },
 
-    approveAllSalaries(obj, { month }, { user }) {
+    approveAllSalaries: async (obj, { month }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_APPROVE_SALARIES])) {
         throw new Error(
           'You do not have permission to approve salaries in the System.'
@@ -226,7 +226,7 @@ export default {
       );
     },
 
-    deleteSalaries(obj, { month, ids }, { user }) {
+    deleteSalaries: async (obj, { month, ids }, { user }) => {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 
@@ -255,7 +255,7 @@ export default {
       });
     },
 
-    deleteAllSalaries(obj, { month }, { user }) {
+    deleteAllSalaries: async (obj, { month }, { user }) => {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 

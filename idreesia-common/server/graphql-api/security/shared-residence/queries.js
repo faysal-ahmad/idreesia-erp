@@ -47,10 +47,8 @@ export function getSharedResidences(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const sharedResidences = SharedResidences.aggregate(
-    resultsPipeline
-  ).toArray();
-  const totalResults = SharedResidences.aggregate(countingPipeline).toArray();
+  const sharedResidences = SharedResidences.aggregate(resultsPipeline);
+  const totalResults = SharedResidences.aggregate(countingPipeline);
 
   return Promise.all([sharedResidences, totalResults]).then(results => ({
     data: results[0],

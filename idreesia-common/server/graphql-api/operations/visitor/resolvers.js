@@ -3,21 +3,23 @@ import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedOperationsVisitors(obj, { filter }) {
-      return People.searchPeople(filter, {
+    pagedOperationsVisitors: async (obj, { filter }) =>
+      People.searchPeople(filter, {
         includeVisitors: true,
       }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
-      }));
-    },
+      })),
 
-    operationsVisitorById(obj, { _id }) {
+    operationsVisitorById: async (obj, { _id }) => {
       const person = People.findOne(_id);
       return People.personToVisitor(person);
     },
 
-    operationsVisitorsByCnic(obj, { cnicNumbers, partialCnicNumber }) {
+    operationsVisitorsByCnic: async (
+      obj,
+      { cnicNumbers, partialCnicNumber }
+    ) => {
       if (cnicNumbers.length > 0) {
         const person = People.findOne({
           cnicNumber: { $in: cnicNumbers },
@@ -46,7 +48,7 @@ export default {
   },
 
   Mutation: {
-    createOperationsVisitor(obj, values, { user }) {
+    createOperationsVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.createPerson(
         {
@@ -58,17 +60,15 @@ export default {
       return People.personToVisitor(person);
     },
 
-    updateOperationsVisitor(obj, values, { user }) {
+    updateOperationsVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    deleteOperationsVisitor(obj, { _id }) {
-      return People.remove(_id);
-    },
+    deleteOperationsVisitor: async (obj, { _id }) => People.remove(_id),
 
-    setOperationsVisitorImage(obj, values, { user }) {
+    setOperationsVisitorImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);

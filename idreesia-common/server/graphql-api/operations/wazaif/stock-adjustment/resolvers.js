@@ -9,11 +9,11 @@ import { getStockAdjustments } from './queries';
 
 export default {
   WazeefaStockAdjustment: {
-    refWazeefa: stockAdjustment =>
+    refWazeefa: async stockAdjustment =>
       Wazaif.findOne({
         _id: { $eq: stockAdjustment.wazeefaId },
       }),
-    refAdjustedBy: stockAdjustment => {
+    refAdjustedBy: async stockAdjustment => {
       const user = Users.findOne(stockAdjustment.adjustedBy);
       if (user && user.personId) {
         return People.findOne({
@@ -25,17 +25,15 @@ export default {
     },
   },
   Query: {
-    pagedWazaifStockAdjustments(obj, { queryString }) {
-      return getStockAdjustments(queryString);
-    },
+    pagedWazaifStockAdjustments: async (obj, { queryString }) =>
+      getStockAdjustments(queryString),
 
-    wazeefaStockAdjustmentById(obj, { _id }) {
-      return StockAdjustments.findOne(_id);
-    },
+    wazeefaStockAdjustmentById: async (obj, { _id }) =>
+      StockAdjustments.findOne(_id),
   },
 
   Mutation: {
-    approveWazeefaStockAdjustment(obj, { _id }, { user }) {
+    approveWazeefaStockAdjustment: async (obj, { _id }, { user }) => {
       const date = new Date();
       StockAdjustments.update(_id, {
         $set: {
@@ -47,7 +45,7 @@ export default {
       return StockAdjustments.findOne(_id);
     },
 
-    removeWazeefaStockAdjustment(obj, { _id }, { user }) {
+    removeWazeefaStockAdjustment: async (obj, { _id }, { user }) => {
       const date = new Date();
       const adjustment = StockAdjustments.findOne(_id);
       const wazeefa = Wazaif.findOne(adjustment.wazeefaId);

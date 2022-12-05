@@ -13,7 +13,7 @@ import { getMessages } from './queries';
 
 export default {
   Query: {
-    outstationMessageById(obj, { _id }, { user }) {
+    outstationMessageById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_MESSAGES,
@@ -30,7 +30,7 @@ export default {
       });
     },
 
-    pagedOutstationMessages(obj, { filter }, { user }) {
+    pagedOutstationMessages: async (obj, { filter }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_MESSAGES,
@@ -49,7 +49,11 @@ export default {
   },
 
   Mutation: {
-    createOutstationMessage(obj, { messageBody, recepientFilter }, { user }) {
+    createOutstationMessage: async (
+      obj,
+      { messageBody, recepientFilter },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
@@ -83,11 +87,11 @@ export default {
       });
     },
 
-    updateOutstationMessage(
+    updateOutstationMessage: async (
       obj,
       { _id, messageBody, recepientFilter },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
@@ -130,7 +134,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    approveOutstationMessage(obj, { _id }, { user }) {
+    approveOutstationMessage: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
@@ -163,7 +167,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    deleteOutstationMessage(obj, { _id }, { user }) {
+    deleteOutstationMessage: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.OUTSTATION_DELETE_DATA])
       ) {

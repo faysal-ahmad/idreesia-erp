@@ -10,7 +10,7 @@ import {
 
 export default {
   KarkunType: {
-    image: karkunType => {
+    image: async karkunType => {
       const { imageId } = karkunType;
       if (imageId) {
         return Attachments.findOne({ _id: { $eq: imageId } });
@@ -18,15 +18,18 @@ export default {
 
       return null;
     },
-    job: karkunType => {
+
+    job: async karkunType => {
       if (!karkunType.jobId) return null;
       return Jobs.findOne(karkunType.jobId);
     },
-    duties: karkunType =>
+
+    duties: async karkunType =>
       KarkunDuties.find({
         karkunId: { $eq: karkunType._id },
       }).fetch(),
-    attachments: karkunType => {
+
+    attachments: async karkunType => {
       const { attachmentIds } = karkunType;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
@@ -34,11 +37,13 @@ export default {
 
       return [];
     },
-    city: karkunType => {
+
+    city: async karkunType => {
       if (!karkunType.cityId) return null;
       return Cities.findOne(karkunType.cityId);
     },
-    cityMehfil: karkunType => {
+
+    cityMehfil: async karkunType => {
       if (!karkunType.cityMehfilId) return null;
       return CityMehfils.findOne(karkunType.cityMehfilId);
     },

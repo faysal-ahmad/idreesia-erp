@@ -7,7 +7,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   AccountHead: {
-    hasChildren: accountHead => {
+    hasChildren: async accountHead => {
       const childCount = AccountHeads.find({
         companyId: accountHead.companyId,
         parent: accountHead.number,
@@ -17,7 +17,7 @@ export default {
     },
   },
   Query: {
-    accountHeadById(obj, { _id }, { user }) {
+    accountHeadById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
@@ -32,7 +32,7 @@ export default {
       return accountHead;
     },
 
-    accountHeadsByCompanyId(obj, { companyId }, { user }) {
+    accountHeadsByCompanyId: async (obj, { companyId }, { user }) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [
@@ -48,11 +48,11 @@ export default {
   },
 
   Mutation: {
-    updateAccountHead(
+    updateAccountHead: async (
       obj,
       { _id, companyId, name, description, startingBalance },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [

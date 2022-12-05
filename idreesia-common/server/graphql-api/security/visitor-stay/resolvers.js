@@ -12,31 +12,31 @@ import { getVisitorStays, getTeamVisits } from './queries';
 
 export default {
   VisitorStayType: {
-    isValid: visitorStay => {
+    isValid: async visitorStay => {
       const toDate = moment(Number(visitorStay.toDate));
       return moment().isBefore(toDate);
     },
-    isExpired: visitorStay => {
+    isExpired: async visitorStay => {
       const toDate = moment(Number(visitorStay.toDate)).hour(18);
       return moment().isAfter(toDate);
     },
-    refVisitor: visitorStay => {
+    refVisitor: async visitorStay => {
       const person = People.findOne({
         _id: { $eq: visitorStay.visitorId },
       });
       return People.personToVisitor(person);
     },
-    dutyName: visitorStay => {
+    dutyName: async visitorStay => {
       if (!visitorStay.dutyId) return null;
       const duty = Duties.findOne(visitorStay.dutyId);
       return duty ? duty.name : null;
     },
-    shiftName: visitorStay => {
+    shiftName: async visitorStay => {
       if (!visitorStay.shiftId) return null;
       const shift = DutyShifts.findOne(visitorStay.shiftId);
       return shift ? shift.name : null;
     },
-    dutyShiftName: visitorStay => {
+    dutyShiftName: async visitorStay => {
       if (!visitorStay.dutyId) return null;
       const duty = Duties.findOne(visitorStay.dutyId);
       const shift = visitorStay.shiftId
@@ -48,23 +48,17 @@ export default {
     },
   },
   Query: {
-    pagedVisitorStays(obj, { queryString }) {
-      return getVisitorStays(queryString);
-    },
+    pagedVisitorStays: async (obj, { queryString }) =>
+      getVisitorStays(queryString),
 
-    pagedVisitorStaysByVisitorId(obj, { visitorId }) {
-      return getVisitorStays(`?visitorId=${visitorId}&pageSize=5`);
-    },
+    pagedVisitorStaysByVisitorId: async (obj, { visitorId }) =>
+      getVisitorStays(`?visitorId=${visitorId}&pageSize=5`),
 
-    pagedTeamVisits(obj, { queryString }) {
-      return getTeamVisits(queryString);
-    },
+    pagedTeamVisits: async (obj, { queryString }) => getTeamVisits(queryString),
 
-    visitorStayById(obj, { _id }) {
-      return VisitorStays.findOne(_id);
-    },
+    visitorStayById: async (obj, { _id }) => VisitorStays.findOne(_id),
 
-    distinctStayAllowedBy() {
+    distinctStayAllowedBy: async () => {
       const distincFunction = Meteor.wrapAsync(
         VisitorStays.rawCollection().distinct,
         VisitorStays.rawCollection()
@@ -73,7 +67,7 @@ export default {
       return compact(distincFunction('stayAllowedBy'));
     },
 
-    distinctTeamNames() {
+    distinctTeamNames: async () => {
       const distincFunction = Meteor.wrapAsync(
         VisitorStays.rawCollection().distinct,
         VisitorStays.rawCollection()
@@ -84,7 +78,7 @@ export default {
   },
 
   Mutation: {
-    createVisitorStay(
+    createVisitorStay: async (
       obj,
       {
         visitorId,
@@ -96,7 +90,7 @@ export default {
         teamName,
       },
       { user }
-    ) {
+    ) => {
       // We are going to assume that if the current time is before midnight, but
       // after 6 PM, then the stay is for the next day's date.
       // But if it is after midnight, then it is for the current date.
@@ -140,7 +134,7 @@ export default {
       return VisitorStays.findOne(visitorStayId);
     },
 
-    updateVisitorStay(
+    updateVisitorStay: async (
       obj,
       {
         _id,
@@ -153,7 +147,7 @@ export default {
         teamName,
       },
       { user }
-    ) {
+    ) => {
       const mFromDate = moment(fromDate);
       const mToDate = moment(toDate);
       const numOfDays = mToDate.diff(mFromDate, 'days') + 1;
@@ -177,7 +171,11 @@ export default {
       return VisitorStays.findOne(_id);
     },
 
-    fixNameSpelling(obj, { existingSpelling, newSpelling }, { user }) {
+    fixNameSpelling: async (
+      obj,
+      { existingSpelling, newSpelling },
+      { user }
+    ) => {
       const date = new Date();
       const count = VisitorStays.update(
         {
@@ -196,7 +194,7 @@ export default {
       return count;
     },
 
-    cancelVisitorStay(obj, { _id }, { user }) {
+    cancelVisitorStay: async (obj, { _id }, { user }) => {
       const date = new Date();
       VisitorStays.update(_id, {
         $set: {
@@ -209,8 +207,6 @@ export default {
       return VisitorStays.findOne(_id);
     },
 
-    deleteVisitorStay(obj, { _id }) {
-      return VisitorStays.remove(_id);
-    },
+    deleteVisitorStay: async (obj, { _id }) => VisitorStays.remove(_id),
   },
 };

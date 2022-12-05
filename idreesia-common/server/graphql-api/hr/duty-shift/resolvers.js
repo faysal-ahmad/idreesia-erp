@@ -9,8 +9,8 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   DutyShiftType: {
-    duty: dutyShiftType => Duties.findOne(dutyShiftType.dutyId),
-    canDelete: dutyShiftType => {
+    duty: async dutyShiftType => Duties.findOne(dutyShiftType.dutyId),
+    canDelete: async dutyShiftType => {
       // Check if this shift is currently assigned to a karkun
       const karkunDutiesCount = KarkunDuties.find({
         shiftId: { $eq: dutyShiftType._id },
@@ -28,27 +28,23 @@ export default {
   },
 
   Query: {
-    allDutyShifts() {
-      return DutyShifts.find({}, { sort: { dutyId: 1 } }).fetch();
-    },
+    allDutyShifts: async () =>
+      DutyShifts.find({}, { sort: { dutyId: 1 } }).fetch(),
 
-    dutyShiftsByDutyId(obj, { dutyId }) {
-      return DutyShifts.find({
+    dutyShiftsByDutyId: async (obj, { dutyId }) =>
+      DutyShifts.find({
         dutyId,
-      }).fetch();
-    },
+      }).fetch(),
 
-    dutyShiftById(obj, { id }) {
-      return DutyShifts.findOne(id);
-    },
+    dutyShiftById: async (obj, { id }) => DutyShifts.findOne(id),
   },
 
   Mutation: {
-    createDutyShift(
+    createDutyShift: async (
       obj,
       { name, dutyId, startTime, endTime, attendanceSheet },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Shifts Setup Data in the System.'
@@ -71,11 +67,11 @@ export default {
       return DutyShifts.findOne(dutyShiftId);
     },
 
-    updateDutyShift(
+    updateDutyShift: async (
       obj,
       { _id, name, dutyId, startTime, endTime, attendanceSheet },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Shifts Setup Data in the System.'
@@ -98,7 +94,7 @@ export default {
       return DutyShifts.findOne(_id);
     },
 
-    removeDutyShift(obj, { _id }, { user }) {
+    removeDutyShift: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Shifts Setup Data in the System.'

@@ -3,7 +3,7 @@ import { EntityType } from 'meteor/idreesia-common/constants/audit';
 
 export default {
   Query: {
-    pagedPortalAuditLogs(obj, { filter }) {
+    pagedPortalAuditLogs: async (obj, { filter }) => {
       const updatedFilter = Object.assign({}, filter, {
         entityTypes: [EntityType.PERSON],
       });

@@ -30,8 +30,8 @@ export default function getDataImports(jobType, status, pageIndex, pageSize) {
     { $limit: pageSize },
   ]);
 
-  const adminJobs = AdminJobs.aggregate(resultsPipeline).toArray();
-  const totalResults = AdminJobs.aggregate(countingPipeline).toArray();
+  const adminJobs = AdminJobs.aggregate(resultsPipeline);
+  const totalResults = AdminJobs.aggregate(countingPipeline);
 
   return Promise.all([adminJobs, totalResults]).then(results => ({
     data: results[0],

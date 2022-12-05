@@ -8,7 +8,6 @@ export default new SimpleSchema({
   },
   dutyId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   startTime: {
     type: String,

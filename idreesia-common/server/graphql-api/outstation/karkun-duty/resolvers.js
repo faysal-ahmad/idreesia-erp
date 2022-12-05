@@ -4,7 +4,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Mutation: {
-    createOutstationKarkunDuty(obj, { karkunId, dutyId }, { user }) {
+    createOutstationKarkunDuty: async (obj, { karkunId, dutyId }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.OUTSTATION_MANAGE_KARKUNS])
       ) {
@@ -31,7 +31,7 @@ export default {
       return KarkunDuties.findOne(karkunDutyId);
     },
 
-    removeOutstationKarkunDuty(obj, { _id }, { user }) {
+    removeOutstationKarkunDuty: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.OUTSTATION_MANAGE_KARKUNS])
       ) {

@@ -4,23 +4,22 @@ import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedOutstationMembers(obj, { filter }) {
-      return People.searchPeople(filter, {
+    pagedOutstationMembers: async (obj, { filter }) =>
+      People.searchPeople(filter, {
         includeVisitors: true,
       }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
-      }));
-    },
+      })),
 
-    outstationMemberById(obj, { _id }) {
+    outstationMemberById: async (obj, { _id }) => {
       const person = People.findOne(_id);
       return People.personToVisitor(person);
     },
   },
 
   Mutation: {
-    importOutstationMember(
+    importOutstationMember: async (
       obj,
       {
         name,
@@ -33,7 +32,7 @@ export default {
         referenceName,
       },
       { user }
-    ) {
+    ) => {
       // Check if we already have an existing visitor coresponding to these values
       // Create a new visitor corresponding to this member if one is not found
       const existingPerson = People.findByCnicOrContactNumber(
@@ -63,7 +62,7 @@ export default {
       return 'Member already exists. Ignored.';
     },
 
-    createOutstationMember(obj, values, { user }) {
+    createOutstationMember: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.createPerson(
         {
@@ -75,17 +74,15 @@ export default {
       return People.personToVisitor(person);
     },
 
-    updateOutstationMember(obj, values, { user }) {
+    updateOutstationMember: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    deleteOutstationMember(obj, { _id }) {
-      return People.remove(_id);
-    },
+    deleteOutstationMember: async (obj, { _id }) => People.remove(_id),
 
-    setOutstationMemberImage(obj, values, { user }) {
+    setOutstationMemberImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);

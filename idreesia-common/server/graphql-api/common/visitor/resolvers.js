@@ -10,7 +10,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   VisitorType: {
-    image: visitorType => {
+    image: async visitorType => {
       const { imageId } = visitorType;
       if (imageId) {
         return Attachments.findOne({ _id: { $eq: imageId } });
@@ -21,7 +21,7 @@ export default {
   },
 
   Query: {
-    distinctCities() {
+    distinctCities: async () => {
       const distincFunction = Meteor.wrapAsync(
         People.rawCollection().distinct,
         People.rawCollection()
@@ -30,7 +30,7 @@ export default {
       return compact(distincFunction('visitorData.city'));
     },
 
-    distinctCountries() {
+    distinctCountries: async () => {
       const distincFunction = Meteor.wrapAsync(
         People.rawCollection().distinct,
         People.rawCollection()
@@ -39,13 +39,15 @@ export default {
       return compact(distincFunction('visitorData.country'));
     },
 
-    pagedVisitors(obj, { filter }) {
-      return Visitors.searchVisitors(filter);
-    },
+    pagedVisitors: async (obj, { filter }) => Visitors.searchVisitors(filter),
   },
 
   Mutation: {
-    fixCitySpelling(obj, { existingSpelling, newSpelling }, { user }) {
+    fixCitySpelling: async (
+      obj,
+      { existingSpelling, newSpelling },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [PermissionConstants.SECURITY_MANAGE_VISITORS])
       ) {

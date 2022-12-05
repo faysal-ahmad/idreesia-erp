@@ -7,7 +7,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Query: {
-    allCompanies(obj, params, { user }) {
+    allCompanies: async (obj, params, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_COMPANIES,
@@ -20,13 +20,13 @@ export default {
       return Companies.find({}).fetch();
     },
 
-    allAccessibleCompanies(obj, params, { user }) {
+    allAccessibleCompanies: async (obj, params, { user }) => {
       const companies = Companies.find({}).fetch();
       const filteredCompanies = filterByInstanceAccess(user, companies);
       return filteredCompanies;
     },
 
-    companyById(obj, { id }, { user }) {
+    companyById: async (obj, { id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_COMPANIES,
@@ -41,7 +41,11 @@ export default {
   },
 
   Mutation: {
-    createCompany(obj, { name, importData, connectivitySettings }, { user }) {
+    createCompany: async (
+      obj,
+      { name, importData, connectivitySettings },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {
@@ -64,11 +68,11 @@ export default {
       return Companies.findOne(companyId);
     },
 
-    updateCompany(
+    updateCompany: async (
       obj,
       { _id, name, importData, connectivitySettings },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_COMPANIES])
       ) {

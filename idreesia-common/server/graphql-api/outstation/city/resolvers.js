@@ -10,19 +10,19 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   CityType: {
-    karkunCount: cityType =>
+    karkunCount: async cityType =>
       People.find({
         isKarkun: true,
         'karkunData.cityId': cityType._id,
       }).count(),
 
-    memberCount: cityType =>
+    memberCount: async cityType =>
       People.find({
         isKarkun: false,
         'visitorsData.city': cityType.name,
       }).count(),
 
-    mehfils: cityType =>
+    mehfils: async cityType =>
       CityMehfils.find(
         {
           cityId: { $eq: cityType._id },
@@ -30,7 +30,7 @@ export default {
         { sort: { name: 1 } }
       ).fetch(),
 
-    peripheryOfCity: cityType =>
+    peripheryOfCity: async cityType =>
       cityType.peripheryOf
         ? Cities.findOne({
             _id: { $eq: cityType.peripheryOf },
@@ -39,19 +39,13 @@ export default {
   },
 
   Query: {
-    allCities() {
-      return Cities.find({}, { sort: { name: 1 } }).fetch();
-    },
+    allCities: async () => Cities.find({}, { sort: { name: 1 } }).fetch(),
 
-    pagedCities(obj, { filter }) {
-      return Cities.searchCities(filter);
-    },
+    pagedCities: async (obj, { filter }) => Cities.searchCities(filter),
 
-    cityById(obj, { _id }) {
-      return Cities.findOne(_id);
-    },
+    cityById: async (obj, { _id }) => Cities.findOne(_id),
 
-    citiesByPortalId(obj, { portalId }) {
+    citiesByPortalId: async (obj, { portalId }) => {
       const portal = Portals.findOne(portalId);
       return Cities.find(
         { _id: { $in: portal.cityIds } },
@@ -59,7 +53,7 @@ export default {
       ).fetch();
     },
 
-    distinctRegions() {
+    distinctRegions: async () => {
       const distincFunction = Meteor.wrapAsync(
         Cities.rawCollection().distinct,
         Cities.rawCollection()
@@ -70,7 +64,11 @@ export default {
   },
 
   Mutation: {
-    createCity(obj, { name, peripheryOf, country, region }, { user }) {
+    createCity: async (
+      obj,
+      { name, peripheryOf, country, region },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -112,7 +110,11 @@ export default {
       return Cities.findOne(cityId);
     },
 
-    updateCity(obj, { _id, name, peripheryOf, country, region }, { user }) {
+    updateCity: async (
+      obj,
+      { _id, name, peripheryOf, country, region },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -158,7 +160,7 @@ export default {
       return Cities.findOne(_id);
     },
 
-    removeCity(obj, { _id }, { user }) {
+    removeCity: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.OUTSTATION_DELETE_DATA])
       ) {

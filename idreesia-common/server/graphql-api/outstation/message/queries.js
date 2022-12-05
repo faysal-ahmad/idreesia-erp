@@ -50,8 +50,8 @@ export function getMessages(filter) {
     { $limit: nPageSize },
   ]);
 
-  const messages = Messages.aggregate(resultsPipeline).toArray();
-  const totalResults = Messages.aggregate(countingPipeline).toArray();
+  const messages = Messages.aggregate(resultsPipeline);
+  const totalResults = Messages.aggregate(countingPipeline);
 
   return Promise.all([messages, totalResults]).then(results => ({
     data: results[0],

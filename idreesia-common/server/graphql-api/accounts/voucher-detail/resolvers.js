@@ -13,13 +13,13 @@ import getVoucherDetails from './queries';
 
 export default {
   VoucherDetail: {
-    refAccountHead: voucherDetail =>
+    refAccountHead: async voucherDetail =>
       AccountHeads.findOne({
         _id: { $eq: voucherDetail.accountHeadId },
         companyId: { $eq: voucherDetail.companyId },
       }),
 
-    refVoucher: voucherDetail =>
+    refVoucher: async voucherDetail =>
       Vouchers.findOne({
         _id: { $eq: voucherDetail.voucherId },
         companyId: { $eq: voucherDetail.companyId },
@@ -27,7 +27,7 @@ export default {
   },
 
   Query: {
-    voucherDetailById(obj, { _id, companyId }, { user }) {
+    voucherDetailById: async (obj, { _id, companyId }, { user }) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [
@@ -44,7 +44,11 @@ export default {
       });
     },
 
-    voucherDetailsByVoucherId(obj, { companyId, voucherId }, { user }) {
+    voucherDetailsByVoucherId: async (
+      obj,
+      { companyId, voucherId },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [
@@ -61,7 +65,7 @@ export default {
       }).fetch();
     },
 
-    pagedVoucherDetails(
+    pagedVoucherDetails: async (
       obj,
       {
         companyId,
@@ -74,7 +78,7 @@ export default {
         pageSize,
       },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [
@@ -102,11 +106,11 @@ export default {
   },
 
   Mutation: {
-    createVoucherDetail(
+    createVoucherDetail: async (
       obj,
       { companyId, voucherId, accountHeadId, description, amount, isCredit },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
@@ -133,7 +137,7 @@ export default {
       return VoucherDetails.findOne(voucherDetailId);
     },
 
-    updateVoucherDetail(
+    updateVoucherDetail: async (
       obj,
       {
         _id,
@@ -145,7 +149,7 @@ export default {
         isCredit,
       },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
@@ -177,7 +181,7 @@ export default {
       return VoucherDetails.findOne(_id);
     },
 
-    removeVoucherDetail(obj, { _id, companyId }, { user }) {
+    removeVoucherDetail: async (obj, { _id, companyId }, { user }) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])

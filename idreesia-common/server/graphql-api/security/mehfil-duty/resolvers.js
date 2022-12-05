@@ -5,11 +5,11 @@ import {
 
 export default {
   MehfilDutyType: {
-    overallUsedCount: mehfilDutyType =>
+    overallUsedCount: async mehfilDutyType =>
       MehfilKarkuns.find({
         dutyId: { $eq: mehfilDutyType._id },
       }).count(),
-    mehfilUsedCount: (mehfilDutyType, args, context, info) => {
+    mehfilUsedCount: async (mehfilDutyType, args, context, info) => {
       const mehfilId = info?.variableValues?.mehfilId;
       if (mehfilId) {
         return MehfilKarkuns.find({
@@ -22,16 +22,13 @@ export default {
   },
 
   Query: {
-    allSecurityMehfilDuties() {
-      return MehfilDuties.find({}).fetch();
-    },
-    securityMehfilDutyById(obj, { id }) {
-      return MehfilDuties.findOne(id);
-    },
+    allSecurityMehfilDuties: async () => MehfilDuties.find({}).fetch(),
+
+    securityMehfilDutyById: async (obj, { id }) => MehfilDuties.findOne(id),
   },
 
   Mutation: {
-    createSecurityMehfilDuty(obj, { name, urduName }, { user }) {
+    createSecurityMehfilDuty: async (obj, { name, urduName }, { user }) => {
       const date = new Date();
       const mehfilDutyId = MehfilDuties.insert({
         name,
@@ -45,7 +42,7 @@ export default {
       return MehfilDuties.findOne(mehfilDutyId);
     },
 
-    updateSecurityMehfilDuty(obj, { id, name, urduName }, { user }) {
+    updateSecurityMehfilDuty: async (obj, { id, name, urduName }, { user }) => {
       const date = new Date();
       MehfilDuties.update(id, {
         $set: {
@@ -59,7 +56,7 @@ export default {
       return MehfilDuties.findOne(id);
     },
 
-    removeSecurityMehfilDuty(obj, { _id }) {
+    removeSecurityMehfilDuty: async (obj, { _id }) => {
       const usedCount = MehfilKarkuns.find({
         dutyId: { $eq: _id },
       }).count();

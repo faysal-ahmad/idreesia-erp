@@ -45,6 +45,5 @@ export default new SimpleSchema({
   },
   'attachmentIds.$': {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
 });

@@ -10,23 +10,25 @@ import { JobTypes } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    hrMessageById(obj, { _id }) {
-      return Messages.findOne({
+    hrMessageById: async (obj, { _id }) =>
+      Messages.findOne({
         _id,
         source: MessageSource.HR,
-      });
-    },
+      }),
 
-    pagedHrMessages(obj, { filter }) {
-      return Messages.searchMessages({
+    pagedHrMessages: async (obj, { filter }) =>
+      Messages.searchMessages({
         ...filter,
         source: MessageSource.HR,
-      });
-    },
+      }),
   },
 
   Mutation: {
-    createHrMessage(obj, { messageBody, recepientFilter }, { user }) {
+    createHrMessage: async (
+      obj,
+      { messageBody, recepientFilter },
+      { user }
+    ) => {
       const multanCity = Cities.findOne({
         name: 'Multan',
         country: 'Pakistan',
@@ -60,7 +62,11 @@ export default {
       });
     },
 
-    updateHrMessage(obj, { _id, messageBody, recepientFilter }, { user }) {
+    updateHrMessage: async (
+      obj,
+      { _id, messageBody, recepientFilter },
+      { user }
+    ) => {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(
@@ -110,7 +116,7 @@ export default {
       });
     },
 
-    approveHrMessage(obj, { _id }, { user }) {
+    approveHrMessage: async (obj, { _id }, { user }) => {
       const date = new Date();
       Messages.update(
         {
@@ -133,7 +139,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    deleteHrMessage(obj, { _id }) {
+    deleteHrMessage: async (obj, { _id }) => {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(

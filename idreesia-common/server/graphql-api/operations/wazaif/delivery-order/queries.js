@@ -81,8 +81,8 @@ export default function getWazaifDeliveryOrders(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const deliveryOrders = DeliveryOrders.aggregate(resultsPipeline).toArray();
-  const totalResults = DeliveryOrders.aggregate(countingPipeline).toArray();
+  const deliveryOrders = DeliveryOrders.aggregate(resultsPipeline);
+  const totalResults = DeliveryOrders.aggregate(countingPipeline);
 
   return Promise.all([deliveryOrders, totalResults]).then(results => ({
     data: results[0],

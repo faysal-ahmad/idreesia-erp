@@ -12,7 +12,6 @@ export default new SimpleSchema({
   },
   'cityIds.$': {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
 })
   .extend(identifiable)

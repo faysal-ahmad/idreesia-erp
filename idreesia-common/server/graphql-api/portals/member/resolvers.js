@@ -5,18 +5,17 @@ import { getPortalMembers } from './queries';
 
 export default {
   Query: {
-    pagedPortalMembers(obj, { portalId, queryString }) {
-      return getPortalMembers(portalId, queryString);
-    },
+    pagedPortalMembers: async (obj, { portalId, queryString }) =>
+      getPortalMembers(portalId, queryString),
 
-    portalMemberById(obj, { _id }) {
+    portalMemberById: async (obj, { _id }) => {
       const person = People.findOne(_id);
       return People.personToVisitor(person);
     },
   },
 
   Mutation: {
-    createPortalMember(obj, values, { user }) {
+    createPortalMember: async (obj, values, { user }) => {
       const { portalId } = values;
       const personValues = People.visitorToPerson(values);
       const person = People.createPerson(
@@ -29,13 +28,13 @@ export default {
       return People.personToVisitor(person);
     },
 
-    updatePortalMember(obj, values, { user }) {
+    updatePortalMember: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    setPortalMemberImage(obj, values, { user }) {
+    setPortalMemberImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);

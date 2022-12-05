@@ -10,18 +10,18 @@ import getAmaanatLogs from './queries';
 
 export default {
   AmaanatLogType: {
-    city: ammanatLogType => {
+    city: async ammanatLogType => {
       if (!ammanatLogType.cityId) return null;
       return Cities.findOne(ammanatLogType.cityId);
     },
-    cityMehfil: ammanatLogType => {
+    cityMehfil: async ammanatLogType => {
       if (!ammanatLogType.cityMehfilId) return null;
       return CityMehfils.findOne(ammanatLogType.cityMehfilId);
     },
   },
 
   Query: {
-    accountsAmaanatLogById(obj, { _id }, { user }) {
+    accountsAmaanatLogById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
@@ -34,7 +34,7 @@ export default {
       return AmaanatLogs.findOne({ _id });
     },
 
-    pagedAccountsAmaanatLogs(obj, { filter }, { user }) {
+    pagedAccountsAmaanatLogs: async (obj, { filter }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
@@ -52,7 +52,7 @@ export default {
   },
 
   Mutation: {
-    createAccountsAmaanatLog(
+    createAccountsAmaanatLog: async (
       obj,
       {
         cityId,
@@ -67,7 +67,7 @@ export default {
         otherPortionDescription,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
@@ -99,7 +99,7 @@ export default {
       return AmaanatLogs.findOne(amaanatLogId);
     },
 
-    updateAccountsAmaanatLog(
+    updateAccountsAmaanatLog: async (
       obj,
       {
         _id,
@@ -115,7 +115,7 @@ export default {
         otherPortionDescription,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
@@ -152,7 +152,7 @@ export default {
       return AmaanatLogs.findOne(_id);
     },
 
-    removeAccountsAmaanatLog(obj, { _id }, { user }) {
+    removeAccountsAmaanatLog: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,

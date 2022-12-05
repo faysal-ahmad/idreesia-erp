@@ -82,8 +82,8 @@ export function getStockAdjustments(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const data = StockAdjustments.aggregate(resultsPipeline).toArray();
-  const totalResults = StockAdjustments.aggregate(countingPipeline).toArray();
+  const data = StockAdjustments.aggregate(resultsPipeline);
+  const totalResults = StockAdjustments.aggregate(countingPipeline);
 
   return Promise.all([data, totalResults]).then(results => ({
     data: results[0],

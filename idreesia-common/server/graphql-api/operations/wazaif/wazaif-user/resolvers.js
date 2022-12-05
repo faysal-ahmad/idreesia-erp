@@ -4,7 +4,7 @@ import { DataSource, ModuleNames } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedOperationsWazaifUsers() {
+    pagedOperationsWazaifUsers: async () => {
       const usersFilter = {
         moduleAccess: ModuleNames.operations,
       };
@@ -13,7 +13,11 @@ export default {
   },
 
   Mutation: {
-    setOperationsWazaifUserPermissions(obj, { userId, permissions }, { user }) {
+    setOperationsWazaifUserPermissions: async (
+      obj,
+      { userId, permissions },
+      { user }
+    ) => {
       // Get the existing permissions for the user
       const userWithPermissions = Users.findOneUser(userId);
       const existingPermissions = userWithPermissions.permissions;

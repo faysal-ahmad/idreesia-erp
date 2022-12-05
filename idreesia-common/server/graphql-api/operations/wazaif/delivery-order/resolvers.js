@@ -12,21 +12,21 @@ import getWazaifDeliveryOrders from './queries';
 
 export default {
   WazaifDeliveryOrderType: {
-    refCity: parent =>
+    refCity: async parent =>
       Cities.findOne({
         _id: { $eq: parent.cityId },
       }),
-    refCityMehfil: parent =>
+    refCityMehfil: async parent =>
       CityMehfils.findOne({
         _id: { $eq: parent.cityMehfilId },
       }),
-    refRequestedBy: parent => {
+    refRequestedBy: async parent => {
       if (!parent.requestedBy) return null;
       return People.findOne({
         _id: { $eq: parent.requestedBy },
       });
     },
-    refDeliveredTo: parent => {
+    refDeliveredTo: async parent => {
       if (!parent.deliveredTo) return null;
       return People.findOne({
         _id: { $eq: parent.deliveredTo },
@@ -34,17 +34,15 @@ export default {
     },
   },
   Query: {
-    wazaifDeliveryOrderById(obj, { _id }) {
-      return DeliveryOrders.findOne(_id);
-    },
+    wazaifDeliveryOrderById: async (obj, { _id }) =>
+      DeliveryOrders.findOne(_id),
 
-    pagedWazaifDeliveryOrders(obj, { queryString }) {
-      return getWazaifDeliveryOrders(queryString);
-    },
+    pagedWazaifDeliveryOrders: async (obj, { queryString }) =>
+      getWazaifDeliveryOrders(queryString),
   },
 
   Mutation: {
-    createWazaifDeliveryOrder(
+    createWazaifDeliveryOrder: async (
       obj,
       {
         cityId,
@@ -58,7 +56,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const deliveryOrderId = DeliveryOrders.insert({
         cityId,
@@ -83,7 +81,7 @@ export default {
       return DeliveryOrders.findOne(deliveryOrderId);
     },
 
-    updateWazaifDeliveryOrder(
+    updateWazaifDeliveryOrder: async (
       obj,
       {
         _id,
@@ -98,7 +96,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const existingOrder = DeliveryOrders.findOne(_id);
       const { items: existingItems } = existingOrder;
@@ -138,7 +136,7 @@ export default {
       return DeliveryOrders.findOne(_id);
     },
 
-    removeWazaifDeliveryOrder(obj, { _id }) {
+    removeWazaifDeliveryOrder: async (obj, { _id }) => {
       const existingOrder = DeliveryOrders.findOne(_id);
       const { items: existingItems } = existingOrder;
       // Undo the effect of all previous items

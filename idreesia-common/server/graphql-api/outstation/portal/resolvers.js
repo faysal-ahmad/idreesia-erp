@@ -4,7 +4,7 @@ import { filterByInstanceAccess } from 'meteor/idreesia-common/server/graphql-ap
 
 export default {
   PortalType: {
-    cities: portalType =>
+    cities: async portalType =>
       Cities.find(
         {
           _id: { $in: portalType.cityIds },
@@ -14,23 +14,19 @@ export default {
   },
 
   Query: {
-    allPortals() {
-      return Portals.find({}, { sort: { name: 1 } }).fetch();
-    },
+    allPortals: async () => Portals.find({}, { sort: { name: 1 } }).fetch(),
 
-    allAccessiblePortals(obj, params, { user }) {
+    allAccessiblePortals: async (obj, params, { user }) => {
       const portals = Portals.find({}, { sort: { name: 1 } }).fetch();
       const filteredPortals = filterByInstanceAccess(user, portals);
       return filteredPortals;
     },
 
-    portalById(obj, { _id }) {
-      return Portals.findOne(_id);
-    },
+    portalById: async (obj, { _id }) => Portals.findOne(_id),
   },
 
   Mutation: {
-    createPortal(obj, { name, cityIds }, { user }) {
+    createPortal: async (obj, { name, cityIds }, { user }) => {
       const existingPortal = Portals.findOne({ name });
       if (existingPortal) {
         throw new Error('Another portal with the same name already exists.');
@@ -49,7 +45,7 @@ export default {
       return Portals.findOne(portalId);
     },
 
-    updatePortal(obj, { _id, name, cityIds }, { user }) {
+    updatePortal: async (obj, { _id, name, cityIds }, { user }) => {
       const existingPortal = Portals.findOne({ name });
       if (existingPortal && existingPortal._id !== _id) {
         throw new Error('Another portal with the same name already exists.');

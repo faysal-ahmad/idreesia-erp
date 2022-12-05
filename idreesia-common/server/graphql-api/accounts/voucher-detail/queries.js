@@ -77,8 +77,8 @@ export default function getVoucherDetails(
     { $limit: pageSize },
   ]);
 
-  const voucherDetails = VoucherDetails.aggregate(resultsPipeline).toArray();
-  const totalResults = VoucherDetails.aggregate(countingPipeline).toArray();
+  const voucherDetails = VoucherDetails.aggregate(resultsPipeline);
+  const totalResults = VoucherDetails.aggregate(countingPipeline);
 
   return Promise.all([voucherDetails, totalResults]).then(results => ({
     data: results[0],

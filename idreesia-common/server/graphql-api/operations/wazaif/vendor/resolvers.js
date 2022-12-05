@@ -5,27 +5,24 @@ import {
 
 export default {
   WazaifVendor: {
-    usageCount: vendor =>
+    usageCount: async vendor =>
       PrintingOrders.find({
         vendorId: { $eq: vendor._id },
       }).count(),
   },
   Query: {
-    wazaifVendorById(obj, { _id }) {
-      return Vendors.findOne(_id);
-    },
+    wazaifVendorById: async (obj, { _id }) => Vendors.findOne(_id),
 
-    allWazaifVendors() {
-      return Vendors.find({}, { sort: { name: 1 } }).fetch();
-    },
+    allWazaifVendors: async () =>
+      Vendors.find({}, { sort: { name: 1 } }).fetch(),
   },
 
   Mutation: {
-    createWazaifVendor(
+    createWazaifVendor: async (
       obj,
       { name, contactPerson, contactNumber, address, notes },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const vendorId = Vendors.insert({
         name,
@@ -42,11 +39,11 @@ export default {
       return Vendors.findOne(vendorId);
     },
 
-    updateWazaifVendor(
+    updateWazaifVendor: async (
       obj,
       { _id, name, contactPerson, contactNumber, address, notes },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       Vendors.update(_id, {
         $set: {
@@ -63,8 +60,6 @@ export default {
       return Vendors.findOne(_id);
     },
 
-    removeWazaifVendor(obj, { _id }) {
-      return Vendors.remove(_id);
-    },
+    removeWazaifVendor: async (obj, { _id }) => Vendors.remove(_id),
   },
 };

@@ -171,8 +171,8 @@ export function getPagedStockItems(queryString, physicalStoreId) {
     { $limit: nPageSize },
   ]);
 
-  const stockItems = StockItems.aggregate(resultsPipeline).toArray();
-  const totalResults = StockItems.aggregate(countingPipeline).toArray();
+  const stockItems = StockItems.aggregate(resultsPipeline);
+  const totalResults = StockItems.aggregate(countingPipeline);
   return Promise.all([stockItems, totalResults]).then(results => ({
     data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),

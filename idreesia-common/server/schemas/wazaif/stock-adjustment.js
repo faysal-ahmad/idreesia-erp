@@ -5,14 +5,12 @@ import { approvable, identifiable, timestamps } from '../common';
 export default new SimpleSchema({
   wazeefaId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   adjustmentDate: {
     type: Date,
   },
   adjustedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   quantity: {
     type: Number,

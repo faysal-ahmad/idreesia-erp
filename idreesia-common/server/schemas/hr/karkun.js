@@ -104,7 +104,6 @@ export default new SimpleSchema({
   },
   imageId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   attachmentIds: {
@@ -113,7 +112,6 @@ export default new SimpleSchema({
   },
   'attachmentIds.$': {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   isEmployee: {
     type: Boolean,

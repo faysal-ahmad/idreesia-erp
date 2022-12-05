@@ -9,11 +9,11 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   DutyType: {
-    shifts: dutyType =>
+    shifts: async dutyType =>
       DutyShifts.find({
         dutyId: { $eq: dutyType._id },
       }).fetch(),
-    canDelete: dutyType => {
+    canDelete: async dutyType => {
       // Check if this duty is currently assigned to a karkun
       const karkunDutiesCount = KarkunDuties.find({
         dutyId: { $eq: dutyType._id },
@@ -31,29 +31,27 @@ export default {
   },
 
   Query: {
-    allMSDuties() {
-      return Duties.find(
+    allMSDuties: async () =>
+      Duties.find(
         { isMehfilDuty: { $eq: false } },
         { sort: { name: 1 } }
-      ).fetch();
-    },
-    allMehfilDuties() {
-      return Duties.find(
+      ).fetch(),
+
+    allMehfilDuties: async () =>
+      Duties.find(
         { isMehfilDuty: { $eq: true } },
         { sort: { name: 1 } }
-      ).fetch();
-    },
-    dutyById(obj, { id }) {
-      return Duties.findOne(id);
-    },
+      ).fetch(),
+
+    dutyById: async (obj, { id }) => Duties.findOne(id),
   },
 
   Mutation: {
-    createDuty(
+    createDuty: async (
       obj,
       { name, isMehfilDuty, description, attendanceSheet },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
@@ -75,7 +73,11 @@ export default {
       return Duties.findOne(dutyId);
     },
 
-    updateDuty(obj, { id, name, description, attendanceSheet }, { user }) {
+    updateDuty: async (
+      obj,
+      { id, name, description, attendanceSheet },
+      { user }
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'
@@ -96,7 +98,7 @@ export default {
       return Duties.findOne(id);
     },
 
-    removeDuty(obj, { _id }, { user }) {
+    removeDuty: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Setup Data in the System.'

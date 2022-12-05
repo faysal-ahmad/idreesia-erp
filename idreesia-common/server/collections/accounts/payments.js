@@ -151,7 +151,7 @@ class Payments extends AggregatableCollection {
       { $limit: 50 },
     ];
 
-    const payments = await this.aggregate(pipeline).toArray();
+    const payments = await this.aggregate(pipeline);
     return payments.map(({ _id }) => _id);
   }
 
@@ -270,8 +270,8 @@ class Payments extends AggregatableCollection {
     const countingPipeline = pipeline.concat({
       $count: 'total',
     });
-    const payments = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const payments = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([payments, totalResults]).then(results => ({
       data: results[0],

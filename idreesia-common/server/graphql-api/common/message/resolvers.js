@@ -4,25 +4,25 @@ import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 
 export default {
   MessageType: {
-    karkunCount: messageType =>
+    karkunCount: async messageType =>
       messageType.karkunIds ? messageType.karkunIds.length : 0,
 
-    visitorCount: messageType =>
+    visitorCount: async messageType =>
       messageType.visitorIds ? messageType.visitorIds.length : 0,
 
-    succeededMessageCount: messageType =>
+    succeededMessageCount: async messageType =>
       messageType.succeededPhoneNumbers
         ? messageType.succeededPhoneNumbers.length
         : 0,
 
-    failedMessageCount: messageType =>
+    failedMessageCount: async messageType =>
       messageType.failedPhoneNumbers
         ? messageType.failedPhoneNumbers.length
         : 0,
   },
 
   Query: {
-    pagedMSKarkunMessageRecepients(obj, { recepientFilter }) {
+    pagedMSKarkunMessageRecepients: async (obj, { recepientFilter }) => {
       const multanCity = Cities.findOne({
         name: 'Multan',
         country: 'Pakistan',
@@ -42,7 +42,10 @@ export default {
       }));
     },
 
-    pagedMSKarkunMessageRecepientsByResult(obj, { recepientsByResultFilter }) {
+    pagedMSKarkunMessageRecepientsByResult: async (
+      obj,
+      { recepientsByResultFilter }
+    ) => {
       const { _id, succeeded, pageIndex, pageSize } = recepientsByResultFilter;
       const multanCity = Cities.findOne({
         name: 'Multan',
@@ -70,20 +73,19 @@ export default {
       }));
     },
 
-    pagedOutstationKarkunMessageRecepients(obj, { recepientFilter }) {
-      return People.searchPeople(recepientFilter, {
+    pagedOutstationKarkunMessageRecepients: async (obj, { recepientFilter }) =>
+      People.searchPeople(recepientFilter, {
         includeKarkuns: true,
         includeEmployees: false,
       }).then(result => ({
         karkuns: result.data.map(person => People.personToKarkun(person)),
         totalResults: result.totalResults,
-      }));
-    },
+      })),
 
-    pagedOutstationKarkunMessageRecepientsByResult(
+    pagedOutstationKarkunMessageRecepientsByResult: async (
       obj,
       { recepientsByResultFilter }
-    ) {
+    ) => {
       const { _id, succeeded, pageIndex, pageSize } = recepientsByResultFilter;
       const message = Messages.findOne(_id);
       const phoneNumbers = succeeded
@@ -106,13 +108,12 @@ export default {
       }));
     },
 
-    pagedVisitorMessageRecepients(obj, { recepientFilter }) {
-      return People.searchPeople(recepientFilter, {
+    pagedVisitorMessageRecepients: async (obj, { recepientFilter }) =>
+      People.searchPeople(recepientFilter, {
         includeVisitors: true,
       }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
-      }));
-    },
+      })),
   },
 };

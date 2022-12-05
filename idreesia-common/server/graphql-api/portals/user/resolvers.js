@@ -5,7 +5,7 @@ import { isKarkunInPortal } from './helpers';
 
 export default {
   Query: {
-    pagedPortalUsers(obj, { portalId, filter }) {
+    pagedPortalUsers: async (obj, { portalId, filter }) => {
       const updatedFilter = Object.assign({}, filter, {
         portalAccess: portalId,
       });
@@ -13,7 +13,7 @@ export default {
       return Users.searchUsers(updatedFilter);
     },
 
-    portalUserById(obj, { portalId, _id }) {
+    portalUserById: async (obj, { portalId, _id }) => {
       const _user = Users.findOneUser(_id);
       if (_user.instances.indexOf(portalId) === -1) return null;
       return _user;
@@ -21,11 +21,11 @@ export default {
   },
 
   Mutation: {
-    createPortalUser(
+    createPortalUser: async (
       obj,
       { portalId, userName, password, karkunId },
       { user }
-    ) {
+    ) => {
       const karkunInPortal = isKarkunInPortal(karkunId, portalId);
       if (!karkunInPortal) {
         throw new Error(
@@ -51,7 +51,11 @@ export default {
       );
     },
 
-    updatePortalUser(obj, { portalId, userId, password, locked }, { user }) {
+    updatePortalUser: async (
+      obj,
+      { portalId, userId, password, locked },
+      { user }
+    ) => {
       const _user = Users.findOneUser(userId);
       const karkunInPortal = isKarkunInPortal(_user.karkunId, portalId);
       if (!karkunInPortal) {
@@ -68,7 +72,11 @@ export default {
       );
     },
 
-    setPortalUserPermissions(obj, { portalId, userId, permissions }, { user }) {
+    setPortalUserPermissions: async (
+      obj,
+      { portalId, userId, permissions },
+      { user }
+    ) => {
       const _user = Users.findOneUser(userId);
       if (_user.instances.indexOf(portalId) !== -1) {
         return Users.setPermissions(

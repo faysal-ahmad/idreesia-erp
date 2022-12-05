@@ -3,7 +3,7 @@ import { ModuleNames } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedOutstationUsers(obj, { filter }) {
+    pagedOutstationUsers: async (obj, { filter }) => {
       const updatedFilter = {
         ...filter,
         moduleAccess: ModuleNames.outstation,

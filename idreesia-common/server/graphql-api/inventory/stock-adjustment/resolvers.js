@@ -15,11 +15,11 @@ import getStockAdjustments, {
 
 export default {
   StockAdjustment: {
-    refStockItem: stockAdjustment =>
+    refStockItem: async stockAdjustment =>
       StockItems.findOne({
         _id: { $eq: stockAdjustment.stockItemId },
       }),
-    refAdjustedBy: stockAdjustment => {
+    refAdjustedBy: async stockAdjustment => {
       const person = People.findOne({
         _id: { $eq: stockAdjustment.adjustedBy },
       });
@@ -27,11 +27,11 @@ export default {
     },
   },
   Query: {
-    stockAdjustmentsByStockItem(
+    stockAdjustmentsByStockItem: async (
       obj,
       { physicalStoreId, stockItemId },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -46,7 +46,11 @@ export default {
       return getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId);
     },
 
-    pagedStockAdjustments(obj, { physicalStoreId, queryString }, { user }) {
+    pagedStockAdjustments: async (
+      obj,
+      { physicalStoreId, queryString },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -64,7 +68,7 @@ export default {
       return getStockAdjustments(queryString, physicalStoreId);
     },
 
-    stockAdjustmentById(obj, { _id }, { user }) {
+    stockAdjustmentById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
@@ -84,7 +88,7 @@ export default {
   },
 
   Mutation: {
-    createStockAdjustment(
+    createStockAdjustment: async (
       obj,
       {
         physicalStoreId,
@@ -96,7 +100,7 @@ export default {
         adjustmentReason,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -138,11 +142,11 @@ export default {
       return StockAdjustments.findOne(stockAdjustmentId);
     },
 
-    updateStockAdjustment(
+    updateStockAdjustment: async (
       obj,
       { _id, adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -213,7 +217,7 @@ export default {
       return StockAdjustments.findOne(_id);
     },
 
-    approveStockAdjustment(obj, { _id }, { user }) {
+    approveStockAdjustment: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
@@ -245,7 +249,7 @@ export default {
       return StockAdjustments.findOne(_id);
     },
 
-    removeStockAdjustment(obj, { _id }, { user }) {
+    removeStockAdjustment: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in the System.'

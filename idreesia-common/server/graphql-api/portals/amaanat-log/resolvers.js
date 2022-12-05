@@ -14,7 +14,7 @@ const userHasPortalLevelAccess = user =>
 
 export default {
   Query: {
-    portalAmaanatLogById(obj, { _id }, { user }) {
+    portalAmaanatLogById: async (obj, { _id }, { user }) => {
       const amaanatLog = AmaanatLogs.findOne({ _id });
       if (!userHasPortalLevelAccess(user)) {
         const person = People.findOne(user.personId);
@@ -27,7 +27,11 @@ export default {
       return amaanatLog;
     },
 
-    pagedPortalAmaanatLogs(obj, { portalId, queryString }, { user }) {
+    pagedPortalAmaanatLogs: async (
+      obj,
+      { portalId, queryString },
+      { user }
+    ) => {
       const params = parse(queryString);
       // Check whether the user is allowed to see all amaanat logs for
       // the portal, or just the logs for the mehfil that he belongs to.
@@ -55,7 +59,7 @@ export default {
   },
 
   Mutation: {
-    createPortalAmaanatLog(
+    createPortalAmaanatLog: async (
       obj,
       {
         cityId,
@@ -70,7 +74,7 @@ export default {
         otherPortionDescription,
       },
       { user }
-    ) {
+    ) => {
       if (!userHasPortalLevelAccess(user)) {
         const person = People.findOne(user.personId);
         if (
@@ -102,7 +106,7 @@ export default {
       return AmaanatLogs.findOne(amaanatLogId);
     },
 
-    updatePortalAmaanatLog(
+    updatePortalAmaanatLog: async (
       obj,
       {
         _id,
@@ -118,7 +122,7 @@ export default {
         otherPortionDescription,
       },
       { user }
-    ) {
+    ) => {
       const amaanatLog = AmaanatLogs.findOne({ _id });
       if (!userHasPortalLevelAccess(user)) {
         const person = People.findOne(user.personId);
@@ -157,7 +161,7 @@ export default {
       return AmaanatLogs.findOne(_id);
     },
 
-    removePortalAmaanatLog(obj, { _id }, { user }) {
+    removePortalAmaanatLog: async (obj, { _id }, { user }) => {
       const amaanatLog = AmaanatLogs.findOne({ _id });
       if (!userHasPortalLevelAccess(user)) {
         const person = People.findOne(user.personId);

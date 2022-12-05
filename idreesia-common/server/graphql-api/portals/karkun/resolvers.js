@@ -15,7 +15,7 @@ const userHasPortalLevelAccess = user =>
 
 export default {
   Query: {
-    portalKarkunById(obj, { _id }, { user }) {
+    portalKarkunById: async (obj, { _id }, { user }) => {
       const person = People.findOne(_id);
       if (!userHasPortalLevelAccess(user)) {
         const userPerson = People.findOne(user.personId);
@@ -31,7 +31,7 @@ export default {
       return People.personToKarkun(person);
     },
 
-    pagedPortalKarkuns(obj, { portalId, filter }, { user }) {
+    pagedPortalKarkuns: async (obj, { portalId, filter }, { user }) => {
       const portal = Portals.findOne(portalId);
       const updatedFilter = {
         ...filter,
@@ -62,11 +62,11 @@ export default {
       }));
     },
 
-    findPortalKarkunByCnicOrContactNumber(
+    findPortalKarkunByCnicOrContactNumber: async (
       obj,
       { cnicNumber, contactNumber },
       { user }
-    ) {
+    ) => {
       let person = null;
 
       if (cnicNumber) {
@@ -104,7 +104,7 @@ export default {
   },
 
   Mutation: {
-    createPortalKarkun(obj, values, { user }) {
+    createPortalKarkun: async (obj, values, { user }) => {
       const { portalId, cityMehfilId } = values;
       if (!userHasPortalLevelAccess(user)) {
         const userPerson = People.findOne(user.personId);
@@ -130,7 +130,7 @@ export default {
       return People.personToKarkun(person);
     },
 
-    updatePortalKarkun(obj, values, { user }) {
+    updatePortalKarkun: async (obj, values, { user }) => {
       const { _id, cityMehfilId } = values;
       let person = People.findOne({ _id });
       if (!userHasPortalLevelAccess(user)) {
@@ -150,7 +150,7 @@ export default {
       return People.personToKarkun(person);
     },
 
-    setPortalKarkunWazaifAndRaabta(obj, values, { user }) {
+    setPortalKarkunWazaifAndRaabta: async (obj, values, { user }) => {
       const { _id } = values;
       let person = People.findOne({ _id });
       if (!userHasPortalLevelAccess(user)) {
@@ -169,7 +169,7 @@ export default {
       return People.personToKarkun(person);
     },
 
-    setPortalKarkunProfileImage(obj, values, { user }) {
+    setPortalKarkunProfileImage: async (obj, values, { user }) => {
       const { _id } = values;
       let person = People.findOne({ _id });
       if (!userHasPortalLevelAccess(user)) {
@@ -188,7 +188,7 @@ export default {
       return People.personToKarkun(person);
     },
 
-    addPortalKarkun(obj, values, { user }) {
+    addPortalKarkun: async (obj, values, { user }) => {
       const { _id } = values;
       // We are converting a member into a karkun. We need to set
       // the karkun data like the cityId for it, so that it would
@@ -212,7 +212,7 @@ export default {
       return People.personToKarkun(person);
     },
 
-    removePortalKarkun(obj, values, { user }) {
+    removePortalKarkun: async (obj, values, { user }) => {
       const { _id } = values;
       People.update(_id, {
         $set: {

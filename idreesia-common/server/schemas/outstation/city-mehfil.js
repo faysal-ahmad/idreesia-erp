@@ -8,7 +8,6 @@ export default new SimpleSchema({
   },
   cityId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   address: {
     type: String,

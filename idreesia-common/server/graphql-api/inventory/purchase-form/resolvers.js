@@ -21,7 +21,7 @@ import getPurchaseForms, {
 
 export default {
   PurchaseForm: {
-    attachments: purchaseForm => {
+    attachments: async purchaseForm => {
       const { attachmentIds } = purchaseForm;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
@@ -29,7 +29,7 @@ export default {
 
       return [];
     },
-    refLocation: purchaseForm => {
+    refLocation: async purchaseForm => {
       if (purchaseForm.locationId) {
         return Locations.findOne({
           _id: { $eq: purchaseForm.locationId },
@@ -37,25 +37,29 @@ export default {
       }
       return null;
     },
-    refReceivedBy: purchaseForm => {
+    refReceivedBy: async purchaseForm => {
       const person = People.findOne({
         _id: { $eq: purchaseForm.receivedBy },
       });
       return People.personToKarkun(person);
     },
-    refPurchasedBy: purchaseForm => {
+    refPurchasedBy: async purchaseForm => {
       const person = People.findOne({
         _id: { $eq: purchaseForm.purchasedBy },
       });
       return People.personToKarkun(person);
     },
-    refVendor: purchaseForm =>
+    refVendor: async purchaseForm =>
       Vendors.findOne({
         _id: { $eq: purchaseForm.vendorId },
       }),
   },
   Query: {
-    purchaseFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
+    purchaseFormsByStockItem: async (
+      obj,
+      { physicalStoreId, stockItemId },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -70,7 +74,7 @@ export default {
       return getPurchaseFormsByStockItemId(physicalStoreId, stockItemId);
     },
 
-    purchaseFormsByMonth(obj, { physicalStoreId, month }, { user }) {
+    purchaseFormsByMonth: async (obj, { physicalStoreId, month }, { user }) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -85,7 +89,11 @@ export default {
       return getPurchaseFormsByMonth(physicalStoreId, month);
     },
 
-    pagedPurchaseForms(obj, { physicalStoreId, queryString }, { user }) {
+    pagedPurchaseForms: async (
+      obj,
+      { physicalStoreId, queryString },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -103,7 +111,7 @@ export default {
       return getPurchaseForms(queryString, physicalStoreId);
     },
 
-    purchaseFormById(obj, { _id }, { user }) {
+    purchaseFormById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_PURCHASE_FORMS,
@@ -123,7 +131,7 @@ export default {
   },
 
   Mutation: {
-    createPurchaseForm(
+    createPurchaseForm: async (
       obj,
       {
         purchaseDate,
@@ -136,7 +144,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
@@ -181,7 +189,7 @@ export default {
       return PurchaseForms.findOne(purchaseFormId);
     },
 
-    updatePurchaseForm(
+    updatePurchaseForm: async (
       obj,
       {
         _id,
@@ -195,7 +203,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
@@ -259,7 +267,7 @@ export default {
       return PurchaseForms.findOne(_id);
     },
 
-    approvePurchaseForm(obj, { _id }, { user }) {
+    approvePurchaseForm: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_APPROVE_PURCHASE_FORMS])
       ) {
@@ -289,7 +297,11 @@ export default {
       return PurchaseForms.findOne(_id);
     },
 
-    addFormAttachment(obj, { _id, physicalStoreId, attachmentId }, { user }) {
+    addFormAttachment: async (
+      obj,
+      { _id, physicalStoreId, attachmentId },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -322,11 +334,11 @@ export default {
       return PurchaseForms.findOne(_id);
     },
 
-    removeFormAttachment(
+    removeFormAttachment: async (
       obj,
       { _id, physicalStoreId, attachmentId },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -357,7 +369,7 @@ export default {
       return PurchaseForms.findOne(_id);
     },
 
-    removePurchaseForm(obj, { _id }, { user }) {
+    removePurchaseForm: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in the System.'

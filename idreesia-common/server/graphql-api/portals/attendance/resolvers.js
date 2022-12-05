@@ -41,7 +41,11 @@ const userCanAccessKarkunData = (karkunId, user) => {
 
 export default {
   Query: {
-    pagedPortalAttendanceByKarkun(obj, { karkunId, queryString }, { user }) {
+    pagedPortalAttendanceByKarkun: async (
+      obj,
+      { karkunId, queryString },
+      { user }
+    ) => {
       if (userCanAccessKarkunData(karkunId, user)) {
         return getPagedAttendanceByKarkun(karkunId, queryString);
       }
@@ -52,7 +56,11 @@ export default {
       };
     },
 
-    portalAttendanceByMonth(obj, { month, cityId, cityMehfilId }, { user }) {
+    portalAttendanceByMonth: async (
+      obj,
+      { month, cityId, cityMehfilId },
+      { user }
+    ) => {
       if (!cityId) return [];
 
       let people = [];
@@ -80,11 +88,10 @@ export default {
   },
 
   Mutation: {
-    createPortalAttendances(obj, { portalId, month }, { user }) {
-      return createMonthlyAttendance(portalId, month, user);
-    },
+    createPortalAttendances: async (obj, { portalId, month }, { user }) =>
+      createMonthlyAttendance(portalId, month, user),
 
-    updatePortalAttendance(
+    updatePortalAttendance: async (
       obj,
       {
         _id,
@@ -96,7 +103,7 @@ export default {
         percentage,
       },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       Attendances.update(_id, {
         $set: {
@@ -114,7 +121,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    deletePortalAttendances(obj, { month, ids }, { user }) {
+    deletePortalAttendances: async (obj, { month, ids }, { user }) => {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(`01-${month}`, Formats.DATE_FORMAT);
 
@@ -132,7 +139,11 @@ export default {
       });
     },
 
-    deleteAllPortalAttendances(obj, { month, cityId, cityMehfilId }, { user }) {
+    deleteAllPortalAttendances: async (
+      obj,
+      { month, cityId, cityMehfilId },
+      { user }
+    ) => {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(`01-${month}`, Formats.DATE_FORMAT);
 

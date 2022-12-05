@@ -5,7 +5,6 @@ import { identifiable, timestamps } from '../common';
 export default new SimpleSchema({
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   name: {
     type: String,
@@ -20,7 +19,6 @@ export default new SimpleSchema({
   },
   categoryId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   unitOfMeasurement: {
     type: String,

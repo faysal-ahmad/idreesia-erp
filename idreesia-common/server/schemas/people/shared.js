@@ -70,7 +70,6 @@ export default new SimpleSchema({
   },
   imageId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
 });

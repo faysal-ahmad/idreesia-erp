@@ -9,18 +9,16 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   PaymentType: {
-    paymentType: paymentType =>
+    paymentType: async paymentType =>
       PaymentTypes.findOne({
         _id: { $eq: paymentType.paymentTypeId },
       }),
   },
 
   Query: {
-    nextPaymentNumber() {
-      return Payments.getNextPaymentNo();
-    },
+    nextPaymentNumber: async () => Payments.getNextPaymentNo(),
 
-    paymentById(obj, { _id }, { user }) {
+    paymentById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
@@ -33,7 +31,7 @@ export default {
       return Payments.findOne(_id);
     },
 
-    pagedPayments(obj, { filter }, { user }) {
+    pagedPayments: async (obj, { filter }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
@@ -49,7 +47,7 @@ export default {
       return Payments.getPayments(filter);
     },
 
-    pagedPaymentsForImdadRequest(obj, { imdadRequestId, filter }) {
+    pagedPaymentsForImdadRequest: async (obj, { imdadRequestId, filter }) => {
       const imdadRequest = ImdadRequests.findOne(imdadRequestId);
       const { visitorId } = imdadRequest;
       const visitor = People.findOne(visitorId);
@@ -68,7 +66,7 @@ export default {
   },
 
   Mutation: {
-    createPayment(obj, values, { user }) {
+    createPayment: async (obj, values, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS])
       ) {
@@ -80,7 +78,7 @@ export default {
       return Payments.createPayment(values, user);
     },
 
-    updatePayment(obj, values, { user }) {
+    updatePayment: async (obj, values, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS])
       ) {
@@ -92,7 +90,7 @@ export default {
       return Payments.updatePayment(values, user);
     },
 
-    removePayment(obj, { _id }, { user }) {
+    removePayment: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS])
       ) {

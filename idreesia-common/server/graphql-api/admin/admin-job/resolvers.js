@@ -7,7 +7,11 @@ import getAdminJobs from './queries';
 
 export default {
   Query: {
-    pagedAdminJobs(obj, { jobType, status, pageIndex, pageSize }, { user }) {
+    pagedAdminJobs: async (
+      obj,
+      { jobType, status, pageIndex, pageSize },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ADMIN_VIEW_ADMIN_JOBS,
@@ -25,7 +29,7 @@ export default {
   },
 
   Mutation: {
-    createAdminJob(obj, { jobType, jobDetails }, { user }) {
+    createAdminJob: async (obj, { jobType, jobDetails }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS])
       ) {
@@ -55,7 +59,7 @@ export default {
       return AdminJobs.findOne(adminJobId);
     },
 
-    removeAdminJob(obj, { _id }, { user }) {
+    removeAdminJob: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS])
       ) {

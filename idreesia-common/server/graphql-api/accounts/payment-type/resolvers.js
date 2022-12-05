@@ -7,23 +7,23 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   PaymentTypeType: {
-    usedCount: paymentType =>
+    usedCount: async paymentType =>
       Payments.find({
         paymentTypeId: { $eq: paymentType._id },
       }).count(),
   },
 
   Query: {
-    allPaymentTypes() {
-      return PaymentTypes.find({}, { sort: { name: 1 } }).fetch();
-    },
+    allPaymentTypes: async () =>
+      PaymentTypes.find({}, { sort: { name: 1 } }).fetch(),
+
     paymentTypeById(obj, { id }) {
       return PaymentTypes.findOne(id);
     },
   },
 
   Mutation: {
-    createPaymentType(obj, { name, description }, { user }) {
+    createPaymentType: async (obj, { name, description }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
@@ -47,7 +47,7 @@ export default {
       return PaymentTypes.findOne(paymentTypeId);
     },
 
-    updatePaymentType(obj, { _id, name, description }, { user }) {
+    updatePaymentType: async (obj, { _id, name, description }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
@@ -71,7 +71,7 @@ export default {
       return PaymentTypes.findOne(_id);
     },
 
-    removePaymentType(obj, { _id }, { user }) {
+    removePaymentType: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,

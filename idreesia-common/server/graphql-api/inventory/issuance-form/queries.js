@@ -22,7 +22,7 @@ export function getIssuanceFormsByStockItemId(physicalStoreId, stockItemId) {
     },
   ];
 
-  return IssuanceForms.aggregate(pipeline).toArray();
+  return IssuanceForms.aggregate(pipeline);
 }
 
 export function getIssuanceFormsByMonth(physicalStoreId, monthString) {
@@ -47,7 +47,7 @@ export function getIssuanceFormsByMonth(physicalStoreId, monthString) {
     },
   ];
 
-  return IssuanceForms.aggregate(pipeline).toArray();
+  return IssuanceForms.aggregate(pipeline);
 }
 
 export default function getIssuanceForms(queryString, physicalStoreId) {
@@ -132,8 +132,8 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     { $limit: nPageSize },
   ]);
 
-  const issuanceForms = IssuanceForms.aggregate(resultsPipeline).toArray();
-  const totalResults = IssuanceForms.aggregate(countingPipeline).toArray();
+  const issuanceForms = IssuanceForms.aggregate(resultsPipeline);
+  const totalResults = IssuanceForms.aggregate(countingPipeline);
 
   return Promise.all([issuanceForms, totalResults]).then(results => ({
     issuanceForms: results[0],

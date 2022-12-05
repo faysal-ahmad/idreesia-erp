@@ -3,7 +3,7 @@ import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedOutstationSecurityLogs(obj, { filter }) {
+    pagedOutstationSecurityLogs: async (obj, { filter }) => {
       const updatedFilter = filter.dataSource
         ? Object.assign({}, filter, {
             dataSources: [filter.dataSource],

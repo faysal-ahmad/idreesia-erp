@@ -9,17 +9,17 @@ import getWazaifPrintingOrders from './queries';
 
 export default {
   WazaifPrintingOrderType: {
-    refVendor: parent =>
+    refVendor: async parent =>
       Vendors.findOne({
         _id: { $eq: parent.vendorId },
       }),
-    refOrderedBy: parent => {
+    refOrderedBy: async parent => {
       if (!parent.orderedBy) return null;
       return People.findOne({
         _id: { $eq: parent.orderedBy },
       });
     },
-    refReceivedBy: parent => {
+    refReceivedBy: async parent => {
       if (!parent.receivedBy) return null;
       return People.findOne({
         _id: { $eq: parent.receivedBy },
@@ -27,17 +27,15 @@ export default {
     },
   },
   Query: {
-    wazaifPrintingOrderById(obj, { _id }) {
-      return PrintingOrders.findOne(_id);
-    },
+    wazaifPrintingOrderById: async (obj, { _id }) =>
+      PrintingOrders.findOne(_id),
 
-    pagedWazaifPrintingOrders(obj, { queryString }) {
-      return getWazaifPrintingOrders(queryString);
-    },
+    pagedWazaifPrintingOrders: async (obj, { queryString }) =>
+      getWazaifPrintingOrders(queryString),
   },
 
   Mutation: {
-    createWazaifPrintingOrder(
+    createWazaifPrintingOrder: async (
       obj,
       {
         vendorId,
@@ -50,7 +48,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const printingOrderId = PrintingOrders.insert({
         vendorId,
@@ -74,7 +72,7 @@ export default {
       return PrintingOrders.findOne(printingOrderId);
     },
 
-    updateWazaifPrintingOrder(
+    updateWazaifPrintingOrder: async (
       obj,
       {
         _id,
@@ -88,7 +86,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const existingOrder = PrintingOrders.findOne(_id);
       const { items: existingItems } = existingOrder;
@@ -125,7 +123,7 @@ export default {
       return PrintingOrders.findOne(_id);
     },
 
-    removeWazaifPrintingOrder(obj, { _id }) {
+    removeWazaifPrintingOrder: async (obj, { _id }) => {
       const existingOrder = PrintingOrders.findOne(_id);
       const { items: existingItems } = existingOrder;
       // Undo the effect of all previous items

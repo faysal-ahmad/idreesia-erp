@@ -2,6 +2,10 @@
  * Base structure
  */
 
+body {
+  margin: 0;
+}
+
 /*
  * Typography
  */

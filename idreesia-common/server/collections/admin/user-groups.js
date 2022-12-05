@@ -31,8 +31,8 @@ class UserGroups extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const userGroups = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const userGroups = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([userGroups, totalResults]).then(results => ({
       data: results[0],

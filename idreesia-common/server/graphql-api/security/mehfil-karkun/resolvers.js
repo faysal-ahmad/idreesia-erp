@@ -8,13 +8,15 @@ import {
 
 export default {
   MehfilKarkunType: {
-    mehfil: mehfilKarkunType => Mehfils.findOne(mehfilKarkunType.mehfilId),
-    duty: mehfilKarkunType => MehfilDuties.findOne(mehfilKarkunType.dutyId),
-    karkun: mehfilKarkunType => People.findOne(mehfilKarkunType.karkunId),
+    mehfil: async mehfilKarkunType =>
+      Mehfils.findOne(mehfilKarkunType.mehfilId),
+    duty: async mehfilKarkunType =>
+      MehfilDuties.findOne(mehfilKarkunType.dutyId),
+    karkun: async mehfilKarkunType => People.findOne(mehfilKarkunType.karkunId),
   },
 
   Query: {
-    mehfilKarkunsByMehfilId(obj, { mehfilId, dutyId }) {
+    mehfilKarkunsByMehfilId: async (obj, { mehfilId, dutyId }) => {
       if (dutyId) {
         return MehfilKarkuns.find(
           { mehfilId, dutyId },
@@ -25,22 +27,21 @@ export default {
       return MehfilKarkuns.find({ mehfilId }).fetch();
     },
 
-    mehfilKarkunsByIds(obj, { ids }) {
+    mehfilKarkunsByIds: async (obj, { ids }) => {
       const idsArray = ids.split(',');
       return MehfilKarkuns.find({
         _id: { $in: idsArray },
       }).fetch();
     },
 
-    mehfilKarkunByBarcodeId(obj, { barcode }) {
-      return MehfilKarkuns.findOne({
+    mehfilKarkunByBarcodeId: async (obj, { barcode }) =>
+      MehfilKarkuns.findOne({
         dutyCardBarcodeId: barcode,
-      });
-    },
+      }),
   },
 
   Mutation: {
-    addMehfilKarkun(obj, { mehfilId, karkunId, dutyId }, { user }) {
+    addMehfilKarkun: async (obj, { mehfilId, karkunId, dutyId }, { user }) => {
       const existingMehfilKarkun = MehfilKarkuns.findOne({
         mehfilId,
         karkunId,
@@ -64,7 +65,7 @@ export default {
       return MehfilKarkuns.findOne(mehfilKarkunId);
     },
 
-    setDutyDetail(obj, { ids, dutyDetail }, { user }) {
+    setDutyDetail: async (obj, { ids, dutyDetail }, { user }) => {
       const date = new Date();
       MehfilKarkuns.update(
         {
@@ -83,8 +84,6 @@ export default {
       return MehfilKarkuns.find({ _id: { $in: ids } }).fetch();
     },
 
-    removeMehfilKarkun(obj, { _id }) {
-      return MehfilKarkuns.remove(_id);
-    },
+    removeMehfilKarkun: async (obj, { _id }) => MehfilKarkuns.remove(_id),
   },
 };

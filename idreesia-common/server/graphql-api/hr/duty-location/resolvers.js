@@ -7,23 +7,19 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   DutyLocationType: {
-    usedCount: dutyLocationType =>
+    usedCount: async dutyLocationType =>
       KarkunDuties.find({
         locationId: { $eq: dutyLocationType._id },
       }).count(),
   },
 
   Query: {
-    allDutyLocations() {
-      return DutyLocations.find({}).fetch();
-    },
-    dutyLocationById(obj, { id }) {
-      return DutyLocations.findOne(id);
-    },
+    allDutyLocations: async () => DutyLocations.find({}).fetch(),
+    dutyLocationById: async (obj, { id }) => DutyLocations.findOne(id),
   },
 
   Mutation: {
-    createDutyLocation(obj, { name }, { user }) {
+    createDutyLocation: async (obj, { name }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Locations Setup Data in the System.'
@@ -42,7 +38,7 @@ export default {
       return DutyLocations.findOne(dutyLocationId);
     },
 
-    updateDutyLocation(obj, { id, name }, { user }) {
+    updateDutyLocation: async (obj, { id, name }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Locations Setup Data in the System.'
@@ -61,7 +57,7 @@ export default {
       return DutyLocations.findOne(id);
     },
 
-    removeDutyLocation(obj, { _id }, { user }) {
+    removeDutyLocation: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Duty Locations Setup Data in the System.'

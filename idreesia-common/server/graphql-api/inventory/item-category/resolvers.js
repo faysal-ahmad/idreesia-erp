@@ -10,14 +10,14 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   ItemCategory: {
-    stockItemCount: itemCategory =>
+    stockItemCount: async itemCategory =>
       StockItems.find({
         categoryId: { $eq: itemCategory._id },
       }).count(),
   },
 
   Query: {
-    itemCategoryById(obj, { id }, { user }) {
+    itemCategoryById: async (obj, { id }, { user }) => {
       const itemCategory = ItemCategories.findOne(id);
       if (hasInstanceAccess(user, itemCategory.physicalStoreId) === false) {
         return null;
@@ -25,7 +25,11 @@ export default {
       return itemCategory;
     },
 
-    itemCategoriesByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
+    itemCategoriesByPhysicalStoreId: async (
+      obj,
+      { physicalStoreId },
+      { user }
+    ) => {
       if (hasInstanceAccess(user, physicalStoreId) === false) return [];
       return ItemCategories.find(
         {
@@ -37,7 +41,7 @@ export default {
   },
 
   Mutation: {
-    createItemCategory(obj, { name, physicalStoreId }, { user }) {
+    createItemCategory: async (obj, { name, physicalStoreId }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
@@ -63,7 +67,7 @@ export default {
       return ItemCategories.findOne(itemCategoryId);
     },
 
-    updateItemCategory(obj, { id, name }, { user }) {
+    updateItemCategory: async (obj, { id, name }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
@@ -92,7 +96,7 @@ export default {
       return ItemCategories.findOne(id);
     },
 
-    removeItemCategory(obj, { _id, physicalStoreId }, { user }) {
+    removeItemCategory: async (obj, { _id, physicalStoreId }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'

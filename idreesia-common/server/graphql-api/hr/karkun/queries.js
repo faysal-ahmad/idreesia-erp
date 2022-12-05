@@ -231,8 +231,8 @@ function getKarkunsByFilter(params) {
     { $limit: nPageSize },
   ]);
 
-  const people = People.aggregate(resultsPipeline).toArray();
-  const totalResults = People.aggregate(countingPipeline).toArray();
+  const people = People.aggregate(resultsPipeline);
+  const totalResults = People.aggregate(countingPipeline);
 
   return Promise.all([people, totalResults]).then(results => {
     const karkuns = results[0].map(person => People.personToKarkun(person));
@@ -315,8 +315,8 @@ function getKarkunsByPredefinedFilter(params) {
     { $limit: nPageSize },
   ]);
 
-  const people = People.aggregate(resultsPipeline).toArray();
-  const totalResults = People.aggregate(countingPipeline).toArray();
+  const people = People.aggregate(resultsPipeline);
+  const totalResults = People.aggregate(countingPipeline);
 
   return Promise.all([people, totalResults]).then(results => {
     const karkuns = results[0].map(person => People.personToKarkun(person));

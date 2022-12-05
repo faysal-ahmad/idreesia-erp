@@ -5,7 +5,7 @@ import {
 
 export default {
   ImdadRequestType: {
-    attachments: imdadRequestType => {
+    attachments: async imdadRequestType => {
       const { attachmentIds } = imdadRequestType;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
@@ -13,6 +13,8 @@ export default {
 
       return [];
     },
-    visitor: imdadRequestType => People.findOne(imdadRequestType.visitorId),
+
+    visitor: async imdadRequestType =>
+      People.findOne(imdadRequestType.visitorId),
   },
 };

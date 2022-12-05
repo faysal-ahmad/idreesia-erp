@@ -33,7 +33,7 @@ async function getVisitorIdsByNameSearch(name) {
     { $limit: 50 },
   ];
 
-  const visitors = await People.aggregate(pipeline).toArray();
+  const visitors = await People.aggregate(pipeline);
   return visitors.map(({ _id }) => _id);
 }
 
@@ -173,8 +173,8 @@ export async function getVisitorStays(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const visitors = VisitorStays.aggregate(resultsPipeline).toArray();
-  const totalResults = VisitorStays.aggregate(countingPipeline).toArray();
+  const visitors = VisitorStays.aggregate(resultsPipeline);
+  const totalResults = VisitorStays.aggregate(countingPipeline);
 
   return Promise.all([visitors, totalResults]).then(results => ({
     data: results[0],
@@ -252,8 +252,8 @@ export async function getTeamVisits(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const visitors = VisitorStays.aggregate(resultsPipeline).toArray();
-  const totalResults = VisitorStays.aggregate(countingPipeline).toArray();
+  const visitors = VisitorStays.aggregate(resultsPipeline);
+  const totalResults = VisitorStays.aggregate(countingPipeline);
 
   return Promise.all([visitors, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),

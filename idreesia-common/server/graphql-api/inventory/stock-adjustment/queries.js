@@ -18,7 +18,7 @@ export function getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId) {
     },
   ];
 
-  return StockAdjustments.aggregate(pipeline).toArray();
+  return StockAdjustments.aggregate(pipeline);
 }
 
 export default function getStockAdjustments(queryString, physicalStoreId) {
@@ -104,8 +104,8 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
     { $limit: nPageSize },
   ]);
 
-  const data = StockAdjustments.aggregate(resultsPipeline).toArray();
-  const totalResults = StockAdjustments.aggregate(countingPipeline).toArray();
+  const data = StockAdjustments.aggregate(resultsPipeline);
+  const totalResults = StockAdjustments.aggregate(countingPipeline);
 
   return Promise.all([data, totalResults]).then(results => ({
     data: results[0],

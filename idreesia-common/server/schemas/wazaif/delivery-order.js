@@ -5,11 +5,9 @@ import WazeefaWithQuantity from './wazeefa-with-quantity';
 export default new SimpleSchema({
   cityId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   cityMehfilId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   requestedDate: {
@@ -17,7 +15,6 @@ export default new SimpleSchema({
   },
   requestedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   deliveryDate: {
     type: Date,
@@ -25,7 +22,6 @@ export default new SimpleSchema({
   },
   deliveryTo: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   items: {

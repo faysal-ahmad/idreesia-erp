@@ -8,12 +8,10 @@ export default new SimpleSchema({
   },
   parentId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   description: {
     type: String,

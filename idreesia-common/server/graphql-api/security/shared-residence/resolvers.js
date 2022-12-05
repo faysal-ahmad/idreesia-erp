@@ -11,15 +11,15 @@ import { getSharedResidences } from './queries';
 
 export default {
   SharedResidenceType: {
-    residentsCount: sharedResidenceType =>
+    residentsCount: async sharedResidenceType =>
       SharedResidenceResidents.find({
         sharedResidenceId: { $eq: sharedResidenceType._id },
       }).count(),
-    residents: sharedResidenceType =>
+    residents: async sharedResidenceType =>
       SharedResidenceResidents.find({
         sharedResidenceId: { $eq: sharedResidenceType._id },
       }).fetch(),
-    attachments: sharedResidenceType => {
+    attachments: async sharedResidenceType => {
       const { attachmentIds } = sharedResidenceType;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
@@ -30,28 +30,23 @@ export default {
   },
 
   SharedResidenceResidentType: {
-    resident: sharedResidenceResidentType => {
+    resident: async sharedResidenceResidentType => {
       const person = People.findOne(sharedResidenceResidentType.residentId);
       return People.personToVisitor(person);
     },
   },
 
   Query: {
-    allSharedResidences() {
-      return SharedResidences.find({}).fetch();
-    },
+    allSharedResidences: async () => SharedResidences.find({}).fetch(),
 
-    pagedSharedResidences(obj, { queryString }) {
-      return getSharedResidences(queryString);
-    },
+    pagedSharedResidences: async (obj, { queryString }) =>
+      getSharedResidences(queryString),
 
-    sharedResidenceById(obj, { _id }) {
-      return SharedResidences.findOne(_id);
-    },
+    sharedResidenceById: async (obj, { _id }) => SharedResidences.findOne(_id),
   },
 
   Mutation: {
-    createSharedResidence(obj, { name, address }, { user }) {
+    createSharedResidence: async (obj, { name, address }, { user }) => {
       const date = new Date();
       const sharedResidenceId = SharedResidences.insert({
         name,
@@ -65,7 +60,7 @@ export default {
       return SharedResidences.findOne(sharedResidenceId);
     },
 
-    updateSharedResidence(obj, { _id, name, address }, { user }) {
+    updateSharedResidence: async (obj, { _id, name, address }, { user }) => {
       const date = new Date();
       SharedResidences.update(_id, {
         $set: {
@@ -79,7 +74,7 @@ export default {
       return SharedResidences.findOne(_id);
     },
 
-    removeSharedResidence(obj, { _id }) {
+    removeSharedResidence: async (obj, { _id }) => {
       const residentsCount = SharedResidenceResidents.find({
         sharedResidenceId: { $eq: _id },
       }).count();
@@ -93,11 +88,11 @@ export default {
       return SharedResidences.remove(_id);
     },
 
-    createResident(
+    createResident: async (
       obj,
       { sharedResidenceId, residentId, isOwner, roomNumber, fromDate, toDate },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const sharedResidenceResidentId = SharedResidenceResidents.insert({
         sharedResidenceId,
@@ -115,11 +110,11 @@ export default {
       return SharedResidenceResidents.findOne(sharedResidenceResidentId);
     },
 
-    updateResident(
+    updateResident: async (
       obj,
       { _id, isOwner, roomNumber, fromDate, toDate },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       SharedResidenceResidents.update(_id, {
         $set: {
@@ -135,11 +130,14 @@ export default {
       return SharedResidenceResidents.findOne(_id);
     },
 
-    removeResident(obj, { _id }) {
-      return SharedResidenceResidents.remove(_id);
-    },
+    removeResident: async (obj, { _id }) =>
+      SharedResidenceResidents.remove(_id),
 
-    addSharedResidenceAttachment(obj, { _id, attachmentId }, { user }) {
+    addSharedResidenceAttachment: async (
+      obj,
+      { _id, attachmentId },
+      { user }
+    ) => {
       const date = new Date();
       SharedResidences.update(_id, {
         $addToSet: {
@@ -154,7 +152,11 @@ export default {
       return SharedResidences.findOne(_id);
     },
 
-    removeSharedResidenceAttachment(obj, { _id, attachmentId }, { user }) {
+    removeSharedResidenceAttachment: async (
+      obj,
+      { _id, attachmentId },
+      { user }
+    ) => {
       const date = new Date();
       SharedResidences.update(_id, {
         $pull: {

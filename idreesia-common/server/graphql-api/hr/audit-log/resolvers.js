@@ -5,7 +5,7 @@ import { EntityType } from 'meteor/idreesia-common/constants/audit';
 
 export default {
   Query: {
-    pagedHrAuditLogs(obj, { filter }, { user }) {
+    pagedHrAuditLogs: async (obj, { filter }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_VIEW_AUDIT_LOGS])) {
         return {
           data: [],

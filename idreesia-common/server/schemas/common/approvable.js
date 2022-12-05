@@ -7,7 +7,6 @@ export default new SimpleSchema({
   },
   approvedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
 });

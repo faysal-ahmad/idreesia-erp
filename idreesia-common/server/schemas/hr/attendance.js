@@ -5,24 +5,20 @@ import { identifiable, timestamps } from '../common';
 export default new SimpleSchema({
   karkunId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   month: {
     type: String,
   },
   dutyId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   shiftId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   jobId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   attendanceDetails: {

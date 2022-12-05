@@ -10,29 +10,27 @@ import { DataSource, JobTypes } from 'meteor/idreesia-common/constants';
 
 export default {
   UserType: {
-    person: userType => {
+    person: async userType => {
       if (!userType.personId) return null;
       return People.findOne(userType.personId);
     },
 
-    karkun: userType => {
+    karkun: async userType => {
       if (!userType.personId) return null;
       const person = People.findOne(userType.personId);
       return People.personToKarkun(person);
     },
 
-    portal: userType =>
+    portal: async userType =>
       Portals.findOne({
         _id: { $in: userType.instances },
       }),
   },
 
   Query: {
-    pagedUsers(obj, { filter }) {
-      return Users.searchUsers(filter);
-    },
+    pagedUsers: async (obj, { filter }) => Users.searchUsers(filter),
 
-    userById(obj, { _id }, { user }) {
+    userById: async (obj, { _id }, { user }) => {
       if (!_id || !user) {
         return null;
       }
@@ -45,7 +43,7 @@ export default {
       return _user;
     },
 
-    currentUser(obj, {}, { user }) {
+    currentUser: async (obj, {}, { user }) => {
       if (!user) return null;
       const _user = Users.findOneUser(user._id);
       if (_user.username === 'erp-admin') {
@@ -55,7 +53,7 @@ export default {
       return _user;
     },
 
-    userNames(obj, { ids }) {
+    userNames: async (obj, { ids }) => {
       const names = [];
       if (!ids) return names;
 
@@ -75,31 +73,25 @@ export default {
   },
 
   Mutation: {
-    createUser(obj, params, { user }) {
-      return Users.createUser(params, user, DataSource.ADMIN);
-    },
+    createUser: async (obj, params, { user }) =>
+      Users.createUser(params, user, DataSource.ADMIN),
 
-    updateUser(obj, params, { user }) {
-      return Users.updateUser(params, user, DataSource.ADMIN);
-    },
+    updateUser: async (obj, params, { user }) =>
+      Users.updateUser(params, user, DataSource.ADMIN),
 
-    setPermissions(obj, params, { user }) {
-      return Users.setPermissions(params, user, DataSource.ADMIN);
-    },
+    setPermissions: async (obj, params, { user }) =>
+      Users.setPermissions(params, user, DataSource.ADMIN),
 
-    setInstanceAccess(obj, params, { user }) {
-      return Users.setInstanceAccess(params, user, DataSource.ADMIN);
-    },
+    setInstanceAccess: async (obj, params, { user }) =>
+      Users.setInstanceAccess(params, user, DataSource.ADMIN),
 
-    setGroups(obj, params, { user }) {
-      return Users.setGroups(params, user, DataSource.ADMIN);
-    },
+    setGroups: async (obj, params, { user }) =>
+      Users.setGroups(params, user, DataSource.ADMIN),
 
-    resetPassword(obj, params, { user }) {
-      return Users.resetPassword(params, user, DataSource.ADMIN);
-    },
+    resetPassword: async (obj, params, { user }) =>
+      Users.resetPassword(params, user, DataSource.ADMIN),
 
-    updateLoginTime(obj, {}, { user }) {
+    updateLoginTime: async (obj, {}, { user }) => {
       if (user) {
         const loginTime = new Date();
         Users.update(user._id, {
@@ -126,7 +118,7 @@ export default {
       return 1;
     },
 
-    updateLastActiveTime(obj, {}, { user }) {
+    updateLastActiveTime: async (obj, {}, { user }) => {
       if (user) {
         Users.update(user._id, {
           $set: {

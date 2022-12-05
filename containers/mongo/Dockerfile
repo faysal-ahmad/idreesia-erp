@@ -1,4 +1,4 @@
-FROM mongo:4.2.2
+FROM mongo:4.4.18
 EXPOSE 27017
 VOLUME /data/backup
 COPY ./scripts /scripts

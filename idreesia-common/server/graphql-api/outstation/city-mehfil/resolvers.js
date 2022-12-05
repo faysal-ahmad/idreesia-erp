@@ -6,7 +6,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   CityMehfilType: {
-    karkunCount: cityMehfilType =>
+    karkunCount: async cityMehfilType =>
       People.find({
         isKarkun: true,
         'karkunData.cityMehfilId': { $eq: cityMehfilType._id },
@@ -14,20 +14,18 @@ export default {
   },
 
   Query: {
-    allCityMehfils() {
-      return CityMehfils.find({}, { sort: { name: 1 } }).fetch();
-    },
+    allCityMehfils: async () =>
+      CityMehfils.find({}, { sort: { name: 1 } }).fetch(),
 
-    cityMehfilsByCityId(obj, { cityId }) {
-      return CityMehfils.find(
+    cityMehfilsByCityId: async (obj, { cityId }) =>
+      CityMehfils.find(
         {
           cityId,
         },
         { sort: { name: 1 } }
-      ).fetch();
-    },
+      ).fetch(),
 
-    cityMehfilsByPortalId(obj, { portalId }) {
+    cityMehfilsByPortalId: async (obj, { portalId }) => {
       const portal = Portals.findOne(portalId);
       return CityMehfils.find(
         {
@@ -37,13 +35,11 @@ export default {
       ).fetch();
     },
 
-    cityMehfilById(obj, { _id }) {
-      return CityMehfils.findOne(_id);
-    },
+    cityMehfilById: async (obj, { _id }) => CityMehfils.findOne(_id),
   },
 
   Mutation: {
-    createCityMehfil(
+    createCityMehfil: async (
       obj,
       {
         name,
@@ -56,7 +52,7 @@ export default {
         otherMehfilDetails,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -86,7 +82,7 @@ export default {
       return CityMehfils.findOne(cityMehfilId);
     },
 
-    updateCityMehfil(
+    updateCityMehfil: async (
       obj,
       {
         _id,
@@ -100,7 +96,7 @@ export default {
         otherMehfilDetails,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
@@ -130,7 +126,7 @@ export default {
       return CityMehfils.findOne(_id);
     },
 
-    removeCityMehfil(obj, { _id }, { user }) {
+    removeCityMehfil: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,

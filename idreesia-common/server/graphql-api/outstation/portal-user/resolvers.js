@@ -7,24 +7,24 @@ import { isKarkunInPortal, isKarkunSubscribed } from './helpers';
 
 export default {
   Query: {
-    pagedOutstationPortalUsers(obj, { filter }) {
+    pagedOutstationPortalUsers: async (obj, { filter }) => {
       const portals = Portals.find({}).fetch();
       const portalIds = portals.map(portal => portal._id);
       return Users.searchOutstationPortalUsers(filter, portalIds);
     },
 
-    outstationPortalUserById(obj, { _id }) {
+    outstationPortalUserById: async (obj, { _id }) => {
       const user = Users.findOneUser(_id);
       return user;
     },
   },
 
   Mutation: {
-    createOutstationPortalUser(
+    createOutstationPortalUser: async (
       obj,
       { portalId, userName, karkunId },
       { user }
-    ) {
+    ) => {
       const karkunInPortal = isKarkunInPortal(karkunId, portalId);
       if (!karkunInPortal) {
         throw new Error(
@@ -54,7 +54,11 @@ export default {
       );
     },
 
-    updateOutstationPortalUser(obj, { portalId, userId, locked }, { user }) {
+    updateOutstationPortalUser: async (
+      obj,
+      { portalId, userId, locked },
+      { user }
+    ) => {
       const _user = Users.findOneUser(userId);
       const karkunInPortal = isKarkunInPortal(_user.karkunId, portalId);
       if (!karkunInPortal) {
@@ -77,12 +81,10 @@ export default {
       return Users.updateUser({ userId, locked }, user, DataSource.OUTSTATION);
     },
 
-    setOutstationPortalUserPermissions(obj, params, { user }) {
-      return Users.setPermissions(params, user, DataSource.OUTSTATION);
-    },
+    setOutstationPortalUserPermissions: async (obj, params, { user }) =>
+      Users.setPermissions(params, user, DataSource.OUTSTATION),
 
-    resetOutstationPortalUserPassword(obj, params, { user }) {
-      return Users.resetPassword(params, user, DataSource.OUTSTATION);
-    },
+    resetOutstationPortalUserPassword: async (obj, params, { user }) =>
+      Users.resetPassword(params, user, DataSource.OUTSTATION),
   },
 };

@@ -25,8 +25,8 @@ export function getPagedSalariesByKarkun(queryString) {
     { $limit: nPageSize },
   ]);
 
-  const karkunSalaries = Salaries.aggregate(resultsPipeline).toArray();
-  const totalResults = Salaries.aggregate(countingPipeline).toArray();
+  const karkunSalaries = Salaries.aggregate(resultsPipeline);
+  const totalResults = Salaries.aggregate(countingPipeline);
 
   return Promise.all([karkunSalaries, totalResults]).then(results => ({
     salaries: results[0],

@@ -8,16 +8,14 @@ import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    hrPersonById(obj, { _id }) {
-      return People.findOne(_id);
-    },
+    hrPersonById: async (obj, { _id }) => People.findOne(_id),
 
-    hrpeopleByIds(obj, { _ids }) {
+    hrpeopleByIds: async (obj, { _ids }) => {
       const idsArray = _ids.split(',');
       return People.find({ _id: { $in: idsArray } }).fetch();
     },
 
-    pagedHrPeople(obj, { filter }) {
+    pagedHrPeople: async (obj, { filter }) => {
       const multanCity = Cities.findOne({
         name: 'Multan',
         country: 'Pakistan',
@@ -37,7 +35,7 @@ export default {
   },
 
   Mutation: {
-    createHrPerson(obj, values, { user }) {
+    createHrPerson: async (obj, values, { user }) => {
       const multanCity = Cities.getMultanCity();
       const personValues = People.karkunToPerson({
         ...values,
@@ -54,13 +52,13 @@ export default {
       return People.personToKarkun(person);
     },
 
-    updateHrKarkun(obj, values, { user }) {
+    updateHrKarkun: async (obj, values, { user }) => {
       const personValues = People.karkunToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
-    deleteHrKarkun(obj, { _id }) {
+    deleteHrKarkun: async (obj, { _id }) => {
       if (canDeletePerson(_id)) {
         return deletePerson(_id);
       }
@@ -68,30 +66,30 @@ export default {
       return 0;
     },
 
-    setHrKarkunWazaifAndRaabta(obj, values, { user }) {
+    setHrKarkunWazaifAndRaabta: async (obj, values, { user }) => {
       const personValues = People.karkunToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
-    setHrKarkunEmploymentInfo(obj, values, { user }) {
+    setHrKarkunEmploymentInfo: async (obj, values, { user }) => {
       const personValues = People.karkunToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
-    setHrKarkunProfileImage(obj, values, { user }) {
+    setHrKarkunProfileImage: async (obj, values, { user }) => {
       const personValues = People.karkunToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
-    addHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
+    addHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) => {
       const person = People.addAttachment({ _id, attachmentId }, user);
       return People.personToKarkun(person);
     },
 
-    removeHrKarkunAttachment(obj, { _id, attachmentId }, { user }) {
+    removeHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) => {
       const person = People.removeAttachment({ _id, attachmentId }, user);
       return People.personToKarkun(person);
     },

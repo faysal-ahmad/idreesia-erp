@@ -132,8 +132,8 @@ Users.searchUsers = params => {
     { $limit: nPageSize },
   ]);
 
-  const users = aggregate(resultsPipeline).toArray();
-  const totalResults = aggregate(countingPipeline).toArray();
+  const users = aggregate(resultsPipeline);
+  const totalResults = aggregate(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),
@@ -167,8 +167,8 @@ Users.searchOperationsWazaifUsers = params => {
     { $limit: nPageSize },
   ]);
 
-  const users = aggregate(resultsPipeline).toArray();
-  const totalResults = aggregate(countingPipeline).toArray();
+  const users = aggregate(resultsPipeline);
+  const totalResults = aggregate(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),
@@ -212,8 +212,8 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
     { $limit: nPageSize },
   ]);
 
-  const users = aggregate(resultsPipeline).toArray();
-  const totalResults = aggregate(countingPipeline).toArray();
+  const users = aggregate(resultsPipeline);
+  const totalResults = aggregate(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),

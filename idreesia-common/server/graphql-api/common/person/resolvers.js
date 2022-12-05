@@ -13,7 +13,7 @@ import {
 
 export default {
   PersonSharedDataType: {
-    image: personSharedDataType => {
+    image: async personSharedDataType => {
       const { imageId } = personSharedDataType;
       if (imageId) {
         return Attachments.findOne({ _id: { $eq: imageId } });
@@ -23,19 +23,19 @@ export default {
     },
   },
   PersonKarkunDataType: {
-    city: personKarkunDataType => {
+    city: async personKarkunDataType => {
       if (!personKarkunDataType.cityId) return null;
       return Cities.findOne(personKarkunDataType.cityId);
     },
-    cityMehfil: personKarkunDataType => {
+    cityMehfil: async personKarkunDataType => {
       if (!personKarkunDataType.cityMehfilId) return null;
       return CityMehfils.findOne(personKarkunDataType.cityMehfilId);
     },
-    duties: personKarkunDataType =>
+    duties: async personKarkunDataType =>
       KarkunDuties.find({
         karkunId: { $eq: personKarkunDataType._id },
       }).fetch(),
-    attachments: personKarkunDataType => {
+    attachments: async personKarkunDataType => {
       const { attachmentIds } = personKarkunDataType;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
@@ -45,19 +45,18 @@ export default {
     },
   },
   PersonEmployeeDataType: {
-    job: personEmployeeDataType => {
+    job: async personEmployeeDataType => {
       if (!personEmployeeDataType.jobId) return null;
       return Jobs.findOne(personEmployeeDataType.jobId);
     },
   },
 
   Query: {
-    pagedPeople(obj, { filter }) {
-      return People.searchPeople(filter, {
+    pagedPeople: async (obj, { filter }) =>
+      People.searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,
         includeEmployees: true,
-      });
-    },
+      }),
   },
 };

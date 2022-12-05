@@ -5,23 +5,21 @@ import {
 
 export default {
   ImdadReasonType: {
-    usedCount: imdadReason =>
+    usedCount: async imdadReason =>
       ImdadRequests.find({
         imdadReasonId: { $eq: imdadReason._id },
       }).count(),
   },
 
   Query: {
-    allImdadReasons() {
-      return ImdadReasons.find({}, { sort: { name: 1 } }).fetch();
-    },
-    imdadReasonById(obj, { _id }) {
-      return ImdadReasons.findOne(_id);
-    },
+    allImdadReasons: async () =>
+      ImdadReasons.find({}, { sort: { name: 1 } }).fetch(),
+
+    imdadReasonById: async (obj, { _id }) => ImdadReasons.findOne(_id),
   },
 
   Mutation: {
-    createImdadReason(obj, { name, description }, { user }) {
+    createImdadReason: async (obj, { name, description }, { user }) => {
       const date = new Date();
       const imdadReasonId = ImdadReasons.insert({
         name,
@@ -35,7 +33,7 @@ export default {
       return ImdadReasons.findOne(imdadReasonId);
     },
 
-    updateImdadReason(obj, { _id, name, description }, { user }) {
+    updateImdadReason: async (obj, { _id, name, description }, { user }) => {
       const date = new Date();
       ImdadReasons.update(_id, {
         $set: {
@@ -49,7 +47,7 @@ export default {
       return ImdadReasons.findOne(_id);
     },
 
-    removeImdadReason(obj, { _id }) {
+    removeImdadReason: async (obj, { _id }) => {
       // Make sure this is not being used in any payment
       const usedCount = ImdadRequests.find({ imdadReasonId: _id }).count();
       if (usedCount > 0) {

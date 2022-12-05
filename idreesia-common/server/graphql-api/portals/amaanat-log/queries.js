@@ -112,8 +112,8 @@ export default function getAmaanatLogs(portalId, params) {
     { $limit: nPageSize },
   ]);
 
-  const amaanatLogs = AmaanatLogs.aggregate(resultsPipeline).toArray();
-  const totalResults = AmaanatLogs.aggregate(countingPipeline).toArray();
+  const amaanatLogs = AmaanatLogs.aggregate(resultsPipeline);
+  const totalResults = AmaanatLogs.aggregate(countingPipeline);
 
   return Promise.all([amaanatLogs, totalResults]).then(results => ({
     data: results[0],

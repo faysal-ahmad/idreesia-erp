@@ -17,7 +17,7 @@ import getIssuanceForms, {
 
 export default {
   IssuanceForm: {
-    refLocation: issuanceForm => {
+    refLocation: async issuanceForm => {
       if (issuanceForm.locationId) {
         return Locations.findOne({
           _id: { $eq: issuanceForm.locationId },
@@ -25,13 +25,13 @@ export default {
       }
       return null;
     },
-    refIssuedBy: issuanceForm => {
+    refIssuedBy: async issuanceForm => {
       const person = People.findOne({
         _id: { $eq: issuanceForm.issuedBy },
       });
       return People.personToKarkun(person);
     },
-    refIssuedTo: issuanceForm => {
+    refIssuedTo: async issuanceForm => {
       const person = People.findOne({
         _id: { $eq: issuanceForm.issuedTo },
       });
@@ -39,7 +39,11 @@ export default {
     },
   },
   Query: {
-    issuanceFormsByStockItem(obj, { physicalStoreId, stockItemId }, { user }) {
+    issuanceFormsByStockItem: async (
+      obj,
+      { physicalStoreId, stockItemId },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -54,7 +58,7 @@ export default {
       return getIssuanceFormsByStockItemId(physicalStoreId, stockItemId);
     },
 
-    issuanceFormsByMonth(obj, { physicalStoreId, month }, { user }) {
+    issuanceFormsByMonth: async (obj, { physicalStoreId, month }, { user }) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -69,7 +73,11 @@ export default {
       return getIssuanceFormsByMonth(physicalStoreId, month);
     },
 
-    pagedIssuanceForms(obj, { physicalStoreId, queryString }, { user }) {
+    pagedIssuanceForms: async (
+      obj,
+      { physicalStoreId, queryString },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, physicalStoreId) === false ||
         !hasOnePermission(user, [
@@ -87,7 +95,7 @@ export default {
       return getIssuanceForms(queryString, physicalStoreId);
     },
 
-    issuanceFormById(obj, { _id }, { user }) {
+    issuanceFormById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
@@ -107,7 +115,7 @@ export default {
   },
 
   Mutation: {
-    createIssuanceForm(
+    createIssuanceForm: async (
       obj,
       {
         issueDate,
@@ -120,7 +128,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -165,7 +173,7 @@ export default {
       return IssuanceForms.findOne(issuanceFormId);
     },
 
-    updateIssuanceForm(
+    updateIssuanceForm: async (
       obj,
       {
         _id,
@@ -179,7 +187,7 @@ export default {
         notes,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
@@ -243,7 +251,7 @@ export default {
       return IssuanceForms.findOne(_id);
     },
 
-    approveIssuanceForm(obj, { _id }, { user }) {
+    approveIssuanceForm: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_APPROVE_ISSUANCE_FORMS])
       ) {
@@ -273,7 +281,7 @@ export default {
       return IssuanceForms.findOne(_id);
     },
 
-    removeIssuanceForm(obj, { _id }, { user }) {
+    removeIssuanceForm: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in the System.'

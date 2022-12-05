@@ -55,8 +55,8 @@ class Wazaif extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const wazaif = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const wazaif = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([wazaif, totalResults]).then(results => ({
       data: results[0],

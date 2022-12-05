@@ -5,22 +5,21 @@ import { processCsvData } from './helpers';
 
 export default {
   Query: {
-    pagedSecurityVisitors(obj, { filter }) {
-      return People.searchPeople(filter, {
+    pagedSecurityVisitors: async (obj, { filter }) =>
+      People.searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,
       }).then(result => ({
         data: result.data.map(person => People.personToVisitor(person)),
         totalResults: result.totalResults,
-      }));
-    },
+      })),
 
-    securityVisitorById(obj, { _id }) {
+    securityVisitorById: async (obj, { _id }) => {
       const person = People.findOne(_id);
       return People.personToVisitor(person);
     },
 
-    securityVisitorByCnic(obj, { cnicNumbers }) {
+    securityVisitorByCnic: async (obj, { cnicNumbers }) => {
       if (cnicNumbers.length > 0) {
         const person = People.findOne({
           'sharedData.cnicNumber': { $in: cnicNumbers },
@@ -31,7 +30,10 @@ export default {
       return null;
     },
 
-    securityVisitorByCnicOrContactNumber(obj, { cnicNumber, contactNumber }) {
+    securityVisitorByCnicOrContactNumber: async (
+      obj,
+      { cnicNumber, contactNumber }
+    ) => {
       const person = People.findByCnicOrContactNumber(
         cnicNumber,
         contactNumber
@@ -41,7 +43,7 @@ export default {
   },
 
   Mutation: {
-    createSecurityVisitor(obj, values, { user }) {
+    createSecurityVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.createPerson(
         {
@@ -53,30 +55,27 @@ export default {
       return People.personToVisitor(person);
     },
 
-    updateSecurityVisitor(obj, values, { user }) {
+    updateSecurityVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    deleteSecurityVisitor(obj, { _id }) {
-      return People.remove(_id);
-    },
+    deleteSecurityVisitor: async (obj, { _id }) => People.remove(_id),
 
-    setSecurityVisitorImage(obj, values, { user }) {
+    setSecurityVisitorImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    updateSecurityVisitorNotes(obj, values, { user }) {
+    updateSecurityVisitorNotes: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       const person = People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    importSecurityVisitorsCsvData(obj, { csvData }, { user }) {
-      return processCsvData(csvData, new Date(), user);
-    },
+    importSecurityVisitorsCsvData: async (obj, { csvData }, { user }) =>
+      processCsvData(csvData, new Date(), user),
   },
 };

@@ -5,6 +5,7 @@ export default class AggregatableCollection extends Mongo.Collection {
 
   aggregate(pipelines, options) {
     const rawCollection = this.rawCollection();
-    return this.wrapAsync(rawCollection.aggregate.bind(rawCollection))(pipelines, options);
+    const cursor = rawCollection.aggregate(pipelines, options);
+    return this.wrapAsync(cursor.toArray, cursor)();
   }
 }

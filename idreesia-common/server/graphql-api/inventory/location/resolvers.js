@@ -11,13 +11,13 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Location: {
-    refParent: location => {
+    refParent: async location => {
       if (location.parentId) {
         return Locations.findOne(location.parentId);
       }
       return null;
     },
-    isInUse: location => {
+    isInUse: async location => {
       // If this has any child locations then it is in use
       const childCount = Locations.find({ parentId: location._id }).count();
       if (childCount > 0) return true;
@@ -35,7 +35,7 @@ export default {
     },
   },
   Query: {
-    locationById(obj, { _id }, { user }) {
+    locationById: async (obj, { _id }, { user }) => {
       const location = Locations.findOne(_id);
       if (hasInstanceAccess(user, location.physicalStoreId) === false) {
         return null;
@@ -43,7 +43,7 @@ export default {
       return location;
     },
 
-    locationsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
+    locationsByPhysicalStoreId: async (obj, { physicalStoreId }, { user }) => {
       if (hasInstanceAccess(user, physicalStoreId) === false) return [];
       return Locations.find(
         {
@@ -55,11 +55,11 @@ export default {
   },
 
   Mutation: {
-    createLocation(
+    createLocation: async (
       obj,
       { name, physicalStoreId, parentId, description },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
@@ -87,7 +87,11 @@ export default {
       return Locations.findOne(locationId);
     },
 
-    updateLocation(obj, { _id, name, parentId, description }, { user }) {
+    updateLocation: async (
+      obj,
+      { _id, name, parentId, description },
+      { user }
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
@@ -118,7 +122,7 @@ export default {
       return Locations.findOne(_id);
     },
 
-    removeLocation(obj, { _id }, { user }) {
+    removeLocation: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'

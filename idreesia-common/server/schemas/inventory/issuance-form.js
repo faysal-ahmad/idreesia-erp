@@ -9,11 +9,9 @@ export default new SimpleSchema({
   },
   issuedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   issuedTo: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   handedOverTo: {
     type: String,
@@ -21,12 +19,10 @@ export default new SimpleSchema({
   },
   locationId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   items: {
     type: Array,

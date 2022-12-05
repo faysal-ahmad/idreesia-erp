@@ -24,5 +24,5 @@ export default async function getAllAccounts(companyId) {
     },
   ];
 
-  return AccountHeads.aggregate(pipeline).toArray();
+  return AccountHeads.aggregate(pipeline);
 }

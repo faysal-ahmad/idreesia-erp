@@ -10,7 +10,7 @@ import { without, isNil } from 'meteor/idreesia-common/utilities/lodash';
 
 export default {
   WazeefaType: {
-    formattedName: wazeefaType => {
+    formattedName: async wazeefaType => {
       const { name, revisionNumber, revisionDate } = wazeefaType;
       let fName = name;
       if (revisionNumber) {
@@ -24,7 +24,7 @@ export default {
 
       return fName;
     },
-    images: wazeefaType => {
+    images: async wazeefaType => {
       const { imageIds } = wazeefaType;
       if (imageIds && imageIds.length > 0) {
         return Attachments.find({ _id: { $in: imageIds } }).fetch();
@@ -32,7 +32,7 @@ export default {
 
       return [];
     },
-    deliveryOrders: wazeefaType => {
+    deliveryOrders: async wazeefaType => {
       let packetCount = 0;
       const deliveryOrders = DeliveryOrders.find({
         status: { $eq: 'pending' },
@@ -54,7 +54,7 @@ export default {
 
       return packetCount;
     },
-    printingOrders: wazeefaType => {
+    printingOrders: async wazeefaType => {
       let packetCount = 0;
       const printingOrders = PrintingOrders.find({
         status: { $eq: 'pending' },
@@ -76,7 +76,7 @@ export default {
 
       return packetCount;
     },
-    isBeingUsed: wazeefaType => {
+    isBeingUsed: async wazeefaType => {
       const printingOrdersCount = PrintingOrders.find({
         items: {
           $elemMatch: {
@@ -108,27 +108,23 @@ export default {
   },
 
   Query: {
-    pagedOperationsWazaif(obj, { filter }) {
-      return Wazaif.searchWazaif(filter);
-    },
+    pagedOperationsWazaif: async (obj, { filter }) =>
+      Wazaif.searchWazaif(filter),
 
-    operationsWazeefaById(obj, { _id }) {
-      return Wazaif.findOne(_id);
-    },
+    operationsWazeefaById: async (obj, { _id }) => Wazaif.findOne(_id),
 
-    operationsWazaifById(obj, { _ids }) {
-      return Wazaif.find({
+    operationsWazaifById: async (obj, { _ids }) =>
+      Wazaif.find({
         _id: { $in: _ids },
-      });
-    },
+      }),
   },
 
   Mutation: {
-    createOperationsWazeefa(
+    createOperationsWazeefa: async (
       obj,
       { name, revisionNumber, revisionDate, currentStockLevel },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       const wazeefaId = Wazaif.insert({
         name,
@@ -153,11 +149,11 @@ export default {
       return Wazaif.findOne(wazeefaId);
     },
 
-    updateOperationsWazeefa(
+    updateOperationsWazeefa: async (
       obj,
       { _id, name, revisionNumber, revisionDate },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -172,11 +168,11 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    setOperationsWazeefaDetails(
+    setOperationsWazeefaDetails: async (
       obj,
       { _id, packetCount, subCartonCount, cartonCount },
       { user }
-    ) {
+    ) => {
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -193,11 +189,11 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    setOperationsWazeefaStockLevel(
+    setOperationsWazeefaStockLevel: async (
       obj,
       { _id, currentStockLevel, adjustmentReason },
       { user }
-    ) {
+    ) => {
       const existingWazeefa = Wazaif.findOne(_id);
       const canUpdateStockLevel = isNil(existingWazeefa.currentStockLevel);
 
@@ -226,7 +222,11 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    setOperationsWazeefaStockLevelReconciled(obj, { _id }, { user }) {
+    setOperationsWazeefaStockLevelReconciled: async (
+      obj,
+      { _id },
+      { user }
+    ) => {
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -239,7 +239,7 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    deleteOperationsWazeefa(obj, { _id }) {
+    deleteOperationsWazeefa: async (obj, { _id }) => {
       const wazeefa = Wazaif.findOne(_id);
       const { imageIds } = wazeefa;
       if (imageIds && imageIds.length > 0) {
@@ -249,7 +249,7 @@ export default {
       return Wazaif.remove(_id);
     },
 
-    setOperationsWazeefaImage(obj, { _id, imageIds }, { user }) {
+    setOperationsWazeefaImage: async (obj, { _id, imageIds }, { user }) => {
       const date = new Date();
       Wazaif.update(_id, {
         $set: {
@@ -262,7 +262,7 @@ export default {
       return Wazaif.findOne(_id);
     },
 
-    removeOperationsWazeefaImage(obj, { _id, imageId }, { user }) {
+    removeOperationsWazeefaImage: async (obj, { _id, imageId }, { user }) => {
       const wazeefa = Wazaif.findOne(_id);
       const { imageIds } = wazeefa;
       const updatedImageIds = without(imageIds, imageId);

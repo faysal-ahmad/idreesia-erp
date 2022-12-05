@@ -5,11 +5,9 @@ import { approvable, identifiable, timestamps } from '../common';
 export default new SimpleSchema({
   karkunId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   jobId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   month: {

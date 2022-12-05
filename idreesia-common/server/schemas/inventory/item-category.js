@@ -8,7 +8,6 @@ export default new SimpleSchema({
   },
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
 })
   .extend(identifiable)

@@ -9,24 +9,19 @@ export default new SimpleSchema({
   },
   receivedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   purchasedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   locationId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   physicalStoreId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   vendorId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   items: {

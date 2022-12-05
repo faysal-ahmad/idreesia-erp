@@ -7,7 +7,6 @@ export default new SimpleSchema({
   },
   createdBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   updatedAt: {
@@ -16,7 +15,6 @@ export default new SimpleSchema({
   },
   updatedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
 });

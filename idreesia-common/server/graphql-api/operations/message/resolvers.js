@@ -9,20 +9,21 @@ import { JobTypes } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    operationsMessageById(obj, { _id }) {
-      return Messages.findOne(_id);
-    },
+    operationsMessageById: async (obj, { _id }) => Messages.findOne(_id),
 
-    pagedOperationsMessages(obj, { filter }) {
-      return Messages.searchMessages({
+    pagedOperationsMessages: async (obj, { filter }) =>
+      Messages.searchMessages({
         ...filter,
-      });
-    },
+      }),
   },
 
   Mutation: {
-    createOperationsMessage(obj, { messageBody, recepientFilter }, { user }) {
-      return People.searchPeople(recepientFilter, {
+    createOperationsMessage: async (
+      obj,
+      { messageBody, recepientFilter },
+      { user }
+    ) =>
+      People.searchPeople(recepientFilter, {
         includeKarkuns: true,
         paginatedResults: false,
       }).then(people => {
@@ -41,14 +42,13 @@ export default {
         });
 
         return Messages.findOne(messageId);
-      });
-    },
+      }),
 
-    updateOperationsMessage(
+    updateOperationsMessage: async (
       obj,
       { _id, messageBody, recepientFilter },
       { user }
-    ) {
+    ) => {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(
@@ -87,7 +87,7 @@ export default {
       });
     },
 
-    approveOperationsMessage(obj, { _id }, { user }) {
+    approveOperationsMessage: async (obj, { _id }, { user }) => {
       const date = new Date();
       Messages.update(
         {
@@ -109,7 +109,7 @@ export default {
       return Messages.findOne(_id);
     },
 
-    deleteOperationsMessage(obj, { _id }) {
+    deleteOperationsMessage: async (obj, { _id }) => {
       const existingMessage = Messages.findOne(_id);
       if (existingMessage.status === MessageStatus.SENDING) {
         throw new Error(

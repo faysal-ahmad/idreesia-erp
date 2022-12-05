@@ -117,8 +117,8 @@ export function getVouchers(companyId, queryString) {
     { $limit: nPageSize },
   ]);
 
-  const vouchers = Vouchers.aggregate(resultsPipeline).toArray();
-  const totalResults = Vouchers.aggregate(countingPipeline).toArray();
+  const vouchers = Vouchers.aggregate(resultsPipeline);
+  const totalResults = Vouchers.aggregate(countingPipeline);
 
   return Promise.all([vouchers, totalResults]).then(results => ({
     data: results[0],

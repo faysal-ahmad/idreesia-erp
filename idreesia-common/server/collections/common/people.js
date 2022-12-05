@@ -701,8 +701,8 @@ class People extends AggregatableCollection {
         { $limit: nPageSize },
       ]);
 
-      const people = this.aggregate(resultsPipeline).toArray();
-      const totalResults = this.aggregate(countingPipeline).toArray();
+      const people = this.aggregate(resultsPipeline);
+      const totalResults = this.aggregate(countingPipeline);
 
       return Promise.all([people, totalResults]).then(results => ({
         data: results[0],
@@ -711,7 +711,7 @@ class People extends AggregatableCollection {
     }
 
     // Return the full results without pagination
-    return this.aggregate(pipeline).toArray();
+    return this.aggregate(pipeline);
   }
 
   // **************************************************************

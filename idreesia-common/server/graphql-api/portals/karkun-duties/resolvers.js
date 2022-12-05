@@ -2,7 +2,7 @@ import { KarkunDuties } from 'meteor/idreesia-common/server/collections/hr';
 
 export default {
   Mutation: {
-    createPortalKarkunDuty(obj, { karkunId, dutyId }) {
+    createPortalKarkunDuty: async (obj, { karkunId, dutyId }) => {
       const newDuty = {
         karkunId,
         dutyId,
@@ -11,8 +11,6 @@ export default {
       return KarkunDuties.findOne(karkunDutyId);
     },
 
-    removePortalKarkunDuty(obj, { _id }) {
-      return KarkunDuties.remove(_id);
-    },
+    removePortalKarkunDuty: async (obj, { _id }) => KarkunDuties.remove(_id),
   },
 };

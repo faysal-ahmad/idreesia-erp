@@ -5,20 +5,16 @@ import { identifiable } from '../common';
 export default new SimpleSchema({
   karkunId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   dutyId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   shiftId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   locationId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   role: {

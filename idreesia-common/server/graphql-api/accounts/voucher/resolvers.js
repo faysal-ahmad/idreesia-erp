@@ -13,7 +13,7 @@ import { getVouchers, getInfoForNewVoucher } from './queries';
 
 export default {
   Voucher: {
-    attachments: voucher => {
+    attachments: async voucher => {
       const { attachmentIds } = voucher;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
@@ -26,7 +26,7 @@ export default {
   },
 
   Query: {
-    pagedVouchers(obj, { companyId, queryString }, { user }) {
+    pagedVouchers: async (obj, { companyId, queryString }, { user }) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [
@@ -43,7 +43,7 @@ export default {
       return getVouchers(companyId, queryString);
     },
 
-    voucherById(obj, { _id }, { user }) {
+    voucherById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
@@ -59,11 +59,11 @@ export default {
     },
   },
   Mutation: {
-    createVoucher(
+    createVoucher: async (
       obj,
       { companyId, voucherType, voucherDate, description },
       { user }
-    ) {
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
@@ -91,7 +91,7 @@ export default {
       return Vouchers.findOne(voucherId);
     },
 
-    updateVoucher(obj, { _id, companyId, description }, { user }) {
+    updateVoucher: async (obj, { _id, companyId, description }, { user }) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
@@ -119,7 +119,11 @@ export default {
       return Vouchers.findOne(_id);
     },
 
-    addVoucherAttachment(obj, { _id, companyId, attachmentId }, { user }) {
+    addVoucherAttachment: async (
+      obj,
+      { _id, companyId, attachmentId },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])
@@ -149,7 +153,11 @@ export default {
       return Vouchers.findOne(_id);
     },
 
-    removeVoucherAttachment(obj, { _id, companyId, attachmentId }, { user }) {
+    removeVoucherAttachment: async (
+      obj,
+      { _id, companyId, attachmentId },
+      { user }
+    ) => {
       if (
         hasInstanceAccess(user, companyId) === false ||
         !hasOnePermission(user, [PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS])

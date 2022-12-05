@@ -2,7 +2,11 @@ import { Duties } from 'meteor/idreesia-common/server/collections/hr';
 
 export default {
   Mutation: {
-    createOutstationMehfilDuty(obj, { name, description }, { user }) {
+    createOutstationMehfilDuty: async (
+      obj,
+      { name, description },
+      { user }
+    ) => {
       const date = new Date();
       const dutyId = Duties.insert({
         name,
@@ -17,7 +21,11 @@ export default {
       return Duties.findOne(dutyId);
     },
 
-    updateOutstationMehfilDuty(obj, { _id, name, description }, { user }) {
+    updateOutstationMehfilDuty: async (
+      obj,
+      { _id, name, description },
+      { user }
+    ) => {
       const date = new Date();
       Duties.update(_id, {
         $set: {
@@ -31,8 +39,6 @@ export default {
       return Duties.findOne(_id);
     },
 
-    removeOutstationMehfilDuty(obj, { _id }) {
-      return Duties.remove(_id);
-    },
+    removeOutstationMehfilDuty: async (obj, { _id }) => Duties.remove(_id),
   },
 };

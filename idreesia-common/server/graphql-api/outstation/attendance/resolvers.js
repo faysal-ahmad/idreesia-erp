@@ -7,11 +7,11 @@ import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   Query: {
-    pagedOutstationAttendanceByKarkun(
+    pagedOutstationAttendanceByKarkun: async (
       obj,
       { karkunId, queryString },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.OUTSTATION_VIEW_KARKUNS,
@@ -27,11 +27,11 @@ export default {
       return getPagedAttendanceByKarkun(karkunId, queryString);
     },
 
-    outstationAttendanceByMonth(
+    outstationAttendanceByMonth: async (
       obj,
       { month, cityId, cityMehfilId },
       { user }
-    ) {
+    ) => {
       if (!cityId) return [];
 
       if (

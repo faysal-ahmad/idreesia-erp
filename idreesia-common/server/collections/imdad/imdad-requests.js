@@ -191,8 +191,8 @@ class ImdadRequests extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const imdadRequests = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const imdadRequests = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([imdadRequests, totalResults]).then(results => ({
       data: results[0],

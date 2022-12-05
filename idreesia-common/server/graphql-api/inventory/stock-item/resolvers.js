@@ -17,7 +17,7 @@ import { mergeStockItems, recalculateStockLevels } from './helpers';
 
 export default {
   StockItem: {
-    formattedName: stockItem => {
+    formattedName: async stockItem => {
       const { name, company, details } = stockItem;
       let formattedName = name;
       if (company) {
@@ -28,15 +28,15 @@ export default {
       }
       return formattedName;
     },
-    categoryName: stockItem => {
+    categoryName: async stockItem => {
       const itemCategory = ItemCategories.findOne(stockItem.categoryId);
       return itemCategory.name;
     },
-    physicalStoreName: stockItem => {
+    physicalStoreName: async stockItem => {
       const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
       return physicalStore.name;
     },
-    purchaseFormsCount: stockItem =>
+    purchaseFormsCount: async stockItem =>
       PurchaseForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         items: {
@@ -45,7 +45,7 @@ export default {
           },
         },
       }).count(),
-    issuanceFormsCount: stockItem =>
+    issuanceFormsCount: async stockItem =>
       IssuanceForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         items: {
@@ -54,7 +54,7 @@ export default {
           },
         },
       }).count(),
-    stockAdjustmentsCount: stockItem =>
+    stockAdjustmentsCount: async stockItem =>
       StockAdjustments.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         stockItemId: { $eq: stockItem._id },
@@ -62,7 +62,11 @@ export default {
   },
 
   Query: {
-    pagedStockItems(obj, { physicalStoreId, queryString }, { user }) {
+    pagedStockItems: async (
+      obj,
+      { physicalStoreId, queryString },
+      { user }
+    ) => {
       if (hasInstanceAccess(user, physicalStoreId) === false) {
         return {
           data: [],
@@ -73,7 +77,7 @@ export default {
       return getPagedStockItems(queryString, physicalStoreId);
     },
 
-    stockItemById(obj, { _id }, { user }) {
+    stockItemById: async (obj, { _id }, { user }) => {
       const stockItem = StockItems.findOne(_id);
       if (hasInstanceAccess(user, stockItem.physicalStoreId) === false) {
         return null;
@@ -81,7 +85,7 @@ export default {
       return stockItem;
     },
 
-    stockItemsById(obj, { physicalStoreId, _ids }, { user }) {
+    stockItemsById: async (obj, { physicalStoreId, _ids }, { user }) => {
       if (!_ids || _ids.length === 0) return [];
       if (hasInstanceAccess(user, physicalStoreId) === false) return [];
 
@@ -91,14 +95,14 @@ export default {
       }).fetch();
     },
 
-    statistics(obj, { physicalStoreId }, { user }) {
+    statistics: async (obj, { physicalStoreId }, { user }) => {
       if (hasInstanceAccess(user, physicalStoreId) === false) return null;
       return getStatistics(physicalStoreId);
     },
   },
 
   Mutation: {
-    createStockItem(
+    createStockItem: async (
       obj,
       {
         name,
@@ -111,7 +115,7 @@ export default {
         currentStockLevel,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
@@ -146,7 +150,7 @@ export default {
       return StockItems.findOne(stockItemId);
     },
 
-    updateStockItem(
+    updateStockItem: async (
       obj,
       {
         _id,
@@ -158,7 +162,7 @@ export default {
         minStockLevel,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
@@ -194,7 +198,7 @@ export default {
       return StockItems.findOne(_id);
     },
 
-    verifyStockItemLevel(obj, { _id, physicalStoreId }, { user }) {
+    verifyStockItemLevel: async (obj, { _id, physicalStoreId }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
@@ -221,7 +225,7 @@ export default {
       return StockItems.findOne(_id);
     },
 
-    removeStockItem(obj, { _id, physicalStoreId }, { user }) {
+    removeStockItem: async (obj, { _id, physicalStoreId }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Items in the System.'
@@ -267,7 +271,7 @@ export default {
       return 0;
     },
 
-    setStockItemImage(obj, { _id, imageId }, { user }) {
+    setStockItemImage: async (obj, { _id, imageId }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
@@ -288,7 +292,7 @@ export default {
       return StockItems.findOne(_id);
     },
 
-    mergeStockItems(obj, { ids, physicalStoreId }, { user }) {
+    mergeStockItems: async (obj, { ids, physicalStoreId }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {
@@ -307,7 +311,7 @@ export default {
       return StockItems.findOne(ids[0]);
     },
 
-    recalculateStockLevels(obj, { ids, physicalStoreId }, { user }) {
+    recalculateStockLevels: async (obj, { ids, physicalStoreId }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
       ) {

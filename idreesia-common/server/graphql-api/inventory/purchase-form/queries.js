@@ -22,7 +22,7 @@ export function getPurchaseFormsByStockItemId(physicalStoreId, stockItemId) {
     },
   ];
 
-  return PurchaseForms.aggregate(pipeline).toArray();
+  return PurchaseForms.aggregate(pipeline);
 }
 
 export function getPurchaseFormsByMonth(physicalStoreId, monthString) {
@@ -47,7 +47,7 @@ export function getPurchaseFormsByMonth(physicalStoreId, monthString) {
     },
   ];
 
-  return PurchaseForms.aggregate(pipeline).toArray();
+  return PurchaseForms.aggregate(pipeline);
 }
 
 export default function getPurchaseForms(queryString, physicalStoreId) {
@@ -131,8 +131,8 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     { $limit: nPageSize },
   ]);
 
-  const purchaseForms = PurchaseForms.aggregate(resultsPipeline).toArray();
-  const totalResults = PurchaseForms.aggregate(countingPipeline).toArray();
+  const purchaseForms = PurchaseForms.aggregate(resultsPipeline);
+  const totalResults = PurchaseForms.aggregate(countingPipeline);
 
   return Promise.all([purchaseForms, totalResults]).then(results => ({
     purchaseForms: results[0],

@@ -21,25 +21,25 @@ import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   AttendanceType: {
-    karkun: attendanceType => {
+    karkun: async attendanceType => {
       const person = People.findOne({
         _id: { $eq: attendanceType.karkunId },
       });
       return People.personToKarkun(person);
     },
-    job: attendanceType => {
+    job: async attendanceType => {
       if (!attendanceType.jobId) return null;
       return Jobs.findOne({
         _id: { $eq: attendanceType.jobId },
       });
     },
-    duty: attendanceType => {
+    duty: async attendanceType => {
       if (!attendanceType.dutyId) return null;
       return Duties.findOne({
         _id: { $eq: attendanceType.dutyId },
       });
     },
-    shift: attendanceType => {
+    shift: async attendanceType => {
       if (!attendanceType.shiftId) return null;
       return DutyShifts.findOne({
         _id: { $eq: attendanceType.shiftId },
@@ -48,7 +48,7 @@ export default {
   },
 
   Query: {
-    attendanceById(obj, { _id }, { user }) {
+    attendanceById: async (obj, { _id }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -62,7 +62,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    pagedAttendanceByKarkun(obj, { queryString }, { user }) {
+    pagedAttendanceByKarkun: async (obj, { queryString }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -78,7 +78,11 @@ export default {
       return getPagedAttendanceByKarkun(queryString);
     },
 
-    attendanceByMonth(obj, { month, categoryId, subCategoryId }, { user }) {
+    attendanceByMonth: async (
+      obj,
+      { month, categoryId, subCategoryId },
+      { user }
+    ) => {
       if (!categoryId) return [];
 
       if (
@@ -121,7 +125,7 @@ export default {
       return Attendances.find(query).fetch();
     },
 
-    attendanceByBarcodeId(obj, { barcodeId }, { user }) {
+    attendanceByBarcodeId: async (obj, { barcodeId }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -138,7 +142,7 @@ export default {
       });
     },
 
-    attendanceByBarcodeIds(obj, { barcodeIds }, { user }) {
+    attendanceByBarcodeIds: async (obj, { barcodeIds }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_KARKUNS,
@@ -157,7 +161,7 @@ export default {
   },
 
   Mutation: {
-    createAttendances(obj, { month }, { user }) {
+    createAttendances: async (obj, { month }, { user }) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_KARKUNS,
@@ -176,7 +180,7 @@ export default {
       return createMonthlyAttendance(formattedMonth, user);
     },
 
-    updateAttendance(
+    updateAttendance: async (
       obj,
       {
         _id,
@@ -187,7 +191,7 @@ export default {
         percentage,
       },
       { user }
-    ) {
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_KARKUNS,
@@ -215,7 +219,7 @@ export default {
       return Attendances.findOne(_id);
     },
 
-    importAttendances(obj, { month, dutyId, shiftId }, { user }) {
+    importAttendances: async (obj, { month, dutyId, shiftId }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
         throw new Error(
           'You do not have permission to manage attendances in the System.'
@@ -275,7 +279,7 @@ export default {
       });
     },
 
-    deleteAttendances(obj, { month, ids }, { user }) {
+    deleteAttendances: async (obj, { month, ids }, { user }) => {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 
@@ -304,7 +308,11 @@ export default {
       });
     },
 
-    deleteAllAttendances(obj, { month, categoryId, subCategoryId }, { user }) {
+    deleteAllAttendances: async (
+      obj,
+      { month, categoryId, subCategoryId },
+      { user }
+    ) => {
       const currentMonth = moment().startOf('month');
       const passedMonth = moment(month, Formats.DATE_FORMAT);
 

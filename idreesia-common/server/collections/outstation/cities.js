@@ -69,8 +69,8 @@ class Cities extends AggregatableCollection {
       $count: 'total',
     });
 
-    const cities = this.aggregate(resultsPipeline).toArray();
-    const totalResults = this.aggregate(countingPipeline).toArray();
+    const cities = this.aggregate(resultsPipeline);
+    const totalResults = this.aggregate(countingPipeline);
 
     return Promise.all([cities, totalResults]).then(results => ({
       data: results[0],

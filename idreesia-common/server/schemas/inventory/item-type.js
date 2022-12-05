@@ -24,7 +24,6 @@ export default new SimpleSchema({
   },
   itemCategoryId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   unitOfMeasurement: {
     type: String,

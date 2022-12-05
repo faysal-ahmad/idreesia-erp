@@ -5,14 +5,12 @@ import WazeefaWithQuantity from './wazeefa-with-quantity';
 export default new SimpleSchema({
   vendorId: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   orderDate: {
     type: Date,
   },
   orderedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
   },
   deliveryDate: {
     type: Date,
@@ -20,7 +18,6 @@ export default new SimpleSchema({
   },
   receivedBy: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id,
     optional: true,
   },
   items: {

@@ -10,13 +10,13 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Vendor: {
-    usageCount: vendor =>
+    usageCount: async vendor =>
       PurchaseForms.find({
         vendorId: { $eq: vendor._id },
       }).count(),
   },
   Query: {
-    vendorById(obj, { _id }, { user }) {
+    vendorById: async (obj, { _id }, { user }) => {
       const vendor = Vendors.findOne(_id);
       if (hasInstanceAccess(user, vendor.physicalStoreId) === false) {
         return null;
@@ -24,7 +24,7 @@ export default {
       return vendor;
     },
 
-    vendorsByPhysicalStoreId(obj, { physicalStoreId }, { user }) {
+    vendorsByPhysicalStoreId: async (obj, { physicalStoreId }, { user }) => {
       if (hasInstanceAccess(user, physicalStoreId) === false) return [];
       return Vendors.find(
         {
@@ -36,11 +36,11 @@ export default {
   },
 
   Mutation: {
-    createVendor(
+    createVendor: async (
       obj,
       { name, physicalStoreId, contactPerson, contactNumber, address, notes },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
@@ -70,11 +70,11 @@ export default {
       return Vendors.findOne(vendorId);
     },
 
-    updateVendor(
+    updateVendor: async (
       obj,
       { _id, name, contactPerson, contactNumber, address, notes },
       { user }
-    ) {
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'
@@ -107,7 +107,7 @@ export default {
       return Vendors.findOne(_id);
     },
 
-    removeVendor(obj, { _id }, { user }) {
+    removeVendor: async (obj, { _id }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
         throw new Error(
           'You do not have permission to manage Inventory Setup Data in the System.'

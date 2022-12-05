@@ -3,34 +3,25 @@ import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    pagedUserGroups(obj, { queryString }) {
-      return UserGroups.searchGroups(queryString);
-    },
+    pagedUserGroups: async (obj, { queryString }) =>
+      UserGroups.searchGroups(queryString),
 
-    userGroupById(obj, { _id }) {
-      return UserGroups.findOne(_id);
-    },
+    userGroupById: async (obj, { _id }) => UserGroups.findOne(_id),
   },
 
   Mutation: {
-    createUserGroup(obj, params, { user }) {
-      return UserGroups.createGroup(params, user);
-    },
+    createUserGroup: async (obj, params, { user }) =>
+      UserGroups.createGroup(params, user),
 
-    updateUserGroup(obj, params, { user }) {
-      return UserGroups.updateGroup(params, user);
-    },
+    updateUserGroup: async (obj, params, { user }) =>
+      UserGroups.updateGroup(params, user),
 
-    deleteUserGroup(obj, { _id }) {
-      return UserGroups.removeGroup(_id);
-    },
+    deleteUserGroup: async (obj, { _id }) => UserGroups.removeGroup(_id),
 
-    setUserGroupPermissions(obj, params, { user }) {
-      return UserGroups.setPermissions(params, user, DataSource.ADMIN);
-    },
+    setUserGroupPermissions: async (obj, params, { user }) =>
+      UserGroups.setPermissions(params, user, DataSource.ADMIN),
 
-    setUserGroupInstanceAccess(obj, params, { user }) {
-      return UserGroups.setInstanceAccess(params, user, DataSource.ADMIN);
-    },
+    setUserGroupInstanceAccess: async (obj, params, { user }) =>
+      UserGroups.setInstanceAccess(params, user, DataSource.ADMIN),
   },
 };

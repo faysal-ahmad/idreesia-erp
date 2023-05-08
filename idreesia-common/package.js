@@ -10,6 +10,7 @@ Package.onUse(api => {
   api.versionsFrom('2.3.2');
   api.use('ecmascript');
   api.use('accounts-password');
+  api.use('sakulstra:aggregate', 'server');
   api.use('aldeed:collection2-core', 'server');
   api.use('swydo:graphql', 'server');
 });

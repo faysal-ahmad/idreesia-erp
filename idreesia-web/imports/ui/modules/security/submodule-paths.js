@@ -28,6 +28,22 @@ export default class SubModulePaths {
     return `${SubModulePaths.mehfilDutiesPath}/${mehfilDutyId}`;
   }
 
+  static mehfilLangarDishesPath = `${ModulePaths.security}/mehfil-langar-dishes`;
+  static mehfilLangarDishesNewFormPath = `${SubModulePaths.mehfilLangarDishesPath}/new`;
+  static mehfilLangarDishesEditFormPath(
+    mehfilLangarDishId = ':mehfilLangarDishId'
+  ) {
+    return `${SubModulePaths.mehfilLangarDishesPath}/${mehfilLangarDishId}`;
+  }
+
+  static mehfilLangarLocationsPath = `${ModulePaths.security}/mehfil-langar-locations`;
+  static mehfilLangarLocationsNewFormPath = `${SubModulePaths.mehfilLangarLocationsPath}/new`;
+  static mehfilLangarLocationsEditFormPath(
+    mehfilLangarLocationId = ':mehfilLangarLocationId'
+  ) {
+    return `${SubModulePaths.mehfilLangarLocationsPath}/${mehfilLangarLocationId}`;
+  }
+
   // *************************************************************************************
   // Card Verification Routes
   // *************************************************************************************

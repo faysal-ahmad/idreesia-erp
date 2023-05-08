@@ -1,11 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../idreesia-digitalocean"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../idreesia-digitalocean"
+    },
+    {
+      "path": "../idreesia-db-backup"
+    }
+  ],
+  "settings": {}
 }

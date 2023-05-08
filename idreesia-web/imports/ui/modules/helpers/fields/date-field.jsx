@@ -1,7 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import moment from "moment";
-
 import { DatePicker, Form } from "antd";
 
 const formItemLayout = {
@@ -23,7 +21,7 @@ const DateField = ({
   fieldName,
   fieldLabel,
   fieldLayout = formItemLayout,
-  initialValue = moment(),
+  initialValue = null,
   required,
   requiredMessage,
 }) => {

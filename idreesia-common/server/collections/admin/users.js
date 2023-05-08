@@ -12,6 +12,7 @@ import { JobTypes } from 'meteor/idreesia-common/constants';
 
 const Users = Meteor.users;
 
+/*
 const wrapAsync = Meteor.wrapAsync ? Meteor.wrapAsync : Meteor._wrapAsync;
 function aggregate(pipelines, options) {
   const rawCollection = Meteor.users.rawCollection();
@@ -20,6 +21,7 @@ function aggregate(pipelines, options) {
     options
   );
 }
+*/
 
 const mapUser = user => ({
   _id: user._id,
@@ -132,8 +134,8 @@ Users.searchUsers = params => {
     { $limit: nPageSize },
   ]);
 
-  const users = aggregate(resultsPipeline);
-  const totalResults = aggregate(countingPipeline);
+  const users = Users.aggregate(resultsPipeline);
+  const totalResults = Users.aggregate(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),
@@ -167,8 +169,8 @@ Users.searchOperationsWazaifUsers = params => {
     { $limit: nPageSize },
   ]);
 
-  const users = aggregate(resultsPipeline);
-  const totalResults = aggregate(countingPipeline);
+  const users = Users.aggregate(resultsPipeline);
+  const totalResults = Users.aggregate(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),
@@ -212,8 +214,8 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
     { $limit: nPageSize },
   ]);
 
-  const users = aggregate(resultsPipeline);
-  const totalResults = aggregate(countingPipeline);
+  const users = Users.aggregate(resultsPipeline);
+  const totalResults = Users.aggregate(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),

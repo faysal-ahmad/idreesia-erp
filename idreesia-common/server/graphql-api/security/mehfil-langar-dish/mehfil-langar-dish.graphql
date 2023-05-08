@@ -1,0 +1,27 @@
+type MehfilLangarDishType {	
+  _id: String	
+  name: String	
+  urduName: String	
+  overallUsedCount: Int	
+
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
+
+extend type Query {	
+  allSecurityMehfilLangarDishes: [MehfilLangarDishType]	
+  securityMehfilLangarDishById(id: String!): MehfilLangarDishType	
+}	
+
+extend type Mutation {	
+  createSecurityMehfilLangarDish(name: String!, urduName: String!): MehfilLangarDishType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  updateSecurityMehfilLangarDish(id: String!, name: String!, urduName: String!): MehfilLangarDishType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  removeSecurityMehfilLangarDish(_id: String!): Int	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}

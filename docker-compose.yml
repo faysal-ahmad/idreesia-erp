@@ -6,41 +6,19 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data/mongo:/data/db
-      - ~/Dropbox/Idreesia-ERP-Backup:/data/backup
+      - mongo-dev:/data/db
 
   mongo-express:
     build:
       context: ./containers/mongo-express
+    depends_on:
+      - mongo
     ports:
-      - "3002:8081"
+      - "8000:8081"
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo
       - ME_CONFIG_BASICAUTH_USERNAME=erp-admin
       - ME_CONFIG_BASICAUTH_PASSWORD=fairly long password
-    depends_on:
-      - mongo
 
-  web:
-    build:
-      context: ./idreesia-web
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mongo
-
-  mobile:
-    build:
-      context: ./idreesia-mobile
-    ports:
-      - "3001:3001"
-    depends_on:
-      - mongo
-
-  jobs:
-    build:
-      context: ./idreesia-jobs
-    ports:
-      - "3002:3002"
-    depends_on:
-      - mongo
+volumes:
+  mongo-dev: {}

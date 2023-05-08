@@ -19,6 +19,7 @@ percolate:migrations
 swydo:graphql@1.0.0
 react-meteor-data
 dynamic-import@0.7.2
+sakulstra:aggregate@1.4.4
 
 idreesia-common
 accounts-google@1.4.0

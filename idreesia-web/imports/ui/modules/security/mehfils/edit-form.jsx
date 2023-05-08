@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
 import { Form, message } from 'antd';
+import dayjs from 'dayjs';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
@@ -74,7 +74,7 @@ class EditForm extends Component {
           <DateField
             fieldName="mehfilDate"
             fieldLabel="Mehfil Date"
-            initialValue={moment(Number(mehfilById.mehfilDate))}
+            initialValue={dayjs(Number(mehfilById.mehfilDate))}
           />
           <FormButtonsSaveCancel
             handleCancel={this.handleCancel}

@@ -4,6 +4,20 @@ import { Switch, Route } from 'react-router-dom';
 import { withTracker } from 'meteor/react-meteor-data';
 import { useDispatch } from 'react-redux';
 
+/**
+ * Workaround to get dayjs latest version to work with
+ * rc-component/picker. Basically DatePicker throws errors
+ * without this when clicking on control to display picker.
+ * https://github.com/ant-design/ant-design/issues/26190
+ */
+import dayjs from "dayjs";
+import weekday from "dayjs/plugin/weekday"
+import localeData from "dayjs/plugin/localeData"
+
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+// *********************************************************
+
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import { LoggedInRoute, LoggedOutRoute } from './main-layout';

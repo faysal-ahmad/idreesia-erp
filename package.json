@@ -17,6 +17,11 @@
     "prettier": "^1.18.2",
     "regenerator-runtime": "^0.13.3"
   },
+  "scripts": {
+    "compose": "docker compose --file 'docker-compose.yml'",
+    "docker:up": "yarn compose up -d",
+    "docker:down": "yarn compose down"
+  },
   "lint-staged": {
     "*.{js,jsx}": [
       "prettier --write",

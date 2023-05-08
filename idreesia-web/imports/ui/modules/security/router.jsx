@@ -5,7 +5,21 @@ import { default as paths } from './submodule-paths';
 import { MehfilCardVerificationForm } from './mehfil-card-verification';
 import { KarkunVerificationForm } from './karkun-verification';
 import { MehfilsNewForm, MehfilsEditForm, MehfilsList } from './mehfils';
-import { MehfilDutiesNewForm, MehfilDutiesEditForm, MehfilDutiesList } from './mehfil-duties';
+import {
+  MehfilDutiesNewForm,
+  MehfilDutiesEditForm,
+  MehfilDutiesList,
+} from './setup/mehfil-duties';
+import {
+  MehfilLangarDishesNewForm,
+  MehfilLangarDishesEditForm,
+  MehfilLangarDishesList,
+} from './setup/mehfil-langar-dishes';
+import {
+  MehfilLangarLocationsNewForm,
+  MehfilLangarLocationsEditForm,
+  MehfilLangarLocationsList,
+} from './setup/mehfil-langar-locations';
 import {
   MehfilKarkunsList,
   MehfilKarkunsPrintCards,
@@ -41,6 +55,14 @@ const Router = () => (
     <Route path={paths.mehfilDutiesNewFormPath} component={MehfilDutiesNewForm} />
     <Route path={paths.mehfilDutiesEditFormPath()} component={MehfilDutiesEditForm} />
     <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
+
+    <Route path={paths.mehfilLangarDishesNewFormPath} component={MehfilLangarDishesNewForm} />
+    <Route path={paths.mehfilLangarDishesEditFormPath()} component={MehfilLangarDishesEditForm} />
+    <Route path={paths.mehfilLangarDishesPath} component={MehfilLangarDishesList} />
+
+    <Route path={paths.mehfilLangarLocationsNewFormPath} component={MehfilLangarLocationsNewForm} />
+    <Route path={paths.mehfilLangarLocationsEditFormPath()} component={MehfilLangarLocationsEditForm} />
+    <Route path={paths.mehfilLangarLocationsPath} component={MehfilLangarLocationsList} />
 
     <Route
       path={paths.mehfilCardVerificationPath}

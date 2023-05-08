@@ -4,6 +4,8 @@ const SubModuleNames = {
   visitorCardVerification: 'Visitor Card Verification',
   mehfils: 'Mehfils',
   mehfilDuties: 'Mehfil Duties',
+  mehfilLangarDishes: 'Mehfil Langar Dishes',
+  mehfilLangarLocations: 'Mehfil Langar Locations',
   mehfilCardVerification: 'Mehfil Card Verification',
   dutyCardVerification: 'Duty Card Verification',
   sharedResidences: 'Shared Residences',

@@ -64,6 +64,12 @@ import SecurityMehfilDutyResolvers from './security/mehfil-duty/resolvers';
 import SecurityMehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun.graphql';
 import SecurityMehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
 
+import SecurityMehfilLangarDishSchema from './security/mehfil-langar-dish/mehfil-langar-dish.graphql';
+import SecurityMehfilLangarDishResolvers from './security/mehfil-langar-dish/resolvers';
+
+import SecurityMehfilLangarLocationSchema from './security/mehfil-langar-location/mehfil-langar-location.graphql';
+import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-location/resolvers';
+
 import SecurityUserSchema from './security/security-user/security-user.graphql';
 import SecurityUserResolvers from './security/security-user/resolvers';
 
@@ -290,6 +296,8 @@ const typeDefs = [
   SecurityMehfilSchema,
   SecurityMehfilDutySchema,
   SecurityMehfilKarkunSchema,
+  SecurityMehfilLangarDishSchema,
+  SecurityMehfilLangarLocationSchema,
   SecurityUserSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
@@ -379,6 +387,8 @@ const resolvers = merge(
   SecurityMehfilResolvers,
   SecurityMehfilDutyResolvers,
   SecurityMehfilKarkunResolvers,
+  SecurityMehfilLangarDishResolvers,
+  SecurityMehfilLangarLocationResolvers,
   SecurityUserResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,

@@ -46,6 +46,16 @@ class Sidebar extends Component {
         history.push(paths.mehfilDutiesPath);
         break;
 
+      case 'mehfil-langar-dishes':
+        setActiveSubModuleName(SubModuleNames.mehfilLangarDishes);
+        history.push(paths.mehfilLangarDishesPath);
+        break;
+
+      case 'mehfil-langar-locations':
+        setActiveSubModuleName(SubModuleNames.mehfilLangarLocations);
+        history.push(paths.mehfilLangarLocationsPath);
+        break;
+    
       case 'mehfil-card-verification':
         setActiveSubModuleName(SubModuleNames.mehfilCardVerification);
         history.push(paths.mehfilCardVerificationPath);
@@ -187,6 +197,14 @@ class Sidebar extends Component {
           <Menu.Item key="mehfil-duties">
             <TagsOutlined style={IconStyle} />
             <span>Mehfil Duties</span>
+          </Menu.Item>
+          <Menu.Item key="mehfil-langar-dishes">
+            <TagsOutlined style={IconStyle} />
+            <span>Langar Dishes</span>
+          </Menu.Item>
+          <Menu.Item key="mehfil-langar-locations">
+            <TagsOutlined style={IconStyle} />
+            <span>Langar Locations</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu

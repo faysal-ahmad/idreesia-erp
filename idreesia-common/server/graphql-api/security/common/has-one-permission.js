@@ -1,6 +1,5 @@
 export default function hasOnePermission(user, permissions) {
-  if (user.username === 'erp-admin') return true;
-
+  if (user?.username === 'erp-admin') return true;
   if (!user || user.locked === true) return false;
 
   const { permissions: userPermissions } = user;

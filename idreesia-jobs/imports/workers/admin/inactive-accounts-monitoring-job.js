@@ -19,7 +19,7 @@ export const worker = (job, callback) => {
     // Iterate through all the users and lock the accounts that
     // have not been active for 30 days.
     users.forEach(user => {
-      if (!user.locked) {
+      if (user.username !== 'erp-admin' && !user.locked) {
         const lastActiveAt = user.lastActiveAt || user.createdAt;
         const diff = moment().diff(
           moment(lastActiveAt, Formats.DATE_FORMAT),

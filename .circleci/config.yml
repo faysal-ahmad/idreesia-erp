@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-web:
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2204:2023.10.1
 
     working_directory: ~/idreesia-erp/idreesia-web
 
@@ -41,7 +41,7 @@ jobs:
 
   build-mobile:
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2204:2023.10.1
 
     working_directory: ~/idreesia-erp/idreesia-mobile
 
@@ -80,7 +80,7 @@ jobs:
 
   build-jobs:
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2204:2023.10.1
 
     working_directory: ~/idreesia-erp/idreesia-jobs
 

@@ -6,7 +6,7 @@ module.exports = {
       autorestart: true,
       env: {
         NODE_ENV: 'production',
-        MONGO_URL: 'mongodb://mongo:27017/idreesia-erp',
+        MONGO_URL: 'mongodb+srv://doadmin:6F9dv5BU82hz047w@db-mongodb-sgp1-86957-5dbb618c.mongo.ondigitalocean.com/idreesia-erp?authSource=admin&tls=true',
         ROOT_URL: 'https://idreesia-erp.com',
         PORT: 3000,
         METEOR_SETTINGS: {

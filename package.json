@@ -1,5 +1,5 @@
 {
-  "name": "idreesia-erp-suite",
+  "name": "idreesia-apps-suite",
   "private": true,
   "devDependencies": {
     "babel-eslint": "^8.2.2",

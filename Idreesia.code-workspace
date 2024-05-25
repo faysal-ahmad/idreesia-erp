@@ -4,9 +4,6 @@
       "path": "."
     },
     {
-      "path": "../idreesia-digitalocean"
-    },
-    {
       "path": "../idreesia-db-backup"
     }
   ],

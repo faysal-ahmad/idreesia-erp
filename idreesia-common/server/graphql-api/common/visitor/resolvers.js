@@ -3,7 +3,6 @@ import {
   Attachments,
   People,
 } from 'meteor/idreesia-common/server/collections/common';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
@@ -39,7 +38,13 @@ export default {
       return compact(distincFunction('visitorData.country'));
     },
 
-    pagedVisitors: async (obj, { filter }) => Visitors.searchVisitors(filter),
+    pagedVisitors: async (obj, { filter }) =>
+      People.searchPeople(filter, {
+        includeVisitors: true,
+      }).then(result => ({
+        data: result.data.map(person => People.personToVisitor(person)),
+        totalResults: result.totalResults,
+      })),
   },
 
   Mutation: {

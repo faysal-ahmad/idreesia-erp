@@ -33,7 +33,6 @@ import MessageResolvers from './common/message/resolvers';
 
 import PersonSchema from './common/person/person.graphql';
 import PersonResolvers from './common/person/resolvers';
-
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 

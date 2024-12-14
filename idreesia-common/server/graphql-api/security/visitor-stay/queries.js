@@ -121,7 +121,7 @@ export async function getVisitorStays(queryString) {
   if (city) {
     pipeline.push({
       $match: {
-        'visitor.city': { $eq: city },
+        'visitor.visitorData.city': { $eq: city },
       },
     });
   }
@@ -138,21 +138,34 @@ export async function getVisitorStays(queryString) {
     if (additionalInfo === 'has-notes') {
       pipeline.push({
         $match: {
-          'visitor.otherNotes': { $exists: true, $nin: ['', null] },
+          'visitor.visitorData.otherNotes': { $exists: true, $nin: ['', null] },
         },
       });
     } else if (additionalInfo === 'has-criminal-record') {
       pipeline.push({
         $match: {
-          'visitor.criminalRecord': { $exists: true, $nin: ['', null] },
+          'visitor.visitorData.criminalRecord': {
+            $exists: true,
+            $nin: ['', null],
+          },
         },
       });
     } else if (additionalInfo === 'has-notes-or-criminal-record') {
       pipeline.push({
         $match: {
           $or: [
-            { 'visitor.otherNotes': { $exists: true, $nin: ['', null] } },
-            { 'visitor.criminalRecord': { $exists: true, $nin: ['', null] } },
+            {
+              'visitor.visitorData.otherNotes': {
+                $exists: true,
+                $nin: ['', null],
+              },
+            },
+            {
+              'visitor.visitorData.criminalRecord': {
+                $exists: true,
+                $nin: ['', null],
+              },
+            },
           ],
         },
       });

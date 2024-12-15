@@ -94,12 +94,14 @@ export default {
       // We are going to assume that if the current time is before midnight, but
       // after 6 PM, then the stay is for the next day's date.
       // But if it is after midnight, then it is for the current date.
-      const fromDate = dayjs();
-      if (fromDate.hour() >= 18) fromDate.add(1, 'd');
+      let fromDate = dayjs();
+      if (fromDate.hour() >= 18) {
+        fromDate = fromDate.add(1, 'd');
+      }
 
-      const toDate = fromDate.clone();
+      let toDate = fromDate.clone();
       if (numOfDays > 1) {
-        toDate.add(numOfDays - 1, 'days');
+        toDate = toDate.add(numOfDays - 1, 'd');
       }
 
       // Before creating a stay, ensure that there isn't already another stay created

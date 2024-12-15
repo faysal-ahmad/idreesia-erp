@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
@@ -57,8 +57,8 @@ class ListFilter extends Component {
       queryParams: { startDate, endDate, showApproved, showUnapproved },
     } = this.props;
 
-    const mStartDate = moment(startDate, Formats.DATE_FORMAT);
-    const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+    const mStartDate = startDate ? dayjs(startDate, Formats.DATE_FORMAT) : null;
+    const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
     const status = [];
     if (!showApproved || showApproved === 'true') status.push('approved');
     if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');
@@ -82,14 +82,14 @@ class ListFilter extends Component {
               fieldLabel="Start Date"
               fieldLayout={formItemLayout}
               required={false}
-              initialValue={mStartDate.isValid() ? mStartDate : null}
+              initialValue={mStartDate}
             />
             <DateField
               fieldName="endDate"
               fieldLabel="End Date"
               fieldLayout={formItemLayout}
               required={false}
-              initialValue={mEndDate.isValid() ? mEndDate : null}
+              initialValue={mEndDate}
             />
             <Form.Item {...buttonItemLayout}>
               <Row type="flex" justify="end">

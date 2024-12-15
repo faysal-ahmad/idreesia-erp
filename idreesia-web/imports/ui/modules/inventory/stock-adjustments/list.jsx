@@ -90,7 +90,7 @@ class List extends Component {
       title: 'Adjustment Date',
       dataIndex: 'adjustmentDate',
       key: 'adjustmentDate',
-      render: text => dayjs(Number(text).format('DD MMM, YYYY')),
+      render: text => text ? dayjs(Number(text)).format('DD MMM, YYYY') : '',
     },
     {
       title: 'Adjusted By',

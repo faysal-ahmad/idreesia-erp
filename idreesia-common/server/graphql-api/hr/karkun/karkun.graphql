@@ -6,7 +6,12 @@ extend type Query {
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
-  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES], dataFieldName: "karkuns")
+  @checkPermissions(permissions: [
+    HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES,
+    IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
+    IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
+    IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
+  ], dataFieldName: "karkuns")
 }
 
 extend type Mutation {

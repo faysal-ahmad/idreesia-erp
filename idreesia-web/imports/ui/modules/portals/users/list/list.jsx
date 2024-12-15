@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Pagination, Row, Table } from 'antd';
-import { LockOutlined, PlayCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
@@ -155,7 +155,7 @@ const List = ({ history, location }) => {
       key: 'lastActiveAt',
       render: text => {
         if (!text) return '';
-        return moment(Number(text)).format(Formats.DATE_TIME_FORMAT);
+        return dayjs(Number(text)).format(Formats.DATE_TIME_FORMAT);
       },
     },
     {

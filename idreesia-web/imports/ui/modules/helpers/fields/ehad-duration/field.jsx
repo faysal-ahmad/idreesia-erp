@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Form } from 'antd';
 import Input from './input';
@@ -50,7 +50,7 @@ Field.propTypes = {
 };
 
 Field.defaultProps = {
-  initialValue: moment().startOf('day'),
+  initialValue: dayjs().startOf('day'),
   fieldLayout: formItemLayout,
 };
 

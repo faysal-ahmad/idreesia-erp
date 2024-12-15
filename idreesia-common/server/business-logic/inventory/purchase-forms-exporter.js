@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import XLSX from 'xlsx';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -15,7 +15,7 @@ export function exportPurchaseForms(purchaseFormIdsString) {
   }).fetch();
 
   const sheetData = purchaseForms.map(purchaseForm => {
-    const purchaseDate = moment(Number(purchaseForm.purchaseDate)).format(
+    const purchaseDate = dayjs(Number(purchaseForm.purchaseDate)).format(
       'DD MMM, YYYY'
     );
 

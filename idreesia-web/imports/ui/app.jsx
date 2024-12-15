@@ -11,11 +11,13 @@ import { useDispatch } from 'react-redux';
  * https://github.com/ant-design/ant-design/issues/26190
  */
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration"
 import weekday from "dayjs/plugin/weekday"
 import localeData from "dayjs/plugin/localeData"
 
-dayjs.extend(weekday);
+dayjs.extend(duration);
 dayjs.extend(localeData);
+dayjs.extend(weekday);
 // *********************************************************
 
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';

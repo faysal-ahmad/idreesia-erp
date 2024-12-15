@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { LockOutlined } from '@ant-design/icons';
+import { Pagination, Row, Table } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats, Permissions } from 'meteor/idreesia-common/constants';
 
-import { Pagination, Row, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import { PAGED_OUTSTATION_USERS } from '../gql';
@@ -92,8 +92,8 @@ const List = ({ history, location }) => {
         if (!text) return '';
         return (
           <>
-            <Row>{moment(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{moment(Number(text)).format(Formats.TIME_FORMAT)}</Row>
+            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
+            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
           </>
         );
       },

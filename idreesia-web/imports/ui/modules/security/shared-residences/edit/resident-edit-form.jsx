@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form } from 'antd';
 
 import {
@@ -62,14 +62,14 @@ class EditForm extends Component {
           fieldName="fromDate"
           fieldLabel="From Date"
           initialValue={
-            resident.fromDate ? moment(Number(resident.fromDate)) : null
+            resident.fromDate ? dayjs(Number(resident.fromDate)) : null
           }
         />
         <DateField
           fieldName="toDate"
           fieldLabel="To Date"
           initialValue={
-            resident.toDate ? moment(Number(resident.toDate)) : null
+            resident.toDate ? dayjs(Number(resident.toDate)) : null
           }
         />
         <FormButtonsSaveCancel

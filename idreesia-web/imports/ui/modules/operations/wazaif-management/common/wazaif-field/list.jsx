@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -43,7 +43,7 @@ const List = ({
     key: 'revisionDate',
     width: 150,
     render: text =>
-      text ? moment(Number(text)).format(Formats.DATE_FORMAT) : '',
+      text ? dayjs(Number(text)).format(Formats.DATE_FORMAT) : '',
   };
 
   const columns = [

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { TimePicker, Form } from 'antd';
 
@@ -22,7 +22,7 @@ const TimeField = ({
   fieldName,
   fieldLabel,
   fieldLayout = formItemLayout,
-  initialValue = moment(),
+  initialValue = dayjs(),
   required,
   requiredMessage,
 }) => {

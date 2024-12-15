@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import moment from "moment";
+import dayjs from "dayjs";
 import gql from "graphql-tag";
 import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
+import { Pagination, Table } from "antd";
 
 import { Formats } from "meteor/idreesia-common/constants";
-import { Pagination, Table } from "antd";
 
 class List extends Component {
   static propTypes = {
@@ -31,10 +31,7 @@ class List extends Component {
     title: "Date",
     dataIndex: ['refVoucher', 'voucherDate'],
     key: "refVoucher.voucherDate",
-    render: text => {
-      const date = moment(Number(text));
-      return date.format("DD MMM, YYYY");
-    },
+    render: text => dayjs(Number(text)).format("DD MMM, YYYY"),
   };
 
   descriptionColumn = {

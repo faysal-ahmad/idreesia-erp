@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
 import { Form, message } from 'antd';
+import dayjs from 'dayjs';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -111,16 +111,16 @@ class EditForm extends Component {
         <DateField
           fieldName="fromDate"
           fieldLabel="From Date"
-          initialValue={moment(Number(visitorStayById.fromDate))}
+          initialValue={dayjs(Number(visitorStayById.fromDate))}
           required
-          requiredMessage="Please select a from date."
+          requiredMessage="Please select from date."
         />
         <DateField
           fieldName="toDate"
           fieldLabel="To Date"
-          initialValue={moment(Number(visitorStayById.toDate))}
+          initialValue={dayjs(Number(visitorStayById.toDate))}
           required
-          requiredMessage="Please select a to date."
+          requiredMessage="Please select to date."
         />
         <AutoCompleteField
           fieldName="stayAllowedBy"

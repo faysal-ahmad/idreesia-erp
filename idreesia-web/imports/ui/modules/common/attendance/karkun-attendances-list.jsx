@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { Table, Pagination } from 'antd';
@@ -32,7 +32,7 @@ const columns = [
     fixed: 'left',
     width: 100,
     render: text => {
-      const date = moment(`01-${text}`, Formats.DATE_FORMAT);
+      const date = dayjs(`01-${text}`, Formats.DATE_FORMAT);
       return date.format('MMM, YYYY');
     },
   },
@@ -44,7 +44,7 @@ const columns = [
     render: (text, record) => {
       const attendanceDetails = text ? JSON.parse(text) : {};
 
-      const month = moment(`01-${record.month}`, Formats.DATE_FORMAT);
+      const month = dayjs(`01-${record.month}`, Formats.DATE_FORMAT);
       const days = [];
       for (let d = 1; d <= month.daysInMonth(); d++) {
         const day = d.toString();

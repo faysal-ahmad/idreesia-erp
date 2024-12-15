@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Col, Divider, Row, Spin, Tabs } from 'antd';
 import { CheckCircleTwoTone, ExclamationCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Col, Divider, Row, Spin, Tabs } from 'antd';
 import { VisitorImdadRequestsList } from '/imports/ui/modules/operations/visitor-imdad-requests';
 
 import { OPERATIONS_VISITORS_BY_CNIC } from '../gql';
@@ -73,7 +73,7 @@ const SearchResult = ({ visitor }) => {
         <SearchResultRow label="S/O" text={parentName} dataStyle={DataStyle} />
         <SearchResultRow
           label="Ehad Date"
-          text={moment(Number(ehadDate)).format('MMMM, YYYY')}
+          text={dayjs(Number(ehadDate)).format('MMMM, YYYY')}
           dataStyle={DataStyle}
         />
         <SearchResultRow

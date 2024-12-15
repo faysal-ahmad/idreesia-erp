@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Table, Tooltip, message } from 'antd';
 import { DeleteOutlined, PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';
 
@@ -34,7 +34,7 @@ class List extends Component {
       dataIndex: 'mehfilDate',
       key: 'mehfilDate',
       render: text => {
-        const mehfilDate = moment(Number(text));
+        const mehfilDate = dayjs(Number(text));
         return mehfilDate.format('DD MMM, YYYY');
       },
     },

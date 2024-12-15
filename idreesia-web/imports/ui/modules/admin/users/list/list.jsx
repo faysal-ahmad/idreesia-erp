@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { LockOutlined } from '@ant-design/icons';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Pagination, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -48,7 +48,7 @@ const columns = [
     key: 'lastActiveAt',
     render: text => {
       if (!text) return '';
-      return moment(Number(text)).format(Formats.DATE_TIME_FORMAT);
+      return dayjs(Number(text)).format(Formats.DATE_TIME_FORMAT);
     },
   },
   {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
@@ -132,9 +132,9 @@ class List extends Component {
           let tooltip = `Stock level has never been verified.`;
 
           if (record.verifiedOn) {
-            const now = moment();
-            const lastVerified = moment(Number(record.verifiedOn));
-            const duration = moment.duration(now.diff(lastVerified)).asMonths();
+            const now = dayjs();
+            const lastVerified = dayjs(Number(record.verifiedOn));
+            const duration = dayjs.duration(now.diff(lastVerified)).asMonths();
             tooltip = `Stock level verified on ${lastVerified.format(
               Formats.DATE_FORMAT
             )}`;

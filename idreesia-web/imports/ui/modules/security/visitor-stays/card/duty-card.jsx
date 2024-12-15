@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
@@ -43,16 +43,16 @@ export default class DutyCard extends Component {
 
     if (!reason) return null;
 
-    const fromDate = moment(Number(visitorStay.fromDate)).format('DD-MMM-YY');
-    const toDate = moment(Number(visitorStay.toDate)).format('DD-MMM-YY');
+    const fromDate = dayjs(Number(visitorStay.fromDate)).format('DD-MMM-YY');
+    const toDate = dayjs(Number(visitorStay.toDate)).format('DD-MMM-YY');
     const title = reason.name;
-    const subTitle = `${fromDate} to ${toDate}`;
+    const subTitle = fromDate === toDate ? fromDate : `${fromDate} to ${toDate}`;
     const visitorImage = this.getVisitorImage();
 
     return (
       <div className="visitor-duty-card-print-view">
         <div className="visitor_duty_card">
-          <Row>
+          <Row justify="center">
             <Col>
               <div className="visitor_duty_card_heading">{title}</div>
               <div className="visitor_duty_card_subheading">{subTitle}</div>

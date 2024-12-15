@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
@@ -130,7 +130,7 @@ class EditForm extends Component {
           <DateField
             fieldName="requestedDate"
             fieldLabel="Requested Date"
-            initialValue={moment(Number(wazaifDeliveryOrderById.requestedDate))}
+            initialValue={dayjs(Number(wazaifDeliveryOrderById.requestedDate))}
             required
             requiredMessage="Please input a value for requested date."
           />
@@ -155,7 +155,7 @@ class EditForm extends Component {
             fieldLabel="Delivery Date"
             initialValue={
               wazaifDeliveryOrderById.deliveryDate
-                ? moment(Number(wazaifDeliveryOrderById.deliveryDate))
+                ? dayjs(Number(wazaifDeliveryOrderById.deliveryDate))
                 : null
             }
           />

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -125,10 +125,7 @@ const List = ({ history, location }) => {
       dataIndex: 'paymentDate',
       key: 'paymentDate',
       width: 150,
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Name',

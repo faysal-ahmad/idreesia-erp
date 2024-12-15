@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Form } from 'antd';
@@ -73,7 +73,7 @@ class ViewForm extends Component {
           <DateField
             fieldName="adjustedDate"
             fieldLabel="Adjusted Date"
-            initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
+            initialValue={dayjs(Number(stockAdjustmentById.adjustmentDate))}
           />
 
           <InputTextAreaField

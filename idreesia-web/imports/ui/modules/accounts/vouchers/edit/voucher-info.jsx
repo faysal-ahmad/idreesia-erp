@@ -4,7 +4,7 @@ import { Form, message } from 'antd';
 import gql from 'graphql-tag';
 import { flowRight } from 'lodash';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { WithCompanyId } from '/imports/ui/modules/accounts/common/composers';
@@ -74,7 +74,7 @@ class VoucherInfo extends Component {
         <InputTextField
           fieldName="voucherDate"
           fieldLabel="Voucher Date"
-          initialValue={moment(Number(voucherById.voucherDate)).format(
+          initialValue={dayjs(Number(voucherById.voucherDate)).format(
             Formats.DATE_FORMAT
           )}
           readOnly

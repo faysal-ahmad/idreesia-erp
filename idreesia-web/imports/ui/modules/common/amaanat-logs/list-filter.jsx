@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -58,8 +58,8 @@ const ListFilter = props => {
   } = props;
   const cityMehfilCascaderData = getCityMehfilCascaderData(cities, cityMehfils);
 
-  const mStartDate = moment(startDate, Formats.DATE_FORMAT);
-  const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+  const mStartDate = dayjs(startDate, Formats.DATE_FORMAT);
+  const mEndDate = dayjs(endDate, Formats.DATE_FORMAT);
 
   return (
     <Collapse style={ContainerStyle}>

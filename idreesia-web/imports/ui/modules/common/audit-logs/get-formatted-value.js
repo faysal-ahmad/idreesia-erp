@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Formats } from 'meteor/idreesia-common/constants';
 
 const fieldDisplayNamesMap = {
@@ -29,9 +29,9 @@ const fieldDisplayNamesMap = {
 };
 
 const fieldValueFormatterMap = {
-  ehadDate: val => moment(val).format(Formats.DATE_FORMAT),
-  birthDate: val => moment(val).format(Formats.DATE_FORMAT),
-  lastTarteebDate: val => moment(val).format(Formats.DATE_FORMAT),
+  ehadDate: val => dayjs(val).format(Formats.DATE_FORMAT),
+  birthDate: val => dayjs(val).format(Formats.DATE_FORMAT),
+  lastTarteebDate: val => dayjs(val).format(Formats.DATE_FORMAT),
 };
 
 export default function getFormattedValue({

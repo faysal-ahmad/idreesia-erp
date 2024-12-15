@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -17,13 +17,13 @@ const AuditInfo = ({ record, userNamesLoading, userNames }) => {
   const { createdAt, updatedAt, approvedOn } = record;
 
   const strCreatedAt = createdAt
-    ? moment(Number(createdAt)).format(Formats.DATE_TIME_FORMAT)
+    ? dayjs(Number(createdAt)).format(Formats.DATE_TIME_FORMAT)
     : null;
   const strUpdatedAt = updatedAt
-    ? moment(Number(updatedAt)).format(Formats.DATE_TIME_FORMAT)
+    ? dayjs(Number(updatedAt)).format(Formats.DATE_TIME_FORMAT)
     : null;
   const strApprovedOn = approvedOn
-    ? moment(Number(approvedOn)).format(Formats.DATE_TIME_FORMAT)
+    ? dayjs(Number(approvedOn)).format(Formats.DATE_TIME_FORMAT)
     : null;
 
   let approvalNode = null;

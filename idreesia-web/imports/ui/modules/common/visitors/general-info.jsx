@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Divider, Form } from 'antd';
 
 import {
@@ -81,7 +81,7 @@ const GeneralInfo = ({ visitor, handleFinish, handleCancel }) => {
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            visitor.birthDate ? moment(Number(visitor.birthDate)) : null
+            visitor.birthDate ? dayjs(Number(visitor.birthDate)) : null
           }
         />
 
@@ -124,7 +124,7 @@ const GeneralInfo = ({ visitor, handleFinish, handleCancel }) => {
           fieldLabel="Ehad Duration"
           required
           requiredMessage="Please specify the Ehad duration for the person."
-          initialValue={moment(Number(visitor.ehadDate))}
+          initialValue={dayjs(Number(visitor.ehadDate))}
         />
 
         <InputTextField

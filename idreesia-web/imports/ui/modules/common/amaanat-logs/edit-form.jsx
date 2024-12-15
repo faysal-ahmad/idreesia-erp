@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form } from 'antd';
 
 import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
@@ -55,7 +55,7 @@ class EditForm extends Component {
           fieldLabel="Sent Date"
           required
           requiredMessage="Please select a date for when the amaanat was sent."
-          initialValue={moment(Number(amaanatLog.sentDate))}
+          initialValue={dayjs(Number(amaanatLog.sentDate))}
         />
 
         <InputNumberField

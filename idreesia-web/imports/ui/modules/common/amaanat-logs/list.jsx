@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-
 import { Pagination, Table, Tooltip } from 'antd';
 
 export default class AmaanatLogsList extends Component {
@@ -26,10 +25,7 @@ export default class AmaanatLogsList extends Component {
       title: 'Sent Date',
       dataIndex: 'sentDate',
       key: 'sentDate',
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'City / Mehfil',

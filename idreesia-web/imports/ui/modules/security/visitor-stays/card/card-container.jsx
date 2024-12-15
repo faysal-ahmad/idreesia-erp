@@ -104,6 +104,7 @@ const formQueryVisitorStay = gql`
       fromDate
       toDate
       stayReason
+      stayAllowedBy
       dutyName
       shiftName
     }

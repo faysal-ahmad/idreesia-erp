@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import XLSX from 'xlsx';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -15,7 +15,7 @@ export function exportIsssuanceForms(issuanceFormIdsString) {
   }).fetch();
 
   const sheetData = issuanceForms.map(issuanceForm => {
-    const issueDate = moment(Number(issuanceForm.issueDate)).format(
+    const issueDate = dayjs(Number(issuanceForm.issueDate)).format(
       'DD MMM, YYYY'
     );
 

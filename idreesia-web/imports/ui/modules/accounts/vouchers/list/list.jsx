@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Button, Table, Tooltip, Pagination } from 'antd';
 import { BarsOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Button, Table, Tooltip, Pagination } from 'antd';
 import { AccountsSubModulePaths as paths } from '/imports/ui/modules/accounts';
 import ListFilter from './list-filter';
 
@@ -56,10 +56,7 @@ class List extends Component {
       title: 'Voucher Date',
       dataIndex: 'voucherDate',
       key: 'voucherDate',
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Description',

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Barcode from "react-barcode";
-import moment from "moment";
+import dayjs from 'dayjs';
 import { find } from "lodash";
 
 import { Card } from "antd";
@@ -80,6 +80,9 @@ export default class StayCard extends Component {
       ? find(StayReasons, ({ _id }) => _id === visitorStay.stayReason)
       : null;
     const reasonText = reason ? reason.name : "";
+    const stayAllowedBy = visitorStay.stayAllowedBy ?? "";
+    const fromDate = dayjs(Number(visitorStay.fromDate)).format("DD MMM, YYYY");
+    const toDate = dayjs(Number(visitorStay.toDate)).format("DD MMM, YYYY");
 
     return (
       <Card
@@ -108,19 +111,31 @@ export default class StayCard extends Component {
           <b>Phone:</b> {visitor.contactNumber1}
         </div>
         <h2 className="stay_card_section">Stay Details</h2>
-        <div className="stay_card_item">
-          <b>From:</b>{" "}
-          {moment(Number(visitorStay.fromDate)).format("DD MMMM, YYYY")}
-        </div>
-        <div className="stay_card_item">
-          <b>To:</b>{" "}
-          {moment(Number(visitorStay.toDate)).format("DD MMMM, YYYY")}
-        </div>
-        {reasonText ? (
-          <div className="stay_card_item">
-            <b>Reason:</b> {reasonText}
-          </div>
-        ) : null}
+        {
+          fromDate === toDate ? (
+            <div className="stay_card_item">
+              <b>Date:</b>&nbsp;{fromDate}
+            </div>
+          ) : (
+            <div className="stay_card_item">
+              <b>Dates:</b>&nbsp;{fromDate}&nbsp;-&nbsp;{toDate}
+            </div>
+            )
+        }
+        {
+          reasonText ? (
+            <div className="stay_card_item">
+              <b>Reason:</b> {reasonText}
+            </div>
+          ) : null
+        }
+        {
+          stayAllowedBy ? (
+            <div className="stay_card_item">
+              <b>Allowed By:</b> {stayAllowedBy}
+            </div>
+          ) : null
+        }
         {dutyDetails}
         <div className="stay_card_item">
           <Barcode value={visitorStay._id} {...barcodeOptions} />

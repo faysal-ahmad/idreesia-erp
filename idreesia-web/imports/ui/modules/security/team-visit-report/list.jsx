@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Pagination, Table } from 'antd';
@@ -35,7 +35,7 @@ class List extends Component {
     title: 'Visit Date',
     key: 'visitDate',
     dataIndex: 'visitDate',
-    render: text => moment(Number(text)).format('DD MMM, YYYY'),
+    render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
   };
 
   teamNameColumn = {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { CloseCircleOutlined, DeleteOutlined, LeftOutlined, PlusCircleOutlined, RightOutlined, SaveOutlined, SettingOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -50,7 +50,7 @@ export default class KarkunsAttendanceList extends Component {
 
     cities: [],
     cityMehfils: [],
-    month: moment().format(Formats.MONTH_FORMAT),
+    month: dayjs().format(Formats.MONTH_FORMAT),
     attendance: [],
   };
 
@@ -106,7 +106,7 @@ export default class KarkunsAttendanceList extends Component {
             attendanceDetails = text ? JSON.parse(text) : {};
           }
 
-          const month = moment(`01-${record.month}`, Formats.DATE_FORMAT);
+          const month = dayjs(`01-${record.month}`, Formats.DATE_FORMAT);
           const days = [];
           for (let d = 1; d <= month.daysInMonth(); d++) {
             const day = d.toString();
@@ -350,7 +350,7 @@ export default class KarkunsAttendanceList extends Component {
 
   getTableHeader = () => {
     const { month } = this.props;
-    const _month = moment(`01-${month}`, Formats.DATE_FORMAT);
+    const _month = dayjs(`01-${month}`, Formats.DATE_FORMAT);
     return (
       <div className="list-table-header">
         <div className="list-table-header-section">

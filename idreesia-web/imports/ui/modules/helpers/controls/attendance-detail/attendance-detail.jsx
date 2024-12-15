@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import AttendanceDay from './attendance-day';
 
-const weekdayShorts = moment.weekdaysShort();
+const weekdayShorts = dayjs.weekdaysShort();
 
 export default class AttendanceDetail extends Component {
   static propTypes = {
@@ -24,7 +24,7 @@ export default class AttendanceDetail extends Component {
 
   render() {
     const { forMonth, value, initialValue } = this.props;
-    const month = moment(`01-${forMonth}`, Formats.DATE_FORMAT);
+    const month = dayjs(`01-${forMonth}`, Formats.DATE_FORMAT);
     const firstDayOfMonth = month.startOf('month').format('d');
     const attendances = value || initialValue || {};
 

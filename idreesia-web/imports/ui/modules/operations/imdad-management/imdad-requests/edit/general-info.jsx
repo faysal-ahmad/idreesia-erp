@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form, message } from 'antd';
 
 import { values } from 'meteor/idreesia-common/utilities/lodash';
@@ -76,7 +76,7 @@ const GeneralInfo = ({ requestId, history }) => {
           fieldLabel="Request Date"
           required
           requiredMessage="Please select a Request Date."
-          initialValue={moment(Number(operationsImdadRequestById.requestDate))}
+          initialValue={dayjs(Number(operationsImdadRequestById.requestDate))}
         />
 
         <SelectField

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
@@ -11,17 +11,15 @@ import { List } from 'antd';
 const ViewForm = ({ formDataLoading, visitorStayById }) => {
   if (formDataLoading) return null;
 
-  const fromDate = moment(Number(visitorStayById.fromDate));
-  const toDate = moment(Number(visitorStayById.toDate));
+  const fromDate = dayjs(Number(visitorStayById.fromDate)).format('DD MMM, YYYY');
+  const toDate = dayjs(Number(visitorStayById.toDate)).format('DD MMM, YYYY');
   const days = visitorStayById.numOfDays;
 
   let detail;
   if (days === 1) {
-    detail = `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
+    detail = `1 day - [${fromDate}]`;
   } else {
-    detail = `${days} days - [${fromDate.format(
-      'DD MMM, YYYY'
-    )} - ${toDate.format('DD MMM, YYYY')}]`;
+    detail = `${days} days - [${fromDate} - ${toDate}]`;
   }
 
   let stayReason;

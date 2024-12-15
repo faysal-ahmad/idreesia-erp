@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const EhadDurationDisplay = ({ value }) => {
-  const currentDate = moment().startOf('day');
+  const currentDate = dayjs().startOf('day');
   const diffInMonths = currentDate.diff(value, 'months');
   const yearValue =
     diffInMonths < 12 ? 0 : (diffInMonths - (diffInMonths % 12)) / 12;

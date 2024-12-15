@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -94,7 +94,7 @@ class EmploymentInfo extends Component {
           fieldLabel="Start Date"
           initialValue={
             hrKarkunById.employmentStartDate
-              ? moment(Number(hrKarkunById.employmentStartDate))
+              ? dayjs(Number(hrKarkunById.employmentStartDate))
               : null
           }
         />
@@ -104,7 +104,7 @@ class EmploymentInfo extends Component {
           fieldLabel="End Date"
           initialValue={
             hrKarkunById.employmentEndDate
-              ? moment(Number(hrKarkunById.employmentEndDate))
+              ? dayjs(Number(hrKarkunById.employmentEndDate))
               : null
           }
         />

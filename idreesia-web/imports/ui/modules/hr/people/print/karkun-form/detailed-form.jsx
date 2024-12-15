@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
@@ -70,7 +70,7 @@ export class DetailedForm extends Component {
       hrKarkunById.job,
       hrKarkunById.duties
     );
-    const timestamp = moment().format('DD MMM, YYYY');
+    const timestamp = dayjs().format('DD MMM, YYYY');
 
     return (
       <div className="karkun-print-view" ref={this.printViewRef}>
@@ -118,8 +118,8 @@ export class DetailedForm extends Component {
               <EhadDurationDisplay
                 value={
                   hrKarkunById.ehadDate
-                    ? moment(Number(hrKarkunById.ehadDate))
-                    : moment()
+                    ? dayjs(Number(hrKarkunById.ehadDate))
+                    : new Date()
                 }
               />
             </DisplayItem>

@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { CheckSquareOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FileOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Pagination,
+  Popconfirm,
+  Table,
+  Tooltip,
+  message,
+} from 'antd';
 
 import {
   flowRight,
@@ -14,14 +22,6 @@ import {
   WithDynamicBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import {
-  Button,
-  Pagination,
-  Popconfirm,
-  Table,
-  Tooltip,
-  message,
-} from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
@@ -59,10 +59,7 @@ class List extends Component {
       title: 'Purchase Date',
       dataIndex: 'purchaseDate',
       key: 'purchaseDate',
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Purchased By',

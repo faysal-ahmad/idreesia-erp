@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { WarningTwoTone } from '@ant-design/icons';
 
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -173,8 +173,8 @@ class List extends Component {
       ),
       key: 'stayDetails',
       render: (text, record) => {
-        const fromDate = moment(Number(record.fromDate));
-        const toDate = moment(Number(record.toDate));
+        const fromDate = dayjs(Number(record.fromDate));
+        const toDate = dayjs(Number(record.toDate));
         const days = record.numOfDays;
 
         let detail;

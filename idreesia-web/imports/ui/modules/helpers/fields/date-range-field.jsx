@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { DatePicker, Form } from 'antd';
 
@@ -25,7 +25,7 @@ const DateRangeField = ({
   fieldName,
   fieldLabel,
   fieldLayout = formItemLayout,
-  initialValue = [moment(), moment()],
+  initialValue = [dayjs(), dayjs()],
   required,
   requiredMessage,
 }) => {

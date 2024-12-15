@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { InstagramOutlined } from '@ant-design/icons';
 
 import { getUploadUrl } from 'meteor/idreesia-common/utilities';
@@ -52,7 +52,7 @@ export default class TakePicture extends Component {
     let data = this.pictureForm.state.imageSrc;
     if (!data) return;
 
-    const timestamp = moment();
+    const timestamp = dayjs();
 
     if (data.startsWith('data:image/jpeg;base64,')) {
       data = data.slice(23);

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { LockOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -90,8 +90,8 @@ const List = ({ history, location }) => {
         if (!text) return '';
         return (
           <>
-            <Row>{moment(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{moment(Number(text)).format(Formats.TIME_FORMAT)}</Row>
+            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
+            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
           </>
         );
       },

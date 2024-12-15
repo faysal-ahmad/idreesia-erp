@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import {
@@ -62,10 +62,7 @@ class List extends Component {
       title: 'Issue Date',
       dataIndex: 'issueDate',
       key: 'issueDate',
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Issued To',

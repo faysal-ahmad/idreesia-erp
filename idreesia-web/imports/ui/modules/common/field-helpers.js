@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { Button, Form, Row } from 'antd';
@@ -173,8 +173,8 @@ export function getUpdatedBetweenFilterField(fieldValue) {
   if (fieldValue) {
     const dates = JSON.parse(fieldValue);
     initialValue = [
-      dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
-      dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
+      dates[0] ? dayjs(dates[0], Formats.DATE_FORMAT) : null,
+      dates[1] ? dayjs(dates[1], Formats.DATE_FORMAT) : null,
     ];
   } else {
     initialValue = [null, null];

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Divider, Form } from 'antd';
@@ -64,7 +64,7 @@ class ViewForm extends Component {
           <DateField
             fieldName="purchaseDate"
             fieldLabel="Purchase Date"
-            initialValue={moment(Number(purchaseFormById.purchaseDate))}
+            initialValue={dayjs(Number(purchaseFormById.purchaseDate))}
             required
             requiredMessage="Please input a purchase date."
           />

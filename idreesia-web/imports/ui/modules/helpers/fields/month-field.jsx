@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import moment from "moment";
+import dayjs from "dayjs";
 
 import { DatePicker, Form } from "antd";
 
@@ -23,7 +23,7 @@ const MonthField = ({
   fieldName,
   fieldLabel,
   fieldLayout = formItemLayout,
-  initialValue = moment(),
+  initialValue = dayjs(),
   format = "MM-YYYY",
   required,
   requiredMessage,

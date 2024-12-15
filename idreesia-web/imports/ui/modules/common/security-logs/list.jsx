@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -60,7 +60,7 @@ class AuditLogsList extends Component {
       key: 'operationTime',
       width: 110,
       render: text => {
-        const date = moment(Number(text));
+        const date = dayjs(Number(text));
         return (
           <span>
             {date.format(Formats.DATE_FORMAT)}

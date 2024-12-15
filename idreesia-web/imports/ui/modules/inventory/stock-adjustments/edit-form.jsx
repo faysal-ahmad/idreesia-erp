@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
@@ -116,7 +116,7 @@ class EditForm extends Component {
           <DateField
             fieldName="adjustmentDate"
             fieldLabel="Adjustment Date"
-            initialValue={moment(Number(stockAdjustmentById.adjustmentDate))}
+            initialValue={dayjs(Number(stockAdjustmentById.adjustmentDate))}
             required
             requiredMessage="Please input an adjustment date."
           />

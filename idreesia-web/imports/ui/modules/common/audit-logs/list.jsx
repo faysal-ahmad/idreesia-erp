@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Pagination, Table } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { OperationType } from 'meteor/idreesia-common/constants/audit';
-import { Pagination, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import getFormattedValue from './get-formatted-value';
@@ -41,7 +41,7 @@ export default class AuditLogsList extends Component {
       key: 'operationTime',
       width: 110,
       render: text => {
-        const date = moment(Number(text));
+        const date = dayjs(Number(text));
         return (
           <span>
             {date.format(Formats.DATE_FORMAT)}

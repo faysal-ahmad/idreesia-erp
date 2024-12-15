@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
@@ -160,7 +160,7 @@ class GeneralInfo extends Component {
             fieldLabel="Age (years)"
             initialValue={
               portalMemberById.birthDate
-                ? moment(Number(portalMemberById.birthDate))
+                ? dayjs(Number(portalMemberById.birthDate))
                 : null
             }
           />
@@ -197,7 +197,7 @@ class GeneralInfo extends Component {
             fieldName="ehadDate"
             fieldLabel="Ehad Duration"
             required
-            initialValue={moment(Number(portalMemberById.ehadDate))}
+            initialValue={dayjs(Number(portalMemberById.ehadDate))}
             requiredMessage="Please specify the Ehad duration for the member."
           />
 

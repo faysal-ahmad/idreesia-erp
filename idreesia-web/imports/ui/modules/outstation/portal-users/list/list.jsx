@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Button, Pagination, Row, Table } from 'antd';
 import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -11,7 +12,6 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats, Permissions } from 'meteor/idreesia-common/constants';
 
-import { Button, Pagination, Row, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
@@ -168,8 +168,8 @@ const List = ({ history, location }) => {
         if (!text) return '';
         return (
           <>
-            <Row>{moment(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{moment(Number(text)).format(Formats.TIME_FORMAT)}</Row>
+            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
+            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
           </>
         );
       },

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -13,12 +13,12 @@ import { getVisitorStays, getTeamVisits } from './queries';
 export default {
   VisitorStayType: {
     isValid: async visitorStay => {
-      const toDate = moment(Number(visitorStay.toDate));
-      return moment().isBefore(toDate);
+      const toDate = dayjs(Number(visitorStay.toDate));
+      return dayjs().isBefore(toDate);
     },
     isExpired: async visitorStay => {
-      const toDate = moment(Number(visitorStay.toDate)).hour(18);
-      return moment().isAfter(toDate);
+      const toDate = dayjs(Number(visitorStay.toDate)).hour(18);
+      return dayjs().isAfter(toDate);
     },
     refVisitor: async visitorStay => {
       const person = People.findOne({
@@ -94,7 +94,7 @@ export default {
       // We are going to assume that if the current time is before midnight, but
       // after 6 PM, then the stay is for the next day's date.
       // But if it is after midnight, then it is for the current date.
-      const fromDate = moment();
+      const fromDate = dayjs();
       if (fromDate.hour() >= 18) fromDate.add(1, 'd');
 
       const toDate = fromDate.clone();
@@ -148,8 +148,8 @@ export default {
       },
       { user }
     ) => {
-      const mFromDate = moment(fromDate);
-      const mToDate = moment(toDate);
+      const mFromDate = dayjs(fromDate);
+      const mToDate = dayjs(toDate);
       const numOfDays = mToDate.diff(mFromDate, 'days') + 1;
 
       const date = new Date();

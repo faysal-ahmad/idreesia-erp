@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useQuery } from '@apollo/react-hooks';
+import { Pagination, Table } from 'antd';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Pagination, Table } from 'antd';
 
 import { PAGED_PAYMENTS_FOR_IMDAD_REQUEST } from '../gql';
 
@@ -44,10 +44,7 @@ const PaymentsHistory = ({ requestId }) => {
       dataIndex: 'paymentDate',
       key: 'paymentDate',
       width: 150,
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Type',

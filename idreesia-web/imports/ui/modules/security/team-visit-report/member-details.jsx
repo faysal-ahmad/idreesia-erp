@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Pagination, Table } from 'antd';
 import { WarningTwoTone } from '@ant-design/icons';
 
-import { Pagination, Table } from 'antd';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { Formats } from 'meteor/idreesia-common/constants';
 
@@ -91,7 +91,7 @@ const columns = [
 ];
 
 const getQueryString = ({ teamName, visitDate, pageIndex, pageSize }) => {
-  const mVisitDate = moment(Number(visitDate)).format(Formats.DATE_FORMAT);
+  const mVisitDate = dayjs(Number(visitDate)).format(Formats.DATE_FORMAT);
   return `?startDate=${mVisitDate}&endDate=${mVisitDate}&teamName=${teamName}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 };
 

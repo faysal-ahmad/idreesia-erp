@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-
+import dayjs from 'dayjs';
 import { Col, Divider, Row } from 'antd';
 
 import { Item } from './item';
@@ -26,7 +25,7 @@ export default class PaymentReceipts extends Component {
   };
 
   getPaymentReceipt = payment => {
-    const formattedDate = moment().format('DD-MM-YYYY h:mm a');
+    const formattedDate = dayjs().format('DD-MM-YYYY h:mm a');
     return (
       <div key={payment._id} className="payment-receipt-print-view">
         <Row type="flex" justify="space-between" style={HeaderStyle}>
@@ -40,7 +39,7 @@ export default class PaymentReceipts extends Component {
           </Col>
           <Col order={3} style={{ marginRight: '10px' }}>
             <div>
-              {moment(Number(payment.paymentDate)).format('DD MMM, YYYY')}
+              {dayjs(Number(payment.paymentDate)).format('DD MMM, YYYY')}
             </div>
           </Col>
         </Row>

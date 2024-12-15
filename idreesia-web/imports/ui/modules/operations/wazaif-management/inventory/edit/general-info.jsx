@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -84,7 +84,7 @@ class GeneralInfo extends Component {
           fieldLabel="Revision Date"
           initialValue={
             operationsWazeefaById.revisionDate
-              ? moment(Number(operationsWazeefaById.revisionDate))
+              ? dayjs(Number(operationsWazeefaById.revisionDate))
               : null
           }
         />

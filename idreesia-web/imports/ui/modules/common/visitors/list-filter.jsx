@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -144,8 +144,8 @@ const ListFilter = ({
   if (updatedBetween) {
     const dates = updatedBetween ? JSON.parse(updatedBetween) : null;
     initialValue = [
-      dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
-      dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
+      dates[0] ? dayjs(dates[0], Formats.DATE_FORMAT) : null,
+      dates[1] ? dayjs(dates[1], Formats.DATE_FORMAT) : null,
     ];
   } else {
     initialValue = [null, null];

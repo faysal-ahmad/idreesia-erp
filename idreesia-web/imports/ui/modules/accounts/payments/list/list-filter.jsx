@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { SyncOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -116,15 +116,15 @@ class ListFilter extends Component {
       updatedBetween,
     } = this.props;
 
-    const mStartDate = moment(startDate, Formats.DATE_FORMAT);
-    const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+    const mStartDate = dayjs(startDate, Formats.DATE_FORMAT);
+    const mEndDate = dayjs(endDate, Formats.DATE_FORMAT);
 
     let initialValue;
     if (updatedBetween) {
       const dates = updatedBetween ? JSON.parse(updatedBetween) : null;
       initialValue = [
-        dates[0] ? moment(dates[0], Formats.DATE_FORMAT) : null,
-        dates[1] ? moment(dates[1], Formats.DATE_FORMAT) : null,
+        dates[0] ? dayjs(dates[0], Formats.DATE_FORMAT) : null,
+        dates[1] ? dayjs(dates[1], Formats.DATE_FORMAT) : null,
       ];
     } else {
       initialValue = [null, null];

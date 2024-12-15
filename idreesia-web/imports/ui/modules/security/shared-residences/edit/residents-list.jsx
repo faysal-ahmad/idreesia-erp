@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -136,14 +136,14 @@ const ResidentsList = ({ sharedResidenceId }) => {
       dataIndex: 'fromDate',
       key: 'fromDate',
       render: text =>
-        text ? moment(Number(text)).format(Formats.DATE_FORMAT) : '',
+        text ? dayjs(Number(text)).format(Formats.DATE_FORMAT) : '',
     },
     {
       title: 'To Date',
       dataIndex: 'toDate',
       key: 'toDate',
       render: text =>
-        text ? moment(Number(text)).format(Formats.DATE_FORMAT) : '',
+        text ? dayjs(Number(text)).format(Formats.DATE_FORMAT) : '',
     },
     {
       key: 'action',

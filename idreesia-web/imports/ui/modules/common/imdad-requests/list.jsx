@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { AuditOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-
-import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Pagination,
   Popconfirm,
   Table,
   Tooltip,
 } from 'antd';
+
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 export default class ImdadRequestsList extends Component {
@@ -61,10 +61,7 @@ export default class ImdadRequestsList extends Component {
     title: 'Request Date',
     dataIndex: 'requestDate',
     key: 'requestDate',
-    render: text => {
-      const date = moment(Number(text));
-      return date.format('DD MMM, YYYY');
-    },
+    render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
   };
 
   nameColumn = {

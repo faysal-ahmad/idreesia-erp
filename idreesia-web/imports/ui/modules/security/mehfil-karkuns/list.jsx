@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Row, Select, Table, Tooltip } from 'antd';
 import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
 
@@ -38,9 +38,9 @@ export class List extends Component {
   };
 
   getIsPastMehfil = mehfilById => {
-    const mehfilDate = moment(Number(mehfilById.mehfilDate));
-    return moment().diff(
-      moment(mehfilDate, Formats.DATE_FORMAT),
+    const mehfilDate = dayjs(Number(mehfilById.mehfilDate));
+    return dayjs().diff(
+      dayjs(mehfilDate, Formats.DATE_FORMAT),
       'days'
       ) > 30;
   }

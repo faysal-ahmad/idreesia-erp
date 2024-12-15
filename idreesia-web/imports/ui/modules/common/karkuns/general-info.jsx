@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Divider, Form } from 'antd';
 
 import {
@@ -75,7 +75,7 @@ const GeneralInfo = ({
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            karkun.birthDate ? moment(Number(karkun.birthDate)) : null
+            karkun.birthDate ? dayjs(Number(karkun.birthDate)) : null
           }
         />
 
@@ -83,7 +83,7 @@ const GeneralInfo = ({
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
           initialValue={
-            karkun.ehadDate ? moment(Number(karkun.ehadDate)) : moment()
+            karkun.ehadDate ? dayjs(Number(karkun.ehadDate)) : dayjs()
           }
           required
           requiredMessage="Please specify the Ehad duration for the karkun."
@@ -93,7 +93,7 @@ const GeneralInfo = ({
           fieldName="deathDate"
           fieldLabel="Date of Death"
           initialValue={
-            karkun.deathDate ? moment(Number(karkun.deathDate)) : null
+            karkun.deathDate ? dayjs(Number(karkun.deathDate)) : null
           }
         />
 
@@ -141,7 +141,7 @@ const GeneralInfo = ({
           fieldLabel="Ehad Permission Date"
           initialValue={
             karkun.ehadPermissionDate
-              ? moment(Number(karkun.ehadPermissionDate))
+              ? dayjs(Number(karkun.ehadPermissionDate))
               : null
           }
         />

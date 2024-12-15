@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { CheckSquareOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
@@ -94,10 +94,7 @@ const List = ({
       title: 'Adjustment Date',
       dataIndex: 'adjustmentDate',
       key: 'adjustmentDate',
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD MMM, YYYY');
-      },
+      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Adjusted By',

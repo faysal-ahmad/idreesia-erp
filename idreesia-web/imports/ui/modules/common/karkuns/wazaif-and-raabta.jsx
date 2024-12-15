@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form } from 'antd';
 
 import {
@@ -25,7 +25,7 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
           fieldLabel="Last Tarteeb"
           initialValue={
             karkun.lastTarteebDate
-              ? moment(Number(karkun.lastTarteebDate))
+              ? dayjs(Number(karkun.lastTarteebDate))
               : null
           }
         />
@@ -49,7 +49,7 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
           fieldLabel="Last MS Visit"
           initialValue={
             karkun.msLastVisitDate
-              ? moment(Number(karkun.msLastVisitDate))
+              ? dayjs(Number(karkun.msLastVisitDate))
               : null
           }
         />

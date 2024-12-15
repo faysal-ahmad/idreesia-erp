@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { ExclamationCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
@@ -106,7 +106,7 @@ const SearchResult = props => {
         <SearchResultRow label="S/O" text={parentName} dataStyle={dataStyle} />
         <SearchResultRow
           label="Ehad Date"
-          text={moment(Number(ehadDate)).format('MMMM, YYYY')}
+          text={dayjs(Number(ehadDate)).format('MMMM, YYYY')}
           dataStyle={dataStyle}
         />
         <SearchResultRow

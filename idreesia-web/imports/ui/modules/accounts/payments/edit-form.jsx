@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useDispatch } from 'react-redux';
 
@@ -100,7 +100,7 @@ const EditForm = ({ match, history }) => {
         <DateField
           fieldName="paymentDate"
           fieldLabel="Payment Date"
-          initialValue={moment(Number(paymentById.paymentDate))}
+          initialValue={dayjs(Number(paymentById.paymentDate))}
           required
           requiredMessage="Please select a Payment Date."
         />

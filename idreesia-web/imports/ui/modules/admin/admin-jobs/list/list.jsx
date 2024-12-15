@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
@@ -52,10 +52,7 @@ class List extends Component {
       title: 'Created On',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: text => {
-        const date = moment(Number(text));
-        return date.format('DD-MM-YY hh:mm a');
-      },
+      render: text => dayjs(Number(text)).format('DD-MM-YY hh:mm a'),
     },
     {
       title: 'Status',

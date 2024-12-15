@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { EditOutlined, IdcardOutlined, PlusCircleOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -51,8 +51,8 @@ class List extends Component {
     title: 'Stay Details',
     key: 'stayDetails',
     render: (text, record) => {
-      const fromDate = moment(Number(record.fromDate));
-      const toDate = moment(Number(record.toDate));
+      const fromDate = dayjs(Number(record.fromDate));
+      const toDate = dayjs(Number(record.toDate));
       const days = record.numOfDays;
       if (days === 1) {
         return `1 day - [${fromDate.format('DD MMM, YYYY')}]`;
@@ -85,7 +85,7 @@ class List extends Component {
     width: 100,
     render: (text, record) => {
       if (record.cancelledDate) {
-        const title = `Cancelled on ${moment(
+        const title = `Cancelled on ${dayjs(
           Number(record.cancelledDate)
         ).format('DD MMM, YYYY')}`;
         return <Tooltip title={title}>Cancelled</Tooltip>;

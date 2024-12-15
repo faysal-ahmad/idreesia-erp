@@ -48,12 +48,12 @@ class ListContainer extends Component {
 
     let startDateVal;
     if (newParams.hasOwnProperty('startDate'))
-      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
+      startDateVal = startDate ?? '';
     else startDateVal = queryParams.startDate || '';
 
     let endDateVal;
     if (newParams.hasOwnProperty('endDate'))
-      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
+      endDateVal = endDate ?? '';
     else endDateVal = queryParams.endDate || '';
 
     let nameVal;

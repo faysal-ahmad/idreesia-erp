@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { graphql } from 'react-apollo';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -150,7 +150,7 @@ class ListContainer extends Component {
 
     const _selectedMonth = selectedMonth
       ? `01-${selectedMonth}`
-      : moment().format(Formats.DATE_FORMAT);
+      : dayjs().format(Formats.DATE_FORMAT);
 
     createSalaries({
       variables: {
@@ -178,8 +178,8 @@ class ListContainer extends Component {
     const ids = selectedSalaries.map(({ _id }) => _id);
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     approveSalaries({
       variables: {
@@ -202,8 +202,8 @@ class ListContainer extends Component {
     } = this.props;
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     approveAllSalaries({
       variables: {
@@ -231,8 +231,8 @@ class ListContainer extends Component {
     const ids = selectedSalaries.map(({ _id }) => _id);
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     deleteSalaries({
       variables: {
@@ -255,8 +255,8 @@ class ListContainer extends Component {
     } = this.props;
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     deleteAllSalaries({
       variables: {
@@ -288,8 +288,8 @@ class ListContainer extends Component {
     } = this.props;
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     return (
       <>

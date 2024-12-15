@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { graphql } from 'react-apollo';
 import FileSaver from 'file-saver';
 import {
@@ -252,7 +252,7 @@ export class List extends Component {
 
     // Don't show the edit and delete actions for salaries from previous months
     const { selectedMonth } = this.props;
-    const currentMonth = moment();
+    const currentMonth = dayjs();
     if (currentMonth.diff(selectedMonth, 'months') <= 1) {
       return columns.concat(actionsColumn);
     }
@@ -404,7 +404,7 @@ export class List extends Component {
 
     // Don't show the delete and delete all options in the menu for salaries from previous months
     const { selectedMonth } = this.props;
-    const currentMonth = moment();
+    const currentMonth = dayjs();
     let showDeleteMenu = false;
     if (currentMonth.diff(selectedMonth, 'months') === 0) {
       showDeleteMenu = true;
@@ -415,11 +415,11 @@ export class List extends Component {
       deleteMenuItems = [
         <Menu.Divider key="divider" />,
         <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
-          <DeleteOutlined />
+          <DeleteOutlined />&nbsp;
           Delete Selected Salaries
         </Menu.Item>,
         <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
-          <DeleteOutlined />
+          <DeleteOutlined />&nbsp;
           Delete All Salaries
         </Menu.Item>,
       ];
@@ -428,33 +428,33 @@ export class List extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingSalaries}>
-          <PlusCircleOutlined />
+          <PlusCircleOutlined />&nbsp;
           Create Missing Salaries
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="2-1" onClick={this._handleApproveSelectedSalaries}>
-          <CheckCircleOutlined />
+          <CheckCircleOutlined />&nbsp;
           Approve Selected Salaries
         </Menu.Item>
         <Menu.Item key="2-2" onClick={handleApproveAllSalaries}>
-          <CheckCircleOutlined />
+          <CheckCircleOutlined />&nbsp;
           Approve All Salaries
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" onClick={this.handleDownloadAsCSV}>
-          <FileExcelOutlined />
+          <FileExcelOutlined />&nbsp;
           Download as CSV
         </Menu.Item>
         <Menu.Item key="4" onClick={this.handlePrintSalaryReceipts}>
-          <PrinterOutlined />
+          <PrinterOutlined />&nbsp;
           Print Salary Receipts
         </Menu.Item>
         <Menu.Item key="5" onClick={this.handlePrintRashanReceipts}>
-          <PrinterOutlined />
+          <PrinterOutlined />&nbsp;
           Print Rashan Receipts
         </Menu.Item>
         <Menu.Item key="6" onClick={this.handlePrintEidReceipts}>
-          <PrinterOutlined />
+          <PrinterOutlined />&nbsp;
           Print Eid Receipts
         </Menu.Item>
         {deleteMenuItems}

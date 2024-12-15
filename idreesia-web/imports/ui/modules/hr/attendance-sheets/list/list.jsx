@@ -324,15 +324,15 @@ export class List extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
-          <PlusCircleOutlined />
+          <PlusCircleOutlined />&nbsp;
           Create Missing Attendances
         </Menu.Item>
         <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
-          <DownloadOutlined />
+          <DownloadOutlined />&nbsp;
           Download as CSV
         </Menu.Item>
         <Menu.Item key="4" onClick={handleImportFromGoogleSheet}>
-          <ImportOutlined />
+          <ImportOutlined />&nbsp;
           Import from Google Sheets
         </Menu.Item>
         <Menu.Divider />
@@ -360,11 +360,11 @@ export class List extends Component {
         </Menu.SubMenu>
         <Menu.Divider />
         <Menu.Item key="6" onClick={this._handleDeleteSelectedAttendances}>
-          <DeleteOutlined />
+          <DeleteOutlined />&nbsp;
           Delete Selected Attendances
         </Menu.Item>
         <Menu.Item key="7" onClick={this._handleDeleteAllAttendances}>
-          <DeleteOutlined />
+          <DeleteOutlined />&nbsp;
           Delete All Attendances
         </Menu.Item>
       </Menu>

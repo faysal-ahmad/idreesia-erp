@@ -313,12 +313,12 @@ class List extends Component {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={this.handlePrintSelected}>
-          <PrinterOutlined />
+          <PrinterOutlined />&nbsp;
           Print Selected
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="2" onClick={this.handleExportSelected}>
-          <DownloadOutlined />
+          <DownloadOutlined />&nbsp;
           Download Selected
         </Menu.Item>
       </Menu>

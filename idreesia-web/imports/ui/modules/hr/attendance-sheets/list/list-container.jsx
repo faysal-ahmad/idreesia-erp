@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -111,7 +111,7 @@ class ListContainer extends Component {
     if (selectedCategoryId) {
       importAttendances({
         variables: {
-          month: selectedMonth || moment().format('MM-YYYY'),
+          month: selectedMonth || dayjs().format('MM-YYYY'),
           dutyId: selectedCategoryId,
           shiftId: selectedSubCategoryId,
         },
@@ -133,7 +133,7 @@ class ListContainer extends Component {
 
     const _selectedMonth = selectedMonth
       ? `01-${selectedMonth}`
-      : moment().format(Formats.DATE_FORMAT);
+      : dayjs().format(Formats.DATE_FORMAT);
 
     createAttendances({
       variables: {
@@ -202,8 +202,8 @@ class ListContainer extends Component {
     } = this.props;
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     const ids = selectedAttendances.map(({ _id }) => _id);
     deleteAttendances({
@@ -227,8 +227,8 @@ class ListContainer extends Component {
     } = this.props;
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     if (selectedCategoryId) {
       deleteAllAttendances({
@@ -272,8 +272,8 @@ class ListContainer extends Component {
     } = this.props;
 
     const _selectedMonth = selectedMonth
-      ? moment(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : moment();
+      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+      : dayjs();
 
     return (
       <>

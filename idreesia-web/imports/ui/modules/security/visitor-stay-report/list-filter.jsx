@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Collapse, Form, Row, Button } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -39,8 +39,8 @@ class ListFilter extends Component {
   handleFinish = ({ startDate, endDate, name, city, stayReason, additionalInfo }) => {
     const { setPageParams } = this.props;
     setPageParams({
-      startDate,
-      endDate,
+      startDate: startDate ? dayjs(startDate).format(Formats.DATE_FORMAT) : null,
+      endDate: endDate ? dayjs(endDate).format(Formats.DATE_FORMAT) : null,
       name,
       city,
       stayReason,
@@ -75,8 +75,8 @@ class ListFilter extends Component {
       },
     } = this.props;
 
-    const mStartDate = moment(startDate, Formats.DATE_FORMAT);
-    const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+    const mStartDate = startDate ? dayjs(startDate, Formats.DATE_FORMAT) : null;
+    const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
 
     return (
       <Collapse style={ContainerStyle}>
@@ -87,14 +87,14 @@ class ListFilter extends Component {
               fieldLabel="Start Date"
               fieldLayout={formItemLayout}
               required={false}
-              initialValue={mStartDate.isValid() ? mStartDate : null}
+              initialValue={mStartDate}
             />
             <DateField
               fieldName="endDate"
               fieldLabel="End Date"
               fieldLayout={formItemLayout}
               required={false}
-              initialValue={mEndDate.isValid() ? mEndDate : null}
+              initialValue={mEndDate}
             />
             <InputTextField
               fieldName="name"

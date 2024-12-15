@@ -150,16 +150,16 @@ const List = ({ history, location }) => {
     const menu = (
       <Menu>
         <Menu.Item key="1" onClick={handleDownloadSelectedAsCSV}>
-          <DownloadOutlined />
+          <DownloadOutlined />&nbsp;
           Download Selected
         </Menu.Item>
         <Menu.Item key="2" onClick={handleDownloadAllAsCSV}>
-          <UploadOutlined />
+          <UploadOutlined />&nbsp;
           Download All
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" onClick={handleUploadClicked}>
-          <UploadOutlined />
+          <UploadOutlined />&nbsp;
           Upload CSV Data
         </Menu.Item>
       </Menu>

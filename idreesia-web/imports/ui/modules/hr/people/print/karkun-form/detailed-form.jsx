@@ -119,7 +119,7 @@ export class DetailedForm extends Component {
                 value={
                   hrKarkunById.ehadDate
                     ? dayjs(Number(hrKarkunById.ehadDate))
-                    : new Date()
+                    : dayjs()
                 }
               />
             </DisplayItem>

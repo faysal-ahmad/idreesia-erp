@@ -17,14 +17,12 @@ const LoggedInRoute = ({ location, history }) => {
     let retVal = null;
     const breadcrumbItems = [];
     if (breadcrumbs.length > 0) {
-      breadcrumbs.forEach((breadcrumb, index) => {
-        breadcrumbItems.push(
-          <Breadcrumb.Item key={index}>{breadcrumb}</Breadcrumb.Item>
-        );
+      breadcrumbs.forEach(breadcrumb => {
+        breadcrumbItems.push({title: breadcrumb});
       });
 
       retVal = (
-        <Breadcrumb style={{ margin: '16px 0' }}>{breadcrumbItems}</Breadcrumb>
+        <Breadcrumb style={{ margin: '16px 0' }} items={breadcrumbItems} />
       );
     }
 

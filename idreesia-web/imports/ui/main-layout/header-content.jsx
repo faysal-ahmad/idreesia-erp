@@ -91,7 +91,10 @@ const HeaderContent = ({ history, location, user }) => {
       if (isAccessible) {
         const modulePath = modulePathsMapping[moduleName];
         menuItems.push(
-          <Menu.Item key={moduleName}>{moduleName}</Menu.Item>
+          {
+            key: moduleName,
+            label: moduleName,
+          }
         );
         if (pathname.startsWith(modulePath)) {
           selectedMenuItemKey.push(moduleName);
@@ -109,9 +112,8 @@ const HeaderContent = ({ history, location, user }) => {
           defaultSelectedKeys={selectedMenuItemKey}
           style={{ lineHeight: '64px' }}
           onSelect={handleMenuItemSelected}
-        >
-          {menuItems}
-        </Menu>
+          items={menuItems}
+        />
         <UserMenu history={history} location={location} />
       </div>
     </Layout.Header>

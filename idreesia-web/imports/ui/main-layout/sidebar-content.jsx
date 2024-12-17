@@ -1,7 +1,8 @@
 import React, { Suspense, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Layout } from 'antd';
 import { useSelector } from 'react-redux';
+import { Button, Flex, Layout } from 'antd';
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 
@@ -50,16 +51,24 @@ const SidebarContent = props => {
   };
 
   return (
-    <Layout.Sider
-      width={220}
-      style={{ background: '#fff' }}
-      collapsible
-      collapsed={sidebarCollapsed}
-      collapsedWidth={0}
-      onCollapse={handleCollapse}
-    >
-      {sidebar}
-    </Layout.Sider>
+    <Flex vertical>
+      <Layout.Sider
+        width={220}
+        style={{ background: '#fff' }}
+        collapsible
+        trigger={null}
+        collapsed={sidebarCollapsed}
+        onCollapse={handleCollapse}
+      >
+        {sidebar}
+      </Layout.Sider>
+      <Button
+        type="link"
+        icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        style={{ fontSize: '16px', width: 64, height: 64 }}
+      />
+    </Flex>
   );
 };
 

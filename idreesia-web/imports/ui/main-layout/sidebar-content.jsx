@@ -1,7 +1,7 @@
 import React, { Suspense, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { Button, Flex, Layout } from 'antd';
+import { Button, Flex, Layout, Typography } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
@@ -52,6 +52,9 @@ const SidebarContent = props => {
 
   return (
     <Flex vertical>
+      <Flex justify='center' horizontal>
+        <Typography.Title level={4}>{activeModuleName}</Typography.Title>
+      </Flex>
       <Layout.Sider
         width={220}
         style={{ background: '#fff' }}

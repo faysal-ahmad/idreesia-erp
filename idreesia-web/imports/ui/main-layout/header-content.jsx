@@ -26,9 +26,7 @@ const modulePathsMapping = {
   [ModuleNames.admin]: ModulePaths.admin,
   [ModuleNames.accounts]: ModulePaths.accounts,
   [ModuleNames.hr]: ModulePaths.hr,
-  [ModuleNames.communication]: ModulePaths.communication,
   [ModuleNames.inventory]: ModulePaths.inventory,
-  //  [ModuleNames.wazaifManagement]: ModulePaths.wazaifManagement,
   [ModuleNames.operations]: ModulePaths.operations,
   [ModuleNames.security]: ModulePaths.security,
   [ModuleNames.outstation]: ModulePaths.outstation,
@@ -72,7 +70,7 @@ const HeaderContent = ({ history, location, user }) => {
         }
       });
     }
-  });
+  }, [ user ]);
 
   const handleMenuItemSelected = ({ key }) => {
     const modulePath = modulePathsMapping[key];
@@ -81,26 +79,54 @@ const HeaderContent = ({ history, location, user }) => {
   };
 
   const menuItems = [];
+  const childMenuItems = [];
   const selectedMenuItemKey = [];
 
   if (user) {
     const { pathname } = location;
+
+    // Add the admin node if it is accessible to the user
+    if (isModuleAccessible(user, ModuleNames.admin)) {
+      if (isModuleAccessible(user, ModuleNames.admin)) {
+        menuItems.push({ key: ModuleNames.admin, label: ModuleNames.admin });
+        if (pathname.startsWith(ModulePaths.admin)) {
+          selectedMenuItemKey.push(ModuleNames.admin);
+        }
+      }
+    }
+
+    // Add the 381-a operations node if any child of it are
+    // accessible to the user 
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName) => {
-      const isAccessible = isModuleAccessible(user, moduleName);
-      if (isAccessible) {
-        const modulePath = modulePathsMapping[moduleName];
-        menuItems.push(
-          {
-            key: moduleName,
-            label: moduleName,
+      if([ModuleNames.admin, ModuleNames.portals].includes(moduleName) === false) {
+        if (isModuleAccessible(user, moduleName)) {
+          childMenuItems.push({ key: moduleName, label: moduleName });
+          const modulePath = modulePathsMapping[moduleName];
+          if (pathname.startsWith(modulePath)) {
+            selectedMenuItemKey.push(moduleName);
           }
-        );
-        if (pathname.startsWith(modulePath)) {
-          selectedMenuItemKey.push(moduleName);
         }
       }
     });
+
+    if (childMenuItems.length > 0) {
+      menuItems.push({
+        key: '381-a-group',
+        label: '381-A Operations',
+        children: childMenuItems,
+      });
+    }
+
+    // Add the mehfil portal node if it is accessible to the user
+    if (isModuleAccessible(user, ModuleNames.portals)) {
+      if (isModuleAccessible(user, ModuleNames.portals)) {
+        menuItems.push({ key: ModuleNames.portals, label: ModuleNames.portals });
+        if (pathname.startsWith(ModulePaths.portals)) {
+          selectedMenuItemKey.push(ModuleNames.portals);
+        }
+      }
+    }
   }
 
   return (
@@ -110,9 +136,9 @@ const HeaderContent = ({ history, location, user }) => {
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={selectedMenuItemKey}
-          style={{ lineHeight: '64px' }}
           onSelect={handleMenuItemSelected}
           items={menuItems}
+          style={{ width: "50%" }}
         />
         <UserMenu history={history} location={location} />
       </div>

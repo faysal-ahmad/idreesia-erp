@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Card, Form, Input, message } from 'antd';
 import { useMutation } from '@apollo/react-hooks';
 import { GoogleOutlined } from '@ant-design/icons';
 
@@ -51,44 +51,46 @@ const LoginForm = ({ history, location }) => {
   };
 
   return (
-    <Form style={FormStyle} onFinish={handleFinish}>
-      <Form.Item
-        name="userName"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your username.',
-          },
-        ]}
-      >
-        <Input placeholder="Username" />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your password.',
-          },
-        ]}
-      >
-        <Input type="password" placeholder="Password" />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" style={LoginFormButtonStyle} block>
-          Log in
-        </Button>
-        <Button
-          type="primary"
-          style={LoginFormButtonStyle}
-          onClick={handleLoginWithGoogle}
-          block
+    <Card title="Login" style={{ minWidth: 400 }}>
+      <Form style={FormStyle} onFinish={handleFinish}>
+        <Form.Item
+          name="userName"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your username.',
+            },
+          ]}
         >
-          <GoogleOutlined />
-          Log in with Google
-        </Button>
-      </Form.Item>
-    </Form>
+          <Input placeholder="Username" />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your password.',
+            },
+          ]}
+        >
+          <Input type="password" placeholder="Password" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={LoginFormButtonStyle} block>
+            Log in
+          </Button>
+          <Button
+            type="primary"
+            style={LoginFormButtonStyle}
+            onClick={handleLoginWithGoogle}
+            block
+          >
+            <GoogleOutlined />
+            Log in with Google
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
 

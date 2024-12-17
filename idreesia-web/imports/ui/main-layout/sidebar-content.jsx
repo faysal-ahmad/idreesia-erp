@@ -13,9 +13,6 @@ const sidebarsMap = {
     import('/imports/ui/modules/inventory/sidebar')
   ),
   [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/sidebar')),
-  [ModuleNames.communication]: React.lazy(() =>
-    import('/imports/ui/modules/communication/sidebar')
-  ),
   [ModuleNames.accounts]: React.lazy(() =>
     import('/imports/ui/modules/accounts/sidebar')
   ),

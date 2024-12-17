@@ -13,9 +13,6 @@ const routersMap = {
     import('/imports/ui/modules/inventory/router')
   ),
   [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/router')),
-  [ModuleNames.communication]: React.lazy(() =>
-    import('/imports/ui/modules/communication/router')
-  ),
   [ModuleNames.accounts]: React.lazy(() =>
     import('/imports/ui/modules/accounts/router')
   ),

@@ -8,17 +8,34 @@ services:
     volumes:
       - mongo-dev:/data/db
 
-  mongo-express:
-    build:
-      context: ./containers/mongo-express
-    depends_on:
-      - mongo
+  minio:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
     ports:
-      - "8000:8081"
+      - "9000:9000"
+      - "9001:9001" # Console
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_BASICAUTH_USERNAME=erp-admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=fairly long password
+      MINIO_ROOT_USER: minio_root_user
+      MINIO_ROOT_PASSWORD: minio_root_user_password
+    volumes:
+      - minio-dev:/data:cached
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    command: server --console-address ":9001" /data
+
+  minio-defaultbuckets:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minio_root_user minio_root_user_password;
+      /usr/bin/mc mb myminio/idreesia-files;
+      exit 0;
+      "
 
 volumes:
+  minio-dev: {}
   mongo-dev: {}

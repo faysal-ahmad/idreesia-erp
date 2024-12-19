@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -26,7 +26,7 @@ class ReportContainer extends Component {
   };
 
   state = {
-    month: moment(),
+    month: dayjs(),
   };
 
   setPageParams = pageParams => {
@@ -44,7 +44,7 @@ class ReportContainer extends Component {
     } = this.props;
     if (physicalStoreLoading || locationsLoading) return null;
 
-    const monthString = month.startOf('month').format(Formats.DATE_FORMAT);
+    const monthString = dayjs(month).startOf('month').format(Formats.DATE_FORMAT);
     return (
       <Report
         month={month}

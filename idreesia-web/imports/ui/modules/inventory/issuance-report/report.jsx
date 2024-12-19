@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import dayjs from 'dayjs';
 import { Button, DatePicker, Spin, Table } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
@@ -94,14 +95,14 @@ class Report extends Component {
   handleMonthGoBack = () => {
     const { setPageParams, month } = this.props;
     setPageParams({
-      month: month.clone().subtract(1, 'months'),
+      month: dayjs(month).subtract(1, 'months'),
     });
   };
 
   handleMonthGoForward = () => {
     const { setPageParams, month } = this.props;
     setPageParams({
-      month: month.clone().add(1, 'months'),
+      month: dayjs(month).add(1, 'months'),
     });
   };
 

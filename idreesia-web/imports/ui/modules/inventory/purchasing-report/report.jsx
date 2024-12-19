@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { Button, DatePicker, Spin, Row, Table } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
@@ -127,13 +128,13 @@ const Report = ({
 
   const handleMonthGoBack = () => {
     setPageParams({
-      month: month.clone().subtract(1, 'months'),
+      month: dayjs(month).subtract(1, 'months'),
     });
   };
 
   const handleMonthGoForward = () => {
     setPageParams({
-      month: month.clone().add(1, 'months'),
+      month: dayjs(month).add(1, 'months'),
     });
   };
 

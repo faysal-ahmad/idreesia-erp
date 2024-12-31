@@ -5,7 +5,6 @@ import {
   BarcodeOutlined,
   BarsOutlined,
   BookOutlined,
-  FileSearchOutlined,
   FlagOutlined,
   HomeOutlined,
   IdcardOutlined,
@@ -166,23 +165,9 @@ class Sidebar extends Component {
             <BarcodeOutlined style={IconStyle} />
             <span>Card Verification</span>
           </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.SubMenu
-          key="security-reports"
-          title={
-            <>
-              <FileSearchOutlined style={IconStyle} />
-              <span>Reports</span>
-            </>
-          }
-        >
           <Menu.Item key="visitor-stay-report">
             <BookOutlined style={IconStyle} />
             <span>Visitor Stay Report</span>
-          </Menu.Item>
-          <Menu.Item key="team-visit-report">
-            <BookOutlined style={IconStyle} />
-            <span>Team Visit Report</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu

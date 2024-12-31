@@ -8,7 +8,6 @@ type VisitorStayType {
   stayAllowedBy: String
   dutyId: String
   shiftId: String
-  teamName: String
   cancelledDate: String
 
   isValid: Boolean
@@ -29,18 +28,6 @@ type PagedVisitorStayType {
   data: [VisitorStayType]
 }
 
-type TeamVisitType {
-  _id: String
-  teamName: String
-  visitDate: String
-  membersCount: Int
-}
-
-type PagedTeamVisitType {
-  totalResults: Int
-  data: [TeamVisitType]
-}
-
 extend type Query {
   pagedVisitorStays(queryString: String!): PagedVisitorStayType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
@@ -48,14 +35,10 @@ extend type Query {
   pagedVisitorStaysByVisitorId(visitorId: String!): PagedVisitorStayType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  pagedTeamVisits(queryString: String!): PagedTeamVisitType
-  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
-
   visitorStayById(_id: String!): VisitorStayType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   distinctStayAllowedBy: [String]
-  distinctTeamNames: [String]
 }
 
 extend type Mutation {
@@ -66,7 +49,6 @@ extend type Mutation {
     stayAllowedBy: String
     dutyId: String
     shiftId: String
-    teamName: String
   ): VisitorStayType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
@@ -78,7 +60,6 @@ extend type Mutation {
     stayAllowedBy: String
     dutyId: String
     shiftId: String
-    teamName: String
   ): VisitorStayType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 

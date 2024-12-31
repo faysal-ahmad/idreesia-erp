@@ -41,7 +41,6 @@ import { VisitorCardVerificationForm } from './visitor-stays';
 import { SecurityUsersList, SecurityUsersEditForm } from './security-users';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
-import { TeamVisitReport } from './team-visit-report';
 
 const Router = () => (
   <Switch>
@@ -93,11 +92,11 @@ const Router = () => (
       path={paths.visitorRegistrationPath}
       component={VisitorRegistrationScanForm}
     />
-
     <Route
       path={paths.visitorCardVerificationPath}
       component={VisitorCardVerificationForm}
     />
+    <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
 
     <Route
       path={paths.sharedResidencesNewFormPath}
@@ -114,8 +113,6 @@ const Router = () => (
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
 
-    <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
-    <Route path={paths.teamVisitReportPath} component={TeamVisitReport} />
   </Switch>
 );
 

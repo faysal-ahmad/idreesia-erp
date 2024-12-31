@@ -31,10 +31,6 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  teamName: {
-    type: String,
-    optional: true,
-  },
   cancelledDate: {
     type: Date,
     optional: true,

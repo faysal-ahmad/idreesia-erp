@@ -115,6 +115,7 @@ class NewForm extends Component {
           fieldName="issuedBy"
           fieldLabel="Issued By / Received By"
           placeholder="Issued By / Received By"
+          predefinedFilterStoreId={physicalStoreId}
           predefinedFilterName={
             PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
           }
@@ -125,6 +126,7 @@ class NewForm extends Component {
           fieldName="issuedTo"
           fieldLabel="Issued To / Returned By"
           placeholder="Issued To / Returned By"
+          predefinedFilterStoreId={physicalStoreId}
           predefinedFilterName={
             PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
           }

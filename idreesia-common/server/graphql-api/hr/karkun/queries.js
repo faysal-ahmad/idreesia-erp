@@ -8,7 +8,12 @@ import {
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
 export function getKarkunsByPredefinedFilter(params) {
-  const { predefinedFilterName, pageIndex = '0', pageSize = '20' } = params;
+  const {
+    predefinedFilterName,
+    predefinedFilterStoreId,
+    pageIndex = '0',
+    pageSize = '20',
+  } = params;
 
   let karkunIds = [];
   let distincFunction;
@@ -19,7 +24,9 @@ export function getKarkunsByPredefinedFilter(params) {
         PurchaseForms.rawCollection().distinct,
         PurchaseForms.rawCollection()
       );
-      karkunIds = distincFunction('receivedBy');
+      karkunIds = distincFunction('receivedBy', {
+        physicalStoreId: predefinedFilterStoreId,
+      });
       break;
 
     case PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO:
@@ -27,7 +34,9 @@ export function getKarkunsByPredefinedFilter(params) {
         PurchaseForms.rawCollection().distinct,
         PurchaseForms.rawCollection()
       );
-      karkunIds = distincFunction('purchasedBy');
+      karkunIds = distincFunction('purchasedBy', {
+        physicalStoreId: predefinedFilterStoreId,
+      });
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY:
@@ -35,7 +44,9 @@ export function getKarkunsByPredefinedFilter(params) {
         IssuanceForms.rawCollection().distinct,
         IssuanceForms.rawCollection()
       );
-      karkunIds = distincFunction('issuedBy');
+      karkunIds = distincFunction('issuedBy', {
+        physicalStoreId: predefinedFilterStoreId,
+      });
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY:
@@ -43,7 +54,9 @@ export function getKarkunsByPredefinedFilter(params) {
         IssuanceForms.rawCollection().distinct,
         IssuanceForms.rawCollection()
       );
-      karkunIds = distincFunction('issuedTo');
+      karkunIds = distincFunction('issuedTo', {
+        physicalStoreId: predefinedFilterStoreId,
+      });
       break;
 
     case PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY:

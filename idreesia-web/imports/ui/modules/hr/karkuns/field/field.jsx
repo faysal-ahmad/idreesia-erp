@@ -28,6 +28,7 @@ const Field = ({
   requiredMessage,
   initialValue,
   predefinedFilterName,
+  predefinedFilterStoreId,
 }) => {
   const rules = [
     {
@@ -42,6 +43,7 @@ const Field = ({
         placeholder={placeholder}
         disabled={disabled}
         predefinedFilterName={predefinedFilterName}
+        predefinedFilterStoreId={predefinedFilterStoreId}
       />
       </Form.Item>
   );
@@ -54,6 +56,7 @@ Field.propTypes = {
   fieldLayout: PropTypes.object,
   initialValue: PropTypes.object,
   predefinedFilterName: PropTypes.string,
+  predefinedFilterStoreId: PropTypes.string,
   required: PropTypes.bool,
   requiredMessage: PropTypes.string,
   disabled: PropTypes.bool,

@@ -26,7 +26,7 @@ import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 import { AuditInfo } from '/imports/ui/modules/common';
 
 const FormStyle = {
-  width: '800px',
+  width: '900px',
 };
 
 const formItemExtendedLayout = {
@@ -148,6 +148,7 @@ class EditForm extends Component {
             fieldLabel="Received By / Returned By"
             placeholder="Received By / Returned By"
             initialValue={purchaseFormById.refReceivedBy}
+            predefinedFilterStoreId={physicalStoreId}
             predefinedFilterName={
               PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
             }
@@ -159,6 +160,7 @@ class EditForm extends Component {
             fieldLabel="Purchased By / Returned To"
             placeholder="Purchased By / Returned To"
             initialValue={purchaseFormById.refPurchasedBy}
+            predefinedFilterStoreId={physicalStoreId}
             predefinedFilterName={
               PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
             }

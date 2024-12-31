@@ -20,6 +20,7 @@ export default class CustomInput extends Component {
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
     predefinedFilterName: PropTypes.string,
+    predefinedFilterStoreId: PropTypes.string,
   };
 
   state = {
@@ -58,7 +59,7 @@ export default class CustomInput extends Component {
   };
 
   render() {
-    const { placeholder, value, predefinedFilterName } = this.props;
+    const { placeholder, value, predefinedFilterName, predefinedFilterStoreId } = this.props;
 
     let containersNode;
     if (predefinedFilterName) {
@@ -68,6 +69,7 @@ export default class CustomInput extends Component {
             <ListContainer
               setSelectedValue={this.setSelectedValue}
               predefinedFilterName={predefinedFilterName}
+              predefinedFilterStoreId={predefinedFilterStoreId}
             />
           </Tabs.TabPane>
           <Tabs.TabPane tab="All Karkuns" key="2">

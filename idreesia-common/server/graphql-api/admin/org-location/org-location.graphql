@@ -1,0 +1,28 @@
+type OrgLocationType {
+  _id: String
+  name: String
+  type: String
+  parentId: String
+}
+
+extend type Query {
+  allOrgLocations: [OrgLocationType]  
+  orgLocationById(_id: String!): OrgLocationType
+}
+
+extend type Mutation {
+  createOrgLocation(
+    name: String!
+    type: String!
+    parentId: String
+  ): OrgLocationType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateOrgLocation(
+    _id: String!
+    name: String
+    parentId: String
+  ): OrgLocationType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  deleteOrgLocation(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+}

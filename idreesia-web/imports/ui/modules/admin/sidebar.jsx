@@ -23,6 +23,11 @@ class Sidebar extends Component {
         history.push(paths.adminJobsPath);
         break;
 
+      case 'org-locations':
+        setActiveSubModuleName(SubModuleNames.orgLocations);
+        history.push(paths.orgLocationsPath);
+        break;
+
       case 'users':
         setActiveSubModuleName(SubModuleNames.users);
         history.push(paths.usersPath);
@@ -56,6 +61,7 @@ class Sidebar extends Component {
         onClick={this.handleMenuItemSelected}
       >
         <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
+        <Menu.Item key="org-locations">Organization Locations</Menu.Item>
         <Menu.SubMenu key="access" title={<span>Access Management </span>}>
           <Menu.Item key="users">Users</Menu.Item>
           <Menu.Item key="user-groups">User Groups</Menu.Item>

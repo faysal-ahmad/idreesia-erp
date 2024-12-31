@@ -10,6 +10,11 @@ export default class SubModulePaths {
   static adminJobsNewAccountsCalculationPath = `${SubModulePaths.adminJobsPath}/new-accounts-calculation`;
 
   // *************************************************************************************
+  // Org Locations Routes
+  // *************************************************************************************
+  static orgLocationsPath = `${ModulePaths.admin}/org-locations`;
+
+  // *************************************************************************************
   // Users Routes
   // *************************************************************************************
   static usersPath = `${ModulePaths.admin}/users`;

@@ -1,0 +1,23 @@
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+
+const QUERY = gql`
+  query allOrgLocations {
+    allOrgLocations {
+      _id
+      name
+      type
+      parentId
+    }
+  }
+`;
+
+const useAllOrgLocations = () => {
+  const { data, loading } = useQuery(QUERY);
+  return {
+    allOrgLocations: data ? data.allOrgLocations : null,
+    allOrgLocationsLoading: loading,
+  };
+};
+
+export default useAllOrgLocations;

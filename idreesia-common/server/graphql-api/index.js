@@ -42,6 +42,9 @@ import VisitorResolvers from './common/visitor/resolvers';
 import AdminJobSchema from './admin/admin-job/admin-job.graphql';
 import AdminJobResolvers from './admin/admin-job/resolvers';
 
+import OrgLocationSchema from './admin/org-location/org-location.graphql';
+import OrgLocationResolvers from './admin/org-location/resolvers';
+
 import UserSchema from './admin/user/user.graphql';
 import UserResolvers from './admin/user/resolvers';
 
@@ -288,6 +291,7 @@ const typeDefs = [
   PersonSchema,
   VisitorSchema,
   AdminJobSchema,
+  OrgLocationSchema,
   UserSchema,
   UserGroupSchema,
 
@@ -379,6 +383,7 @@ const resolvers = merge(
   PersonResolvers,
   VisitorResolvers,
   AdminJobResolvers,
+  OrgLocationResolvers,
   UserResolvers,
   UserGroupResolvers,
 

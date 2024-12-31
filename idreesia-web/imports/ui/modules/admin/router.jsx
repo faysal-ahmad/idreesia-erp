@@ -8,6 +8,7 @@ import {
   AdminJobsNewVouchersImport,
   AdminJobsNewAccountsCalculation,
 } from './admin-jobs';
+import { OrgLocationsList } from './org-locations';
 import { UsersNewForm, UsersEditForm, UsersList } from './users';
 import {
   UserGroupsNewForm,
@@ -40,6 +41,8 @@ const Router = () => (
       component={AdminJobsNewAccountsCalculation}
     />
     <Route path={paths.adminJobsPath} component={AdminJobsList} />
+
+    <Route path={paths.orgLocationsPath} component={OrgLocationsList} />
 
     <Route path={paths.usersNewFormPath} component={UsersNewForm} />
     <Route path={paths.usersEditFormPath} component={UsersEditForm} />

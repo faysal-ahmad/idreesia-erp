@@ -63,17 +63,6 @@ export default class SubModulePaths {
     return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
   }
 
-  // ******************************************************************************
-  // Shared Residences
-  // ******************************************************************************
-  static sharedResidencesPath = `${ModulePaths.security}/shared-residences`;
-  static sharedResidencesNewFormPath = `${SubModulePaths.sharedResidencesPath}/new`;
-  static sharedResidencesEditFormPath(
-    sharedResidenceId = ':sharedResidenceId'
-  ) {
-    return `${SubModulePaths.sharedResidencesPath}/${sharedResidenceId}`;
-  }
-
   // *************************************************************************************
   // Security Users Routes
   // *************************************************************************************

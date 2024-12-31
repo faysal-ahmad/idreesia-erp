@@ -78,9 +78,6 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay.graphql';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
 
-import SecuritySharedResidenceSchema from './security/shared-residence/shared-residence.graphql';
-import SecuritySharedResidenceResolvers from './security/shared-residence/resolvers';
-
 /**
  * Schema and Resolvers for the Operations module
  */
@@ -300,7 +297,6 @@ const typeDefs = [
   SecurityUserSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
-  SecuritySharedResidenceSchema,
 
   OperationsVisitorSchema,
   OperationsMessageSchema,
@@ -391,7 +387,6 @@ const resolvers = merge(
   SecurityUserResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
-  SecuritySharedResidenceResolvers,
 
   OperationsVisitorResolvers,
   OperationsMessageResolvers,

@@ -76,11 +76,11 @@ export default {
       const date = new Date();
       const count = People.update(
         {
-          'visitorsData.city': { $eq: existingSpelling },
+          'visitorData.city': { $eq: existingSpelling },
         },
         {
           $set: {
-            'visitorsData.city': newSpelling,
+            'visitorData.city': newSpelling,
             updatedAt: date,
             updatedBy: user._id,
           },

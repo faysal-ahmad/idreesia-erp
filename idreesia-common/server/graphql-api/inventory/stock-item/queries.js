@@ -1,7 +1,6 @@
-import { parse } from 'query-string';
 import moment from 'moment';
+import { parse } from 'query-string';
 
-import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 
 export function getStatistics(physicalStoreId) {
@@ -70,7 +69,7 @@ export function getStatistics(physicalStoreId) {
   };
 }
 
-export function getPagedStockItems(queryString, physicalStoreId) {
+export async function getPagedStockItems(queryString, physicalStoreId) {
   const params = parse(queryString);
   const {
     categoryId,
@@ -159,22 +158,33 @@ export function getPagedStockItems(queryString, physicalStoreId) {
     });
   }
 
-  const countingPipeline = pipeline.concat({
-    $count: 'total',
-  });
+  // Group the filtered results by the name. This gives us an
+  // array of objects with _id set to the grouped stock item name
+  const groupingPipeline = pipeline.concat([
+    { $group: { _id: '$name' } },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const groupResults = await StockItems.aggregate(groupingPipeline);
+  // Build an array of all the stock item names in the result
+  // We will be using the contents of this array to do pagination
+  const allNames = groupResults.map(item => item._id);
 
   const nPageIndex = parseInt(pageIndex, 10);
   const nPageSize = parseInt(pageSize, 10);
+  const pagedNames = allNames.slice(
+    nPageIndex * nPageSize,
+    nPageIndex * nPageSize + nPageSize
+  );
+
   const resultsPipeline = pipeline.concat([
+    { $match: { name: { $in: pagedNames } } },
     { $sort: { name: 1 } },
-    { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize },
   ]);
 
-  const stockItems = StockItems.aggregate(resultsPipeline);
-  const totalResults = StockItems.aggregate(countingPipeline);
-  return Promise.all([stockItems, totalResults]).then(results => ({
-    data: results[0],
-    totalResults: get(results[1], ['0', 'total'], 0),
-  }));
+  const stockItems = await StockItems.aggregate(resultsPipeline);
+  return {
+    data: stockItems,
+    totalResults: allNames.length,
+  };
 }

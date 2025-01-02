@@ -24,7 +24,7 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { flowRight, groupBy, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
@@ -52,6 +52,15 @@ const StockLevelVerificationError = {
   justifyContent: 'center',
   color: 'red',
   cursor: 'pointer',
+};
+
+const GroupNameDivStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  color: '#1890ff',
+  fontWeight: 'bold',
 };
 
 class List extends Component {
@@ -93,32 +102,51 @@ class List extends Component {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: (text, record) => (
-          <StockItemName
-            stockItem={record}
-            onStockItemNameClicked={this.props.handleItemSelected}
-          />
-        ),
+        onCell: (record) => record.isGroup ? ({ colSpan: showActions ? 7 : 6 }) : ({ colSpan: 1 }),
+        render: (text, record) => {
+          if (record.isGroup) {
+            return (
+              <div style={GroupNameDivStyle}>
+                {record.name}
+              </div>
+            );
+          }
+
+          // If it's not a top level item then add indent
+          const paddingLeft = record.noParent ? 0 : 20;
+          return (
+            <div style={{ paddingLeft }}>
+              <StockItemName
+                stockItem={record}
+                onStockItemNameClicked={this.props.handleItemSelected}
+              />
+            </div>
+          )
+        },
       },
       {
         title: 'Company',
         dataIndex: 'company',
         key: 'company',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
       },
       {
         title: 'Details',
         dataIndex: 'details',
         key: 'details',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
       },
       {
         title: 'Category',
         dataIndex: 'categoryName',
         key: 'categoryName',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
       },
       {
         title: 'Min Stock',
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
         render: (text, record) => {
           let stockLevel = text ? numeral(text).format('0.00') : '';
           if (stockLevel && record.unitOfMeasurement !== 'quantity') {
@@ -132,6 +160,7 @@ class List extends Component {
         title: 'Current Stock',
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
         render: (text, record) => {
           let stockLevel = text ? numeral(text).format('0.00') : '';
           if (stockLevel && record.unitOfMeasurement !== 'quantity')
@@ -169,6 +198,7 @@ class List extends Component {
       columns.push({
         title: 'Actions',
         key: 'action',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
         render: (text, record) => {
           const {
             purchaseFormsCount,
@@ -222,9 +252,12 @@ class List extends Component {
   };
 
   rowSelection = {
+    checkStrictly: false,
     onChange: (selectedRowKeys, selectedRows) => {
+      // Remove any group rows from the selection
+      const filteredRows = selectedRows.filter(item => !item.isGroup);
       this.setState({
-        selectedRows,
+        selectedRows: filteredRows,
       });
     },
   };
@@ -426,6 +459,35 @@ class List extends Component {
     );
   };
 
+  getTreeData = (data) => {
+    const treeData = [];
+    // Convert the flat data received from the server into
+    // appropriate shape for showing tree in the table
+    const groupedData = groupBy(data, 'name');
+    const itemNames = Object.keys(groupedData);
+    itemNames.forEach((itemName, index) => {
+      // If there is only a single item against the item name
+      // then we do not need to show this item in a hierarchy
+      const items = groupedData[itemName];
+      if (items.length === 1) {
+        treeData.push({
+          ...items[0],
+          noParent: true,
+      });
+      } else {
+        // Insert a parent row under which we will group all the items
+        treeData.push({
+          _id: `${index}-${kebabCase(itemName)}`,
+          name: `${itemName} (${items.length} items)`,
+          isGroup: true,
+          children: items,
+        });
+      }
+    });
+
+    return treeData;
+  }
+
   render() {
     const { loading } = this.props;
     if (loading) return null;
@@ -437,15 +499,17 @@ class List extends Component {
       pagedStockItems: { totalResults, data },
     } = this.props;
 
+    const treeData = this.getTreeData(data);
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={data}
+        dataSource={treeData}
         columns={this.getColumns()}
         bordered
+        indentSize={30}
         size="small"
         pagination={false}
         title={this.getTableHeader}

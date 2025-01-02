@@ -10,7 +10,7 @@ jobs:
       - checkout:
           path: ~/idreesia-erp
 
-      - run: "npm install -g meteor"
+      - run: curl https://install.meteor.com/\?release\=2.8.1 | sh
 
       - restore_cache:
           key: web-dependencies-{{ checksum "package.json" }}

@@ -5,12 +5,12 @@ import { graphql } from 'react-apollo';
 import {
   AppstoreOutlined,
   BookOutlined,
+  DatabaseOutlined,
   EnvironmentOutlined,
   FolderOpenOutlined,
   FormOutlined,
   LaptopOutlined,
   PieChartOutlined,
-  ReconciliationOutlined,
   ShopOutlined,
   TagsOutlined,
 } from '@ant-design/icons';
@@ -93,7 +93,7 @@ class Sidebar extends Component {
             parent-key={physicalStore._id}
             key={`stock-items-${physicalStore._id}`}
           >
-            <ReconciliationOutlined style={IconStyle} />
+            <DatabaseOutlined style={IconStyle} />
             <span>Stock Items</span>
           </Menu.Item>
           <Menu.Item

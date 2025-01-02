@@ -4,13 +4,9 @@ import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import numeral from 'numeral';
-import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats } from 'meteor/idreesia-common/constants';
 import {
+  Button,
   Dropdown,
-  Menu,
   Modal,
   Table,
   Tooltip,
@@ -18,6 +14,18 @@ import {
   Popconfirm,
   message,
 } from 'antd';
+import {
+  CalculatorOutlined,
+  DeleteOutlined,
+  FileExcelOutlined,
+  MergeCellsOutlined,
+  PlusCircleOutlined,
+  ReconciliationOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
 
@@ -148,12 +156,7 @@ class List extends Component {
 
           return (
             <Tooltip title={tooltip}>
-              <div
-                style={style}
-                onClick={() => {
-                  this.handleStockLevelClicked(record);
-                }}
-              >
+              <div style={style}>
                 {stockLevel}
               </div>
             </Tooltip>
@@ -173,12 +176,23 @@ class List extends Component {
             stockAdjustmentsCount,
           } = record;
 
+          const verifyAction = (
+            <Tooltip title="Verify Stock Level">
+              <ReconciliationOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  this.handleVerifyStockLevel(record);
+                }}
+              />
+            </Tooltip>
+          );
+
+          let deleteAction;
+
           if (
-            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
-            0
+            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount === 0
           ) {
-            return (
-              <div className="list-actions-column">
+            deleteAction = (
                 <Popconfirm
                   title="Are you sure you want to delete this stock item?"
                   onConfirm={() => {
@@ -191,11 +205,15 @@ class List extends Component {
                     <DeleteOutlined className="list-actions-icon" />
                   </Tooltip>
                 </Popconfirm>
-              </div>
             );
           }
 
-          return null;
+          return (
+            <div className="list-actions-column">
+              {verifyAction}
+              {deleteAction}    
+            </div>
+          );
         },
       });
     }
@@ -230,6 +248,7 @@ class List extends Component {
   handleMergeClicked = () => {
     const { selectedRows } = this.state;
     const { physicalStoreId, mergeStockItems } = this.props;
+    if (selectedRows.length === 0) return;
 
     const ids = selectedRows.map(({ _id }) => _id);
     mergeStockItems({
@@ -249,6 +268,7 @@ class List extends Component {
   handleRecalculateClicked = () => {
     const { selectedRows } = this.state;
     const { physicalStoreId, recalculateStockLevels } = this.props;
+    if (selectedRows.length === 0) return;
 
     const ids = selectedRows.map(({ _id }) => _id);
     recalculateStockLevels({
@@ -265,13 +285,15 @@ class List extends Component {
       });
   };
 
-  handleStockLevelClicked = record => {
+  handleVerifyStockLevel = record => {
     const { physicalStoreId, verifyStockItemLevel } = this.props;
+    let currentStockLevel = record.currentStockLevel;
+    currentStockLevel = currentStockLevel ? numeral(currentStockLevel).format('0.00') : 0;
     Modal.confirm({
       title: 'Stock Level Verification',
       content: `Have you verified that the current stock level of "${
         record.name
-      }" is ${record.currentStockLevel || 0}?`,
+      }" is ${currentStockLevel}?`,
       onOk() {
         verifyStockItemLevel({
           variables: {
@@ -308,7 +330,7 @@ class List extends Component {
     });
   };
 
-  handleMenuClick = ({ key }) => {
+  handleAction = ({ key }) => {
     const { selectedRows } = this.state;
     if (key === 'merge') {
       if (selectedRows.length <= 1) {
@@ -328,6 +350,35 @@ class List extends Component {
     }
   };
 
+  getActionsMenu = () => {
+    const items = [
+      {
+        key: 'merge',
+        label: 'Merge Selected',
+        icon: <MergeCellsOutlined />,
+      },
+      {
+        key: 'recalculate',
+        label: 'Recalculate Selected',
+        icon: <CalculatorOutlined />,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'export',
+        label: 'Export Current Stock Levels',
+        icon: <FileExcelOutlined />,
+      },
+    ];
+
+    return (
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
+    );
+  };
+
   getTableHeader = () => {
     const {
       name,
@@ -341,39 +392,36 @@ class List extends Component {
       refetchListQuery,
     } = this.props;
 
-    const menu = (
-      <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="merge">Merge Selected Items</Menu.Item>
-        <Menu.Item key="recalculate">Recalculate Stock Level</Menu.Item>
-      </Menu>
-    );
-
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Dropdown.Button
+        <Button
+          size="large"
           type="primary"
-          icon={<DownOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
-          overlay={menu}
         >
           New Stock Item
-        </Dropdown.Button>
+        </Button>
       );
     }
 
     return (
       <div className="list-table-header">
         {newButton}
-        <ListFilter
-          name={name}
-          physicalStoreId={physicalStoreId}
-          categoryId={categoryId}
-          verifyDuration={verifyDuration}
-          stockLevel={stockLevel}
-          setPageParams={setPageParams}
-          refreshData={refetchListQuery}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            name={name}
+            physicalStoreId={physicalStoreId}
+            categoryId={categoryId}
+            verifyDuration={verifyDuration}
+            stockLevel={stockLevel}
+            setPageParams={setPageParams}
+            refreshData={refetchListQuery}
+          />
+          &nbsp;&nbsp;
+          {this.getActionsMenu()}
+        </div>
       </div>
     );
   };

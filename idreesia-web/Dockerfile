@@ -1,4 +1,4 @@
-FROM node:14.18.3
+FROM meteor/node:14.21.4-alpine3.17
 EXPOSE 3000
 ENV TZ=Asia/Karachi
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

@@ -18,7 +18,7 @@ export default {
 
   Query: {
     itemCategoryById: async (obj, { id }, { user }) => {
-      const itemCategory = ItemCategories.findOne(id);
+      const itemCategory = await ItemCategories.findOneAsync(id);
       if (hasInstanceAccess(user, itemCategory.physicalStoreId) === false) {
         return null;
       }
@@ -36,7 +36,7 @@ export default {
           physicalStoreId: { $eq: physicalStoreId },
         },
         { sort: { name: 1 } }
-      ).fetch();
+      ).fetchAsync();
     },
   },
 
@@ -55,7 +55,7 @@ export default {
       }
 
       const date = new Date();
-      const itemCategoryId = ItemCategories.insert({
+      const itemCategoryId = await ItemCategories.insertAsync({
         name,
         physicalStoreId,
         createdAt: date,
@@ -64,7 +64,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return ItemCategories.findOne(itemCategoryId);
+      return ItemCategories.findOneAsync(itemCategoryId);
     },
 
     updateItemCategory: async (obj, { id, name }, { user }) => {
@@ -74,7 +74,7 @@ export default {
         );
       }
 
-      const existingItemCategory = ItemCategories.findOne(id);
+      const existingItemCategory = await ItemCategories.findOneAsync(id);
       if (
         !existingItemCategory ||
         hasInstanceAccess(user, existingItemCategory.physicalStoreId) === false
@@ -85,7 +85,7 @@ export default {
       }
 
       const date = new Date();
-      ItemCategories.update(id, {
+      await ItemCategories.updateAsync(id, {
         $set: {
           name,
           updatedAt: date,
@@ -93,7 +93,7 @@ export default {
         },
       });
 
-      return ItemCategories.findOne(id);
+      return ItemCategories.findOneAsync(id);
     },
 
     removeItemCategory: async (obj, { _id, physicalStoreId }, { user }) => {
@@ -115,7 +115,7 @@ export default {
       }).count();
 
       if (stockItemCount === 0) {
-        return ItemCategories.remove(_id);
+        return ItemCategories.removeAsync(_id);
       }
 
       return 0;

@@ -24,33 +24,33 @@ export default {
     attachments: async purchaseForm => {
       const { attachmentIds } = purchaseForm;
       if (attachmentIds && attachmentIds.length > 0) {
-        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
+        return Attachments.find({ _id: { $in: attachmentIds } }).fetchAsync();
       }
 
       return [];
     },
     refLocation: async purchaseForm => {
       if (purchaseForm.locationId) {
-        return Locations.findOne({
+        return Locations.findOneAsync({
           _id: { $eq: purchaseForm.locationId },
         });
       }
       return null;
     },
     refReceivedBy: async purchaseForm => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: purchaseForm.receivedBy },
       });
       return People.personToKarkun(person);
     },
     refPurchasedBy: async purchaseForm => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: purchaseForm.purchasedBy },
       });
       return People.personToKarkun(person);
     },
     refVendor: async purchaseForm =>
-      Vendors.findOne({
+      Vendors.findOneAsync({
         _id: { $eq: purchaseForm.vendorId },
       }),
   },
@@ -122,7 +122,7 @@ export default {
         return null;
       }
 
-      const purchaseForm = PurchaseForms.findOne(_id);
+      const purchaseForm = await PurchaseForms.findOneAsync(_id);
       if (hasInstanceAccess(user, purchaseForm.physicalStoreId) === false) {
         return null;
       }
@@ -163,7 +163,7 @@ export default {
       }
 
       const date = new Date();
-      const purchaseFormId = PurchaseForms.insert({
+      const purchaseFormId = await PurchaseForms.insertAsync({
         purchaseDate,
         receivedBy,
         purchasedBy,
@@ -178,15 +178,17 @@ export default {
         updatedBy: user._id,
       });
 
-      items.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        items.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          }
 
-      return PurchaseForms.findOne(purchaseFormId);
+          return StockItems.decrementCurrentLevel(stockItemId, quantity);
+        })
+      );
+
+      return PurchaseForms.findOneAsync(purchaseFormId);
     },
 
     updatePurchaseForm: async (
@@ -221,32 +223,36 @@ export default {
         );
       }
 
-      const existingForm = PurchaseForms.findOne(_id);
+      const existingForm = await PurchaseForms.findOneAsync(_id);
       const { items: existingItems } = existingForm;
       // Undo the effect of all previous items
-      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        existingItems.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.decrementCurrentLevel(stockItemId, quantity);
+          }
+
+          return StockItems.incrementCurrentLevel(stockItemId, quantity);
+        })
+      );
 
       // Apply the effect of new incoming items
-      items.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        items.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          }
+
+          return StockItems.decrementCurrentLevel(stockItemId, quantity);
+        })
+      );
 
       const date = new Date();
-      PurchaseForms.update(
+      await PurchaseForms.updateAsync(
         {
           _id: { $eq: _id },
-          approvedOn: { $eq: null },
-          approvedBy: { $eq: null },
+          approvedOn: { $exists: false },
+          approvedBy: { $exists: false },
         },
         {
           $set: {
@@ -264,7 +270,7 @@ export default {
         }
       );
 
-      return PurchaseForms.findOne(_id);
+      return PurchaseForms.findOneAsync(_id);
     },
 
     approvePurchaseForm: async (obj, { _id }, { user }) => {
@@ -276,7 +282,7 @@ export default {
         );
       }
 
-      const existingPurchaseForm = PurchaseForms.findOne(_id);
+      const existingPurchaseForm = await PurchaseForms.findOneAsync(_id);
       if (
         !existingPurchaseForm ||
         hasInstanceAccess(user, existingPurchaseForm.physicalStoreId) === false
@@ -287,14 +293,14 @@ export default {
       }
 
       const date = new Date();
-      PurchaseForms.update(_id, {
+      await PurchaseForms.updateAsync(_id, {
         $set: {
           approvedOn: date,
           approvedBy: user._id,
         },
       });
 
-      return PurchaseForms.findOne(_id);
+      return PurchaseForms.findOneAsync(_id);
     },
 
     addFormAttachment: async (
@@ -315,7 +321,7 @@ export default {
       }
 
       const date = new Date();
-      PurchaseForms.update(
+      await PurchaseForms.updateAsync(
         {
           _id,
           physicalStoreId,
@@ -331,7 +337,7 @@ export default {
         }
       );
 
-      return PurchaseForms.findOne(_id);
+      return PurchaseForms.findOneAsync(_id);
     },
 
     removeFormAttachment: async (
@@ -352,7 +358,7 @@ export default {
       }
 
       const date = new Date();
-      PurchaseForms.update(
+      await PurchaseForms.updateAsync(
         { _id, physicalStoreId },
         {
           $pull: {
@@ -365,8 +371,8 @@ export default {
         }
       );
 
-      Attachments.remove(attachmentId);
-      return PurchaseForms.findOne(_id);
+      await Attachments.removeAsync(attachmentId);
+      return PurchaseForms.findOneAsync(_id);
     },
 
     removePurchaseForm: async (obj, { _id }, { user }) => {
@@ -376,7 +382,7 @@ export default {
         );
       }
 
-      const existingPurchaseForm = PurchaseForms.findOne(_id);
+      const existingPurchaseForm = await PurchaseForms.findOneAsync(_id);
       if (
         !existingPurchaseForm ||
         hasInstanceAccess(user, existingPurchaseForm.physicalStoreId) === false
@@ -386,17 +392,19 @@ export default {
         );
       }
 
-      const existingForm = PurchaseForms.findOne(_id);
+      const existingForm = await PurchaseForms.findOneAsync(_id);
       const { items: existingItems } = existingForm;
-      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        existingItems.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.decrementCurrentLevel(stockItemId, quantity);
+          }
 
-      return PurchaseForms.remove(_id);
+          return StockItems.incrementCurrentLevel(stockItemId, quantity);
+        })
+      );
+
+      return PurchaseForms.removeAsync(_id);
     },
   },
 };

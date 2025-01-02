@@ -29,11 +29,15 @@ export default {
       return formattedName;
     },
     categoryName: async stockItem => {
-      const itemCategory = ItemCategories.findOne(stockItem.categoryId);
+      const itemCategory = await ItemCategories.findOneAsync(
+        stockItem.categoryId
+      );
       return itemCategory.name;
     },
     physicalStoreName: async stockItem => {
-      const physicalStore = PhysicalStores.findOne(stockItem.physicalStoreId);
+      const physicalStore = await PhysicalStores.findOneAsync(
+        stockItem.physicalStoreId
+      );
       return physicalStore.name;
     },
     purchaseFormsCount: async stockItem =>
@@ -78,7 +82,7 @@ export default {
     },
 
     stockItemById: async (obj, { _id }, { user }) => {
-      const stockItem = StockItems.findOne(_id);
+      const stockItem = await StockItems.findOneAsync(_id);
       if (hasInstanceAccess(user, stockItem.physicalStoreId) === false) {
         return null;
       }
@@ -92,7 +96,7 @@ export default {
       return StockItems.find({
         _id: { $in: _ids },
         physicalStoreId: { $eq: physicalStoreId },
-      }).fetch();
+      }).fetchAsync();
     },
 
     statistics: async (obj, { physicalStoreId }, { user }) => {
@@ -131,7 +135,7 @@ export default {
       }
 
       const date = new Date();
-      const stockItemId = StockItems.insert({
+      const stockItemId = await StockItems.insertAsync({
         name,
         company,
         details,
@@ -147,7 +151,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return StockItems.findOne(stockItemId);
+      return StockItems.findOneAsync(stockItemId);
     },
 
     updateStockItem: async (
@@ -171,7 +175,7 @@ export default {
         );
       }
 
-      const existingStockItem = StockItems.findOne(_id);
+      const existingStockItem = await StockItems.findOneAsync(_id);
       if (
         !existingStockItem ||
         hasInstanceAccess(user, existingStockItem.physicalStoreId) === false
@@ -182,7 +186,7 @@ export default {
       }
 
       const date = new Date();
-      StockItems.update(_id, {
+      await StockItems.updateAsync(_id, {
         $set: {
           name,
           company,
@@ -195,7 +199,7 @@ export default {
         },
       });
 
-      return StockItems.findOne(_id);
+      return StockItems.findOneAsync(_id);
     },
 
     verifyStockItemLevel: async (obj, { _id, physicalStoreId }, { user }) => {
@@ -214,7 +218,7 @@ export default {
       }
 
       const date = new Date();
-      StockItems.update(_id, {
+      await StockItems.updateAsync(_id, {
         $set: {
           verifiedOn: date,
           updatedAt: date,
@@ -222,7 +226,7 @@ export default {
         },
       });
 
-      return StockItems.findOne(_id);
+      return StockItems.findOneAsync(_id);
     },
 
     removeStockItem: async (obj, { _id, physicalStoreId }, { user }) => {
@@ -265,7 +269,7 @@ export default {
         purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
         0
       ) {
-        return StockItems.remove(_id);
+        return StockItems.removeAsync(_id);
       }
 
       return 0;
@@ -281,7 +285,7 @@ export default {
       }
 
       const date = new Date();
-      StockItems.update(_id, {
+      await StockItems.updateAsync(_id, {
         $set: {
           imageId,
           updatedAt: date,
@@ -289,7 +293,7 @@ export default {
         },
       });
 
-      return StockItems.findOne(_id);
+      return StockItems.findOneAsync(_id);
     },
 
     mergeStockItems: async (obj, { ids, physicalStoreId }, { user }) => {
@@ -307,8 +311,8 @@ export default {
         );
       }
 
-      mergeStockItems(ids, physicalStoreId);
-      return StockItems.findOne(ids[0]);
+      await mergeStockItems(ids, physicalStoreId);
+      return StockItems.findOneAsync(ids[0]);
     },
 
     recalculateStockLevels: async (obj, { ids, physicalStoreId }, { user }) => {
@@ -326,14 +330,16 @@ export default {
         );
       }
 
-      ids.forEach(id => {
-        recalculateStockLevels(id, physicalStoreId);
-      });
+      await ids.reduce(
+        (prevPromise, id) =>
+          prevPromise.then(() => recalculateStockLevels(id, physicalStoreId)),
+        Promise.resolve()
+      );
 
       return StockItems.find({
         _id: { $in: ids },
         physicalStoreId: { $eq: physicalStoreId },
-      }).fetch();
+      }).fetchAsync();
     },
   },
 };

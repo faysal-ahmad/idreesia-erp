@@ -18,24 +18,30 @@ import getIssuanceForms, {
 export default {
   IssuanceForm: {
     refLocation: async issuanceForm => {
-      if (issuanceForm.locationId) {
-        return Locations.findOne({
+      if (issuanceForm?.locationId) {
+        return Locations.findOneAsync({
           _id: { $eq: issuanceForm.locationId },
         });
       }
       return null;
     },
     refIssuedBy: async issuanceForm => {
-      const person = People.findOne({
-        _id: { $eq: issuanceForm.issuedBy },
-      });
-      return People.personToKarkun(person);
+      if (issuanceForm?.issuedBy) {
+        const person = await People.findOneAsync({
+          _id: { $eq: issuanceForm.issuedBy },
+        });
+        return People.personToKarkun(person);
+      }
+      return null;
     },
     refIssuedTo: async issuanceForm => {
-      const person = People.findOne({
-        _id: { $eq: issuanceForm.issuedTo },
-      });
-      return People.personToKarkun(person);
+      if (issuanceForm?.issuedBy) {
+        const person = await People.findOneAsync({
+          _id: { $eq: issuanceForm.issuedBy },
+        });
+        return People.personToKarkun(person);
+      }
+      return null;
     },
   },
   Query: {
@@ -106,7 +112,7 @@ export default {
         return null;
       }
 
-      const issuanceForm = IssuanceForms.findOne(_id);
+      const issuanceForm = await IssuanceForms.findOneAsync(_id);
       if (hasInstanceAccess(user, issuanceForm.physicalStoreId) === false) {
         return null;
       }
@@ -147,7 +153,7 @@ export default {
       }
 
       const date = new Date();
-      const issuanceFormId = IssuanceForms.insert({
+      const issuanceFormId = await IssuanceForms.insertAsync({
         issueDate,
         issuedBy,
         issuedTo,
@@ -162,15 +168,17 @@ export default {
         updatedBy: user._id,
       });
 
-      items.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        items.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          }
 
-      return IssuanceForms.findOne(issuanceFormId);
+          return StockItems.decrementCurrentLevel(stockItemId, quantity);
+        })
+      );
+
+      return IssuanceForms.findOneAsync(issuanceFormId);
     },
 
     updateIssuanceForm: async (
@@ -205,28 +213,36 @@ export default {
         );
       }
 
-      const existingForm = IssuanceForms.findOne(_id);
+      const existingForm = await IssuanceForms.findOneAsync(_id);
+      if (existingForm.approvedOn || existingForm.approvedBy) {
+        throw new Error('You cannot update an already approved Issuance Form.');
+      }
+
       const { items: existingItems } = existingForm;
       // Undo the effect of all previous items
-      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        existingItems.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.decrementCurrentLevel(stockItemId, quantity);
+          }
+
+          return StockItems.incrementCurrentLevel(stockItemId, quantity);
+        })
+      );
 
       // Apply the effect of new incoming items
-      items.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        }
-      });
+      await Promise.all(
+        items.map(({ stockItemId, quantity, isInflow }) => {
+          if (isInflow) {
+            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          }
+
+          return StockItems.decrementCurrentLevel(stockItemId, quantity);
+        })
+      );
 
       const date = new Date();
-      IssuanceForms.update(
+      await IssuanceForms.updateAsync(
         {
           _id: { $eq: _id },
           approvedOn: { $eq: null },
@@ -248,10 +264,10 @@ export default {
         }
       );
 
-      return IssuanceForms.findOne(_id);
+      return IssuanceForms.findOneAsync(_id);
     },
 
-    approveIssuanceForm: async (obj, { _id }, { user }) => {
+    approveIssuanceForms: async (obj, { physicalStoreId, _ids }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_APPROVE_ISSUANCE_FORMS])
       ) {
@@ -260,55 +276,69 @@ export default {
         );
       }
 
-      const existingIssuanceForm = IssuanceForms.findOne(_id);
-      if (
-        !existingIssuanceForm ||
-        hasInstanceAccess(user, existingIssuanceForm.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to approve Issuance Forms in this Physical Store.'
         );
       }
 
       const date = new Date();
-      IssuanceForms.update(_id, {
-        $set: {
-          approvedOn: date,
-          approvedBy: user._id,
+      await IssuanceForms.updateAsync(
+        {
+          physicalStoreId,
+          _id: { $in: _ids },
+          approvedOn: { $exists: false },
+          approvedBy: { $exists: false },
         },
-      });
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
 
-      return IssuanceForms.findOne(_id);
+      return IssuanceForms.find({
+        physicalStoreId,
+        _id: { $in: _ids },
+      });
     },
 
-    removeIssuanceForm: async (obj, { _id }, { user }) => {
+    removeIssuanceForms: async (obj, { physicalStoreId, _ids }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in the System.'
         );
       }
 
-      const existingIssuanceForm = IssuanceForms.findOne(_id);
-      if (
-        !existingIssuanceForm ||
-        hasInstanceAccess(user, existingIssuanceForm.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Issuance Forms in this Physical Store.'
         );
       }
 
-      const existingForm = IssuanceForms.findOne(_id);
-      const { items: existingItems } = existingForm;
-      existingItems.forEach(({ stockItemId, quantity, isInflow }) => {
-        if (isInflow) {
-          StockItems.decrementCurrentLevel(stockItemId, quantity);
-        } else {
-          StockItems.incrementCurrentLevel(stockItemId, quantity);
-        }
+      const existingIssuanceForms = IssuanceForms.find({
+        _id: { $in: _ids },
+        physicalStoreId,
+        approvedOn: { $exists: false },
+        approvedBy: { $exists: false },
       });
 
-      return IssuanceForms.remove(_id);
+      await existingIssuanceForms.forEachAsync(async existingForm => {
+        const { items: existingItems } = existingForm;
+        return Promise.all(
+          existingItems.map(({ stockItemId, quantity, isInflow }) => {
+            if (isInflow) {
+              return StockItems.decrementCurrentLevel(stockItemId, quantity);
+            }
+
+            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          })
+        );
+      });
+
+      return IssuanceForms.removeAsync({ _id: { $in: _ids }, physicalStoreId });
     },
   },
 };

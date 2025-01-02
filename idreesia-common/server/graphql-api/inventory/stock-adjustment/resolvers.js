@@ -16,11 +16,11 @@ import getStockAdjustments, {
 export default {
   StockAdjustment: {
     refStockItem: async stockAdjustment =>
-      StockItems.findOne({
+      StockItems.findOneAsync({
         _id: { $eq: stockAdjustment.stockItemId },
       }),
     refAdjustedBy: async stockAdjustment => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: stockAdjustment.adjustedBy },
       });
       return People.personToKarkun(person);
@@ -79,7 +79,7 @@ export default {
         return null;
       }
 
-      const stockAdjustment = StockAdjustments.findOne(_id);
+      const stockAdjustment = await StockAdjustments.findOneAsync(_id);
       if (hasInstanceAccess(user, stockAdjustment.physicalStoreId) === false) {
         return null;
       }
@@ -119,7 +119,7 @@ export default {
       }
 
       const date = new Date();
-      const stockAdjustmentId = StockAdjustments.insert({
+      const stockAdjustmentId = await StockAdjustments.insertAsync({
         physicalStoreId,
         stockItemId,
         adjustmentDate,
@@ -134,12 +134,12 @@ export default {
       });
 
       if (isInflow) {
-        StockItems.incrementCurrentLevel(stockItemId, quantity);
+        await StockItems.incrementCurrentLevel(stockItemId, quantity);
       } else {
-        StockItems.decrementCurrentLevel(stockItemId, quantity);
+        await StockItems.decrementCurrentLevel(stockItemId, quantity);
       }
 
-      return StockAdjustments.findOne(stockAdjustmentId);
+      return StockAdjustments.findOneAsync(stockAdjustmentId);
     },
 
     updateStockAdjustment: async (
@@ -158,7 +158,7 @@ export default {
         );
       }
 
-      const existingAdjustment = StockAdjustments.findOne(_id);
+      const existingAdjustment = await StockAdjustments.findOneAsync(_id);
       if (
         !existingAdjustment ||
         hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
@@ -170,12 +170,12 @@ export default {
 
       // Undo the effect of previous values
       if (existingAdjustment.isInflow) {
-        StockItems.decrementCurrentLevel(
+        await StockItems.decrementCurrentLevel(
           existingAdjustment.stockItemId,
           existingAdjustment.quantity
         );
       } else {
-        StockItems.incrementCurrentLevel(
+        await StockItems.incrementCurrentLevel(
           existingAdjustment.stockItemId,
           existingAdjustment.quantity
         );
@@ -183,19 +183,19 @@ export default {
 
       // Apply the effect of new values
       if (isInflow) {
-        StockItems.incrementCurrentLevel(
+        await StockItems.incrementCurrentLevel(
           existingAdjustment.stockItemId,
           quantity
         );
       } else {
-        StockItems.decrementCurrentLevel(
+        await StockItems.decrementCurrentLevel(
           existingAdjustment.stockItemId,
           quantity
         );
       }
 
       const date = new Date();
-      StockAdjustments.update(
+      await StockAdjustments.updateAsync(
         {
           _id: { $eq: _id },
           approvedOn: { $eq: null },
@@ -214,7 +214,7 @@ export default {
         }
       );
 
-      return StockAdjustments.findOne(_id);
+      return StockAdjustments.findOneAsync(_id);
     },
 
     approveStockAdjustment: async (obj, { _id }, { user }) => {
@@ -228,7 +228,7 @@ export default {
         );
       }
 
-      const existingAdjustment = StockAdjustments.findOne(_id);
+      const existingAdjustment = await StockAdjustments.findOneAsync(_id);
       if (
         !existingAdjustment ||
         hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
@@ -239,14 +239,14 @@ export default {
       }
 
       const date = new Date();
-      StockAdjustments.update(_id, {
+      await StockAdjustments.updateAsync(_id, {
         $set: {
           approvedOn: date,
           approvedBy: user._id,
         },
       });
 
-      return StockAdjustments.findOne(_id);
+      return StockAdjustments.findOneAsync(_id);
     },
 
     removeStockAdjustment: async (obj, { _id }, { user }) => {
@@ -256,7 +256,7 @@ export default {
         );
       }
 
-      const existingAdjustment = StockAdjustments.findOne(_id);
+      const existingAdjustment = await StockAdjustments.findOneAsync(_id);
       if (
         !existingAdjustment ||
         hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
@@ -268,18 +268,18 @@ export default {
 
       // Undo the effect of this adjustment
       if (existingAdjustment.isInflow) {
-        StockItems.decrementCurrentLevel(
+        await StockItems.decrementCurrentLevel(
           existingAdjustment.stockItemId,
           existingAdjustment.quantity
         );
       } else {
-        StockItems.incrementCurrentLevel(
+        await StockItems.incrementCurrentLevel(
           existingAdjustment.stockItemId,
           existingAdjustment.quantity
         );
       }
 
-      return StockAdjustments.remove(_id);
+      return StockAdjustments.removeAsync(_id);
     },
   },
 };

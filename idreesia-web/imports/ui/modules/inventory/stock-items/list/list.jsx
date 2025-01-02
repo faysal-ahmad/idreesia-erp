@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import numeral from 'numeral';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -111,8 +112,8 @@ class List extends Component {
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
         render: (text, record) => {
-          let stockLevel = text || '';
-          if (text && record.unitOfMeasurement !== 'quantity') {
+          let stockLevel = text ? numeral(text).format('0.00') : '';
+          if (stockLevel && record.unitOfMeasurement !== 'quantity') {
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
           }
 
@@ -124,8 +125,8 @@ class List extends Component {
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
         render: (text, record) => {
-          let stockLevel = text || 0;
-          if (record.unitOfMeasurement !== 'quantity')
+          let stockLevel = text ? numeral(text).format('0.00') : '';
+          if (stockLevel && record.unitOfMeasurement !== 'quantity')
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
 
           let style = StockLevelVerificationError;

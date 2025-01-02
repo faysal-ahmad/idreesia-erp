@@ -5,13 +5,23 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import {
   Button,
+  Dropdown,
+  Modal,
   Pagination,
-  Popconfirm,
   Table,
   Tooltip,
   message,
 } from 'antd';
-import { CheckSquareOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FileOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  CheckSquareOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  FileExcelOutlined,
+  FileOutlined,
+  PlusCircleOutlined,
+  PrinterOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 
 import {
   flowRight,
@@ -49,8 +59,8 @@ class List extends Component {
       totalResults: PropTypes.number,
       issuanceForms: PropTypes.array,
     }),
-    removeIssuanceForm: PropTypes.func,
-    approveIssuanceForm: PropTypes.func,
+    removeIssuanceForms: PropTypes.func,
+    approveIssuanceForms: PropTypes.func,
   };
 
   state = {
@@ -112,14 +122,6 @@ class List extends Component {
         if (!record.approvedOn) {
           return (
             <div className="list-actions-column">
-              <Tooltip title="Approve">
-                <CheckSquareOutlined
-                  className="list-actions-icon"
-                  onClick={() => {
-                    this.handleApproveClicked(record);
-                  }}
-                />
-              </Tooltip>
               <Tooltip title="Edit">
                 <EditOutlined
                   className="list-actions-icon"
@@ -128,31 +130,33 @@ class List extends Component {
                   }}
                 />
               </Tooltip>
-              <Popconfirm
-                title="Are you sure you want to delete this issuance form?"
-                onConfirm={() => {
-                  this.handleDeleteClicked(record);
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+              <Tooltip title="Print">
+                <PrinterOutlined
+                  className="list-actions-icon"
+                  onClick={() => {}}
+                />
+              </Tooltip>
             </div>
           );
         }
 
         return (
-          <Tooltip title="View">
-            <FileOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleViewClicked(record);
-              }}
-            />
-          </Tooltip>
+          <div className="list-actions-column">
+            <Tooltip title="View">
+              <FileOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  this.handleViewClicked(record);
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="Print">
+              <PrinterOutlined
+                className="list-actions-icon"
+                onClick={() => {}}
+              />
+            </Tooltip>
+          </div>
         );
       },
     },
@@ -230,26 +234,39 @@ class List extends Component {
     history.push(paths.issuanceFormsViewFormPath(physicalStoreId, record._id));
   };
 
-  handleDeleteClicked = issuanceForm => {
-    const { removeIssuanceForm } = this.props;
-    removeIssuanceForm({
-      variables: { _id: issuanceForm._id },
-    })
-      .then(() => {
-        message.success('Issuance form has been deleted.', 5);
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  };
+  handleAction = ({ key }) => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
 
-  handleApproveClicked = issuanceForm => {
-    const { approveIssuanceForm } = this.props;
-    approveIssuanceForm({
-      variables: { _id: issuanceForm._id },
+    if (key === '1') {
+      this.handleApproveSelected();
+    } else if (key === '2') {
+      this.handleExportSelected();
+    } else if (key === '3') {
+      Modal.confirm({
+        title: 'Delete Issuance Forms',
+        content:
+          'Are you sure you want to delete the selected issuance forms?',
+        onOk: () => {
+          this.handleDeleteSelected();
+        },
+      });
+    }
+  }
+
+  handleApproveSelected = () => {
+    const { selectedRows } = this.state;
+    const _ids = selectedRows.map(row => row._id);
+    const { approveIssuanceForms, physicalStoreId } = this.props;
+
+    approveIssuanceForms({
+      variables: { 
+        _ids,
+        physicalStoreId,
+      },
     })
       .then(() => {
-        message.success('Issuance form has been approved.', 5);
+        message.success('Issuance forms have been approved.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -258,8 +275,6 @@ class List extends Component {
 
   handleExportSelected = () => {
     const { selectedRows } = this.state;
-    if (selectedRows.length === 0) return;
-
     const reportArgs = selectedRows.map(row => row._id);
     const url = `${
       window.location.origin
@@ -267,6 +282,24 @@ class List extends Component {
       ','
     )}`;
     window.open(url, '_blank');
+  };
+
+  handleDeleteSelected = () => {
+    const { selectedRows } = this.state;
+    const _ids = selectedRows.map(row => row._id);
+    const { removeIssuanceForms, physicalStoreId } = this.props;
+    removeIssuanceForms({
+      variables: {
+        _ids,
+        physicalStoreId,
+      },
+    })
+      .then(() => {
+        message.success('Issuance forms have been deleted.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
   };
 
   onChange = (pageIndex, pageSize) => {
@@ -281,6 +314,35 @@ class List extends Component {
       pageIndex: pageIndex - 1,
       pageSize,
     });
+  };
+
+  getActionsMenu = () => {
+    const items = [
+      {
+        key: '1',
+        label: 'Approve Selected',
+        icon: <CheckSquareOutlined />,
+      },
+      {
+        key: '2',
+        label: 'Export Selected',
+        icon: <FileExcelOutlined />,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: '3',
+        label: 'Delete Selected',
+        icon: <DeleteOutlined />,
+      },
+    ];
+
+    return (
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
+    );
   };
 
   getTableHeader = () => {
@@ -308,13 +370,7 @@ class List extends Component {
             refreshData={refetchListQuery}
           />
           &nbsp;&nbsp;
-          <Tooltip title="Download Selected Data">
-            <Button
-              icon={<DownloadOutlined />}
-              size="large"
-              onClick={this.handleExportSelected}
-            />
-          </Tooltip>
+          {this.getActionsMenu()}
         </div>
       </div>
     );
@@ -363,14 +419,14 @@ class List extends Component {
 }
 
 const formMutationRemove = gql`
-  mutation removeIssuanceForm($_id: String!) {
-    removeIssuanceForm(_id: $_id)
+  mutation removeIssuanceForms($physicalStoreId: String!, $_ids: [String]!) {
+    removeIssuanceForms(physicalStoreId: $physicalStoreId, _ids: $_ids)
   }
 `;
 
 const formMutationApprove = gql`
-  mutation approveIssuanceForm($_id: String!) {
-    approveIssuanceForm(_id: $_id) {
+  mutation approveIssuanceForms($physicalStoreId: String!, $_ids: [String]!) {
+    approveIssuanceForms(physicalStoreId: $physicalStoreId, _ids: $_ids) {
       _id
       issueDate
       issuedBy
@@ -435,7 +491,7 @@ export default flowRight(
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutationRemove, {
-    name: 'removeIssuanceForm',
+    name: 'removeIssuanceForms',
     options: {
       refetchQueries: [
         'pagedIssuanceForms',
@@ -445,7 +501,7 @@ export default flowRight(
     },
   }),
   graphql(formMutationApprove, {
-    name: 'approveIssuanceForm',
+    name: 'approveIssuanceForms',
     options: {
       refetchQueries: [
         'pagedIssuanceForms',

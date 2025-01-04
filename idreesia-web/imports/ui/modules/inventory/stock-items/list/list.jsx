@@ -347,6 +347,14 @@ class List extends Component {
     });
   };
 
+  handleExportSelected = () => {
+    const { physicalStoreId } = this.props;
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=StockItems&reportArgs=${physicalStoreId}`;
+    window.open(url, '_blank');
+  };
+
   onChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
@@ -380,6 +388,8 @@ class List extends Component {
       });
     } else if (key === 'recalculate') {
       this.handleRecalculateClicked();
+    } else if (key === 'export') {
+      this.handleExportSelected();
     }
   };
 

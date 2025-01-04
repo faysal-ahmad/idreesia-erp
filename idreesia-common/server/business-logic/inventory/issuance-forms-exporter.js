@@ -1,55 +1,59 @@
 import dayjs from 'dayjs';
 import XLSX from 'xlsx';
 
-import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Locations,
   IssuanceForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
-export function exportIsssuanceForms(issuanceFormIdsString) {
+export async function exportIsssuanceForms(issuanceFormIdsString) {
   const issuanceFormIds = issuanceFormIdsString.split(',');
-  const issuanceForms = IssuanceForms.find({
+  const issuanceForms = await IssuanceForms.find({
     _id: { $in: issuanceFormIds },
-  }).fetch();
+  }).fetchAsync();
 
-  const sheetData = issuanceForms.map(issuanceForm => {
-    const issueDate = dayjs(Number(issuanceForm.issueDate)).format(
-      'DD MMM, YYYY'
-    );
+  const sheetData = await Promise.all(
+    issuanceForms.map(async issuanceForm => {
+      const issueDate = dayjs(Number(issuanceForm.issueDate)).format(
+        'DD MMM, YYYY'
+      );
 
-    const person = People.findOne(issuanceForm.issuedTo);
-    let issuedTo = person.sharedData.name;
-    if (issuanceForm.handedOverTo) {
-      issuedTo = `${issuanceForm.handedOverTo} - [on behalf of ${issuedTo}]`;
-    }
-
-    let locationName = '';
-    if (issuanceForm.locationId) {
-      const location = Locations.findOne(issuanceForm.locationId);
-      locationName = location.name;
-    }
-
-    const formattedItems = issuanceForm.items.map(item => {
-      const stockItem = StockItems.findOne(item.stockItemId);
-      let quantity = item.quantity;
-      if (stockItem.unitOfMeasurement !== 'quantity') {
-        quantity = `${quantity} ${stockItem.unitOfMeasurement}`;
+      const person = await People.findOneAsync(issuanceForm.issuedTo);
+      let issuedTo = person.sharedData.name;
+      if (issuanceForm.handedOverTo) {
+        issuedTo = `${issuanceForm.handedOverTo} - [on behalf of ${issuedTo}]`;
       }
 
-      return `${stockItem.name} [${quantity} ${
-        item.isInflow ? 'Returned' : 'Issued'
-      }]`;
-    });
+      let locationName = '';
+      if (issuanceForm.locationId) {
+        const location = await Locations.findOneAsync(issuanceForm.locationId);
+        locationName = location.name;
+      }
 
-    return {
-      'Issue Date': issueDate,
-      'Issued To': issuedTo,
-      'Location Name': locationName,
-      Items: formattedItems.join('\n'),
-    };
-  });
+      const formattedItems = await Promise.all(
+        issuanceForm.items.map(async item => {
+          const stockItem = await StockItems.findOneAsync(item.stockItemId);
+          let quantity = item.quantity;
+          if (stockItem.unitOfMeasurement !== 'quantity') {
+            quantity = `${quantity} ${stockItem.unitOfMeasurement}`;
+          }
+
+          return `${stockItem.name} [${quantity} ${
+            item.isInflow ? 'Returned' : 'Issued'
+          }]`;
+        })
+      );
+
+      return {
+        'Issue Date': issueDate,
+        'Issued To': issuedTo,
+        'Location Name': locationName,
+        Items: formattedItems.join('\n'),
+      };
+    })
+  );
 
   const ws = XLSX.utils.json_to_sheet(sheetData);
   const wb = XLSX.utils.book_new();

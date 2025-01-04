@@ -238,11 +238,11 @@ class List extends Component {
     const { selectedRows } = this.state;
     if (selectedRows.length === 0) return;
 
-    if (key === '1') {
+    if (key === 'approve') {
       this.handleApproveSelected();
-    } else if (key === '2') {
+    } else if (key === 'export') {
       this.handleExportSelected();
-    } else if (key === '3') {
+    } else if (key === 'delete') {
       Modal.confirm({
         title: 'Delete Issuance Forms',
         content:
@@ -319,12 +319,12 @@ class List extends Component {
   getActionsMenu = () => {
     const items = [
       {
-        key: '1',
+        key: 'approve',
         label: 'Approve Selected',
         icon: <CheckSquareOutlined />,
       },
       {
-        key: '2',
+        key: 'export',
         label: 'Export Selected',
         icon: <FileExcelOutlined />,
       },
@@ -332,7 +332,7 @@ class List extends Component {
         type: 'divider',
       },
       {
-        key: '3',
+        key: 'delete',
         label: 'Delete Selected',
         icon: <DeleteOutlined />,
       },

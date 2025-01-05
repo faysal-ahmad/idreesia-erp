@@ -69,7 +69,7 @@ extend type Mutation {
     notes: String
   ): PurchaseForm
 
-  approvePurchaseForm(_id: String!): PurchaseForm
+  approvePurchaseForms(physicalStoreId: String!, _ids: [String]!): [PurchaseForm]
 
   addFormAttachment(
     _id: String!
@@ -82,5 +82,5 @@ extend type Mutation {
     attachmentId: String!
   ): Voucher
 
-  removePurchaseForm(_id: String!): Int
+  removePurchaseForms(physicalStoreId: String!, _ids: [String]!): Int
 }

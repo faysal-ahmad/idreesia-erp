@@ -273,7 +273,7 @@ export default {
       return PurchaseForms.findOneAsync(_id);
     },
 
-    approvePurchaseForm: async (obj, { _id }, { user }) => {
+    approvePurchaseForms: async (obj, { physicalStoreId, _ids }, { user }) => {
       if (
         !hasOnePermission(user, [PermissionConstants.IN_APPROVE_PURCHASE_FORMS])
       ) {
@@ -282,25 +282,33 @@ export default {
         );
       }
 
-      const existingPurchaseForm = await PurchaseForms.findOneAsync(_id);
-      if (
-        !existingPurchaseForm ||
-        hasInstanceAccess(user, existingPurchaseForm.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to approve Purchase Forms in this Physical Store.'
         );
       }
 
       const date = new Date();
-      await PurchaseForms.updateAsync(_id, {
-        $set: {
-          approvedOn: date,
-          approvedBy: user._id,
+      await PurchaseForms.updateAsync(
+        {
+          physicalStoreId,
+          _id: { $in: _ids },
+          approvedOn: { $exists: false },
+          approvedBy: { $exists: false },
         },
-      });
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
 
-      return PurchaseForms.findOneAsync(_id);
+      return PurchaseForms.find({
+        physicalStoreId,
+        _id: { $in: _ids },
+      });
     },
 
     addFormAttachment: async (
@@ -375,36 +383,40 @@ export default {
       return PurchaseForms.findOneAsync(_id);
     },
 
-    removePurchaseForm: async (obj, { _id }, { user }) => {
+    removePurchaseForms: async (obj, { physicalStoreId, _ids }, { user }) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in the System.'
         );
       }
 
-      const existingPurchaseForm = await PurchaseForms.findOneAsync(_id);
-      if (
-        !existingPurchaseForm ||
-        hasInstanceAccess(user, existingPurchaseForm.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Purchase Forms in this Physical Store.'
         );
       }
 
-      const existingForm = await PurchaseForms.findOneAsync(_id);
-      const { items: existingItems } = existingForm;
-      await Promise.all(
-        existingItems.map(({ stockItemId, quantity, isInflow }) => {
-          if (isInflow) {
-            return StockItems.decrementCurrentLevel(stockItemId, quantity);
-          }
+      const existingPurchaseForms = PurchaseForms.find({
+        _id: { $in: _ids },
+        physicalStoreId,
+        approvedOn: { $exists: false },
+        approvedBy: { $exists: false },
+      });
 
-          return StockItems.incrementCurrentLevel(stockItemId, quantity);
-        })
-      );
+      await existingPurchaseForms.forEachAsync(async existingForm => {
+        const { items: existingItems } = existingForm;
+        await Promise.all(
+          existingItems.map(({ stockItemId, quantity, isInflow }) => {
+            if (isInflow) {
+              return StockItems.decrementCurrentLevel(stockItemId, quantity);
+            }
 
-      return PurchaseForms.removeAsync(_id);
+            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          })
+        );
+      });
+
+      return PurchaseForms.removeAsync({ _id: { $in: _ids }, physicalStoreId });
     },
   },
 };

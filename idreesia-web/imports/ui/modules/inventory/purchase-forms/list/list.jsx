@@ -3,15 +3,25 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { CheckSquareOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FileOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
+  Dropdown,
+  Modal,
   Pagination,
-  Popconfirm,
   Table,
   Tooltip,
   message,
 } from 'antd';
+import {
+  CheckSquareOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  FileExcelOutlined,
+  FileOutlined,
+  SettingOutlined,
+  PlusCircleOutlined,
+  PrinterOutlined,
+} from '@ant-design/icons';
 
 import {
   flowRight,
@@ -46,8 +56,8 @@ class List extends Component {
       totalResults: PropTypes.number,
       purchaseForms: PropTypes.array,
     }),
-    removePurchaseForm: PropTypes.func,
-    approvePurchaseForm: PropTypes.func,
+    removePurchaseForms: PropTypes.func,
+    approvePurchaseForms: PropTypes.func,
   };
 
   state = {
@@ -101,14 +111,6 @@ class List extends Component {
         if (!record.approvedOn) {
           return (
             <div className="list-actions-column">
-              <Tooltip title="Approve">
-                <CheckSquareOutlined
-                  className="list-actions-icon"
-                  onClick={() => {
-                    this.handleApproveClicked(record);
-                  }}
-                />
-              </Tooltip>
               <Tooltip title="Edit">
                 <EditOutlined
                   className="list-actions-icon"
@@ -117,31 +119,33 @@ class List extends Component {
                   }}
                 />
               </Tooltip>
-              <Popconfirm
-                title="Are you sure you want to delete this purchase form?"
-                onConfirm={() => {
-                  this.handleDeleteClicked(record);
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+              <Tooltip title="Print">
+                <PrinterOutlined
+                  className="list-actions-icon"
+                  onClick={() => {}}
+                />
+              </Tooltip>
             </div>
           );
         }
 
         return (
-          <Tooltip title="View">
-            <FileOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleViewClicked(record);
-              }}
-            />
-          </Tooltip>
+          <div className="list-actions-column">
+            <Tooltip title="View">
+              <FileOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  this.handleViewClicked(record);
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="Print">
+              <PrinterOutlined
+                className="list-actions-icon"
+                onClick={() => {}}
+              />
+            </Tooltip>
+          </div>
         );
       },
     },
@@ -219,26 +223,57 @@ class List extends Component {
     history.push(paths.purchaseFormsViewFormPath(physicalStoreId, record._id));
   };
 
-  handleDeleteClicked = purchaseForm => {
-    const { removePurchaseForm } = this.props;
-    removePurchaseForm({
-      variables: { _id: purchaseForm._id },
+  handleAction = ({ key }) => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+
+    if (key === 'approve') {
+      this.handleApproveSelected();
+    } else if (key === 'export') {
+      this.handleExportSelected();
+    } else if (key === 'delete') {
+      Modal.confirm({
+        title: 'Delete Purchase Forms',
+        content:
+          'Are you sure you want to delete the selected issuance forms?',
+        onOk: () => {
+          this.handleDeleteSelected();
+        },
+      });
+    }
+  }
+
+  handleDeleteSelected = () => {
+    const { selectedRows } = this.state;
+    const _ids = selectedRows.map(row => row._id);
+    const { removePurchaseForms, physicalStoreId } = this.props;
+    removePurchaseForms({
+      variables: {
+        _ids,
+        physicalStoreId,
+      },
     })
       .then(() => {
-        message.success('Purchase form has been deleted.', 5);
+        message.success('Purchase forms have been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
       });
   };
 
-  handleApproveClicked = purchaseForm => {
-    const { approvePurchaseForm } = this.props;
-    approvePurchaseForm({
-      variables: { _id: purchaseForm._id },
+  handleApproveSelected = () => {
+    const { selectedRows } = this.state;
+    const _ids = selectedRows.map(row => row._id);
+    const { approvePurchaseForms, physicalStoreId } = this.props;
+
+    approvePurchaseForms({
+      variables: {
+        _ids,
+        physicalStoreId,
+      },
     })
       .then(() => {
-        message.success('Purchase form has been approved.', 5);
+        message.success('Purchase forms have been approved.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
@@ -272,6 +307,35 @@ class List extends Component {
     });
   };
 
+  getActionsMenu = () => {
+    const items = [
+      {
+        key: 'approve',
+        label: 'Approve Selected',
+        icon: <CheckSquareOutlined />,
+      },
+      {
+        key: 'export',
+        label: 'Export Selected',
+        icon: <FileExcelOutlined />,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'delete',
+        label: 'Delete Selected',
+        icon: <DeleteOutlined />,
+      },
+    ];
+
+    return (
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
+    );
+  };
+
   getTableHeader = () => {
     const { physicalStoreId, queryParams, refetchListQuery } = this.props;
 
@@ -292,13 +356,7 @@ class List extends Component {
             refreshData={refetchListQuery}
           />
           &nbsp;&nbsp;
-          <Tooltip title="Download Selected Data">
-            <Button
-              icon={<DownloadOutlined />}
-              size="large"
-              onClick={this.handleExportSelected}
-            />
-          </Tooltip>
+          {this.getActionsMenu()}
         </div>
       </div>
     );
@@ -347,14 +405,14 @@ class List extends Component {
 }
 
 const formMutationRemove = gql`
-  mutation removePurchaseForm($_id: String!) {
-    removePurchaseForm(_id: $_id)
+  mutation removePurchaseForms($physicalStoreId: String!, $_ids: [String]!) {
+    removePurchaseForms(physicalStoreId: $physicalStoreId, _ids: $_ids)
   }
 `;
 
 const formMutationApprove = gql`
-  mutation approvePurchaseForm($_id: String!) {
-    approvePurchaseForm(_id: $_id) {
+  mutation approvePurchaseForms($physicalStoreId: String!, $_ids: [String]!) {
+    approvePurchaseForms(physicalStoreId: $physicalStoreId, _ids: $_ids) {
       _id
       purchaseDate
       receivedBy
@@ -415,7 +473,7 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formMutationRemove, {
-    name: 'removePurchaseForm',
+    name: 'removePurchaseForms',
     options: {
       refetchQueries: [
         'pagedPurchaseForms',
@@ -426,7 +484,7 @@ export default flowRight(
     },
   }),
   graphql(formMutationApprove, {
-    name: 'approvePurchaseForm',
+    name: 'approvePurchaseForms',
     options: {
       refetchQueries: [
         'pagedPurchaseForms',

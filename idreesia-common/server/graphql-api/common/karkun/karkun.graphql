@@ -63,6 +63,7 @@ input KarkunFilter {
   region: String
   updatedBetween: String
   predefinedFilterName: String
+  predefinedFilterStoreId: String
   showVolunteers: String
   showEmployees: String
   pageIndex: String

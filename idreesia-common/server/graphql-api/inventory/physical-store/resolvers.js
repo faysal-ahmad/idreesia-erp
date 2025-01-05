@@ -18,11 +18,11 @@ export default {
         );
       }
 
-      return PhysicalStores.find({}).fetch();
+      return PhysicalStores.find({}).fetchAsync();
     },
 
     allAccessiblePhysicalStores: async (obj, params, { user }) => {
-      const physicalStores = PhysicalStores.find({}).fetch();
+      const physicalStores = await PhysicalStores.find({}).fetchAsync();
       const filteredPhysicalStores = filterByInstanceAccess(
         user,
         physicalStores
@@ -41,7 +41,7 @@ export default {
         );
       }
 
-      return PhysicalStores.findOne(id);
+      return PhysicalStores.findOneAsync(id);
     },
   },
 
@@ -58,7 +58,7 @@ export default {
       }
 
       const date = new Date();
-      const physicalStoreId = PhysicalStores.insert({
+      const physicalStoreId = await PhysicalStores.insertAsync({
         name,
         address,
         createdAt: date,
@@ -67,7 +67,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return PhysicalStores.findOne(physicalStoreId);
+      return PhysicalStores.findOneAsync(physicalStoreId);
     },
 
     updatePhysicalStore: async (obj, { id, name, address }, { user }) => {
@@ -82,7 +82,7 @@ export default {
       }
 
       const date = new Date();
-      PhysicalStores.update(id, {
+      await PhysicalStores.updateAsync(id, {
         $set: {
           name,
           address,
@@ -91,7 +91,7 @@ export default {
         },
       });
 
-      return PhysicalStores.findOne(id);
+      return PhysicalStores.findOneAsync(id);
     },
   },
 };

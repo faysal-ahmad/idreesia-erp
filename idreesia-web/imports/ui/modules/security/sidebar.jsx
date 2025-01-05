@@ -5,9 +5,7 @@ import {
   BarcodeOutlined,
   BarsOutlined,
   BookOutlined,
-  FileSearchOutlined,
   FlagOutlined,
-  HomeOutlined,
   IdcardOutlined,
   LaptopOutlined,
   TagsOutlined,
@@ -66,11 +64,6 @@ class Sidebar extends Component {
         history.push(paths.karkunCardVerificationPath);
         break;
 
-      case 'shared-residencs':
-        setActiveSubModuleName(SubModuleNames.sharedResidences);
-        history.push(paths.sharedResidencesPath);
-        break;
-
       case 'visitor-registration':
         setActiveSubModuleName(SubModuleNames.visitorRegistration);
         history.push(paths.visitorRegistrationPath);
@@ -113,10 +106,6 @@ class Sidebar extends Component {
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
       >
-        <Menu.Item key="shared-residencs">
-          <HomeOutlined style={IconStyle} />
-          <span>Shared Residences</span>
-        </Menu.Item>
         <Menu.SubMenu
           key="mehfil-management"
           title={
@@ -166,23 +155,9 @@ class Sidebar extends Component {
             <BarcodeOutlined style={IconStyle} />
             <span>Card Verification</span>
           </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.SubMenu
-          key="security-reports"
-          title={
-            <>
-              <FileSearchOutlined style={IconStyle} />
-              <span>Reports</span>
-            </>
-          }
-        >
           <Menu.Item key="visitor-stay-report">
             <BookOutlined style={IconStyle} />
             <span>Visitor Stay Report</span>
-          </Menu.Item>
-          <Menu.Item key="team-visit-report">
-            <BookOutlined style={IconStyle} />
-            <span>Team Visit Report</span>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu

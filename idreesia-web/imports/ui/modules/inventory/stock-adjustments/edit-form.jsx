@@ -81,7 +81,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { formDataLoading, stockAdjustmentById } = this.props;
+    const { formDataLoading, stockAdjustmentById, physicalStoreId } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading) return null;
 
@@ -127,6 +127,7 @@ class EditForm extends Component {
             required
             requiredMessage="Please select a name for adjusted By."
             initialValue={stockAdjustmentById.refAdjustedBy}
+            predefinedFilterStoreId={physicalStoreId}
             predefinedFilterName={
               PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
             }

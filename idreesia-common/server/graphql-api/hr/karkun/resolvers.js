@@ -6,6 +6,8 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/hr';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
+import { getKarkunsByPredefinedFilter } from './queries';
+
 export default {
   Query: {
     hrKarkunById: async (obj, { _id }) => {
@@ -24,6 +26,11 @@ export default {
         name: 'Multan',
         country: 'Pakistan',
       });
+
+      if (filter.predefinedFilterName) {
+        return getKarkunsByPredefinedFilter(filter);
+      }
+
       return People.searchPeople(
         {
           ...filter,

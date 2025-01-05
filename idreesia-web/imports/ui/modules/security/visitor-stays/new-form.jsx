@@ -18,10 +18,7 @@ import {
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import {
-  WithDistinctTeamNames,
-  WithDistinctStayAllowedBy,
-} from 'meteor/idreesia-common/composers/security';
+import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
 class NewForm extends Component {
@@ -36,11 +33,9 @@ class NewForm extends Component {
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
     distinctStayAllowedByLoading: PropTypes.bool,
-    distinctTeamNames: PropTypes.array,
-    distinctTeamNamesLoading: PropTypes.bool,
   };
 
-  handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId, teamName }) => {
+  handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId }) => {
     const { visitorId, handleAddItem, createVisitorStay } = this.props;
     createVisitorStay({
       variables: {
@@ -50,7 +45,6 @@ class NewForm extends Component {
         stayAllowedBy,
         dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
         shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-        teamName,
       },
     })
       .then(({ data: { createVisitorStay: newVisitorStay } }) => {
@@ -66,18 +60,15 @@ class NewForm extends Component {
       allMSDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
-      distinctTeamNamesLoading,
       allMSDuties,
       allDutyShifts,
       distinctStayAllowedBy,
-      distinctTeamNames,
     } = this.props;
 
     if (
       allMSDutiesLoading ||
       allDutyShiftsLoading ||
-      distinctStayAllowedByLoading ||
-      distinctTeamNamesLoading
+      distinctStayAllowedByLoading
     )
       return null;
 
@@ -112,11 +103,6 @@ class NewForm extends Component {
           fieldName="dutyIdShiftId"
           fieldLabel="Duty Participation"
         />
-        <AutoCompleteField
-          fieldName="teamName"
-          fieldLabel="Team Name"
-          dataSource={distinctTeamNames}
-        />
 
         <FormButtonsSubmit
           text="Add Stay"
@@ -135,7 +121,6 @@ const formMutation = gql`
     $stayAllowedBy: String
     $dutyId: String
     $shiftId: String
-    $teamName: String
   ) {
     createVisitorStay(
       visitorId: $visitorId
@@ -144,7 +129,6 @@ const formMutation = gql`
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId
       shiftId: $shiftId
-      teamName: $teamName
     ) {
       _id
       visitorId
@@ -154,7 +138,6 @@ const formMutation = gql`
       stayAllowedBy
       dutyId
       shiftId
-      teamName
     }
   }
 `;
@@ -168,6 +151,5 @@ export default flowRight(
   }),
   WithAllMSDuties(),
   WithAllDutyShifts(),
-  WithDistinctStayAllowedBy(),
-  WithDistinctTeamNames()
+  WithDistinctStayAllowedBy()
 )(NewForm);

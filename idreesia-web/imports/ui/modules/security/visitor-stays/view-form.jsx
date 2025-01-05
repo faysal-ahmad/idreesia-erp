@@ -45,9 +45,6 @@ const ViewForm = ({ formDataLoading, visitorStayById }) => {
       <List.Item>
         <b>Duty / Shift:</b> {visitorStayById.dutyShiftName}
       </List.Item>
-      <List.Item>
-        <b>Team Name:</b> {visitorStayById.teamName}
-      </List.Item>
     </List>
   );
 };
@@ -69,7 +66,6 @@ const formQuery = gql`
       stayReason
       stayAllowedBy
       dutyShiftName
-      teamName
     }
   }
 `;

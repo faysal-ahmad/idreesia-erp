@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
+import numeral from 'numeral';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -116,6 +117,18 @@ class EditForm extends Component {
             initialValue={stockItemById.unitOfMeasurement}
           />
           <InputNumberField
+            disabled
+            fieldName="startingStockLevel"
+            fieldLabel="Starting Stock Level"
+            initialValue={stockItemById.startingStockLevel}
+          />
+          <InputNumberField
+            disabled
+            fieldName="currentStockLevel"
+            fieldLabel="Current Stock Level"
+            initialValue={numeral(stockItemById.currentStockLevel).format('0.00')}
+          />
+          <InputNumberField
             fieldName="minStockLevel"
             fieldLabel="Min Stock Level"
             initialValue={stockItemById.minStockLevel}
@@ -174,6 +187,8 @@ const formQuery = gql`
       details
       categoryId
       unitOfMeasurement
+      startingStockLevel
+      currentStockLevel
       minStockLevel
       createdAt
       createdBy

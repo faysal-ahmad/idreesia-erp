@@ -143,6 +143,7 @@ class EditForm extends Component {
             fieldLabel="Issued By / Received By"
             placeholder="Issued By / Received By"
             initialValue={issuanceFormById.refIssuedBy}
+            predefinedFilterStoreId={physicalStoreId}
             predefinedFilterName={
               PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
             }
@@ -154,6 +155,7 @@ class EditForm extends Component {
             fieldLabel="Issued To / Returned By"
             placeholder="Issued To / Returned By"
             initialValue={issuanceFormById.refIssuedTo}
+            predefinedFilterStoreId={physicalStoreId}
             predefinedFilterName={
               PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
             }

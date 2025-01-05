@@ -3,7 +3,6 @@ import { Migrations } from 'meteor/percolate:migrations';
 import {
   Karkuns,
   KarkunDuties,
-  SharedResidences,
 } from 'meteor/idreesia-common/server/collections/hr';
 
 Migrations.add({
@@ -14,7 +13,7 @@ Migrations.add({
     karkuns.createIndex({ contactNumber1: 1 }, { background: false });
     karkuns.createIndex({ contactNumber2: 1 }, { background: false });
     karkuns.createIndex({ bloodGroup: 1 }, { background: false });
-    karkuns.createIndex({ sharedResidenceId: 1 }, { background: false });
+    // karkuns.createIndex({ sharedResidenceId: 1 }, { background: false });
     karkuns.createIndex({ isEmployee: 1 }, { background: false });
     karkuns.createIndex({ jobId: 1 }, { background: false });
     karkuns.createIndex({ employmentStartDate: 1 }, { background: false });
@@ -25,8 +24,8 @@ Migrations.add({
     karkunDuties.createIndex({ dutyId: 1 }, { background: false });
     karkunDuties.createIndex({ shiftId: 1 }, { background: false });
 
-    const sharedResidencies = SharedResidences.rawCollection();
-    sharedResidencies.createIndex({ address: 'text' });
-    sharedResidencies.createIndex({ ownerKarkunId: 1 }, { background: false });
+    // const sharedResidencies = SharedResidences.rawCollection();
+    // sharedResidencies.createIndex({ address: 'text' });
+    // sharedResidencies.createIndex({ ownerKarkunId: 1 }, { background: false });
   },
 });

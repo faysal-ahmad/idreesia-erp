@@ -32,16 +32,10 @@ import {
   VisitorRegistrationUploadForm,
   VisitorRegistrationList,
 } from './visitor-registeration';
-import {
-  SharedResidencesNewForm,
-  SharedResidencesEditForm,
-  SharedResidencesList,
-} from './shared-residences';
 import { VisitorCardVerificationForm } from './visitor-stays';
 import { SecurityUsersList, SecurityUsersEditForm } from './security-users';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
-import { TeamVisitReport } from './team-visit-report';
 
 const Router = () => (
   <Switch>
@@ -93,29 +87,17 @@ const Router = () => (
       path={paths.visitorRegistrationPath}
       component={VisitorRegistrationScanForm}
     />
-
     <Route
       path={paths.visitorCardVerificationPath}
       component={VisitorCardVerificationForm}
     />
-
-    <Route
-      path={paths.sharedResidencesNewFormPath}
-      component={SharedResidencesNewForm}
-    />
-    <Route
-      path={paths.sharedResidencesEditFormPath()}
-      component={SharedResidencesEditForm}
-    />
-    <Route path={paths.sharedResidencesPath} component={SharedResidencesList} />
+    <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
 
     <Route path={paths.securityUsersEditFormPath()} component={SecurityUsersEditForm} />
     <Route path={paths.securityUsersPath} component={SecurityUsersList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
 
-    <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
-    <Route path={paths.teamVisitReportPath} component={TeamVisitReport} />
   </Switch>
 );
 

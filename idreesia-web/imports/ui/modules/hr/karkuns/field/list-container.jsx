@@ -7,6 +7,7 @@ export default class ListContainer extends Component {
   static propTypes = {
     setSelectedValue: PropTypes.func,
     predefinedFilterName: PropTypes.string,
+    predefinedFilterStoreId: PropTypes.string,
   };
 
   state = {
@@ -27,7 +28,7 @@ export default class ListContainer extends Component {
   };
 
   render() {
-    const { predefinedFilterName, setSelectedValue } = this.props;
+    const { predefinedFilterName, predefinedFilterStoreId, setSelectedValue } = this.props;
     const {
       pageIndex,
       pageSize,
@@ -65,6 +66,7 @@ export default class ListContainer extends Component {
         showDutiesColumn
         showActionsColumn={false}
         predefinedFilterName={predefinedFilterName}
+        predefinedFilterStoreId={predefinedFilterStoreId}
       />
     );
   }

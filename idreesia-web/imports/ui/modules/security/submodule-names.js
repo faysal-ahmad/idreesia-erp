@@ -8,9 +8,7 @@ const SubModuleNames = {
   mehfilLangarLocations: 'Mehfil Langar Locations',
   mehfilCardVerification: 'Mehfil Card Verification',
   dutyCardVerification: 'Duty Card Verification',
-  sharedResidences: 'Shared Residences',
   visitorStayReport: "Visitor's Stay Report",
-  teamVisitReport: 'Team Visit Report',
   auditLogs: 'Audit Logs',
   securityUsers: 'Security Users',
 };

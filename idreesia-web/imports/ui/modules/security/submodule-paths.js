@@ -52,31 +52,15 @@ export default class SubModulePaths {
   static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************
-  // Visitor Registration Routes
+  // Visitor Routes
   // *************************************************************************************
+  static visitorStayReportPath = `${ModulePaths.security}/visitor-stay-report`;
   static visitorRegistrationPath = `${ModulePaths.security}/visitor-registration`;
   static visitorRegistrationListPath = `${SubModulePaths.visitorRegistrationPath}/list`;
   static visitorRegistrationNewFormPath = `${SubModulePaths.visitorRegistrationPath}/new`;
   static visitorRegistrationUploadFormPath = `${SubModulePaths.visitorRegistrationPath}/upload`;
   static visitorRegistrationEditFormPath(visitorId = ':visitorId') {
     return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
-  }
-
-  // *************************************************************************************
-  // Report Routes
-  // *************************************************************************************
-  static visitorStayReportPath = `${ModulePaths.security}/visitor-stay-report`;
-  static teamVisitReportPath = `${ModulePaths.security}/team-visit-report`;
-
-  // ******************************************************************************
-  // Shared Residences
-  // ******************************************************************************
-  static sharedResidencesPath = `${ModulePaths.security}/shared-residences`;
-  static sharedResidencesNewFormPath = `${SubModulePaths.sharedResidencesPath}/new`;
-  static sharedResidencesEditFormPath(
-    sharedResidenceId = ':sharedResidenceId'
-  ) {
-    return `${SubModulePaths.sharedResidencesPath}/${sharedResidenceId}`;
   }
 
   // *************************************************************************************

@@ -56,7 +56,7 @@ extend type Mutation {
     adjustmentReason: String
   ): StockAdjustment
 
-  approveStockAdjustment(_id: String!): StockAdjustment
+  approveStockAdjustments(physicalStoreId: String!, _ids: [String]!): [StockAdjustment]
 
-  removeStockAdjustment(_id: String!): Int
+  removeStockAdjustments(physicalStoreId: String!, _ids: [String]!): Int
 }

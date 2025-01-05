@@ -17,7 +17,7 @@ export default {
   },
   Query: {
     vendorById: async (obj, { _id }, { user }) => {
-      const vendor = Vendors.findOne(_id);
+      const vendor = await Vendors.findOneAsync(_id);
       if (hasInstanceAccess(user, vendor.physicalStoreId) === false) {
         return null;
       }
@@ -31,7 +31,7 @@ export default {
           physicalStoreId: { $eq: physicalStoreId },
         },
         { sort: { name: 1 } }
-      ).fetch();
+      ).fetchAsync();
     },
   },
 
@@ -54,7 +54,7 @@ export default {
       }
 
       const date = new Date();
-      const vendorId = Vendors.insert({
+      const vendorId = await Vendors.insertAsync({
         name,
         physicalStoreId,
         contactPerson,
@@ -67,7 +67,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return Vendors.findOne(vendorId);
+      return Vendors.findOneAsync(vendorId);
     },
 
     updateVendor: async (
@@ -81,7 +81,7 @@ export default {
         );
       }
 
-      const existingVendor = Vendors.findOne(_id);
+      const existingVendor = await Vendors.findOneAsync(_id);
       if (
         !existingVendor ||
         hasInstanceAccess(user, existingVendor.physicalStoreId) === false
@@ -92,7 +92,7 @@ export default {
       }
 
       const date = new Date();
-      Vendors.update(_id, {
+      await Vendors.updateAsync(_id, {
         $set: {
           name,
           contactPerson,
@@ -104,7 +104,7 @@ export default {
         },
       });
 
-      return Vendors.findOne(_id);
+      return Vendors.findOneAsync(_id);
     },
 
     removeVendor: async (obj, { _id }, { user }) => {
@@ -114,7 +114,7 @@ export default {
         );
       }
 
-      const existingVendor = Vendors.findOne(_id);
+      const existingVendor = await Vendors.findOneAsync(_id);
       if (
         !existingVendor ||
         hasInstanceAccess(user, existingVendor.physicalStoreId) === false
@@ -124,7 +124,7 @@ export default {
         );
       }
 
-      return Vendors.remove(_id);
+      return Vendors.removeAsync(_id);
     },
   },
 };

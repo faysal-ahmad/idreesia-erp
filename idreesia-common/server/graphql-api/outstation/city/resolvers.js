@@ -19,7 +19,7 @@ export default {
     memberCount: async cityType =>
       People.find({
         isKarkun: false,
-        'visitorsData.city': cityType.name,
+        'visitorData.city': cityType.name,
       }).count(),
 
     mehfils: async cityType =>

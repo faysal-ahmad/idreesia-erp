@@ -17,18 +17,18 @@ class StockItems extends AggregatableCollection {
     return stockItems;
   }
 
-  incrementCurrentLevel(stockItemId, incrementBy) {
-    const stockItem = this.findOne(stockItemId);
-    this.update(stockItemId, {
+  async incrementCurrentLevel(stockItemId, incrementBy) {
+    const stockItem = await this.findOneAsync(stockItemId);
+    return this.updateAsync(stockItemId, {
       $set: {
         currentStockLevel: stockItem.currentStockLevel + incrementBy,
       },
     });
   }
 
-  decrementCurrentLevel(stockItemId, decrementBy) {
-    const stockItem = this.findOne(stockItemId);
-    this.update(stockItemId, {
+  async decrementCurrentLevel(stockItemId, decrementBy) {
+    const stockItem = await this.findOneAsync(stockItemId);
+    return this.updateAsync(stockItemId, {
       $set: {
         currentStockLevel: stockItem.currentStockLevel - decrementBy,
       },

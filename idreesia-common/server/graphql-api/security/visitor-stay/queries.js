@@ -47,7 +47,6 @@ export async function getVisitorStays(queryString) {
     endDate,
     name,
     city,
-    teamName,
     stayReason,
     additionalInfo,
     sortBy = DEFAULT_SORT_BY,
@@ -88,14 +87,6 @@ export async function getVisitorStays(queryString) {
             .endOf('day')
             .toDate(),
         },
-      },
-    });
-  }
-
-  if (teamName) {
-    pipeline.push({
-      $match: {
-        teamName: { $eq: teamName },
       },
     });
   }
@@ -192,89 +183,5 @@ export async function getVisitorStays(queryString) {
   return Promise.all([visitors, totalResults]).then(results => ({
     data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
-  }));
-}
-
-export async function getTeamVisits(queryString) {
-  const params = parse(queryString);
-  const pipeline = [
-    {
-      $match: {
-        stayReason: { $in: ['team-visit', 'team-visit-co'] },
-        cancelledDate: { $exists: false },
-      },
-    },
-  ];
-
-  const {
-    startDate,
-    endDate,
-    teamName,
-    pageIndex = DEFAULT_PAGE_INDEX,
-    pageSize = DEFAULT_PAGE_SIZE,
-  } = params;
-
-  if (startDate) {
-    pipeline.push({
-      $match: {
-        fromDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT)
-            .startOf('day')
-            .toDate(),
-        },
-      },
-    });
-  }
-  if (endDate) {
-    pipeline.push({
-      $match: {
-        toDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT)
-            .endOf('day')
-            .toDate(),
-        },
-      },
-    });
-  }
-
-  if (teamName) {
-    pipeline.push({
-      $match: {
-        teamName: { $eq: teamName },
-      },
-    });
-  }
-
-  pipeline.push({
-    $group: {
-      _id: { fromDate: '$fromDate', teamName: '$teamName' },
-      count: { $sum: 1 },
-    },
-  });
-
-  const countingPipeline = pipeline.concat({
-    $count: 'total',
-  });
-
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
-
-  const resultsPipeline = pipeline.concat([
-    { $sort: { '_id.fromDate': -1 } },
-    { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize },
-  ]);
-
-  const visitors = VisitorStays.aggregate(resultsPipeline);
-  const totalResults = VisitorStays.aggregate(countingPipeline);
-
-  return Promise.all([visitors, totalResults]).then(results => ({
-    totalResults: get(results[1], ['0', 'total'], 0),
-    data: results[0].map(resultObj => ({
-      _id: `${resultObj._id.fromDate}_${resultObj._id.teamName}`,
-      teamName: resultObj._id.teamName,
-      visitDate: resultObj._id.fromDate,
-      membersCount: resultObj.count,
-    })),
   }));
 }

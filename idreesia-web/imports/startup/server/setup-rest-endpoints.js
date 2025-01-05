@@ -5,14 +5,20 @@ import bodyParser from 'body-parser';
 
 import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
-import { exportIsssuanceForms } from 'meteor/idreesia-common/server/business-logic/inventory/issuance-forms-exporter';
-import { exportPurchaseForms } from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms-exporter';
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
+import {
+  exportIsssuanceForms,
+  exportPurchaseForms,
+  exportStockAdjustmentForms,
+  exportStockItems,
+} from 'meteor/idreesia-common/server/business-logic/inventory';
 
 const ReportGenerators = {
   IssuanceForms: exportIsssuanceForms,
   PurchaseForms: exportPurchaseForms,
+  StockAdjustments: exportStockAdjustmentForms,
+  StockItems: exportStockItems,
   Karkuns: exportKarkuns,
   Visitors: exportVisitors,
   OutstationKarkuns: exportKarkuns,
@@ -30,11 +36,11 @@ Meteor.startup(() => {
   app.get(
     '/generate-report',
     bodyParser.urlencoded({ extended: false }),
-    Meteor.bindEnvironment((req, res) => {
+    Meteor.bindEnvironment(async (req, res) => {
       const { reportName, reportArgs } = req.query;
       const reportGenerator = ReportGenerators[reportName];
       if (reportGenerator) {
-        const report = reportGenerator(reportArgs);
+        const report = await reportGenerator(reportArgs);
         res.writeHead(200, {
           'Content-Type': 'application/vnd.ms-excel',
           'Content-Disposition': `attachment; filename=${kebabCase(
@@ -43,6 +49,8 @@ Meteor.startup(() => {
         });
         res.end(report);
       } else {
+        // eslint-disable-next-line no-console
+        console.warn(`Report generator not found for ${reportName}`);
         res.writeHead(404);
         res.end();
       }

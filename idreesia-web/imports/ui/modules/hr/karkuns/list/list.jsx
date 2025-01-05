@@ -61,6 +61,7 @@ class List extends Component {
     showDutiesColumn: PropTypes.bool,
     showActionsColumn: PropTypes.bool,
     predefinedFilterName: PropTypes.string,
+    predefinedFilterStoreId: PropTypes.string,
     handlePrintClicked: PropTypes.func,
     handleAuditLogClicked: PropTypes.func,
     handleNewClicked: PropTypes.func,
@@ -471,6 +472,7 @@ export default flowRight(
       showVolunteers,
       showEmployees,
       predefinedFilterName,
+      predefinedFilterStoreId,
       pageIndex,
       pageSize,
     }) => ({
@@ -487,6 +489,7 @@ export default flowRight(
           showVolunteers,
           showEmployees,
           predefinedFilterName,
+          predefinedFilterStoreId,
           pageIndex: pageIndex.toString(),
           pageSize: pageSize.toString(),
         },

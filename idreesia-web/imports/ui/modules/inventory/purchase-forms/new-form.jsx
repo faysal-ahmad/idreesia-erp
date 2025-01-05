@@ -125,6 +125,7 @@ class NewForm extends Component {
           fieldName="receivedBy"
           fieldLabel="Received By / Returned By"
           placeholder="Received By / Returned By"
+          predefinedFilterStoreId={physicalStoreId}
           predefinedFilterName={
             PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
           }
@@ -135,6 +136,7 @@ class NewForm extends Component {
           fieldName="purchasedBy"
           fieldLabel="Purchased By / Returned To"
           placeholder="Purchased By / Returned To"
+          predefinedFilterStoreId={physicalStoreId}
           predefinedFilterName={
             PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
           }

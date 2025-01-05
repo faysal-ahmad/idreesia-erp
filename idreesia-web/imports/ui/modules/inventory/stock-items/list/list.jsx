@@ -3,13 +3,10 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats } from 'meteor/idreesia-common/constants';
+import numeral from 'numeral';
 import {
+  Button,
   Dropdown,
-  Menu,
   Modal,
   Table,
   Tooltip,
@@ -17,6 +14,18 @@ import {
   Popconfirm,
   message,
 } from 'antd';
+import {
+  CalculatorOutlined,
+  DeleteOutlined,
+  FileExcelOutlined,
+  MergeCellsOutlined,
+  PlusCircleOutlined,
+  ReconciliationOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
+
+import { flowRight, groupBy, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
 
@@ -43,6 +52,15 @@ const StockLevelVerificationError = {
   justifyContent: 'center',
   color: 'red',
   cursor: 'pointer',
+};
+
+const GroupNameDivStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  color: '#1890ff',
+  fontWeight: 'bold',
 };
 
 class List extends Component {
@@ -84,35 +102,54 @@ class List extends Component {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: (text, record) => (
-          <StockItemName
-            stockItem={record}
-            onStockItemNameClicked={this.props.handleItemSelected}
-          />
-        ),
+        onCell: (record) => record.isGroup ? ({ colSpan: showActions ? 7 : 6 }) : ({ colSpan: 1 }),
+        render: (text, record) => {
+          if (record.isGroup) {
+            return (
+              <div style={GroupNameDivStyle}>
+                {record.name}
+              </div>
+            );
+          }
+
+          // If it's not a top level item then add indent
+          const paddingLeft = record.noParent ? 0 : 20;
+          return (
+            <div style={{ paddingLeft }}>
+              <StockItemName
+                stockItem={record}
+                onStockItemNameClicked={this.props.handleItemSelected}
+              />
+            </div>
+          )
+        },
       },
       {
         title: 'Company',
         dataIndex: 'company',
         key: 'company',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
       },
       {
         title: 'Details',
         dataIndex: 'details',
         key: 'details',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
       },
       {
         title: 'Category',
         dataIndex: 'categoryName',
         key: 'categoryName',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
       },
       {
         title: 'Min Stock',
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
         render: (text, record) => {
-          let stockLevel = text || '';
-          if (text && record.unitOfMeasurement !== 'quantity') {
+          let stockLevel = text ? numeral(text).format('0.00') : '';
+          if (stockLevel && record.unitOfMeasurement !== 'quantity') {
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
           }
 
@@ -123,9 +160,10 @@ class List extends Component {
         title: 'Current Stock',
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
         render: (text, record) => {
-          let stockLevel = text || 0;
-          if (record.unitOfMeasurement !== 'quantity')
+          let stockLevel = text ? numeral(text).format('0.00') : '';
+          if (stockLevel && record.unitOfMeasurement !== 'quantity')
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
 
           let style = StockLevelVerificationError;
@@ -147,12 +185,7 @@ class List extends Component {
 
           return (
             <Tooltip title={tooltip}>
-              <div
-                style={style}
-                onClick={() => {
-                  this.handleStockLevelClicked(record);
-                }}
-              >
+              <div style={style}>
                 {stockLevel}
               </div>
             </Tooltip>
@@ -165,6 +198,7 @@ class List extends Component {
       columns.push({
         title: 'Actions',
         key: 'action',
+        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
         render: (text, record) => {
           const {
             purchaseFormsCount,
@@ -172,12 +206,23 @@ class List extends Component {
             stockAdjustmentsCount,
           } = record;
 
+          const verifyAction = (
+            <Tooltip title="Verify Stock Level">
+              <ReconciliationOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  this.handleVerifyStockLevel(record);
+                }}
+              />
+            </Tooltip>
+          );
+
+          let deleteAction;
+
           if (
-            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
-            0
+            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount === 0
           ) {
-            return (
-              <div className="list-actions-column">
+            deleteAction = (
                 <Popconfirm
                   title="Are you sure you want to delete this stock item?"
                   onConfirm={() => {
@@ -190,11 +235,15 @@ class List extends Component {
                     <DeleteOutlined className="list-actions-icon" />
                   </Tooltip>
                 </Popconfirm>
-              </div>
             );
           }
 
-          return null;
+          return (
+            <div className="list-actions-column">
+              {verifyAction}
+              {deleteAction}    
+            </div>
+          );
         },
       });
     }
@@ -203,9 +252,12 @@ class List extends Component {
   };
 
   rowSelection = {
+    checkStrictly: false,
     onChange: (selectedRowKeys, selectedRows) => {
+      // Remove any group rows from the selection
+      const filteredRows = selectedRows.filter(item => !item.isGroup);
       this.setState({
-        selectedRows,
+        selectedRows: filteredRows,
       });
     },
   };
@@ -229,6 +281,7 @@ class List extends Component {
   handleMergeClicked = () => {
     const { selectedRows } = this.state;
     const { physicalStoreId, mergeStockItems } = this.props;
+    if (selectedRows.length === 0) return;
 
     const ids = selectedRows.map(({ _id }) => _id);
     mergeStockItems({
@@ -248,6 +301,7 @@ class List extends Component {
   handleRecalculateClicked = () => {
     const { selectedRows } = this.state;
     const { physicalStoreId, recalculateStockLevels } = this.props;
+    if (selectedRows.length === 0) return;
 
     const ids = selectedRows.map(({ _id }) => _id);
     recalculateStockLevels({
@@ -264,13 +318,15 @@ class List extends Component {
       });
   };
 
-  handleStockLevelClicked = record => {
+  handleVerifyStockLevel = record => {
     const { physicalStoreId, verifyStockItemLevel } = this.props;
+    let currentStockLevel = record.currentStockLevel;
+    currentStockLevel = currentStockLevel ? numeral(currentStockLevel).format('0.00') : 0;
     Modal.confirm({
       title: 'Stock Level Verification',
       content: `Have you verified that the current stock level of "${
         record.name
-      }" is ${record.currentStockLevel || 0}?`,
+      }" is ${currentStockLevel}?`,
       onOk() {
         verifyStockItemLevel({
           variables: {
@@ -291,6 +347,14 @@ class List extends Component {
     });
   };
 
+  handleExportSelected = () => {
+    const { physicalStoreId } = this.props;
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=StockItems&reportArgs=${physicalStoreId}`;
+    window.open(url, '_blank');
+  };
+
   onChange = (pageIndex, pageSize) => {
     const { setPageParams } = this.props;
     setPageParams({
@@ -307,7 +371,7 @@ class List extends Component {
     });
   };
 
-  handleMenuClick = ({ key }) => {
+  handleAction = ({ key }) => {
     const { selectedRows } = this.state;
     if (key === 'merge') {
       if (selectedRows.length <= 1) {
@@ -324,7 +388,38 @@ class List extends Component {
       });
     } else if (key === 'recalculate') {
       this.handleRecalculateClicked();
+    } else if (key === 'export') {
+      this.handleExportSelected();
     }
+  };
+
+  getActionsMenu = () => {
+    const items = [
+      {
+        key: 'merge',
+        label: 'Merge Selected',
+        icon: <MergeCellsOutlined />,
+      },
+      {
+        key: 'recalculate',
+        label: 'Recalculate Selected',
+        icon: <CalculatorOutlined />,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'export',
+        label: 'Export Current Stock Levels',
+        icon: <FileExcelOutlined />,
+      },
+    ];
+
+    return (
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
+    );
   };
 
   getTableHeader = () => {
@@ -340,42 +435,68 @@ class List extends Component {
       refetchListQuery,
     } = this.props;
 
-    const menu = (
-      <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="merge">Merge Selected Items</Menu.Item>
-        <Menu.Item key="recalculate">Recalculate Stock Level</Menu.Item>
-      </Menu>
-    );
-
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Dropdown.Button
+        <Button
+          size="large"
           type="primary"
-          icon={<DownOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
-          overlay={menu}
         >
           New Stock Item
-        </Dropdown.Button>
+        </Button>
       );
     }
 
     return (
       <div className="list-table-header">
         {newButton}
-        <ListFilter
-          name={name}
-          physicalStoreId={physicalStoreId}
-          categoryId={categoryId}
-          verifyDuration={verifyDuration}
-          stockLevel={stockLevel}
-          setPageParams={setPageParams}
-          refreshData={refetchListQuery}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            name={name}
+            physicalStoreId={physicalStoreId}
+            categoryId={categoryId}
+            verifyDuration={verifyDuration}
+            stockLevel={stockLevel}
+            setPageParams={setPageParams}
+            refreshData={refetchListQuery}
+          />
+          &nbsp;&nbsp;
+          {this.getActionsMenu()}
+        </div>
       </div>
     );
   };
+
+  getTreeData = (data) => {
+    const treeData = [];
+    // Convert the flat data received from the server into
+    // appropriate shape for showing tree in the table
+    const groupedData = groupBy(data, 'name');
+    const itemNames = Object.keys(groupedData);
+    itemNames.forEach((itemName, index) => {
+      // If there is only a single item against the item name
+      // then we do not need to show this item in a hierarchy
+      const items = groupedData[itemName];
+      if (items.length === 1) {
+        treeData.push({
+          ...items[0],
+          noParent: true,
+      });
+      } else {
+        // Insert a parent row under which we will group all the items
+        treeData.push({
+          _id: `${index}-${kebabCase(itemName)}`,
+          name: `${itemName} (${items.length} items)`,
+          isGroup: true,
+          children: items,
+        });
+      }
+    });
+
+    return treeData;
+  }
 
   render() {
     const { loading } = this.props;
@@ -388,15 +509,17 @@ class List extends Component {
       pagedStockItems: { totalResults, data },
     } = this.props;
 
+    const treeData = this.getTreeData(data);
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
       <Table
         rowKey="_id"
-        dataSource={data}
+        dataSource={treeData}
         columns={this.getColumns()}
         bordered
+        indentSize={30}
         size="small"
         pagination={false}
         title={this.getTableHeader}

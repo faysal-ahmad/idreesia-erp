@@ -24,48 +24,52 @@ const ItemForm = ({
   handleAddItem,
   showPrice,
 }) => (
-  <Row type="flex" justify="start" style={RowStyle}>
-    <StockItemField
-      physicalStoreId={physicalStoreId}
-      fieldLayout={null}
-      fieldName="stockItem"
-      placeholder="Stock Item"
-    />
-    <InputNumberField
-      fieldName="quantity"
-      placeholder="Quantity"
-      fieldLayout={null}
-      minValue={0}
-      precision={2}
-    />
-    {showPrice ? (
+  <>
+    <Row type="flex" justify="end" style={RowStyle}>
+      <StockItemField
+        physicalStoreId={physicalStoreId}
+        fieldLayout={null}
+        fieldName="stockItem"
+        placeholder="Stock Item"
+      />
       <InputNumberField
-        fieldName="price"
-        placeholder="Price"
+        fieldName="quantity"
+        placeholder="Quantity"
         fieldLayout={null}
         minValue={0}
         precision={2}
       />
-    ) : null}
-    <SelectField
-      allowClear={false}
-      dropdownMatchSelectWidth={false}
-      data={[
-        { label: inflowLabel, value: 'inflow' },
-        { label: outflowLabel, value: 'outflow' },
-      ]}
-      getDataValue={({ value }) => value}
-      getDataText={({ label }) => label}
-      initialValue={defaultLabel === inflowLabel ? 'inflow' : 'outflow'}
-      fieldLayout={null}
-      fieldName="status"
-    />
-    <Form.Item style={ButtonContainerStyle}>
-      <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleAddItem}>
-        Add Item
-      </Button>
-    </Form.Item>
-  </Row>
+      {showPrice ? (
+        <InputNumberField
+          fieldName="price"
+          placeholder="Price"
+          fieldLayout={null}
+          minValue={0}
+          precision={2}
+        />
+      ) : null}
+      <SelectField
+        allowClear={false}
+        dropdownMatchSelectWidth={false}
+        data={[
+          { label: inflowLabel, value: 'inflow' },
+          { label: outflowLabel, value: 'outflow' },
+        ]}
+        getDataValue={({ value }) => value}
+        getDataText={({ label }) => label}
+        initialValue={defaultLabel === inflowLabel ? 'inflow' : 'outflow'}
+        fieldLayout={null}
+        fieldName="status"
+      />
+    </Row>
+    <Row type="flex" justify="end" style={RowStyle}>
+      <Form.Item style={ButtonContainerStyle}>
+        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleAddItem}>
+          Add Item
+        </Button>
+      </Form.Item>
+    </Row>
+  </>
 );
 
 ItemForm.propTypes = {

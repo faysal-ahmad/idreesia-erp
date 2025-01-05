@@ -8,7 +8,7 @@ import {
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 
-import { getVisitorStays, getTeamVisits } from './queries';
+import { getVisitorStays } from './queries';
 
 export default {
   VisitorStayType: {
@@ -54,8 +54,6 @@ export default {
     pagedVisitorStaysByVisitorId: async (obj, { visitorId }) =>
       getVisitorStays(`?visitorId=${visitorId}&pageSize=5`),
 
-    pagedTeamVisits: async (obj, { queryString }) => getTeamVisits(queryString),
-
     visitorStayById: async (obj, { _id }) => VisitorStays.findOne(_id),
 
     distinctStayAllowedBy: async () => {
@@ -66,29 +64,12 @@ export default {
 
       return compact(distincFunction('stayAllowedBy'));
     },
-
-    distinctTeamNames: async () => {
-      const distincFunction = Meteor.wrapAsync(
-        VisitorStays.rawCollection().distinct,
-        VisitorStays.rawCollection()
-      );
-
-      return compact(distincFunction('teamName'));
-    },
   },
 
   Mutation: {
     createVisitorStay: async (
       obj,
-      {
-        visitorId,
-        numOfDays,
-        stayReason,
-        stayAllowedBy,
-        dutyId,
-        shiftId,
-        teamName,
-      },
+      { visitorId, numOfDays, stayReason, stayAllowedBy, dutyId, shiftId },
       { user }
     ) => {
       // We are going to assume that if the current time is before midnight, but
@@ -126,7 +107,6 @@ export default {
         stayAllowedBy,
         dutyId,
         shiftId,
-        teamName,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -138,16 +118,7 @@ export default {
 
     updateVisitorStay: async (
       obj,
-      {
-        _id,
-        fromDate,
-        toDate,
-        stayReason,
-        stayAllowedBy,
-        dutyId,
-        shiftId,
-        teamName,
-      },
+      { _id, fromDate, toDate, stayReason, stayAllowedBy, dutyId, shiftId },
       { user }
     ) => {
       const mFromDate = dayjs(fromDate);
@@ -164,7 +135,6 @@ export default {
           stayAllowedBy,
           dutyId,
           shiftId,
-          teamName,
           updatedAt: date,
           updatedBy: user._id,
         },

@@ -128,6 +128,7 @@ class NewForm extends Component {
           placeholder="Adjusted By"
           required
           requiredMessage="Please select a name for adjusted By."
+          predefinedFilterStoreId={physicalStoreId}
           predefinedFilterName={
             PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY
           }

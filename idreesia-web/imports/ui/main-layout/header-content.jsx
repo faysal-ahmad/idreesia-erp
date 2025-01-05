@@ -24,12 +24,16 @@ const ContainerStyle = {
 
 const modulePathsMapping = {
   [ModuleNames.admin]: ModulePaths.admin,
+  // ***********************************************
+  // Items within this section would be grouped under
+  // the node '381-A Operations'
   [ModuleNames.accounts]: ModulePaths.accounts,
   [ModuleNames.hr]: ModulePaths.hr,
   [ModuleNames.inventory]: ModulePaths.inventory,
   [ModuleNames.operations]: ModulePaths.operations,
-  [ModuleNames.security]: ModulePaths.security,
   [ModuleNames.outstation]: ModulePaths.outstation,
+  [ModuleNames.security]: ModulePaths.security,
+  // ***********************************************
   [ModuleNames.portals]: ModulePaths.portals,
 };
 

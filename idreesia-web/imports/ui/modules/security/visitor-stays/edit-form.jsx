@@ -15,10 +15,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import {
-  WithDistinctTeamNames,
-  WithDistinctStayAllowedBy,
-} from 'meteor/idreesia-common/composers/security';
+import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
 import {
   WithAllMSDuties,
   WithAllDutyShifts,
@@ -39,8 +36,6 @@ class EditForm extends Component {
     allDutyShiftsLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
     distinctStayAllowedByLoading: PropTypes.bool,
-    distinctTeamNames: PropTypes.array,
-    distinctTeamNamesLoading: PropTypes.bool,
   };
   
   state = {
@@ -51,7 +46,7 @@ class EditForm extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId, teamName }) => {
+  handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId }) => {
     const {
       visitorStayById,
       handleSaveItem,
@@ -66,7 +61,6 @@ class EditForm extends Component {
         stayAllowedBy,
         dutyId: dutyIdShiftId ? dutyIdShiftId[0] : null,
         shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
-        teamName,
       },
     })
       .then(() => {
@@ -84,11 +78,9 @@ class EditForm extends Component {
       allMSDutiesLoading,
       allDutyShiftsLoading,
       distinctStayAllowedByLoading,
-      distinctTeamNamesLoading,
       allMSDuties,
       allDutyShifts,
       distinctStayAllowedBy,
-      distinctTeamNames,
     } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
 
@@ -96,8 +88,7 @@ class EditForm extends Component {
       formDataLoading ||
       allMSDutiesLoading ||
       allDutyShiftsLoading ||
-      distinctStayAllowedByLoading ||
-      distinctTeamNamesLoading
+      distinctStayAllowedByLoading
     )
       return null;
 
@@ -143,12 +134,6 @@ class EditForm extends Component {
           fieldLabel="Duty Participation"
           initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
         />
-        <AutoCompleteField
-          fieldName="teamName"
-          fieldLabel="Team Name"
-          dataSource={distinctTeamNames}
-          initialValue={visitorStayById.teamName}
-        />
 
         <FormButtonsSubmit
           text="Update Stay"
@@ -171,7 +156,6 @@ const formQuery = gql`
       stayAllowedBy
       dutyId
       shiftId
-      teamName
     }
   }
 `;
@@ -185,7 +169,6 @@ const formMutation = gql`
     $stayAllowedBy: String
     $dutyId: String
     $shiftId: String
-    $teamName: String
   ) {
     updateVisitorStay(
       _id: $_id
@@ -195,7 +178,6 @@ const formMutation = gql`
       stayAllowedBy: $stayAllowedBy
       dutyId: $dutyId
       shiftId: $shiftId
-      teamName: $teamName
     ) {
       _id
       visitorId
@@ -206,7 +188,6 @@ const formMutation = gql`
       stayAllowedBy
       dutyId
       shiftId
-      teamName
     }
   }
 `;
@@ -224,6 +205,5 @@ export default flowRight(
   }),
   WithAllMSDuties(),
   WithAllDutyShifts(),
-  WithDistinctStayAllowedBy(),
-  WithDistinctTeamNames()
+  WithDistinctStayAllowedBy()
 )(EditForm);

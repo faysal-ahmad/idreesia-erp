@@ -41,6 +41,7 @@ import './37-create-mehfil-portals';
 import './38-karkuns-visitors-to-people';
 import './39-update-karkun-references';
 import './40-security-mehfil-duties';
+import './41-inventory-stockitem-indexes';
 
 Migrations.config({
   log: true,

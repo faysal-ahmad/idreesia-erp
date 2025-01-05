@@ -13,7 +13,7 @@ export default {
   Location: {
     refParent: async location => {
       if (location.parentId) {
-        return Locations.findOne(location.parentId);
+        return Locations.findOneAsync(location.parentId);
       }
       return null;
     },
@@ -36,7 +36,7 @@ export default {
   },
   Query: {
     locationById: async (obj, { _id }, { user }) => {
-      const location = Locations.findOne(_id);
+      const location = await Locations.findOneAsync(_id);
       if (hasInstanceAccess(user, location.physicalStoreId) === false) {
         return null;
       }
@@ -50,7 +50,7 @@ export default {
           physicalStoreId: { $eq: physicalStoreId },
         },
         { sort: { name: 1 } }
-      ).fetch();
+      ).fetchAsync();
     },
   },
 
@@ -73,7 +73,7 @@ export default {
       }
 
       const date = new Date();
-      const locationId = Locations.insert({
+      const locationId = await Locations.insertAsync({
         name,
         physicalStoreId,
         parentId,
@@ -84,7 +84,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return Locations.findOne(locationId);
+      return Locations.findOneAsync(locationId);
     },
 
     updateLocation: async (
@@ -98,7 +98,7 @@ export default {
         );
       }
 
-      const existingLocation = Locations.findOne(_id);
+      const existingLocation = await Locations.findOneAsync(_id);
       if (
         !existingLocation ||
         hasInstanceAccess(user, existingLocation.physicalStoreId) === false
@@ -109,7 +109,7 @@ export default {
       }
 
       const date = new Date();
-      Locations.update(_id, {
+      await Locations.updateAsync(_id, {
         $set: {
           name,
           parentId,
@@ -119,7 +119,7 @@ export default {
         },
       });
 
-      return Locations.findOne(_id);
+      return Locations.findOneAsync(_id);
     },
 
     removeLocation: async (obj, { _id }, { user }) => {
@@ -129,7 +129,7 @@ export default {
         );
       }
 
-      const existingLocation = Locations.findOne(_id);
+      const existingLocation = await Locations.findOneAsync(_id);
       if (
         !existingLocation ||
         hasInstanceAccess(user, existingLocation.physicalStoreId) === false
@@ -139,7 +139,7 @@ export default {
         );
       }
 
-      return Locations.remove(_id);
+      return Locations.removeAsync(_id);
     },
   },
 };

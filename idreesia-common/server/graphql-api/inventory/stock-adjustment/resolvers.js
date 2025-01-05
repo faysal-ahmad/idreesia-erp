@@ -217,7 +217,11 @@ export default {
       return StockAdjustments.findOneAsync(_id);
     },
 
-    approveStockAdjustment: async (obj, { _id }, { user }) => {
+    approveStockAdjustments: async (
+      obj,
+      { _ids, physicalStoreId },
+      { user }
+    ) => {
       if (
         !hasOnePermission(user, [
           PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
@@ -228,58 +232,78 @@ export default {
         );
       }
 
-      const existingAdjustment = await StockAdjustments.findOneAsync(_id);
-      if (
-        !existingAdjustment ||
-        hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to approve Stock Adjustments in this Physical Store.'
         );
       }
 
       const date = new Date();
-      await StockAdjustments.updateAsync(_id, {
-        $set: {
-          approvedOn: date,
-          approvedBy: user._id,
+      await StockAdjustments.updateAsync(
+        {
+          physicalStoreId,
+          _id: { $in: _ids },
+          approvedOn: { $exists: false },
+          approvedBy: { $exists: false },
         },
-      });
+        {
+          $set: {
+            approvedOn: date,
+            approvedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
 
-      return StockAdjustments.findOneAsync(_id);
+      return StockAdjustments.find({
+        physicalStoreId,
+        _id: { $in: _ids },
+      });
     },
 
-    removeStockAdjustment: async (obj, { _id }, { user }) => {
+    removeStockAdjustments: async (
+      obj,
+      { _ids, physicalStoreId },
+      { user }
+    ) => {
       if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in the System.'
         );
       }
 
-      const existingAdjustment = await StockAdjustments.findOneAsync(_id);
-      if (
-        !existingAdjustment ||
-        hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
-      ) {
+      if (hasInstanceAccess(user, physicalStoreId) === false) {
         throw new Error(
           'You do not have permission to manage Stock Adjustments in this Physical Store.'
         );
       }
 
-      // Undo the effect of this adjustment
-      if (existingAdjustment.isInflow) {
-        await StockItems.decrementCurrentLevel(
-          existingAdjustment.stockItemId,
-          existingAdjustment.quantity
-        );
-      } else {
-        await StockItems.incrementCurrentLevel(
-          existingAdjustment.stockItemId,
-          existingAdjustment.quantity
-        );
-      }
+      const existingAdjustments = StockAdjustments.find({
+        _id: { $in: _ids },
+        physicalStoreId,
+        approvedOn: { $exists: false },
+        approvedBy: { $exists: false },
+      });
 
-      return StockAdjustments.removeAsync(_id);
+      await existingAdjustments.forEachAsync(async existingAdjustment => {
+        // Undo the effect of this adjustment
+        if (existingAdjustment.isInflow) {
+          await StockItems.decrementCurrentLevel(
+            existingAdjustment.stockItemId,
+            existingAdjustment.quantity
+          );
+        } else {
+          await StockItems.incrementCurrentLevel(
+            existingAdjustment.stockItemId,
+            existingAdjustment.quantity
+          );
+        }
+      });
+
+      return StockAdjustments.removeAsync({
+        _id: { $in: _ids },
+        physicalStoreId,
+      });
     },
   },
 };

@@ -10,12 +10,14 @@ import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/sec
 import {
   exportIsssuanceForms,
   exportPurchaseForms,
+  exportStockAdjustmentForms,
   exportStockItems,
 } from 'meteor/idreesia-common/server/business-logic/inventory';
 
 const ReportGenerators = {
   IssuanceForms: exportIsssuanceForms,
   PurchaseForms: exportPurchaseForms,
+  StockAdjustments: exportStockAdjustmentForms,
   StockItems: exportStockItems,
   Karkuns: exportKarkuns,
   Visitors: exportVisitors,

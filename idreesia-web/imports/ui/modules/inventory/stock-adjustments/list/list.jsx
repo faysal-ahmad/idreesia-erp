@@ -3,7 +3,25 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { CheckSquareOutlined, DeleteOutlined, EditOutlined, FileOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Dropdown,
+  Modal,
+  Pagination,
+  Table,
+  Tooltip,
+  message,
+} from 'antd';
+import {
+  CheckSquareOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  FileExcelOutlined,
+  FileOutlined,
+  PlusCircleOutlined,
+  PrinterOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 
 import {
   flowRight,
@@ -14,14 +32,6 @@ import {
   WithDynamicBreadcrumbs,
   WithQueryParams,
 } from 'meteor/idreesia-common/composers/common';
-import {
-  Button,
-  Pagination,
-  Popconfirm,
-  Table,
-  Tooltip,
-  message,
-} from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   WithPhysicalStore,
@@ -47,8 +57,12 @@ class List extends Component {
       totalResults: PropTypes.number,
       data: PropTypes.array,
     }),
-    removeStockAdjustment: PropTypes.func,
-    approveStockAdjustment: PropTypes.func,
+    removeStockAdjustments: PropTypes.func,
+    approveStockAdjustments: PropTypes.func,
+  };
+
+  state = {
+    selectedRows: [],
   };
 
   columns = [
@@ -104,14 +118,6 @@ class List extends Component {
         if (!record.approvedOn) {
           return (
             <div className="list-actions-column">
-              <Tooltip title="Approve">
-                <CheckSquareOutlined
-                  className="list-actions-icon"
-                  onClick={() => {
-                    this.handleApproveClicked(record);
-                  }}
-                />
-              </Tooltip>
               <Tooltip title="Edit">
                 <EditOutlined
                   className="list-actions-icon"
@@ -120,35 +126,45 @@ class List extends Component {
                   }}
                 />
               </Tooltip>
-              <Popconfirm
-                title="Are you sure you want to delete this stock adjustment?"
-                onConfirm={() => {
-                  this.handleDeleteClicked(record);
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+              <Tooltip title="Print">
+                <PrinterOutlined
+                  className="list-actions-icon"
+                  onClick={() => {}}
+                />
+              </Tooltip>
             </div>
           );
         }
 
         return (
-          <Tooltip title="View">
-            <FileOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleViewClicked(record);
-              }}
-            />
-          </Tooltip>
+          <div className="list-actions-column">
+            <Tooltip title="View">
+              <FileOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  this.handleViewClicked(record);
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="Print">
+              <PrinterOutlined
+                className="list-actions-icon"
+                onClick={() => {}}
+              />
+            </Tooltip>
+          </div>
         );
       },
     },
   ];
+
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      this.setState({
+        selectedRows,
+      });
+    },
+  };
 
   refreshPage = newParams => {
     const {
@@ -213,30 +229,71 @@ class List extends Component {
     );
   };
 
-  handleDeleteClicked = stockAdjustment => {
-    const { removeStockAdjustment } = this.props;
-    removeStockAdjustment({
-      variables: { _id: stockAdjustment._id },
+  handleAction = ({ key }) => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+
+    if (key === 'approve') {
+      this.handleApproveSelected();
+    } else if (key === 'export') {
+      this.handleExportSelected();
+    } else if (key === 'delete') {
+      Modal.confirm({
+        title: 'Delete Stock Adjustment Forms',
+        content:
+          'Are you sure you want to delete the selected stock adjustment forms?',
+        onOk: () => {
+          this.handleDeleteSelected();
+        },
+      });
+    }
+  }
+
+  handleDeleteSelected = () => {
+    const { selectedRows } = this.state;
+    const _ids = selectedRows.map(row => row._id);
+    const { removeStockAdjustments, physicalStoreId } = this.props;
+    removeStockAdjustments({
+      variables: {
+        _ids,
+        physicalStoreId,
+      },
     })
       .then(() => {
-        message.success('Stock adjustment has been deleted.', 5);
+        message.success('Stock adjustments have been deleted.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
       });
   };
 
-  handleApproveClicked = stockAdjustment => {
-    const { approveStockAdjustment } = this.props;
-    approveStockAdjustment({
-      variables: { _id: stockAdjustment._id },
+  handleApproveSelected = () => {
+    const { selectedRows } = this.state;
+    const _ids = selectedRows.map(row => row._id);
+    const { approveStockAdjustments, physicalStoreId } = this.props;
+    approveStockAdjustments({
+      variables: {
+        _ids,
+        physicalStoreId,
+      },
     })
       .then(() => {
-        message.success('Stock adjustment has been approved.', 5);
+        message.success('Stock adjustments have been approved.', 5);
       })
       .catch(error => {
         message.error(error.message, 5);
       });
+  };
+
+  handleExportSelected = () => {
+    const { selectedRows } = this.state;
+    const reportArgs = selectedRows.map(row => row._id);
+    const url = `${
+      window.location.origin
+    }/generate-report?reportName=StockAdjustments&reportArgs=${reportArgs.join(
+      ','
+    )}`;
+    window.open(url, '_blank');
   };
 
   onChange = (pageIndex, pageSize) => {
@@ -253,6 +310,35 @@ class List extends Component {
     });
   };
 
+  getActionsMenu = () => {
+    const items = [
+      {
+        key: 'approve',
+        label: 'Approve Selected',
+        icon: <CheckSquareOutlined />,
+      },
+      {
+        key: 'export',
+        label: 'Export Selected',
+        icon: <FileExcelOutlined />,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'delete',
+        label: 'Delete Selected',
+        icon: <DeleteOutlined />,
+      },
+    ];
+
+    return (
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
+    );
+  };
+
   getTableHeader = () => {
     const { queryParams, refetchListQuery } = this.props;
 
@@ -265,11 +351,15 @@ class List extends Component {
         >
           New Stock Adjustment
         </Button>
-        <ListFilter
-          refreshPage={this.refreshPage}
-          queryParams={queryParams}
-          refreshData={refetchListQuery}
-        />
+        <div className="list-table-header-section">
+          <ListFilter
+            refreshPage={this.refreshPage}
+            queryParams={queryParams}
+            refreshData={refetchListQuery}
+          />
+          &nbsp;&nbsp;
+          {this.getActionsMenu()}
+        </div>
       </div>
     );
   };
@@ -293,6 +383,7 @@ class List extends Component {
         columns={this.columns}
         bordered
         title={this.getTableHeader}
+        rowSelection={this.rowSelection}
         size="small"
         pagination={false}
         footer={() => (
@@ -316,14 +407,14 @@ class List extends Component {
 }
 
 const formMutationRemove = gql`
-  mutation removeStockAdjustment($_id: String!) {
-    removeStockAdjustment(_id: $_id)
+  mutation removeStockAdjustments($physicalStoreId: String!, $_ids: [String]!) {
+    removeStockAdjustments(physicalStoreId: $physicalStoreId, _ids: $_ids)
   }
 `;
 
 const formMutationApprove = gql`
-  mutation approveStockAdjustment($_id: String!) {
-    approveStockAdjustment(_id: $_id) {
+  mutation approveStockAdjustments($physicalStoreId: String!, $_ids: [String]!) {
+    approveStockAdjustments(physicalStoreId: $physicalStoreId, _ids: $_ids) {
       _id
       physicalStoreId
       stockItemId
@@ -374,7 +465,7 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   graphql(formMutationRemove, {
-    name: 'removeStockAdjustment',
+    name: 's',
     options: {
       refetchQueries: [
         'pagedStockAdjustments',
@@ -384,7 +475,7 @@ export default flowRight(
     },
   }),
   graphql(formMutationApprove, {
-    name: 'approveStockAdjustment',
+    name: 'approveStockAdjustments',
     options: {
       refetchQueries: [
         'pagedStockAdjustments',

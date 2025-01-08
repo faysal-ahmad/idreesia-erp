@@ -35,9 +35,9 @@ export default {
       return null;
     },
     refIssuedTo: async issuanceForm => {
-      if (issuanceForm?.issuedBy) {
+      if (issuanceForm?.issuedTo) {
         const person = await People.findOneAsync({
-          _id: { $eq: issuanceForm.issuedBy },
+          _id: { $eq: issuanceForm.issuedTo },
         });
         return People.personToKarkun(person);
       }

@@ -5,4 +5,3 @@ export { default as timestamps } from './timestamps';
 export { default as Attachment } from './attachment';
 export { default as AuditLog } from './audit-log';
 export { default as SecurityLog } from './security-log';
-export { default as Configuration } from './configuration';

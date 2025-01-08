@@ -42,6 +42,7 @@ import './38-karkuns-visitors-to-people';
 import './39-update-karkun-references';
 import './40-security-mehfil-duties';
 import './41-inventory-stockitem-indexes';
+import './42-admin-locations';
 
 Migrations.config({
   log: true,

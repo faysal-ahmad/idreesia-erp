@@ -33,6 +33,12 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // Temporarily added to link to org location created
+  // for this mehfil
+  orgLocationId: {
+    type: String,
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

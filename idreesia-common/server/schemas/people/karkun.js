@@ -7,6 +7,12 @@ export default new SimpleSchema({
     optional: true,
   },
 
+  orgLocationId: {
+    type: String,
+    optional: true,
+  },
+  // ***************************
+  // These will be deprecated once we populate the orgLocationId
   cityId: {
     type: String,
     optional: true,
@@ -15,6 +21,7 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // ***************************
   lastTarteebDate: {
     type: Date,
     optional: true,

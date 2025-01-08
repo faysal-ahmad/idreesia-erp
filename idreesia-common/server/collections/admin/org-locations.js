@@ -2,7 +2,7 @@ import { AggregatableCollection } from 'meteor/idreesia-common/server/collection
 import { OrgLocation as OrgLocationSchema } from 'meteor/idreesia-common/server/schemas/admin';
 
 class OrgLocations extends AggregatableCollection {
-  constructor(name = 'admin-org-units', options = {}) {
+  constructor(name = 'admin-org-locations', options = {}) {
     const orgLocations = super(name, options);
     orgLocations.attachSchema(OrgLocationSchema);
     return orgLocations;
@@ -11,7 +11,7 @@ class OrgLocations extends AggregatableCollection {
   createOrgLocation({ name, type, parentId }, user) {
     const existingOrgLocation = this.findOne({ name, parentId });
     if (existingOrgLocation) {
-      throw new Error(`Org unit name '${name}' is already in use.`);
+      throw new Error(`Org location name '${name}' is already in use.`);
     }
 
     const date = new Date();
@@ -31,7 +31,7 @@ class OrgLocations extends AggregatableCollection {
   updateOrgLocation({ _id, name, parentId }, user) {
     const existingOrgLocation = this.findOne({ name, parentId });
     if (existingOrgLocation) {
-      throw new Error(`Org unit name '${name}' is already in use.`);
+      throw new Error(`Org location name '${name}' is already in use.`);
     }
 
     const date = new Date();
@@ -56,7 +56,7 @@ class OrgLocations extends AggregatableCollection {
 
     if (childCount > 0) {
       throw new Error(
-        `This Org unit is currently in use and cannot be deleted.`
+        `This Org location is currently in use and cannot be deleted.`
       );
     }
 

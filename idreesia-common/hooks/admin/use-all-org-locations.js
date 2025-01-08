@@ -8,6 +8,14 @@ const QUERY = gql`
       name
       type
       parentId
+      mehfilDetails {
+        address
+        mehfilStartDate
+        timingDetails
+        lcdAvailability
+        tabAvailability
+        otherMehfilDetails
+      }
     }
   }
 `;

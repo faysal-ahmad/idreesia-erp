@@ -1,8 +1,18 @@
+type MehfilDetailsType {
+  address: String
+  mehfilStartDate: String
+  timingDetails: String
+  lcdAvailability: String
+  tabAvailability: String
+  otherMehfilDetails: String
+}
+
 type OrgLocationType {
   _id: String
   name: String
   type: String
   parentId: String
+  mehfilDetails: MehfilDetailsType
 }
 
 extend type Query {

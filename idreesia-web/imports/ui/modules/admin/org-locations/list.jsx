@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { sortBy } from "lodash";
 import { useDispatch } from 'react-redux';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Button, Descriptions, Divider, Dropdown, Flex, Input, Space, Splitter, Tree } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Button, Flex, Input, Modal, Splitter, Tree } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import {
-  useAllOrgLocations,
-} from 'meteor/idreesia-common/hooks/admin';
+import { useAllOrgLocations } from 'meteor/idreesia-common/hooks/admin';
+
+import { NewForm } from './new';
+import { EditForm } from './edit';
 
 const items = [
   {
@@ -54,10 +55,16 @@ const getChildNodes = (parentId, locationsByParentId) => {
 }
 
 const List = ({ history, location }) => {
-  const [selectedLocation, setSelectedLocation] = useState();
+  const [newFormOpen, setNewFormOpen] = useState(false);
+  const [newOrgLocationType, setNewOrgLocationType] = useState();
+  const [selectedOrgLocation, setSelectedOrgLocation] = useState();
   const [treeData, setTreeData] = useState([]);
   const dispatch = useDispatch();
-  const { allOrgLocations, allOrgLocationsLoading } = useAllOrgLocations();
+  const {
+    allOrgLocations,
+    allOrgLocationsLoading,
+    refetchAllOrgLocations,
+  } = useAllOrgLocations();
   
   useEffect(() => {
     dispatch(
@@ -99,86 +106,77 @@ const List = ({ history, location }) => {
     setTreeData(updatedTreeData);
   }, [allOrgLocations])
   
-  const handleNewClicked = () => { };
-
-  const onDragEnter = (info) => {
-    // console.log(info);
-    // expandedKeys, set it when controlled is needed
-    // setExpandedKeys(info.expandedKeys)
+  const handleCreateLocation = (locationType) => { 
+    setNewOrgLocationType(locationType);
+    setNewFormOpen(true);
   };
 
-  const onDrop = (info) => { }
+  const handleCreateLocationClose = (refreshData) => {
+    setNewOrgLocationType(null);
+    setNewFormOpen(false);
+    if (refreshData) {
+      refetchAllOrgLocations();
+    }
+  }
 
   const onSelect = (selectedKeys) => {
     const selectedLocationId = selectedKeys[0];
-    const location = allOrgLocations.find(
+    const orgLocation = allOrgLocations.find(
       location => location._id === selectedLocationId
     );
-
-    setSelectedLocation(location);
+ 
+    setSelectedOrgLocation(orgLocation);
   }
 
   if (allOrgLocationsLoading) return null;
 
-  // If there is a selected mehfil location in the tree then
-  // create the description node to show in the splitter panel
-  let descriptionNode = <div />;
-  if (selectedLocation && selectedLocation.type === 'Mehfil') {
-    const mehfilDetails = selectedLocation.mehfilDetails ?? {};
-    const items = [
-      {
-        key: '1',
-        label: 'LCD Available',
-        children: <p>{mehfilDetails.lcdAvailability ? 'Yes' : 'No'}</p>,
-      },     
-      {
-        key: '2',
-        label: 'Tab Available',
-        children: <p>{mehfilDetails.tabAvailability ? 'Yes' : 'No'}</p>,
-      },     
-      {
-        key: '3',
-        label: 'Address',
-        children: <p>{mehfilDetails.address}</p>,
-      },     
-    ]
-
-    descriptionNode = <Descriptions bordered title="Mehfil Details" items={items} />;
-  }
-
   return (
     <>
-      <Flex justify='space-between'>
-        <Dropdown menu={{ items }}>
-          <Button type='primary'>
-            <Space>
-              New Location
-              <DownOutlined />
-            </Space>
-          </Button>
-        </Dropdown>
-        <Input.Search style={{ width: 300 }} placeholder="Search" />
-      </Flex>
-      <Divider />
       <Splitter>
         <Splitter.Panel defaultSize="30%" min="30%" max="50%">
-          <Tree
-            className="draggable-tree"
-            draggable
-            blockNode
-            onDragEnter={onDragEnter}
-            onDrop={onDrop}
-            onSelect={onSelect}
-            treeData={treeData}
-            showLine
-          />
-        </Splitter.Panel>
-        <Splitter.Panel>
-          <Flex justify="center">
-            {descriptionNode}
+          <Flex gap="middle" vertical>
+            <Flex gap="middle">
+              <Button icon={<SyncOutlined />} size="middle" onClick={() => { refetchAllOrgLocations() }} />
+              <Input.Search style={{ width: "100%" }} placeholder="Search" />
+            </Flex>
+            <Tree
+              blockNode
+              showLine
+              onSelect={onSelect}
+              treeData={treeData}
+            />
           </Flex>
         </Splitter.Panel>
+        <Splitter.Panel>
+          {
+            selectedOrgLocation ? (
+              <EditForm
+                orgLocation={selectedOrgLocation}
+                onCreateLocation={handleCreateLocation}
+              />
+            ) : null
+          }
+        </Splitter.Panel>
       </Splitter>
+      <Modal
+        title="New Organization Location"
+        open={newFormOpen}
+        onCancel={() => { handleCreateLocationClose(false) }}
+        width={600}
+        footer={null}
+      >
+        <div>
+          {
+            newFormOpen ? (
+              <NewForm
+                parentOrgLocation={selectedOrgLocation}
+                newOrgLocationType={newOrgLocationType}
+                onClose={handleCreateLocationClose}
+              />
+            ) : null
+          }
+        </div>
+      </Modal>
     </>
   );
 };

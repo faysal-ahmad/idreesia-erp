@@ -1,8 +1,9 @@
 const OrgLocationTypes = {
+  ROOT: 'Root',
   MEHFIL: 'Mehfil',
   CITY: 'City',
   COUNTRY: 'Country',
-  OTHER: 'Other',
+  GROUP: 'Group',
 };
 
 export default OrgLocationTypes;

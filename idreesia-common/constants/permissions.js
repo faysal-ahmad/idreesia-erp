@@ -25,6 +25,8 @@ const Permissions = {
   ADMIN_VIEW_ADMIN_JOBS: 'admin-view-admin-jobs',
   ADMIN_MANAGE_ADMIN_JOBS: 'admin-manage-admin-jobs',
 
+  ADMIN_MANAGE_ORG_LOCATIONS: 'admin-manage-org-locations',
+
   ADMIN_VIEW_USERS_AND_GROUPS: 'admin-view-users-and-groups',
   ADMIN_MANAGE_USERS_AND_GROUPS: 'admin-manage-users-and-groups',
 

@@ -1,6 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 
 import { identifiable, timestamps } from '../common';
+import { OrgLocationTypes } from '../../../constants';
 
 const MehfilSchema = new SimpleSchema({
   address: {
@@ -35,7 +36,13 @@ export default new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ['Root', 'Mehfil', 'City', 'Country', 'Other'],
+    allowedValues: [
+      OrgLocationTypes.ROOT,
+      OrgLocationTypes.MEHFIL,
+      OrgLocationTypes.CITY,
+      OrgLocationTypes.COUNTRY,
+      OrgLocationTypes.GROUP,
+    ],
   },
   parentId: {
     type: String,

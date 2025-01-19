@@ -21,10 +21,11 @@ const QUERY = gql`
 `;
 
 const useAllOrgLocations = () => {
-  const { data, loading } = useQuery(QUERY);
+  const { loading, data, refetch } = useQuery(QUERY);
   return {
     allOrgLocations: data ? data.allOrgLocations : null,
     allOrgLocationsLoading: loading,
+    refetchAllOrgLocations: refetch,
   };
 };
 

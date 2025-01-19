@@ -1,3 +1,12 @@
+input MehfilDetailsInput {
+  address: String
+  mehfilStartDate: String
+  timingDetails: String
+  lcdAvailability: String
+  tabAvailability: String
+  otherMehfilDetails: String
+}
+
 type MehfilDetailsType {
   address: String
   mehfilStartDate: String
@@ -24,13 +33,18 @@ extend type Mutation {
   createOrgLocation(
     name: String!
     type: String!
-    parentId: String
+    parentId: String!
   ): OrgLocationType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   updateOrgLocation(
     _id: String!
-    name: String
-    parentId: String
+    name: String!
+    mehfilDetails: MehfilDetailsInput
+  ): OrgLocationType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateOrgLocationParent(
+    _id: String!
+    parentId: String!
   ): OrgLocationType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   deleteOrgLocation(_id: String!): Int

@@ -1,5 +1,6 @@
 import { Migrations } from 'meteor/percolate:migrations';
 
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants';
 import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import {
   Cities,
@@ -12,7 +13,7 @@ Migrations.add({
     // Create the root idreesia location
     const rootLocationId = OrgLocations.insert({
       name: 'Idreesia',
-      type: 'Root',
+      type: OrgLocationTypes.ROOT,
       parentId: null,
       allParentIds: [],
     });
@@ -23,13 +24,13 @@ Migrations.add({
       // create that first. Do same for zone.
       let countryLocation = OrgLocations.findOne({
         name: city.country,
-        type: 'Country',
+        type: OrgLocationTypes.COUNTRY,
       });
 
       if (!countryLocation) {
         const countryLocationId = OrgLocations.insert({
           name: city.country,
-          type: 'Country',
+          type: OrgLocationTypes.COUNTRY,
           parentId: rootLocationId,
           allParentIds: [rootLocationId],
         });
@@ -41,12 +42,12 @@ Migrations.add({
       if (city.region) {
         let zoneLocation = OrgLocations.findOne({
           name: `Zone ${city.region}`,
-          type: 'Other',
+          type: OrgLocationTypes.GROUP,
         });
         if (!zoneLocation) {
           const zoneLocationId = OrgLocations.insert({
             name: `Zone ${city.region}`,
-            type: 'Other',
+            type: OrgLocationTypes.GROUP,
             parentId: countryLocation._id,
             allParentIds: countryLocation.allParentIds.concat(
               countryLocation._id
@@ -58,7 +59,7 @@ Migrations.add({
         // Create the city under the zone location
         const cityLocationId = OrgLocations.insert({
           name: city.name,
-          type: 'City',
+          type: OrgLocationTypes.CITY,
           parentId: zoneLocation._id,
           allParentIds: zoneLocation.allParentIds.concat(zoneLocation._id),
         });
@@ -67,7 +68,7 @@ Migrations.add({
         // Create the city under the country location
         const cityLocationId = OrgLocations.insert({
           name: city.name,
-          type: 'City',
+          type: OrgLocationTypes.CITY,
           parentId: countryLocation._id,
           allParentIds: countryLocation.allParentIds.concat(
             countryLocation._id
@@ -83,7 +84,7 @@ Migrations.add({
         // Create the city under the zone location
         const mehfilLocationId = OrgLocations.insert({
           name: cityMehfil.name,
-          type: 'Mehfil',
+          type: OrgLocationTypes.MEHFIL,
           parentId: cityLocation._id,
           allParentIds: cityLocation.allParentIds.concat(cityLocation._id),
           mehfilDetails: {

@@ -6,11 +6,8 @@ import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { ItemsList } from '../common/items-list';
+import { ItemsList } from '../../common/items-list';
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
   WithLocationsByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
 import {
@@ -34,7 +31,7 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class EditForm extends Component {
+class IssuanceDetails extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -287,8 +284,6 @@ const formQuery = gql`
 `;
 
 export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
     name: 'updateIssuanceForm',
@@ -303,15 +298,6 @@ export default flowRight(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { formId } = match.params;
-      return { variables: { _id: formId } };
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Issuance Forms, Edit`;
-    }
-    return `Inventory, Issuance Forms, Edit`;
+    options: ({ issuanceFormId }) => ({ variables: { _id: issuanceFormId } }),
   })
-)(EditForm);
+)(IssuanceDetails);

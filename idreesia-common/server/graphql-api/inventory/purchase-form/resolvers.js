@@ -311,7 +311,7 @@ export default {
       });
     },
 
-    addFormAttachment: async (
+    addPurchaseFormAttachment: async (
       obj,
       { _id, physicalStoreId, attachmentId },
       { user }
@@ -348,7 +348,7 @@ export default {
       return PurchaseForms.findOneAsync(_id);
     },
 
-    removeFormAttachment: async (
+    removePurchaseFormAttachment: async (
       obj,
       { _id, physicalStoreId, attachmentId },
       { user }

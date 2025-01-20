@@ -50,6 +50,8 @@ const AttachmentsList = ({ requestId }) => {
 
   return (
     <AttachmentsListControl
+      canUploadDocument
+      canEditAttachments
       attachments={operationsImdadRequestById.attachments}
       handleAttachmentAdded={handleAttachmentAdded}
       handleAttachmentRemoved={handleAttachmentRemoved}

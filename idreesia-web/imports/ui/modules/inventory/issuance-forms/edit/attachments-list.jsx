@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import { flowRight } from "lodash";
 import { graphql } from "react-apollo";
+import { flowRight } from "lodash";
 
 import { message } from "antd";
-import { WithCompanyId } from "/imports/ui/modules/accounts/common/composers";
+import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
 import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
 
 class AttachmentsList extends Component {
@@ -14,20 +14,20 @@ class AttachmentsList extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    companyId: PropTypes.string,
+    physicalStoreId: PropTypes.string,
+    issuanceFormId: PropTypes.string,
     formDataLoading: PropTypes.bool,
-    voucherId: PropTypes.string,
-    voucherById: PropTypes.object,
-    addVoucherAttachment: PropTypes.func,
-    removeVoucherAttachment: PropTypes.func,
+    issuanceFormById: PropTypes.object,
+    addIssuanceFormAttachment: PropTypes.func,
+    removeIssuanceFormAttachment: PropTypes.func,
   };
 
   handleAttachmentAdded = attachmentId => {
-    const { addVoucherAttachment, companyId, voucherById } = this.props;
-    addVoucherAttachment({
+    const { addIssuanceFormAttachment, physicalStoreId, issuanceFormById } = this.props;
+    addIssuanceFormAttachment({
       variables: {
-        _id: voucherById._id,
-        companyId,
+        _id: issuanceFormById._id,
+        physicalStoreId,
         attachmentId,
       },
     }).catch(error => {
@@ -36,11 +36,15 @@ class AttachmentsList extends Component {
   };
 
   handleAttachmentRemoved = attachmentId => {
-    const { removeVoucherAttachment, companyId, voucherById } = this.props;
-    removeVoucherAttachment({
+    const {
+      removeIssuanceFormAttachment,
+      physicalStoreId,
+      issuanceFormById,
+    } = this.props;
+    removeIssuanceFormAttachment({
       variables: {
-        _id: voucherById._id,
-        companyId,
+        _id: issuanceFormById._id,
+        physicalStoreId,
         attachmentId,
       },
     }).catch(error => {
@@ -49,14 +53,14 @@ class AttachmentsList extends Component {
   };
 
   render() {
-    const { voucherById, formDataLoading } = this.props;
+    const { issuanceFormById, formDataLoading } = this.props;
     if (formDataLoading) return null;
 
     return (
       <AttachmentsListControl
-        canUploadDocument
         canEditAttachments
-        attachments={voucherById.attachments}
+        canUploadDocument
+        attachments={issuanceFormById.attachments}
         handleAttachmentAdded={this.handleAttachmentAdded}
         handleAttachmentRemoved={this.handleAttachmentRemoved}
       />
@@ -65,8 +69,8 @@ class AttachmentsList extends Component {
 }
 
 const formQuery = gql`
-  query voucherById($_id: String!, $companyId: String!) {
-    voucherById(_id: $_id, companyId: $companyId) {
+  query issuanceFormById($_id: String!) {
+    issuanceFormById(_id: $_id) {
       _id
       attachments {
         _id
@@ -78,15 +82,15 @@ const formQuery = gql`
   }
 `;
 
-const addAttachmentMutation = gql`
-  mutation addVoucherAttachment(
+const addIssuanceAttachmentMutation = gql`
+  mutation addIssuanceFormAttachment(
     $_id: String!
-    $companyId: String!
+    $physicalStoreId: String!
     $attachmentId: String!
   ) {
-    addVoucherAttachment(
+    addIssuanceFormAttachment(
       _id: $_id
-      companyId: $companyId
+      physicalStoreId: $physicalStoreId
       attachmentId: $attachmentId
     ) {
       _id
@@ -100,15 +104,15 @@ const addAttachmentMutation = gql`
   }
 `;
 
-const removeAttachmentMutation = gql`
-  mutation removeVoucherAttachment(
+const removeIssuanceAttachmentMutation = gql`
+  mutation removeIssuanceFormAttachment(
     $_id: String!
-    $companyId: String!
+    $physicalStoreId: String!
     $attachmentId: String!
   ) {
-    removeVoucherAttachment(
+    removeIssuanceFormAttachment(
       _id: $_id
-      companyId: $companyId
+      physicalStoreId: $physicalStoreId
       attachmentId: $attachmentId
     ) {
       _id
@@ -123,18 +127,15 @@ const removeAttachmentMutation = gql`
 `;
 
 export default flowRight(
-  WithCompanyId(),
+  WithPhysicalStoreId(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ companyId, match }) => {
-      const { voucherId } = match.params;
-      return { variables: { _id: voucherId, companyId } };
-    },
+    options: ({ issuanceFormId }) => ({ variables: { _id: issuanceFormId } }),
   }),
-  graphql(addAttachmentMutation, {
-    name: "addVoucherAttachment",
+  graphql(addIssuanceAttachmentMutation, {
+    name: "addIssuanceFormAttachment",
   }),
-  graphql(removeAttachmentMutation, {
-    name: "removeVoucherAttachment",
+  graphql(removeIssuanceAttachmentMutation, {
+    name: "removeIssuanceFormAttachment",
   })
 )(AttachmentsList);

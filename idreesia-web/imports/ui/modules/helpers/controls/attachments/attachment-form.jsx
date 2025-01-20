@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
 
-import { InputTextField } from '/imports/ui/modules/helpers/fields';
+import {
+  InputTextField,
+  InputTextAreaField,
+} from '/imports/ui/modules/helpers/fields';
 
 const AttachmentForm = props => {
   const { form, defaultValues } = props;
@@ -15,7 +18,7 @@ const AttachmentForm = props => {
         initialValue={defaultValues.name}
       />
 
-      <InputTextField
+      <InputTextAreaField
         fieldName="description"
         fieldLabel="Description"
         initialValue={defaultValues.description}

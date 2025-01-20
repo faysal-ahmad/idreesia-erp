@@ -8,7 +8,9 @@ type IssuanceForm {
   physicalStoreId: String
   items: [ItemWithQuantity]
   notes: String
+  attachmentIds: [String]
 
+  attachments: [Attachment]
   refLocation: Location
   refIssuedBy: KarkunType
   refIssuedTo: KarkunType
@@ -67,6 +69,17 @@ extend type Mutation {
   ): IssuanceForm
 
   approveIssuanceForms(physicalStoreId: String!, _ids: [String]!): [IssuanceForm]
+
+  addIssuanceFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): IssuanceForm
+  removeIssuanceFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): IssuanceForm
 
   removeIssuanceForms(physicalStoreId: String!, _ids: [String]!): Int
 }

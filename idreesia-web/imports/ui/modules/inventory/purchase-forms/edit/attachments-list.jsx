@@ -18,13 +18,13 @@ class AttachmentsList extends Component {
     purchaseFormId: PropTypes.string,
     formDataLoading: PropTypes.bool,
     purchaseFormById: PropTypes.object,
-    addFormAttachment: PropTypes.func,
-    removeFormAttachment: PropTypes.func,
+    addPurchaseFormAttachment: PropTypes.func,
+    removePurchaseFormAttachment: PropTypes.func,
   };
 
   handleAttachmentAdded = attachmentId => {
-    const { addFormAttachment, physicalStoreId, purchaseFormById } = this.props;
-    addFormAttachment({
+    const { addPurchaseFormAttachment, physicalStoreId, purchaseFormById } = this.props;
+    addPurchaseFormAttachment({
       variables: {
         _id: purchaseFormById._id,
         physicalStoreId,
@@ -37,11 +37,11 @@ class AttachmentsList extends Component {
 
   handleAttachmentRemoved = attachmentId => {
     const {
-      removeFormAttachment,
+      removePurchaseFormAttachment,
       physicalStoreId,
       purchaseFormById,
     } = this.props;
-    removeFormAttachment({
+    removePurchaseFormAttachment({
       variables: {
         _id: purchaseFormById._id,
         physicalStoreId,
@@ -58,6 +58,8 @@ class AttachmentsList extends Component {
 
     return (
       <AttachmentsListControl
+        canUploadDocument
+        canEditAttachments
         attachments={purchaseFormById.attachments}
         handleAttachmentAdded={this.handleAttachmentAdded}
         handleAttachmentRemoved={this.handleAttachmentRemoved}
@@ -80,13 +82,13 @@ const formQuery = gql`
   }
 `;
 
-const addAttachmentMutation = gql`
-  mutation addFormAttachment(
+const addPurchaseAttachmentMutation = gql`
+  mutation addPurchaseFormAttachment(
     $_id: String!
     $physicalStoreId: String!
     $attachmentId: String!
   ) {
-    addFormAttachment(
+    addPurchaseFormAttachment(
       _id: $_id
       physicalStoreId: $physicalStoreId
       attachmentId: $attachmentId
@@ -102,13 +104,13 @@ const addAttachmentMutation = gql`
   }
 `;
 
-const removeAttachmentMutation = gql`
-  mutation removeFormAttachment(
+const removePurchaseAttachmentMutation = gql`
+  mutation removePurchaseFormAttachment(
     $_id: String!
     $physicalStoreId: String!
     $attachmentId: String!
   ) {
-    removeFormAttachment(
+    removePurchaseFormAttachment(
       _id: $_id
       physicalStoreId: $physicalStoreId
       attachmentId: $attachmentId
@@ -130,10 +132,10 @@ export default flowRight(
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ purchaseFormId }) => ({ variables: { _id: purchaseFormId } }),
   }),
-  graphql(addAttachmentMutation, {
-    name: "addFormAttachment",
+  graphql(addPurchaseAttachmentMutation, {
+    name: "addPurchaseFormAttachment",
   }),
-  graphql(removeAttachmentMutation, {
-    name: "removeFormAttachment",
+  graphql(removePurchaseAttachmentMutation, {
+    name: "removePurchaseFormAttachment",
   })
 )(AttachmentsList);

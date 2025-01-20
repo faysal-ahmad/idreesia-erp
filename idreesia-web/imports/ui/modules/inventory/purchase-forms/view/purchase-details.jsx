@@ -6,12 +6,7 @@ import { graphql } from 'react-apollo';
 import { Divider, Form } from 'antd';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { ItemsList } from '../common/items-list';
-import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+import { ItemsList } from '../../common/items-list';
 import {
   InputTextField,
   DateField,
@@ -37,7 +32,7 @@ class ViewForm extends Component {
     physicalStore: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
-    issuanceFormById: PropTypes.object,
+    purchaseFormById: PropTypes.object,
   };
 
   handleClose = () => {
@@ -46,7 +41,7 @@ class ViewForm extends Component {
   };
 
   render() {
-    const { formDataLoading, issuanceFormById, physicalStoreId } = this.props;
+    const { formDataLoading, purchaseFormById, physicalStoreId } = this.props;
     if (formDataLoading) {
       return null;
     }
@@ -62,75 +57,70 @@ class ViewForm extends Component {
       <Fragment>
         <Form layout="horizontal" style={FormStyle} onFinish={noop}>
           <DateField
-            fieldName="issueDate"
-            fieldLabel="Issue Date"
-            initialValue={dayjs(Number(issuanceFormById.issueDate))}
+            fieldName="purchaseDate"
+            fieldLabel="Purchase Date"
+            initialValue={dayjs(Number(purchaseFormById.purchaseDate))}
             required
-            requiredMessage="Please input an issue date."
+            requiredMessage="Please input a purchase date."
           />
           <InputTextField
-            fieldName="issuedBy"
-            fieldLabel="Issued By"
-            initialValue={issuanceFormById.refIssuedBy.name}
-            required
-            requiredMessage="Please input a name in issued by."
-          />
-          <InputTextField
-            fieldName="issuedTo"
-            fieldLabel="Issued To"
-            initialValue={issuanceFormById.refIssuedTo.name}
-            required
-            requiredMessage="Please input a name in issued to."
-          />
-          <InputTextField
-            fieldName="handedOverTo"
-            fieldLabel="Handed Over To / By"
-            initialValue={issuanceFormById.handedOverTo}
-          />
-          <InputTextField
-            fieldName="locationId"
-            fieldLabel="For Location"
+            fieldName="vendorId"
+            fieldLabel="Vendor"
             initialValue={
-              issuanceFormById.refLocation
-                ? issuanceFormById.refLocation.name
-                : null
+              purchaseFormById.refVendor ? purchaseFormById.refVendor.name : ''
             }
           />
+          <InputTextField
+            fieldName="receivedBy"
+            fieldLabel="Received By"
+            initialValue={purchaseFormById.refReceivedBy.name}
+            required
+            requiredMessage="Please input a name in received by."
+          />
+          <InputTextField
+            fieldName="purchasedBy"
+            fieldLabel="Purchased By"
+            initialValue={purchaseFormById.refPurchasedBy.name}
+            required
+            requiredMessage="Please input a name in purchased by."
+          />
+
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
-            initialValue={issuanceFormById.notes}
+            initialValue={purchaseFormById.notes}
           />
 
-          <Divider orientation="left">Issued / Returned Items</Divider>
-          <Form.Item name="items" initialValue={issuanceFormById.items} rules={rules} {...formItemExtendedLayout}>
+          <Divider orientation="left">Purchased / Returned Items</Divider>
+          <Form.Item name="items" initialValue={purchaseFormById.items} rules={rules} {...formItemExtendedLayout}>
             <ItemsList
               readOnly
-              defaultLabel="Issued"
-              inflowLabel="Returned"
-              outflowLabel="Issued"
+              defaultLabel="Purchased"
+              inflowLabel="Purchased"
+              outflowLabel="Returned"
+              showPrice
               physicalStoreId={physicalStoreId}
             />
           </Form.Item>
 
           <FormButtonsClose handleClose={this.handleClose} />
         </Form>
-        <AuditInfo record={issuanceFormById} />
+        <AuditInfo record={purchaseFormById} />
       </Fragment>
     );
   }
 }
 
 const formQuery = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
+  query purchaseFormById($_id: String!) {
+    purchaseFormById(_id: $_id) {
       _id
-      issueDate
-      issuedBy
-      issuedTo
-      handedOverTo
+      purchaseDate
+      receivedBy
+      purchasedBy
       physicalStoreId
+      vendorId
       createdAt
       createdBy
       updatedAt
@@ -141,16 +131,17 @@ const formQuery = gql`
         stockItemId
         quantity
         isInflow
+        price
       }
-      refLocation {
+      refReceivedBy {
         _id
         name
       }
-      refIssuedBy {
+      refPurchasedBy {
         _id
         name
       }
-      refIssuedTo {
+      refVendor {
         _id
         name
       }
@@ -160,19 +151,11 @@ const formQuery = gql`
 `;
 
 export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { formId } = match.params;
       return { variables: { _id: formId } };
     },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Issuance Forms, View`;
-    }
-    return `Inventory, Issuance Forms, View`;
   })
 )(ViewForm);

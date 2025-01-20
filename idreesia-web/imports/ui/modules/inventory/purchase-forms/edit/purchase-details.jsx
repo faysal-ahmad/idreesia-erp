@@ -8,8 +8,6 @@ import { Divider, Form, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { ItemsList } from '../../common/items-list';
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
   WithVendorsByPhysicalStore,
   WithLocationsByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
@@ -34,7 +32,7 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class EditForm extends Component {
+class PurchaseDetails extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -299,8 +297,6 @@ const formQuery = gql`
 `;
 
 export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
   WithVendorsByPhysicalStore(),
   WithLocationsByPhysicalStore(),
   graphql(formMutation, {
@@ -319,4 +315,4 @@ export default flowRight(
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ purchaseFormId }) => ({ variables: { _id: purchaseFormId } }),
   })
-)(EditForm);
+)(PurchaseDetails);

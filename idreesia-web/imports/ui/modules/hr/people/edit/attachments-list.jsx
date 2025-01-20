@@ -55,6 +55,8 @@ class AttachmentsList extends Component {
 
     return (
       <AttachmentsListControl
+        canUploadDocument
+        canEditAttachments
         attachments={hrKarkunById.attachments}
         handleAttachmentAdded={this.handleAttachmentAdded}
         handleAttachmentRemoved={this.handleAttachmentRemoved}

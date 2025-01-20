@@ -43,7 +43,15 @@ const FileIconStyle = {
   fontSize: 30,
 };
 
-const AttachmentsList = props => {
+const AttachmentsList = ({
+  attachments,
+  canTakePicture,
+  canUploadDocument,
+  canEditAttachments,
+  handleAttachmentAdded,
+  handleAttachmentRemoved,
+  updateAttachment,
+}) => {
   const [showForm, setShowForm] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
   const [attachmentForm] = Form.useForm();
@@ -69,7 +77,6 @@ const AttachmentsList = props => {
   };
 
   const handleDeleteClicked = attachmentId => {
-    const { handleAttachmentRemoved } = props;
     handleAttachmentRemoved(attachmentId);
   };
 
@@ -78,7 +85,6 @@ const AttachmentsList = props => {
   };
 
   const handleAttachmentFormSaved = () => {
-    const { updateAttachment } = props;
     attachmentForm.validateFields().then(values => {
       setShowForm(false);
       updateAttachment({
@@ -127,11 +133,14 @@ const AttachmentsList = props => {
       dataIndex: 'description',
       key: 'description',
     },
-    {
+  ];
+
+  if (canEditAttachments) {
+    columns.push({
       key: 'action',
       render: (text, record) => (
         <span>
-          <Tooltip title="View">
+          <Tooltip title="Edit">
             <EditOutlined
               className="list-actions-icon"
               onClick={() => {
@@ -154,15 +163,8 @@ const AttachmentsList = props => {
           </Popconfirm>
         </span>
       ),
-    },
-  ];
-
-  const {
-    attachments,
-    canTakePicture,
-    canEditAttachments,
-    handleAttachmentAdded,
-  } = props;
+    });
+  }
 
   return (
     <>
@@ -175,7 +177,7 @@ const AttachmentsList = props => {
           <Row type="flex" gutter={16}>
             <Col order={1}>
               <UploadAttachment
-                enabled={canEditAttachments}
+                disabled={!canUploadDocument}
                 buttonText="Upload Attachment"
                 onUploadFinish={handleAttachmentAdded}
               />
@@ -183,7 +185,7 @@ const AttachmentsList = props => {
             {canTakePicture ? (
               <Col order={2}>
                 <TakePicture
-                  enabled={canEditAttachments}
+                  disabled={!canTakePicture}
                   buttonText="Capture Image"
                   onPictureTaken={handleAttachmentAdded}
                 />
@@ -193,7 +195,7 @@ const AttachmentsList = props => {
         )}
       />
       <Modal
-        visible={showForm}
+        open={showForm}
         title="Edit Attachment"
         okText="Save"
         width={600}
@@ -228,6 +230,7 @@ const updateAttachmentMutation = gql`
 AttachmentsList.propTypes = {
   attachments: PropTypes.array,
   canTakePicture: PropTypes.bool,
+  canUploadDocument: PropTypes.bool,
   canEditAttachments: PropTypes.bool,
   handleAttachmentAdded: PropTypes.func,
   handleAttachmentRemoved: PropTypes.func,
@@ -237,6 +240,7 @@ AttachmentsList.propTypes = {
 AttachmentsList.defaultProps = {
   attachments: [],
   canTakePicture: false,
+  canUploadDocument: false,
   canEditAttachments: false,
   handleAttachmentAdded: noop,
   handleAttachmentRemoved: noop,

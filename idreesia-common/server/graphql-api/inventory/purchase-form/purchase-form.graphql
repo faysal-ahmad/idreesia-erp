@@ -71,16 +71,16 @@ extend type Mutation {
 
   approvePurchaseForms(physicalStoreId: String!, _ids: [String]!): [PurchaseForm]
 
-  addFormAttachment(
+  addPurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
-  ): Voucher
-  removeFormAttachment(
+  ): PurchaseForm
+  removePurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
-  ): Voucher
+  ): PurchaseForm
 
   removePurchaseForms(physicalStoreId: String!, _ids: [String]!): Int
 }

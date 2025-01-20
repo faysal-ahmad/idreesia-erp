@@ -6,12 +6,7 @@ import { graphql } from 'react-apollo';
 import { Divider, Form } from 'antd';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { ItemsList } from '../common/items-list';
-import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+import { ItemsList } from '../../common/items-list';
 import {
   InputTextField,
   DateField,
@@ -29,7 +24,7 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class ViewForm extends Component {
+class IssuanceDetails extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -37,7 +32,7 @@ class ViewForm extends Component {
     physicalStore: PropTypes.object,
 
     formDataLoading: PropTypes.bool,
-    purchaseFormById: PropTypes.object,
+    issuanceFormById: PropTypes.object,
   };
 
   handleClose = () => {
@@ -46,7 +41,7 @@ class ViewForm extends Component {
   };
 
   render() {
-    const { formDataLoading, purchaseFormById, physicalStoreId } = this.props;
+    const { formDataLoading, issuanceFormById, physicalStoreId } = this.props;
     if (formDataLoading) {
       return null;
     }
@@ -62,69 +57,75 @@ class ViewForm extends Component {
       <Fragment>
         <Form layout="horizontal" style={FormStyle} onFinish={noop}>
           <DateField
-            fieldName="purchaseDate"
-            fieldLabel="Purchase Date"
-            initialValue={dayjs(Number(purchaseFormById.purchaseDate))}
+            fieldName="issueDate"
+            fieldLabel="Issue Date"
+            initialValue={dayjs(Number(issuanceFormById.issueDate))}
             required
-            requiredMessage="Please input a purchase date."
+            requiredMessage="Please input an issue date."
           />
           <InputTextField
-            fieldName="vendorId"
-            fieldLabel="Vendor"
+            fieldName="issuedBy"
+            fieldLabel="Issued By"
+            initialValue={issuanceFormById.refIssuedBy.name}
+            required
+            requiredMessage="Please input a name in issued by."
+          />
+          <InputTextField
+            fieldName="issuedTo"
+            fieldLabel="Issued To"
+            initialValue={issuanceFormById.refIssuedTo.name}
+            required
+            requiredMessage="Please input a name in issued to."
+          />
+          <InputTextField
+            fieldName="handedOverTo"
+            fieldLabel="Handed Over To / By"
+            initialValue={issuanceFormById.handedOverTo}
+          />
+          <InputTextField
+            fieldName="locationId"
+            fieldLabel="For Location"
             initialValue={
-              purchaseFormById.refVendor ? purchaseFormById.refVendor.name : ''
+              issuanceFormById.refLocation
+                ? issuanceFormById.refLocation.name
+                : null
             }
           />
-          <InputTextField
-            fieldName="receivedBy"
-            fieldLabel="Received By"
-            initialValue={purchaseFormById.refReceivedBy.name}
-            required
-            requiredMessage="Please input a name in received by."
-          />
-          <InputTextField
-            fieldName="purchasedBy"
-            fieldLabel="Purchased By"
-            initialValue={purchaseFormById.refPurchasedBy.name}
-            required
-            requiredMessage="Please input a name in purchased by."
-          />
-
           <InputTextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
-            initialValue={purchaseFormById.notes}
+            initialValue={issuanceFormById.notes}
           />
 
-          <Divider orientation="left">Purchased / Returned Items</Divider>
-          <Form.Item name="items" initialValue={purchaseFormById.items} rules={rules} {...formItemExtendedLayout}>
+          <Divider orientation="left">Issued / Returned Items</Divider>
+          <Form.Item name="items" initialValue={issuanceFormById.items} rules={rules} {...formItemExtendedLayout}>
             <ItemsList
-              defaultLabel="Purchased"
-              inflowLabel="Purchased"
-              outflowLabel="Returned"
-              showPrice
+              readOnly
+              defaultLabel="Issued"
+              inflowLabel="Returned"
+              outflowLabel="Issued"
               physicalStoreId={physicalStoreId}
             />
           </Form.Item>
 
           <FormButtonsClose handleClose={this.handleClose} />
         </Form>
-        <AuditInfo record={purchaseFormById} />
+        <AuditInfo record={issuanceFormById} />
       </Fragment>
     );
   }
 }
 
 const formQuery = gql`
-  query purchaseFormById($_id: String!) {
-    purchaseFormById(_id: $_id) {
+  query issuanceFormById($_id: String!) {
+    issuanceFormById(_id: $_id) {
       _id
-      purchaseDate
-      receivedBy
-      purchasedBy
+      issueDate
+      issuedBy
+      issuedTo
+      handedOverTo
       physicalStoreId
-      vendorId
       createdAt
       createdBy
       updatedAt
@@ -135,17 +136,16 @@ const formQuery = gql`
         stockItemId
         quantity
         isInflow
-        price
       }
-      refReceivedBy {
+      refLocation {
         _id
         name
       }
-      refPurchasedBy {
+      refIssuedBy {
         _id
         name
       }
-      refVendor {
+      refIssuedTo {
         _id
         name
       }
@@ -155,19 +155,11 @@ const formQuery = gql`
 `;
 
 export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { formId } = match.params;
       return { variables: { _id: formId } };
     },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Purchase Forms, View`;
-    }
-    return `Inventory, Purchase Forms, View`;
   })
-)(ViewForm);
+)(IssuanceDetails);

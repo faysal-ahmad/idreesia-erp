@@ -1,9 +1,12 @@
-import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   Locations,
   IssuanceForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
+import {
+  Attachments,
+  People,
+} from 'meteor/idreesia-common/server/collections/common';
 import {
   hasInstanceAccess,
   hasOnePermission,
@@ -17,6 +20,14 @@ import getIssuanceForms, {
 
 export default {
   IssuanceForm: {
+    attachments: async issuanceForm => {
+      const { attachmentIds } = issuanceForm;
+      if (attachmentIds && attachmentIds.length > 0) {
+        return Attachments.find({ _id: { $in: attachmentIds } }).fetchAsync();
+      }
+
+      return [];
+    },
     refLocation: async issuanceForm => {
       if (issuanceForm?.locationId) {
         return Locations.findOneAsync({
@@ -303,6 +314,78 @@ export default {
         physicalStoreId,
         _id: { $in: _ids },
       });
+    },
+
+    addIssuanceFormAttachment: async (
+      obj,
+      { _id, physicalStoreId, attachmentId },
+      { user }
+    ) => {
+      if (
+        hasInstanceAccess(user, physicalStoreId) === false ||
+        !hasOnePermission(user, [
+          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Issuance Forms in the System.'
+        );
+      }
+
+      const date = new Date();
+      await IssuanceForms.updateAsync(
+        {
+          _id,
+          physicalStoreId,
+        },
+        {
+          $addToSet: {
+            attachmentIds: attachmentId,
+          },
+          $set: {
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
+
+      return IssuanceForms.findOneAsync(_id);
+    },
+
+    removeIssuanceFormAttachment: async (
+      obj,
+      { _id, physicalStoreId, attachmentId },
+      { user }
+    ) => {
+      if (
+        hasInstanceAccess(user, physicalStoreId) === false ||
+        !hasOnePermission(user, [
+          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
+          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Issuance Forms in the System.'
+        );
+      }
+
+      const date = new Date();
+      await IssuanceForms.updateAsync(
+        { _id, physicalStoreId },
+        {
+          $pull: {
+            attachmentIds: attachmentId,
+          },
+          $set: {
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
+
+      await Attachments.removeAsync(attachmentId);
+      return IssuanceForms.findOneAsync(_id);
     },
 
     removeIssuanceForms: async (obj, { physicalStoreId, _ids }, { user }) => {

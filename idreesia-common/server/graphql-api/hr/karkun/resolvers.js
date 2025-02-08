@@ -27,6 +27,13 @@ export default {
         country: 'Pakistan',
       });
 
+      if (!multanCity) {
+        return {
+          karkuns: [],
+          totalResults: 0,
+        };
+      }
+
       if (filter.predefinedFilterName) {
         return getKarkunsByPredefinedFilter(filter);
       }

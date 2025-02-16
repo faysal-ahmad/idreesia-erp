@@ -125,7 +125,7 @@ const List = ({ history, location }) => {
         onClose={() => {
           setShowResults(false);
         }}
-        visible={showResults}
+        open={showResults}
       >
         <MessageResults
           messageId={messageIdForResults}

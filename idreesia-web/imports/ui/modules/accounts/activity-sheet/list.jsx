@@ -309,7 +309,7 @@ class List extends Component {
           width={800}
           placement="left"
           onClose={this.handleClose}
-          visible={showForm}
+          open={showForm}
         >
           {this.getVoucherDetailsList()}
         </Drawer>

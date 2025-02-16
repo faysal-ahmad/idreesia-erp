@@ -57,7 +57,7 @@ export default class CustomInput extends Component {
           title="Select Person"
           width={800}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           <VisitorsList handleSelectItem={this.setSelectedValue} />
         </Drawer>

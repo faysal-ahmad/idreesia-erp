@@ -87,7 +87,7 @@ export default class CustomInput extends Component {
           title="Select a Karkun"
           width={720}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           {containersNode}
         </Drawer>

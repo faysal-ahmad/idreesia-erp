@@ -161,7 +161,7 @@ const List = ({ history, location }) => {
         title="Imdad Requests"
         width={400}
         onClose={handleImdadRequestsListClose}
-        visible={showImdadRequests}
+        open={showImdadRequests}
       >
         <VisitorImdadRequestsList visitorId={visitorIdForList} />
       </Drawer>

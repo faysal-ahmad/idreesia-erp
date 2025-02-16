@@ -171,7 +171,7 @@ const NewForm = ({ history, location }) => {
         onClose={() => {
           setShowPreview(false);
         }}
-        visible={showPreview}
+        open={showPreview}
       >
         <KarkunsPreview recepientFilter={recepientFilter} />
       </Drawer>

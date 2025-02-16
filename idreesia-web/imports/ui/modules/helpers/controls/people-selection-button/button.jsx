@@ -58,7 +58,7 @@ export default class SelectionButton extends Component {
           title="Select Karkuns"
           width={720}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           <PeopleList handleSelectItem={this.setSelectedValue} />
         </Drawer>

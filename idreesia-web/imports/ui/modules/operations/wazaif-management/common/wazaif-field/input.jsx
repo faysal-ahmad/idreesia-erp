@@ -48,7 +48,7 @@ export default class CustomInput extends Component {
           title="Select a Wazeefa"
           width={600}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           <ListContainer
             setSelectedValue={this.setSelectedValue}

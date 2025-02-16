@@ -245,7 +245,7 @@ const List = ({ history, location }) => {
         title="Stay History"
         width={600}
         onClose={handleStayListClose}
-        visible={showStayList}
+        open={showStayList}
       >
         <VisitorStaysList
           showNewButton

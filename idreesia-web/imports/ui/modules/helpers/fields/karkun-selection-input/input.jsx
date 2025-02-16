@@ -100,7 +100,7 @@ export default class CustomInput extends Component {
           title="Select a Karkun"
           width={800}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           <Tabs>{containersNode}</Tabs>
         </Drawer>

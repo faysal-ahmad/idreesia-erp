@@ -50,7 +50,7 @@ export default class CustomInput extends Component {
           title="Select a Stock Item"
           width={720}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           <ListContainer
             setSelectedValue={this.setSelectedValue}

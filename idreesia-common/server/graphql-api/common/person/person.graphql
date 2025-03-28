@@ -49,6 +49,7 @@ type PersonEmployeeDataType {
   jobId: String
   employmentStartDate: String
   employmentEndDate: String
+  bankAccountDetails: String
 
   job: JobType
 }

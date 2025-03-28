@@ -33,6 +33,7 @@ const HR_KARKUN_BY_ID = gql`
       jobId
       employmentStartDate
       employmentEndDate
+      bankAccountDetails
       createdAt
       createdBy
       updatedAt

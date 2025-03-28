@@ -13,4 +13,8 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
+  bankAccountDetails: {
+    type: String,
+    optional: true,
+  },
 });

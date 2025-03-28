@@ -7,6 +7,7 @@ import { Form, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   DateField,
+  InputTextAreaField,
   SelectField,
   SwitchField,
   FormButtonsSaveCancel,
@@ -42,7 +43,7 @@ class EmploymentInfo extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ isEmployee, jobId, employmentStartDate, employmentEndDate }) => {
+  handleFinish = ({ isEmployee, jobId, employmentStartDate, employmentEndDate, bankAccountDetails }) => {
     const { history, karkunId, setHrKarkunEmploymentInfo } = this.props;
     setHrKarkunEmploymentInfo({
       variables: {
@@ -51,6 +52,7 @@ class EmploymentInfo extends Component {
         jobId: jobId || null,
         employmentStartDate,
         employmentEndDate,
+        bankAccountDetails,
       },
     })
       .then(() => {
@@ -107,6 +109,13 @@ class EmploymentInfo extends Component {
               ? dayjs(Number(hrKarkunById.employmentEndDate))
               : null
           }
+        />
+
+        <InputTextAreaField
+          fieldName="bankAccountDetails"
+          fieldLabel="Bank Account Details"
+          initialValue={hrKarkunById.bankAccountDetails}
+          required={false}
         />
 
         <FormButtonsSaveCancel

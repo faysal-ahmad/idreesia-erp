@@ -32,6 +32,7 @@ export {
 export { default as ScanCnic } from './cnic/scan-cnic';
 export { default as ScanBarcode } from './barcode/scan-barcode';
 export { default as DisplayBarcode } from './barcode/display-barcode';
+export { default as DisplayItem } from './display-item/display-item';
 
 export { getNameWithImageRenderer } from './paged-data-list-renderers';
 export { default as PagedDataList } from './paged-data-list';

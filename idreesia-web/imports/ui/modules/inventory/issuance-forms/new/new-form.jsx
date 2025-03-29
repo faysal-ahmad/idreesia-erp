@@ -7,7 +7,7 @@ import { Divider, Form, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
-import { ItemsList } from '../common/items-list';
+import { ItemsList } from '../../common/items-list';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,

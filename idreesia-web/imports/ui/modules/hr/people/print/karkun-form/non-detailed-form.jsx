@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
 import moment from 'moment';
+import { Col, Divider, Row } from 'antd';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Col, Divider, Row } from 'antd';
-import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
+import { DisplayItem } from '/imports/ui/modules/helpers/controls';
 
 const barcodeOptions = {
   width: 1,
@@ -68,7 +68,7 @@ export class NonDetailedForm extends Component {
     const timestamp = moment().format('DD MMM, YYYY');
 
     return (
-      <div className="karkun-print-view" ref={this.printViewRef}>
+      <div className="form-print-view" ref={this.printViewRef}>
         <Row type="flex" justify="start" gutter={40}>
           <Col order={1}>
             <Barcode value={hrKarkunById._id} {...barcodeOptions} />

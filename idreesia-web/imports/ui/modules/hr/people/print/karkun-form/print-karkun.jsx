@@ -89,7 +89,7 @@ class PrintView extends Component {
           </Checkbox>
         </div>
         <Divider />
-        <div className="karkun-print-view" ref={this.printViewRef}>
+        <div className="form-print-view" ref={this.printViewRef}>
           {form}
         </div>
       </>

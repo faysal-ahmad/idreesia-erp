@@ -5,8 +5,7 @@ import dayjs from 'dayjs';
 import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
-import { DisplayItem } from '/imports/ui/modules/hr/common/controls';
+import { DisplayItem, EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
 
 const barcodeOptions = {
   width: 1,
@@ -73,7 +72,7 @@ export class DetailedForm extends Component {
     const timestamp = dayjs().format('DD MMM, YYYY');
 
     return (
-      <div className="karkun-print-view" ref={this.printViewRef}>
+      <div className="form-print-view" ref={this.printViewRef}>
         <Row type="flex" justify="start" gutter={40}>
           <Col order={1}>
             <Barcode value={hrKarkunById._id} {...barcodeOptions} />

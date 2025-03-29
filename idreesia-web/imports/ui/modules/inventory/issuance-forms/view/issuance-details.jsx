@@ -1,12 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import { Divider, Form } from 'antd';
 
-import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
-import { ItemsList } from '../../common/items-list';
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   InputTextField,
   DateField,
@@ -14,6 +11,7 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
+import { ItemsList } from '../../common/items-list';
 
 const FormStyle = {
   width: '800px',
@@ -24,14 +22,11 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class IssuanceDetails extends Component {
+export class IssuanceDetails extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
     physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-
-    formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
   };
 
@@ -41,10 +36,7 @@ class IssuanceDetails extends Component {
   };
 
   render() {
-    const { formDataLoading, issuanceFormById, physicalStoreId } = this.props;
-    if (formDataLoading) {
-      return null;
-    }
+    const { issuanceFormById, physicalStoreId } = this.props;
 
     const rules = [
       {
@@ -54,7 +46,7 @@ class IssuanceDetails extends Component {
     ];
 
     return (
-      <Fragment>
+      <>
         <Form layout="horizontal" style={FormStyle} onFinish={noop}>
           <DateField
             fieldName="issueDate"
@@ -112,54 +104,7 @@ class IssuanceDetails extends Component {
           <FormButtonsClose handleClose={this.handleClose} />
         </Form>
         <AuditInfo record={issuanceFormById} />
-      </Fragment>
+      </>
     );
   }
 }
-
-const formQuery = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
-      _id
-      issueDate
-      issuedBy
-      issuedTo
-      handedOverTo
-      physicalStoreId
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-      approvedOn
-      approvedBy
-      items {
-        stockItemId
-        quantity
-        isInflow
-      }
-      refLocation {
-        _id
-        name
-      }
-      refIssuedBy {
-        _id
-        name
-      }
-      refIssuedTo {
-        _id
-        name
-      }
-      notes
-    }
-  }
-`;
-
-export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { formId } = match.params;
-      return { variables: { _id: formId } };
-    },
-  })
-)(IssuanceDetails);

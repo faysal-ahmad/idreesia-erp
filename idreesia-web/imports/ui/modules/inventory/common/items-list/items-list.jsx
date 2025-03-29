@@ -228,6 +228,7 @@ class ItemsList extends Component {
         pagination={false}
         dataSource={this.state.stockItems}
         title={this.getTableHeader}
+        size='small'
       />
     );
   }

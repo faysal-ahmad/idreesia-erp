@@ -96,8 +96,7 @@ form {
 }
 
 @media print {
-  .karkun-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
-  .salary-receipt-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
+  .form-print-view { padding-left: 50px; padding-top: 50px; width: 800px }
   .pagebreak { page-break-before: always; }
 
   /* 

@@ -45,7 +45,7 @@ export default class RashanReceipts extends Component {
     ).format('MMM, YYYY');
 
     return (
-      <div key={salary._id} className="salary-receipt-print-view">
+      <div key={salary._id} className="form-print-view">
         <Row type="flex" justify="center" style={HeaderStyle}>
           <div>Rashan Receipt - {displayMonth}</div>
         </Row>

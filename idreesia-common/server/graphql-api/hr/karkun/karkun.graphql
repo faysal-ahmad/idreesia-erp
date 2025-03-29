@@ -74,6 +74,7 @@ extend type Mutation {
     jobId: String
     employmentStartDate: String
     employmentEndDate: String
+    bankAccountDetails: String
   ): KarkunType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 

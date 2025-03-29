@@ -103,6 +103,14 @@ export default class SubModulePaths {
       physicalStoreId
     )}/view/${formId}`;
   }
+  static issuanceFormsPrintFormPath(
+    physicalStoreId = ':physicalStoreId',
+    formId = ':formId'
+  ) {
+    return `${SubModulePaths.issuanceFormsPath(
+      physicalStoreId
+    )}/print/${formId}`;
+  }
 
   // *************************************************************************************
   // Purchase Forms Routes

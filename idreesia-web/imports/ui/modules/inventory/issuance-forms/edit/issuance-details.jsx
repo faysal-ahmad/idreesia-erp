@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { ItemsList } from '../../common/items-list';
 import {
   WithLocationsByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
@@ -17,6 +15,8 @@ import {
   InputTextAreaField,
   TreeSelectField,
 } from '/imports/ui/modules/helpers/fields';
+import { ItemsList } from '../../common/items-list';
+import { ISSUANCE_FORM_BY_ID, UPDATE_ISSUANCE_FORM } from '../gql';
 
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
@@ -201,91 +201,9 @@ class IssuanceDetails extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation updateIssuanceForm(
-    $_id: String!
-    $issueDate: String!
-    $issuedBy: String!
-    $issuedTo: String!
-    $handedOverTo: String
-    $locationId: String
-    $physicalStoreId: String!
-    $items: [ItemWithQuantityInput]
-    $notes: String
-  ) {
-    updateIssuanceForm(
-      _id: $_id
-      issueDate: $issueDate
-      issuedBy: $issuedBy
-      issuedTo: $issuedTo
-      handedOverTo: $handedOverTo
-      locationId: $locationId
-      physicalStoreId: $physicalStoreId
-      items: $items
-      notes: $notes
-    ) {
-      _id
-      issueDate
-      locationId
-      physicalStoreId
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-      items {
-        stockItemId
-        quantity
-        isInflow
-      }
-      refIssuedBy {
-        _id
-        name
-      }
-      refIssuedTo {
-        _id
-        name
-      }
-      notes
-    }
-  }
-`;
-
-const formQuery = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
-      _id
-      issueDate
-      issuedBy
-      issuedTo
-      handedOverTo
-      locationId
-      physicalStoreId
-      approvedOn
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-      items {
-        stockItemId
-        quantity
-        isInflow
-      }
-      refIssuedBy {
-        _id
-        name
-      }
-      refIssuedTo {
-        _id
-        name
-      }
-      notes
-    }
-  }
-`;
-
 export default flowRight(
   WithLocationsByPhysicalStore(),
-  graphql(formMutation, {
+  graphql(UPDATE_ISSUANCE_FORM, {
     name: 'updateIssuanceForm',
     options: {
       refetchQueries: [
@@ -296,7 +214,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(formQuery, {
+  graphql(ISSUANCE_FORM_BY_ID, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ issuanceFormId }) => ({ variables: { _id: issuanceFormId } }),
   })

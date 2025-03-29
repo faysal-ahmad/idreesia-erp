@@ -32,6 +32,7 @@ type KarkunType {
   jobId: String
   employmentStartDate: String
   employmentEndDate: String
+  bankAccountDetails: String
 
   job: JobType
   duties: [KarkunDutyType]

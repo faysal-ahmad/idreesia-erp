@@ -881,6 +881,7 @@ class People extends AggregatableCollection {
       jobId: person.employeeData?.jobId,
       employmentStartDate: person.employeeData?.employmentStartDate,
       employmentEndDate: person.employeeData?.employmentEndDate,
+      bankAccountDetails: person.employeeData?.bankAccountDetails,
     };
   }
 
@@ -927,6 +928,7 @@ class People extends AggregatableCollection {
         jobId: karkun.jobId,
         employmentStartDate: karkun.employmentStartDate,
         employmentEndDate: karkun.employmentEndDate,
+        bankAccountDetails: karkun.bankAccountDetails,
       },
       visitorData: city
         ? {

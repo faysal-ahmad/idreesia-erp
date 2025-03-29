@@ -25,6 +25,7 @@ import {
   IssuanceFormsNewForm,
   IssuanceFormsEditForm,
   IssuanceFormsViewForm,
+  IssuanceFormsPrintForm,
   IssuanceFormsList,
 } from './issuance-forms';
 import {
@@ -82,6 +83,10 @@ const Router = () => (
     <Route
       path={paths.issuanceFormsViewFormPath()}
       component={IssuanceFormsViewForm}
+    />
+    <Route
+      path={paths.issuanceFormsPrintFormPath()}
+      component={IssuanceFormsPrintForm}
     />
     <Route path={paths.issuanceFormsPath()} component={IssuanceFormsList} />
 

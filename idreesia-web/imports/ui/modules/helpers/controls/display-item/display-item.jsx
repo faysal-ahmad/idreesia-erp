@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import { Col, Row } from 'antd';
+
 import { isArray } from 'meteor/idreesia-common/utilities/lodash';
 
 const LabelStyle = {
@@ -19,7 +19,7 @@ const DisplayItem = ({ label, value, children, labelStyle, dataStyle }) => (
       <span style={labelStyle}>{label}:</span>
     </Col>
     {value ? (
-      <Col order={2}>
+      <Col order={2} flex='auto'>
         {isArray(value) ? (
           value.map((val, index) => (
             <Row key={index}>
@@ -31,7 +31,7 @@ const DisplayItem = ({ label, value, children, labelStyle, dataStyle }) => (
         )}
       </Col>
     ) : (
-      <Col order={2} style={dataStyle}>
+      <Col order={2} style={dataStyle} flex='auto'>
         {children}
       </Col>
     )}

@@ -29,6 +29,7 @@ const CURRENT_MONTH_SALARIES = gql`
         imageId
         cnicNumber
         contactNumber1
+        bankAccountDetails
       }
       job {
         _id

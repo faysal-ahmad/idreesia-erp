@@ -325,10 +325,12 @@ export class List extends Component {
     const sortedSalariesByMonth = sortBy(currentSalaries, 'karkun.name');
 
     const header =
-      'Name, S/O, CNIC, Phone No., Dept, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
+      'Name, S/O, CNIC, Phone No., Dept, Bank Account, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
     const rows = sortedSalariesByMonth.map(
-      salary =>
-        `${salary.karkun.name}, ${salary.karkun.parentName}, ${salary.karkun.cnicNumber}, ${salary.karkun.contactNumber1}, ${salary.job.name}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
+      salary => {
+        const bankAccountDetails = (salary.karkun.bankAccountDetails || '').replace('\n', ' - ');
+        return `${salary.karkun.name}, ${salary.karkun.parentName}, ${salary.karkun.cnicNumber}, ${salary.karkun.contactNumber1}, ${salary.job.name}, ${bankAccountDetails}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
+      }
     );
     const csvContent = `${header}${rows.join('\r\n')}`;
 

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { useParams } from 'react-router-dom';
 
 const QUERY = gql`
   query physicalStoreById($id: String!) {
@@ -12,8 +11,7 @@ const QUERY = gql`
   }
 `;
 
-export const usePhysicalStore = () => {
-  const { physicalStoreId } = useParams();
+export const usePhysicalStore = physicalStoreId => {
   const { data, loading, refetch } = useQuery(QUERY, {
     variables: {
       id: physicalStoreId,

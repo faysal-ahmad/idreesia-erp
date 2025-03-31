@@ -74,6 +74,7 @@ const PrintContainer = ({ history }) => {
         ref={printFormRef}
         issuanceFormById={issuanceFormById}
         physicalStoreId={physicalStoreId}
+        physicalStore={physicalStore}
       />
     </>
   );

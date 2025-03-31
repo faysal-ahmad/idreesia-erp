@@ -5,9 +5,7 @@ import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithLocationsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import {
   DateField,
   InputTextField,
@@ -15,12 +13,10 @@ import {
   InputTextAreaField,
   TreeSelectField,
 } from '/imports/ui/modules/helpers/fields';
-import { ItemsList } from '../../common/items-list';
-import { ISSUANCE_FORM_BY_ID, UPDATE_ISSUANCE_FORM } from '../gql';
-
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 import { AuditInfo } from '/imports/ui/modules/common';
+import { UPDATE_ISSUANCE_FORM } from '../gql';
+import { ItemsList } from '../../common/items-list';
 
 const FormStyle = {
   width: '800px',
@@ -37,11 +33,9 @@ class IssuanceDetails extends Component {
     location: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
-
-    locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
-    formDataLoading: PropTypes.bool,
     issuanceFormById: PropTypes.object,
+
     updateIssuanceForm: PropTypes.func,
   };
   
@@ -105,16 +99,11 @@ class IssuanceDetails extends Component {
 
   render() {
     const {
-      locationsLoading,
-      formDataLoading,
       issuanceFormById,
       locationsByPhysicalStoreId,
       physicalStoreId,
     } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (locationsLoading || formDataLoading) {
-      return null;
-    }
 
     const rules = [
       {
@@ -202,7 +191,6 @@ class IssuanceDetails extends Component {
 }
 
 export default flowRight(
-  WithLocationsByPhysicalStore(),
   graphql(UPDATE_ISSUANCE_FORM, {
     name: 'updateIssuanceForm',
     options: {
@@ -213,9 +201,5 @@ export default flowRight(
         'issuanceFormsByMonth',
       ],
     },
-  }),
-  graphql(ISSUANCE_FORM_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ issuanceFormId }) => ({ variables: { _id: issuanceFormId } }),
   })
 )(IssuanceDetails);

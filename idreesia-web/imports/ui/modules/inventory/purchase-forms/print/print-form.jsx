@@ -21,13 +21,12 @@ export class PrintForm extends Component {
     location: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
-    issuanceFormById: PropTypes.object,
+    purchaseFormById: PropTypes.object,
   };
 
   getItemsList = () => {
-    const { issuanceFormById } = this.props;
-    const formattedItems = issuanceFormById.items.map(item => {
-      // const key = `${item.stockItemId}${item.isInflow}`;
+    const { purchaseFormById } = this.props;
+    const formattedItems = purchaseFormById.items.map(item => {
       let quantity = item.quantity;
       if (item.unitOfMeasurement !== 'quantity') {
         quantity = `${quantity} ${item.unitOfMeasurement}`;
@@ -39,7 +38,7 @@ export class PrintForm extends Component {
           <Col flex='auto'>
             <hr style={RowStyle} />
           </Col>
-          <Col>{`${quantity} ${item.isInflow ? 'Returned' : 'Issued'}`}</Col>
+          <Col>{`${quantity} ${item.isInflow ? 'Purchased' : 'Returned'} for Rs. ${item.price || '???'}`}</Col>
         </Row>
       );
     });
@@ -48,7 +47,7 @@ export class PrintForm extends Component {
   }
 
   render() {
-    const { issuanceFormById, physicalStore } = this.props;
+    const { purchaseFormById, physicalStore } = this.props;
     const items = this.getItemsList();
 
     return (
@@ -56,16 +55,16 @@ export class PrintForm extends Component {
         <Row type="flex" justify="start" gutter={20}>
           <Col flex={2}>
             <DisplayItem label="Store" value={physicalStore.name} />
-            <DisplayItem label="Issue Date" value={dayjs(Number(issuanceFormById.issueDate)).format('DD-MMM-YYYY')} />
-            <DisplayItem label="Issued By" value={issuanceFormById.refIssuedBy.name} />
-            <DisplayItem label="Issued To" value={issuanceFormById.refIssuedTo.name} />
-            <DisplayItem label="Handed Over To" value={issuanceFormById.handedOverTo} />
-            <DisplayItem label="For Location" value={issuanceFormById.refLocation?.name} />
+            <DisplayItem label="Purchase Date" value={dayjs(Number(purchaseFormById.issueDate)).format('DD-MMM-YYYY')} />
+            <DisplayItem label="Purchased By" value={purchaseFormById.refPurchasedBy.name} />
+            <DisplayItem label="Vendor" value={purchaseFormById.refVendor?.name} />
+            <DisplayItem label="For Location" value={purchaseFormById.refLocation?.name} />
+            <DisplayItem label="Received By" value={purchaseFormById.refReceivedBy.name} />
           </Col>
           <Col flex={3}>
             <DisplayItem label="Printing Time" value={dayjs().format('DD-MMM-YYYY hh:mm:ss A')} />
             <DisplayItem label="Notes">
-              <Input.TextArea style={{ width: '100%' }}>{issuanceFormById.notes}</Input.TextArea>
+              <Input.TextArea style={{ width: '100%' }}>{purchaseFormById.notes}</Input.TextArea>
             </DisplayItem>
           </Col>
         </Row>

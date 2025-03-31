@@ -126,12 +126,6 @@ class List extends Component {
                   }}
                 />
               </Tooltip>
-              <Tooltip title="Print">
-                <PrinterOutlined
-                  className="list-actions-icon"
-                  onClick={() => {}}
-                />
-              </Tooltip>
             </div>
           );
         }

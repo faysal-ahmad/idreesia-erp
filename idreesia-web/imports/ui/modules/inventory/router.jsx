@@ -32,6 +32,7 @@ import {
   PurchaseFormsNewForm,
   PurchaseFormsEditForm,
   PurchaseFormsViewForm,
+  PurchaseFormsPrintForm,
   PurchaseFormsList,
 } from './purchase-forms';
 import {
@@ -101,6 +102,10 @@ const Router = () => (
     <Route
       path={paths.purchaseFormsViewFormPath()}
       component={PurchaseFormsViewForm}
+    />
+    <Route
+      path={paths.purchaseFormsPrintFormPath()}
+      component={PurchaseFormsPrintForm}
     />
     <Route path={paths.purchaseFormsPath()} component={PurchaseFormsList} />
 

@@ -122,7 +122,9 @@ class List extends Component {
               <Tooltip title="Print">
                 <PrinterOutlined
                   className="list-actions-icon"
-                  onClick={() => {}}
+                  onClick={() => {
+                    this.handlePrintClicked(record);
+                  }}
                 />
               </Tooltip>
             </div>
@@ -142,7 +144,9 @@ class List extends Component {
             <Tooltip title="Print">
               <PrinterOutlined
                 className="list-actions-icon"
-                onClick={() => {}}
+                onClick={() => {
+                  this.handlePrintClicked(record);
+                }}
               />
             </Tooltip>
           </div>
@@ -216,6 +220,11 @@ class List extends Component {
   handleEditClicked = record => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.purchaseFormsEditFormPath(physicalStoreId, record._id));
+  };
+
+  handlePrintClicked = record => {
+    const { history, physicalStoreId } = this.props;
+    history.push(paths.purchaseFormsPrintFormPath(physicalStoreId, record._id));
   };
 
   handleViewClicked = record => {

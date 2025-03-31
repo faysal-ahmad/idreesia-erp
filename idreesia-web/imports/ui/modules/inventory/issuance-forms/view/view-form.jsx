@@ -15,7 +15,7 @@ import { ISSUANCE_FORM_BY_ID } from '../gql';
 const ViewForm = props => {
   const dispatch = useDispatch();
   const { formId, physicalStoreId } = useParams();
-  const { physicalStore } = usePhysicalStore();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
   const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
     skip: !formId,
     variables: {

@@ -11,7 +11,7 @@ import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
 
 import { PrintForm } from './print-form';
-import { ISSUANCE_FORM_BY_ID } from '../gql';
+import { PURCHASE_FORM_BY_ID } from '../gql';
 
 const ControlsContainer = {
   display: 'flex',
@@ -25,7 +25,7 @@ const PrintContainer = ({ history }) => {
   const printFormRef = useRef(null);
   const { formId, physicalStoreId } = useParams();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
+  const { data, loading } = useQuery(PURCHASE_FORM_BY_ID, {
     skip: !formId,
     variables: {
       _id: formId,
@@ -35,15 +35,15 @@ const PrintContainer = ({ history }) => {
   useEffect(() => {
     if (physicalStore) {
       dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Issuance Forms', 'Print'])
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Purchase Forms', 'Print'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'Print']));
+      dispatch(setBreadcrumbs(['Inventory', 'Purchase Forms', 'Print']));
     }
   }, [physicalStoreId]);
   
   if (loading || !data) return null;
-  const { issuanceFormById } = data; 
+  const { purchaseFormById } = data; 
 
   return (
     <>
@@ -72,7 +72,7 @@ const PrintContainer = ({ history }) => {
       <Divider />
       <PrintForm
         ref={printFormRef}
-        issuanceFormById={issuanceFormById}
+        purchaseFormById={purchaseFormById}
         physicalStoreId={physicalStoreId}
         physicalStore={physicalStore}
       />

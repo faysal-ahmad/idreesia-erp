@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
@@ -20,8 +19,9 @@ import {
   InputTextAreaField,
   TreeSelectField,
 } from '/imports/ui/modules/helpers/fields';
-
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+
+import { CREATE_ISSUANCE_FORM } from '../gql';
 
 const FormStyle = {
   width: '800px',
@@ -172,46 +172,11 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createIssuanceForm(
-    $issueDate: String!
-    $issuedBy: String!
-    $issuedTo: String!
-    $handedOverTo: String
-    $physicalStoreId: String!
-    $locationId: String
-    $items: [ItemWithQuantityInput]
-    $notes: String
-  ) {
-    createIssuanceForm(
-      issueDate: $issueDate
-      issuedBy: $issuedBy
-      issuedTo: $issuedTo
-      handedOverTo: $handedOverTo
-      physicalStoreId: $physicalStoreId
-      locationId: $locationId
-      items: $items
-      notes: $notes
-    ) {
-      _id
-      issueDate
-      physicalStoreId
-      locationId
-      items {
-        stockItemId
-        quantity
-        isInflow
-      }
-      notes
-    }
-  }
-`;
-
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
-  graphql(formMutation, {
+  graphql(CREATE_ISSUANCE_FORM, {
     name: 'createIssuanceForm',
     options: {
       refetchQueries: [

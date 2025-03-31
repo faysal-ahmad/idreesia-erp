@@ -137,6 +137,14 @@ export default class SubModulePaths {
       physicalStoreId
     )}/view/${formId}`;
   }
+  static purchaseFormsPrintFormPath(
+    physicalStoreId = ':physicalStoreId',
+    formId = ':formId'
+  ) {
+    return `${SubModulePaths.purchaseFormsPath(
+      physicalStoreId
+    )}/print/${formId}`;
+  }
 
   // *************************************************************************************
   // Stock Adjustment Routes

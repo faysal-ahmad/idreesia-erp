@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { ItemsList } from '../../common/items-list';
-import {
-  WithVendorsByPhysicalStore,
-  WithLocationsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import {
   DateField,
   SelectField,
@@ -18,10 +13,10 @@ import {
   InputTextAreaField,
   TreeSelectField,
 } from '/imports/ui/modules/helpers/fields';
-
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 import { AuditInfo } from '/imports/ui/modules/common';
+import { ItemsList } from '../../common/items-list';
+import { UPDATE_PURCHASE_FORM } from '../gql';
 
 const FormStyle = {
   width: '900px',
@@ -38,13 +33,10 @@ class PurchaseDetails extends Component {
     location: PropTypes.object,
     physicalStoreId: PropTypes.string,
     physicalStore: PropTypes.object,
-
-    locationsLoading: PropTypes.bool,
     locationsByPhysicalStoreId: PropTypes.array,
-    vendorsLoading: PropTypes.bool,
-    vendorsByPhysicalStoreId: PropTypes.array,
-    formDataLoading: PropTypes.bool,
     purchaseFormById: PropTypes.object,
+    vendorsByPhysicalStoreId: PropTypes.array,
+
     updatePurchaseForm: PropTypes.func,
   };
   
@@ -111,16 +103,12 @@ class PurchaseDetails extends Component {
 
   render() {
     const {
-      formDataLoading,
-      vendorsLoading,
-      locationsLoading,
       purchaseFormById,
       vendorsByPhysicalStoreId,
       locationsByPhysicalStoreId,
       physicalStoreId,
     } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (formDataLoading || locationsLoading || vendorsLoading) return null;
 
     const rules = [
       {
@@ -211,95 +199,8 @@ class PurchaseDetails extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation updatePurchaseForm(
-    $_id: String!
-    $purchaseDate: String!
-    $receivedBy: String!
-    $purchasedBy: String!
-    $physicalStoreId: String!
-    $locationId: String
-    $vendorId: String
-    $items: [ItemWithQuantityAndPriceInput]
-    $notes: String
-  ) {
-    updatePurchaseForm(
-      _id: $_id
-      purchaseDate: $purchaseDate
-      receivedBy: $receivedBy
-      purchasedBy: $purchasedBy
-      physicalStoreId: $physicalStoreId
-      locationId: $locationId
-      vendorId: $vendorId
-      items: $items
-      notes: $notes
-    ) {
-      _id
-      purchaseDate
-      physicalStoreId
-      locationId
-      vendorId
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-      items {
-        stockItemId
-        quantity
-        isInflow
-        price
-      }
-      refReceivedBy {
-        _id
-        name
-      }
-      refPurchasedBy {
-        _id
-        name
-      }
-      notes
-    }
-  }
-`;
-
-const formQuery = gql`
-  query purchaseFormById($_id: String!) {
-    purchaseFormById(_id: $_id) {
-      _id
-      purchaseDate
-      receivedBy
-      purchasedBy
-      physicalStoreId
-      locationId
-      vendorId
-      approvedOn
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-      items {
-        stockItemId
-        quantity
-        isInflow
-        price
-      }
-      refReceivedBy {
-        _id
-        name
-      }
-      refPurchasedBy {
-        _id
-        name
-      }
-      notes
-    }
-  }
-`;
-
 export default flowRight(
-  WithVendorsByPhysicalStore(),
-  WithLocationsByPhysicalStore(),
-  graphql(formMutation, {
+  graphql(UPDATE_PURCHASE_FORM, {
     name: 'updatePurchaseForm',
     options: {
       refetchQueries: [
@@ -310,9 +211,5 @@ export default flowRight(
         'purchaseFormsByMonth',
       ],
     },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ purchaseFormId }) => ({ variables: { _id: purchaseFormId } }),
   })
 )(PurchaseDetails);

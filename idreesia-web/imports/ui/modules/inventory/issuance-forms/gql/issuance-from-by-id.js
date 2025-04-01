@@ -20,8 +20,6 @@ export const ISSUANCE_FORM_BY_ID = gql`
         stockItemId
         quantity
         isInflow
-        stockItemName
-        unitOfMeasurement
       }
       refLocation {
         _id

@@ -15,14 +15,25 @@ import getStockAdjustments, {
 
 export default {
   StockAdjustment: {
-    refStockItem: async stockAdjustment =>
-      StockItems.findOneAsync({
-        _id: { $eq: stockAdjustment.stockItemId },
-      }),
-    refAdjustedBy: async stockAdjustment => {
-      const person = await People.findOneAsync({
-        _id: { $eq: stockAdjustment.adjustedBy },
-      });
+    refStockItem: async (
+      stockAdjustment,
+      args,
+      {
+        loaders: {
+          inventory: { stockItems },
+        },
+      }
+    ) => stockItems.load(stockAdjustment.stockItemId),
+    refAdjustedBy: async (
+      stockAdjustment,
+      args,
+      {
+        loaders: {
+          common: { people },
+        },
+      }
+    ) => {
+      const person = await people.load(stockAdjustment.adjustedBy);
       return People.personToKarkun(person);
     },
   },

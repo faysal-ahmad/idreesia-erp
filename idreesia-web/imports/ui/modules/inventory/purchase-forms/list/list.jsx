@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import {
   Button,
+  Divider,
   Dropdown,
   Modal,
   Pagination,
@@ -39,6 +39,11 @@ import {
 } from '/imports/ui/modules/inventory/common/composers';
 
 import ListFilter from './list-filter';
+import { 
+  APPROVE_PURCHASE_FORMS,
+  PAGED_PURCHASE_FORMS,
+  REMOVE_PURCHASE_FORMS,
+} from '../gql';
 
 class List extends Component {
   static propTypes = {
@@ -82,25 +87,42 @@ class List extends Component {
       key: 'refLocationName',
     },
     {
-      title: 'Items',
-      dataIndex: 'items',
-      key: 'items',
-      render: items => {
-        const formattedItems = items.map(item => {
+      title: 'Purchase Details',
+      key: 'details',
+      render: (text, record) => {
+        const { items, attachments } = record;
+        const formattedItems = items?.map(item => {
           const key = `${item.stockItemId}${item.isInflow}`;
           let quantity = item.quantity;
-          if (item.unitOfMeasurement !== 'quantity') {
+          if (item.refStockItem.unitOfMeasurement !== 'quantity') {
             quantity = `${quantity} ${item.unitOfMeasurement}`;
           }
 
           return (
             <li key={key}>
-              {`${item.stockItemName} [${quantity} ${
+              {`${item.refStockItem.name} [${quantity} ${
                 item.isInflow ? 'Purchased' : 'Returned'
               }]`}
             </li>
           );
         });
+
+        const formattedAttachments = attachments?.map(attachment => (
+          <li key={attachment._id}>
+            {attachment.name}
+          </li>
+        ));
+
+        if (formattedAttachments?.length > 0) {
+          return (
+            <>
+              <ul>{formattedItems}</ul>
+              <Divider>Attachments</Divider>
+              <ul>{formattedAttachments}</ul>
+            </>
+          );
+        }
+
         return <ul>{formattedItems}</ul>;
       },
     },
@@ -413,75 +435,11 @@ class List extends Component {
   }
 }
 
-const formMutationRemove = gql`
-  mutation removePurchaseForms($physicalStoreId: String!, $_ids: [String]!) {
-    removePurchaseForms(physicalStoreId: $physicalStoreId, _ids: $_ids)
-  }
-`;
-
-const formMutationApprove = gql`
-  mutation approvePurchaseForms($physicalStoreId: String!, $_ids: [String]!) {
-    approvePurchaseForms(physicalStoreId: $physicalStoreId, _ids: $_ids) {
-      _id
-      purchaseDate
-      receivedBy
-      purchasedBy
-      physicalStoreId
-      approvedOn
-      items {
-        stockItemId
-        quantity
-        isInflow
-        stockItemName
-        unitOfMeasurement
-      }
-    }
-  }
-`;
-
-const listQuery = gql`
-  query pagedPurchaseForms($physicalStoreId: String!, $queryString: String) {
-    pagedPurchaseForms(
-      physicalStoreId: $physicalStoreId
-      queryString: $queryString
-    ) {
-      totalResults
-      purchaseForms {
-        _id
-        purchaseDate
-        receivedBy
-        purchasedBy
-        physicalStoreId
-        approvedOn
-        items {
-          stockItemId
-          quantity
-          isInflow
-          stockItemName
-          unitOfMeasurement
-        }
-        refReceivedBy {
-          _id
-          name
-        }
-        refPurchasedBy {
-          _id
-          name
-        }
-        refLocation {
-          _id
-          name
-        }
-      }
-    }
-  }
-`;
-
 export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(formMutationRemove, {
+  graphql(REMOVE_PURCHASE_FORMS, {
     name: 'removePurchaseForms',
     options: {
       refetchQueries: [
@@ -492,7 +450,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(formMutationApprove, {
+  graphql(APPROVE_PURCHASE_FORMS, {
     name: 'approvePurchaseForms',
     options: {
       refetchQueries: [
@@ -502,7 +460,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(listQuery, {
+  graphql(PAGED_PURCHASE_FORMS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },

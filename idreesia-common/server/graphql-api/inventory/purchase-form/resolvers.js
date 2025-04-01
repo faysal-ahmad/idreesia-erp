@@ -1,8 +1,6 @@
 import {
   PurchaseForms,
   StockItems,
-  Vendors,
-  Locations,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   Attachments,
@@ -21,38 +19,76 @@ import getPurchaseForms, {
 
 export default {
   PurchaseForm: {
-    attachments: async purchaseForm => {
+    attachments: async (
+      purchaseForm,
+      args,
+      {
+        loaders: {
+          common: { attachments },
+        },
+      }
+    ) => {
       const { attachmentIds } = purchaseForm;
       if (attachmentIds && attachmentIds.length > 0) {
-        return Attachments.find({ _id: { $in: attachmentIds } }).fetchAsync();
+        return Promise.all(
+          attachmentIds.map(attachmentId => attachments.load(attachmentId))
+        );
       }
 
       return [];
     },
-    refLocation: async purchaseForm => {
-      if (purchaseForm.locationId) {
-        return Locations.findOneAsync({
-          _id: { $eq: purchaseForm.locationId },
-        });
+    refLocation: async (
+      purchaseForm,
+      args,
+      {
+        loaders: {
+          inventory: { locations },
+        },
+      }
+    ) => {
+      if (purchaseForm?.locationId) {
+        return locations.load(purchaseForm.locationId);
       }
       return null;
     },
-    refReceivedBy: async purchaseForm => {
-      const person = await People.findOneAsync({
-        _id: { $eq: purchaseForm.receivedBy },
-      });
+    refReceivedBy: async (
+      purchaseForm,
+      args,
+      {
+        loaders: {
+          common: { people },
+        },
+      }
+    ) => {
+      const person = await people.load(purchaseForm.receivedBy);
       return People.personToKarkun(person);
     },
-    refPurchasedBy: async purchaseForm => {
-      const person = await People.findOneAsync({
-        _id: { $eq: purchaseForm.purchasedBy },
-      });
+    refPurchasedBy: async (
+      purchaseForm,
+      args,
+      {
+        loaders: {
+          common: { people },
+        },
+      }
+    ) => {
+      const person = await people.load(purchaseForm.purchasedBy);
       return People.personToKarkun(person);
     },
-    refVendor: async purchaseForm =>
-      Vendors.findOneAsync({
-        _id: { $eq: purchaseForm.vendorId },
-      }),
+    refVendor: async (
+      purchaseForm,
+      args,
+      {
+        loaders: {
+          inventory: { vendors },
+        },
+      }
+    ) => {
+      if (purchaseForm.vendorId) {
+        return vendors.load(purchaseForm.vendorId);
+      }
+      return null;
+    },
   },
   Query: {
     purchaseFormsByStockItem: async (

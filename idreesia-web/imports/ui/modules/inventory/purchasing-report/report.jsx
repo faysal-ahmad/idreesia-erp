@@ -26,10 +26,13 @@ const LIST_QUERY = gql`
         quantity
         isInflow
         price
-        stockItemName
-        stockItemImageId
-        categoryName
-        unitOfMeasurement
+        refStockItem {
+          _id
+          name
+          imageId
+          categoryName
+          unitOfMeasurement
+        }
       }
     }
   }
@@ -150,10 +153,10 @@ const Report = ({
       if (!summaryItem) {
         summaryItem = {
           stockItemId: item.stockItemId,
-          stockItemName: item.stockItemName,
-          stockItemImageId: item.stockItemImageId,
-          categoryName: item.categoryName,
-          unitOfMeasurement: item.unitOfMeasurement,
+          stockItemName: item.refStockItem.name,
+          stockItemImageId: item.refStockItem.imageId,
+          categoryName: item.refStockItem.categoryName,
+          unitOfMeasurement: item.refStockItem.unitOfMeasurement,
           byLocation: {},
           inflow: 0,
           outflow: 0,

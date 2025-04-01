@@ -1,5 +1,4 @@
 import {
-  Locations,
   IssuanceForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
@@ -20,36 +19,64 @@ import getIssuanceForms, {
 
 export default {
   IssuanceForm: {
-    attachments: async issuanceForm => {
+    attachments: async (
+      issuanceForm,
+      args,
+      {
+        loaders: {
+          common: { attachments },
+        },
+      }
+    ) => {
       const { attachmentIds } = issuanceForm;
       if (attachmentIds && attachmentIds.length > 0) {
-        return Attachments.find({ _id: { $in: attachmentIds } }).fetchAsync();
+        return Promise.all(
+          attachmentIds.map(attachmentId => attachments.load(attachmentId))
+        );
       }
 
       return [];
     },
-    refLocation: async issuanceForm => {
-      if (issuanceForm?.locationId) {
-        return Locations.findOneAsync({
-          _id: { $eq: issuanceForm.locationId },
-        });
+    refLocation: async (
+      issuanceForm,
+      args,
+      {
+        loaders: {
+          inventory: { locations },
+        },
+      }
+    ) => {
+      if (issuanceForm.locationId) {
+        return locations.load(issuanceForm.locationId);
       }
       return null;
     },
-    refIssuedBy: async issuanceForm => {
-      if (issuanceForm?.issuedBy) {
-        const person = await People.findOneAsync({
-          _id: { $eq: issuanceForm.issuedBy },
-        });
+    refIssuedBy: async (
+      issuanceForm,
+      args,
+      {
+        loaders: {
+          common: { people },
+        },
+      }
+    ) => {
+      if (issuanceForm.issuedBy) {
+        const person = await people.load(issuanceForm.issuedBy);
         return People.personToKarkun(person);
       }
       return null;
     },
-    refIssuedTo: async issuanceForm => {
-      if (issuanceForm?.issuedTo) {
-        const person = await People.findOneAsync({
-          _id: { $eq: issuanceForm.issuedTo },
-        });
+    refIssuedTo: async (
+      issuanceForm,
+      args,
+      {
+        loaders: {
+          common: { people },
+        },
+      }
+    ) => {
+      if (issuanceForm.issuedTo) {
+        const person = await people.load(issuanceForm.issuedTo);
         return People.personToKarkun(person);
       }
       return null;

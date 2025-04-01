@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import {
   Button,
+  Divider,
   Dropdown,
   Modal,
   Pagination,
@@ -40,6 +40,11 @@ import {
 } from '/imports/ui/modules/inventory/common/composers';
 
 import ListFilter from './list-filter';
+import {
+  APPROVE_ISSUANCE_FORMS,
+  PAGED_ISSUANCE_FORMS,
+  REMOVE_ISSUANCE_FORMS,
+} from '../gql';
 
 class List extends Component {
   static propTypes = {
@@ -92,25 +97,41 @@ class List extends Component {
       key: 'refLocation.name',
     },
     {
-      title: 'Items',
-      dataIndex: 'items',
-      key: 'items',
-      render: items => {
+      title: 'Issuance Details',
+      key: 'details',
+      render: (text, record) => {
+        const { items, attachments } = record;
         const formattedItems = items.map(item => {
           const key = `${item.stockItemId}${item.isInflow}`;
           let quantity = item.quantity;
           if (item.unitOfMeasurement !== 'quantity') {
-            quantity = `${quantity} ${item.unitOfMeasurement}`;
+            quantity = `${quantity} ${item.refStockItem.unitOfMeasurement}`;
           }
 
           return (
             <li key={key}>
-              {`${item.stockItemName} [${quantity} ${
+              {`${item.refStockItem.name} [${quantity} ${
                 item.isInflow ? 'Returned' : 'Issued'
               }]`}
             </li>
           );
         });
+
+        const formattedAttachments = attachments?.map(attachment => (
+          <li key={attachment._id}>
+            {attachment.name}
+          </li>
+        ));
+
+        if (formattedAttachments?.length > 0) {
+          return (
+            <>
+              <ul>{formattedItems}</ul>
+              <Divider>Attachments</Divider>
+              <ul>{formattedAttachments}</ul>
+            </>
+          );
+        }
 
         return <ul>{formattedItems}</ul>;
       },
@@ -427,79 +448,12 @@ class List extends Component {
   }
 }
 
-const formMutationRemove = gql`
-  mutation removeIssuanceForms($physicalStoreId: String!, $_ids: [String]!) {
-    removeIssuanceForms(physicalStoreId: $physicalStoreId, _ids: $_ids)
-  }
-`;
-
-const formMutationApprove = gql`
-  mutation approveIssuanceForms($physicalStoreId: String!, $_ids: [String]!) {
-    approveIssuanceForms(physicalStoreId: $physicalStoreId, _ids: $_ids) {
-      _id
-      issueDate
-      issuedBy
-      issuedTo
-      locationId
-      physicalStoreId
-      approvedOn
-      items {
-        stockItemId
-        quantity
-        isInflow
-        stockItemName
-        unitOfMeasurement
-      }
-      refIssuedTo {
-        _id
-        name
-      }
-    }
-  }
-`;
-
-const listQuery = gql`
-  query pagedIssuanceForms($physicalStoreId: String!, $queryString: String) {
-    pagedIssuanceForms(
-      physicalStoreId: $physicalStoreId
-      queryString: $queryString
-    ) {
-      totalResults
-      issuanceForms {
-        _id
-        issueDate
-        issuedBy
-        issuedTo
-        handedOverTo
-        locationId
-        physicalStoreId
-        approvedOn
-        items {
-          stockItemId
-          quantity
-          isInflow
-          stockItemName
-          unitOfMeasurement
-        }
-        refIssuedTo {
-          _id
-          name
-        }
-        refLocation {
-          _id
-          name
-        }
-      }
-    }
-  }
-`;
-
 export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
-  graphql(formMutationRemove, {
+  graphql(REMOVE_ISSUANCE_FORMS, {
     name: 'removeIssuanceForms',
     options: {
       refetchQueries: [
@@ -509,7 +463,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(formMutationApprove, {
+  graphql(APPROVE_ISSUANCE_FORMS, {
     name: 'approveIssuanceForms',
     options: {
       refetchQueries: [
@@ -519,7 +473,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(listQuery, {
+  graphql(PAGED_ISSUANCE_FORMS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },

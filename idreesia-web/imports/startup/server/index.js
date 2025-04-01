@@ -7,6 +7,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebApp } from 'meteor/webapp';
 import { getUser } from 'meteor/apollo';
 import { typeDefs, resolvers } from 'meteor/idreesia-common/server/graphql-api';
+import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
@@ -31,6 +32,7 @@ const server = new ApolloServer({
   },
   context: async ({ req }) => ({
     user: await getUser(req.headers.authorization),
+    loaders: getDataLoaders(),
   }),
 });
 

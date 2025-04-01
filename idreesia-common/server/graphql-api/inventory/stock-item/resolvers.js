@@ -1,6 +1,4 @@
 import {
-  PhysicalStores,
-  ItemCategories,
   StockItems,
   PurchaseForms,
   IssuanceForms,
@@ -28,17 +26,17 @@ export default {
       }
       return formattedName;
     },
-    categoryName: async stockItem => {
-      const itemCategory = await ItemCategories.findOneAsync(
-        stockItem.categoryId
-      );
+    categoryName: async (
+      stockItem,
+      args,
+      {
+        loaders: {
+          inventory: { itemCategories },
+        },
+      }
+    ) => {
+      const itemCategory = await itemCategories.load(stockItem.categoryId);
       return itemCategory.name;
-    },
-    physicalStoreName: async stockItem => {
-      const physicalStore = await PhysicalStores.findOneAsync(
-        stockItem.physicalStoreId
-      );
-      return physicalStore.name;
     },
     purchaseFormsCount: async stockItem =>
       PurchaseForms.find({

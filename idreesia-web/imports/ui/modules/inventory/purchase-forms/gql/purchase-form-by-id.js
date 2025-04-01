@@ -19,8 +19,6 @@ export const PURCHASE_FORM_BY_ID = gql`
         stockItemId
         quantity
         isInflow
-        stockItemName
-        unitOfMeasurement
         price
       }
       attachments {

@@ -151,10 +151,10 @@ class Report extends Component {
         if (!summaryItem) {
           summaryItem = {
             stockItemId: item.stockItemId,
-            stockItemName: item.stockItemName,
-            stockItemImageId: item.stockItemImageId,
-            categoryName: item.categoryName,
-            unitOfMeasurement: item.unitOfMeasurement,
+            stockItemName: item.refStockItem.name,
+            stockItemImageId: item.refStockItem.imageId,
+            categoryName: item.refStockItem.categoryName,
+            unitOfMeasurement: item.refStockItem.unitOfMeasurement,
             byLocation: {},
             quantity: 0,
           };
@@ -228,10 +228,13 @@ const listQuery = gql`
         stockItemId
         quantity
         isInflow
-        stockItemName
-        stockItemImageId
-        categoryName
-        unitOfMeasurement
+        refStockItem {
+          _id
+          name
+          imageId
+          categoryName
+          unitOfMeasurement
+        }
       }
     }
   }

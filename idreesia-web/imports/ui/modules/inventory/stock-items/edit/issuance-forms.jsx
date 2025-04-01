@@ -43,7 +43,7 @@ class List extends Component {
       render: items => {
         const { stockItemId } = this.props;
         const item = find(items, _item => _item.stockItemId === stockItemId);
-        return `${item.stockItemName} [${item.quantity} ${
+        return `${item.refStockItem.name} [${item.quantity} ${
           item.isInflow ? 'Returned' : 'Issued'
         }]`;
       },
@@ -136,7 +136,10 @@ const listQuery = gql`
         stockItemId
         quantity
         isInflow
-        stockItemName
+        refStockItem {
+          _id
+          name
+        }
       }
       refIssuedTo {
         _id

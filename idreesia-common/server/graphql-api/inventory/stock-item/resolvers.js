@@ -1,5 +1,4 @@
 import {
-  PhysicalStores,
   ItemCategories,
   StockItems,
   PurchaseForms,
@@ -33,12 +32,6 @@ export default {
         stockItem.categoryId
       );
       return itemCategory.name;
-    },
-    physicalStoreName: async stockItem => {
-      const physicalStore = await PhysicalStores.findOneAsync(
-        stockItem.physicalStoreId
-      );
-      return physicalStore.name;
     },
     purchaseFormsCount: async stockItem =>
       PurchaseForms.find({

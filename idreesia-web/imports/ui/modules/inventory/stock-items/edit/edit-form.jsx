@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Tabs } from 'antd';
 
 import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { Tabs } from 'antd';
 import {
   WithPhysicalStore,
   WithPhysicalStoreId,
 } from '/imports/ui/modules/inventory/common/composers';
 
-import GeneralInfo from './edit/general-info';
-import Picture from './edit/picture';
-import IssuanceForms from './edit/issuance-forms';
-import PurchaseForms from './edit/purchase-forms';
-import Adjustments from './edit/adjustments';
+import GeneralInfo from './general-info';
+import Picture from './picture';
+import IssuanceForms from './issuance-forms';
+import PurchaseForms from './purchase-forms';
+import Adjustments from './adjustments';
 
 const EditForm = props => {
   const stockItemId = get(props, ['match', 'params', 'stockItemId'], null);

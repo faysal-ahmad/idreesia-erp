@@ -29,13 +29,13 @@ export class PrintForm extends Component {
     const formattedItems = issuanceFormById.items.map(item => {
       // const key = `${item.stockItemId}${item.isInflow}`;
       let quantity = item.quantity;
-      if (item.unitOfMeasurement !== 'quantity') {
-        quantity = `${quantity} ${item.unitOfMeasurement}`;
+      if (item.refStockItem.unitOfMeasurement !== 'quantity') {
+        quantity = `${quantity} ${item.refStockItem.unitOfMeasurement}`;
       }
 
       return (
         <Row style={{ fontSize: 16 }} justify="space-between" gutter={10}>
-          <Col>{item.stockItemName}</Col>
+          <Col>{item.refStockItem.name}</Col>
           <Col flex='auto'>
             <hr style={RowStyle} />
           </Col>

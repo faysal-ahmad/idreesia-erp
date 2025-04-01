@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import { useSelector } from 'react-redux';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 
@@ -38,7 +39,13 @@ const MainContent = () => {
   if (Router) {
     main = (
       <Suspense fallback={<div />}>
-        <Router />
+        <ErrorBoundary fallbackRender={({ resetErrorBoundary}) => {
+          resetErrorBoundary();
+          return <div />;
+        }}
+        >
+          <Router />
+        </ErrorBoundary>
       </Suspense>
     );
   }

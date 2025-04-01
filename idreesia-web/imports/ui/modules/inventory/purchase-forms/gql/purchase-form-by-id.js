@@ -20,6 +20,11 @@ export const PURCHASE_FORM_BY_ID = gql`
         quantity
         isInflow
         price
+        refStockItem {
+          _id
+          name
+          unitOfMeasurement
+        }
       }
       attachments {
         _id

@@ -15,7 +15,7 @@ import {
   WithPhysicalStoreId,
 } from '/imports/ui/modules/inventory/common/composers';
 
-import List from './list/list';
+import List from './list';
 
 class ListContainer extends Component {
   static propTypes = {

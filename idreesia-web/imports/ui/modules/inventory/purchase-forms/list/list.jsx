@@ -95,7 +95,7 @@ class List extends Component {
           const key = `${item.stockItemId}${item.isInflow}`;
           let quantity = item.quantity;
           if (item.refStockItem.unitOfMeasurement !== 'quantity') {
-            quantity = `${quantity} ${item.unitOfMeasurement}`;
+            quantity = `${quantity} ${item.refStockItem.unitOfMeasurement}`;
           }
 
           return (

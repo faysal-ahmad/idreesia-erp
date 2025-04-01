@@ -94,13 +94,13 @@ class List extends Component {
         const formattedItems = items?.map(item => {
           const key = `${item.stockItemId}${item.isInflow}`;
           let quantity = item.quantity;
-          if (item.unitOfMeasurement !== 'quantity') {
+          if (item.refStockItem.unitOfMeasurement !== 'quantity') {
             quantity = `${quantity} ${item.unitOfMeasurement}`;
           }
 
           return (
             <li key={key}>
-              {`${item.stockItemName} [${quantity} ${
+              {`${item.refStockItem.name} [${quantity} ${
                 item.isInflow ? 'Purchased' : 'Returned'
               }]`}
             </li>

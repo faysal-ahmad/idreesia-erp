@@ -13,8 +13,6 @@ export const APPROVE_PURCHASE_FORMS = gql`
         stockItemId
         quantity
         isInflow
-        stockItemName
-        unitOfMeasurement
       }
     }
   }

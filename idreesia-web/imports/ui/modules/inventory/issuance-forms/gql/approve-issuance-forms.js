@@ -14,8 +14,6 @@ export const APPROVE_ISSUANCE_FORMS = gql`
         stockItemId
         quantity
         isInflow
-        stockItemName
-        unitOfMeasurement
       }
       refIssuedTo {
         _id

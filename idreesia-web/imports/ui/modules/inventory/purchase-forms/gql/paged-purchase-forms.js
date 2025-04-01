@@ -18,8 +18,11 @@ export const PAGED_PURCHASE_FORMS = gql`
           stockItemId
           quantity
           isInflow
-          stockItemName
-          unitOfMeasurement
+          refStockItem {
+            _id
+            name
+            unitOfMeasurement
+          }
         }
         attachments {
           _id

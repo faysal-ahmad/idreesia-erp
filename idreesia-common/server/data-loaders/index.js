@@ -1,5 +1,10 @@
 import { attachmentsDataLoader, peopleDataLoader } from './common';
-import { locationsDataLoader, vendorsDataLoader } from './inventory';
+import {
+  itemCategoriesDataLoader,
+  locationsDataLoader,
+  stockItemsDataLoader,
+  vendorsDataLoader,
+} from './inventory';
 
 export function getDataLoaders() {
   return {
@@ -8,7 +13,9 @@ export function getDataLoaders() {
       people: peopleDataLoader(),
     },
     inventory: {
+      itemCategories: itemCategoriesDataLoader(),
       locations: locationsDataLoader(),
+      stockItems: stockItemsDataLoader(),
       vendors: vendorsDataLoader(),
     },
   };

@@ -3,10 +3,7 @@ type ItemWithQuantity {
   quantity: Float
   isInflow: Boolean
 
-  stockItemName: String
-  stockItemImageId: String
-  categoryName: String
-  unitOfMeasurement: String
+  refStockItem: StockItem
 }
 
 input ItemWithQuantityInput {
@@ -21,10 +18,7 @@ type ItemWithQuantityAndPrice {
   isInflow: Boolean
   price: Float
 
-  stockItemName: String
-  stockItemImageId: String
-  categoryName: String
-  unitOfMeasurement: String
+  refStockItem: StockItem
 }
 
 input ItemWithQuantityAndPriceInput {

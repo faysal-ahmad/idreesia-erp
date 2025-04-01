@@ -11,9 +11,17 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Location: {
-    refParent: async location => {
+    refParent: async (
+      location,
+      args,
+      {
+        loaders: {
+          inventory: { locations },
+        },
+      }
+    ) => {
       if (location.parentId) {
-        return Locations.findOneAsync(location.parentId);
+        return locations.load(location.parentId);
       }
       return null;
     },

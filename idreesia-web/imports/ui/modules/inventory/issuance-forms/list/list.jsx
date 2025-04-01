@@ -105,12 +105,12 @@ class List extends Component {
           const key = `${item.stockItemId}${item.isInflow}`;
           let quantity = item.quantity;
           if (item.unitOfMeasurement !== 'quantity') {
-            quantity = `${quantity} ${item.unitOfMeasurement}`;
+            quantity = `${quantity} ${item.refStockItem.unitOfMeasurement}`;
           }
 
           return (
             <li key={key}>
-              {`${item.stockItemName} [${quantity} ${
+              {`${item.refStockItem.name} [${quantity} ${
                 item.isInflow ? 'Returned' : 'Issued'
               }]`}
             </li>

@@ -28,7 +28,6 @@ const Permissions = {
   ADMIN_VIEW_USERS_AND_GROUPS: 'admin-view-users-and-groups',
   ADMIN_MANAGE_USERS_AND_GROUPS: 'admin-manage-users-and-groups',
 
-  ADMIN_VIEW_PHYSICAL_STORES: 'admin-view-physical-stores',
   ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
 
   ADMIN_VIEW_COMPANIES: 'admin-view-companies',

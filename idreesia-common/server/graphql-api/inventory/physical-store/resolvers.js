@@ -7,17 +7,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   Query: {
-    allPhysicalStores: async (obj, params, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to view Physical Stores in the System.'
-        );
-      }
-
+    allPhysicalStores: async () => {
       return PhysicalStores.find({}).fetchAsync();
     },
 
@@ -30,17 +20,7 @@ export default {
       return filteredPhysicalStores;
     },
 
-    physicalStoreById: async (obj, { id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to view Physical Stores in the System.'
-        );
-      }
-
+    physicalStoreById: async (obj, { id }) => {
       return PhysicalStores.findOneAsync(id);
     },
   },

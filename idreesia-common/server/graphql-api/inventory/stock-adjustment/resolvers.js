@@ -36,6 +36,17 @@ export default {
       const person = await people.load(stockAdjustment.adjustedBy);
       return People.personToKarkun(person);
     },
+    refPhysicalStore: async (
+      stockAdjustment,
+      args,
+      {
+        loaders: {
+          inventory: { physicalStores },
+        },
+      }
+    ) => {
+      return physicalStores.load(stockAdjustment.physicalStoreId);
+    },
   },
   Query: {
     stockAdjustmentsByStockItem: async (

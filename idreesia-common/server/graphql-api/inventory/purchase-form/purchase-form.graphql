@@ -11,10 +11,11 @@ type PurchaseForm {
   attachmentIds: [String]
 
   attachments: [Attachment]
+  refVendor: Vendor
   refLocation: Location
   refReceivedBy: KarkunType
   refPurchasedBy: KarkunType
-  refVendor: Vendor
+  refPhysicalStore: PhysicalStore
 
   createdAt: String
   createdBy: String

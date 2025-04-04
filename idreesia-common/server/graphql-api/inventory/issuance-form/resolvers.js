@@ -81,6 +81,17 @@ export default {
       }
       return null;
     },
+    refPhysicalStore: async (
+      issuanceForm,
+      args,
+      {
+        loaders: {
+          inventory: { physicalStores },
+        },
+      }
+    ) => {
+      return physicalStores.load(issuanceForm.physicalStoreId);
+    },
   },
   Query: {
     issuanceFormsByStockItem: async (

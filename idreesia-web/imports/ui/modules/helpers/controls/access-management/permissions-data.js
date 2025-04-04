@@ -55,10 +55,6 @@ export const AdminPermissionsData = {
           key: 'module-admin-physical-stores',
           children: [
             {
-              title: 'View Physical Stores',
-              key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
-            },
-            {
               title: 'Manage Physical Stores',
               key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
             },

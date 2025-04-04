@@ -61,6 +61,17 @@ export default {
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         stockItemId: { $eq: stockItem._id },
       }).count(),
+    refPhysicalStore: async (
+      stockItem,
+      args,
+      {
+        loaders: {
+          inventory: { physicalStores },
+        },
+      }
+    ) => {
+      return physicalStores.load(stockItem.physicalStoreId);
+    },
   },
 
   Query: {

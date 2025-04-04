@@ -19,6 +19,8 @@ type StockItem {
   issuanceFormsCount: Float
   stockAdjustmentsCount: Float
 
+  refPhysicalStore: PhysicalStore
+
   createdAt: String
   createdBy: String
   updatedAt: String

@@ -26,7 +26,7 @@ type IssuanceForm {
 
 type PagedIssuanceForm {
   totalResults: Int
-  issuanceForms: [IssuanceForm]
+  data: [IssuanceForm]
 }
 
 extend type Query {
@@ -34,15 +34,29 @@ extend type Query {
     physicalStoreId: String!
     stockItemId: String!
   ): [IssuanceForm]
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
   issuanceFormsByMonth(
     physicalStoreId: String!
     month: String!
   ): [IssuanceForm]
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
   pagedIssuanceForms(
     physicalStoreId: String!
     queryString: String
   ): PagedIssuanceForm
-  issuanceFormById(_id: String!): IssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  issuanceFormById(
+    physicalStoreId: String!
+    _id: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }
 
 extend type Mutation {
@@ -56,6 +70,8 @@ extend type Mutation {
     items: [ItemWithQuantityInput]
     notes: String
   ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   updateIssuanceForm(
     _id: String!
@@ -68,19 +84,30 @@ extend type Mutation {
     items: [ItemWithQuantityInput]
     notes: String
   ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   approveIssuanceForms(physicalStoreId: String!, _ids: [String]!): [IssuanceForm]
+  @checkPermissions(permissions: [IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   addIssuanceFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
   removeIssuanceFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   removeIssuanceForms(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }

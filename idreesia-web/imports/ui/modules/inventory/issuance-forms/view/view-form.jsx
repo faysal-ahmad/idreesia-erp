@@ -20,6 +20,7 @@ const ViewForm = props => {
     skip: !formId,
     variables: {
       _id: formId,
+      physicalStoreId,
     },
   });
 

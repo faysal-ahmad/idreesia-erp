@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const ISSUANCE_FORM_BY_ID = gql`
-  query issuanceFormById($_id: String!) {
-    issuanceFormById(_id: $_id) {
+  query issuanceFormById($physicalStoreId: String!, $_id: String!) {
+    issuanceFormById(physicalStoreId: $physicalStoreId, _id: $_id) {
       _id
       issueDate
       issuedBy

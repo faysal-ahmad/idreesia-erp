@@ -94,73 +94,19 @@ export default {
     },
   },
   Query: {
-    issuanceFormsByStockItem: async (
-      obj,
-      { physicalStoreId, stockItemId },
-      { user }
-    ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        return [];
-      }
-
+    issuanceFormsByStockItem: async (obj, { physicalStoreId, stockItemId }) => {
       return getIssuanceFormsByStockItemId(physicalStoreId, stockItemId);
     },
 
-    issuanceFormsByMonth: async (obj, { physicalStoreId, month }, { user }) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        return [];
-      }
-
+    issuanceFormsByMonth: async (obj, { physicalStoreId, month }) => {
       return getIssuanceFormsByMonth(physicalStoreId, month);
     },
 
-    pagedIssuanceForms: async (
-      obj,
-      { physicalStoreId, queryString },
-      { user }
-    ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        return {
-          issuanceForms: [],
-          totalResults: 0,
-        };
-      }
-
+    pagedIssuanceForms: async (obj, { physicalStoreId, queryString }) => {
       return getIssuanceForms(queryString, physicalStoreId);
     },
 
     issuanceFormById: async (obj, { _id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_ISSUANCE_FORMS,
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        return null;
-      }
-
       const issuanceForm = await IssuanceForms.findOneAsync(_id);
       if (hasInstanceAccess(user, issuanceForm.physicalStoreId) === false) {
         return null;
@@ -184,23 +130,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       const issuanceFormId = await IssuanceForms.insertAsync({
         issueDate,
@@ -245,23 +174,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in this Physical Store.'
-        );
-      }
-
       const existingForm = await IssuanceForms.findOneAsync(_id);
       if (existingForm.approvedOn || existingForm.approvedBy) {
         throw new Error('You cannot update an already approved Issuance Form.');
@@ -317,20 +229,6 @@ export default {
     },
 
     approveIssuanceForms: async (obj, { physicalStoreId, _ids }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_APPROVE_ISSUANCE_FORMS])
-      ) {
-        throw new Error(
-          'You do not have permission to approve Issuance Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to approve Issuance Forms in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       await IssuanceForms.updateAsync(
         {
@@ -359,18 +257,6 @@ export default {
       { _id, physicalStoreId, attachmentId },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in the System.'
-        );
-      }
-
       const date = new Date();
       await IssuanceForms.updateAsync(
         {
@@ -396,18 +282,6 @@ export default {
       { _id, physicalStoreId, attachmentId },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_ISSUANCE_FORMS,
-          PermissionConstants.IN_APPROVE_ISSUANCE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in the System.'
-        );
-      }
-
       const date = new Date();
       await IssuanceForms.updateAsync(
         { _id, physicalStoreId },
@@ -427,18 +301,6 @@ export default {
     },
 
     removeIssuanceForms: async (obj, { physicalStoreId, _ids }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Issuance Forms in this Physical Store.'
-        );
-      }
-
       const existingIssuanceForms = IssuanceForms.find({
         _id: { $in: _ids },
         physicalStoreId,

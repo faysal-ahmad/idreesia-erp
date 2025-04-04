@@ -101,9 +101,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         issueDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT)
-            .startOf('day')
-            .toDate(),
+          $gte: moment(startDate, Formats.DATE_FORMAT).startOf('day').toDate(),
         },
       },
     });
@@ -112,9 +110,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         issueDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT)
-            .endOf('day')
-            .toDate(),
+          $lte: moment(endDate, Formats.DATE_FORMAT).endOf('day').toDate(),
         },
       },
     });
@@ -136,7 +132,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
   const totalResults = IssuanceForms.aggregate(countingPipeline);
 
   return Promise.all([issuanceForms, totalResults]).then(results => ({
-    issuanceForms: results[0],
+    data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

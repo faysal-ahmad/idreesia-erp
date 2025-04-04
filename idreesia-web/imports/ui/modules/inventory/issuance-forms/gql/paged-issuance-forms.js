@@ -7,7 +7,7 @@ export const PAGED_ISSUANCE_FORMS = gql`
       queryString: $queryString
     ) {
       totalResults
-      issuanceForms {
+      data {
         _id
         issueDate
         issuedBy

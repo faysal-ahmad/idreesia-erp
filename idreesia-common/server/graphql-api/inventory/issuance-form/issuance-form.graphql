@@ -35,28 +35,28 @@ extend type Query {
     stockItemId: String!
   ): [IssuanceForm]
   @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 
   issuanceFormsByMonth(
     physicalStoreId: String!
     month: String!
   ): [IssuanceForm]
   @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 
   pagedIssuanceForms(
     physicalStoreId: String!
     queryString: String
   ): PagedIssuanceForm
   @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
 
   issuanceFormById(
     physicalStoreId: String!
     _id: String!
   ): IssuanceForm
   @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 }
 
 extend type Mutation {

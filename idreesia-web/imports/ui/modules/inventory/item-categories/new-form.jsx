@@ -1,49 +1,61 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
+
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+  CREATE_ITEM_CATEGORY,
+  ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
+} from './gql';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-    createItemCategory: PropTypes.func,
-  };
-  
-  state = {
-    isFieldsTouched: false,
-  };
+const NewForm = ({ history }) => {
+  const dispatch = useDispatch();
+  const { physicalStoreId } = useParams();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [createItemCategory] = useMutation(CREATE_ITEM_CATEGORY, {
+    refetchQueries: [{ 
+      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
+      variables: {
+        physicalStoreId,
+      }
+    }],
+  });
 
-  handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
+  useEffect(() => {
+    if (physicalStore) {
+      dispatch(
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Item Categories', 'New'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New']));
+    }
+  }, [physicalStoreId]);
+
+  const handleCancel = () => {
     history.push(paths.itemCategoriesPath(physicalStoreId));
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
   }
 
-  handleFinish = ({ name }) => {
-    const { physicalStoreId, createItemCategory, history } = this.props;
+  const handleFinish = ({ name }) => {
     createItemCategory({
       variables: { name, physicalStoreId },
     })
       .then(() => {
+        message.success('New item category was created successfully.', 5);
         history.push(paths.itemCategoriesPath(physicalStoreId));
       })
       .catch(error => {
@@ -51,49 +63,25 @@ class NewForm extends Component {
       });
   };
 
-  render() {
-    const isFieldsTouched = this.state.isFieldsTouched;
-
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input a name for the item category."
-        />
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        required
+        requiredMessage="Please input a name for the item category."
+      />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
 }
 
-const formMutation = gql`
-  mutation createItemCategory($name: String!, $physicalStoreId: String!) {
-    createItemCategory(name: $name, physicalStoreId: $physicalStoreId) {
-      _id
-      name
-      physicalStoreId
-    }
-  }
-`;
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  graphql(formMutation, {
-    name: 'createItemCategory',
-    options: {
-      refetchQueries: ['itemCategoriesByPhysicalStoreId'],
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Setup, Item Categories, New`;
-    }
-    return `Inventory, Setup, Item Categories, New`;
-  })
-)(NewForm);
+export default NewForm;

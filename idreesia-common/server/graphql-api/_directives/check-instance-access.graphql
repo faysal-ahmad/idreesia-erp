@@ -1,4 +1,5 @@
 directive @checkInstanceAccess(
-  instanceIdArgName: String,
+  instanceIdArgName: String!,
+  returnType: String,
   dataFieldName: String,
 ) on FIELD_DEFINITION

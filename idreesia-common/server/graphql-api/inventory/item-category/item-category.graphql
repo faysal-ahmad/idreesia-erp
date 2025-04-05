@@ -11,7 +11,7 @@ type ItemCategory {
 }
 
 extend type Query {
-  itemCategoryById(id: String!, physicalStoreId: String!): ItemCategory
+  itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]

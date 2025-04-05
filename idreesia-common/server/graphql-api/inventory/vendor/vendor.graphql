@@ -16,8 +16,11 @@ type Vendor {
 }
 
 extend type Query {
-  vendorById(_id: String!): Vendor
+  vendorById(_id: String!, physicalStoreId: String!): Vendor
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
   vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -29,15 +32,22 @@ extend type Mutation {
     address: String
     notes: String
   ): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   updateVendor(
     _id: String!
+    physicalStoreId: String!
     name: String
     contactPerson: String
     contactNumber: String
     address: String
     notes: String
   ): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
-  removeVendor(_id: String!): Int
+  removeVendor(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }

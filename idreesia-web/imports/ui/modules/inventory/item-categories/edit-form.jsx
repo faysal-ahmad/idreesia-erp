@@ -20,7 +20,7 @@ import {
   UPDATE_ITEM_CATEGORY,
 } from './gql';
 
-const EditForm = ({ history}) => {
+const EditForm = ({ history }) => {
   const dispatch = useDispatch();
   const { physicalStoreId, itemCategoryId } = useParams();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
@@ -45,7 +45,7 @@ const EditForm = ({ history}) => {
   }, [physicalStoreId]);
 
   const { data, loading } = useQuery(ITEM_CATEGORY_BY_ID, {
-    variables: { id: itemCategoryId, physicalStoreId }
+    variables: { _id: itemCategoryId, physicalStoreId }
   });
 
   if (loading) return null;
@@ -97,15 +97,8 @@ const EditForm = ({ history}) => {
 }
 
 EditForm.propTypes = {
-  match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
-  physicalStoreId: PropTypes.string,
-  physicalStore: PropTypes.object,
-
-  loading: PropTypes.bool,
-  itemCategoryById: PropTypes.object,
-  updateItemCategory: PropTypes.func,
 };
 
 export default EditForm;

@@ -12,8 +12,8 @@ export default {
   },
 
   Query: {
-    itemCategoryById: async (obj, { id }) => {
-      return ItemCategories.findOneAsync(id);
+    itemCategoryById: async (obj, { _id }) => {
+      return ItemCategories.findOneAsync(_id);
     },
 
     itemCategoriesByPhysicalStoreId: async (

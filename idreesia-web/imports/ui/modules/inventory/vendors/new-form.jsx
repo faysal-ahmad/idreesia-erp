@@ -1,46 +1,56 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
+
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+  CREATE_VENDOR,
+  VENDORS_BY_PHYSICAL_STORE_ID,
+} from './gql';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const NewForm = ({ history }) => {
+  const dispatch = useDispatch();
+  const { physicalStoreId } = useParams();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [createVendor] = useMutation(CREATE_VENDOR, {
+    refetchQueries: [{ 
+      query: VENDORS_BY_PHYSICAL_STORE_ID,
+      variables: {
+        physicalStoreId,
+      }
+    }],
+  });
 
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-    createVendor: PropTypes.func,
-  };
-  
-  state = {
-    isFieldsTouched: false,
-  };
+  useEffect(() => {
+    if (physicalStore) {
+      dispatch(
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Vendors', 'New'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'New']));
+    }
+  }, [physicalStoreId]);
 
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
   }
 
-  handleFinish = ({ name, contactPerson, contactNumber, address, notes }) => {
-    const { physicalStoreId, createVendor, history } = this.props;
+  const handleFinish = ({ name, contactPerson, contactNumber, address, notes }) => {
     createVendor({
       variables: {
         name,
@@ -52,6 +62,7 @@ class NewForm extends Component {
       },
     })
       .then(() => {
+        message.success('New vendor was created successfully.', 5);
         history.goBack();
       })
       .catch(error => {
@@ -59,83 +70,41 @@ class NewForm extends Component {
       });
   };
 
-  render() {
-    const isFieldsTouched = this.state.isFieldsTouched;
-
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input a name for the vendor."
-        />
-        <InputTextField
-          fieldName="contactPerson"
-          fieldLabel="Contact Person"
-        />
-        <InputTextField
-          fieldName="contactNumber"
-          fieldLabel="Contact Number"
-        />
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-        />
-        <InputTextAreaField
-          fieldName="notes"
-          fieldLabel="Notes"
-        />
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        required
+        requiredMessage="Please input a name for the vendor."
+      />
+      <InputTextField
+        fieldName="contactPerson"
+        fieldLabel="Contact Person"
+      />
+      <InputTextField
+        fieldName="contactNumber"
+        fieldLabel="Contact Number"
+      />
+      <InputTextAreaField
+        fieldName="address"
+        fieldLabel="Address"
+      />
+      <InputTextAreaField
+        fieldName="notes"
+        fieldLabel="Notes"
+      />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
 }
 
-const formMutation = gql`
-  mutation createVendor(
-    $name: String!
-    $physicalStoreId: String!
-    $contactPerson: String
-    $contactNumber: String
-    $address: String
-    $notes: String
-  ) {
-    createVendor(
-      name: $name
-      physicalStoreId: $physicalStoreId
-      contactPerson: $contactPerson
-      contactNumber: $contactNumber
-      address: $address
-      notes: $notes
-    ) {
-      _id
-      name
-      physicalStoreId
-      contactPerson
-      contactNumber
-      address
-      notes
-    }
-  }
-`;
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  graphql(formMutation, {
-    name: 'createVendor',
-    options: {
-      refetchQueries: ['vendorsByPhysicalStoreId'],
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Setup, Vendors, New`;
-    }
-    return `Inventory, Setup, Vendors, New`;
-  })
-)(NewForm);
+export default NewForm;

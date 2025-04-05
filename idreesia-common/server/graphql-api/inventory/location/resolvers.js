@@ -3,11 +3,28 @@ import {
   IssuanceForms,
   Locations,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  hasOnePermission,
-  hasInstanceAccess,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+
+function isLocationInUse(locationId, physicalStoreId) {
+  // If this has any child locations then it is in use
+  const childCount = Locations.find({
+    parentId: locationId,
+    physicalStoreId,
+  }).count();
+  if (childCount > 0) return true;
+  // Check if it is being used in any purchase/issuance forms
+  const purchaseFormCount = PurchaseForms.find({
+    locationId,
+    physicalStoreId,
+  }).count();
+  if (purchaseFormCount > 0) return true;
+  const issuanceFormCount = IssuanceForms.find({
+    locationId,
+    physicalStoreId,
+  }).count();
+  if (issuanceFormCount > 0) return true;
+
+  return false;
+}
 
 export default {
   Location: {
@@ -25,34 +42,15 @@ export default {
       }
       return null;
     },
-    isInUse: async location => {
-      // If this has any child locations then it is in use
-      const childCount = Locations.find({ parentId: location._id }).count();
-      if (childCount > 0) return true;
-      // Check if it is being used in any purchase/issuance forms
-      const purchaseFormCount = PurchaseForms.find({
-        locationId: location._id,
-      }).count();
-      if (purchaseFormCount > 0) return true;
-      const issuanceFormCount = IssuanceForms.find({
-        locationId: location._id,
-      }).count();
-      if (issuanceFormCount > 0) return true;
-
-      return false;
-    },
+    isInUse: async location =>
+      isLocationInUse(location._id, location.physicalStoreId),
   },
   Query: {
     locationById: async (obj, { _id }, { user }) => {
-      const location = await Locations.findOneAsync(_id);
-      if (hasInstanceAccess(user, location.physicalStoreId) === false) {
-        return null;
-      }
-      return location;
+      return Locations.findOneAsync(_id);
     },
 
     locationsByPhysicalStoreId: async (obj, { physicalStoreId }, { user }) => {
-      if (hasInstanceAccess(user, physicalStoreId) === false) return [];
       return Locations.find(
         {
           physicalStoreId: { $eq: physicalStoreId },
@@ -68,18 +66,6 @@ export default {
       { name, physicalStoreId, parentId, description },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       const locationId = await Locations.insertAsync({
         name,
@@ -97,57 +83,39 @@ export default {
 
     updateLocation: async (
       obj,
-      { _id, name, parentId, description },
+      { _id, physicalStoreId, name, parentId, description },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in the System.'
-        );
-      }
-
-      const existingLocation = await Locations.findOneAsync(_id);
-      if (
-        !existingLocation ||
-        hasInstanceAccess(user, existingLocation.physicalStoreId) === false
-      ) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
-        );
-      }
-
       const date = new Date();
-      await Locations.updateAsync(_id, {
-        $set: {
-          name,
-          parentId,
-          description,
-          updatedAt: date,
-          updatedBy: user._id,
+      await Locations.updateAsync(
+        {
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
         },
-      });
+        {
+          $set: {
+            name,
+            parentId,
+            description,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
 
       return Locations.findOneAsync(_id);
     },
 
-    removeLocation: async (obj, { _id }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in the System.'
-        );
+    removeLocation: async (obj, { _id, physicalStoreId }, { user }) => {
+      const inUse = isLocationInUse(_id, physicalStoreId);
+      if (!inUse) {
+        return Locations.removeAsync({
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
+        });
       }
 
-      const existingLocation = await Locations.findOneAsync(_id);
-      if (
-        !existingLocation ||
-        hasInstanceAccess(user, existingLocation.physicalStoreId) === false
-      ) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
-        );
-      }
-
-      return Locations.removeAsync(_id);
+      return 0;
     },
   },
 };

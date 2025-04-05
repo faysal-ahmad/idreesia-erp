@@ -72,6 +72,7 @@ const EditForm = ({ history }) => {
       },
     })
       .then(() => {
+        message.success('Vendor was updated successfully.', 5);
         history.goBack();
       })
       .catch(error => {

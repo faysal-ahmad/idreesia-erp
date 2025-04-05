@@ -15,8 +15,11 @@ type Location {
 }
 
 extend type Query {
-  locationById(_id: String!): Location
+  locationById(_id: String!, physicalStoreId: String!): Location
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
   locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -26,11 +29,20 @@ extend type Mutation {
     parentId: String
     description: String
   ): Location
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
   updateLocation(
     _id: String!
+    physicalStoreId: String!
     name: String!
     parentId: String
     description: String
   ): Location
-  removeLocation(_id: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeLocation(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }

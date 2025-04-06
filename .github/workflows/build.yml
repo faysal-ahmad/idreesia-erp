@@ -23,4 +23,9 @@ jobs:
         with: 
           meteor-release: 2.16
       - run: meteor npm install -g yarn
-      - run: meteor yarn install
+      
+      - name: Build Web Application
+        run: 
+          cd ./idreesia-web
+          meteor yarn install
+          meteor yarn run build

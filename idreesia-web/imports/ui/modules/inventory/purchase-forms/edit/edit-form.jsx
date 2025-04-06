@@ -23,9 +23,10 @@ const EditForm = props => {
   const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } = usePhysicalStoreLocations(physicalStoreId)
   const { vendorsByPhysicalStoreId, vendorsByPhysicalStoreIdLoading } = usePhysicalStoreVendors(physicalStoreId)
   const { data, loading } = useQuery(PURCHASE_FORM_BY_ID, {
-    skip: !formId,
+    skip: !formId || !physicalStoreId,
     variables: {
       _id: formId,
+      physicalStoreId,
     },
   });
 

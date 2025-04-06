@@ -6,11 +6,6 @@ import {
   Attachments,
   People,
 } from 'meteor/idreesia-common/server/collections/common';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import getPurchaseForms, {
   getPurchaseFormsByStockItemId,
@@ -102,37 +97,19 @@ export default {
     },
   },
   Query: {
+    purchaseFormById: async (obj, { _id }, { user }) => {
+      return PurchaseForms.findOneAsync(_id);
+    },
+
     purchaseFormsByStockItem: async (
       obj,
       { physicalStoreId, stockItemId },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_PURCHASE_FORMS,
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        return [];
-      }
-
       return getPurchaseFormsByStockItemId(physicalStoreId, stockItemId);
     },
 
     purchaseFormsByMonth: async (obj, { physicalStoreId, month }, { user }) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_PURCHASE_FORMS,
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        return [];
-      }
-
       return getPurchaseFormsByMonth(physicalStoreId, month);
     },
 
@@ -141,39 +118,7 @@ export default {
       { physicalStoreId, queryString },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_PURCHASE_FORMS,
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        return {
-          purchaseForms: [],
-          totalResults: 0,
-        };
-      }
-
       return getPurchaseForms(queryString, physicalStoreId);
-    },
-
-    purchaseFormById: async (obj, { _id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_PURCHASE_FORMS,
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        return null;
-      }
-
-      const purchaseForm = await PurchaseForms.findOneAsync(_id);
-      if (hasInstanceAccess(user, purchaseForm.physicalStoreId) === false) {
-        return null;
-      }
-      return purchaseForm;
     },
   },
 
@@ -192,23 +137,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       const purchaseFormId = await PurchaseForms.insertAsync({
         purchaseDate,
@@ -242,10 +170,10 @@ export default {
       obj,
       {
         _id,
+        physicalStoreId,
         purchaseDate,
         receivedBy,
         purchasedBy,
-        physicalStoreId,
         locationId,
         vendorId,
         items,
@@ -253,23 +181,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in this Physical Store.'
-        );
-      }
-
       const existingForm = await PurchaseForms.findOneAsync(_id);
       const { items: existingItems } = existingForm;
       // Undo the effect of all previous items
@@ -321,20 +232,6 @@ export default {
     },
 
     approvePurchaseForms: async (obj, { physicalStoreId, _ids }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_APPROVE_PURCHASE_FORMS])
-      ) {
-        throw new Error(
-          'You do not have permission to approve Purchase Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to approve Purchase Forms in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       await PurchaseForms.updateAsync(
         {
@@ -363,18 +260,6 @@ export default {
       { _id, physicalStoreId, attachmentId },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in the System.'
-        );
-      }
-
       const date = new Date();
       await PurchaseForms.updateAsync(
         {
@@ -400,18 +285,6 @@ export default {
       { _id, physicalStoreId, attachmentId },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_PURCHASE_FORMS,
-          PermissionConstants.IN_APPROVE_PURCHASE_FORMS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in the System.'
-        );
-      }
-
       const date = new Date();
       await PurchaseForms.updateAsync(
         { _id, physicalStoreId },
@@ -431,18 +304,6 @@ export default {
     },
 
     removePurchaseForms: async (obj, { physicalStoreId, _ids }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Purchase Forms in this Physical Store.'
-        );
-      }
-
       const existingPurchaseForms = PurchaseForms.find({
         _id: { $in: _ids },
         physicalStoreId,

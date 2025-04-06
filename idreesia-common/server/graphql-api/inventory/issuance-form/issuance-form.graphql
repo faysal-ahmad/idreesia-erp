@@ -30,6 +30,13 @@ type PagedIssuanceForm {
 }
 
 extend type Query {
+  issuanceFormById(
+    _id: String!
+    physicalStoreId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
   issuanceFormsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
@@ -50,13 +57,6 @@ extend type Query {
   ): PagedIssuanceForm
   @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
-
-  issuanceFormById(
-    physicalStoreId: String!
-    _id: String!
-  ): IssuanceForm
-  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 }
 
 extend type Mutation {

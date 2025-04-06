@@ -218,10 +218,6 @@ export const InventoryPermissionsData = {
   key: 'module-inventory',
   children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.IN_DELETE_DATA,
-    },
-    {
       title: 'Manage Setup Data',
       key: PermissionConstants.IN_MANAGE_SETUP_DATA,
     },

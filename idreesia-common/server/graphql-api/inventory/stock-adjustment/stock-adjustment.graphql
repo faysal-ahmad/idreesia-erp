@@ -71,7 +71,7 @@ extend type Mutation {
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   approveStockAdjustments(physicalStoreId: String!, _ids: [String]!): [StockAdjustment]
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkPermissions(permissions: [IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   removeStockAdjustments(physicalStoreId: String!, _ids: [String]!): Int

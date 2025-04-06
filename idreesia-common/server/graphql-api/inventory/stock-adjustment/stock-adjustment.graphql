@@ -26,15 +26,23 @@ type PagedStockAdjustment {
 }
 
 extend type Query {
+  stockAdjustmentById(_id: String!, physicalStoreId: String!): StockAdjustment
+  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
   stockAdjustmentsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [StockAdjustment]
+  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
   pagedStockAdjustments(
     physicalStoreId: String!
     queryString: String
   ): PagedStockAdjustment
-  stockAdjustmentById(_id: String!): StockAdjustment
+  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
@@ -47,17 +55,26 @@ extend type Mutation {
     isInflow: Boolean!
     adjustmentReason: String
   ): StockAdjustment
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   updateStockAdjustment(
     _id: String!
+    physicalStoreId: String!
     adjustmentDate: String!
     adjustedBy: String!
     quantity: Float!
     isInflow: Boolean!
     adjustmentReason: String
   ): StockAdjustment
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   approveStockAdjustments(physicalStoreId: String!, _ids: [String]!): [StockAdjustment]
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   removeStockAdjustments(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }

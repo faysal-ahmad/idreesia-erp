@@ -91,8 +91,8 @@ class ViewForm extends Component {
 }
 
 const formQuery = gql`
-  query stockAdjustmentById($_id: String!) {
-    stockAdjustmentById(_id: $_id) {
+  query stockAdjustmentById($_id: String!, $physicalStoreId: String!) {
+    stockAdjustmentById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       physicalStoreId
       stockItemId
@@ -125,9 +125,9 @@ export default flowRight(
   WithPhysicalStore(),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
+    options: ({ match, physicalStoreId }) => {
       const { formId } = match.params;
-      return { variables: { _id: formId } };
+      return { variables: { _id: formId, physicalStoreId } };
     },
   }),
   WithDynamicBreadcrumbs(({ physicalStore }) => {

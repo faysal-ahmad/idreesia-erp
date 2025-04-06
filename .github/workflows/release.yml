@@ -9,7 +9,7 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -41,3 +41,8 @@ jobs:
 
       - name: Push Docker Container
         run: docker push faysalahmad/idreesia-web
+
+      - name: Deploy the App to Digital Ocean
+        uses: digitalocean/app_action/deploy@v2
+        with:
+         token: ${{ secrets.DIGITALOCEAN_TOKEN }}

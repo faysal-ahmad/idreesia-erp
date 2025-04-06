@@ -16,5 +16,8 @@ extend type Query {
 
 extend type Mutation {
   createPhysicalStore(name: String!, address: String): PhysicalStore
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
   updatePhysicalStore(id: String!, name: String!, address: String): PhysicalStore
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
 }

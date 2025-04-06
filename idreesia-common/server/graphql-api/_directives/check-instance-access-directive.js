@@ -14,7 +14,12 @@ export default function CheckInstanceAccessDirective(schema) {
       )?.[0];
       if (directive) {
         const { resolve = defaultFieldResolver } = fieldConfig;
-        const { instanceIdArgName, dataFieldName = 'data' } = directive;
+        // The returnType could be set to object, list, paged-list
+        const {
+          instanceIdArgName,
+          returnType = 'object',
+          dataFieldName = 'data',
+        } = directive;
 
         fieldConfig.resolve = async (...params) => {
           const [, args, context, info] = params;
@@ -28,14 +33,14 @@ export default function CheckInstanceAccessDirective(schema) {
 
           if (hasInstanceAccess(user, instanceId) === false) {
             if (info.parentType.name === 'Query') {
-              if (info.fieldName.startsWith('paged')) {
+              if (returnType === 'object') return null;
+              else if (returnType === 'list') return [];
+              else if (returnType === 'paged-list') {
                 return {
                   [dataFieldName]: [],
                   totalResults: 0,
                 };
               }
-
-              return null;
             }
 
             // It is a mutation, throw a not-allowed exception

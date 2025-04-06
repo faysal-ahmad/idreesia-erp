@@ -58,13 +58,14 @@ class EditForm extends Component {
     const {
       history,
       updateStockAdjustment,
-      stockAdjustmentById: { _id },
+      stockAdjustmentById: { _id, physicalStoreId },
     } = this.props;
 
     const isInflow = adjustment === 'inflow';
     updateStockAdjustment({
       variables: {
         _id,
+        physicalStoreId,
         adjustmentDate,
         adjustedBy: adjustedBy._id,
         quantity,
@@ -152,8 +153,8 @@ class EditForm extends Component {
 }
 
 const formQuery = gql`
-  query stockAdjustmentById($_id: String!) {
-    stockAdjustmentById(_id: $_id) {
+query stockAdjustmentById($_id: String!, $physicalStoreId: String!) {
+  stockAdjustmentById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       physicalStoreId
       stockItemId
@@ -182,6 +183,7 @@ const formQuery = gql`
 const formMutation = gql`
   mutation updateStockAdjustment(
     $_id: String!
+    $physicalStoreId: String!
     $adjustmentDate: String!
     $adjustedBy: String!
     $quantity: Float!
@@ -190,6 +192,7 @@ const formMutation = gql`
   ) {
     updateStockAdjustment(
       _id: $_id
+      physicalStoreId: $physicalStoreId
       adjustmentDate: $adjustmentDate
       adjustedBy: $adjustedBy
       quantity: $quantity
@@ -236,9 +239,9 @@ export default flowRight(
   }),
   graphql(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
+    options: ({ match, physicalStoreId }) => {
       const { formId } = match.params;
-      return { variables: { _id: formId } };
+      return { variables: { _id: formId, physicalStoreId } };
     },
   }),
   WithDynamicBreadcrumbs(({ physicalStore }) => {

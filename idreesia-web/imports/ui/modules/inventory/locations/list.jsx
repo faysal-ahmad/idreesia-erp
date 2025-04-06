@@ -1,12 +1,8 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useDispatch } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
   Button,
   Popconfirm,
@@ -14,25 +10,64 @@ import {
   Tooltip,
   message,
 } from 'antd';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-  WithLocationsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+  DeleteOutlined,
+  PlusCircleOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-    locationsLoading: PropTypes.bool,
-    locationsByPhysicalStoreId: PropTypes.array,
-    removeLocation: PropTypes.func,
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
+
+import {
+  REMOVE_LOCATION,
+  LOCATIONS_BY_PHYSICAL_STORE_ID,
+} from './gql';
+
+const List = ({ history }) => {
+  const dispatch = useDispatch();
+  const { physicalStoreId } = useParams();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const [removeLocation] = useMutation(REMOVE_LOCATION, {
+    refetchQueries: [{ 
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
+      variables: {
+        physicalStoreId,
+      }
+    }],
+  });
+  
+  useEffect(() => {
+    if (physicalStore) {
+      dispatch(
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Locations', 'List'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'List']));
+    }
+  }, [physicalStore]);
+
+  const handleNewClicked = () => {
+    history.push(paths.locationsNewFormPath(physicalStoreId));
   };
 
-  columns = [
+  const handleDeleteClicked = location => {
+    removeLocation({
+      variables: {
+        _id: location._id,
+        physicalStoreId,
+      },
+    })
+      .then(() => {
+        message.success('Location has been deleted.', 5);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -40,7 +75,7 @@ class List extends Component {
       render: (text, record) => (
         <Link
           to={`${paths.locationsEditFormPath(
-            this.props.physicalStoreId,
+            physicalStoreId,
             record._id
           )}`}
         >
@@ -55,7 +90,7 @@ class List extends Component {
       render: (text, record) => (
         <Link
           to={`${paths.itemCategoriesEditFormPath(
-            this.props.physicalStoreId,
+            physicalStoreId,
             record.parentId
           )}`}
         >
@@ -80,7 +115,7 @@ class List extends Component {
               <Popconfirm
                 title="Are you sure you want to delete this location?"
                 onConfirm={() => {
-                  this.handleDeleteClicked(record);
+                  handleDeleteClicked(record);
                 }}
                 okText="Yes"
                 cancelText="No"
@@ -98,70 +133,44 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.locationsNewFormPath(physicalStoreId));
-  };
+  const { data, loading, refetch } = useQuery(LOCATIONS_BY_PHYSICAL_STORE_ID, {
+    variables: { physicalStoreId }
+  });
+  
+  if (loading) return null;
+  const { locationsByPhysicalStoreId } = data;
 
-  handleDeleteClicked = location => {
-    const { removeLocation } = this.props;
-    removeLocation({
-      variables: {
-        _id: location._id,
-      },
-    })
-      .then(() => {
-        message.success('Location has been deleted.', 5);
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  };
-
-  render() {
-    const { locationsLoading, locationsByPhysicalStoreId } = this.props;
-    if (locationsLoading) return null;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={locationsByPhysicalStoreId}
-        columns={this.columns}
-        bordered
-        title={() => (
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={locationsByPhysicalStoreId}
+      columns={columns}
+      bordered
+      title={() => (
+        <div className="list-table-header">
           <Button
             type="primary"
             icon={<PlusCircleOutlined />}
-            onClick={this.handleNewClicked}
+            onClick={handleNewClicked}
           >
             New Location
           </Button>
-        )}
-      />
-    );
-  }
+          <div className="list-table-header-section">
+            <Button 
+              size="large"
+              icon={<SyncOutlined />}
+              onClick={() => { refetch() }}
+            />
+          </div>
+        </div>
+      )}
+    />
+  );
 }
 
-const formMutationRemove = gql`
-  mutation removeLocation($_id: String!) {
-    removeLocation(_id: $_id)
-  }
-`;
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithLocationsByPhysicalStore(),
-  graphql(formMutationRemove, {
-    name: 'removeLocation',
-    options: {
-      refetchQueries: ['locationsByPhysicalStoreId'],
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Setup, Locations, List`;
-    }
-    return `Inventory, Setup, Locations, List`;
-  })
-)(List);
+export default List;

@@ -2,6 +2,7 @@ import { attachmentsDataLoader, peopleDataLoader } from './common';
 import {
   itemCategoriesDataLoader,
   locationsDataLoader,
+  physicalStoresDataLoader,
   stockItemsDataLoader,
   vendorsDataLoader,
 } from './inventory';
@@ -15,6 +16,7 @@ export function getDataLoaders() {
     inventory: {
       itemCategories: itemCategoriesDataLoader(),
       locations: locationsDataLoader(),
+      physicalStores: physicalStoresDataLoader(),
       stockItems: stockItemsDataLoader(),
       vendors: vendorsDataLoader(),
     },

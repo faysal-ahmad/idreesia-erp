@@ -1,182 +1,124 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { AuditInfo } from '/imports/ui/modules/common';
 import {
   InputTextField,
   InputTextAreaField,
   TreeSelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
+
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-  WithLocationsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
-import { AuditInfo } from '/imports/ui/modules/common';
+  LOCATION_BY_ID,
+  LOCATIONS_BY_PHYSICAL_STORE_ID,
+  UPDATE_LOCATION,
+} from './gql';
 
-class EditForm extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-    loading: PropTypes.bool,
-    locationById: PropTypes.object,
-    locationsLoading: PropTypes.bool,
-    locationsByPhysicalStoreId: PropTypes.array,
-    updateLocation: PropTypes.func,
-  };
+const EditForm = ({ history }) => {
+  const dispatch = useDispatch();
+  const { physicalStoreId, locationId } = useParams();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [updateLocation] = useMutation(UPDATE_LOCATION, {
+    refetchQueries: [{ 
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
+      variables: {
+        physicalStoreId,
+      }
+    }],
+  });
   
-  state = {
-    isFieldsTouched: false,
-  };
+  useEffect(() => {
+    if (physicalStore) {
+      dispatch(
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Locations', 'Edit'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'Edit']));
+    }
+  }, [physicalStore]);
 
-  handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.locationsPath(physicalStoreId));
+  const { data, loading } = useQuery(LOCATION_BY_ID, {
+    variables: { _id: locationId, physicalStoreId }
+  });
+
+  const { data: locationsData, loading: locationsDataLoading } = useQuery(LOCATIONS_BY_PHYSICAL_STORE_ID, {
+    variables: { physicalStoreId }
+  });
+
+  if (loading || locationsDataLoading) return null;
+  const { locationById } = data;
+  const { locationsByPhysicalStoreId } = locationsData;
+
+  const handleCancel = () => {
+    history.goBack();
   };
 
   handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
+    setIsFieldsTouched(true);
   }
 
-  handleFinish = ({ name, parentId, description }) => {
-    const {
-      history,
-      physicalStoreId,
-      locationById,
-      updateLocation,
-    } = this.props;
-
+  const handleFinish = ({ name, parentId, description }) => {
     updateLocation({
       variables: {
         _id: locationById._id,
-        name,
         physicalStoreId,
+        name,
         parentId: parentId || null,
         description,
       },
     })
       .then(() => {
-        history.push(paths.locationsPath(physicalStoreId));
+        message.success('Location was updated successfully.', 5);
+        history.goBack();
       })
       .catch(error => {
         message.error(error.message, 5);
       });
   };
 
-  render() {
-    const {
-      loading,
-      locationsLoading,
-      locationById,
-      locationsByPhysicalStoreId,
-    } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading || locationsLoading) return null;
-
-    return (
-      <>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-          <InputTextField
-            fieldName="name"
-            fieldLabel="Name"
-            initialValue={locationById.name}
-            required
-            requiredMessage="Please input a name for the location."
-          />
-          <TreeSelectField
-            data={locationsByPhysicalStoreId}
-            skipValue={locationById._id}
-            fieldName="parentId"
-            fieldLabel="Parent Location"
-            initialValue={locationById.parentId}
-          />
-          <InputTextAreaField
-            fieldName="description"
-            fieldLabel="Description"
-            initialValue={locationById.description}
-          />
-          <FormButtonsSaveCancel
-            handleCancel={this.handleCancel}
-            isFieldsTouched={isFieldsTouched}
-          />
-        </Form>
-        <AuditInfo record={locationById} />
-      </>
-    );
-  }
+  return (
+    <>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={locationById.name}
+          required
+          requiredMessage="Please input a name for the location."
+        />
+        <TreeSelectField
+          data={locationsByPhysicalStoreId}
+          skipValue={locationById._id}
+          fieldName="parentId"
+          fieldLabel="Parent Location"
+          initialValue={locationById.parentId}
+        />
+        <InputTextAreaField
+          fieldName="description"
+          fieldLabel="Description"
+          initialValue={locationById.description}
+        />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
+      </Form>
+      <AuditInfo record={locationById} />
+    </>
+  );
 }
 
-const formQuery = gql`
-  query locationById($_id: String!) {
-    locationById(_id: $_id) {
-      _id
-      name
-      parentId
-      description
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
+EditForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-const formMutation = gql`
-  mutation updateLocation(
-    $_id: String!
-    $name: String!
-    $parentId: String
-    $description: String
-  ) {
-    updateLocation(
-      _id: $_id
-      name: $name
-      parentId: $parentId
-      description: $description
-    ) {
-      _id
-      name
-      parentId
-      description
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithLocationsByPhysicalStore(),
-  graphql(formMutation, {
-    name: 'updateLocation',
-    options: {
-      refetchQueries: ['locationsByPhysicalStoreId'],
-    },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { locationId } = match.params;
-      return { variables: { _id: locationId } };
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Setup, Locations, Edit`;
-    }
-    return `Inventory, Setup, Locations, Edit`;
-  })
-)(EditForm);
+export default EditForm;

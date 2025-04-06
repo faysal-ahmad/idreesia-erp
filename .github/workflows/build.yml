@@ -22,10 +22,8 @@ jobs:
         uses: meteorengineer/setup-meteor@v2
         with: 
           meteor-release: 2.16
-      - run: meteor npm install -g yarn
       
-      - name: Build Web Application
-        run: 
-          cd ./idreesia-web
-          meteor yarn install
-          meteor yarn run build
+      - run: meteor npm install -g yarn
+      - run: cd ./idreesia-web
+      - run: meteor yarn install
+      - run: meteor yarn run build

@@ -1,0 +1,43 @@
+name: Release Application
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with: 
+          meteor-release: 2.16
+      
+      - run: meteor npm install -g yarn
+      
+      - name: Install Dependencies
+        run: meteor yarn install
+        working-directory: ./idreesia-web
+
+      - name: Build Application
+        run: meteor yarn run build
+        working-directory: ./idreesia-web
+
+      - name: Build Docker Container
+        run: docker build -t faysalahmad/idreesia-web idreesia-web
+
+      - name: Login to Docker Hub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
+      - name: Push Docker Container
+        run: docker push faysalahmad/idreesia-web

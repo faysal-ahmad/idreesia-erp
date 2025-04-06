@@ -40,7 +40,7 @@ const NewForm = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
 
   const handleCancel = () => {
     history.push(paths.itemCategoriesPath(physicalStoreId));

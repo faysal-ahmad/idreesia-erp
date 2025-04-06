@@ -40,7 +40,7 @@ const NewForm = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'New']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
 
   const handleCancel = () => {
     history.goBack();

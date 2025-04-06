@@ -230,10 +230,6 @@ export const InventoryPermissionsData = {
       key: 'module-inventory-stock-items',
       children: [
         {
-          title: 'View Stock Items',
-          key: PermissionConstants.IN_VIEW_STOCK_ITEMS,
-        },
-        {
           title: 'Manage Stock Items',
           key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,
         },

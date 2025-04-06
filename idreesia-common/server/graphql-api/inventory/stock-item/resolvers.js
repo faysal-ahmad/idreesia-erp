@@ -4,11 +4,6 @@ import {
   IssuanceForms,
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import { getPagedStockItems, getStatistics } from './queries';
 import { mergeStockItems, recalculateStockLevels } from './helpers';
@@ -80,36 +75,22 @@ export default {
       { physicalStoreId, queryString },
       { user }
     ) => {
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
       return getPagedStockItems(queryString, physicalStoreId);
     },
 
     stockItemById: async (obj, { _id }, { user }) => {
-      const stockItem = await StockItems.findOneAsync(_id);
-      if (hasInstanceAccess(user, stockItem.physicalStoreId) === false) {
-        return null;
-      }
-      return stockItem;
+      return StockItems.findOneAsync(_id);
     },
 
     stockItemsById: async (obj, { physicalStoreId, _ids }, { user }) => {
       if (!_ids || _ids.length === 0) return [];
-      if (hasInstanceAccess(user, physicalStoreId) === false) return [];
-
       return StockItems.find({
         _id: { $in: _ids },
         physicalStoreId: { $eq: physicalStoreId },
       }).fetchAsync();
     },
 
-    statistics: async (obj, { physicalStoreId }, { user }) => {
-      if (hasInstanceAccess(user, physicalStoreId) === false) return null;
+    inventoryStatistics: async (obj, { physicalStoreId }, { user }) => {
       return getStatistics(physicalStoreId);
     },
   },
@@ -129,20 +110,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       const stockItemId = await StockItems.insertAsync({
         name,
@@ -167,6 +134,7 @@ export default {
       obj,
       {
         _id,
+        physicalStoreId,
         name,
         company,
         details,
@@ -176,81 +144,49 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
-      const existingStockItem = await StockItems.findOneAsync(_id);
-      if (
-        !existingStockItem ||
-        hasInstanceAccess(user, existingStockItem.physicalStoreId) === false
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
       const date = new Date();
-      await StockItems.updateAsync(_id, {
-        $set: {
-          name,
-          company,
-          details,
-          unitOfMeasurement,
-          categoryId,
-          minStockLevel,
-          updatedAt: date,
-          updatedBy: user._id,
+      await StockItems.updateAsync(
+        {
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
         },
-      });
+        {
+          $set: {
+            name,
+            company,
+            details,
+            unitOfMeasurement,
+            categoryId,
+            minStockLevel,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
 
       return StockItems.findOneAsync(_id);
     },
 
     verifyStockItemLevel: async (obj, { _id, physicalStoreId }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in this Physical Store.'
-        );
-      }
-
       const date = new Date();
-      await StockItems.updateAsync(_id, {
-        $set: {
-          verifiedOn: date,
-          updatedAt: date,
-          updatedBy: user._id,
+      await StockItems.updateAsync(
+        {
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
         },
-      });
+        {
+          $set: {
+            verifiedOn: date,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
 
       return StockItems.findOneAsync(_id);
     },
 
     removeStockItem: async (obj, { _id, physicalStoreId }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in this Physical Store.'
-        );
-      }
-
       // Check that there are no purchase/issuance forms, or stock adjustments
       // against this stock item.
       const purchaseFormsCount = PurchaseForms.find({
@@ -278,75 +214,60 @@ export default {
         purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
         0
       ) {
-        return StockItems.removeAsync(_id);
+        return StockItems.removeAsync({
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
+        });
       }
 
       return 0;
     },
 
-    setStockItemImage: async (obj, { _id, imageId }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
+    setStockItemImage: async (
+      obj,
+      { _id, physicalStoreId, imageId },
+      { user }
+    ) => {
       const date = new Date();
-      await StockItems.updateAsync(_id, {
-        $set: {
-          imageId,
-          updatedAt: date,
-          updatedBy: user._id,
+      await StockItems.updateAsync(
+        {
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
         },
-      });
+        {
+          $set: {
+            imageId,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
 
       return StockItems.findOneAsync(_id);
     },
 
-    mergeStockItems: async (obj, { ids, physicalStoreId }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in this Physical Store.'
-        );
-      }
-
-      await mergeStockItems(ids, physicalStoreId);
-      return StockItems.findOneAsync(ids[0]);
+    mergeStockItems: async (
+      obj,
+      { _idToKeep, _idsToMerge, physicalStoreId },
+      { user }
+    ) => {
+      await mergeStockItems(_idToKeep, _idsToMerge, physicalStoreId);
+      return StockItems.findOneAsync(_idToKeep);
     },
 
-    recalculateStockLevels: async (obj, { ids, physicalStoreId }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.IN_MANAGE_STOCK_ITEMS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Items in this Physical Store.'
-        );
-      }
-
-      await ids.reduce(
+    recalculateStockLevels: async (
+      obj,
+      { _ids, physicalStoreId },
+      { user }
+    ) => {
+      await _ids.reduce(
         (prevPromise, id) =>
           prevPromise.then(() => recalculateStockLevels(id, physicalStoreId)),
         Promise.resolve()
       );
 
       return StockItems.find({
-        _id: { $in: ids },
+        _id: { $in: _ids },
         physicalStoreId: { $eq: physicalStoreId },
       }).fetchAsync();
     },

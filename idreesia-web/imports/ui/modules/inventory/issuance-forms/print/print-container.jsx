@@ -41,7 +41,7 @@ const PrintContainer = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'Print']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
   
   if (loading || !data) return null;
   const { issuanceFormById } = data; 

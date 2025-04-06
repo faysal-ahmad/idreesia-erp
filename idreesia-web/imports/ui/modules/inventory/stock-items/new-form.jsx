@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
 
@@ -18,6 +17,7 @@ import {
   WithItemCategoriesByPhysicalStore,
 } from '/imports/ui/modules/inventory/common/composers';
 
+import { CREATE_STOCK_ITEM } from './gql';
 import allUnitOfMeasurements from './all-unit-of-measurements';
 
 class NewForm extends Component {
@@ -139,45 +139,12 @@ class NewForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation createStockItem(
-    $name: String!
-    $company: String
-    $details: String
-    $unitOfMeasurement: String!
-    $categoryId: String!
-    $physicalStoreId: String!
-    $minStockLevel: Float
-    $currentStockLevel: Float
-  ) {
-    createStockItem(
-      name: $name
-      company: $company
-      details: $details
-      unitOfMeasurement: $unitOfMeasurement
-      categoryId: $categoryId
-      physicalStoreId: $physicalStoreId
-      minStockLevel: $minStockLevel
-      currentStockLevel: $currentStockLevel
-    ) {
-      _id
-      name
-      company
-      details
-      unitOfMeasurement
-      categoryId
-      physicalStoreId
-      minStockLevel
-      currentStockLevel
-    }
-  }
-`;
 
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithItemCategoriesByPhysicalStore(),
-  graphql(formMutation, {
+  graphql(CREATE_STOCK_ITEM, {
     name: 'createStockItem',
     options: {
       refetchQueries: ['pagedStockItems'],

@@ -42,7 +42,7 @@ const EditForm = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'Edit']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
 
   const { data, loading } = useQuery(VENDOR_BY_ID, {
     variables: { _id: vendorId, physicalStoreId }

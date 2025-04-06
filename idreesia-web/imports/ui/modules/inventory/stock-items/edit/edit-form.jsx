@@ -1,58 +1,77 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@apollo/react-hooks';
 
-import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { 
+  usePhysicalStore,
+  usePhysicalStoreItemCategories,
+} from '/imports/ui/modules/inventory/common/hooks';
 
 import GeneralInfo from './general-info';
 import Picture from './picture';
 import IssuanceForms from './issuance-forms';
 import PurchaseForms from './purchase-forms';
 import Adjustments from './adjustments';
+import { STOCK_ITEM_BY_ID } from '../gql';
 
 const EditForm = props => {
-  const stockItemId = get(props, ['match', 'params', 'stockItemId'], null);
+  const dispatch = useDispatch();
+  const { physicalStoreId, stockItemId } = useParams();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { 
+    itemCategoriesByPhysicalStoreId,
+    itemCategoriesByPhysicalStoreIdLoading,
+  } = usePhysicalStoreItemCategories(physicalStoreId);
+  
+  useEffect(() => {
+    if (physicalStore) {
+      dispatch(
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Stock Items', 'Edit'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Inventory', 'Stock Items', 'Edit']));
+    }
+  }, [physicalStore]);
+
+  const { data, loading } = useQuery(STOCK_ITEM_BY_ID, {
+    variables: { _id: stockItemId, physicalStoreId }
+  });
+
+  if (loading || itemCategoriesByPhysicalStoreIdLoading) return null;
+  const { stockItemById } = data;
+
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="General Info" key="1">
-        <GeneralInfo stockItemId={stockItemId} {...props} />
+        <GeneralInfo 
+          stockItemById={stockItemById}
+          itemCategoriesByPhysicalStoreId={itemCategoriesByPhysicalStoreId}
+          {...props}
+        />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Picture" key="2">
-        <Picture stockItemId={stockItemId} {...props} />
+        <Picture stockItemById={stockItemById} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Issuance Forms" key="3">
-        <IssuanceForms stockItemId={stockItemId} {...props} />
+        <IssuanceForms stockItemId={stockItemId} physicalStoreId={physicalStoreId} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Purchase Forms" key="4">
-        <PurchaseForms stockItemId={stockItemId} {...props} />
+        <PurchaseForms stockItemId={stockItemId} physicalStoreId={physicalStoreId} {...props} />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Adjustments" key="5">
-        <Adjustments stockItemId={stockItemId} {...props} />
+        <Adjustments stockItemId={stockItemId} physicalStoreId={physicalStoreId} {...props} />
       </Tabs.TabPane>
     </Tabs>
   );
 };
 
 EditForm.propTypes = {
-  match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
-  physicalStoreId: PropTypes.string,
-  physicalStore: PropTypes.object,
 };
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Stock Items, Edit`;
-    }
-    return `Inventory, Stock Items, Edit`;
-  })
-)(EditForm);
+export default EditForm;

@@ -35,7 +35,7 @@ const EditForm = props => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'Edit']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
 
   if (
     loading ||

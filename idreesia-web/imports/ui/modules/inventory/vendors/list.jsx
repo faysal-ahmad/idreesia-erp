@@ -46,7 +46,7 @@ const List = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'List']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
 
   const handleNewClicked = () => {
     history.push(paths.vendorsNewFormPath(physicalStoreId));

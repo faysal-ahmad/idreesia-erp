@@ -6,11 +6,6 @@ import {
   Attachments,
   People,
 } from 'meteor/idreesia-common/server/collections/common';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import getIssuanceForms, {
   getIssuanceFormsByMonth,
@@ -107,11 +102,7 @@ export default {
     },
 
     issuanceFormById: async (obj, { _id }, { user }) => {
-      const issuanceForm = await IssuanceForms.findOneAsync(_id);
-      if (hasInstanceAccess(user, issuanceForm.physicalStoreId) === false) {
-        return null;
-      }
-      return issuanceForm;
+      return IssuanceForms.findOneAsync(_id);
     },
   },
 

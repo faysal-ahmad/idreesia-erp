@@ -59,7 +59,7 @@ class List extends Component {
     refetchListQuery: PropTypes.func,
     pagedPurchaseForms: PropTypes.shape({
       totalResults: PropTypes.number,
-      purchaseForms: PropTypes.array,
+      data: PropTypes.array,
     }),
     removePurchaseForms: PropTypes.func,
     approvePurchaseForms: PropTypes.func,
@@ -399,7 +399,7 @@ class List extends Component {
 
     const {
       queryParams: { pageIndex, pageSize },
-      pagedPurchaseForms: { totalResults, purchaseForms },
+      pagedPurchaseForms: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
@@ -408,7 +408,7 @@ class List extends Component {
     return (
       <Table
         rowKey="_id"
-        dataSource={purchaseForms}
+        dataSource={data}
         columns={this.columns}
         bordered
         title={this.getTableHeader}

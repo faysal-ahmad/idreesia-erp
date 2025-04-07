@@ -83,12 +83,12 @@ class PurchaseDetails extends Component {
     updatePurchaseForm({
       variables: {
         _id,
+        physicalStoreId,
         purchaseDate,
         locationId,
         vendorId,
         receivedBy: receivedBy._id,
         purchasedBy: purchasedBy._id,
-        physicalStoreId,
         items: updatedItems,
         notes,
       },

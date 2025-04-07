@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import numeral from 'numeral';
 import {
@@ -28,6 +27,13 @@ import { flowRight, groupBy, kebabCase } from 'meteor/idreesia-common/utilities/
 import { Formats } from 'meteor/idreesia-common/constants';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
+import {
+  MERGE_ATOCK_ITEMS,
+  PAGED_STOCK_ITEMS,
+  RECALCULATE_STOCK_LEVELS,
+  REMOVE_STOCK_ITEM,
+  VERIFY_STOCK_ITEM
+} from '../gql';
 
 const MinStockLevelStyle = {
   display: 'flex',
@@ -281,12 +287,13 @@ class List extends Component {
   handleMergeClicked = () => {
     const { selectedRows } = this.state;
     const { physicalStoreId, mergeStockItems } = this.props;
-    if (selectedRows.length === 0) return;
+    if (selectedRows.length <= 1) return;
 
-    const ids = selectedRows.map(({ _id }) => _id);
+    const _ids = selectedRows.map(({ _id }) => _id);
     mergeStockItems({
       variables: {
-        ids,
+        _idToKeep: _ids[0],
+        _idsToMerge: _ids.slice(1),
         physicalStoreId,
       },
     })
@@ -303,10 +310,10 @@ class List extends Component {
     const { physicalStoreId, recalculateStockLevels } = this.props;
     if (selectedRows.length === 0) return;
 
-    const ids = selectedRows.map(({ _id }) => _id);
+    const _ids = selectedRows.map(({ _id }) => _id);
     recalculateStockLevels({
       variables: {
-        ids,
+        _ids,
         physicalStoreId,
       },
     })
@@ -544,75 +551,8 @@ class List extends Component {
   }
 }
 
-const listQuery = gql`
-  query pagedStockItems($physicalStoreId: String!, $queryString: String) {
-    pagedStockItems(
-      physicalStoreId: $physicalStoreId
-      queryString: $queryString
-    ) {
-      totalResults
-      data {
-        _id
-        name
-        formattedName
-        company
-        details
-        imageId
-        categoryName
-        unitOfMeasurement
-        minStockLevel
-        currentStockLevel
-        totalStockLevel
-        verifiedOn
-        purchaseFormsCount
-        issuanceFormsCount
-        stockAdjustmentsCount
-      }
-    }
-  }
-`;
-
-const formMutationVerify = gql`
-  mutation verifyStockItemLevel($_id: String!, $physicalStoreId: String!) {
-    verifyStockItemLevel(_id: $_id, physicalStoreId: $physicalStoreId) {
-      _id
-      verifiedOn
-    }
-  }
-`;
-
-const formMutationRemove = gql`
-  mutation removeStockItem($_id: String!, $physicalStoreId: String!) {
-    removeStockItem(_id: $_id, physicalStoreId: $physicalStoreId)
-  }
-`;
-
-const formMutationMerge = gql`
-  mutation mergeStockItems($ids: [String]!, $physicalStoreId: String!) {
-    mergeStockItems(ids: $ids, physicalStoreId: $physicalStoreId) {
-      _id
-      currentStockLevel
-      purchaseFormsCount
-      issuanceFormsCount
-      stockAdjustmentsCount
-    }
-  }
-`;
-
-const formMutationRecalculate = gql`
-  mutation recalculateStockLevels($ids: [String]!, $physicalStoreId: String!) {
-    recalculateStockLevels(ids: $ids, physicalStoreId: $physicalStoreId) {
-      _id
-      currentStockLevel
-      purchaseFormsCount
-      issuanceFormsCount
-      stockAdjustmentsCount
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(listQuery, {
+  graphql(PAGED_STOCK_ITEMS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({
       physicalStoreId,
@@ -631,25 +571,25 @@ export default flowRight(
       },
     }),
   }),
-  graphql(formMutationVerify, {
+  graphql(VERIFY_STOCK_ITEM, {
     name: 'verifyStockItemLevel',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(formMutationRemove, {
+  graphql(REMOVE_STOCK_ITEM, {
     name: 'removeStockItem',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(formMutationMerge, {
+  graphql(MERGE_ATOCK_ITEMS, {
     name: 'mergeStockItems',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(formMutationRecalculate, {
+  graphql(RECALCULATE_STOCK_LEVELS, {
     name: 'recalculateStockLevels',
     options: {
       refetchQueries: ['pagedStockItems'],

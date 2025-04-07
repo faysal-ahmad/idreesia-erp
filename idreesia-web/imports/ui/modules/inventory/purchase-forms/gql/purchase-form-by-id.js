@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const PURCHASE_FORM_BY_ID = gql`
-  query purchaseFormById($_id: String!) {
-    purchaseFormById(_id: $_id) {
+  query purchaseFormById($_id: String!, $physicalStoreId: String!) {
+    purchaseFormById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       purchaseDate
       receivedBy

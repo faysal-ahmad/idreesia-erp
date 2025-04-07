@@ -1,55 +1,62 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import {
   InputTextField,
   InputTextAreaField,
   TreeSelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
+
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-  WithLocationsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+  CREATE_LOCATION,
+  LOCATIONS_BY_PHYSICAL_STORE_ID,
+} from './gql';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const NewForm = ({ history }) => {
+  const dispatch = useDispatch();
+  const { physicalStoreId } = useParams();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [createLocation] = useMutation(CREATE_LOCATION, {
+    refetchQueries: [{ 
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
+      variables: {
+        physicalStoreId,
+      }
+    }],
+  });
 
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-    createLocation: PropTypes.func,
-    locationsLoading: PropTypes.bool,
-    locationsByPhysicalStoreId: PropTypes.array,
+  useEffect(() => {
+    if (physicalStore) {
+      dispatch(
+        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Locations', 'New'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'New']));
+    }
+  }, [physicalStore]);
+
+  const handleCancel = () => {
+    history.goBack();
   };
-  
-  state = {
-    isFieldsTouched: false,
-  };
 
-  handleCancel = () => {
-    const { history, physicalStoreId } = this.props;
-    history.push(paths.locationsPath(physicalStoreId));
-  };
-
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
   }
 
-  handleFinish = ({ name, parentId, description }) => {
-    const { physicalStoreId, createLocation, history } = this.props;
+  const handleFinish = ({ name, parentId, description }) => {
     createLocation({
       variables: { name, physicalStoreId, parentId, description },
     })
       .then(() => {
+        message.success('New location was created successfully.', 5);
         history.push(paths.locationsPath(physicalStoreId));
       })
       .catch(error => {
@@ -57,74 +64,34 @@ class NewForm extends Component {
       });
   };
 
-  render() {
-    const { locationsLoading, locationsByPhysicalStoreId } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (locationsLoading) {
-      return null;
-    }
-
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input a name for the location."
-        />
-        <TreeSelectField
-          data={locationsByPhysicalStoreId}
-          fieldName="parentId"
-          fieldLabel="Parent Location"
-        />
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-        />
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        required
+        requiredMessage="Please input a name for the location."
+      />
+      <TreeSelectField
+        data={locationsByPhysicalStoreId}
+        fieldName="parentId"
+        fieldLabel="Parent Location"
+      />
+      <InputTextAreaField
+        fieldName="description"
+        fieldLabel="Description"
+      />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
 }
 
-const formMutation = gql`
-  mutation createLocation(
-    $name: String!
-    $physicalStoreId: String!
-    $parentId: String
-    $description: String
-  ) {
-    createLocation(
-      name: $name
-      physicalStoreId: $physicalStoreId
-      parentId: $parentId
-      description: $description
-    ) {
-      _id
-      name
-      parentId
-      description
-    }
-  }
-`;
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithLocationsByPhysicalStore(),
-  graphql(formMutation, {
-    name: 'createLocation',
-    options: {
-      refetchQueries: ['locationsByPhysicalStoreId'],
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Setup, Locations, New`;
-    }
-    return `Inventory, Setup, Locations, New`;
-  })
-)(NewForm);
+export default NewForm;

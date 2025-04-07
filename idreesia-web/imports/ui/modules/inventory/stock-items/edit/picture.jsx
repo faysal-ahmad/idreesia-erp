@@ -1,29 +1,30 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { Row, Col, message } from 'antd';
 import { graphql } from 'react-apollo';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Row, Col, message } from 'antd';
 import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
 
+import { SET_STOCK_ITEM_IMAGE } from '../gql';
+
 class Picture extends Component {
   static propTypes = {
     loading: PropTypes.bool,
-    stockItemId: PropTypes.string,
     stockItemById: PropTypes.object,
     setStockItemImage: PropTypes.func,
   };
 
   updateImageId = imageId => {
-    const { stockItemId, setStockItemImage } = this.props;
+    const { stockItemById, setStockItemImage } = this.props;
     setStockItemImage({
       variables: {
-        _id: stockItemId,
+        _id: stockItemById._id,
+        physicalStoreId: stockItemById.physicalStoreId,
         imageId,
       },
     }).catch(error => {
@@ -32,8 +33,7 @@ class Picture extends Component {
   };
 
   render() {
-    const { loading, stockItemById } = this.props;
-    if (loading) return null;
+    const { stockItemById } = this.props;
     const url = getDownloadUrl(stockItemById.imageId);
 
     return (
@@ -55,33 +55,11 @@ class Picture extends Component {
   }
 }
 
-const formQuery = gql`
-  query stockItemById($_id: String!) {
-    stockItemById(_id: $_id) {
-      _id
-      imageId
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setStockItemImage($_id: String!, $imageId: String!) {
-    setStockItemImage(_id: $_id, imageId: $imageId) {
-      _id
-      imageId
-    }
-  }
-`;
-
 export default flowRight(
-  graphql(formMutation, {
+  graphql(SET_STOCK_ITEM_IMAGE, {
     name: 'setStockItemImage',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),
-  })
 )(Picture);

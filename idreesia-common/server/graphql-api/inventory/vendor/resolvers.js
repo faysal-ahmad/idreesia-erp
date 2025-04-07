@@ -2,11 +2,6 @@ import {
   Vendors,
   PurchaseForms,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  hasOnePermission,
-  hasInstanceAccess,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   Vendor: {
@@ -16,16 +11,11 @@ export default {
       }).count(),
   },
   Query: {
-    vendorById: async (obj, { _id }, { user }) => {
-      const vendor = await Vendors.findOneAsync(_id);
-      if (hasInstanceAccess(user, vendor.physicalStoreId) === false) {
-        return null;
-      }
-      return vendor;
+    vendorById: async (obj, { _id }) => {
+      return Vendors.findOneAsync(_id);
     },
 
-    vendorsByPhysicalStoreId: async (obj, { physicalStoreId }, { user }) => {
-      if (hasInstanceAccess(user, physicalStoreId) === false) return [];
+    vendorsByPhysicalStoreId: async (obj, { physicalStoreId }) => {
       return Vendors.find(
         {
           physicalStoreId: { $eq: physicalStoreId },
@@ -41,18 +31,6 @@ export default {
       { name, physicalStoreId, contactPerson, contactNumber, address, notes },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       const vendorId = await Vendors.insertAsync({
         name,
@@ -72,59 +50,53 @@ export default {
 
     updateVendor: async (
       obj,
-      { _id, name, contactPerson, contactNumber, address, notes },
+      {
+        _id,
+        physicalStoreId,
+        name,
+        contactPerson,
+        contactNumber,
+        address,
+        notes,
+      },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in the System.'
-        );
-      }
-
-      const existingVendor = await Vendors.findOneAsync(_id);
-      if (
-        !existingVendor ||
-        hasInstanceAccess(user, existingVendor.physicalStoreId) === false
-      ) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
-        );
-      }
-
       const date = new Date();
-      await Vendors.updateAsync(_id, {
-        $set: {
-          name,
-          contactPerson,
-          contactNumber,
-          address,
-          notes,
-          updatedAt: date,
-          updatedBy: user._id,
+      await Vendors.updateAsync(
+        {
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
         },
-      });
+        {
+          $set: {
+            name,
+            contactPerson,
+            contactNumber,
+            address,
+            notes,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        }
+      );
 
       return Vendors.findOneAsync(_id);
     },
 
-    removeVendor: async (obj, { _id }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in the System.'
-        );
+    removeVendor: async (obj, { _id, physicalStoreId }) => {
+      const purchaseFormsCount = PurchaseForms.find({
+        vendorId: { $eq: _id },
+        physicalStoreId: { $eq: physicalStoreId },
+      }).count();
+
+      if (purchaseFormsCount === 0) {
+        return Vendors.removeAsync({
+          _id: { $eq: _id },
+          physicalStoreId: { $eq: physicalStoreId },
+        });
       }
 
-      const existingVendor = await Vendors.findOneAsync(_id);
-      if (
-        !existingVendor ||
-        hasInstanceAccess(user, existingVendor.physicalStoreId) === false
-      ) {
-        throw new Error(
-          'You do not have permission to manage Inventory Setup Data in this Physical Store.'
-        );
-      }
-
-      return Vendors.removeAsync(_id);
+      return 0;
     },
   },
 };

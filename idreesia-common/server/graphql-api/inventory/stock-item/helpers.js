@@ -6,15 +6,12 @@ import {
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-async function mergeIssuanceForms(ids, physicalStoreId) {
-  const firstId = ids[0];
-  const otherIds = ids.slice(1);
-
+async function mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId) {
   const issuanceForms = await IssuanceForms.find({
     physicalStoreId: { $eq: physicalStoreId },
     items: {
       $elemMatch: {
-        stockItemId: { $in: otherIds },
+        stockItemId: { $in: _idsToMerge },
       },
     },
   }).fetchAsync();
@@ -23,8 +20,8 @@ async function mergeIssuanceForms(ids, physicalStoreId) {
     issuanceForms.map(issuanceForm => {
       const { items } = issuanceForm;
       const updatedItems = items.map(item => {
-        if (otherIds.indexOf(item.stockItemId) !== -1) {
-          return Object.assign({}, item, { stockItemId: firstId });
+        if (_idsToMerge.indexOf(item.stockItemId) !== -1) {
+          return Object.assign({}, item, { stockItemId: _idToKeep });
         }
 
         return item;
@@ -37,15 +34,12 @@ async function mergeIssuanceForms(ids, physicalStoreId) {
   );
 }
 
-async function mergePurchaseForms(ids, physicalStoreId) {
-  const firstId = ids[0];
-  const otherIds = ids.slice(1);
-
+async function mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId) {
   const purchaseForms = await PurchaseForms.find({
     physicalStoreId: { $eq: physicalStoreId },
     items: {
       $elemMatch: {
-        stockItemId: { $in: otherIds },
+        stockItemId: { $in: _idsToMerge },
       },
     },
   }).fetchAsync();
@@ -54,8 +48,8 @@ async function mergePurchaseForms(ids, physicalStoreId) {
     purchaseForms.map(purchaseForm => {
       const { items } = purchaseForm;
       const updatedItems = items.map(item => {
-        if (otherIds.indexOf(item.stockItemId) !== -1) {
-          return Object.assign({}, item, { stockItemId: firstId });
+        if (_idsToMerge.indexOf(item.stockItemId) !== -1) {
+          return Object.assign({}, item, { stockItemId: _idToKeep });
         }
 
         return item;
@@ -68,28 +62,29 @@ async function mergePurchaseForms(ids, physicalStoreId) {
   );
 }
 
-async function mergeStockAdjustments(ids, physicalStoreId) {
-  const firstId = ids[0];
-  const otherIds = ids.slice(1);
-
+async function mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId) {
   return StockAdjustments.updateAsync(
     {
       physicalStoreId: { $eq: physicalStoreId },
-      stockItemId: { $in: otherIds },
+      stockItemId: { $in: _idsToMerge },
     },
     {
       $set: {
-        stockItemId: firstId,
+        stockItemId: _idToKeep,
       },
     },
     { multi: true }
   );
 }
 
-async function mergeStartingStockLevels(ids, physicalStoreId) {
+async function mergeStartingStockLevels(
+  _idToKeep,
+  _idsToMerge,
+  physicalStoreId
+) {
   const stockItems = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
-    _id: { $in: ids },
+    _id: { $in: [_idToKeep, ..._idsToMerge] },
   }).fetchAsync();
 
   const newStartingStockLevel = reduce(
@@ -101,7 +96,7 @@ async function mergeStartingStockLevels(ids, physicalStoreId) {
   return StockItems.updateAsync(
     {
       physicalStoreId: { $eq: physicalStoreId },
-      _id: { $eq: ids[0] },
+      _id: { $eq: _idToKeep },
     },
     {
       $set: {
@@ -173,15 +168,14 @@ export async function recalculateStockLevels(id, physicalStoreId) {
   });
 }
 
-export async function mergeStockItems(ids, physicalStoreId) {
-  await mergeIssuanceForms(ids, physicalStoreId);
-  await mergePurchaseForms(ids, physicalStoreId);
-  await mergeStockAdjustments(ids, physicalStoreId);
-  await mergeStartingStockLevels(ids, physicalStoreId);
-  await recalculateStockLevels(ids[0], physicalStoreId);
+export async function mergeStockItems(_idToKeep, _idsToMerge, physicalStoreId) {
+  await mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId);
+  await mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId);
+  await mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId);
+  await mergeStartingStockLevels(_idToKeep, _idsToMerge, physicalStoreId);
+  await recalculateStockLevels(_idToKeep, physicalStoreId);
 
-  const otherIds = ids.slice(1);
-  StockItems.removeAsync({
-    _id: { $in: otherIds },
+  return StockItems.removeAsync({
+    _id: { $in: _idsToMerge },
   });
 }

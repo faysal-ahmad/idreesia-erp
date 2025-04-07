@@ -72,7 +72,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
 
   if (showApproved === 'false' && showUnapproved === 'false') {
     return {
-      issuanceForms: [],
+      data: [],
       totalResults: 0,
     };
   } else if (showApproved === 'true' && showUnapproved === 'false') {
@@ -93,9 +93,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         purchaseDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT)
-            .startOf('day')
-            .toDate(),
+          $gte: moment(startDate, Formats.DATE_FORMAT).startOf('day').toDate(),
         },
       },
     });
@@ -105,9 +103,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         purchaseDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT)
-            .endOf('day')
-            .toDate(),
+          $lte: moment(endDate, Formats.DATE_FORMAT).endOf('day').toDate(),
         },
       },
     });
@@ -135,7 +131,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
   const totalResults = PurchaseForms.aggregate(countingPipeline);
 
   return Promise.all([purchaseForms, totalResults]).then(results => ({
-    purchaseForms: results[0],
+    data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

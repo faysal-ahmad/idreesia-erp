@@ -28,7 +28,6 @@ const Permissions = {
   ADMIN_VIEW_USERS_AND_GROUPS: 'admin-view-users-and-groups',
   ADMIN_MANAGE_USERS_AND_GROUPS: 'admin-manage-users-and-groups',
 
-  ADMIN_VIEW_PHYSICAL_STORES: 'admin-view-physical-stores',
   ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
 
   ADMIN_VIEW_COMPANIES: 'admin-view-companies',
@@ -139,10 +138,7 @@ const Permissions = {
   // ****************************************************************************************
   // Inventory Module
   // ****************************************************************************************
-  IN_DELETE_DATA: 'inventory-delete-data',
   IN_MANAGE_SETUP_DATA: 'inventory-manage-setup-data',
-
-  IN_VIEW_STOCK_ITEMS: 'inventory-view-stock-items',
   IN_MANAGE_STOCK_ITEMS: 'inventory-manage-stock-items',
 
   IN_VIEW_STOCK_ADJUSTMENTS: 'inventory-view-stock-adjustments',

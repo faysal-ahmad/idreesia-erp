@@ -55,10 +55,6 @@ export const AdminPermissionsData = {
           key: 'module-admin-physical-stores',
           children: [
             {
-              title: 'View Physical Stores',
-              key: PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
-            },
-            {
               title: 'Manage Physical Stores',
               key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
             },
@@ -222,10 +218,6 @@ export const InventoryPermissionsData = {
   key: 'module-inventory',
   children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.IN_DELETE_DATA,
-    },
-    {
       title: 'Manage Setup Data',
       key: PermissionConstants.IN_MANAGE_SETUP_DATA,
     },
@@ -233,10 +225,6 @@ export const InventoryPermissionsData = {
       title: 'Stock Items',
       key: 'module-inventory-stock-items',
       children: [
-        {
-          title: 'View Stock Items',
-          key: PermissionConstants.IN_VIEW_STOCK_ITEMS,
-        },
         {
           title: 'Manage Stock Items',
           key: PermissionConstants.IN_MANAGE_STOCK_ITEMS,

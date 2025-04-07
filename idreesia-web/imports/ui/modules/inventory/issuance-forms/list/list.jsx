@@ -62,7 +62,7 @@ class List extends Component {
     refetchListQuery: PropTypes.func,
     pagedIssuanceForms: PropTypes.shape({
       totalResults: PropTypes.number,
-      issuanceForms: PropTypes.array,
+      data: PropTypes.array,
     }),
     removeIssuanceForms: PropTypes.func,
     approveIssuanceForms: PropTypes.func,
@@ -412,7 +412,7 @@ class List extends Component {
 
     const {
       queryParams: { pageIndex, pageSize },
-      pagedIssuanceForms: { totalResults, issuanceForms },
+      pagedIssuanceForms: { totalResults, data },
     } = this.props;
 
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
@@ -421,7 +421,7 @@ class List extends Component {
     return (
       <Table
         rowKey="_id"
-        dataSource={issuanceForms}
+        dataSource={data}
         columns={this.columns}
         bordered
         title={this.getTableHeader}

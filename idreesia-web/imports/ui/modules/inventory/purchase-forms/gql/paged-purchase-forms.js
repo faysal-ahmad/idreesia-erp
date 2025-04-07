@@ -7,7 +7,7 @@ export const PAGED_PURCHASE_FORMS = gql`
       queryString: $queryString
     ) {
       totalResults
-      purchaseForms {
+      data {
         _id
         purchaseDate
         receivedBy

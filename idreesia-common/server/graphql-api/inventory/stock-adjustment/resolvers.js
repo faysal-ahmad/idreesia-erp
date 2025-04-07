@@ -3,11 +3,6 @@ import {
   StockAdjustments,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 import getStockAdjustments, {
   getStockAdjustmentsByStockItemId,
@@ -36,24 +31,28 @@ export default {
       const person = await people.load(stockAdjustment.adjustedBy);
       return People.personToKarkun(person);
     },
+    refPhysicalStore: async (
+      stockAdjustment,
+      args,
+      {
+        loaders: {
+          inventory: { physicalStores },
+        },
+      }
+    ) => {
+      return physicalStores.load(stockAdjustment.physicalStoreId);
+    },
   },
   Query: {
+    stockAdjustmentById: async (obj, { _id }, { user }) => {
+      return StockAdjustments.findOneAsync(_id);
+    },
+
     stockAdjustmentsByStockItem: async (
       obj,
       { physicalStoreId, stockItemId },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
-        return [];
-      }
-
       return getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId);
     },
 
@@ -62,39 +61,7 @@ export default {
       { physicalStoreId, queryString },
       { user }
     ) => {
-      if (
-        hasInstanceAccess(user, physicalStoreId) === false ||
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
-        return {
-          data: [],
-          totalResults: 0,
-        };
-      }
-
       return getStockAdjustments(queryString, physicalStoreId);
-    },
-
-    stockAdjustmentById: async (obj, { _id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_VIEW_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
-        return null;
-      }
-
-      const stockAdjustment = await StockAdjustments.findOneAsync(_id);
-      if (hasInstanceAccess(user, stockAdjustment.physicalStoreId) === false) {
-        return null;
-      }
-      return stockAdjustment;
     },
   },
 
@@ -112,23 +79,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Adjustments in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Adjustments in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       const stockAdjustmentId = await StockAdjustments.insertAsync({
         physicalStoreId,
@@ -158,26 +108,7 @@ export default {
       { _id, adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_MANAGE_STOCK_ADJUSTMENTS,
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Adjustments in the System.'
-        );
-      }
-
       const existingAdjustment = await StockAdjustments.findOneAsync(_id);
-      if (
-        !existingAdjustment ||
-        hasInstanceAccess(user, existingAdjustment.physicalStoreId) === false
-      ) {
-        throw new Error(
-          'You do not have permission to manage Stock Adjustments in this Physical Store.'
-        );
-      }
 
       // Undo the effect of previous values
       if (existingAdjustment.isInflow) {
@@ -233,22 +164,6 @@ export default {
       { _ids, physicalStoreId },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.IN_APPROVE_STOCK_ADJUSTMENTS,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to approve Stock Adjustments in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to approve Stock Adjustments in this Physical Store.'
-        );
-      }
-
       const date = new Date();
       await StockAdjustments.updateAsync(
         {
@@ -277,18 +192,6 @@ export default {
       { _ids, physicalStoreId },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.IN_DELETE_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Stock Adjustments in the System.'
-        );
-      }
-
-      if (hasInstanceAccess(user, physicalStoreId) === false) {
-        throw new Error(
-          'You do not have permission to manage Stock Adjustments in this Physical Store.'
-        );
-      }
-
       const existingAdjustments = StockAdjustments.find({
         _id: { $in: _ids },
         physicalStoreId,

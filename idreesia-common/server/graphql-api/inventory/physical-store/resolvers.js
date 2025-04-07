@@ -1,23 +1,9 @@
 import { PhysicalStores } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  filterByInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { filterByInstanceAccess } from 'meteor/idreesia-common/server/graphql-api/security';
 
 export default {
   Query: {
-    allPhysicalStores: async (obj, params, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to view Physical Stores in the System.'
-        );
-      }
-
+    allPhysicalStores: async () => {
       return PhysicalStores.find({}).fetchAsync();
     },
 
@@ -30,33 +16,13 @@ export default {
       return filteredPhysicalStores;
     },
 
-    physicalStoreById: async (obj, { id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.ADMIN_VIEW_PHYSICAL_STORES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to view Physical Stores in the System.'
-        );
-      }
-
+    physicalStoreById: async (obj, { id }) => {
       return PhysicalStores.findOneAsync(id);
     },
   },
 
   Mutation: {
     createPhysicalStore: async (obj, { name, address }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Physical Stores in the System.'
-        );
-      }
-
       const date = new Date();
       const physicalStoreId = await PhysicalStores.insertAsync({
         name,
@@ -71,16 +37,6 @@ export default {
     },
 
     updatePhysicalStore: async (obj, { id, name, address }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Physical Stores in the System.'
-        );
-      }
-
       const date = new Date();
       await PhysicalStores.updateAsync(id, {
         $set: {

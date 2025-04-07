@@ -1,0 +1,34 @@
+name: Build Application
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with: 
+          meteor-release: 2.16
+      
+      - run: meteor npm install -g yarn
+      
+      - name: Install Dependencies
+        run: meteor yarn install
+        working-directory: ./idreesia-web
+
+      - name: Build Application
+        run: meteor yarn run build
+        working-directory: ./idreesia-web

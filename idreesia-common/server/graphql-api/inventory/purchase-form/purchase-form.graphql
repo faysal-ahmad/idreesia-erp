@@ -11,10 +11,11 @@ type PurchaseForm {
   attachmentIds: [String]
 
   attachments: [Attachment]
+  refVendor: Vendor
   refLocation: Location
   refReceivedBy: KarkunType
   refPurchasedBy: KarkunType
-  refVendor: Vendor
+  refPhysicalStore: PhysicalStore
 
   createdAt: String
   createdBy: String
@@ -26,61 +27,88 @@ type PurchaseForm {
 
 type PagedPurchaseForm {
   totalResults: Int
-  purchaseForms: [PurchaseForm]
+  data: [PurchaseForm]
 }
 
 extend type Query {
+  purchaseFormById(
+    _id: String!
+    physicalStoreId: String!
+  ): PurchaseForm
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
   purchaseFormsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [PurchaseForm]
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
   purchaseFormsByMonth(
     physicalStoreId: String!
     month: String!
   ): [PurchaseForm]
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
   pagedPurchaseForms(
     physicalStoreId: String!
     queryString: String
   ): PagedPurchaseForm
-  purchaseFormById(_id: String!): PurchaseForm
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
   createPurchaseForm(
+    physicalStoreId: String!
     purchaseDate: String!
     receivedBy: String!
     purchasedBy: String!
-    physicalStoreId: String!
     locationId: String
     vendorId: String
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   updatePurchaseForm(
     _id: String!
+    physicalStoreId: String!
     purchaseDate: String!
     receivedBy: String!
     purchasedBy: String!
-    physicalStoreId: String!
     locationId: String
     vendorId: String
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   approvePurchaseForms(physicalStoreId: String!, _ids: [String]!): [PurchaseForm]
+  @checkPermissions(permissions: [IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   addPurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
   removePurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
   removePurchaseForms(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }

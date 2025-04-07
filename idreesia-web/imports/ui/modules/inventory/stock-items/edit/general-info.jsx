@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Form, message } from 'antd';
 import numeral from 'numeral';
@@ -12,21 +11,18 @@ import {
   SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { WithItemCategoriesByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
 import { AuditInfo } from '/imports/ui/modules/common';
 
 import allUnitOfMeasurements from '../all-unit-of-measurements';
+import { UPDATE_STOCK_ITEM } from '../gql';
 
 class EditForm extends Component {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-
-    itemCategoriesLoading: PropTypes.bool,
-    itemCategoriesByPhysicalStoreId: PropTypes.array,
-    loading: PropTypes.bool,
     stockItemById: PropTypes.object,
+    itemCategoriesByPhysicalStoreId: PropTypes.array,
+
     updateStockItem: PropTypes.func,
   };
 
@@ -48,6 +44,7 @@ class EditForm extends Component {
     updateStockItem({
       variables: {
         _id: stockItemById._id,
+        physicalStoreId: stockItemById.physicalStoreId,
         name,
         company,
         details,
@@ -65,15 +62,9 @@ class EditForm extends Component {
   };
 
   render() {
-    const {
-      loading,
-      itemCategoriesLoading,
-      stockItemById,
-      itemCategoriesByPhysicalStoreId,
-    } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading || itemCategoriesLoading) return null;
-
+    const { stockItemById, itemCategoriesByPhysicalStoreId } = this.props;
+ 
     return (
       <>
         <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
@@ -144,67 +135,8 @@ class EditForm extends Component {
   }
 }
 
-const formMutation = gql`
-  mutation updateStockItem(
-    $_id: String!
-    $name: String!
-    $company: String
-    $details: String
-    $unitOfMeasurement: String!
-    $categoryId: String!
-    $minStockLevel: Float
-  ) {
-    updateStockItem(
-      _id: $_id
-      name: $name
-      company: $company
-      details: $details
-      unitOfMeasurement: $unitOfMeasurement
-      categoryId: $categoryId
-      minStockLevel: $minStockLevel
-    ) {
-      _id
-      name
-      company
-      details
-      categoryId
-      unitOfMeasurement
-      minStockLevel
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
-const formQuery = gql`
-  query stockItemById($_id: String!) {
-    stockItemById(_id: $_id) {
-      _id
-      name
-      company
-      details
-      categoryId
-      unitOfMeasurement
-      startingStockLevel
-      currentStockLevel
-      minStockLevel
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export default flowRight(
-  WithItemCategoriesByPhysicalStore(),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ stockItemId }) => ({ variables: { _id: stockItemId } }),
-  }),
-  graphql(formMutation, {
+  graphql(UPDATE_STOCK_ITEM, {
     name: 'updateStockItem',
     options: {
       refetchQueries: ['pagedStockItems'],

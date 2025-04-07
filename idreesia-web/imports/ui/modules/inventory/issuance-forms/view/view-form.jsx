@@ -20,6 +20,7 @@ const ViewForm = props => {
     skip: !formId,
     variables: {
       _id: formId,
+      physicalStoreId,
     },
   });
 
@@ -31,7 +32,7 @@ const ViewForm = props => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'View']));
     }
-  }, [physicalStoreId]);
+  }, [physicalStore]);
   
   if (loading || !data) return null;
   const { issuanceFormById } = data; 

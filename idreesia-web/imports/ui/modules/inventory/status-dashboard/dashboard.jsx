@@ -12,7 +12,7 @@ import {
 } from '/imports/ui/modules/inventory/common/composers';
 
 const Dashboard = props => {
-  const { loading, statistics } = props;
+  const { loading, inventoryStatistics } = props;
   if (loading) {
     return <Spin size="large" />;
   }
@@ -29,7 +29,7 @@ const Dashboard = props => {
               color: '#000',
               fontWeight: 'bold',
             }}
-            count={statistics.itemsWithImages + statistics.itemsWithoutImages}
+            count={inventoryStatistics.itemsWithImages + inventoryStatistics.itemsWithoutImages}
           />
         </Descriptions.Item>
         <Descriptions.Item label="With Images">
@@ -37,7 +37,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'green' }}
-            count={statistics.itemsWithImages}
+            count={inventoryStatistics.itemsWithImages}
           />
         </Descriptions.Item>
         <Descriptions.Item label="Without Images">
@@ -45,7 +45,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'red' }}
-            count={statistics.itemsWithoutImages}
+            count={inventoryStatistics.itemsWithoutImages}
           />
         </Descriptions.Item>
       </Descriptions>
@@ -56,7 +56,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'green' }}
-            count={statistics.itemsWithPositiveStockLevel}
+            count={inventoryStatistics.itemsWithPositiveStockLevel}
           />
         </Descriptions.Item>
         <Descriptions.Item label="Less than minimum">
@@ -64,7 +64,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'orange' }}
-            count={statistics.itemsWithLessThanMinStockLevel}
+            count={inventoryStatistics.itemsWithLessThanMinStockLevel}
           />
         </Descriptions.Item>
         <Descriptions.Item label="Negative">
@@ -72,7 +72,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'red' }}
-            count={statistics.itemsWithNegativeStockLevel}
+            count={inventoryStatistics.itemsWithNegativeStockLevel}
           />
         </Descriptions.Item>
       </Descriptions>
@@ -83,7 +83,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'green' }}
-            count={statistics.itemsVerifiedLessThanThreeMonthsAgo}
+            count={inventoryStatistics.itemsVerifiedLessThanThreeMonthsAgo}
           />
         </Descriptions.Item>
         <Descriptions.Item label="Between 3 to 6 months ago">
@@ -91,7 +91,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'orange' }}
-            count={statistics.itemsVerifiedThreeToSixMonthsAgo}
+            count={inventoryStatistics.itemsVerifiedThreeToSixMonthsAgo}
           />
         </Descriptions.Item>
         <Descriptions.Item label="More than 6 months ago">
@@ -99,7 +99,7 @@ const Dashboard = props => {
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'red' }}
-            count={statistics.itemsVerifiedMoreThanSixMonthsAgo}
+            count={inventoryStatistics.itemsVerifiedMoreThanSixMonthsAgo}
           />
         </Descriptions.Item>
       </Descriptions>
@@ -112,12 +112,12 @@ Dashboard.propTypes = {
   location: PropTypes.object,
   physicalStoreId: PropTypes.string,
   loading: PropTypes.bool,
-  statistics: PropTypes.object,
+  inventoryStatistics: PropTypes.object,
 };
 
 const query = gql`
-  query statistics($physicalStoreId: String!) {
-    statistics(physicalStoreId: $physicalStoreId) {
+  query inventoryStatistics($physicalStoreId: String!) {
+    inventoryStatistics(physicalStoreId: $physicalStoreId) {
       physicalStoreId
       itemsWithImages
       itemsWithoutImages

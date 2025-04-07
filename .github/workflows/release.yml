@@ -3,7 +3,6 @@ name: Release Application
 on:
   push:
     branches:
-      - develop
       - master
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
@@ -41,8 +40,3 @@ jobs:
 
       - name: Push Docker Container
         run: docker push faysalahmad/idreesia-web
-
-      - name: Deploy the App to Digital Ocean
-        uses: digitalocean/app_action/deploy@v2
-        with:
-         token: ${{ secrets.DIGITALOCEAN_TOKEN }}

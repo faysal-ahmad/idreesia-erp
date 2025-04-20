@@ -24,7 +24,11 @@ dayjs.extend(weekday);
 
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
-import { LoggedInRoute, LoggedOutRoute } from './main-layout';
+import {
+  LoggedInRoute,
+  LoginRegisterForm,
+  ResetForgottenPasswordForm,
+} from './main-layout';
 
 const App = ({ userId }) => {
   const dispatch = useDispatch();
@@ -42,7 +46,8 @@ const App = ({ userId }) => {
 
   return (
     <Switch>
-      <Route path="/" component={LoggedOutRoute} />
+      <Route path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
+      <Route path="/" component={LoginRegisterForm} />
     </Switch>
   );
 };

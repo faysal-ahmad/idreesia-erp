@@ -1,2 +1,4 @@
-export { default as LoggedInRoute } from "./logged-in-route";
-export { default as LoggedOutRoute } from "./logged-out-route";
+export { LoggedInRoute } from './logged-in-route';
+export { LoginRegisterForm } from './login-register';
+export { ResetForgottenPasswordForm } from './reset-forgotten-password-form';
+export { SetInitialPasswordForm } from './set-initial-password-form';

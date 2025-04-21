@@ -8,7 +8,7 @@ import HeaderContent from './header-content';
 import SidebarContent from './sidebar-content';
 import MainContent from './main-content';
 
-const LoggedInRoute = ({ location, history }) => {
+export const LoggedInRoute = ({ location, history }) => {
   const breadcrumbs = useSelector(state => state.breadcrumbs);
   const { user, userLoading } = useLoggedInUser();
   if (userLoading) return null;
@@ -47,5 +47,3 @@ LoggedInRoute.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
 };
-
-export default LoggedInRoute;

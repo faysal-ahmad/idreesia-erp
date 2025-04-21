@@ -7,6 +7,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
 import { DataSource, JobTypes } from 'meteor/idreesia-common/constants';
+import { Accounts } from 'meteor/accounts-base';
 
 export default {
   UserType: {
@@ -73,6 +74,27 @@ export default {
   },
 
   Mutation: {
+    registerUser: async (obj, { displayName, email }) => {
+      // Check if this email is already registered for a user
+      const user = await Accounts.findUserByEmail(email);
+      if (user) {
+        throw new Error('This email address is already registered.');
+      }
+
+      const userId = await Accounts.createUserAsync({
+        email,
+        profile: {
+          name: displayName,
+        },
+      });
+
+      if (userId) {
+        Accounts.sendEnrollmentEmail(userId);
+      }
+
+      return 1;
+    },
+
     createUser: async (obj, params, { user }) =>
       Users.createUser(params, user, DataSource.ADMIN),
 

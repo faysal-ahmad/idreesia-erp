@@ -1,3 +1,10 @@
+import path from 'path';
+import { config } from 'dotenv';
+
+config({
+  path: path.resolve(process.env.PWD, '.env'),
+});
+
 import './configure-services';
 import './setup-rest-endpoints';
 import './migrations';

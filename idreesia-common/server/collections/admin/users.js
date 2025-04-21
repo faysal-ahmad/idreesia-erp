@@ -27,7 +27,7 @@ const mapUser = user => ({
   _id: user._id,
   username: user.username,
   email: get(user, 'emails.0.address', null),
-  displayName: user.displayName,
+  displayName: user.profile?.name,
   personId: user.personId,
   locked: user.locked,
   lastLoggedInAt: user.lastLoggedInAt,
@@ -257,8 +257,10 @@ Users.createUser = (
     Users.update(newUserId, {
       $set: {
         email,
-        displayName,
         personId,
+        profile: {
+          name: displayName,
+        },
       },
     });
   } else if (email) {
@@ -268,8 +270,10 @@ Users.createUser = (
 
     Users.update(newUserId, {
       $set: {
-        displayName,
         personId,
+        profile: {
+          name: displayName,
+        },
       },
     });
   }
@@ -353,8 +357,10 @@ Users.updateUser = (
     Users.update(userId, {
       $set: {
         'emails.0.address': email,
-        displayName,
         locked,
+        profile: {
+          name: displayName,
+        },
       },
     });
   } else {
@@ -363,8 +369,10 @@ Users.updateUser = (
         emails: '',
       },
       $set: {
-        displayName,
         locked,
+        profile: {
+          name: displayName,
+        },
       },
     });
   }

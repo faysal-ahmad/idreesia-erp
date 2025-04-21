@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { LockOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { Button, Pagination, Table } from 'antd';
+import { Button, Flex, Pagination, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -25,22 +25,19 @@ const columns = [
     render: (text, record) => (record.locked ? <LockOutlined /> : null),
   },
   {
-    title: 'User Name',
-    dataIndex: 'username',
+    title: 'Email / User Name / Display Name',
     key: 'username',
     render: (text, record) => (
-      <Link to={`${paths.usersPath}/${record._id}`}>{text}</Link>
+      <Flex vertical>
+        <Link to={`${paths.usersPath}/${record._id}`}>
+          <span>{record.email}</span>
+        </Link>
+        <Link to={`${paths.usersPath}/${record._id}`}>
+          <span>{record.username}</span>
+        </Link>
+        <span>{record.displayName}</span>
+      </Flex>
     ),
-  },
-  {
-    title: 'Email',
-    dataIndex: 'email',
-    key: 'email',
-  },
-  {
-    title: 'Display Name',
-    dataIndex: 'displayName',
-    key: 'displayName',
   },
   {
     title: 'Last Active',

@@ -7,7 +7,6 @@ const SubModuleNames = {
   portals: 'Portals',
   portalUsers: 'Portal Users',
   outstationUsers: 'Outstation Users',
-  messages: 'Messages',
   auditLogs: 'Audit Logs',
   securityLogs: 'Security Logs',
 };

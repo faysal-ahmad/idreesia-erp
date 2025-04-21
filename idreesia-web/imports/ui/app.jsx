@@ -28,6 +28,7 @@ import {
   LoggedInRoute,
   LoginRegisterForm,
   ResetForgottenPasswordForm,
+  SetInitialPasswordForm,
 } from './main-layout';
 
 const App = ({ userId }) => {
@@ -46,6 +47,7 @@ const App = ({ userId }) => {
 
   return (
     <Switch>
+      <Route path="/set-initial-password/:token" component={SetInitialPasswordForm} />
       <Route path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
       <Route path="/" component={LoginRegisterForm} />
     </Switch>

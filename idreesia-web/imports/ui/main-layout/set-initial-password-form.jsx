@@ -10,13 +10,13 @@ const FormWrapperStyle = {
   width: "300px",
   height: "200px",
   position: "absolute",
-  top: "50%",
-  left: "50%",
+  top: "40%",
+  left: "45%",
   marginTop: "-100px",
   marginLeft: "-150px",
 };
 
-export const ResetForgottenPasswordForm = ({}) => {
+export const SetInitialPasswordForm = ({}) => {
   const [form] = Form.useForm();
   const { token } = useParams();
 
@@ -33,7 +33,7 @@ export const ResetForgottenPasswordForm = ({}) => {
 
   return (
     <div style={FormWrapperStyle}>
-      <Card title="Set New Password" style={{ minWidth: 400 }}>
+      <Card title="Set Account Password" style={{ minWidth: 400 }}>
         <Flex justify='center'>
           <Form form={form} onFinish={handleFinish}>
             <Form.Item

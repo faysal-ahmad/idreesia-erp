@@ -74,16 +74,23 @@ export default {
   },
 
   Mutation: {
-    registerUser: async (obj, { email }) => {
+    registerUser: async (obj, { displayName, email }) => {
       // Check if this email is already registered for a user
       const user = await Accounts.findUserByEmail(email);
       if (user) {
         throw new Error('This email address is already registered.');
       }
 
-      Accounts.createUserVerifyingEmail({
+      const userId = await Accounts.createUserAsync({
         email,
+        profile: {
+          name: displayName,
+        },
       });
+
+      if (userId) {
+        Accounts.sendEnrollmentEmail(userId);
+      }
 
       return 1;
     },

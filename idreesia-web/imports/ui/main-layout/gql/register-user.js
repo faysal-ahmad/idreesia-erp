@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 export const REGISTER_USER = gql`
-  mutation registerUser($email: String!) {
-    registerUser(email: $email)
+  mutation registerUser($displayName: String!, $email: String!) {
+    registerUser(displayName: $displayName, email: $email)
   }
 `;

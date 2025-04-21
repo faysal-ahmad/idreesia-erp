@@ -9,8 +9,8 @@ const FormWrapperStyle = {
   width: "300px",
   height: "200px",
   position: "absolute",
-  top: "50%",
-  left: "50%",
+  top: "40%",
+  left: "45%",
   marginTop: "-100px",
   marginLeft: "-150px",
 };

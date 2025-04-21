@@ -45,7 +45,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  registerUser(email: String!): Int
+  registerUser(displayName: String!, email: String!): Int
 
   createUser(
     userName: String

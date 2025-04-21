@@ -20,9 +20,10 @@ export const RegisterForm = ({ history, location, setShowForm }) => {
   const [registerUser] = useMutation(REGISTER_USER);
 
   const handleFinish = values => {
-    const { email } = values;
+    const { displayName, email } = values;
     return registerUser({
       variables: {
+        displayName,
         email,
       }
     })
@@ -39,6 +40,17 @@ export const RegisterForm = ({ history, location, setShowForm }) => {
     <Card title="Register" style={{ minWidth: 400 }}>
       <Flex justify='center'>
         <Form form={form} style={FormStyle} onFinish={handleFinish}>
+          <Form.Item
+            name="displayName"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your name.',
+              },
+            ]}
+          >
+            <Input placeholder="Name" />
+          </Form.Item>
           <Form.Item
             name="email"
             rules={[

@@ -22,7 +22,7 @@ export const ForgotPasswordForm = ({ history, location, setShowForm }) => {
   };
 
   return (
-    <Card title="Password Reset" style={{ minWidth: 400 }}>
+    <Card title="Reset Your Password" style={{ minWidth: 400 }}>
       <Flex justify='center'>
         <Form style={FormStyle} onFinish={handleFinish}>
           <Form.Item

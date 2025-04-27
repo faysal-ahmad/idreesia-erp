@@ -13,9 +13,7 @@ const AttendanceContainer = {
 
 const attendanceStyles = {
   pr: 'ant-calendar-cell attendance-date-linear attendance-present',
-  la: 'ant-calendar-cell attendance-date-linear attendance-late',
   ab: 'ant-calendar-cell attendance-date-linear attendance-absent',
-  ms: 'ant-calendar-cell attendance-date-linear attendance-ms',
   none: 'ant-calendar-cell attendance-date-linear attendance-none',
 };
 
@@ -63,13 +61,6 @@ const columns = [
     title: 'Present',
     dataIndex: 'presentCount',
     key: 'presentCount',
-    fixed: 'right',
-    width: 70,
-  },
-  {
-    title: 'Late',
-    dataIndex: 'lateCount',
-    key: 'lateCount',
     fixed: 'right',
     width: 70,
   },

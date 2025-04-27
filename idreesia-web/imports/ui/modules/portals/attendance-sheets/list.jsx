@@ -140,7 +140,6 @@ const List = ({ history, location }) => {
           attendanceDetails: JSON.stringify(attendanceDetails),
           presentCount,
           absentCount,
-          msVisitCount,
           percentage,
         },
       });

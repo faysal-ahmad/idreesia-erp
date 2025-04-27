@@ -7,7 +7,6 @@ const UPDATE_PORTAL_ATTENDANCE = gql`
     $attendanceDetails: String
     $presentCount: Int
     $absentCount: Int
-    $msVisitCount: Int
     $percentage: Int
   ) {
     updatePortalAttendance(

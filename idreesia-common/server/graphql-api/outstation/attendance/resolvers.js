@@ -3,6 +3,7 @@ import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
+import { ensureMonthlyAttendance } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
@@ -46,21 +47,22 @@ export default {
 
       let people = [];
       if (!cityMehfilId) {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
-        }).fetch();
+        }).fetchAsync();
       } else {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
           'karkunData.cityMehfilId': { $eq: cityMehfilId },
-        }).fetch();
+        }).fetchAsync();
       }
 
       const karkunIds = people.map(({ _id }) => _id);
+      await ensureMonthlyAttendance(karkunIds, month, user);
       return Attendances.find({
         month,
         karkunId: { $in: karkunIds },
-      }).fetch();
+      }).fetchAsync();
     },
   },
 };

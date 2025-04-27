@@ -9,12 +9,11 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 const EditForm = ({ attendance, handleSave, handleCancel }) => {
-  const handleFinish = ({ attendanceDetails, presentCount, lateCount, absentCount, percentage }) => {
+  const handleFinish = ({ attendanceDetails, presentCount, absentCount, percentage }) => {
     handleSave({
       _id: attendance._id,
       attendanceDetails: JSON.stringify(attendanceDetails),
       presentCount: presentCount || 0,
-      lateCount: lateCount || 0,
       absentCount: absentCount || 0,
       percentage: percentage || 0,
     });
@@ -36,13 +35,6 @@ const EditForm = ({ attendance, handleSave, handleCancel }) => {
         fieldName="presentCount"
         fieldLabel="Present Days"
         initialValue={attendance.presentCount || 0}
-        minValue={0}
-        maxValue={31}
-      />
-      <InputNumberField
-        fieldName="lateCount"
-        fieldLabel="Late Days"
-        initialValue={attendance.lateCount || 0}
         minValue={0}
         maxValue={31}
       />

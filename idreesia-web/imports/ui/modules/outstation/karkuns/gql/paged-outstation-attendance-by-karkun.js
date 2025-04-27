@@ -15,7 +15,6 @@ const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
         month
         attendanceDetails
         absentCount
-        lateCount
         presentCount
         percentage
       }

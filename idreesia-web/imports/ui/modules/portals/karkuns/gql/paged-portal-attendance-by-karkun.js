@@ -17,7 +17,6 @@ const PAGED_PORTAL_ATTENDANCE_BY_KARKUN = gql`
         month
         attendanceDetails
         absentCount
-        lateCount
         presentCount
         percentage
       }

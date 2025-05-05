@@ -87,14 +87,14 @@ const KarkunAttendancesList = ({
   pageSize,
   onPageParamsChange,
 }) => {
-  const { attendance, totalResults } = pagedAttendances;
+  const { data, totalResults } = pagedAttendances;
 
   return (
     <Table
       rowKey="_id"
       size="small"
       columns={columns}
-      dataSource={attendance}
+      dataSource={data}
       pagination={false}
       bordered
       scroll={{ x: 1000 }}
@@ -122,7 +122,7 @@ KarkunAttendancesList.propTypes = {
 
   pagedAttendances: PropTypes.shape({
     totalResults: PropTypes.number,
-    attendance: PropTypes.array,
+    data: PropTypes.array,
   }),
 };
 

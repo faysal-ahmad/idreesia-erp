@@ -12,7 +12,7 @@ const PAGED_PORTAL_ATTENDANCE_BY_KARKUN = gql`
       queryString: $queryString
     ) {
       totalResults
-      attendance {
+      data {
         _id
         month
         attendanceDetails

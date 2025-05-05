@@ -51,7 +51,7 @@ export default {
       }
 
       return {
-        attendance: [],
+        data: [],
         totalResults: 0,
       };
     },

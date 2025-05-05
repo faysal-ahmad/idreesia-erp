@@ -26,7 +26,7 @@ type AttendanceType {
 }
 type PagedAttendanceType {
   totalResults: Int
-  attendance: [AttendanceType]
+  data: [AttendanceType]
 }
 extend type Query {
   attendanceById(_id: String!): AttendanceType

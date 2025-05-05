@@ -10,7 +10,7 @@ const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
       queryString: $queryString
     ) {
       totalResults
-      attendance {
+      data {
         _id
         month
         attendanceDetails

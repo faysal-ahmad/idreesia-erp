@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { DownloadOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Dropdown, message } from 'antd';
+import { DeleteOutlined, DownloadOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -13,16 +14,18 @@ import {
   useAllMehfilDuties,
   useDistinctRegions,
 } from 'meteor/idreesia-common/hooks/outstation';
-import { Button, Dropdown, Menu, message } from 'antd';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
-import { DELETE_OUTSTATION_KARKUN, PAGED_OUTSTATION_KARKUNS } from '../gql';
+import {
+  DELETE_OUTSTATION_KARKUNS,
+  PAGED_OUTSTATION_KARKUNS,
+} from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
   const karkunsList = useRef(null);
-  const [deleteOutstationKarkun] = useMutation(DELETE_OUTSTATION_KARKUN);
+  const [deleteOutstationKarkuns] = useMutation(DELETE_OUTSTATION_KARKUNS);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -58,10 +61,14 @@ const List = ({ history, location }) => {
     dispatch(setBreadcrumbs(['Outstation', 'Karkuns', 'List']));
   }, [location]);
 
-  const handleDeleteItem = record => {
-    deleteOutstationKarkun({
+  const handleDeleteSelected = () => {
+    const selectedRows = karkunsList.current.getSelectedRows();
+    if (selectedRows.length === 0) return;
+
+    const _ids = selectedRows.map(row => row._id);
+    deleteOutstationKarkuns({
       variables: {
-        _id: record._id,
+        _ids,
       },
     })
       .then(() => {
@@ -157,23 +164,40 @@ const List = ({ history, location }) => {
     );
   };
 
+  const handleAction = ({ key }) => {
+    if (key === 'download-selected') {
+      handleExportSelected();
+    } else if (key === 'delete-selected') {
+      handleDeleteSelected();
+    } else if (key === 'upload-csv') {
+      handleUploadClicked();
+    }
+  }
+
   const getActionsMenu = () => {
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={handleExportSelected}>
-          <DownloadOutlined />
-          Download Selected
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="3" onClick={handleUploadClicked}>
-          <UploadOutlined />
-          Upload CSV Data
-        </Menu.Item>
-      </Menu>
-    );
+    const items = [
+      {
+        key: 'download-selected',
+        label: 'Download Selected',
+        icon: <DownloadOutlined />,
+      },
+      {
+        key: 'delete-selected',
+        label: 'Delete Selected',
+        icon: <DeleteOutlined />,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'upload-csv',
+        label: 'Upload CSV Data',
+        icon: <UploadOutlined />,
+      },
+    ];
 
     return (
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items, onClick: handleAction }}>
         <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );
@@ -199,10 +223,9 @@ const List = ({ history, location }) => {
       showMehfilCityColumn
       showDutiesColumn
       showAuditLogsAction
-      showDeleteAction
+      showDeleteAction={false}
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
-      handleDeleteItem={handleDeleteItem}
       handleAuditLogsAction={handleAuditLogsAction}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}

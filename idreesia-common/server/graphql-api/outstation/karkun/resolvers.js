@@ -52,12 +52,18 @@ export default {
       return People.personToKarkun(person);
     },
 
-    deleteOutstationKarkun: async (obj, { _id }) => {
-      if (canDeleteKarkun(_id)) {
-        return deleteKarkun(_id);
-      }
+    deleteOutstationKarkuns: async (obj, { _ids }) => {
+      await _ids.reduce(
+        (prevPromise, _id) =>
+          prevPromise.then(() => {
+            if (canDeleteKarkun(_id)) {
+              return deleteKarkun(_id);
+            }
+          }),
+        Promise.resolve()
+      );
 
-      return 0;
+      return 1;
     },
 
     setOutstationKarkunWazaifAndRaabta: async (obj, values, { user }) => {

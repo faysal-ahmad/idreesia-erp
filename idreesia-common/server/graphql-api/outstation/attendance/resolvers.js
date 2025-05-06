@@ -1,29 +1,15 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
+import { ensureMonthlyAttendance } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   Query: {
     pagedOutstationAttendanceByKarkun: async (
       obj,
-      { karkunId, queryString },
-      { user }
+      { karkunId, queryString }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_VIEW_KARKUNS,
-          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
-          PermissionConstants.OUTSTATION_DELETE_DATA,
-        ])
-      ) {
-        return {
-          attendance: [],
-          totalResults: 0,
-        };
-      }
       return getPagedAttendanceByKarkun(karkunId, queryString);
     },
 
@@ -34,33 +20,24 @@ export default {
     ) => {
       if (!cityId) return [];
 
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_VIEW_KARKUNS,
-          PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
-          PermissionConstants.OUTSTATION_DELETE_DATA,
-        ])
-      ) {
-        return [];
-      }
-
       let people = [];
       if (!cityMehfilId) {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
-        }).fetch();
+        }).fetchAsync();
       } else {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
           'karkunData.cityMehfilId': { $eq: cityMehfilId },
-        }).fetch();
+        }).fetchAsync();
       }
 
       const karkunIds = people.map(({ _id }) => _id);
+      await ensureMonthlyAttendance(karkunIds, month, user);
       return Attendances.find({
         month,
         karkunId: { $in: karkunIds },
-      }).fetch();
+      }).fetchAsync();
     },
   },
 };

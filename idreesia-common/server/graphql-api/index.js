@@ -177,9 +177,6 @@ import OutstationKarkunDutyResolvers from './outstation/karkun-duty/resolvers';
 import OutstationAttendanceSchema from './outstation/attendance/attendance.graphql';
 import OutstationAttendanceResolvers from './outstation/attendance/resolvers';
 
-import OutstationMessageSchema from './outstation/message/message.graphql';
-import OutstationMessageResolvers from './outstation/message/resolvers';
-
 import OutstationUserSchema from './outstation/outstation-user/outstation-user.graphql';
 import OutstationUserResolvers from './outstation/outstation-user/resolvers';
 
@@ -329,7 +326,6 @@ const typeDefs = [
   OutstationKarkunSchema,
   OutstationKarkunDutySchema,
   OutstationAttendanceSchema,
-  OutstationMessageSchema,
   OutstationUserSchema,
   OutstationPortalUserSchema,
 
@@ -419,7 +415,6 @@ const resolvers = merge(
   OutstationKarkunResolvers,
   OutstationKarkunDutyResolvers,
   OutstationAttendanceResolvers,
-  OutstationMessageResolvers,
   OutstationUserResolvers,
   OutstationPortalUserResolvers,
 

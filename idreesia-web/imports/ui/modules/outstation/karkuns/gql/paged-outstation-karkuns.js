@@ -10,9 +10,8 @@ const PAGED_OUTSTATION_KARKUNS = gql`
         cnicNumber
         contactNumber1
         contactNumber2
-        contactNumber1Subscribed
-        contactNumber2Subscribed
         imageId
+        hasUserAccount
         duties {
           _id
           dutyId

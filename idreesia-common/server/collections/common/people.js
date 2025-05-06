@@ -316,6 +316,8 @@ class People extends AggregatableCollection {
       // employee related fields
       jobId,
       jobIds,
+      // user account related fileds
+      userAccount,
     } = params;
 
     // ************************************
@@ -368,9 +370,7 @@ class People extends AggregatableCollection {
       pipeline.push({
         $match: {
           'sharedData.ehadDate': {
-            $eq: moment(ehadDate, Formats.DATE_FORMAT)
-              .startOf('day')
-              .toDate(),
+            $eq: moment(ehadDate, Formats.DATE_FORMAT).startOf('day').toDate(),
           },
         },
       });
@@ -379,9 +379,7 @@ class People extends AggregatableCollection {
     if (ehadDuration) {
       const { scale, duration } = JSON.parse(ehadDuration);
       if (duration) {
-        const date = moment()
-          .startOf('day')
-          .subtract(duration, scale);
+        const date = moment().startOf('day').subtract(duration, scale);
 
         pipeline.push({
           $match: {
@@ -495,9 +493,7 @@ class People extends AggregatableCollection {
       if (lastTarteeb) {
         const { scale, duration } = JSON.parse(lastTarteeb);
         if (duration) {
-          const date = moment()
-            .startOf('day')
-            .subtract(duration, scale);
+          const date = moment().startOf('day').subtract(duration, scale);
 
           pipeline.push({
             $match: {
@@ -515,9 +511,7 @@ class People extends AggregatableCollection {
       if (attendance) {
         const { criteria, percentage } = JSON.parse(attendance);
         if (percentage) {
-          const month = moment()
-            .subtract(1, 'month')
-            .startOf('month');
+          const month = moment().subtract(1, 'month').startOf('month');
 
           const criteriaCondition =
             criteria === 'less-than'
@@ -643,6 +637,35 @@ class People extends AggregatableCollection {
           'employeeData.jobId': { $in: jobIds },
         },
       });
+    }
+
+    // ********************************************
+    // Add criteria for user account related fields
+    // ********************************************
+    if (userAccount) {
+      const userAccountValue = userAccount === 'true';
+      pipeline.push({
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: 'personId',
+          as: 'users',
+        },
+      });
+
+      if (userAccountValue) {
+        pipeline.push({
+          $match: {
+            'users.0': { $exists: true },
+          },
+        });
+      } else {
+        pipeline.push({
+          $match: {
+            'users.0': { $exists: false },
+          },
+        });
+      }
     }
 
     // ************************************

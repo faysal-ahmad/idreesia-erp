@@ -50,26 +50,15 @@
 }
 
 .attendance-present {
-  color: #00CC00;
+  color: #000000;
   border-color: #00CC00;
-  font-weight: bold;
-}
-
-.attendance-late {
-  color: #FFA501;
-  border-color: #FFA501;
+  background-color: #00CC00;
   font-weight: bold;
 }
 
 .attendance-absent {
-  color: #F50000;
-  border-color: #F50000;
-  font-weight: bold;
-}
-
-.attendance-ms {
   color: #000000;
-  border-color: #00CC00;
-  background-color: #00CC00;
+  border-color: #F50000;
+  background-color: #F50000;
   font-weight: bold;
 }

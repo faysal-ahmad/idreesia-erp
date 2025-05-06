@@ -327,7 +327,6 @@ const updateMutation = gql`
     $_id: String!
     $attendanceDetails: String
     $presentCount: Int
-    $lateCount: Int
     $absentCount: Int
     $percentage: Int
   ) {
@@ -335,13 +334,11 @@ const updateMutation = gql`
       _id: $_id
       attendanceDetails: $attendanceDetails
       presentCount: $presentCount
-      lateCount: $lateCount
       absentCount: $absentCount
       percentage: $percentage
     ) {
       _id
       attendanceDetails
-      lateCount
       presentCount
       absentCount
       percentage

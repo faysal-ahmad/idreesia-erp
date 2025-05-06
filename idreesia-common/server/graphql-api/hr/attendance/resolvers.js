@@ -182,14 +182,7 @@ export default {
 
     updateAttendance: async (
       obj,
-      {
-        _id,
-        attendanceDetails,
-        presentCount,
-        lateCount,
-        absentCount,
-        percentage,
-      },
+      { _id, attendanceDetails, presentCount, absentCount, percentage },
       { user }
     ) => {
       if (
@@ -208,7 +201,6 @@ export default {
         $set: {
           attendanceDetails,
           presentCount: toInteger(presentCount),
-          lateCount: toInteger(lateCount),
           absentCount: toInteger(absentCount),
           percentage: toInteger(percentage),
           updatedAt: date,

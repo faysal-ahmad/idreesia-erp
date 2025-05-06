@@ -27,6 +27,7 @@ type KarkunType {
   referenceName: String
   imageId: String
   attachmentIds: [String]
+  hasUserAccount: Boolean
 
   isEmployee: Boolean
   jobId: String
@@ -57,6 +58,7 @@ input KarkunFilter {
   isEmployee: Boolean
   jobId: String
   dutyId: String
+  userAccount: String
   ehadKarkun: String
   dutyShiftId: String
   cityId: String

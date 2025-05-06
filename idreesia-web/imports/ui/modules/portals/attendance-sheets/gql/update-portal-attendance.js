@@ -6,9 +6,7 @@ const UPDATE_PORTAL_ATTENDANCE = gql`
     $_id: String!
     $attendanceDetails: String
     $presentCount: Int
-    $lateCount: Int
     $absentCount: Int
-    $msVisitCount: Int
     $percentage: Int
   ) {
     updatePortalAttendance(
@@ -16,9 +14,7 @@ const UPDATE_PORTAL_ATTENDANCE = gql`
       _id: $_id
       attendanceDetails: $attendanceDetails
       presentCount: $presentCount
-      lateCount: $lateCount
       absentCount: $absentCount
-      msVisitCount: $msVisitCount
       percentage: $percentage
     ) {
       _id
@@ -26,9 +22,7 @@ const UPDATE_PORTAL_ATTENDANCE = gql`
       month
       attendanceDetails
       presentCount
-      lateCount
       absentCount
-      msVisitCount
       percentage
       karkun {
         _id

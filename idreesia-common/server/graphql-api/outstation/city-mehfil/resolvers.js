@@ -1,8 +1,6 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   CityMehfilType: {
@@ -53,16 +51,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage City Mehfils Setup Data in the System.'
-        );
-      }
-
       const date = new Date();
       const cityMehfilId = CityMehfils.insert({
         name,
@@ -97,16 +85,6 @@ export default {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage City Mehfils Setup Data in the System.'
-        );
-      }
-
       const date = new Date();
       CityMehfils.update(_id, {
         $set: {
@@ -127,16 +105,6 @@ export default {
     },
 
     removeCityMehfil: async (obj, { _id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage City Mehfils Setup Data in the System.'
-        );
-      }
-
       const karkunCount = People.find({
         isKarkun: true,
         'karkunData.cityMehfilId': { $eq: _id },

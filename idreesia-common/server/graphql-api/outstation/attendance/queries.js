@@ -39,7 +39,7 @@ export function getPagedAttendanceByKarkun(karkunId, queryString) {
   const totalResults = Attendances.aggregate(countingPipeline);
 
   return Promise.all([karkunAttendences, totalResults]).then(results => ({
-    attendance: results[0],
+    data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
   }));
 }

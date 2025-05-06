@@ -15,6 +15,7 @@ import {
   getMehfilDutyFilterField,
   getCityMehfilFilterField,
   getEhadKarkunFilterField,
+  getUserAccountFilterField,
   getRegionFilterField,
   getUpdatedBetweenFilterField,
   getFormButtons,
@@ -35,6 +36,7 @@ const ListFilter = ({
   lastTarteeb,
   attendance,
   dutyId,
+  userAccount,
   ehadKarkun,
   cityId,
   cityMehfilId,
@@ -48,6 +50,7 @@ const ListFilter = ({
   showLastTarteebFilter,
   showAttendanceFilter,
   showMehfilDutyFilter,
+  showUserAccountFilter,
   showEhadKarkunFilter,
   showCityMehfilFilter,
   showRegionFilter,
@@ -70,6 +73,7 @@ const ListFilter = ({
       jobId: null,
       dutyId: null,
       dutyShiftId: null,
+      userAccount: null,
       ehadKarkun: null,
       cityId: null,
       cityMehfilId: null,
@@ -90,6 +94,7 @@ const ListFilter = ({
       jobId: values.jobId,
       dutyId: values.dutyId,
       dutyShiftId: values.dutyShiftId,
+      userAccount: values.userAccount,
       ehadKarkun: values.ehadKarkun,
       cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
       cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
@@ -127,6 +132,9 @@ const ListFilter = ({
           {showAttendanceFilter
             ? getAttendanceFilterField(attendance)
             : null}
+          {showUserAccountFilter
+            ? getUserAccountFilterField(userAccount)
+            : null}
           {showMehfilDutyFilter
             ? getMehfilDutyFilterField(dutyId, mehfilDuties)
             : null}
@@ -161,7 +169,6 @@ ListFilter.propTypes = {
   bloodGroup: PropTypes.string,
   lastTarteeb: PropTypes.string,
   attendance: PropTypes.string,
-  isEmployee: PropTypes.bool,
   jobId: PropTypes.string,
   dutyId: PropTypes.string,
   dutyShiftId: PropTypes.string,
@@ -173,7 +180,6 @@ ListFilter.propTypes = {
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 
-  showPanel: PropTypes.bool,
   showNameFilter: PropTypes.bool,
   showCnicFilter: PropTypes.bool,
   showPhoneNumberFilter: PropTypes.bool,
@@ -182,6 +188,7 @@ ListFilter.propTypes = {
   showAttendanceFilter: PropTypes.bool,
   showMehfilDutyFilter: PropTypes.bool,
   showDutyShiftFilter: PropTypes.bool,
+  showUserAccountFilter: PropTypes.bool,
   showEhadKarkunFilter: PropTypes.bool,
   showCityMehfilFilter: PropTypes.bool,
   showRegionFilter: PropTypes.bool,
@@ -195,7 +202,6 @@ ListFilter.propTypes = {
 
 ListFilter.defaultProps = {
   cnicNumber: '',
-  showPanel: true,
   showNameFilter: true,
   showCnicFilter: true,
   showPhoneNumberFilter: true,
@@ -204,6 +210,7 @@ ListFilter.defaultProps = {
   showAttendanceFilter: false,
   showMehfilDutyFilter: false,
   showDutyShiftFilter: false,
+  showUserAccountFilter: false,
   showEhadKarkunFilter: false,
   showCityMehfilFilter: false,
   showRegionFilter: false,

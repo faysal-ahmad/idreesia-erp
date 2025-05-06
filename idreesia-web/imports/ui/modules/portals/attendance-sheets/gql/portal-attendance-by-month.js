@@ -18,7 +18,6 @@ const PORTAL_ATTENDANCE_BY_MONTH = gql`
       month
       attendanceDetails
       presentCount
-      lateCount
       absentCount
       percentage
       karkun {

@@ -3,10 +3,12 @@ extend type Query {
     karkunId: String!
     queryString: String
   ): PagedAttendanceType
+  @checkPermissions(permissions: [OUTSTATION_VIEW_KARKUNS, OUTSTATION_MANAGE_KARKUNS, OUTSTATION_DELETE_DATA])
 
   outstationAttendanceByMonth(
     month: String!
     cityId: String
     cityMehfilId: String
   ): [AttendanceType]
+  @checkPermissions(permissions: [OUTSTATION_VIEW_KARKUNS, OUTSTATION_MANAGE_KARKUNS, OUTSTATION_DELETE_DATA])
 }

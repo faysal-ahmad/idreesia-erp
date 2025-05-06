@@ -39,15 +39,6 @@ export default class SubModulePaths {
     return `${SubModulePaths.karkunsPath}/${karkunId}`;
   }
 
-  // *************************************************************************************
-  // Messages Routes
-  // *************************************************************************************
-  static messagesPath = `${ModulePaths.outstation}/messages`;
-  static messagesNewFormPath = `${SubModulePaths.messagesPath}/new`;
-  static messagesEditFormPath(messageId = ':messageId') {
-    return `${SubModulePaths.messagesPath}/${messageId}`;
-  }
-
   // ******************************************************************************
   // Attendance Sheets
   // ******************************************************************************

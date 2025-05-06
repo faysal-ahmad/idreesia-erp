@@ -104,12 +104,6 @@ export class List extends Component {
       render: text => text || '0',
     },
     {
-      title: 'Late',
-      dataIndex: 'lateCount',
-      key: 'lateCount',
-      render: text => text || '0',
-    },
-    {
       title: 'Absent',
       dataIndex: 'absentCount',
       key: 'absentCount',

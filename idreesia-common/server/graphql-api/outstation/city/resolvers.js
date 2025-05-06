@@ -5,8 +5,6 @@ import {
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 export default {
   CityType: {
@@ -69,16 +67,6 @@ export default {
       { name, peripheryOf, country, region },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage City Setup Data in the System.'
-        );
-      }
-
       const existingCity = Cities.findOne({ name, country });
       if (existingCity) {
         throw new Error('A City with this name already exists.');
@@ -115,16 +103,6 @@ export default {
       { _id, name, peripheryOf, country, region },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage City Setup Data in the System.'
-        );
-      }
-
       if (peripheryOf) {
         // This city cannot be a periphery of a city which is already a periphery
         // of another city.
@@ -161,14 +139,6 @@ export default {
     },
 
     removeCity: async (obj, { _id }, { user }) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.OUTSTATION_DELETE_DATA])
-      ) {
-        throw new Error(
-          'You do not have permission to delete City in the System.'
-        );
-      }
-
       if (!Cities.canSafelyDeleteCity(_id)) {
         throw new Error(
           'This City cannot be deleted as there is currently data associated with it.'

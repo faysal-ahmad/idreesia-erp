@@ -3,6 +3,8 @@ extend type Mutation {
     karkunId: String!
     dutyId: String!
   ): KarkunDutyType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 
   removeOutstationKarkunDuty(_id: String!): Int
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 }

@@ -18,7 +18,6 @@ import { message } from 'antd';
 import { KarkunsAttendanceList } from '/imports/ui/modules/common';
 
 import {
-  CREATE_PORTAL_ATTENDANCES,
   UPDATE_PORTAL_ATTENDANCE,
   DELETE_ALL_PORTAL_ATTENDANCES,
   DELETE_PORTAL_ATTENDANCES,
@@ -34,7 +33,6 @@ const List = ({ history, location }) => {
     portalCityMehfils,
     portalCityMehfilsLoading,
   } = usePortalCityMehfils();
-  const [createPortalAttendances] = useMutation(CREATE_PORTAL_ATTENDANCES);
   const [updatePortalAttendance] = useMutation(UPDATE_PORTAL_ATTENDANCE);
   const [deleteAllPortalAttendances] = useMutation(
     DELETE_ALL_PORTAL_ATTENDANCES
@@ -78,25 +76,6 @@ const List = ({ history, location }) => {
 
   if (loading || portalCitiesLoading || portalCityMehfilsLoading) return null;
   const { portalAttendanceByMonth } = data;
-
-  const handleCreateMissingAttendances = () => {
-    createPortalAttendances({
-      variables: {
-        portalId,
-        month,
-      },
-    })
-      .then(response => {
-        refetch();
-        message.success(
-          `${response.data.createPortalAttendances} missing attendance records have been created.`,
-          5
-        );
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  };
 
   const handleDeleteSelectedAttendances = selectedRows => {
     const ids = selectedRows.map(({ _id }) => _id);
@@ -145,18 +124,14 @@ const List = ({ history, location }) => {
     const promises = attendanceIds.map(attendanceId => {
       const attendanceDetails = updatedAttendances[attendanceId];
       let presentCount = 0;
-      let lateCount = 0;
       let absentCount = 0;
-      let msVisitCount = 0;
       values(attendanceDetails).forEach(val => {
         if (val === 'pr') presentCount++;
-        if (val === 'la') lateCount++;
         if (val === 'ab') absentCount++;
-        if (val === 'ms') msVisitCount++;
       });
 
-      const total = presentCount + lateCount + absentCount + msVisitCount;
-      const percentage = Math.round(((presentCount + lateCount + msVisitCount) / total) * 100);
+      const total = presentCount + absentCount;
+      const percentage = Math.round((presentCount / total) * 100);
 
       return updatePortalAttendance({
         variables: {
@@ -164,9 +139,7 @@ const List = ({ history, location }) => {
           _id: attendanceId,
           attendanceDetails: JSON.stringify(attendanceDetails),
           presentCount,
-          lateCount,
           absentCount,
-          msVisitCount,
           percentage,
         },
       });
@@ -190,7 +163,6 @@ const List = ({ history, location }) => {
       cityMehfils={portalCityMehfils}
       attendance={portalAttendanceByMonth}
       setPageParams={setPageParams}
-      handleCreateMissingAttendances={handleCreateMissingAttendances}
       handleDeleteSelectedAttendances={handleDeleteSelectedAttendances}
       handleDeleteAllAttendances={handleDeleteAllAttendances}
       handleUpdateAttendanceDetails={handleUpdateAttendanceDetails}

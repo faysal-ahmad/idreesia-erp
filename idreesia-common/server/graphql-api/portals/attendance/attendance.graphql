@@ -18,21 +18,12 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPortalAttendances(
-    portalId: String!
-    month: String!
-  ): Int
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
-  @checkInstanceAccess(instanceIdArgName: "portalId")
-
   updatePortalAttendance(
     portalId: String!
     _id: String!
     attendanceDetails: String
     presentCount: Int
-    lateCount: Int
     absentCount: Int
-    msVisitCount: Int
     percentage: Int
   ): AttendanceType
   @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])

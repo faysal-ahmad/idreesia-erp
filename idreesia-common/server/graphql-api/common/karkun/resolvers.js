@@ -9,7 +9,7 @@ export default {
         },
       }
     ) => {
-      const user = users.load(karkun._id);
+      const user = await users.load(karkun._id);
       if (user) {
         return true;
       }

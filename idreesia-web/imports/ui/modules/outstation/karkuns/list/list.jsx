@@ -37,6 +37,7 @@ const List = ({ history, location }) => {
       'lastTarteeb',
       'attendance',
       'dutyId',
+      'userAccount',
       'ehadKarkun',
       'cityId',
       'cityMehfilId',
@@ -114,6 +115,7 @@ const List = ({ history, location }) => {
     lastTarteeb,
     attendance,
     dutyId,
+    userAccount,
     ehadKarkun,
     cityId,
     cityMehfilId,
@@ -142,6 +144,7 @@ const List = ({ history, location }) => {
         showCityMehfilFilter
         showRegionFilter
         showEhadKarkunFilter
+        showUserAccountFilter
         mehfilDuties={allMehfilDuties}
         cities={allCities}
         cityMehfils={allCityMehfils}
@@ -153,6 +156,7 @@ const List = ({ history, location }) => {
         lastTarteeb={lastTarteeb}
         attendance={attendance}
         dutyId={dutyId}
+        userAccount={userAccount}
         ehadKarkun={ehadKarkun}
         cityId={cityId}
         cityMehfilId={cityMehfilId}
@@ -223,6 +227,7 @@ const List = ({ history, location }) => {
       showMehfilCityColumn
       showDutiesColumn
       showAuditLogsAction
+      showUserAccountAction
       showDeleteAction={false}
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}

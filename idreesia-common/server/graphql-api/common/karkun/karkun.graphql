@@ -58,6 +58,7 @@ input KarkunFilter {
   isEmployee: Boolean
   jobId: String
   dutyId: String
+  userAccount: String
   ehadKarkun: String
   dutyShiftId: String
   cityId: String

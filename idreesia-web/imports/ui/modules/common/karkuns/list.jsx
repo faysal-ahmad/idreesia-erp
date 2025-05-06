@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AuditOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
-
-import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Pagination,
   Popconfirm,
@@ -10,15 +7,15 @@ import {
   Table,
   Tooltip,
 } from 'antd';
+import {
+  AuditOutlined,
+  DeleteOutlined,
+  MinusCircleOutlined,
+  KeyOutlined,
+} from '@ant-design/icons';
+
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
-
-const ContactNumberSubscribed = {
-  color: 'green',
-};
-
-const ContactNumberNotSubscribed = {
-  color: 'red',
-};
 
 export default class KarkunsList extends Component {
   static propTypes = {
@@ -30,6 +27,7 @@ export default class KarkunsList extends Component {
     showDeleteAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
     showRemoveAction: PropTypes.bool,
+    showUserAccountAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
@@ -50,6 +48,7 @@ export default class KarkunsList extends Component {
     showRemoveAction: false,
     showDeleteAction: false,
     showAuditLogsAction: false,
+    showUserAccountAction: false,
 
     handleSelectItem: noop,
     handleDeleteItem: noop,
@@ -85,32 +84,18 @@ export default class KarkunsList extends Component {
     key: 'contactNumber',
     render: (text, record) => {
       const numbers = [];
-      let style = {};
       if (record.contactNumber1) {
-        if (record.contactNumber1Subscribed === true) {
-          style = ContactNumberSubscribed;
-        } else if (record.contactNumber1Subscribed === false) {
-          style = ContactNumberNotSubscribed;
-        }
-
         numbers.push(
           <Row key="1">
-            <span style={style}>{record.contactNumber1}</span>
+            <span>{record.contactNumber1}</span>
           </Row>
         );
       }
 
       if (record.contactNumber2) {
-        style = {};
-        if (record.contactNumber2Subscribed === true) {
-          style = ContactNumberSubscribed;
-        } else if (record.contactNumber2Subscribed === false) {
-          style = ContactNumberNotSubscribed;
-        }
-
         numbers.push(
           <Row key="2">
-            <span style={style}>{record.contactNumber2}</span>
+            <span>{record.contactNumber2}</span>
           </Row>
         );
       }
@@ -176,10 +161,20 @@ export default class KarkunsList extends Component {
         showAuditLogsAction,
         showDeleteAction,
         showRemoveAction,
+        showUserAccountAction,
+        
         handleAuditLogsAction,
         handleDeleteItem,
         handleRemoveItem,
       } = this.props;
+
+      const userAccountAction = showUserAccountAction && record.hasUserAccount ? (
+        <KeyOutlined
+          className="list-actions-icon"
+          onClick={() => {
+          }}
+        />
+      ) : null;
 
       const auditLogsAction = showAuditLogsAction ? (
         <Tooltip title="Audit Logs">
@@ -224,6 +219,7 @@ export default class KarkunsList extends Component {
 
       return (
         <div className="list-actions-column">
+          {userAccountAction}
           {removeAction}
           {auditLogsAction}
           {deleteAction}

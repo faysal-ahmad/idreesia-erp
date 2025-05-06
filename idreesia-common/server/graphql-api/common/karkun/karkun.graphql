@@ -27,6 +27,7 @@ type KarkunType {
   referenceName: String
   imageId: String
   attachmentIds: [String]
+  hasUserAccount: Boolean
 
   isEmployee: Boolean
   jobId: String

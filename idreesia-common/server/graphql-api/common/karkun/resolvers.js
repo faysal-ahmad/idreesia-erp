@@ -1,51 +1,105 @@
-import {
-  Jobs,
-  KarkunDuties,
-} from 'meteor/idreesia-common/server/collections/hr';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
-import {
-  Cities,
-  CityMehfils,
-} from 'meteor/idreesia-common/server/collections/outstation';
-
 export default {
   KarkunType: {
-    image: async karkunType => {
-      const { imageId } = karkunType;
+    hasUserAccount: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          common: { users },
+        },
+      }
+    ) => {
+      const user = users.load(karkun._id);
+      if (user) {
+        return true;
+      }
+
+      return false;
+    },
+
+    image: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          common: { attachments },
+        },
+      }
+    ) => {
+      const { imageId } = karkun;
       if (imageId) {
-        return Attachments.findOne({ _id: { $eq: imageId } });
+        return attachments.load(imageId);
       }
 
       return null;
     },
 
-    job: async karkunType => {
-      if (!karkunType.jobId) return null;
-      return Jobs.findOne(karkunType.jobId);
+    job: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          hr: { jobs },
+        },
+      }
+    ) => {
+      if (!karkun.jobId) return null;
+      return jobs.load(karkun.jobId);
     },
 
-    duties: async karkunType =>
-      KarkunDuties.find({
-        karkunId: { $eq: karkunType._id },
-      }).fetch(),
+    duties: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          hr: { karkunDuties },
+        },
+      }
+    ) => karkunDuties.load(karkun._id),
 
-    attachments: async karkunType => {
-      const { attachmentIds } = karkunType;
+    attachments: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          common: { attachments },
+        },
+      }
+    ) => {
+      const { attachmentIds } = karkun;
       if (attachmentIds && attachmentIds.length > 0) {
-        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
+        return Promise.all(
+          attachmentIds.map(attachmentId => attachments.load(attachmentId))
+        );
       }
 
       return [];
     },
 
-    city: async karkunType => {
-      if (!karkunType.cityId) return null;
-      return Cities.findOne(karkunType.cityId);
+    city: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          outstation: { cities },
+        },
+      }
+    ) => {
+      if (!karkun.cityId) return null;
+      return cities.load(karkun.cityId);
     },
 
-    cityMehfil: async karkunType => {
-      if (!karkunType.cityMehfilId) return null;
-      return CityMehfils.findOne(karkunType.cityMehfilId);
+    cityMehfil: async (
+      karkun,
+      args,
+      {
+        loaders: {
+          outstation: { cityMehfils },
+        },
+      }
+    ) => {
+      if (!karkun.cityMehfilId) return null;
+      return cityMehfils.load(karkun.cityMehfilId);
     },
   },
 };

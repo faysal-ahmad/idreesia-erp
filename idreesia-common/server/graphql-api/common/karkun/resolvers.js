@@ -1,6 +1,6 @@
 export default {
   KarkunType: {
-    hasUserAccount: async (
+    user: async (
       karkun,
       args,
       {
@@ -8,14 +8,7 @@ export default {
           common: { users },
         },
       }
-    ) => {
-      const user = await users.load(karkun._id);
-      if (user) {
-        return true;
-      }
-
-      return false;
-    },
+    ) => users.load(karkun._id),
 
     image: async (
       karkun,

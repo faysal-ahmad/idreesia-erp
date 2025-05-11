@@ -1,10 +1,12 @@
 import gql from 'graphql-tag';
 
-const OUTSTATION_PORTAL_USER_BY_ID = gql`
+export const OUTSTATION_PORTAL_USER_BY_ID = gql`
   query outstationPortalUserById($_id: String!) {
     outstationPortalUserById(_id: $_id) {
       _id
       username
+      email
+      emailVerified
       locked
       instances
       permissions
@@ -16,5 +18,3 @@ const OUTSTATION_PORTAL_USER_BY_ID = gql`
     }
   }
 `;
-
-export default OUTSTATION_PORTAL_USER_BY_ID;

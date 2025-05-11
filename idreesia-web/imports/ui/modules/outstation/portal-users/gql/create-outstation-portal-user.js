@@ -1,19 +1,17 @@
 import gql from 'graphql-tag';
 
-const CREATE_OUTSTATION_PORTAL_USER = gql`
+export const CREATE_OUTSTATION_PORTAL_USER = gql`
   mutation createOutstationPortalUser(
     $portalId: String!
-    $userName: String!
+    $email: String!
     $karkunId: String!
   ) {
     createOutstationPortalUser(
       portalId: $portalId
-      userName: $userName
+      email: $email
       karkunId: $karkunId
     ) {
       _id
     }
   }
 `;
-
-export default CREATE_OUTSTATION_PORTAL_USER;

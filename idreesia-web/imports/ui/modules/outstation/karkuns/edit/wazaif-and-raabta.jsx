@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { message } from 'antd';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 
 import {
-  OUTSTATION_KARKUN_BY_ID,
   SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA,
 } from '../gql';
 
@@ -17,7 +16,6 @@ class WazaifAndRaabta extends Component {
     history: PropTypes.object,
     location: PropTypes.object,
 
-    formDataLoading: PropTypes.bool,
     karkunId: PropTypes.string,
     outstationKarkunById: PropTypes.object,
     setOutstationKarkunWazaifAndRaabta: PropTypes.func,
@@ -61,8 +59,7 @@ class WazaifAndRaabta extends Component {
   };
 
   render() {
-    const { formDataLoading, outstationKarkunById } = this.props;
-    if (formDataLoading) return null;
+    const { outstationKarkunById } = this.props;
 
     return (
       <KarkunsWazaifAndRaabta
@@ -81,8 +78,4 @@ export default flowRight(
       refetchQueries: ['pagedOutstationKarkuns'],
     },
   }),
-  graphql(OUTSTATION_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
-  })
 )(WazaifAndRaabta);

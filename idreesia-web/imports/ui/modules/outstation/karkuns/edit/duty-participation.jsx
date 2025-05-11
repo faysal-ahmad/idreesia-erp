@@ -1,9 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
-
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Button,
   Select,
@@ -12,6 +9,9 @@ import {
   Popconfirm,
   message,
 } from 'antd';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
+
+import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithAllMehfilDuties } from '/imports/ui/modules/outstation/common/composers';
 
 import {

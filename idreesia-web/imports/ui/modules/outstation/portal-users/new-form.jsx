@@ -41,13 +41,13 @@ class NewForm extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ karkun, userName, portalId }) => {
+  handleFinish = ({ karkun, email, portalId }) => {
     const { createOutstationPortalUser, history } = this.props;
     createOutstationPortalUser({
       variables: {
         portalId,
         karkunId: karkun._id,
-        userName,
+        email,
       },
     })
       .then(() => {
@@ -75,10 +75,10 @@ class NewForm extends Component {
     return (
       <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
-          fieldName="userName"
-          fieldLabel="User name"
+          fieldName="email"
+          fieldLabel="Email"
           required
-          requiredMessage="Please input the user name."
+          requiredMessage="Please input the email."
         />
 
         <KarkunSelectionInputField

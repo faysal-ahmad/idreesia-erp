@@ -1,12 +1,14 @@
 import gql from 'graphql-tag';
 
-const PAGED_OUTSTATION_PORTAL_USERS = gql`
+export const PAGED_OUTSTATION_PORTAL_USERS = gql`
   query pagedOutstationPortalUsers($filter: UserFilter) {
     pagedOutstationPortalUsers(filter: $filter) {
       totalResults
       data {
         _id
         username
+        email
+        emailVerified
         locked
         lastActiveAt
         permissions
@@ -32,5 +34,3 @@ const PAGED_OUTSTATION_PORTAL_USERS = gql`
     }
   }
 `;
-
-export default PAGED_OUTSTATION_PORTAL_USERS;

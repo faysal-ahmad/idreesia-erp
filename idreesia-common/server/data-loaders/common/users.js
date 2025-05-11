@@ -3,10 +3,7 @@ import DataLoader from 'dataloader';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 
 export async function getUsers(personIds) {
-  const users = await Users.find({
-    personId: { $in: personIds },
-  }).fetchAsync();
-
+  const users = await Users.findByPersonIds(personIds);
   const usersMap = keyBy(users, 'personId');
   return personIds.map(id => usersMap[id]);
 }

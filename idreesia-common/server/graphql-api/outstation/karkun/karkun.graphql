@@ -67,4 +67,7 @@ extend type Mutation {
 
   deleteOutstationKarkuns(_ids: [String]!): Int
   @checkPermissions(permissions: [OUTSTATION_DELETE_DATA])
+
+  createOutstationKarkunUserAccount(_id: String!, email: String!): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 }

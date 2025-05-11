@@ -1,3 +1,17 @@
+type KarkunUserType {
+  _id: String
+  username: String
+  email: String
+  emailVerified: Boolean
+  displayName: String
+  locked: Boolean
+  lastLoggedInAt: String
+  lastActiveAt: String
+  permissions: [String]
+  instances: [String]
+  groups: [String]
+}
+
 type KarkunType {
   _id: String
   name: String
@@ -27,7 +41,6 @@ type KarkunType {
   referenceName: String
   imageId: String
   attachmentIds: [String]
-  hasUserAccount: Boolean
 
   isEmployee: Boolean
   jobId: String
@@ -41,6 +54,7 @@ type KarkunType {
   image: Attachment
   city: CityType
   cityMehfil: CityMehfilType
+  user: KarkunUserType
 
   createdAt: String
   createdBy: String

@@ -1,16 +1,13 @@
-import { Random } from 'meteor/random';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { DataSource } from 'meteor/idreesia-common/constants';
-
-import { isKarkunInPortal, isKarkunSubscribed } from './helpers';
 
 export default {
   Query: {
     pagedOutstationPortalUsers: async (obj, { filter }) => {
-      const portals = Portals.find({}).fetch();
-      const portalIds = portals.map(portal => portal._id);
-      return Users.searchOutstationPortalUsers(filter, portalIds);
+      // const portals = Portals.find({}).fetch();
+      // const portalIds = portals.map(portal => portal._id);
+      return Users.searchOutstationPortalUsers(filter);
     },
 
     outstationPortalUserById: async (obj, { _id }) => {
@@ -20,55 +17,50 @@ export default {
   },
 
   Mutation: {
-    createOutstationPortalUser: async (
-      obj,
-      { portalId, userName, karkunId },
-      { user }
-    ) => {
-      const karkunInPortal = isKarkunInPortal(karkunId, portalId);
-      if (!karkunInPortal) {
-        throw new Error(
-          `This karkun does not belong to any city in the portal.`
-        );
+    createOutstationPortalUser: async (obj, { portalId, email, karkunId }) => {
+      // Ensure that this karkun does not alredy have an account
+      const existingUser = Users.findOne({ personId: karkunId });
+      if (existingUser) {
+        throw new Error(`This person already has a user account.`);
       }
 
-      const karkunSubscribed = isKarkunSubscribed(karkunId);
-      if (!karkunSubscribed) {
-        throw new Error(`The karkun needs to be subscribed to 8018.`);
+      // Check if this email is already registered for a user
+      const user = await Accounts.findUserByEmail(email);
+      if (user) {
+        throw new Error('This email address is already registered.');
       }
 
-      const password = Random.id(8);
-      const createdUser = Users.createUser(
-        { userName, password, karkunId },
-        user,
-        DataSource.OUTSTATION
-      );
+      const userId = await Accounts.createUserAsync({ email });
+      if (userId) {
+        Accounts.sendEnrollmentEmail(userId);
+        // Set the personId in the newly created User
+        await Users.updateAsync(userId, {
+          $set: {
+            personId: karkunId,
+            instances: [portalId],
+          },
+        });
+      }
 
-      return Users.setInstanceAccess(
-        {
-          userId: createdUser._id,
-          instances: [portalId],
-        },
-        user,
-        DataSource.OUTSTATION
-      );
+      const person = await People.findOneAsync(karkunId);
+      return People.personToKarkun(person);
     },
 
     updateOutstationPortalUser: async (
       obj,
-      { portalId, userId, locked },
+      { userId, email, portalId },
       { user }
     ) => {
       const _user = Users.findOneUser(userId);
-      const karkunInPortal = isKarkunInPortal(_user.karkunId, portalId);
-      if (!karkunInPortal) {
+      // const karkunInPortal = isKarkunInPortal(_user.karkunId, portalId);
+      /* if (!karkunInPortal) {
         throw new Error(
           `This karkun does not belong to any city in the portal.`
         );
-      }
+      } */
 
       if (!_user.instances || _user.instances.indexOf(portalId) === -1) {
-        Users.setInstanceAccess(
+        Users.addInstanceAccess(
           {
             userId,
             instances: [portalId],
@@ -78,13 +70,25 @@ export default {
         );
       }
 
-      return Users.updateUser({ userId, locked }, user, DataSource.OUTSTATION);
+      // Update the email if it is not set previously, or has
+      // not been verified yet.
+      if (_user.email && _user.emailVerified !== true) {
+        await Users.updateAsync(userId, {
+          $set: {
+            'emails.0.address': email,
+          },
+        });
+      } else {
+        console.log('Skip email update.');
+      }
+
+      return Users.findOneUser(userId);
     },
 
-    setOutstationPortalUserPermissions: async (obj, params, { user }) =>
-      Users.setPermissions(params, user, DataSource.OUTSTATION),
+    lockOutstationPortalUser: async (obj, { userId }, { user }) =>
+      Users.updateUser({ userId, locked: true }, user, DataSource.OUTSTATION),
 
-    resetOutstationPortalUserPassword: async (obj, params, { user }) =>
-      Users.resetPassword(params, user, DataSource.OUTSTATION),
+    unlockOutstationPortalUser: async (obj, { userId }, { user }) =>
+      Users.updateUser({ userId, locked: false }, user, DataSource.OUTSTATION),
   },
 };

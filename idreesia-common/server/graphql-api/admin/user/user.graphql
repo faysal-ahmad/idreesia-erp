@@ -2,6 +2,7 @@ type UserType {
   _id: String
   username: String
   email: String
+  emailVerified: Boolean
 
   personId: String
   displayName: String

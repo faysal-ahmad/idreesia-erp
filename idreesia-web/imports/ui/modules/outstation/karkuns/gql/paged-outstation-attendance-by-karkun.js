@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
+export const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
   query pagedOutstationAttendanceByKarkun(
     $karkunId: String!
     $queryString: String
@@ -21,5 +21,3 @@ const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
     }
   }
 `;
-
-export default PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN;

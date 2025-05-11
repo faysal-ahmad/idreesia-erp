@@ -27,7 +27,6 @@ export default class KarkunsList extends Component {
     showDeleteAction: PropTypes.bool,
     showAuditLogsAction: PropTypes.bool,
     showRemoveAction: PropTypes.bool,
-    showUserAccountAction: PropTypes.bool,
 
     listHeader: PropTypes.func,
     handleSelectItem: PropTypes.func,
@@ -48,7 +47,6 @@ export default class KarkunsList extends Component {
     showRemoveAction: false,
     showDeleteAction: false,
     showAuditLogsAction: false,
-    showUserAccountAction: false,
 
     handleSelectItem: noop,
     handleDeleteItem: noop,
@@ -161,20 +159,11 @@ export default class KarkunsList extends Component {
         showAuditLogsAction,
         showDeleteAction,
         showRemoveAction,
-        showUserAccountAction,
         
         handleAuditLogsAction,
         handleDeleteItem,
         handleRemoveItem,
       } = this.props;
-
-      const userAccountAction = showUserAccountAction && record.hasUserAccount ? (
-        <KeyOutlined
-          className="list-actions-icon"
-          onClick={() => {
-          }}
-        />
-      ) : null;
 
       const auditLogsAction = showAuditLogsAction ? (
         <Tooltip title="Audit Logs">
@@ -219,7 +208,6 @@ export default class KarkunsList extends Component {
 
       return (
         <div className="list-actions-column">
-          {userAccountAction}
           {removeAction}
           {auditLogsAction}
           {deleteAction}

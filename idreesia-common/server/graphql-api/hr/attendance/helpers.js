@@ -35,7 +35,6 @@ function getAttendanceValues(jsonRecord) {
     totalCount: presentCount + absentCount,
     presentCount,
     absentCount,
-    lateCount: 0,
     percentage:
       presentCount + absentCount !== 0
         ? round((presentCount / (presentCount + absentCount)) * 100)

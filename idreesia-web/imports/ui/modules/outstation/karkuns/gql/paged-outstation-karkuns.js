@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const PAGED_OUTSTATION_KARKUNS = gql`
+export const PAGED_OUTSTATION_KARKUNS = gql`
   query pagedOutstationKarkuns($filter: KarkunFilter) {
     pagedOutstationKarkuns(filter: $filter) {
       totalResults
@@ -10,8 +10,6 @@ const PAGED_OUTSTATION_KARKUNS = gql`
         cnicNumber
         contactNumber1
         contactNumber2
-        contactNumber1Subscribed
-        contactNumber2Subscribed
         imageId
         duties {
           _id
@@ -32,5 +30,3 @@ const PAGED_OUTSTATION_KARKUNS = gql`
     }
   }
 `;
-
-export default PAGED_OUTSTATION_KARKUNS;

@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
-import dayjs from 'dayjs';
-import { Button, Pagination, Row, Table } from 'antd';
+import { Button, Divider, Flex, Pagination, Row, Table } from 'antd';
 import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats, Permissions } from 'meteor/idreesia-common/constants';
+import { Permissions } from 'meteor/idreesia-common/constants';
 
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
@@ -44,7 +43,7 @@ const List = ({ history, location }) => {
       'portalAccess',
     ],
     paramDefaultValues: {
-      showLocked: 'false',
+      showLocked: 'true',
       showUnlocked: 'true',
     },
   });
@@ -124,20 +123,25 @@ const List = ({ history, location }) => {
         ),
     },
     {
-      title: 'User Name',
+      title: 'Email / User Name',
       dataIndex: 'username',
       key: 'username',
       render: (text, record) => (
-        <Link to={paths.portalUsersEditFormPath(record._id)}>{text}</Link>
+        <Link to={paths.portalUsersEditFormPath(record._id)}>
+          <Flex vertical>
+            <span>{record.email}</span>
+            <span>{record.username}</span>
+          </Flex>
+        </Link>
       ),
     },
     {
-      title: 'City / Mehfil',
+      title: 'Mehfil / City',
       key: 'cityMehfil',
       render: (text, record) => {
+        const cityMehfilInfo = [];
         if (record.karkun) {
           const { city, cityMehfil } = record.karkun;
-          const cityMehfilInfo = [];
 
           if (cityMehfil) {
             cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
@@ -147,38 +151,18 @@ const List = ({ history, location }) => {
               <Row key="2">{`${city.name}, ${city.country}`}</Row>
             );
           }
-
-          if (cityMehfilInfo.length === 0) return '';
-          return <>{cityMehfilInfo}</>;
         }
-
-        return null;
+        
+        if (cityMehfilInfo.length === 0) return '';
+        return <>{cityMehfilInfo}</>;
       },
     },
     {
-      title: 'Portal',
-      key: 'portal',
-      render: (text, record) => record?.portal?.name,
-    },
-    {
-      title: 'Last Active',
-      dataIndex: 'lastActiveAt',
-      key: 'lastActiveAt',
-      render: text => {
-        if (!text) return '';
-        return (
-          <>
-            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
-          </>
-        );
-      },
-    },
-    {
-      title: 'Permissions',
-      dataIndex: 'permissions',
+      title: 'Portal Permissions',
       key: 'permissions',
-      render: permissions => {
+      render: (text, record) => {
+        const { permissions, portal } = record;
+
         const items = [];
         permissions.forEach(permission => {
           const text = permissionDisplayText[permission];
@@ -187,7 +171,19 @@ const List = ({ history, location }) => {
           }
         });
 
-        return <ul>{items}</ul>;
+        const portalSection = portal ? (
+          <>
+            <span>{portal?.name}</span>
+            <Divider style={{ margin: 0 }} />
+          </>
+        ) : null
+
+        return (
+          <Flex vertical>
+            {portalSection}
+            <ul>{items}</ul>
+          </Flex>
+        )
       },
     },
   ];

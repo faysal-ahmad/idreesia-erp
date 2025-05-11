@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import { CloseCircleOutlined, DeleteOutlined, LeftOutlined, PlusCircleOutlined, RightOutlined, SaveOutlined, SettingOutlined } from '@ant-design/icons';
 import {
   Button,
   Cascader,
   DatePicker,
   Dropdown,
-  Menu,
+  Modal,
   Table,
 } from 'antd';
+import { 
+  CloseCircleOutlined,
+  DeleteOutlined,
+  LeftOutlined,
+  RightOutlined,
+  SaveOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { filter, noop, sortBy } from 'meteor/idreesia-common/utilities/lodash';
@@ -62,9 +69,7 @@ export default class KarkunsAttendanceList extends Component {
 
   attendanceStyles = {
     pr: 'ant-calendar-cell attendance-date-linear attendance-present',
-    la: 'ant-calendar-cell attendance-date-linear attendance-late',
     ab: 'ant-calendar-cell attendance-date-linear attendance-absent',
-    ms: 'ant-calendar-cell attendance-date-linear attendance-ms',
     none: 'ant-calendar-cell attendance-date-linear attendance-none',
   };
 
@@ -143,14 +148,6 @@ export default class KarkunsAttendanceList extends Component {
         render: text => text || '0',
       },
       {
-        title: 'Late',
-        dataIndex: 'lateCount',
-        key: 'lateCount',
-        fixed: 'right',
-        width: 70,
-        render: text => text || '0',
-      },
-      {
         title: 'Absent',
         dataIndex: 'absentCount',
         key: 'absentCount',
@@ -187,10 +184,8 @@ export default class KarkunsAttendanceList extends Component {
   ) => {
     let newAttendanceValue;
     if (!curentVal) newAttendanceValue = 'pr';
-    else if (curentVal === 'pr') newAttendanceValue = 'la';
-    else if (curentVal === 'la') newAttendanceValue = 'ab';
-    else if (curentVal === 'ab') newAttendanceValue = 'ms';
-    else if (curentVal === 'ms') newAttendanceValue = null;
+    else if (curentVal === 'pr') newAttendanceValue = 'ab';
+    else if (curentVal === 'ab') newAttendanceValue = null;
 
     const updatedAttendanceDetails = Object.assign({}, attendanceDetails, {
       [day]: newAttendanceValue,
@@ -202,14 +197,6 @@ export default class KarkunsAttendanceList extends Component {
       isEditing: true,
       updatedAttendances,
     });
-  };
-
-  handleDeleteSelected = () => {
-    const { selectedRows } = this.state;
-    const { handleDeleteSelectedAttendances } = this.props;
-
-    if (!selectedRows || selectedRows.length === 0) return;
-    handleDeleteSelectedAttendances(selectedRows);
   };
 
   handleSelectionChange = value => {
@@ -295,16 +282,40 @@ export default class KarkunsAttendanceList extends Component {
     );
   };
 
+  handleAction = ({ key }) => {
+    const {
+      handleDeleteAllAttendances,
+      handleDeleteSelectedAttendances,
+    } = this.props;
+    
+    if (key === 'delete-selected') {
+      const { selectedRows } = this.state;
+      if (selectedRows.length === 0) return;
+      Modal.confirm({
+        title: 'Delete Selected Attendances',
+        content:
+          'Are you sure you want to delete the selected attendances?',
+        onOk: () => {
+          handleDeleteSelectedAttendances(selectedRows);
+        },
+      });
+    } else if (key === 'delete-all') {
+      Modal.confirm({
+        title: 'Delete All Attendances',
+        content:
+          'Are you sure you want to delete all attendances for this month?',
+        onOk: () => {
+          handleDeleteAllAttendances();
+        },
+      });
+    }
+  }
+
   getActionsMenu = () => {
     const { isEditing } = this.state;
-    const {
-      readOnly,
-      handleCreateMissingAttendances,
-      handleDeleteAllAttendances,
-    } = this.props;
+    const { readOnly } = this.props;
 
     if (readOnly) return null;
-
     if (isEditing) {
       return (
         <div>
@@ -323,26 +334,21 @@ export default class KarkunsAttendanceList extends Component {
       );
     }
 
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
-          <PlusCircleOutlined />
-          Create Missing Attendances
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="6" onClick={this.handleDeleteSelected}>
-          <DeleteOutlined />
-          Delete Selected Attendances
-        </Menu.Item>
-        <Menu.Item key="7" onClick={handleDeleteAllAttendances}>
-          <DeleteOutlined />
-          Delete All Attendances
-        </Menu.Item>
-      </Menu>
-    );
+    const items = [
+      {
+        key: 'delete-selected',
+        label: 'Delete Selected Attendances',
+        icon: <DeleteOutlined />,
+      },
+      {
+        key: 'delete-all',
+        label: 'Delete All Attendances',
+        icon: <DeleteOutlined />,
+      },
+    ];
 
     return (
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
         <Button icon={<SettingOutlined />}>Actions</Button>
       </Dropdown>
     );

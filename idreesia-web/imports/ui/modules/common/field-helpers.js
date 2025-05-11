@@ -85,13 +85,34 @@ export function getBloodGroupFilterField(fieldValue) {
   );
 }
 
+export function getUserAccountFilterField(fieldValue) {
+  return (
+    <SelectField
+      fieldName="userAccount"
+      fieldLabel="User Account"
+      required={false}
+      data={[
+        { label: 'Yes', value: 'true' },
+        { label: 'No', value: 'false' },
+      ]}
+      getDataValue={({ value }) => value}
+      getDataText={({ label }) => label}
+      fieldLayout={formItemLayout}
+      initialValue={fieldValue}
+    />
+  );
+}
+
 export function getEhadKarkunFilterField(fieldValue) {
   return (
     <SelectField
       fieldName="ehadKarkun"
       fieldLabel="Ehad Karkun"
       required={false}
-      data={[{ label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }]}
+      data={[
+        { label: 'Yes', value: 'true' },
+        { label: 'No', value: 'false' },
+      ]}
       getDataValue={({ value }) => value}
       getDataText={({ label }) => label}
       fieldLayout={formItemLayout}

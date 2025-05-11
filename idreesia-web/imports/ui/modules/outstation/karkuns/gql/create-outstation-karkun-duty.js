@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const CREATE_OUTSTATION_KARKUN_DUTY = gql`
+export const CREATE_OUTSTATION_KARKUN_DUTY = gql`
   mutation createOutstationKarkunDuty($karkunId: String!, $dutyId: String!) {
     createOutstationKarkunDuty(karkunId: $karkunId, dutyId: $dutyId) {
       _id
@@ -9,5 +9,3 @@ const CREATE_OUTSTATION_KARKUN_DUTY = gql`
     }
   }
 `;
-
-export default CREATE_OUTSTATION_KARKUN_DUTY;

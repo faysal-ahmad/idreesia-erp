@@ -1,20 +1,23 @@
 import gql from 'graphql-tag';
 
-const UPDATE_OUTSTATION_PORTAL_USER = gql`
+export const UPDATE_OUTSTATION_PORTAL_USER = gql`
   mutation updateOutstationPortalUser(
-    $portalId: String!
     $userId: String!
-    $locked: Boolean!
+    $email: String!
+    $portalId: String!
   ) {
     updateOutstationPortalUser(
-      portalId: $portalId
       userId: $userId
-      locked: $locked
+      email: $email
+      portalId: $portalId
     ) {
       _id
       username
+      email
+      emailVerified
       locked
-      karkunId
+      personId
+      instances
       karkun {
         _id
         name
@@ -22,5 +25,3 @@ const UPDATE_OUTSTATION_PORTAL_USER = gql`
     }
   }
 `;
-
-export default UPDATE_OUTSTATION_PORTAL_USER;

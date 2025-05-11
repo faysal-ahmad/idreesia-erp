@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Input, Select, Row, Col } from 'antd';
 
 const getYearMonthValue = dateValue => {
-  const currentDate = moment().startOf('day');
+  const currentDate = dayjs().startOf('day');
   const diffInMonths = currentDate.diff(dateValue, 'months');
   const yearValue =
     diffInMonths < 12 ? 0 : (diffInMonths - (diffInMonths % 12)) / 12;
@@ -57,7 +57,7 @@ export default class CustomInput extends Component {
     });
 
     const totalMonths = years * 12 + months;
-    const newDateValue = moment().startOf('day');
+    const newDateValue = dayjs().startOf('day');
     newDateValue.subtract(totalMonths, 'months');
     this.props.onChange(newDateValue);
   };
@@ -70,37 +70,37 @@ export default class CustomInput extends Component {
     });
 
     const totalMonths = years * 12 + months;
-    const newDateValue = moment().startOf('day');
+    const newDateValue = dayjs().startOf('day');
     newDateValue.subtract(totalMonths, 'months');
     this.props.onChange(newDateValue);
   };
 
   render() {
-  return (
-    <Input.Group>
-      <Row type="flex" align="middle" gutter={10}>
-        <Col span={5}>
-          <Select
-            style={{ width: '100%' }}
-            onChange={this.handleYearChange}
-            value={this.state.years}
-          >
-            {getYearOptions()}
-          </Select>
-        </Col>
-        <Col>years</Col>
-        <Col span={5}>
-          <Select
-            style={{ width: '100%' }}
-            onChange={this.handleMonthChange}
-            value={this.state.months}
-          >
-            {getMonthOptions()}
-          </Select>
-        </Col>
-        <Col>months</Col>
-      </Row>
-    </Input.Group>
-  );
-}
+    return (
+      <Input.Group>
+        <Row type="flex" align="middle" gutter={10}>
+          <Col span={5}>
+            <Select
+              style={{ width: '100%' }}
+              onChange={this.handleYearChange}
+              value={this.state.years}
+            >
+              {getYearOptions()}
+            </Select>
+          </Col>
+          <Col>years</Col>
+          <Col span={5}>
+            <Select
+              style={{ width: '100%' }}
+              onChange={this.handleMonthChange}
+              value={this.state.months}
+            >
+              {getMonthOptions()}
+            </Select>
+          </Col>
+          <Col>months</Col>
+        </Row>
+      </Input.Group>
+    );
+  }
 }

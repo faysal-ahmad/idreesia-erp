@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -5,9 +6,7 @@ import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
-import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
-import { DataSource, JobTypes } from 'meteor/idreesia-common/constants';
-import { Accounts } from 'meteor/accounts-base';
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   UserType: {
@@ -121,11 +120,6 @@ export default {
             lastLoggedInAt: loginTime,
           },
         });
-
-        // Send sms message to user on successful login
-        const params = { userId: user._id, loginTime };
-        const options = { priority: 'normal', retry: 10 };
-        createJob({ type: JobTypes.SEND_LOGIN_SMS_MESSAGE, params, options });
 
         // Create a security log
         SecurityLogs.insert({

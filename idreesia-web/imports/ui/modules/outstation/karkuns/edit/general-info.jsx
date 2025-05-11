@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { message } from 'antd';
 import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
 import {
   WithAllCities,
@@ -11,7 +11,6 @@ import {
 } from '/imports/ui/modules/outstation/common/composers';
 
 import {
-  OUTSTATION_KARKUN_BY_ID,
   PAGED_OUTSTATION_KARKUNS,
   UPDATE_OUTSTATION_KARKUN,
 } from '../gql';
@@ -23,12 +22,12 @@ class GeneralInfo extends Component {
     location: PropTypes.object,
 
     karkunId: PropTypes.string,
+    outstationKarkunById: PropTypes.object,
+
     allCities: PropTypes.array,
     allCitiesLoading: PropTypes.bool,
     allCityMehfils: PropTypes.array,
     allCityMehfilsLoading: PropTypes.bool,
-    formDataLoading: PropTypes.bool,
-    outstationKarkunById: PropTypes.object,
     updateOutstationKarkun: PropTypes.func,
   };
 
@@ -98,10 +97,9 @@ class GeneralInfo extends Component {
       allCitiesLoading,
       allCityMehfils,
       allCityMehfilsLoading,
-      formDataLoading,
       outstationKarkunById,
     } = this.props;
-    if (allCitiesLoading || allCityMehfilsLoading || formDataLoading)
+    if (allCitiesLoading || allCityMehfilsLoading)
       return null;
 
     return (
@@ -126,11 +124,4 @@ export default flowRight(
       refetchQueries: [{ query: PAGED_OUTSTATION_KARKUNS }],
     },
   }),
-  graphql(OUTSTATION_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
-  })
 )(GeneralInfo);

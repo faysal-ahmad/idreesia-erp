@@ -23,7 +23,6 @@ import {
 } from './portal-users';
 import { OutstationUsersList } from './outstation-users';
 import { PortalsNewForm, PortalsEditForm, PortalsList } from './portals';
-import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import { AuditLogsList } from './audit-logs';
 import { SecurityLogsList } from './security-logs';
 
@@ -68,10 +67,6 @@ const Router = () => (
       component={PortalUsersEditForm}
     />
     <Route path={paths.portalUsersPath} component={PortalUsersList} />
-
-    <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
-    <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />
-    <Route path={paths.messagesPath} component={MessagesList} />
   </Switch>
 );
 

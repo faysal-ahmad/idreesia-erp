@@ -1,21 +1,19 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
+import { Row, Col, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Row, Col, message } from 'antd';
 import { TakePicture } from '/imports/ui/modules/helpers/controls';
 
 import {
-  OUTSTATION_KARKUN_BY_ID,
   PAGED_OUTSTATION_KARKUNS,
   SET_OUTSTATION_KARKUN_PROFILE_IMAGE,
 } from '../gql';
 
 class ProfilePicture extends Component {
   static propTypes = {
-    loading: PropTypes.bool,
     karkunId: PropTypes.string,
     outstationKarkunById: PropTypes.object,
     setOutstationKarkunProfileImage: PropTypes.func,
@@ -34,8 +32,7 @@ class ProfilePicture extends Component {
   };
 
   render() {
-    const { loading, outstationKarkunById } = this.props;
-    if (loading) return null;
+    const { outstationKarkunById } = this.props;
     const url = getDownloadUrl(outstationKarkunById.imageId);
 
     return (
@@ -63,11 +60,4 @@ export default flowRight(
       refetchQueries: [{ query: PAGED_OUTSTATION_KARKUNS }],
     },
   }),
-  graphql(OUTSTATION_KARKUN_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
-  })
 )(ProfilePicture);

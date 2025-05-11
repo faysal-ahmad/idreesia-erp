@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const IMPORT_OUTSTATION_KARKUN = gql`
+export const IMPORT_OUTSTATION_KARKUN = gql`
   mutation importOutstationKarkun(
     $name: String!
     $parentName: String
@@ -31,5 +31,3 @@ const IMPORT_OUTSTATION_KARKUN = gql`
     )
   }
 `;
-
-export default IMPORT_OUTSTATION_KARKUN;

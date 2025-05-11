@@ -1,18 +1,7 @@
-export {
-  default as CREATE_OUTSTATION_PORTAL_USER,
-} from './create-outstation-portal-user';
-export {
-  default as UPDATE_OUTSTATION_PORTAL_USER,
-} from './update-outstation-portal-user';
-export {
-  default as PAGED_OUTSTATION_PORTAL_USERS,
-} from './paged-outstation-portal-users';
-export {
-  default as OUTSTATION_PORTAL_USER_BY_ID,
-} from './outstation-portal-user-by-id';
-export {
-  default as SET_OUTSTATION_PORTAL_USER_PERMISSIONS,
-} from './set-outstation-portal-user-permissions';
-export {
-  default as RESET_OUTSTATION_PORTAL_USER_PASSWORD,
-} from './reset-outstation-portal-user-password';
+export { CREATE_OUTSTATION_PORTAL_USER } from './create-outstation-portal-user';
+export { UPDATE_OUTSTATION_PORTAL_USER } from './update-outstation-portal-user';
+export { PAGED_OUTSTATION_PORTAL_USERS } from './paged-outstation-portal-users';
+export { OUTSTATION_PORTAL_USER_BY_ID } from './outstation-portal-user-by-id';
+export { SET_OUTSTATION_PORTAL_USER_PERMISSIONS } from './set-outstation-portal-user-permissions';
+export { LOCK_OUTSTATION_PORTAL_USER } from './lock-outstation-portal-user';
+export { UNLOCK_OUTSTATION_PORTAL_USER } from './unlock-outstation-portal-user';

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA = gql`
+export const SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA = gql`
   mutation setOutstationKarkunWazaifAndRaabta(
     $_id: String!
     $lastTarteebDate: String
@@ -23,4 +23,3 @@ const SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA = gql`
     }
   }
 `;
-export default SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA;

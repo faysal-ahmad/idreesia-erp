@@ -13,9 +13,7 @@ const AttendanceContainer = {
 
 const attendanceStyles = {
   pr: 'ant-calendar-cell attendance-date-linear attendance-present',
-  la: 'ant-calendar-cell attendance-date-linear attendance-late',
   ab: 'ant-calendar-cell attendance-date-linear attendance-absent',
-  ms: 'ant-calendar-cell attendance-date-linear attendance-ms',
   none: 'ant-calendar-cell attendance-date-linear attendance-none',
 };
 
@@ -67,13 +65,6 @@ const columns = [
     width: 70,
   },
   {
-    title: 'Late',
-    dataIndex: 'lateCount',
-    key: 'lateCount',
-    fixed: 'right',
-    width: 70,
-  },
-  {
     title: 'Absent',
     dataIndex: 'absentCount',
     key: 'absentCount',
@@ -96,14 +87,14 @@ const KarkunAttendancesList = ({
   pageSize,
   onPageParamsChange,
 }) => {
-  const { attendance, totalResults } = pagedAttendances;
+  const { data, totalResults } = pagedAttendances;
 
   return (
     <Table
       rowKey="_id"
       size="small"
       columns={columns}
-      dataSource={attendance}
+      dataSource={data}
       pagination={false}
       bordered
       scroll={{ x: 1000 }}
@@ -131,7 +122,7 @@ KarkunAttendancesList.propTypes = {
 
   pagedAttendances: PropTypes.shape({
     totalResults: PropTypes.number,
-    attendance: PropTypes.array,
+    data: PropTypes.array,
   }),
 };
 

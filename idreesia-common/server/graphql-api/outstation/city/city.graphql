@@ -40,6 +40,11 @@ extend type Query {
 
 extend type Mutation {
   createCity(name: String!, peripheryOf: String, country: String!, region: String): CityType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
+
   updateCity(_id: String!, peripheryOf: String, name: String!, country: String!, region: String): CityType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
+
   removeCity(_id: String!): Int
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_SETUP_DATA])
 }

@@ -65,11 +65,6 @@ class Sidebar extends Component {
         history.push(paths.attendanceSheetsPath);
         break;
 
-      case 'messages':
-        setActiveSubModuleName(SubModuleNames.messages);
-        history.push(paths.messagesPath);
-        break;
-
       case 'outstation-user-accounts':
         setActiveSubModuleName(SubModuleNames.outstationUsers);
         history.push(paths.outstationUsersPath);
@@ -113,10 +108,6 @@ class Sidebar extends Component {
         <Menu.Item key="attendance-sheets">
           <SolutionOutlined style={IconStyle} />
           <span>Attendance Sheets</span>
-        </Menu.Item>
-        <Menu.Item key="messages">
-          <MessageOutlined style={IconStyle} />
-          <span>Messages</span>
         </Menu.Item>
         <Menu.SubMenu
           key="administration"

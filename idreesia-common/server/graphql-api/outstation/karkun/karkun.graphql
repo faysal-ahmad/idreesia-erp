@@ -47,9 +47,6 @@ extend type Mutation {
   ): KarkunType
   @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
 
-  deleteOutstationKarkun(_id: String!): Int
-  @checkPermissions(permissions: [OUTSTATION_DELETE_DATA])
-
   setOutstationKarkunEhadDuty(
     _id: String!
     ehadKarkun: Boolean!
@@ -67,4 +64,10 @@ extend type Mutation {
 
   setOutstationKarkunProfileImage(_id: String!, imageId: String!): KarkunType
   @checkPermissions(permissions: [OUTSTATION_MANAGE_KARKUNS])
+
+  deleteOutstationKarkuns(_ids: [String]!): Int
+  @checkPermissions(permissions: [OUTSTATION_DELETE_DATA])
+
+  createOutstationKarkunUserAccount(_id: String!, email: String!): KarkunType
+  @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 }

@@ -8,7 +8,7 @@ import {
   Formats,
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
-import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/portals/create-monthly-attendance';
+import { ensureMonthlyAttendance } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
 const userHasPortalLevelAccess = user =>
@@ -51,7 +51,7 @@ export default {
       }
 
       return {
-        attendance: [],
+        data: [],
         totalResults: 0,
       };
     },
@@ -67,58 +67,46 @@ export default {
       if (!cityMehfilId && userHasPortalLevelAccess(user)) {
         // If the user has portal level access, return him the data
         // for the city.
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
-        }).fetch();
+        }).fetchAsync();
       }
 
       if (cityMehfilId && userCanAccessCityMehfilData(cityMehfilId, user)) {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
           'karkunData.cityMehfilId': { $eq: cityMehfilId },
-        }).fetch();
+        }).fetchAsync();
       }
 
       const karkunIds = people.map(({ _id }) => _id);
+      await ensureMonthlyAttendance(karkunIds, month, user);
       return Attendances.find({
         month,
         karkunId: { $in: karkunIds },
-      }).fetch();
+      }).fetchAsync();
     },
   },
 
   Mutation: {
-    createPortalAttendances: async (obj, { portalId, month }, { user }) =>
-      createMonthlyAttendance(portalId, month, user),
-
     updatePortalAttendance: async (
       obj,
-      {
-        _id,
-        attendanceDetails,
-        presentCount,
-        lateCount,
-        absentCount,
-        msVisitCount,
-        percentage,
-      },
+      { _id, attendanceDetails, presentCount, absentCount, percentage },
       { user }
     ) => {
       const date = new Date();
-      Attendances.update(_id, {
+      await Attendances.updateAsync(_id, {
         $set: {
           attendanceDetails,
           presentCount: toInteger(presentCount),
-          lateCount: toInteger(lateCount),
           absentCount: toInteger(absentCount),
-          msVisitCount: toInteger(msVisitCount),
           percentage: toInteger(percentage),
           updatedAt: date,
           updatedBy: user._id,
         },
       });
 
-      return Attendances.findOne(_id);
+      return Attendances.findOneAsync(_id);
     },
 
     deletePortalAttendances: async (obj, { month, ids }, { user }) => {
@@ -134,7 +122,7 @@ export default {
         );
       }
 
-      return Attendances.remove({
+      return Attendances.removeAsync({
         _id: { $in: ids },
       });
     },
@@ -158,18 +146,18 @@ export default {
 
       let people = [];
       if (!cityMehfilId) {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
-        }).fetch();
+        }).fetchAsync();
       } else {
-        people = People.find({
+        people = await People.find({
           'karkunData.cityId': { $eq: cityId },
           'karkunData.cityMehfilId': { $eq: cityMehfilId },
-        }).fetch();
+        }).fetchAsync();
       }
 
       const karkunIds = people.map(({ _id }) => _id);
-      return Attendances.remove({
+      return Attendances.removeAsync({
         month,
         karkunId: { $in: karkunIds },
       });

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
+export const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
   query pagedOutstationAttendanceByKarkun(
     $karkunId: String!
     $queryString: String
@@ -10,17 +10,14 @@ const PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN = gql`
       queryString: $queryString
     ) {
       totalResults
-      attendance {
+      data {
         _id
         month
         attendanceDetails
         absentCount
-        lateCount
         presentCount
         percentage
       }
     }
   }
 `;
-
-export default PAGED_OUTSTATION_ATTENDANCE_BY_KARKUN;

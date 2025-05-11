@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const SET_OUTSTATION_PORTAL_USER_PERMISSIONS = gql`
+export const SET_OUTSTATION_PORTAL_USER_PERMISSIONS = gql`
   mutation setOutstationPortalUserPermissions(
     $userId: String!
     $permissions: [String]!
@@ -14,5 +14,3 @@ const SET_OUTSTATION_PORTAL_USER_PERMISSIONS = gql`
     }
   }
 `;
-
-export default SET_OUTSTATION_PORTAL_USER_PERMISSIONS;

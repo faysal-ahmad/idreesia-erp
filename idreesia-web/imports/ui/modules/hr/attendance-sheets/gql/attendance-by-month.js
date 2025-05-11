@@ -18,7 +18,6 @@ const ATTENDANCE_BY_MONTH = gql`
       shiftId
       attendanceDetails
       presentCount
-      lateCount
       absentCount
       percentage
       meetingCardBarcodeId

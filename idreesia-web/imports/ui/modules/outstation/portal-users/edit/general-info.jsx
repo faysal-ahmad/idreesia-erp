@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import { Form, Modal, message } from 'antd';
+import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithAllPortals } from 'meteor/idreesia-common/composers/admin';
 import {
   InputTextField,
   SelectField,
-  SwitchField,
   FormButtonsSaveCancelExtra,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -16,10 +15,9 @@ import {
   OUTSTATION_PORTAL_USER_BY_ID,
   PAGED_OUTSTATION_PORTAL_USERS,
   UPDATE_OUTSTATION_PORTAL_USER,
-  RESET_OUTSTATION_PORTAL_USER_PASSWORD,
+  LOCK_OUTSTATION_PORTAL_USER,
+  UNLOCK_OUTSTATION_PORTAL_USER,
 } from '../gql';
-
-const { confirm } = Modal;
 
 class GeneralInfo extends Component {
   static propTypes = {
@@ -33,7 +31,8 @@ class GeneralInfo extends Component {
     loading: PropTypes.bool,
     outstationPortalUserById: PropTypes.object,
     updateOutstationPortalUser: PropTypes.func,
-    resetOutstationPortalUserPassword: PropTypes.func,
+    lockOutstationPortalUser: PropTypes.func,
+    unlockOutstationPortalUser: PropTypes.func,
   };
   
   state = {
@@ -49,36 +48,37 @@ class GeneralInfo extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handlePasswordReset = () => {
-    const { userId, resetOutstationPortalUserPassword } = this.props;
-    confirm({
-      title: 'Do you want to reset the password for this account?',
-      onOk() {
-        resetOutstationPortalUserPassword({
-          variables: {
-            userId,
-          },
-        })
-          .then(() => {
-            message.success(
-              'The password has been reset and a message has been sent to the user.',
-              5
-            );
-          })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-      },
-      onCancel() {},
-    });
+  handleLockUnlock = () => {
+    const {
+      userId,
+      outstationPortalUserById,
+      lockOutstationPortalUser,
+      unlockOutstationPortalUser,
+    } = this.props;
+
+    if (outstationPortalUserById.locked) {
+      unlockOutstationPortalUser({
+        variables: { userId },
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+    } else {
+      lockOutstationPortalUser({
+        variables: { userId },
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+    }
   };
 
-  handleFinish = ({ locked, portalId }) => {
+  handleFinish = ({ email, portalId }) => {
     const { history, userId, updateOutstationPortalUser } = this.props;
     updateOutstationPortalUser({
       variables: {
         userId,
-        locked: locked || false,
+        email,
         portalId,
       },
     })
@@ -115,10 +115,11 @@ class GeneralInfo extends Component {
           initialValue={outstationPortalUserById.username}
         />
 
-        <SwitchField
-          fieldName="locked"
-          fieldLabel="Locked"
-          initialValue={outstationPortalUserById.locked}
+        <InputTextField
+          fieldName="email"
+          fieldLabel="Email"
+          disabled={!!outstationPortalUserById.email && outstationPortalUserById.emailVerified}
+          initialValue={outstationPortalUserById.email}
         />
 
         <InputTextField
@@ -138,9 +139,9 @@ class GeneralInfo extends Component {
         />
 
         <FormButtonsSaveCancelExtra
-          extraText="Reset Password"
+          extraText={outstationPortalUserById.locked ? "Unlock Account" : "Lock Account"}
           handleCancel={this.handleCancel}
-          handleExtra={this.handlePasswordReset}
+          handleExtra={this.handleLockUnlock}
           isFieldsTouched={isFieldsTouched}
         />
       </Form>
@@ -150,14 +151,27 @@ class GeneralInfo extends Component {
 
 export default flowRight(
   WithAllPortals(),
-  graphql(RESET_OUTSTATION_PORTAL_USER_PASSWORD, {
-    name: 'resetOutstationPortalUserPassword',
-  }),
   graphql(UPDATE_OUTSTATION_PORTAL_USER, {
     name: 'updateOutstationPortalUser',
     options: () => ({
       refetchQueries: [
         { query: PAGED_OUTSTATION_PORTAL_USERS, variables: { filter: {} } },
+      ],
+    }),
+  }),
+  graphql(LOCK_OUTSTATION_PORTAL_USER, {
+    name: 'lockOutstationPortalUser',
+    options: ({ userId }) => ({
+      refetchQueries: [
+        { query: OUTSTATION_PORTAL_USER_BY_ID, variables: { _id: userId } },
+      ],
+    }),
+  }),
+  graphql(UNLOCK_OUTSTATION_PORTAL_USER, {
+    name: 'unlockOutstationPortalUser',
+    options: ({ userId }) => ({
+      refetchQueries: [
+        { query: OUTSTATION_PORTAL_USER_BY_ID, variables: { _id: userId } },
       ],
     }),
   }),

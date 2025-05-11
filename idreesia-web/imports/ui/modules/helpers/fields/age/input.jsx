@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { InputNumber } from 'antd';
 
@@ -13,14 +13,14 @@ export default class CustomInput extends Component {
 
   handleChange = years => {
     const { onChange } = this.props;
-    const newValue = moment().startOf('day');
+    const newValue = dayjs().startOf('day');
     newValue.subtract(years, 'years');
     onChange(newValue);
   };
 
   render() {
     const { value } = this.props;
-    const currentDate = moment().startOf('day');
+    const currentDate = dayjs().startOf('day');
     const diffInYears =
       value && value.isValid() ? currentDate.diff(value, 'years') : 0;
 

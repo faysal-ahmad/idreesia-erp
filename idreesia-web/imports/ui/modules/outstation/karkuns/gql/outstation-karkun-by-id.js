@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const OUTSTATION_KARKUN_BY_ID = gql`
+export const OUTSTATION_KARKUN_BY_ID = gql`
   query outstationKarkunById($_id: String!) {
     outstationKarkunById(_id: $_id) {
       _id
@@ -31,8 +31,17 @@ const OUTSTATION_KARKUN_BY_ID = gql`
       createdBy
       updatedAt
       updatedBy
+      user {
+        _id
+        username
+        email
+        emailVerified
+        locked
+        lastLoggedInAt
+        lastActiveAt
+        permissions
+        instances
+      }
     }
   }
 `;
-
-export default OUTSTATION_KARKUN_BY_ID;

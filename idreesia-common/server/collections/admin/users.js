@@ -27,6 +27,7 @@ const mapUser = user => ({
   _id: user._id,
   username: user.username,
   email: get(user, 'emails.0.address', null),
+  emailVerified: get(user, 'emails.0.verified', false),
   displayName: user.profile?.name,
   personId: user.personId,
   locked: user.locked,
@@ -119,6 +120,14 @@ Users.findOneUser = userId => {
   return mapUser(user);
 };
 
+Users.findByPersonIds = async personIds => {
+  const users = await Users.find({
+    personId: { $in: personIds },
+  }).fetchAsync();
+
+  return users.map(user => mapUser(user));
+};
+
 Users.searchUsers = params => {
   const { pageIndex = '0', pageSize = '20' } = params;
   const pipeline = buildPipeline(params);
@@ -184,6 +193,13 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
     {
       $match: {
         personId: { $exists: true, $ne: null },
+      },
+    },
+  ];
+
+  if (portalIds && portalIds.length > 0) {
+    initialPipeline.push({
+      $match: {
         $or: [
           {
             permissions: {
@@ -198,8 +214,8 @@ Users.searchOutstationPortalUsers = (params, portalIds) => {
           },
         ],
       },
-    },
-  ];
+    });
+  }
 
   const pipeline = initialPipeline.concat(buildPipeline(params));
   const countingPipeline = pipeline.concat({
@@ -278,15 +294,6 @@ Users.createUser = (
     });
   }
 
-  // Send sms message to user for account creation
-  const params = { userId: newUserId, password, email };
-  const options = { priority: 'normal', retry: 10 };
-  createJob({
-    type: JobTypes.SEND_ACCOUNT_CREATED_SMS_MESSAGE,
-    params,
-    options,
-  });
-
   // Create a security log
   SecurityLogs.insert({
     userId: newUserId,
@@ -336,11 +343,6 @@ Users.updateUser = (
     // Send sms message to user for new password
     const params = { userId, password };
     const options = { priority: 'normal', retry: 10 };
-    createJob({
-      type: JobTypes.SEND_PASSWORD_RESET_SMS_MESSAGE,
-      params,
-      options,
-    });
 
     // Create a security log
     SecurityLogs.insert({
@@ -407,6 +409,78 @@ Users.setPermissions = (
     operationDetails: {
       permissionsAdded,
       permissionsRemoved,
+    },
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
+};
+
+// Adds the passed instances to the list of existing
+// instances that the user has access to.
+Users.addInstanceAccess = (
+  { userId, instances },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = Users.findOneUser(userId);
+  const instancesToAdd = difference(instances, existingUser.instances || []);
+
+  if (instancesToAdd.length === 0) {
+    // All the passed values were already in the
+    // user's instance list
+    return Users.findOneUser(userId);
+  }
+
+  Users.update(userId, {
+    $set: {
+      instances: (existingUser.instances || []).concat(instancesToAdd),
+    },
+  });
+
+  // Create a security log
+  SecurityLogs.insert({
+    userId,
+    operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    operationDetails: {
+      instancesAdded: instancesToAdd,
+    },
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
+};
+
+// Removes the passed instances from the list of existing
+// instances that the user has access to.
+Users.removeInstanceAccess = (
+  { userId, instances },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = Users.findOneUser(userId);
+  const instancesToKeep = difference(existingUser.instances || [], instances);
+
+  Users.update(userId, {
+    $set: {
+      instances: instancesToKeep,
+    },
+  });
+
+  // Create a security log
+  SecurityLogs.insert({
+    userId,
+    operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    operationDetails: {
+      instancesRemoved: instances,
     },
     dataSource,
     dataSourceDetail,

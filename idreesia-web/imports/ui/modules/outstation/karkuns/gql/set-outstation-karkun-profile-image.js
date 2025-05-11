@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-const SET_OUTSTATION_KARKUN_PROFILE_IMAGE = gql`
+export const SET_OUTSTATION_KARKUN_PROFILE_IMAGE = gql`
   mutation setOutstationKarkunProfileImage($_id: String!, $imageId: String!) {
     setOutstationKarkunProfileImage(_id: $_id, imageId: $imageId) {
       _id
@@ -8,5 +8,3 @@ const SET_OUTSTATION_KARKUN_PROFILE_IMAGE = gql`
     }
   }
 `;
-
-export default SET_OUTSTATION_KARKUN_PROFILE_IMAGE;

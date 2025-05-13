@@ -34,6 +34,7 @@ export default class SubModulePaths {
   // Karkun Routes
   // *************************************************************************************
   static karkunsPath = `${ModulePaths.outstation}/karkuns`;
+  static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
   static karkunsUploadFormPath = `${SubModulePaths.karkunsPath}/upload`;
   static karkunsEditFormPath(karkunId = ':karkunId') {
     return `${SubModulePaths.karkunsPath}/${karkunId}`;

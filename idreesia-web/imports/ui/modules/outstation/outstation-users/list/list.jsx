@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import dayjs from 'dayjs';
+import { Flex, Pagination, Row, Table } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import { Pagination, Row, Table } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
@@ -77,26 +77,40 @@ const List = ({ history, location }) => {
         ),
     },
     {
-      title: 'User Name',
+      title: 'Email / User Name',
       dataIndex: 'username',
       key: 'username',
+      render: (text, record) => (
+        <Flex vertical>
+          <span>{record.email}</span>
+          <span>{record.username}</span>
+        </Flex>
+      ),
     },
     {
-      title: 'Last Active',
-      dataIndex: 'lastActiveAt',
-      key: 'lastActiveAt',
-      render: text => {
-        if (!text) return '';
-        return (
-          <>
-            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
-          </>
-        );
+      title: 'Mehfil / City',
+      key: 'cityMehfil',
+      render: (text, record) => {
+        const cityMehfilInfo = [];
+        if (record.karkun) {
+          const { city, cityMehfil } = record.karkun;
+
+          if (cityMehfil) {
+            cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
+          }
+          if (city) {
+            cityMehfilInfo.push(
+              <Row key="2">{`${city.name}, ${city.country}`}</Row>
+            );
+          }
+        }
+        
+        if (cityMehfilInfo.length === 0) return '';
+        return <>{cityMehfilInfo}</>;
       },
     },
     {
-      title: 'Permissions',
+      title: 'Outstation Permissions',
       dataIndex: 'permissions',
       key: 'permissions',
       render: permissions => {

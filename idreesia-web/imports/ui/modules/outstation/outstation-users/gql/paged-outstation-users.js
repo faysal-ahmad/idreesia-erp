@@ -7,6 +7,8 @@ const PAGED_OUTSTATION_USERS = gql`
       data {
         _id
         username
+        email
+        emailVerified
         locked
         lastActiveAt
         permissions
@@ -14,6 +16,15 @@ const PAGED_OUTSTATION_USERS = gql`
           _id
           name
           imageId
+          city {
+            _id
+            name
+            country
+          }
+          cityMehfil {
+            _id
+            name
+          }
         }
       }
     }

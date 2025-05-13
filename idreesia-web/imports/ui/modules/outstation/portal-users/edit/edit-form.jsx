@@ -14,7 +14,7 @@ const EditForm = props => {
       <Tabs.TabPane tab="General Info" key="1">
         <GeneralInfo userId={userId} {...props} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Permissions" key="2">
+      <Tabs.TabPane tab="Portal Permissions" key="2">
         <Permissions userId={userId} {...props} />
       </Tabs.TabPane>
     </Tabs>

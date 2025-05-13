@@ -4,7 +4,6 @@ import { Switch, Route } from 'react-router-dom';
 import { default as paths } from './submodule-paths';
 import { JobsNewForm, JobsEditForm, JobsList } from './jobs';
 import { MSDutiesNewForm, MSDutiesEditForm, MSDutiesList } from './ms-duties';
-import { MessagesList, MessagesNewForm, MessagesEditForm } from './messages';
 import {
   DutyLocationsNewForm,
   DutyLocationsEditForm,
@@ -98,10 +97,6 @@ const Router = () => (
       component={SalarySheetsEidReceipts}
     />
     <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
-
-    <Route path={paths.messagesNewFormPath} component={MessagesNewForm} />
-    <Route path={paths.messagesEditFormPath()} component={MessagesEditForm} />
-    <Route path={paths.messagesPath} component={MessagesList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
   </Switch>

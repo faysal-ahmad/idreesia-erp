@@ -48,6 +48,21 @@ export default {
       return 'Karkun already exists. Ignored.';
     },
 
+    createOutstationKarkun: async (obj, values, { user }) => {
+      const personValues = People.karkunToPerson(values);
+      const person = People.createPerson(
+        {
+          ...personValues,
+          isKarkun: true,
+          isVisitor: true,
+          dataSource: DataSource.OUTSTATION,
+        },
+        user
+      );
+
+      return People.personToKarkun(person);
+    },
+
     updateOutstationKarkun: async (obj, values, { user }) => {
       const personValues = People.karkunToPerson(values);
       const person = People.updatePerson(personValues, user);

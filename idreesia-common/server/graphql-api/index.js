@@ -25,14 +25,10 @@ import SecurityLogResolvers from './common/security-log/resolvers';
 import ImdadRequestSchema from './common/imdad-request/imdad-request.graphql';
 import ImdadRequestResolvers from './common/imdad-request/resolvers';
 
-import KarkunSchema from './common/karkun/karkun.graphql';
-import KarkunResolvers from './common/karkun/resolvers';
-
-import MessageSchema from './common/message/message.graphql';
-import MessageResolvers from './common/message/resolvers';
-
 import PersonSchema from './common/person/person.graphql';
 import PersonResolvers from './common/person/resolvers';
+import KarkunSchema from './common/karkun/karkun.graphql';
+import KarkunResolvers from './common/karkun/resolvers';
 import VisitorSchema from './common/visitor/visitor.graphql';
 import VisitorResolvers from './common/visitor/resolvers';
 
@@ -83,9 +79,6 @@ import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
  */
 import OperationsVisitorSchema from './operations/visitor/visitor.graphql';
 import OperationsVisitorResolvers from './operations/visitor/resolvers';
-
-import OperationsMessageSchema from './operations/message/message.graphql';
-import OperationsMessageResolvers from './operations/message/resolvers';
 
 import OperationsWazeefaSchema from './operations/wazaif/wazeefa/wazeefa.graphql';
 import OperationsWazeefaResolvers from './operations/wazaif/wazeefa/resolvers';
@@ -140,9 +133,6 @@ import AttendanceResolvers from './hr/attendance/resolvers';
 
 import SalarySchema from './hr/salary/salary.graphql';
 import SalaryResolvers from './hr/salary/resolvers';
-
-import HRMessageSchema from './hr/message/message.graphql';
-import HRMessageResolvers from './hr/message/resolvers';
 
 /**
  * Schema and Resolvers for the Outstation module
@@ -278,7 +268,6 @@ const typeDefs = [
   SecurityLogSchema,
   ImdadRequestSchema,
   KarkunSchema,
-  MessageSchema,
   PersonSchema,
   VisitorSchema,
   AdminJobSchema,
@@ -296,7 +285,6 @@ const typeDefs = [
   SecurityVisitorStaySchema,
 
   OperationsVisitorSchema,
-  OperationsMessageSchema,
   OperationsWazeefaSchema,
   OperationsWazeefaDeliveryOrderSchema,
   OperationsWazeefaPrintingOrderSchema,
@@ -314,7 +302,6 @@ const typeDefs = [
   KarkunDutySchema,
   AttendanceSchema,
   SalarySchema,
-  HRMessageSchema,
 
   PortalSchema,
   CitySchema,
@@ -367,7 +354,6 @@ const resolvers = merge(
   SecurityLogResolvers,
   ImdadRequestResolvers,
   KarkunResolvers,
-  MessageResolvers,
   PersonResolvers,
   VisitorResolvers,
   AdminJobResolvers,
@@ -385,7 +371,6 @@ const resolvers = merge(
   SecurityVisitorStayResolvers,
 
   OperationsVisitorResolvers,
-  OperationsMessageResolvers,
   OperationsWazeefaResolvers,
   OperationsWazeefaDeliveryOrderResolvers,
   OperationsWazeefaPrintingOrderResolvers,
@@ -403,7 +388,6 @@ const resolvers = merge(
   KarkunDutyResolvers,
   AttendanceResolvers,
   SalaryResolvers,
-  HRMessageResolvers,
 
   PortalResolvers,
   CityResolvers,

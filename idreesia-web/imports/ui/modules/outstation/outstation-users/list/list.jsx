@@ -22,9 +22,6 @@ const permissionDisplayText = {
   [Permissions.OUTSTATION_MANAGE_MEMBERS]: 'Manage Members',
   [Permissions.OUTSTATION_VIEW_KARKUNS]: 'View Karkuns',
   [Permissions.OUTSTATION_MANAGE_KARKUNS]: 'Manage Karkuns',
-  [Permissions.OUTSTATION_VIEW_MESSAGES]: 'View Messages',
-  [Permissions.OUTSTATION_MANAGE_MESSAGES]: 'Manage Messages',
-  [Permissions.OUTSTATION_APPROVE_MESSAGES]: 'Approve Messages',
   [Permissions.OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS]: 'View Portal Users & Groups',
   [Permissions.OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS]: 'Manage Portal Users & Groups',
 };

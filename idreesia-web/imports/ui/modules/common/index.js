@@ -20,12 +20,7 @@ export { default as VisitorsNewForm } from './visitors/new-form';
 export { default as VisitorsGeneralInfo } from './visitors/general-info';
 
 export { default as ImdadRequestsList } from './imdad-requests/list';
-export {
-  default as ImdadRequestsListFilter,
-} from './imdad-requests/list-filter';
-
-export { default as MessagesList } from './messages/list';
-export { default as MessagesListFilter } from './messages/list-filter';
+export { default as ImdadRequestsListFilter } from './imdad-requests/list-filter';
 
 export { default as PeopleList } from './people/list';
 export { default as PeopleListFilter } from './people/list-filter';
@@ -33,9 +28,5 @@ export { default as PeopleListFilter } from './people/list-filter';
 export { default as WazaifList } from './wazaif/list';
 export { default as WazaifListFilter } from './wazaif/list-filter';
 
-export {
-  default as KarkunAttendancesList,
-} from './attendance/karkun-attendances-list';
-export {
-  default as KarkunsAttendanceList,
-} from './attendance/karkuns-attendance-list';
+export { default as KarkunAttendancesList } from './attendance/karkun-attendances-list';
+export { default as KarkunsAttendanceList } from './attendance/karkuns-attendance-list';

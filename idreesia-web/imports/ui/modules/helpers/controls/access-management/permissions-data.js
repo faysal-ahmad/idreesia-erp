@@ -192,24 +192,6 @@ export const HrPermissionsData = {
         },
       ],
     },
-    {
-      title: 'Messages',
-      key: 'module-hr-messages',
-      children: [
-        {
-          title: 'View Messages',
-          key: PermissionConstants.HR_VIEW_MESSAGES,
-        },
-        {
-          title: 'Manage Messages',
-          key: PermissionConstants.HR_MANAGE_MESSAGES,
-        },
-        {
-          title: 'Approve Messages',
-          key: PermissionConstants.HR_APPROVE_MESSAGES,
-        },
-      ],
-    },
   ],
 };
 
@@ -325,24 +307,6 @@ export const OutstationPermissionsData = {
         {
           title: 'Manage Karkuns',
           key: PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
-        },
-      ],
-    },
-    {
-      title: 'Messages',
-      key: 'module-outstation-messages',
-      children: [
-        {
-          title: 'View Messages',
-          key: PermissionConstants.OUTSTATION_VIEW_MESSAGES,
-        },
-        {
-          title: 'Manage Messages',
-          key: PermissionConstants.OUTSTATION_MANAGE_MESSAGES,
-        },
-        {
-          title: 'Approve Messages',
-          key: PermissionConstants.OUTSTATION_APPROVE_MESSAGES,
         },
       ],
     },
@@ -558,24 +522,6 @@ export const OperationsPermissionsData = {
         {
           title: 'Manage Imdad Requests',
           key: PermissionConstants.OP_MANAGE_IMDAD_REQUESTS,
-        },
-      ],
-    },
-    {
-      title: 'Messages',
-      key: 'module-operations-messages',
-      children: [
-        {
-          title: 'View Messages',
-          key: PermissionConstants.OP_VIEW_MESSAGES,
-        },
-        {
-          title: 'Manage Messages',
-          key: PermissionConstants.OP_MANAGE_MESSAGES,
-        },
-        {
-          title: 'Approve Messages',
-          key: PermissionConstants.OP_APPROVE_MESSAGES,
         },
       ],
     },

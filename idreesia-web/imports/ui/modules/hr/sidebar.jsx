@@ -5,7 +5,6 @@ import {
   DollarOutlined,
   EnvironmentOutlined,
   LaptopOutlined,
-  MessageOutlined,
   SolutionOutlined,
   TagOutlined,
   TagsOutlined,
@@ -70,11 +69,6 @@ class Sidebar extends Component {
         setActiveSubModuleName(SubModuleNames.people);
         history.push(paths.peoplePath);
         break;
-  
-      case 'messages':
-        setActiveSubModuleName(SubModuleNames.messages);
-        history.push(paths.messagesPath);
-        break;
 
       case 'audit-logs':
         setActiveSubModuleName(SubModuleNames.auditLogs);
@@ -108,10 +102,6 @@ class Sidebar extends Component {
         <Menu.Item key="attendance-sheets">
           <SolutionOutlined style={IconStyle} />
           <span>Attendance Sheets</span>
-        </Menu.Item>
-        <Menu.Item key="messages">
-          <MessageOutlined style={IconStyle} />
-          <span>Messages</span>
         </Menu.Item>
         <SubMenu
           key="setup"

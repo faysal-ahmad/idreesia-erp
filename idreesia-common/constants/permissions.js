@@ -47,10 +47,6 @@ const Permissions = {
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
   HR_APPROVE_SALARIES: 'hr-approve-salaries',
 
-  HR_VIEW_MESSAGES: 'hr-view-messages',
-  HR_MANAGE_MESSAGES: 'hr-manage-messages',
-  HR_APPROVE_MESSAGES: 'hr-approve-messages',
-
   // ****************************************************************************************
   // Operations Module
   // ****************************************************************************************
@@ -59,10 +55,6 @@ const Permissions = {
 
   OP_VIEW_VISITORS: 'operations-view-visitors',
   OP_MANAGE_VISITORS: 'operations-manage-visitors',
-
-  OP_VIEW_MESSAGES: 'operations-view-messages',
-  OP_MANAGE_MESSAGES: 'operations-manage-messages',
-  OP_APPROVE_MESSAGES: 'operations-approve-messages',
 
   OP_VIEW_IMDAD_REQUESTS: 'operations-view-imdad-requests',
   OP_MANAGE_IMDAD_REQUESTS: 'operations-manage-imdad-requests',
@@ -86,10 +78,6 @@ const Permissions = {
 
   OUTSTATION_VIEW_KARKUNS: 'outstation-view-karkuns',
   OUTSTATION_MANAGE_KARKUNS: 'outstation-manage-karkuns',
-
-  OUTSTATION_VIEW_MESSAGES: 'outstation-view-messages',
-  OUTSTATION_MANAGE_MESSAGES: 'outstation-manage-messages',
-  OUTSTATION_APPROVE_MESSAGES: 'outstation-approve-messages',
 
   OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS:
     'outstation-view-portal-users-and-groups',

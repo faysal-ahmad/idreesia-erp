@@ -9,7 +9,6 @@ import {
   FileImageOutlined,
   IdcardOutlined,
   LaptopOutlined,
-  MessageOutlined,
   MonitorOutlined,
   ReadOutlined,
   ShopOutlined,
@@ -80,11 +79,6 @@ class Sidebar extends Component {
         history.push(paths.wazaifUsersPath);
         break;
 
-      case 'messages':
-        setActiveSubModuleName(SubModuleNames.messages);
-        history.push(paths.messagesPath);
-        break;
-
       case 'imdad-reasons':
         setActiveSubModuleName(SubModuleNames.imdadReasons);
         history.push(paths.imdadReasonsPath);
@@ -115,10 +109,6 @@ class Sidebar extends Component {
         <Item key="visitors">
           <IdcardOutlined style={IconStyle} />
           <span>Visitors</span>
-        </Item>
-        <Item key="messages">
-          <MessageOutlined style={IconStyle} />
-          <span>Messages</span>
         </Item>
         <SubMenu
           key="imdad-management"

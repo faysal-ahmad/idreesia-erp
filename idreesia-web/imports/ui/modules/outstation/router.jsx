@@ -8,7 +8,12 @@ import {
   MembersEditForm,
   MembersList,
 } from './members';
-import { KarkunsEditForm, KarkunsUploadForm, KarkunsList } from './karkuns';
+import {
+  KarkunsNewForm,
+  KarkunsEditForm,
+  KarkunsUploadForm,
+  KarkunsList,
+} from './karkuns';
 import { AttendanceSheetsList } from './attendance-sheets';
 import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import {
@@ -52,6 +57,7 @@ const Router = () => (
     <Route path={paths.membersPath} component={MembersList} />
 
     <Route path={paths.karkunsUploadFormPath} component={KarkunsUploadForm} />
+    <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
     <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <Route path={paths.karkunsPath} component={KarkunsList} />
 

@@ -118,6 +118,8 @@ class GeneralInfo extends Component {
         <InputTextField
           fieldName="email"
           fieldLabel="Email"
+          required
+          requiredMessage="Please input the email."
           disabled={!!outstationPortalUserById.email && outstationPortalUserById.emailVerified}
           initialValue={outstationPortalUserById.email}
         />

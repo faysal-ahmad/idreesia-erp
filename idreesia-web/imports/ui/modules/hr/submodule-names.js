@@ -6,7 +6,6 @@ const SubModuleNames = {
   karkuns: 'Karkuns',
   attendanceSheets: 'Attendance Sheets',
   salarySheets: 'Salary Sheets',
-  messages: 'Messages',
   auditLogs: 'Audit Logs',
 };
 

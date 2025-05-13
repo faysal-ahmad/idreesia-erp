@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
-import dayjs from 'dayjs';
+import { Flex, Pagination, Row, Table } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import { Pagination, Row, Table } from 'antd';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats, Permissions } from 'meteor/idreesia-common/constants';
+import { Permissions } from 'meteor/idreesia-common/constants';
 
 import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import { PAGED_OUTSTATION_USERS } from '../gql';
 
@@ -22,9 +22,6 @@ const permissionDisplayText = {
   [Permissions.OUTSTATION_MANAGE_MEMBERS]: 'Manage Members',
   [Permissions.OUTSTATION_VIEW_KARKUNS]: 'View Karkuns',
   [Permissions.OUTSTATION_MANAGE_KARKUNS]: 'Manage Karkuns',
-  [Permissions.OUTSTATION_VIEW_MESSAGES]: 'View Messages',
-  [Permissions.OUTSTATION_MANAGE_MESSAGES]: 'Manage Messages',
-  [Permissions.OUTSTATION_APPROVE_MESSAGES]: 'Approve Messages',
   [Permissions.OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS]: 'View Portal Users & Groups',
   [Permissions.OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS]: 'Manage Portal Users & Groups',
 };
@@ -74,32 +71,51 @@ const List = ({ history, location }) => {
       key: 'karkun.name',
       render: (text, record) =>
         record.karkun ? (
-          <PersonName person={record.karkun} />
+          <PersonName
+            person={record.karkun}
+            onPersonNameClicked={() => {
+              history.push(paths.karkunsEditFormPath(record.karkun._id));
+            }}
+          />
         ) : (
           ''
         ),
     },
     {
-      title: 'User Name',
+      title: 'Email / User Name',
       dataIndex: 'username',
       key: 'username',
+      render: (text, record) => (
+        <Flex vertical>
+          <span>{record.email}</span>
+          <span>{record.username}</span>
+        </Flex>
+      ),
     },
     {
-      title: 'Last Active',
-      dataIndex: 'lastActiveAt',
-      key: 'lastActiveAt',
-      render: text => {
-        if (!text) return '';
-        return (
-          <>
-            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
-          </>
-        );
+      title: 'Mehfil / City',
+      key: 'cityMehfil',
+      render: (text, record) => {
+        const cityMehfilInfo = [];
+        if (record.karkun) {
+          const { city, cityMehfil } = record.karkun;
+
+          if (cityMehfil) {
+            cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
+          }
+          if (city) {
+            cityMehfilInfo.push(
+              <Row key="2">{`${city.name}, ${city.country}`}</Row>
+            );
+          }
+        }
+        
+        if (cityMehfilInfo.length === 0) return '';
+        return <>{cityMehfilInfo}</>;
       },
     },
     {
-      title: 'Permissions',
+      title: 'Outstation Permissions',
       dataIndex: 'permissions',
       key: 'permissions',
       render: permissions => {

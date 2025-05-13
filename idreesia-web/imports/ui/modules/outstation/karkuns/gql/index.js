@@ -4,6 +4,7 @@ export { SET_OUTSTATION_KARKUN_PROFILE_IMAGE } from './set-outstation-karkun-pro
 export { SET_OUTSTATION_KARKUN_WAZAIF_AND_RAABTA } from './set-outstation-karkun-wazaif-and-raabta';
 export { IMPORT_OUTSTATION_KARKUN } from './import-outstation-karkun';
 
+export { CREATE_OUTSTATION_KARKUN } from './create-outstation-karkun';
 export { UPDATE_OUTSTATION_KARKUN } from './update-outstation-karkun';
 export { DELETE_OUTSTATION_KARKUNS } from './delete-outstation-karkuns';
 export { CREATE_OUTSTATION_KARKUN_USER_ACCOUNT } from './create-outstation-karkun-user-account';

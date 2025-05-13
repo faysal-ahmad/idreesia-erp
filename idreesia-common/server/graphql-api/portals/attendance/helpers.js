@@ -15,6 +15,7 @@ export async function ensureMonthlyAttendance(karkunIds, formattedMonth, user) {
     if (!attandancesMap[karkunId]) {
       missingAttendances.push({
         insertOne: {
+          _id: `${karkunId}_${formattedMonth}`,
           karkunId,
           month: formattedMonth,
           totalCount: 0,

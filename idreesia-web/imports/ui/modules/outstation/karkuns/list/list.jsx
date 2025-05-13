@@ -3,7 +3,13 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { Button, Dropdown, message } from 'antd';
-import { DeleteOutlined, DownloadOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons';
+import { 
+  DeleteOutlined,
+  DownloadOutlined,
+  PlusCircleOutlined,
+  SettingOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -61,6 +67,10 @@ const List = ({ history, location }) => {
   useEffect(() => {
     dispatch(setBreadcrumbs(['Outstation', 'Karkuns', 'List']));
   }, [location]);
+
+  const handleNewClicked = () => {
+    history.push(paths.karkunsNewFormPath);
+  };
 
   const handleDeleteSelected = () => {
     const selectedRows = karkunsList.current.getSelectedRows();
@@ -209,6 +219,14 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
+      <Button
+        type="primary"
+        icon={<PlusCircleOutlined />}
+        size="large"
+        onClick={handleNewClicked}
+      >
+        New Karkun
+      </Button>
       <div />
       <div className="list-table-header-section">
         {getListFilter()}

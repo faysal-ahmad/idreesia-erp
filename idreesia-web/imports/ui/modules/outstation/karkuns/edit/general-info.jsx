@@ -108,6 +108,7 @@ class GeneralInfo extends Component {
         handleFinish={this.handleFinish}
         handleCancel={this.handleCancel}
         showCityMehfilField
+        allowEhadInfoUpdation
         cities={allCities}
         cityMehfils={allCityMehfils}
       />

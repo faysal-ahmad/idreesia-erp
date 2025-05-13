@@ -19,10 +19,12 @@ const SwitchField = ({
   fieldLabel,
   fieldLayout = formItemLayout,
   initialValue = false,
+  disabled = false,
   handleChange,
 }) => (
     <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} {...fieldLayout}>
       <Switch
+        disabled={disabled}
         onChange={checked => {
           if (handleChange) {
             handleChange(checked);
@@ -37,6 +39,7 @@ SwitchField.propTypes = {
   fieldLabel: PropTypes.string,
   fieldLayout: PropTypes.object,
   initialValue: PropTypes.bool,
+  disabled: PropTypes.bool,
   handleChange: PropTypes.func,
 };
 

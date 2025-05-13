@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
-import dayjs from 'dayjs';
 import { Flex, Pagination, Row, Table } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats, Permissions } from 'meteor/idreesia-common/constants';
+import { Permissions } from 'meteor/idreesia-common/constants';
 
 import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { OutstationSubModulePaths as paths } from '/imports/ui/modules/outstation';
 
 import { PAGED_OUTSTATION_USERS } from '../gql';
 
@@ -71,7 +71,12 @@ const List = ({ history, location }) => {
       key: 'karkun.name',
       render: (text, record) =>
         record.karkun ? (
-          <PersonName person={record.karkun} />
+          <PersonName
+            person={record.karkun}
+            onPersonNameClicked={() => {
+              history.push(paths.karkunsEditFormPath(record.karkun._id));
+            }}
+          />
         ) : (
           ''
         ),

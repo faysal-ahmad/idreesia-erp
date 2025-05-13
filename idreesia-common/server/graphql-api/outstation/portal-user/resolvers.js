@@ -59,7 +59,10 @@ export default {
         );
       } */
 
-      if (!_user.instances || _user.instances.indexOf(portalId) === -1) {
+      if (
+        portalId &&
+        (!_user.instances || _user.instances.indexOf(portalId) === -1)
+      ) {
         Users.addInstanceAccess(
           {
             userId,

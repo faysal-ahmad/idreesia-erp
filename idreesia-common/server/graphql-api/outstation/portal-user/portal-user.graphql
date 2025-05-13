@@ -19,6 +19,11 @@ extend type Mutation {
     portalId: String
   ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 
+  setOutstationPortalUserPermissions(
+    userId: String!
+    permissions: [String]!
+  ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
+
   lockOutstationPortalUser(
     userId: String!
   ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])

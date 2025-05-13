@@ -88,6 +88,9 @@ export default {
       return Users.findOneUser(userId);
     },
 
+    setOutstationPortalUserPermissions: async (obj, params, { user }) =>
+      Users.setPermissions(params, user, DataSource.OUTSTATION),
+
     lockOutstationPortalUser: async (obj, { userId }, { user }) =>
       Users.updateUser({ userId, locked: true }, user, DataSource.OUTSTATION),
 

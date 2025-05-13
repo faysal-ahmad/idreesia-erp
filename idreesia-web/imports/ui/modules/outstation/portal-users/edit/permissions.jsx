@@ -26,6 +26,18 @@ class Permissions extends Component {
     setOutstationPortalUserPermissions: PropTypes.func,
   };
 
+  state = {
+    permissionsChanged: false,
+    selectedPermissions: null,
+  };
+
+  handlePermissionSelectionChange = updatedPermissions => {
+    this.setState({
+      permissionsChanged: true,
+      selectedPermissions: updatedPermissions,
+    })
+  }
+
   handleCancel = () => {
     const { history } = this.props;
     history.goBack();
@@ -34,12 +46,10 @@ class Permissions extends Component {
   handleSave = e => {
     e.preventDefault();
     const { history, userId, setOutstationPortalUserPermissions } = this.props;
-    const permissions = this.permissionSelection.getSelectedPermissions();
-
     setOutstationPortalUserPermissions({
       variables: {
         userId,
-        permissions,
+        permissions: this.state.selectedPermissions,
       },
     })
       .then(() => {
@@ -57,11 +67,9 @@ class Permissions extends Component {
     return (
       <Fragment>
         <PermissionSelection
-          ref={ps => {
-            this.permissionSelection = ps;
-          }}
           permissions={portalPermissions}
           securityEntity={outstationPortalUserById}
+          onChange={this.handlePermissionSelectionChange}
         />
         <br />
         <br />

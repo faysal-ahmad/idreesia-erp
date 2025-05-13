@@ -24,7 +24,7 @@ export function getPagedAttendanceByKarkun(karkunId, queryString) {
   const resultsPipeline = pipeline.concat([
     {
       $sort: {
-        createdAt: -1,
+        month: -1,
       },
     },
     {

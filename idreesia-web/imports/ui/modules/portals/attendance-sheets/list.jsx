@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { keys, values } from 'meteor/idreesia-common/utilities/lodash';
@@ -43,7 +43,7 @@ const List = ({ history, location }) => {
     location,
     paramNames: ['month', 'cityId', 'cityMehfilId'],
     paramDefaultValues: {
-      month: moment()
+      month: dayjs()
         .startOf('month')
         .format(Formats.MONTH_FORMAT),
     },

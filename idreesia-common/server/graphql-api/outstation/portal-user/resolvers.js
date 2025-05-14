@@ -59,7 +59,10 @@ export default {
         );
       } */
 
-      if (!_user.instances || _user.instances.indexOf(portalId) === -1) {
+      if (
+        portalId &&
+        (!_user.instances || _user.instances.indexOf(portalId) === -1)
+      ) {
         Users.addInstanceAccess(
           {
             userId,
@@ -84,6 +87,9 @@ export default {
 
       return Users.findOneUser(userId);
     },
+
+    setOutstationPortalUserPermissions: async (obj, params, { user }) =>
+      Users.setPermissions(params, user, DataSource.OUTSTATION),
 
     lockOutstationPortalUser: async (obj, { userId }, { user }) =>
       Users.updateUser({ userId, locked: true }, user, DataSource.OUTSTATION),

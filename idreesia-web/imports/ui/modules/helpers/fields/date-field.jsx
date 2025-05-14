@@ -23,6 +23,7 @@ const DateField = ({
   fieldLayout = formItemLayout,
   initialValue = null,
   required,
+  disabled,
   requiredMessage,
 }) => {
   const rules = [
@@ -34,7 +35,7 @@ const DateField = ({
     
   return (
     <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <DatePicker format="DD MMM, YYYY" allowClear={allowClear} />
+      <DatePicker format="DD MMM, YYYY" allowClear={allowClear} disabled={disabled} />
     </Form.Item>
   );
 }
@@ -46,6 +47,7 @@ DateField.propTypes = {
   fieldLayout: PropTypes.object,
   initialValue: PropTypes.object,
   required: PropTypes.bool,
+  disabled: PropTypes.bool,
   requiredMessage: PropTypes.string,
 };
 

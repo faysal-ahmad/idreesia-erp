@@ -16,7 +16,12 @@ extend type Mutation {
   updateOutstationPortalUser(
     userId: String!
     email: String!
-    portalId: String!
+    portalId: String
+  ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
+
+  setOutstationPortalUserPermissions(
+    userId: String!
+    permissions: [String]!
   ): UserType @checkPermissions(permissions: [OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS])
 
   lockOutstationPortalUser(

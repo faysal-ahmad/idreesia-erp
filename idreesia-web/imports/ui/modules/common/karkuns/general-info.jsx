@@ -26,6 +26,7 @@ const GeneralInfo = ({
   cities,
   cityMehfils,
   showCityMehfilField,
+  allowEhadInfoUpdation,
 }) => {
   const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
@@ -133,12 +134,14 @@ const GeneralInfo = ({
         <SwitchField
           fieldName="ehadKarkun"
           fieldLabel="Ehad Karkun"
+          disabled={!allowEhadInfoUpdation}
           initialValue={karkun.ehadKarkun}
         />
 
         <DateField
           fieldName="ehadPermissionDate"
           fieldLabel="Ehad Permission Date"
+          disabled={!allowEhadInfoUpdation}
           initialValue={
             karkun.ehadPermissionDate
               ? dayjs(Number(karkun.ehadPermissionDate))
@@ -227,12 +230,14 @@ GeneralInfo.propTypes = {
   cities: PropTypes.array,
   cityMehfils: PropTypes.array,
   showCityMehfilField: PropTypes.bool,
+  allowEhadInfoUpdation: PropTypes.bool,
 };
 
 GeneralInfo.defaultProps = {
   cities: [],
   cityMehfils: [],
   showCityMehfilField: false,
+  allowEhadInfoUpdation: false,
 };
 
 export default GeneralInfo;

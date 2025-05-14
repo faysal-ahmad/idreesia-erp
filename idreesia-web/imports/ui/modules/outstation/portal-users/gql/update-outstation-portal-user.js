@@ -4,7 +4,7 @@ export const UPDATE_OUTSTATION_PORTAL_USER = gql`
   mutation updateOutstationPortalUser(
     $userId: String!
     $email: String!
-    $portalId: String!
+    $portalId: String
   ) {
     updateOutstationPortalUser(
       userId: $userId

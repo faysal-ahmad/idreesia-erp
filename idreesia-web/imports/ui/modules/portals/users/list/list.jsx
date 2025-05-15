@@ -4,15 +4,14 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
-import { Button, Pagination, Row, Table } from 'antd';
+import { Button, Flex, Pagination, Row, Table } from 'antd';
 import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { usePortal } from 'meteor/idreesia-common/hooks/portals';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats, Permissions } from 'meteor/idreesia-common/constants';
+import { Permissions } from 'meteor/idreesia-common/constants';
 
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
@@ -42,7 +41,7 @@ const List = ({ history, location }) => {
     location,
     paramNames: ['showLocked', 'showUnlocked', 'pageIndex', 'pageSize'],
     paramDefaultValues: {
-      showLocked: 'false',
+      showLocked: 'true',
       showUnlocked: 'true',
     },
   });
@@ -84,14 +83,7 @@ const List = ({ history, location }) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button
-        size="large"
-        type="primary"
-        icon={<PlusCircleOutlined />}
-        onClick={handleNewClicked}
-      >
-        New User
-      </Button>
+      <div />
       <ListFilter
         showLocked={showLocked}
         showUnlocked={showUnlocked}
@@ -114,7 +106,7 @@ const List = ({ history, location }) => {
           <PersonName
             person={record.karkun}
             onPersonNameClicked={() => {
-              history.push(paths.usersEditFormPath(portalId, record._id));
+              history.push(paths.karkunsEditFormPath(portalId, record.karkun._id));
             }}
           />
         ) : (
@@ -122,15 +114,18 @@ const List = ({ history, location }) => {
         ),
     },
     {
-      title: 'User Name',
+      title: 'Email / User Name',
       dataIndex: 'username',
       key: 'username',
       render: (text, record) => (
-        <Link to={paths.usersEditFormPath(portalId, record._id)}>{text}</Link>
+        <Flex vertical>
+          <span>{record.email}</span>
+          <span>{record.username}</span>
+        </Flex>
       ),
     },
     {
-      title: 'City / Mehfil',
+      title: 'Mehfil / City',
       key: 'cityMehfil',
       render: (text, record) => {
         const { city, cityMehfil } = record.karkun;
@@ -147,15 +142,6 @@ const List = ({ history, location }) => {
 
         if (cityMehfilInfo.length === 0) return '';
         return <>{cityMehfilInfo}</>;
-      },
-    },
-    {
-      title: 'Last Active',
-      dataIndex: 'lastActiveAt',
-      key: 'lastActiveAt',
-      render: text => {
-        if (!text) return '';
-        return dayjs(Number(text)).format(Formats.DATE_TIME_FORMAT);
       },
     },
     {

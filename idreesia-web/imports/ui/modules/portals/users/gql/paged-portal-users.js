@@ -7,6 +7,8 @@ const PAGED_PORTAL_USERS = gql`
       data {
         _id
         username
+        email
+        emailVerified
         locked
         lastActiveAt
         permissions

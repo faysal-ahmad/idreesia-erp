@@ -1,23 +1,59 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
-import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
-import { WithPortal } from '/imports/ui/modules/portals/common/composers';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { Tabs } from 'antd';
+import { useQuery } from '@apollo/react-hooks';
+
+import { usePortal } from 'meteor/idreesia-common/hooks/portals';
+import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+
 import GeneralInfo from './general-info';
 import Permissions from './permissions';
+import { PORTAL_USER_BY_ID } from '../gql';
 
 const EditForm = props => {
-  const portalId = get(props, ['match', 'params', 'portalId'], null);
-  const userId = get(props, ['match', 'params', 'userId'], null);
+  const { location } = props;
+  const { portalId, userId } = useParams();
+  const { portal } = usePortal();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (portal) {
+      dispatch(
+        setBreadcrumbs(['Mehfil Portal', portal.name, 'Users', 'Edit'])
+      );
+    } else {
+      dispatch(setBreadcrumbs(['Mehfil Portal', 'Users', 'Edit']));
+    }
+  }, [location, portalId]);
+
+  const { data } = useQuery(PORTAL_USER_BY_ID, {
+    variables: {
+      portalId,
+      _id: userId,
+    },
+  });
+  
+  if (!data?.portalUserById) return null;
+
   return (
     <Tabs defaultActiveKey="1">
       <Tabs.TabPane tab="General Info" key="1">
-        <GeneralInfo portalId={portalId} userId={userId} {...props} />
+        <GeneralInfo
+          portalId={portalId}
+          userId={userId}
+          portalUserById={data.portalUserById}
+          {...props}
+        />
       </Tabs.TabPane>
       <Tabs.TabPane tab="Permissions" key="2">
-        <Permissions portalId={portalId} userId={userId} {...props} />
+        <Permissions
+          portalId={portalId}
+          userId={userId}
+          portalUserById={data.portalUserById}
+          {...props}
+        />
       </Tabs.TabPane>
     </Tabs>
   );
@@ -29,12 +65,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default flowRight(
-  WithPortal(),
-  WithDynamicBreadcrumbs(({ portal }) => {
-    if (portal) {
-      return `Mehfil Portal, ${portal.name}, Users, Edit`;
-    }
-    return `Mehfil Portal, Users, Edit`;
-  })
-)(EditForm);
+export default EditForm;

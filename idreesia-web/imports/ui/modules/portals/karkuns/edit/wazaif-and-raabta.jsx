@@ -7,7 +7,6 @@ import { message } from 'antd';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 
 import {
-  PORTAL_KARKUN_BY_ID,
   SET_PORTAL_KARKUN_WAZAIF_AND_RAABTA,
 } from '../gql';
 
@@ -19,7 +18,6 @@ class WazaifAndRaabta extends Component {
 
     portalId: PropTypes.string,
     karkunId: PropTypes.string,
-    formDataLoading: PropTypes.bool,
     portalKarkunById: PropTypes.object,
     setPortalKarkunWazaifAndRaabta: PropTypes.func,
   };
@@ -64,8 +62,7 @@ class WazaifAndRaabta extends Component {
   };
 
   render() {
-    const { formDataLoading, portalKarkunById } = this.props;
-    if (formDataLoading) return null;
+    const { portalKarkunById } = this.props;
 
     return (
       <KarkunsWazaifAndRaabta
@@ -83,11 +80,5 @@ export default flowRight(
     options: {
       refetchQueries: ['pagedPortalKarkuns'],
     },
-  }),
-  graphql(PORTAL_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ portalId, karkunId }) => ({
-      variables: { portalId, _id: karkunId },
-    }),
   })
 )(WazaifAndRaabta);

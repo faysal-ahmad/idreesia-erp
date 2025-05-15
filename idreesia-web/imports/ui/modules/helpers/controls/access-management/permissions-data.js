@@ -359,7 +359,7 @@ export const PortalsPermissionsData = {
         },
         {
           title: 'Manage Karkun Attendances',
-          key: PermissionConstants.PORTALS_MANAGE_KARKUNS,
+          key: PermissionConstants.PORTALS_MANAGE_KARKUN_ATTENDANCES,
         },
       ],
     },

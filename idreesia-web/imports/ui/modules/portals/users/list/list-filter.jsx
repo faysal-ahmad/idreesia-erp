@@ -33,7 +33,7 @@ const ListFilter = props => {
   const handleReset = () => {
     const { setPageParams } = props;
     setPageParams({
-      showLocked: 'false',
+      showLocked: 'true',
       showUnlocked: 'true',
       pageIndex: '0',
     });

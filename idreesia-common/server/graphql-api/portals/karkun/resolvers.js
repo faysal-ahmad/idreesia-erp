@@ -1,33 +1,13 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import {
-  DataSource,
-  Permissions as PermissionConstants,
-} from 'meteor/idreesia-common/constants';
-
-const userHasPortalLevelAccess = user =>
-  hasOnePermission(user, [
-    PermissionConstants.PORTALS_VIEW_KARKUNS,
-    PermissionConstants.PORTALS_MANAGE_KARKUNS,
-  ]);
+import { DataSource } from 'meteor/idreesia-common/constants';
 
 export default {
   Query: {
-    portalKarkunById: async (obj, { _id }, { user }) => {
+    portalKarkunById: async (obj, { portalId, _id }, { user }) => {
       const person = People.findOne(_id);
-      if (!userHasPortalLevelAccess(user)) {
-        const userPerson = People.findOne(user.personId);
-        const cityMehfilId = userPerson?.karkunData?.cityMehfilId;
-        if (
-          !cityMehfilId ||
-          person?.karkunData?.cityMehfilId !== cityMehfilId
-        ) {
-          return null;
-        }
-      }
-
+      // TODO: Check that the person is within the portal cities
       return People.personToKarkun(person);
     },
 
@@ -37,22 +17,6 @@ export default {
         ...filter,
         cityIds: portal.cityIds,
       };
-
-      // Check whether the user is allowed to see all karkuns for
-      // the portal, or just for the mehfil that he belongs to.
-      if (!userHasPortalLevelAccess(user)) {
-        // Add filter for the mehfil to the incoming filters
-        const person = People.findOne(user.personId);
-        const cityMehfilId = person?.karkunData?.cityMehfilId;
-        if (!cityMehfilId) {
-          return {
-            karkuns: [],
-            totalResults: 0,
-          };
-        }
-
-        updatedFilter.cityMehfilId = cityMehfilId;
-      }
 
       return People.searchPeople(updatedFilter, {
         includeKarkuns: true,
@@ -85,17 +49,6 @@ export default {
       }
 
       if (person) {
-        if (!userHasPortalLevelAccess(user)) {
-          const userPerson = People.findOne(user.personId);
-          if (
-            !userPerson?.karkunData?.cityMehfilId ||
-            userPerson?.karkunData?.cityMehfilId !==
-              person?.karkunData?.cityMehfilId
-          ) {
-            return null;
-          }
-        }
-
         return People.personToKarkun(person);
       }
 
@@ -105,17 +58,7 @@ export default {
 
   Mutation: {
     createPortalKarkun: async (obj, values, { user }) => {
-      const { portalId, cityMehfilId } = values;
-      if (!userHasPortalLevelAccess(user)) {
-        const userPerson = People.findOne(user.personId);
-        if (
-          !userPerson?.karkunData?.cityMehfilId ||
-          userPerson?.karkunData?.cityMehfilId !== cityMehfilId
-        ) {
-          return null;
-        }
-      }
-
+      const { portalId } = values;
       const personValues = People.karkunToPerson(values);
       const person = People.createPerson(
         {
@@ -131,58 +74,18 @@ export default {
     },
 
     updatePortalKarkun: async (obj, values, { user }) => {
-      const { _id, cityMehfilId } = values;
-      let person = People.findOne({ _id });
-      if (!userHasPortalLevelAccess(user)) {
-        const userPerson = People.findOne(user.personId);
-        if (
-          !userPerson?.karkunData?.cityMehfilId ||
-          userPerson?.karkunData?.cityMehfilId !==
-            person?.karkunData?.cityMehfilId ||
-          userPerson?.karkunData?.cityMehfilId !== cityMehfilId
-        ) {
-          return People.personToKarkun(person);
-        }
-      }
-
       const personValues = People.karkunToPerson(values);
       person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     setPortalKarkunWazaifAndRaabta: async (obj, values, { user }) => {
-      const { _id } = values;
-      let person = People.findOne({ _id });
-      if (!userHasPortalLevelAccess(user)) {
-        const userPerson = People.findOne(user.personId);
-        if (
-          !userPerson?.karkunData?.cityMehfilId ||
-          userPerson?.karkunData?.cityMehfilId !==
-            person?.karkunData?.cityMehfilId
-        ) {
-          return People.personToKarkun(person);
-        }
-      }
-
       const personValues = People.karkunToPerson(values);
       person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     setPortalKarkunProfileImage: async (obj, values, { user }) => {
-      const { _id } = values;
-      let person = People.findOne({ _id });
-      if (!userHasPortalLevelAccess(user)) {
-        const userPerson = People.findOne(user.personId);
-        if (
-          !userPerson?.karkunData?.cityMehfilId ||
-          userPerson?.karkunData?.cityMehfilId !==
-            person?.karkunData?.cityMehfilId
-        ) {
-          return People.personToKarkun(person);
-        }
-      }
-
       const personValues = People.karkunToPerson(values);
       person = People.updatePerson(personValues, user);
       return People.personToKarkun(person);

@@ -4,7 +4,7 @@ extend type Query {
     karkunId: String!
     queryString: String
   ): PagedAttendanceType
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_KARKUN_ATTENDANCES])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   portalAttendanceByMonth(
@@ -13,7 +13,7 @@ extend type Query {
     cityId: String
     cityMehfilId: String
   ): [AttendanceType]
-  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_VIEW_MEHFIL_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_VIEW_KARKUNS, PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_KARKUN_ATTENDANCES])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }
 
@@ -26,12 +26,14 @@ extend type Mutation {
     absentCount: Int
     percentage: Int
   ): AttendanceType
-  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUNS, PORTALS_MANAGE_MEHFIL_KARKUNS, PORTALS_DELETE_DATA])
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUN_ATTENDANCES])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   deletePortalAttendances(portalId: String!, month: String!, ids: [String]!): Int
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUN_ATTENDANCES])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   deleteAllPortalAttendances(portalId: String!, month: String!, cityId: String, cityMehfilId: String): Int
+  @checkPermissions(permissions: [PORTALS_MANAGE_KARKUN_ATTENDANCES])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }

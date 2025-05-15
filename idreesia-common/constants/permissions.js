@@ -87,25 +87,20 @@ const Permissions = {
   // ****************************************************************************************
   // Portals Module
   // ****************************************************************************************
-  PORTALS_DELETE_DATA: 'mehfil-portals-delete-data',
-  PORTALS_VIEW_AUDIT_LOGS: 'mehfil-portals-view-audit-logs',
-
-  PORTALS_VIEW_USERS_AND_GROUPS: 'mehfil-portals-view-users-and-groups',
-  PORTALS_MANAGE_USERS_AND_GROUPS: 'mehfil-portals-manage-users-and-groups',
-
   PORTALS_VIEW_MEMBERS: 'mehfil-portals-view-members',
   PORTALS_MANAGE_MEMBERS: 'mehfil-portals-manage-members',
 
   PORTALS_VIEW_KARKUNS: 'mehfil-portals-view-karkuns',
   PORTALS_MANAGE_KARKUNS: 'mehfil-portals-manage-karkuns',
-  PORTALS_VIEW_MEHFIL_KARKUNS: 'mehfil-portals-view-mehfil-karkuns',
-  PORTALS_MANAGE_MEHFIL_KARKUNS: 'mehfil-portals-manage-mehfil-karkuns',
+  PORTALS_MANAGE_KARKUN_ATTENDANCES: 'mehfil-portals-manage-karkun-attendances',
+
+  PORTALS_VIEW_USERS_AND_GROUPS: 'mehfil-portals-view-users-and-groups',
+  PORTALS_MANAGE_USERS_AND_GROUPS: 'mehfil-portals-manage-users-and-groups',
 
   PORTALS_VIEW_AMAANAT_LOGS: 'mehfil-portals-view-amaanat-logs',
   PORTALS_MANAGE_AMAANAT_LOGS: 'mehfil-portals-manage-amaanat-logs',
-  PORTALS_VIEW_MEHFIL_AMAANAT_LOGS: 'mehfil-portals-view-mehfil-amaanat-logs',
-  PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS:
-    'mehfil-portals-manage-mehfil-amaanat-logs',
+
+  PORTALS_VIEW_AUDIT_LOGS: 'mehfil-portals-view-audit-logs',
 
   // ****************************************************************************************
   // Security Module

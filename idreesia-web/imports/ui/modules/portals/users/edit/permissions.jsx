@@ -9,7 +9,6 @@ import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
 import { portalPermissions } from '/imports/ui/modules/helpers/controls/access-management/portal-permissions';
 
 import {
-  PORTAL_USER_BY_ID,
   PAGED_PORTAL_USERS,
   SET_PORTAL_USER_PERMISSIONS,
 } from '../gql';
@@ -22,10 +21,21 @@ class Permissions extends Component {
 
     portalId: PropTypes.string,
     userId: PropTypes.string,
-    loading: PropTypes.bool,
     portalUserById: PropTypes.object,
     setPortalUserPermissions: PropTypes.func,
   };
+
+  state = {
+    permissionsChanged: false,
+    selectedPermissions: null,
+  };
+
+  handlePermissionSelectionChange = updatedPermissions => {
+    this.setState({
+      permissionsChanged: true,
+      selectedPermissions: updatedPermissions,
+    })
+  }
 
   handleCancel = () => {
     const { history } = this.props;
@@ -35,13 +45,17 @@ class Permissions extends Component {
   handleSave = e => {
     e.preventDefault();
     const { history, portalId, userId, setPortalUserPermissions } = this.props;
-    const permissions = this.permissionSelection.getSelectedPermissions();
+
+    if (!this.state.permissionsChanged) {
+        history.goBack();
+        return;
+    };
 
     setPortalUserPermissions({
       variables: {
         portalId,
         userId,
-        permissions,
+        permissions: this.state.selectedPermissions,
       },
     })
       .then(() => {
@@ -53,17 +67,14 @@ class Permissions extends Component {
   };
 
   render() {
-    const { portalUserById, loading } = this.props;
-    if (loading) return null;
+    const { portalUserById } = this.props;
 
     return (
       <Fragment>
         <PermissionSelection
-          ref={ps => {
-            this.permissionSelection = ps;
-          }}
           permissions={portalPermissions}
           securityEntity={portalUserById}
+          onChange={this.handlePermissionSelectionChange}
         />
         <br />
         <br />
@@ -98,12 +109,6 @@ export default flowRight(
       refetchQueries: [
         { query: PAGED_PORTAL_USERS, variables: { portalId, filter: {} } },
       ],
-    }),
-  }),
-  graphql(PORTAL_USER_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ portalId, userId }) => ({
-      variables: { portalId, _id: userId },
     }),
   })
 )(Permissions);

@@ -15,6 +15,8 @@ const UPDATE_PORTAL_USER = gql`
     ) {
       _id
       username
+      email
+      emailVerified
       locked
       personId
       karkun {

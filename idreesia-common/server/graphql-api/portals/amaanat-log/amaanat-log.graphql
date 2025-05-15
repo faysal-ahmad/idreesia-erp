@@ -1,10 +1,10 @@
 extend type Query {
   portalAmaanatLogById(portalId: String!, _id: String!): AmaanatLogType
-  @checkPermissions(permissions: [PORTALS_VIEW_AMAANAT_LOGS, PORTALS_MANAGE_AMAANAT_LOGS, PORTALS_VIEW_MEHFIL_AMAANAT_LOGS, PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS])
+  @checkPermissions(permissions: [PORTALS_VIEW_AMAANAT_LOGS, PORTALS_MANAGE_AMAANAT_LOGS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   pagedPortalAmaanatLogs(portalId: String!, queryString: String): PagedAmaanatLogType
-  @checkPermissions(permissions: [PORTALS_VIEW_AMAANAT_LOGS, PORTALS_MANAGE_AMAANAT_LOGS, PORTALS_VIEW_MEHFIL_AMAANAT_LOGS, PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS])
+  @checkPermissions(permissions: [PORTALS_VIEW_AMAANAT_LOGS, PORTALS_MANAGE_AMAANAT_LOGS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }
 
@@ -22,7 +22,7 @@ extend type Mutation {
     otherPortion: Float
     otherPortionDescription: String
   ): AmaanatLogType
-  @checkPermissions(permissions: [PORTALS_MANAGE_AMAANAT_LOGS, PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS])
+  @checkPermissions(permissions: [PORTALS_MANAGE_AMAANAT_LOGS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   updatePortalAmaanatLog(
@@ -39,10 +39,10 @@ extend type Mutation {
     otherPortion: Float
     otherPortionDescription: String
   ): AmaanatLogType
-  @checkPermissions(permissions: [PORTALS_MANAGE_AMAANAT_LOGS, PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS])
+  @checkPermissions(permissions: [PORTALS_MANAGE_AMAANAT_LOGS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 
   removePortalAmaanatLog(portalId:String!, _id: String!): Int
-  @checkPermissions(permissions: [PORTALS_MANAGE_AMAANAT_LOGS, PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS])
+  @checkPermissions(permissions: [PORTALS_MANAGE_AMAANAT_LOGS])
   @checkInstanceAccess(instanceIdArgName: "portalId")
 }

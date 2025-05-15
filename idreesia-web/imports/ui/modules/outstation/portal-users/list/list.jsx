@@ -18,16 +18,16 @@ import ListFilter from './list-filter';
 import { PAGED_OUTSTATION_PORTAL_USERS } from '../gql';
 
 const permissionDisplayText = {
-  [Permissions.PORTALS_DELETE_DATA]: 'Delete Data',
+  [Permissions.PORTALS_VIEW_MEMBERS]: 'View Members',
+  [Permissions.PORTALS_MANAGE_MEMBERS]: 'Manage Members',
+  [Permissions.PORTALS_VIEW_KARKUNS]: 'View Karkuns',
+  [Permissions.PORTALS_MANAGE_KARKUNS]: 'Manage Karkuns',
+  [Permissions.PORTALS_MANAGE_KARKUN_ATTENDANCES]: 'Manage Karkun Attendances',
+  [Permissions.PORTALS_VIEW_AMAANAT_LOGS]: 'View Amaanat Logs',
+  [Permissions.PORTALS_MANAGE_AMAANAT_LOGS]: 'Manage Amaanat Logs',
   [Permissions.PORTALS_VIEW_AUDIT_LOGS]: 'View Audit Logs',
   [Permissions.PORTALS_VIEW_USERS_AND_GROUPS]: 'View Users & Groups',
   [Permissions.PORTALS_MANAGE_USERS_AND_GROUPS]: 'Manage Users & Groups',
-  [Permissions.PORTALS_VIEW_AMAANAT_LOGS]: 'View Amaanat Logs',
-  [Permissions.PORTALS_MANAGE_AMAANAT_LOGS]: 'Manage Amaanat Logs',
-  [Permissions.PORTALS_VIEW_KARKUNS]: 'View Karkuns',
-  [Permissions.PORTALS_MANAGE_KARKUNS]: 'Manage Karkuns',
-  [Permissions.PORTALS_VIEW_MEMBERS]: 'View Members',
-  [Permissions.PORTALS_MANAGE_MEMBERS]: 'Manage Members',
 };
 
 const List = ({ history, location }) => {

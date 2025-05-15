@@ -5,6 +5,8 @@ const PORTAL_USER_BY_ID = gql`
     portalUserById(portalId: $portalId, _id: $_id) {
       _id
       username
+      email
+      emailVerified
       locked
       instances
       permissions

@@ -46,6 +46,11 @@ class Permissions extends Component {
   handleSave = e => {
     e.preventDefault();
     const { history, userId, setOutstationPortalUserPermissions } = this.props;
+    if (!this.state.permissionsChanged) {
+        history.goBack();
+        return;
+    };
+    
     setOutstationPortalUserPermissions({
       variables: {
         userId,

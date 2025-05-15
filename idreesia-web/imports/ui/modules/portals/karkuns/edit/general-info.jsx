@@ -11,7 +11,6 @@ import {
 } from '/imports/ui/modules/portals/common/composers';
 
 import {
-  PORTAL_KARKUN_BY_ID,
   UPDATE_PORTAL_KARKUN,
   PAGED_PORTAL_KARKUNS,
 } from '../gql';
@@ -24,12 +23,12 @@ class GeneralInfo extends Component {
 
     portalId: PropTypes.string,
     karkunId: PropTypes.string,
+    portalKarkunById: PropTypes.object,
+
     portalCities: PropTypes.array,
     portalCitiesLoading: PropTypes.bool,
     portalCityMehfils: PropTypes.array,
     portalCityMehfilsLoading: PropTypes.bool,
-    formDataLoading: PropTypes.bool,
-    portalKarkunById: PropTypes.object,
     updatePortalKarkun: PropTypes.func,
   };
 
@@ -97,10 +96,9 @@ class GeneralInfo extends Component {
       portalCitiesLoading,
       portalCityMehfils,
       portalCityMehfilsLoading,
-      formDataLoading,
       portalKarkunById,
     } = this.props;
-    if (portalCitiesLoading || portalCityMehfilsLoading || formDataLoading)
+    if (portalCitiesLoading || portalCityMehfilsLoading)
       return null;
 
     return (
@@ -125,12 +123,6 @@ export default flowRight(
       refetchQueries: [
         { query: PAGED_PORTAL_KARKUNS, variables: { portalId, filter: {} } },
       ],
-    }),
-  }),
-  graphql(PORTAL_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ portalId, karkunId }) => ({
-      variables: { portalId, _id: karkunId },
     }),
   })
 )(GeneralInfo);

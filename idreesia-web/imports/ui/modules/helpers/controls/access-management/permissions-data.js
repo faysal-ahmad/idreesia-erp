@@ -332,24 +332,16 @@ export const PortalsPermissionsData = {
   key: 'module-portals',
   children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.PORTALS_DELETE_DATA,
-    },
-    {
-      title: 'View Audit Logs',
-      key: PermissionConstants.PORTALS_VIEW_AUDIT_LOGS,
-    },
-    {
-      title: 'Users & Groups',
-      key: 'module-portals-users-and-groups',
+      title: 'Members',
+      key: 'module-portals-members',
       children: [
         {
-          title: 'View Users & Groups',
-          key: PermissionConstants.PORTALS_VIEW_USERS_AND_GROUPS,
+          title: 'View Members',
+          key: PermissionConstants.PORTALS_VIEW_MEMBERS,
         },
         {
-          title: 'Manage Users & Groups',
-          key: PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
+          title: 'Manage Members',
+          key: PermissionConstants.PORTALS_MANAGE_MEMBERS,
         },
       ],
     },
@@ -366,26 +358,8 @@ export const PortalsPermissionsData = {
           key: PermissionConstants.PORTALS_MANAGE_KARKUNS,
         },
         {
-          title: 'View Mehfil Karkuns',
-          key: PermissionConstants.PORTALS_VIEW_MEHFIL_KARKUNS,
-        },
-        {
-          title: 'Manage Mehfil Karkuns',
-          key: PermissionConstants.PORTALS_MANAGE_MEHFIL_KARKUNS,
-        },
-      ],
-    },
-    {
-      title: 'Members',
-      key: 'module-portals-members',
-      children: [
-        {
-          title: 'View Members',
-          key: PermissionConstants.PORTALS_VIEW_MEMBERS,
-        },
-        {
-          title: 'Manage Members',
-          key: PermissionConstants.PORTALS_MANAGE_MEMBERS,
+          title: 'Manage Karkun Attendances',
+          key: PermissionConstants.PORTALS_MANAGE_KARKUN_ATTENDANCES,
         },
       ],
     },
@@ -401,13 +375,23 @@ export const PortalsPermissionsData = {
           title: 'Manage Amaanat Logs',
           key: PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
         },
+      ],
+    },
+    {
+      title: 'Administration',
+      key: 'module-portals-administration',
+      children: [
         {
-          title: 'View Mehfil Amaanat Logs',
-          key: PermissionConstants.PORTALS_VIEW_MEHFIL_AMAANAT_LOGS,
+          title: 'View Users & Groups',
+          key: PermissionConstants.PORTALS_VIEW_USERS_AND_GROUPS,
         },
+        /*{
+          title: 'Manage Users & Groups',
+          key: PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
+        },*/
         {
-          title: 'Manage Mehfil Amaanat Logs',
-          key: PermissionConstants.PORTALS_MANAGE_MEHFIL_AMAANAT_LOGS,
+          title: 'View Audit Logs',
+          key: PermissionConstants.PORTALS_VIEW_AUDIT_LOGS,
         },
       ],
     },

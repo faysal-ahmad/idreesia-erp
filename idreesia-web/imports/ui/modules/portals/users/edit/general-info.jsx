@@ -6,7 +6,6 @@ import { Form, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   InputTextField,
-  SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -24,7 +23,6 @@ class GeneralInfo extends Component {
 
     portalId: PropTypes.string,
     userId: PropTypes.string,
-    loading: PropTypes.bool,
     portalUserById: PropTypes.object,
     updatePortalUser: PropTypes.func,
   };
@@ -61,10 +59,9 @@ class GeneralInfo extends Component {
   };
 
   render() {
-    const { loading, portalUserById } = this.props;
+    const { portalUserById } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading) return null;
-
+ 
     return (
       <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
         <InputTextField
@@ -74,16 +71,13 @@ class GeneralInfo extends Component {
           initialValue={portalUserById.username}
         />
 
-        <SwitchField
-          fieldName="locked"
-          fieldLabel="Locked"
-          initialValue={portalUserById.locked}
-        />
-
         <InputTextField
-          fieldName="password"
-          fieldLabel="Password"
-          type="password"
+          fieldName="email"
+          fieldLabel="Email"
+          required
+          requiredMessage="Please input the email."
+          disabled={!!portalUserById.email && portalUserById.emailVerified}
+          initialValue={portalUserById.email}
         />
 
         <InputTextField
@@ -109,12 +103,6 @@ export default flowRight(
       refetchQueries: [
         { query: PAGED_PORTAL_USERS, variables: { portalId, filter: {} } },
       ],
-    }),
-  }),
-  graphql(PORTAL_USER_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ portalId, userId }) => ({
-      variables: { portalId, _id: userId },
     }),
   })
 )(GeneralInfo);

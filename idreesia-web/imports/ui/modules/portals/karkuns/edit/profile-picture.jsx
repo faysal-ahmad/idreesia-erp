@@ -8,17 +8,14 @@ import { Row, Col, message } from 'antd';
 import { TakePicture } from '/imports/ui/modules/helpers/controls';
 
 import {
-  PORTAL_KARKUN_BY_ID,
   PAGED_PORTAL_KARKUNS,
   SET_PORTAL_KARKUN_PROFILE_IMAGE,
 } from '../gql';
 
 class ProfilePicture extends Component {
   static propTypes = {
-    loading: PropTypes.bool,
     portalId: PropTypes.string,
     karkunId: PropTypes.string,
-    portalKarkunById: PropTypes.object,
     setPortalKarkunProfileImage: PropTypes.func,
   };
 
@@ -36,8 +33,7 @@ class ProfilePicture extends Component {
   };
 
   render() {
-    const { loading, portalKarkunById } = this.props;
-    if (loading) return null;
+    const { portalKarkunById } = this.props;
     const url = getDownloadUrl(portalKarkunById.imageId);
 
     return (
@@ -65,12 +61,6 @@ export default flowRight(
       refetchQueries: [
         { query: PAGED_PORTAL_KARKUNS, variables: { portalId, filter: {} } },
       ],
-    }),
-  }),
-  graphql(PORTAL_KARKUN_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ portalId, karkunId }) => ({
-      variables: { portalId, _id: karkunId },
     }),
   })
 )(ProfilePicture);

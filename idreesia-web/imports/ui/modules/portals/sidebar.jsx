@@ -4,6 +4,8 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import {
   AuditOutlined,
+  BookOutlined,
+  FolderOpenOutlined,
   RedEnvelopeOutlined,
   ShopOutlined,
   SolutionOutlined,
@@ -54,6 +56,9 @@ class Sidebar extends Component {
     } else if (key.startsWith('audit-logs')) {
       setActiveSubModuleName(SubModuleNames.auditLogs);
       history.push(paths.auditLogsPath(portalId));
+    } else if (key.startsWith('new-ehad-report')) {
+      setActiveSubModuleName(SubModuleNames.newEhadReport);
+      history.push(paths.newEhadReportPath(portalId));
     }
   };
 
@@ -74,6 +79,20 @@ class Sidebar extends Component {
       <RedEnvelopeOutlined style={IconStyle} />
       <span>Amaanat Logs</span>
     </Menu.Item>,
+    <Menu.SubMenu
+      key={`reports-${portalId}`}
+      title={
+        <>
+          <FolderOpenOutlined style={IconStyle} />
+          <span>Reports</span>
+        </>
+      }
+    >
+      <Menu.Item parent-key={portalId} key={`new-ehad-report-${portalId}`}>
+        <BookOutlined style={IconStyle} />
+        <span>New Ehad Report</span>
+      </Menu.Item>
+    </Menu.SubMenu>,
     <Menu.SubMenu
       key={`administration-${portalId}`}
       title={

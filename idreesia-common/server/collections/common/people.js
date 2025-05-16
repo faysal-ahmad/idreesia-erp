@@ -295,6 +295,7 @@ class People extends AggregatableCollection {
       phoneNumbers,
       bloodGroup,
       ehadDate,
+      ehadMonth,
       ehadDuration,
       dataSource,
       updatedBetween,
@@ -371,6 +372,27 @@ class People extends AggregatableCollection {
         $match: {
           'sharedData.ehadDate': {
             $eq: moment(ehadDate, Formats.DATE_FORMAT).startOf('day').toDate(),
+          },
+        },
+      });
+    }
+
+    if (ehadMonth) {
+      pipeline.push({
+        $match: {
+          'sharedData.ehadDate': {
+            $gte: moment(ehadMonth, Formats.MONTH_FORMAT)
+              .startOf('month')
+              .toDate(),
+          },
+        },
+      });
+      pipeline.push({
+        $match: {
+          'sharedData.ehadDate': {
+            $lte: moment(ehadMonth, Formats.MONTH_FORMAT)
+              .endOf('month')
+              .toDate(),
           },
         },
       });

@@ -49,10 +49,10 @@ const List = ({ history, location }) => {
   useEffect(() => {
     if (portal) {
       dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'User Accounts', 'List'])
+        setBreadcrumbs(['Mehfil Portals', portal.name, 'User Accounts', 'List'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'User Accounts', 'List']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'User Accounts', 'List']));
     }
   }, [location, portal]);
 

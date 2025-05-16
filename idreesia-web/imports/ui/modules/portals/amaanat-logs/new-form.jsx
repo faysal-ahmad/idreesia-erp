@@ -36,10 +36,10 @@ const NewForm = ({ history, location }) => {
   useEffect(() => {
     if (portal) {
       dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'Amaanat Logs', 'New'])
+        setBreadcrumbs(['Mehfil Portals', portal.name, 'Amaanat Logs', 'New'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Amaanat Logs', 'New']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Amaanat Logs', 'New']));
     }
   }, [location, portalId]);
 

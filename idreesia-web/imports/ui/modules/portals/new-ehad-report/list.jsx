@@ -35,14 +35,14 @@ const List = ({ history, location }) => {
     if (portal) {
       dispatch(
         setBreadcrumbs([
-          'Mehfil Portal',
+          'Mehfil Portals',
           portal.name,
           'Reports',
           'New Ehad Report',
         ])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Reports', 'New Ehad Report']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Reports', 'New Ehad Report']));
     }
   }, [location, portal]);
 

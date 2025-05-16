@@ -25,10 +25,10 @@ const EditForm = props => {
   useEffect(() => {
     if (portal) {
       dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'Karkuns', 'Edit'])
+        setBreadcrumbs(['Mehfil Portals', portal.name, 'Karkuns', 'Edit'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Karkuns', 'Edit']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Karkuns', 'Edit']));
     }
   }, [location, portalId]);
 

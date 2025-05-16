@@ -70,10 +70,10 @@ const List = ({ history, location }) => {
   useEffect(() => {
     if (portal) {
       dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'Karkuns', 'List'])
+        setBreadcrumbs(['Mehfil Portals', portal.name, 'Karkuns', 'List'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Karkuns', 'List']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Karkuns', 'List']));
     }
   }, [location, portal]);
 

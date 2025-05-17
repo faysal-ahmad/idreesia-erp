@@ -12,6 +12,7 @@ import {
 import { 
   CloseCircleOutlined,
   DeleteOutlined,
+  EditOutlined,
   LeftOutlined,
   RightOutlined,
   SaveOutlined,
@@ -79,6 +80,7 @@ export default class KarkunsAttendanceList extends Component {
   };
 
   getColumns = () => {
+    const { readOnly } = this.props;
     const columns = [
       {
         title: 'Name',
@@ -164,6 +166,24 @@ export default class KarkunsAttendanceList extends Component {
         render: text => `${text}%`,
       },
     ];
+
+    if (!readOnly) {
+      /*columns.push({
+        key: 'action',
+        fixed: 'right',
+        width: 40,
+        render: (text, record) => (
+          <div className="list-actions-column">
+            <EditOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                
+              }}
+            />
+          </div>
+        )
+      });*/
+    }
 
     return columns;
   };

@@ -52,6 +52,10 @@ export default class KarkunsList extends Component {
     handleRemoveItem: noop,
     handleAuditLogsAction: noop,
     listHeader: () => null,
+    pagedData: {
+      totalResults: 0,
+      karkuns: [],
+    }
   };
 
   state = {

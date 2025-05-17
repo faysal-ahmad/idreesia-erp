@@ -74,7 +74,7 @@ const List = ({ history, location }) => {
     history.push(paths.karkunsEditFormPath(portalId, karkun._id));
   };
 
-  if (loading) return null;
+  if (loading || !data?.pagedPortalKarkuns) return null;
   const { pagedPortalKarkuns } = data;
   const {
     name,

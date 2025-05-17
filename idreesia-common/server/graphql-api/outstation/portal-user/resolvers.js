@@ -1,3 +1,4 @@
+import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { DataSource } from 'meteor/idreesia-common/constants';
@@ -63,6 +64,19 @@ export default {
         portalId &&
         (!_user.instances || _user.instances.indexOf(portalId) === -1)
       ) {
+        const portals = await Portals.find({}).fetchAsync();
+        const portalIds = portals.map(portal => portal._id);
+        // First remove access to all other portals
+        Users.removeInstanceAccess(
+          {
+            userId,
+            instances: portalIds,
+          },
+          user,
+          DataSource.OUTSTATION
+        );
+
+        // Now add the permission for this new portalId
         Users.addInstanceAccess(
           {
             userId,

@@ -88,9 +88,11 @@ class Sidebar extends Component {
     }));
 
     const portalSelection = allAccessiblePortals?.length === 1 ? (
-      <Typography.Title level={3} ellipsis>
-        {collapsed ? '' : this.state.selectedPortal?.name}
-      </Typography.Title>  
+      <Flex justify='center' align='center'>
+        <Typography.Title level={3} ellipsis>
+          {collapsed ? '' : this.state.selectedPortal?.name}
+        </Typography.Title>  
+      </Flex>
     ) : (
       <Flex justify='center' align='center'>
         <Dropdown

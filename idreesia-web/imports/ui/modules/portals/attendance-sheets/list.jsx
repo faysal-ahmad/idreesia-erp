@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { message } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { keys, values } from 'meteor/idreesia-common/utilities/lodash';
@@ -14,7 +15,6 @@ import {
   usePortalCities,
   usePortalCityMehfils,
 } from 'meteor/idreesia-common/hooks/portals';
-import { message } from 'antd';
 import { KarkunsAttendanceList } from '/imports/ui/modules/common';
 
 import {
@@ -63,14 +63,14 @@ const List = ({ history, location }) => {
     if (portal) {
       dispatch(
         setBreadcrumbs([
-          'Mehfil Portal',
+          'Mehfil Portals',
           portal.name,
           'Attendance Sheets',
           'List',
         ])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Attendance Sheets', 'List']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Attendance Sheets', 'List']));
     }
   }, [location, portal]);
 

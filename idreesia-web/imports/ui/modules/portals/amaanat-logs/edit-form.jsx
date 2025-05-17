@@ -40,10 +40,10 @@ const EditForm = ({ history, location }) => {
   useEffect(() => {
     if (portal) {
       dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'Amaanat Logs', 'Edit'])
+        setBreadcrumbs(['Mehfil Portals', portal.name, 'Amaanat Logs', 'Edit'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Amaanat Logs', 'Edit']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Amaanat Logs', 'Edit']));
     }
   }, [location, portalId]);
 

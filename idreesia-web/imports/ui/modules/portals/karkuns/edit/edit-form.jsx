@@ -4,7 +4,12 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Button, Dropdown, Modal, Result, Tabs, message } from 'antd';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { AuditOutlined, MinusCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+  AuditOutlined,
+  MinusCircleOutlined,
+  SettingOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
 
 import { usePortal } from 'meteor/idreesia-common/hooks/portals';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -38,7 +43,7 @@ const EditForm = props => {
     }
   }, [location, portalId]);
 
-  const { data, loading } = useQuery(PORTAL_KARKUN_BY_ID, {
+  const { data, loading, refetch } = useQuery(PORTAL_KARKUN_BY_ID, {
     variables: {
       portalId,
       _id: karkunId,
@@ -46,6 +51,11 @@ const EditForm = props => {
   });
   
   const actionItems = [
+    {
+      key: 'reload-data',
+      label: 'Reload Data',
+      icon: <SyncOutlined />
+    },
     {
       key: 'remove-from-karkuns',
       label: 'Remove from Karkuns',
@@ -59,24 +69,29 @@ const EditForm = props => {
   ];
 
   const handleAction = ({ key }) => {
-    if (key === 'remove-from-karkuns') {
-    Modal.confirm({
-      title: 'Do you want to remove this person from karkuns?',
-      onOk() {
-        removePortalKarkun({
-          variables: {
-            portalId,
-            _id: karkunId,
-          },
-        })
-          .then(() => {
-            message.success('Person has been removed from karkuns.', 5);
-            history.goBack();
+    if (key === 'reload-data') {
+      refetch()
+        .then(() => {
+          message.success('Data Reloaded', 2);
+        });
+    } else if (key === 'remove-from-karkuns') {
+      Modal.confirm({
+        title: 'Do you want to remove this person from karkuns?',
+        onOk() {
+          removePortalKarkun({
+            variables: {
+              portalId,
+              _id: karkunId,
+            },
           })
-          .catch(error => {
-            message.error(error.message, 5);
-          });
-        },
+            .then(() => {
+              message.success('Person has been removed from karkuns.', 5);
+              history.goBack();
+            })
+            .catch(error => {
+              message.error(error.message, 5);
+            });
+          },
         onCancel() {},
       });
     } else if (key === 'view-audit-logs') {

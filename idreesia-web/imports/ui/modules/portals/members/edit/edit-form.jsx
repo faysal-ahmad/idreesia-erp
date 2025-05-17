@@ -4,7 +4,12 @@ import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Button, Dropdown, Modal, Result, Tabs, message } from 'antd';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { AuditOutlined, PlusCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { 
+  AuditOutlined,
+  PlusCircleOutlined,
+  SettingOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
 
 import { usePortal } from 'meteor/idreesia-common/hooks/portals';
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -35,7 +40,7 @@ const EditForm = props => {
     }
   }, [location, portalId]);
 
-  const { data, loading } = useQuery(PORTAL_MEMBER_BY_ID, {
+  const { data, loading, refetch } = useQuery(PORTAL_MEMBER_BY_ID, {
     variables: {
       portalId,
       _id: memberId,
@@ -43,6 +48,11 @@ const EditForm = props => {
   });
   
   const actionItems = [
+    {
+      key: 'reload-data',
+      label: 'Reload Data',
+      icon: <SyncOutlined />
+    },
     {
       key: 'add-to-karkuns',
       label: 'Add to Karkuns',
@@ -56,7 +66,12 @@ const EditForm = props => {
   ];
 
   const handleAction = ({ key }) => {
-    if (key === 'add-to-karkuns') {
+    if (key === 'reload-data') {
+      refetch()
+        .then(() => {
+          message.success('Data Reloaded', 2);
+        });
+    } else if (key === 'add-to-karkuns') {
       Modal.confirm({
         title: 'Do you want to add this person to karkuns?',
         onOk() {

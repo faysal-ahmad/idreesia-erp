@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -15,7 +15,6 @@ import {
 } from 'meteor/idreesia-common/hooks/portals';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
-import { ADD_PORTAL_KARKUN } from '/imports/ui/modules/portals/karkuns/gql';
 import { PAGED_PORTAL_MEMBERS } from '../gql';
 
 const List = ({ history, location }) => {
@@ -38,7 +37,6 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const [addPortalKarkun] = useMutation(ADD_PORTAL_KARKUN);
   const { data, loading, refetch } = useQuery(PAGED_PORTAL_MEMBERS, {
     variables: {
       portalId,
@@ -62,27 +60,6 @@ const List = ({ history, location }) => {
 
   const handleSelectItem = visitor => {
     history.push(paths.membersEditFormPath(portalId, visitor._id));
-  };
-
-  const handleAuditLogsAction = visitor => {
-    history.push(`${paths.auditLogsPath(portalId)}?entityId=${visitor._id}`);
-  };
-
-  const handleKarkunCreateAction = visitor => {
-    addPortalKarkun({
-      variables: {
-        portalId,
-        _id: visitor._id,
-      },
-    })
-    .then(() => {
-      refetch();
-      message.success('Member was successfully added to karkuns.', 5);
-    })
-    .catch(error => {
-      message.error(error.message, 5);
-    });
-
   };
 
   if (loading) return null;
@@ -132,13 +109,9 @@ const List = ({ history, location }) => {
       showCnicColumn
       showPhoneNumbersColumn
       showCityCountryColumn
-      showAuditLogsAction
       showDeleteAction={false}
-      showKarkunCreateAction
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
-      handleKarkunCreateAction={handleKarkunCreateAction}
-      handleAuditLogsAction={handleAuditLogsAction}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

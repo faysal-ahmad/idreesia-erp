@@ -69,7 +69,7 @@ export default class AuditLogsList extends Component {
       key: 'auditValues',
       render: (values, record) => {
         const { operationType } = record;
-        const fieldNodes = values.map((value, index) => {
+        const fieldNodes = values?.map((value, index) => {
           const parsedValue = JSON.parse(value);
           const { fieldName, changedFrom, changedTo } = getFormattedValue(
             parsedValue

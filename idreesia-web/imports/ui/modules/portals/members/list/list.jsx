@@ -62,7 +62,7 @@ const List = ({ history, location }) => {
     history.push(paths.membersEditFormPath(portalId, visitor._id));
   };
 
-  if (loading) return null;
+  if (loading || !data.pagedPortalMembers) return null;
   const { pagedPortalMembers } = data;
   const {
     name,

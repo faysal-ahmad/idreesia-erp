@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -18,7 +18,7 @@ import {
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
-import { PAGED_PORTAL_KARKUNS, REMOVE_PORTAL_KARKUN } from '../gql';
+import { PAGED_PORTAL_KARKUNS } from '../gql';
 
 const List = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -55,25 +55,14 @@ const List = ({ history, location }) => {
       filter: queryParams,
     },
   });
-  const [removePortalKarkun] = useMutation(REMOVE_PORTAL_KARKUN, {
-    refetchQueries: [
-      {
-        query: PAGED_PORTAL_KARKUNS,
-        variables: {
-          portalId,
-          filter: queryParams,
-        },
-      },
-    ],
-  });
 
   useEffect(() => {
     if (portal) {
       dispatch(
-        setBreadcrumbs(['Mehfil Portal', portal.name, 'Karkuns', 'List'])
+        setBreadcrumbs(['Mehfil Portals', portal.name, 'Karkuns', 'List'])
       );
     } else {
-      dispatch(setBreadcrumbs(['Mehfil Portal', 'Karkuns', 'List']));
+      dispatch(setBreadcrumbs(['Mehfil Portals', 'Karkuns', 'List']));
     }
   }, [location, portal]);
 
@@ -83,22 +72,6 @@ const List = ({ history, location }) => {
 
   const handleSelectItem = karkun => {
     history.push(paths.karkunsEditFormPath(portalId, karkun._id));
-  };
-
-  const handleRemoveItem = karkun => {
-    removePortalKarkun({
-      variables: {
-        portalId,
-        _id: karkun._id,
-      },
-    })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  }
-
-  const handleAuditLogsAction = karkun => {
-    history.push(`${paths.auditLogsPath(portalId)}?entityId=${karkun._id}`);
   };
 
   if (loading) return null;
@@ -173,14 +146,10 @@ const List = ({ history, location }) => {
       showCnicColumn
       showPhoneNumbersColumn
       showMehfilCityColumn
-      showAuditLogsAction
       showDutiesColumn
-      showRemoveAction
       showDeleteAction={false}
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
-      handleRemoveItem={handleRemoveItem}
-      handleAuditLogsAction={handleAuditLogsAction}
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}

@@ -41,7 +41,7 @@ const SidebarContent = props => {
   if (ModuleSidebar) {
     sidebar = (
       <Suspense fallback={<div />}>
-        <ModuleSidebar history={history} />
+        <ModuleSidebar history={history} collapsed={sidebarCollapsed} />
       </Suspense>
     );
   }
@@ -53,7 +53,11 @@ const SidebarContent = props => {
   return (
     <Flex vertical>
       <Flex justify='center' horizontal>
-        <Typography.Title level={4}>{activeModuleName}</Typography.Title>
+        {
+          sidebarCollapsed ? <div>&nbsp;</div> : (
+            <Typography.Title ellipsis level={4}>{activeModuleName}</Typography.Title>
+          )
+        }
       </Flex>
       <Layout.Sider
         width={220}

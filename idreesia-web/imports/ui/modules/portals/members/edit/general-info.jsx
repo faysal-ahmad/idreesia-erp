@@ -20,7 +20,6 @@ import { WithPortalCities } from '/imports/ui/modules/portals/common/composers';
 import { PortalsSubModulePaths as paths } from '/imports/ui/modules/portals';
 
 import {
-  PORTAL_MEMBER_BY_ID,
   UPDATE_PORTAL_MEMBER,
   PAGED_PORTAL_MEMBERS,
 } from '../gql';
@@ -34,7 +33,7 @@ class GeneralInfo extends Component {
     portalId: PropTypes.string,
     memberId: PropTypes.string,
     portalMemberById: PropTypes.object,
-    formDataLoading: PropTypes.bool,
+
     portalCities: PropTypes.array,
     portalCitiesLoading: PropTypes.bool,
     updatePortalMember: PropTypes.func,
@@ -124,12 +123,11 @@ class GeneralInfo extends Component {
   render() {
     const {
       portalMemberById,
-      formDataLoading,
       portalCities,
       portalCitiesLoading,
     } = this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (formDataLoading || portalCitiesLoading) return null;
+    if (portalCitiesLoading) return null;
 
     const visitorCity = find(
       portalCities,
@@ -248,12 +246,6 @@ export default flowRight(
       refetchQueries: [
         { query: PAGED_PORTAL_MEMBERS, variables: { portalId } },
       ],
-    }),
-  }),
-  graphql(PORTAL_MEMBER_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ portalId, memberId }) => ({
-      variables: { portalId, _id: memberId },
     }),
   })
 )(GeneralInfo);

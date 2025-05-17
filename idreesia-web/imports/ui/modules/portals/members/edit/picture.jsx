@@ -8,14 +8,12 @@ import { Row, Col, message } from 'antd';
 import { TakePicture } from '/imports/ui/modules/helpers/controls';
 
 import {
-  PORTAL_MEMBER_BY_ID,
   PAGED_PORTAL_MEMBERS,
   SET_PORTAL_MEMBER_IMAGE,
 } from '../gql';
 
 class Picture extends Component {
   static propTypes = {
-    loading: PropTypes.bool,
     portalId: PropTypes.string,
     memberId: PropTypes.string,
     portalMemberById: PropTypes.object,
@@ -36,8 +34,7 @@ class Picture extends Component {
   };
 
   render() {
-    const { loading, portalMemberById } = this.props;
-    if (loading) return null;
+    const { portalMemberById } = this.props;
     const url = getDownloadUrl(portalMemberById.imageId);
 
     return (
@@ -65,12 +62,6 @@ export default flowRight(
       refetchQueries: [
         { query: PAGED_PORTAL_MEMBERS, variables: { portalId } },
       ],
-    }),
-  }),
-  graphql(PORTAL_MEMBER_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ portalId, memberId }) => ({
-      variables: { portalId, _id: memberId },
     }),
   })
 )(Picture);

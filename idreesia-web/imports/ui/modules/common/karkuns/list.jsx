@@ -11,7 +11,6 @@ import {
   AuditOutlined,
   DeleteOutlined,
   MinusCircleOutlined,
-  KeyOutlined,
 } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';

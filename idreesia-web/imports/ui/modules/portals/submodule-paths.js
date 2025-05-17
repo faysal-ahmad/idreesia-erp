@@ -2,6 +2,19 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
+  // Members Routes
+  // *************************************************************************************
+  static membersPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/members`;
+  }
+  static membersNewFormPath(portalId = ':portalId') {
+    return `${SubModulePaths.membersPath(portalId)}/new`;
+  }
+  static membersEditFormPath(portalId = ':portalId', memberId = ':memberId') {
+    return `${SubModulePaths.membersPath(portalId)}/${memberId}`;
+  }
+
+  // *************************************************************************************
   // Karkun Routes
   // *************************************************************************************
   static karkunsPath(portalId = ':portalId') {
@@ -35,26 +48,6 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
-  // Members Routes
-  // *************************************************************************************
-  static membersPath(portalId = ':portalId') {
-    return `${ModulePaths.portals}/${portalId}/members`;
-  }
-  static membersNewFormPath(portalId = ':portalId') {
-    return `${SubModulePaths.membersPath(portalId)}/new`;
-  }
-  static membersEditFormPath(portalId = ':portalId', memberId = ':memberId') {
-    return `${SubModulePaths.membersPath(portalId)}/${memberId}`;
-  }
-
-  // ******************************************************************************
-  // Audit Logs
-  // ******************************************************************************
-  static auditLogsPath(portalId = ':portalId') {
-    return `${ModulePaths.portals}/${portalId}/audit-logs`;
-  }
-
-  // *************************************************************************************
   // Users Routes
   // *************************************************************************************
   static usersPath(portalId = ':portalId') {
@@ -65,5 +58,19 @@ export default class SubModulePaths {
   }
   static usersEditFormPath(portalId = ':portalId', userId = ':userId') {
     return `${SubModulePaths.usersPath(portalId)}/${userId}`;
+  }
+
+  // ******************************************************************************
+  // Audit Logs
+  // ******************************************************************************
+  static auditLogsPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/audit-logs`;
+  }
+
+  // *************************************************************************************
+  // Report Routes
+  // *************************************************************************************
+  static newEhadReportPath(portalId = ':portalId') {
+    return `${ModulePaths.portals}/${portalId}/new-ehad-report`;
   }
 }

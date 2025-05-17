@@ -12,6 +12,7 @@ import {
 } from './amaanat-logs';
 import { UsersList, UsersNewForm, UsersEditForm } from './users';
 import { AuditLogsList } from './audit-logs';
+import { NewEhadReport } from './new-ehad-report';
 
 const Router = () => (
   <Switch>
@@ -46,6 +47,8 @@ const Router = () => (
     <Route path={paths.usersNewFormPath()} component={UsersNewForm} />
     <Route path={paths.usersEditFormPath()} component={UsersEditForm} />
     <Route path={paths.usersPath()} component={UsersList} />
+
+    <Route path={paths.newEhadReportPath()} component={NewEhadReport} />
   </Switch>
 );
 

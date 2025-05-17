@@ -1,4 +1,4 @@
-import { parse } from 'query-string';
+import { parse, stringify } from 'query-string';
 import { has } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
@@ -48,7 +48,10 @@ const useQueryParams = ({
   };
 
   return {
-    queryString,
+    // Instead of returning the raw queryString, return the
+    // stringified version from queryParams, because we have
+    // updated that with the default values.
+    queryString: stringify(queryParams),
     queryParams,
     setPageParams,
   };

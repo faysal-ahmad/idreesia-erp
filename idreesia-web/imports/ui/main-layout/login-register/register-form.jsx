@@ -15,7 +15,7 @@ const LoginFormButtonStyle = {
   marginBottom: '10px',
 };
 
-export const RegisterForm = ({ history, location, setShowForm }) => {
+export const RegisterForm = ({ setShowForm }) => {
   const [form] = Form.useForm();
   const [registerUser] = useMutation(REGISTER_USER);
 
@@ -29,7 +29,7 @@ export const RegisterForm = ({ history, location, setShowForm }) => {
     })
     .then(() => {
       form.resetFields();
-      message.success('An email has been sent to the specified email address with further instructions.');
+      message.success('An email has been sent to the specified email address with further instructions.', 5);
     })
     .catch(error => {
       message.error(error.message, 5);

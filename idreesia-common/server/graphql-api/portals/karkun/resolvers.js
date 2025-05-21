@@ -103,6 +103,7 @@ export default {
       People.update(_id, {
         $set: {
           isKarkun: true,
+          isVisitor: false,
           karkunData: {
             cityId: city?._id,
           },

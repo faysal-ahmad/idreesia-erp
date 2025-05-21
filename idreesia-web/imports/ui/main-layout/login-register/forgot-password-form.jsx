@@ -14,17 +14,22 @@ const LoginFormButtonStyle = {
 };
 
 export const ForgotPasswordForm = ({ history, location, setShowForm }) => {
+  const [form] = Form.useForm();
+
   const handleFinish = values => {
     const { email } = values;
     Accounts.forgotPassword({
       email,
     });
+
+    form.resetFields();
+    message.success('An email has been sent to the specified email address with further instructions.', 5);
   };
 
   return (
     <Card title="Reset Your Password" style={{ minWidth: 400 }}>
       <Flex justify='center'>
-        <Form style={FormStyle} onFinish={handleFinish}>
+        <Form form={form} style={FormStyle} onFinish={handleFinish}>
           <Form.Item
             name="email"
             rules={[

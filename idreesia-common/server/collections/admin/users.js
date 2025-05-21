@@ -358,7 +358,11 @@ Users.updateUser = (
   if (email) {
     Users.update(userId, {
       $set: {
-        'emails.0.address': email,
+        emails: [
+          {
+            address: email,
+          },
+        ],
         locked,
         profile: {
           name: displayName,

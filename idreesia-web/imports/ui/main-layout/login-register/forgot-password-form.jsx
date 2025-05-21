@@ -20,10 +20,15 @@ export const ForgotPasswordForm = ({ history, location, setShowForm }) => {
     const { email } = values;
     Accounts.forgotPassword({
       email,
+    }, (error) => {
+      form.resetFields();
+      if (error) {
+        message.error(error.message, 5);
+      } else {
+        message.success('An email has been sent to the specified email address with further instructions.', 5);
+      }
     });
 
-    form.resetFields();
-    message.success('An email has been sent to the specified email address with further instructions.', 5);
   };
 
   return (

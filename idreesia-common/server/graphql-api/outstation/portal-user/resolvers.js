@@ -89,10 +89,14 @@ export default {
 
       // Update the email if it is not set previously, or has
       // not been verified yet.
-      if (_user.email && _user.emailVerified !== true) {
+      if (!_user.email || _user.emailVerified !== true) {
         await Users.updateAsync(userId, {
           $set: {
-            'emails.0.address': email,
+            emails: [
+              {
+                address: email,
+              },
+            ],
           },
         });
       } else {

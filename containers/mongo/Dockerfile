@@ -1,4 +1,4 @@
-FROM mongo:6.0.18
+FROM mongo:7.0.31
 EXPOSE 27017
 VOLUME /data/backup
 ENV TZ=Asia/Karachi

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   InputTextField,
   InputTextAreaField,
@@ -42,6 +43,13 @@ const NewForm = ({ history }) => {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'New']));
     }
   }, [physicalStore]);
+
+  const { data: locationsData, loading: locationsDataLoading } = useQuery(LOCATIONS_BY_PHYSICAL_STORE_ID, {
+    variables: { physicalStoreId }
+  });
+
+  if (locationsDataLoading) return null;
+  const { locationsByPhysicalStoreId } = locationsData;
 
   const handleCancel = () => {
     history.goBack();

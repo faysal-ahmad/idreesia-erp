@@ -13,8 +13,8 @@ export default class CustomInput extends Component {
 
   handleChange = years => {
     const { onChange } = this.props;
-    const newValue = dayjs().startOf('day');
-    newValue.subtract(years, 'years');
+    let newValue = dayjs().startOf('day');
+    newValue = newValue.subtract(years, 'years');
     onChange(newValue);
   };
 

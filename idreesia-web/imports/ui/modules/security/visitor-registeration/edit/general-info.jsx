@@ -43,6 +43,7 @@ class GeneralInfo extends Component {
     meansOfEarning,
   }) => {
     const { history, securityVisitorById, updateSecurityVisitor } = this.props;
+    console.log(ehadDate);
     updateSecurityVisitor({
       variables: {
         _id: securityVisitorById._id,

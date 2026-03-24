@@ -57,8 +57,8 @@ export default class CustomInput extends Component {
     });
 
     const totalMonths = years * 12 + months;
-    const newDateValue = dayjs().startOf('day');
-    newDateValue.subtract(totalMonths, 'months');
+    let newDateValue = dayjs().startOf('day');
+    newDateValue = newDateValue.subtract(totalMonths, 'months');
     this.props.onChange(newDateValue);
   };
 
@@ -70,8 +70,8 @@ export default class CustomInput extends Component {
     });
 
     const totalMonths = years * 12 + months;
-    const newDateValue = dayjs().startOf('day');
-    newDateValue.subtract(totalMonths, 'months');
+    let newDateValue = dayjs().startOf('day');
+    newDateValue = newDateValue.subtract(totalMonths, 'months');
     this.props.onChange(newDateValue);
   };
 

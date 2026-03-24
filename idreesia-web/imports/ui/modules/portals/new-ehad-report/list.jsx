@@ -74,9 +74,8 @@ const List = ({ history, location }) => {
 
   const handleMonthGoBack = () => {
     const currentMonth = dayjs(ehadMonth, Formats.MONTH_FORMAT);
-    setPageParams({
-      ehadMonth: currentMonth.subtract(1, 'month').format(Formats.MONTH_FORMAT),
-    });
+    const ehadMonth = currentMonth.subtract(1, 'month').format(Formats.MONTH_FORMAT);
+    setPageParams({ ehadMonth });
   };
 
   const handleMonthGoForward = () => {

@@ -10,7 +10,7 @@
     "lodash": "^4.17.21",
     "meteor-babel": "^7.5.7",
     "meteor-node-stubs": "^0.4.1",
-    "mjml": "^4.6.2",
+    "mjml": "^4.18.0",
     "moment": "^2.29.4",
     "mssql": "^4.3.1",
     "query-string": "^6.8.2",

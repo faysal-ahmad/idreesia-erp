@@ -75,55 +75,63 @@ class ListFilter extends Component {
     if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');
 
     return (
-      <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form layout="horizontal" onFinish={this.handleFinish}>
-            <CheckboxGroupField
-              fieldName="approvalStatus"
-              fieldLabel="Status"
-              fieldLayout={formItemLayout}
-              options={[
-                { label: 'Approved', value: 'approved' },
-                { label: 'Unapproved', value: 'unapproved' },
-              ]}
-              initialValue={status}
-            />
-            <DateField
-              fieldName="startDate"
-              fieldLabel="Start Date"
-              fieldLayout={formItemLayout}
-              required={false}
-              initialValue={mStartDate.isValid() ? mStartDate : null}
-            />
-            <DateField
-              fieldName="endDate"
-              fieldLabel="End Date"
-              fieldLayout={formItemLayout}
-              required={false}
-              initialValue={mEndDate.isValid() ? mEndDate : null}
-            />
-            <TreeSelectField
-              data={allLocations}
-              fieldName="locationId"
-              fieldLabel="Location"
-              fieldLayout={formItemLayout}
-              initialValue={locationId}
-            />
+      <Collapse
+        style={ContainerStyle}
+        items={[
+          {
+            key: '1',
+            label: 'Filter',
+            extra: this.refreshButton(),
+            children: (
+              <Form layout="horizontal" onFinish={this.handleFinish}>
+                <CheckboxGroupField
+                  fieldName="approvalStatus"
+                  fieldLabel="Status"
+                  fieldLayout={formItemLayout}
+                  options={[
+                    { label: 'Approved', value: 'approved' },
+                    { label: 'Unapproved', value: 'unapproved' },
+                  ]}
+                  initialValue={status}
+                />
+                <DateField
+                  fieldName="startDate"
+                  fieldLabel="Start Date"
+                  fieldLayout={formItemLayout}
+                  required={false}
+                  initialValue={mStartDate.isValid() ? mStartDate : null}
+                />
+                <DateField
+                  fieldName="endDate"
+                  fieldLabel="End Date"
+                  fieldLayout={formItemLayout}
+                  required={false}
+                  initialValue={mEndDate.isValid() ? mEndDate : null}
+                />
+                <TreeSelectField
+                  data={allLocations}
+                  fieldName="locationId"
+                  fieldLabel="Location"
+                  fieldLayout={formItemLayout}
+                  initialValue={locationId}
+                />
 
-            <Form.Item {...buttonItemLayout}>
-              <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleReset}>
-                  Reset
-                </Button>
-                &nbsp;
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-              </Row>
-            </Form.Item>
-          </Form>
-        </Collapse.Panel>
-      </Collapse>
+                <Form.Item {...buttonItemLayout}>
+                  <Row type="flex" justify="end">
+                    <Button type="default" onClick={this.handleReset}>
+                      Reset
+                    </Button>
+                    &nbsp;
+                    <Button type="primary" htmlType="submit">
+                      Search
+                    </Button>
+                  </Row>
+                </Form.Item>
+              </Form>
+            ),
+          },
+        ]}
+      />
     );
   }
 }

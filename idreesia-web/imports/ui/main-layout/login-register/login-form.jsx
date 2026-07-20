@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { Button, Card, Divider, Flex, Form, Input, Typography, message } from 'antd';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 

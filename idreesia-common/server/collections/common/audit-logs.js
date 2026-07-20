@@ -9,7 +9,7 @@ class AuditLogs extends AggregatableCollection {
     return auditLogs;
   }
 
-  createAuditLog(
+  async createAuditLog(
     {
       entityId,
       entityType,
@@ -20,7 +20,7 @@ class AuditLogs extends AggregatableCollection {
     },
     existingEntity
   ) {
-    this.insert({
+    await this.insertAsync({
       entityId,
       entityType,
       operationType,

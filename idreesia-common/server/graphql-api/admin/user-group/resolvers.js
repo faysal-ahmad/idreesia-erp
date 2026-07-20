@@ -6,7 +6,7 @@ export default {
     pagedUserGroups: async (obj, { queryString }) =>
       UserGroups.searchGroups(queryString),
 
-    userGroupById: async (obj, { _id }) => UserGroups.findOne(_id),
+    userGroupById: async (obj, { _id }) => UserGroups.findOneAsync(_id),
   },
 
   Mutation: {

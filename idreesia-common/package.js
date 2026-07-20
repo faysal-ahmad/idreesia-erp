@@ -7,10 +7,8 @@ Package.describe({
 Package.onUse(api => {
   api.addFiles('private/auth/google.json', 'server', { isAsset: true });
 
-  api.versionsFrom('2.3.2');
+  api.versionsFrom('3.5');
   api.use('ecmascript');
   api.use('accounts-password');
-  api.use('sakulstra:aggregate', 'server');
-  api.use('aldeed:collection2-core', 'server');
-  api.use('swydo:graphql', 'server');
+  api.use('aldeed:collection2', 'server');
 });

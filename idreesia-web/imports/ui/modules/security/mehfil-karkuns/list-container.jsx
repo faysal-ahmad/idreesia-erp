@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 
 import { Modal, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -203,7 +203,7 @@ class ListContainer extends Component {
         />
         <Modal
           title="Edit Duty Details"
-          visible={showEditForm}
+          open={showEditForm}
           onCancel={this.handleEditMehfilKarkunClose}
           width={600}
           footer={null}

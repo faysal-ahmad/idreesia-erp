@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import dayjs from 'dayjs';
 import { Button, Table, Tooltip, message } from 'antd';
 import { DeleteOutlined, PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';

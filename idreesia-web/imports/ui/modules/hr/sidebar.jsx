@@ -17,11 +17,66 @@ import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-const { SubMenu } = Menu;
-
 const IconStyle = {
   fontSize: '20px',
 };
+
+const menuItems = [
+  {
+    key: 'people',
+    icon: <TeamOutlined style={IconStyle} />,
+    label: 'People',
+  },
+  {
+    key: 'karkuns',
+    icon: <TeamOutlined style={IconStyle} />,
+    label: 'Karkuns',
+  },
+  {
+    key: 'salary-sheets',
+    icon: <DollarOutlined style={IconStyle} />,
+    label: 'Salary Sheets',
+  },
+  {
+    key: 'attendance-sheets',
+    icon: <SolutionOutlined style={IconStyle} />,
+    label: 'Attendance Sheets',
+  },
+  {
+    key: 'setup',
+    icon: <LaptopOutlined style={IconStyle} />,
+    label: 'Setup',
+    children: [
+      {
+        key: 'jobs',
+        icon: <TagOutlined style={IconStyle} />,
+        label: 'Jobs',
+      },
+      {
+        key: 'ms-duties',
+        icon: <TagsOutlined style={IconStyle} />,
+        label: 'Duties & Shifts',
+      },
+      {
+        key: 'duty-locations',
+        icon: <EnvironmentOutlined style={IconStyle} />,
+        label: 'Duty Locations',
+      },
+    ],
+  },
+  {
+    key: 'administration',
+    icon: <ToolOutlined style={IconStyle} />,
+    label: 'Administration',
+    children: [
+      {
+        key: 'audit-logs',
+        icon: <AuditOutlined style={IconStyle} />,
+        label: 'Audit Logs',
+      },
+    ],
+  },
+];
 
 class Sidebar extends Component {
   static propTypes = {
@@ -86,60 +141,8 @@ class Sidebar extends Component {
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
-      >
-        <Menu.Item key="people">
-          <TeamOutlined style={IconStyle} />
-          <span>People</span>
-        </Menu.Item>
-        <Menu.Item key="karkuns">
-          <TeamOutlined style={IconStyle} />
-          <span>Karkuns</span>
-        </Menu.Item>
-        <Menu.Item key="salary-sheets">
-          <DollarOutlined style={IconStyle} />
-          <span>Salary Sheets</span>
-        </Menu.Item>
-        <Menu.Item key="attendance-sheets">
-          <SolutionOutlined style={IconStyle} />
-          <span>Attendance Sheets</span>
-        </Menu.Item>
-        <SubMenu
-          key="setup"
-          title={
-            <>
-              <LaptopOutlined style={IconStyle} />
-              <span>Setup</span>
-            </>
-          }
-        >
-          <Menu.Item key="jobs">
-            <TagOutlined style={IconStyle} />
-            <span>Jobs</span>
-          </Menu.Item>
-          <Menu.Item key="ms-duties">
-            <TagsOutlined style={IconStyle} />
-            <span>Duties &amp; Shifts</span>
-          </Menu.Item>
-          <Menu.Item key="duty-locations">
-            <EnvironmentOutlined style={IconStyle} />
-            <span>Duty Locations</span>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="administration"
-          title={
-            <>
-              <ToolOutlined style={IconStyle} />
-              <span>Administration</span>
-            </>
-          }
-        >
-          <Menu.Item key="audit-logs">
-            <AuditOutlined style={IconStyle} />
-            <span>Audit Logs</span>
-          </Menu.Item>
-        </SubMenu>
-      </Menu>
+        items={menuItems}
+      />
     );
   }
 }

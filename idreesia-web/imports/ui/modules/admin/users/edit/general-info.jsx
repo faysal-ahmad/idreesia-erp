@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -79,7 +79,6 @@ class GeneralInfo extends Component {
         fieldName="karkun"
         fieldLabel="Karkun Name"
         showMsKarkunsList
-        showOutstationKarkunsList
       />
     );
 

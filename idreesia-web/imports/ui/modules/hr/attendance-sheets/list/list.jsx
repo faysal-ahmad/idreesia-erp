@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import FileSaver from 'file-saver';
 import {
   DeleteOutlined,
@@ -18,7 +18,6 @@ import {
   Cascader,
   DatePicker,
   Dropdown,
-  Menu,
   Modal,
   Popconfirm,
   Table,
@@ -315,57 +314,94 @@ export class List extends Component {
       handleImportFromGoogleSheet,
       handlePrintAttendanceSheet,
     } = this.props;
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={handleCreateMissingAttendances}>
-          <PlusCircleOutlined />&nbsp;
-          Create Missing Attendances
-        </Menu.Item>
-        <Menu.Item key="2" onClick={this.handleDownloadAsCSV}>
-          <DownloadOutlined />&nbsp;
-          Download as CSV
-        </Menu.Item>
-        <Menu.Item key="4" onClick={handleImportFromGoogleSheet}>
-          <ImportOutlined />&nbsp;
-          Import from Google Sheets
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.SubMenu key="5" title="Print" icon={<PrinterOutlined />}>
-          <Menu.Item
-            key="5-1"
-            onClick={() =>
-              this.handleViewMeetingCards(CardTypes.NAAM_I_MUBARIK_MEETING)
-            }
-          >
-            Naam-i-Mubarik Meeting Cards
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="5-2" onClick={() => this.handleViewKarkunCards()}>
-            Karkun Cards
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="5-3" onClick={() => this.handlePrintKarkunsList()}>
-            Karkuns List
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="5-4" onClick={() => handlePrintAttendanceSheet()}>
-            Attendance Sheet
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.Divider />
-        <Menu.Item key="6" onClick={this._handleDeleteSelectedAttendances}>
-          <DeleteOutlined />&nbsp;
-          Delete Selected Attendances
-        </Menu.Item>
-        <Menu.Item key="7" onClick={this._handleDeleteAllAttendances}>
-          <DeleteOutlined />&nbsp;
-          Delete All Attendances
-        </Menu.Item>
-      </Menu>
-    );
+    const menuItems = [
+      {
+        key: '1',
+        label: (
+          <>
+            <PlusCircleOutlined />&nbsp;
+            Create Missing Attendances
+          </>
+        ),
+        onClick: handleCreateMissingAttendances,
+      },
+      {
+        key: '2',
+        label: (
+          <>
+            <DownloadOutlined />&nbsp;
+            Download as CSV
+          </>
+        ),
+        onClick: this.handleDownloadAsCSV,
+      },
+      {
+        key: '4',
+        label: (
+          <>
+            <ImportOutlined />&nbsp;
+            Import from Google Sheets
+          </>
+        ),
+        onClick: handleImportFromGoogleSheet,
+      },
+      { type: 'divider' },
+      {
+        key: '5',
+        label: 'Print',
+        icon: <PrinterOutlined />,
+        children: [
+          {
+            key: '5-1',
+            label: 'Naam-i-Mubarik Meeting Cards',
+            onClick: () =>
+              this.handleViewMeetingCards(CardTypes.NAAM_I_MUBARIK_MEETING),
+          },
+          { type: 'divider' },
+          {
+            key: '5-2',
+            label: 'Karkun Cards',
+            onClick: () => this.handleViewKarkunCards(),
+          },
+          { type: 'divider' },
+          {
+            key: '5-3',
+            label: 'Karkuns List',
+            onClick: () => this.handlePrintKarkunsList(),
+          },
+          { type: 'divider' },
+          {
+            key: '5-4',
+            label: 'Attendance Sheet',
+            onClick: () => handlePrintAttendanceSheet(),
+          },
+        ],
+      },
+      { type: 'divider' },
+      {
+        key: '6',
+        label: (
+          <>
+            <DeleteOutlined />&nbsp;
+            Delete Selected Attendances
+          </>
+        ),
+        onClick: this._handleDeleteSelectedAttendances,
+      },
+      {
+        key: '7',
+        label: (
+          <>
+            <DeleteOutlined />&nbsp;
+            Delete All Attendances
+          </>
+        ),
+        onClick: this._handleDeleteAllAttendances,
+      },
+    ];
 
     return (
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: menuItems }}>
         <Button icon={<SettingOutlined />}>Actions</Button>
       </Dropdown>
     );

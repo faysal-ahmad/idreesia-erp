@@ -8,24 +8,24 @@ export default {
     karkunCount: async mehfilType =>
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
-      }).count(),
+      }).countAsync(),
     mehfilKarkuns: async mehfilType =>
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
-      }).fetch(),
+      }).fetchAsync(),
   },
 
   Query: {
     allMehfils: async () =>
-      Mehfils.find({}, { sort: { mehfilDate: -1 } }).fetch(),
+      Mehfils.find({}, { sort: { mehfilDate: -1 } }).fetchAsync(),
 
-    mehfilById: async (obj, { _id }) => Mehfils.findOne(_id),
+    mehfilById: async (obj, { _id }) => Mehfils.findOneAsync(_id),
   },
 
   Mutation: {
     createMehfil: async (obj, { name, mehfilDate }, { user }) => {
       const date = new Date();
-      const mehfilId = Mehfils.insert({
+      const mehfilId = await Mehfils.insertAsync({
         name,
         mehfilDate,
         createdAt: date,
@@ -34,12 +34,12 @@ export default {
         updatedBy: user._id,
       });
 
-      return Mehfils.findOne(mehfilId);
+      return Mehfils.findOneAsync(mehfilId);
     },
 
     updateMehfil: async (obj, { _id, name, mehfilDate }, { user }) => {
       const date = new Date();
-      Mehfils.update(_id, {
+      await Mehfils.updateAsync(_id, {
         $set: {
           name,
           mehfilDate,
@@ -48,13 +48,13 @@ export default {
         },
       });
 
-      return Mehfils.findOne(_id);
+      return Mehfils.findOneAsync(_id);
     },
 
     removeMehfil: async (obj, { _id }) => {
-      const karkunCount = MehfilKarkuns.find({
+      const karkunCount = await MehfilKarkuns.find({
         mehfilId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (karkunCount > 0) {
         throw new Error(
@@ -62,7 +62,7 @@ export default {
         );
       }
 
-      return Mehfils.remove(_id);
+      return Mehfils.removeAsync(_id);
     },
   },
 };

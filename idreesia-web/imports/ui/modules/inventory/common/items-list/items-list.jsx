@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { filter, find } from 'meteor/idreesia-common/utilities/lodash';

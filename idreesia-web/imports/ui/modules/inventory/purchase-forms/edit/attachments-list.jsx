@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql } from "react-apollo";
+import { graphql } from '@apollo/react-hoc';
 import { flowRight } from "lodash";
 import { message } from "antd";
 

@@ -1,7 +1,7 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
@@ -17,12 +17,8 @@ class InstanceAccess extends Component {
     groupId: PropTypes.string,
     groupLoading: PropTypes.bool,
     userGroupById: PropTypes.object,
-    companiesListLoading: PropTypes.bool,
-    allCompanies: PropTypes.array,
     physicalStoresListLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
-    portalsListLoading: PropTypes.bool,
-    allPortals: PropTypes.array,
     setUserGroupInstanceAccess: PropTypes.func,
   };
 
@@ -55,26 +51,14 @@ class InstanceAccess extends Component {
       groupLoading,
       physicalStoresListLoading,
       allPhysicalStores,
-      companiesListLoading,
-      allCompanies,
-      portalsListLoading,
-      allPortals,
     } = this.props;
-    if (
-      groupLoading ||
-      physicalStoresListLoading ||
-      companiesListLoading ||
-      portalsListLoading
-    )
-      return null;
+    if (groupLoading || physicalStoresListLoading) return null;
 
     return (
       <Fragment>
         <InstanceSelection
           securityEntity={userGroupById}
           allPhysicalStores={allPhysicalStores}
-          allCompanies={allCompanies}
-          allPortals={allPortals}
           ref={is => {
             this.instanceSelection = is;
           }}
@@ -132,24 +116,6 @@ const physicalStoresListQuery = gql`
   }
 `;
 
-const companiesListQuery = gql`
-  query allCompanies {
-    allCompanies {
-      _id
-      name
-    }
-  }
-`;
-
-const portalsListQuery = gql`
-  query allPortals {
-    allPortals {
-      _id
-      name
-    }
-  }
-`;
-
 export default flowRight(
   graphql(formMutation, {
     name: 'setUserGroupInstanceAccess',
@@ -160,11 +126,5 @@ export default flowRight(
   }),
   graphql(physicalStoresListQuery, {
     props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
-  }),
-  graphql(companiesListQuery, {
-    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
-  }),
-  graphql(portalsListQuery, {
-    props: ({ data }) => ({ portalsListLoading: data.loading, ...data }),
   })
 )(InstanceAccess);

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import FileSaver from 'file-saver';
 import {
   CheckCircleOutlined,
@@ -21,7 +21,6 @@ import {
   Button,
   DatePicker,
   Dropdown,
-  Menu,
   Modal,
   Popconfirm,
   Select,
@@ -415,56 +414,108 @@ export class List extends Component {
     let deleteMenuItems = [];
     if (showDeleteMenu) {
       deleteMenuItems = [
-        <Menu.Divider key="divider" />,
-        <Menu.Item key="6" onClick={this._handleDeleteSelectedSalaries}>
-          <DeleteOutlined />&nbsp;
-          Delete Selected Salaries
-        </Menu.Item>,
-        <Menu.Item key="7" onClick={this._handleDeleteAllSalaries}>
-          <DeleteOutlined />&nbsp;
-          Delete All Salaries
-        </Menu.Item>,
+        { type: 'divider' },
+        {
+          key: '8',
+          label: (
+            <>
+              <DeleteOutlined />&nbsp;
+              Delete Selected Salaries
+            </>
+          ),
+          onClick: this._handleDeleteSelectedSalaries,
+        },
+        {
+          key: '9',
+          label: (
+            <>
+              <DeleteOutlined />&nbsp;
+              Delete All Salaries
+            </>
+          ),
+          onClick: this._handleDeleteAllSalaries,
+        },
       ];
     }
 
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={handleCreateMissingSalaries}>
-          <PlusCircleOutlined />&nbsp;
-          Create Missing Salaries
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="2-1" onClick={this._handleApproveSelectedSalaries}>
-          <CheckCircleOutlined />&nbsp;
-          Approve Selected Salaries
-        </Menu.Item>
-        <Menu.Item key="2-2" onClick={handleApproveAllSalaries}>
-          <CheckCircleOutlined />&nbsp;
-          Approve All Salaries
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="3" onClick={this.handleDownloadAsCSV}>
-          <FileExcelOutlined />&nbsp;
-          Download as CSV
-        </Menu.Item>
-        <Menu.Item key="4" onClick={this.handlePrintSalaryReceipts}>
-          <PrinterOutlined />&nbsp;
-          Print Salary Receipts
-        </Menu.Item>
-        <Menu.Item key="5" onClick={this.handlePrintRashanReceipts}>
-          <PrinterOutlined />&nbsp;
-          Print Rashan Receipts
-        </Menu.Item>
-        <Menu.Item key="6" onClick={this.handlePrintEidReceipts}>
-          <PrinterOutlined />&nbsp;
-          Print Eid Receipts
-        </Menu.Item>
-        {deleteMenuItems}
-      </Menu>
-    );
+    const menuItems = [
+      {
+        key: '1',
+        label: (
+          <>
+            <PlusCircleOutlined />&nbsp;
+            Create Missing Salaries
+          </>
+        ),
+        onClick: handleCreateMissingSalaries,
+      },
+      { type: 'divider' },
+      {
+        key: '2-1',
+        label: (
+          <>
+            <CheckCircleOutlined />&nbsp;
+            Approve Selected Salaries
+          </>
+        ),
+        onClick: this._handleApproveSelectedSalaries,
+      },
+      {
+        key: '2-2',
+        label: (
+          <>
+            <CheckCircleOutlined />&nbsp;
+            Approve All Salaries
+          </>
+        ),
+        onClick: handleApproveAllSalaries,
+      },
+      { type: 'divider' },
+      {
+        key: '3',
+        label: (
+          <>
+            <FileExcelOutlined />&nbsp;
+            Download as CSV
+          </>
+        ),
+        onClick: this.handleDownloadAsCSV,
+      },
+      {
+        key: '4',
+        label: (
+          <>
+            <PrinterOutlined />&nbsp;
+            Print Salary Receipts
+          </>
+        ),
+        onClick: this.handlePrintSalaryReceipts,
+      },
+      {
+        key: '5',
+        label: (
+          <>
+            <PrinterOutlined />&nbsp;
+            Print Rashan Receipts
+          </>
+        ),
+        onClick: this.handlePrintRashanReceipts,
+      },
+      {
+        key: '6',
+        label: (
+          <>
+            <PrinterOutlined />&nbsp;
+            Print Eid Receipts
+          </>
+        ),
+        onClick: this.handlePrintEidReceipts,
+      },
+      ...deleteMenuItems,
+    ];
 
     return (
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: menuItems }}>
         <Button icon={<SettingOutlined />}>Actions</Button>
       </Dropdown>
     );

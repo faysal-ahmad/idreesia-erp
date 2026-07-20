@@ -83,7 +83,7 @@ export default class TakePicture extends Component {
         </Button>
 
         <Modal
-          visible={showForm}
+          open={showForm}
           title={buttonText}
           width={750}
           okText="Save"

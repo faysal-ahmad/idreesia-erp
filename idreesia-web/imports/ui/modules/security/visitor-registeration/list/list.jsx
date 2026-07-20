@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Drawer,
   Dropdown,
-  Menu,
   message,
 } from 'antd';
 import {
@@ -147,26 +146,42 @@ const List = ({ history, location }) => {
   };
 
   const getActionsMenu = () => {
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={handleDownloadSelectedAsCSV}>
-          <DownloadOutlined />&nbsp;
-          Download Selected
-        </Menu.Item>
-        <Menu.Item key="2" onClick={handleDownloadAllAsCSV}>
-          <UploadOutlined />&nbsp;
-          Download All
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="3" onClick={handleUploadClicked}>
-          <UploadOutlined />&nbsp;
-          Upload CSV Data
-        </Menu.Item>
-      </Menu>
-    );
+    const menuItems = [
+      {
+        key: '1',
+        label: (
+          <>
+            <DownloadOutlined />&nbsp;
+            Download Selected
+          </>
+        ),
+        onClick: handleDownloadSelectedAsCSV,
+      },
+      {
+        key: '2',
+        label: (
+          <>
+            <UploadOutlined />&nbsp;
+            Download All
+          </>
+        ),
+        onClick: handleDownloadAllAsCSV,
+      },
+      { type: 'divider' },
+      {
+        key: '3',
+        label: (
+          <>
+            <UploadOutlined />&nbsp;
+            Upload CSV Data
+          </>
+        ),
+        onClick: handleUploadClicked,
+      },
+    ];
 
     return (
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: menuItems }}>
         <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );
@@ -245,7 +260,7 @@ const List = ({ history, location }) => {
         title="Stay History"
         width={600}
         onClose={handleStayListClose}
-        visible={showStayList}
+        open={showStayList}
       >
         <VisitorStaysList
           showNewButton

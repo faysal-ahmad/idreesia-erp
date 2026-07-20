@@ -113,52 +113,60 @@ const ListFilter = ({
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   return (
-    <Collapse style={ContainerStyle}>
-      <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onFinish={handleFinish}>
-          {showNameFilter ? getNameFilterField(name) : null}
-          {showCnicFilter
-            ? getCnicNumberFilterField(cnicNumber)
-            : null}
-          {showPhoneNumberFilter
-            ? getPhoneNumberFilterField(phoneNumber)
-            : null}
-          {showBloodGroupFilter
-            ? getBloodGroupFilterField(bloodGroup)
-            : null}
-          {showLastTarteebFilter
-            ? getLastTarteebFilterField(lastTarteeb)
-            : null}
-          {showAttendanceFilter
-            ? getAttendanceFilterField(attendance)
-            : null}
-          {showUserAccountFilter
-            ? getUserAccountFilterField(userAccount)
-            : null}
-          {showMehfilDutyFilter
-            ? getMehfilDutyFilterField(dutyId, mehfilDuties)
-            : null}
-          {showEhadKarkunFilter
-            ? getEhadKarkunFilterField(ehadKarkun)
-            : null}
-          {showCityMehfilFilter
-            ? getCityMehfilFilterField(
-                [cityId, cityMehfilId],
-                cities,
-                cityMehfils
-              )
-            : null}
-          {showRegionFilter
-            ? getRegionFilterField(region, regions)
-            : null}
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: refreshButton(),
+          children: (
+            <Form layout="horizontal" onFinish={handleFinish}>
+              {showNameFilter ? getNameFilterField(name) : null}
+              {showCnicFilter
+                ? getCnicNumberFilterField(cnicNumber)
+                : null}
+              {showPhoneNumberFilter
+                ? getPhoneNumberFilterField(phoneNumber)
+                : null}
+              {showBloodGroupFilter
+                ? getBloodGroupFilterField(bloodGroup)
+                : null}
+              {showLastTarteebFilter
+                ? getLastTarteebFilterField(lastTarteeb)
+                : null}
+              {showAttendanceFilter
+                ? getAttendanceFilterField(attendance)
+                : null}
+              {showUserAccountFilter
+                ? getUserAccountFilterField(userAccount)
+                : null}
+              {showMehfilDutyFilter
+                ? getMehfilDutyFilterField(dutyId, mehfilDuties)
+                : null}
+              {showEhadKarkunFilter
+                ? getEhadKarkunFilterField(ehadKarkun)
+                : null}
+              {showCityMehfilFilter
+                ? getCityMehfilFilterField(
+                    [cityId, cityMehfilId],
+                    cities,
+                    cityMehfils
+                  )
+                : null}
+              {showRegionFilter
+                ? getRegionFilterField(region, regions)
+                : null}
 
-          {showUpdatedBetweenFilter
-            ? getUpdatedBetweenFilterField(updatedBetween)
-            : null}
-          {getFormButtons(handleReset)}
-        </Form>
-      </Collapse.Panel>
-    </Collapse>
+              {showUpdatedBetweenFilter
+                ? getUpdatedBetweenFilterField(updatedBetween)
+                : null}
+              {getFormButtons(handleReset)}
+            </Form>
+          ),
+        },
+      ]}
+    />
   );
 };
 

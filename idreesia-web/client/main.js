@@ -6,8 +6,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import { ApolloProvider } from 'react-apollo';
-import ApolloClient from 'apollo-boost';
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  HttpLink,
+  from,
+} from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 
 import './main.css';
 import './attendance.css';
@@ -20,14 +26,18 @@ import combinedReducer from '../imports/ui/reducers/combined-reducer';
 
 const store = createStore(combinedReducer);
 
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const authLink = setContext((_, { headers }) => ({
+  headers: {
+    ...headers,
+    authorization: Accounts._storedLoginToken(),
+  },
+}));
+
 const client = new ApolloClient({
-  uri: '/graphql',
-  request: operation =>
-    operation.setContext(() => ({
-      headers: {
-        authorization: Accounts._storedLoginToken(),
-      },
-    })),
+  link: from([authLink, httpLink]),
+  cache: new InMemoryCache(),
 });
 
 Meteor.startup(() => {

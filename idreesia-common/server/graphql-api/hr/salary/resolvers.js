@@ -13,20 +13,20 @@ import { getPagedSalariesByKarkun } from './queries';
 export default {
   SalaryType: {
     karkun: async salaryType => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: salaryType.karkunId },
       });
       return People.personToKarkun(person);
     },
     job: async salaryType => {
       if (!salaryType.jobId) return null;
-      return Jobs.findOne({
+      return Jobs.findOneAsync({
         _id: { $eq: salaryType.jobId },
       });
     },
     approver: async salaryType => {
       if (!salaryType.approvedBy) return null;
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: salaryType.approvedBy },
       });
       return People.personToKarkun(person);
@@ -53,12 +53,12 @@ export default {
         return Salaries.find({
           month: formattedMonth,
           jobId,
-        }).fetch();
+        }).fetchAsync();
       }
 
       return Salaries.find({
         month: formattedMonth,
-      }).fetch();
+      }).fetchAsync();
     },
 
     salariesByIds: async (obj, { ids }, { user }) => {
@@ -75,7 +75,7 @@ export default {
       const idsArray = ids.split(',');
       return Salaries.find({
         _id: { $in: idsArray },
-      }).fetch();
+      }).fetchAsync();
     },
 
     pagedSalariesByKarkun: async (obj, { queryString }, { user }) => {
@@ -117,7 +117,7 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      return createMonthlySalaries(
+      return await createMonthlySalaries(
         formattedCurrentMonth,
         formattedPreviousMonth,
         user
@@ -150,7 +150,7 @@ export default {
       }
 
       const date = new Date();
-      Salaries.update(_id, {
+      await Salaries.updateAsync(_id, {
         $set: {
           salary,
           openingLoan,
@@ -170,7 +170,7 @@ export default {
         },
       });
 
-      return Salaries.findOne(_id);
+      return Salaries.findOneAsync(_id);
     },
 
     approveSalaries: async (obj, { month, ids }, { user }) => {
@@ -185,7 +185,7 @@ export default {
         .format('MM-YYYY');
 
       const date = new Date();
-      return Salaries.update(
+      return Salaries.updateAsync(
         {
           _id: { $in: ids },
           month: formattedMonth,
@@ -212,7 +212,7 @@ export default {
         .format('MM-YYYY');
 
       const date = new Date();
-      return Salaries.update(
+      return Salaries.updateAsync(
         {
           month: formattedMonth,
         },
@@ -250,7 +250,7 @@ export default {
         );
       }
 
-      return Salaries.remove({
+      return Salaries.removeAsync({
         _id: { $in: ids },
       });
     },
@@ -283,7 +283,7 @@ export default {
         .startOf('month')
         .format('MM-YYYY');
 
-      return Salaries.remove({
+      return Salaries.removeAsync({
         month: formattedMonth,
       });
     },

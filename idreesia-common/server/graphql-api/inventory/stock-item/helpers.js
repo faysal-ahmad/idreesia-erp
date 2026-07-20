@@ -131,7 +131,7 @@ export async function recalculateStockLevels(id, physicalStoreId) {
     });
   });
 
-  const purchaseForms = PurchaseForms.find({
+  const purchaseForms = await PurchaseForms.find({
     physicalStoreId: { $eq: physicalStoreId },
     items: {
       $elemMatch: {
@@ -151,7 +151,7 @@ export async function recalculateStockLevels(id, physicalStoreId) {
     });
   });
 
-  const stockAdjustments = StockAdjustments.find({
+  const stockAdjustments = await StockAdjustments.find({
     physicalStoreId: { $eq: physicalStoreId },
     stockItemId: { $eq: id },
   });

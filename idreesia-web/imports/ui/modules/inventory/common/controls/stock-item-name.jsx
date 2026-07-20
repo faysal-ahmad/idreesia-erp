@@ -65,7 +65,7 @@ const StockItemName = ({ stockItem, onStockItemNameClicked }) => {
       </div>
       <Modal
         title={stockItem.name}
-        visible={showDialog}
+        open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >

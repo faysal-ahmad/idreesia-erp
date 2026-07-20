@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -299,7 +299,7 @@ class ListContainer extends Component {
         {this.state.showEditForm ? (
           <Modal
             title="Update Attendance"
-            visible={this.state.showEditForm}
+            open={this.state.showEditForm}
             onCancel={this.handleEditAttendanceCancel}
             width={500}
             footer={null}

@@ -1,11 +1,11 @@
 import XLSX from 'xlsx';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
-export function exportKarkuns(karkunIdsString) {
+export async function exportKarkuns(karkunIdsString) {
   const karkunIds = karkunIdsString.split(',');
-  const people = People.find({
+  const people = await People.find({
     _id: { $in: karkunIds },
-  }).fetch();
+  }).fetchAsync();
 
   let index = 1;
   const sheetData = people.map(person => ({

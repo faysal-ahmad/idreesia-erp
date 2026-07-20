@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import ReactToPrint from 'react-to-print';
 import { Button, Checkbox, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';

@@ -2,17 +2,17 @@ import XLSX from 'xlsx';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
-export function exportVisitors(visitorIdsString) {
+export async function exportVisitors(visitorIdsString) {
   let people;
 
   if (visitorIdsString === 'all') {
-    people = People.find({ isVisitor: true }).fetch();
+    people = await People.find({ isVisitor: true }).fetchAsync();
   } else {
     const visitorIds = visitorIdsString.split(',');
-    people = People.find({
+    people = await People.find({
       _id: { $in: visitorIds },
       isVisitor: true,
-    }).fetch();
+    }).fetchAsync();
   }
 
   let index = 1;

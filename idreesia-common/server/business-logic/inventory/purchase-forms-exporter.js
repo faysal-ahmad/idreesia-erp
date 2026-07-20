@@ -14,7 +14,7 @@ export async function exportPurchaseForms(purchaseFormIdsString) {
     _id: { $in: purchaseFormIds },
   }).fetchAsync();
 
-  const sheetData = Promise.all(
+  const sheetData = await Promise.all(
     purchaseForms.map(async purchaseForm => {
       const purchaseDate = dayjs(Number(purchaseForm.purchaseDate)).format(
         'DD MMM, YYYY'

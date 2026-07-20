@@ -6,7 +6,7 @@ function getName() {
   return `Image_${timestamp.format('DD-MM-YY_HH:mm')}.jpeg`;
 }
 
-export function createAttachment(
+export async function createAttachment(
   { name, description, mimeType, data },
   { user }
 ) {
@@ -16,7 +16,7 @@ export function createAttachment(
   }
 
   const date = new Date();
-  const attachmentId = Attachments.insert({
+  const attachmentId = await Attachments.insertAsync({
     name: name || getName(),
     description,
     mimeType: mimeType || 'image/jpeg',

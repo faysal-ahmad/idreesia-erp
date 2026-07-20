@@ -7,21 +7,13 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
-import { createJob } from 'meteor/idreesia-common/server/utilities/jobs';
-import { JobTypes } from 'meteor/idreesia-common/constants';
 
 const Users = Meteor.users;
 
-/*
-const wrapAsync = Meteor.wrapAsync ? Meteor.wrapAsync : Meteor._wrapAsync;
-function aggregate(pipelines, options) {
-  const rawCollection = Meteor.users.rawCollection();
-  return wrapAsync(rawCollection.aggregate.bind(rawCollection))(
-    pipelines,
-    options
-  );
-}
-*/
+Users.aggregate = (pipelines, options) => {
+  const rawCollection = Users.rawCollection();
+  return rawCollection.aggregate(pipelines, options).toArray();
+};
 
 const mapUser = user => ({
   _id: user._id,
@@ -46,7 +38,6 @@ const buildPipeline = params => {
     showActive,
     showInactive,
     moduleAccess,
-    portalAccess,
   } = params;
 
   if (showLocked === 'true' && showUnlocked === 'false') {
@@ -102,21 +93,11 @@ const buildPipeline = params => {
     });
   }
 
-  if (portalAccess) {
-    pipeline.push({
-      $match: {
-        instances: {
-          $elemMatch: { $eq: portalAccess },
-        },
-      },
-    });
-  }
-
   return pipeline;
 };
 
-Users.findOneUser = userId => {
-  const user = Meteor.users.findOne(userId);
+Users.findOneUser = async userId => {
+  const user = await Meteor.users.findOneAsync(userId);
   return mapUser(user);
 };
 
@@ -152,112 +133,26 @@ Users.searchUsers = params => {
   }));
 };
 
-Users.searchOperationsWazaifUsers = params => {
-  const { pageIndex = '0', pageSize = '20' } = params;
-  const initialPipeline = [
-    {
-      $match: {
-        personId: { $exists: true, $ne: null },
-        permissions: {
-          $elemMatch: { $regex: `^operations-wazaif` },
-        },
-      },
-    },
-  ];
-
-  const pipeline = initialPipeline.concat(buildPipeline(params));
-  const countingPipeline = pipeline.concat({
-    $count: 'total',
-  });
-
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
-  const resultsPipeline = pipeline.concat([
-    { $sort: { username: 1 } },
-    { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize },
-  ]);
-
-  const users = Users.aggregate(resultsPipeline);
-  const totalResults = Users.aggregate(countingPipeline);
-
-  return Promise.all([users, totalResults]).then(results => ({
-    totalResults: get(results[1], ['0', 'total'], 0),
-    data: results[0].map(user => mapUser(user)),
-  }));
-};
-
-Users.searchOutstationPortalUsers = (params, portalIds) => {
-  const { pageIndex = '0', pageSize = '20' } = params;
-  const initialPipeline = [
-    {
-      $match: {
-        personId: { $exists: true, $ne: null },
-      },
-    },
-  ];
-
-  if (portalIds && portalIds.length > 0) {
-    initialPipeline.push({
-      $match: {
-        $or: [
-          {
-            permissions: {
-              $elemMatch: { $regex: `^mehfil-portals` },
-            },
-          },
-          {
-            // We want to get back users even if they don't have any
-            // permissions related to the portal, but have been given
-            // access to a portal.
-            instances: { $in: portalIds },
-          },
-        ],
-      },
-    });
-  }
-
-  const pipeline = initialPipeline.concat(buildPipeline(params));
-  const countingPipeline = pipeline.concat({
-    $count: 'total',
-  });
-
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
-  const resultsPipeline = pipeline.concat([
-    { $sort: { username: 1 } },
-    { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize },
-  ]);
-
-  const users = Users.aggregate(resultsPipeline);
-  const totalResults = Users.aggregate(countingPipeline);
-
-  return Promise.all([users, totalResults]).then(results => ({
-    totalResults: get(results[1], ['0', 'total'], 0),
-    data: results[0].map(user => mapUser(user)),
-  }));
-};
 
 // *******************************************************************
 // Common Create/Update methods for User.
 // Used from Admin/Outstation/Portals.
 // *******************************************************************
-Users.createUser = (
+Users.createUser = async (
   { userName, password, email, displayName, personId },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
   if (userName) {
-    const existingUser = Accounts.findUserByUsername(userName);
+    const existingUser = await Accounts.findUserByUsername(userName);
     if (existingUser) {
       throw new Error(`User name '${userName}' is already in use.`);
     }
   }
 
   if (personId) {
-    const existingUser = Users.findOne({ personId });
+    const existingUser = await Users.findOneAsync({ personId });
     if (existingUser) {
       throw new Error(`This person already has a user account.`);
     }
@@ -265,12 +160,12 @@ Users.createUser = (
 
   let newUserId = null;
   if (userName && password) {
-    newUserId = Accounts.createUser({
+    newUserId = await Accounts.createUserAsync({
       username: userName,
       password,
     });
 
-    Users.update(newUserId, {
+    await Users.updateAsync(newUserId, {
       $set: {
         email,
         personId,
@@ -280,11 +175,11 @@ Users.createUser = (
       },
     });
   } else if (email) {
-    newUserId = Accounts.createUser({
+    newUserId = await Accounts.createUserAsync({
       email,
     });
 
-    Users.update(newUserId, {
+    await Users.updateAsync(newUserId, {
       $set: {
         personId,
         profile: {
@@ -295,7 +190,7 @@ Users.createUser = (
   }
 
   // Create a security log
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId: newUserId,
     operationType: SecurityOperationType.ACCOUNT_CREATED,
     operationBy: user._id,
@@ -307,17 +202,17 @@ Users.createUser = (
   return Users.findOneUser(newUserId);
 };
 
-Users.updateUser = (
+Users.updateUser = async (
   { userId, password, email, displayName, locked },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  const existingUser = Users.findOneUser(userId);
+  const existingUser = await Users.findOneUser(userId);
   if (existingUser.locked !== locked) {
     // Create a security log
     if (locked === true) {
-      SecurityLogs.insert({
+      await SecurityLogs.insertAsync({
         userId,
         operationType: SecurityOperationType.ACCOUNT_LOCKED,
         operationBy: user._id,
@@ -326,7 +221,7 @@ Users.updateUser = (
         dataSourceDetail,
       });
     } else {
-      SecurityLogs.insert({
+      await SecurityLogs.insertAsync({
         userId,
         operationType: SecurityOperationType.ACCOUNT_UNLOCKED,
         operationBy: user._id,
@@ -338,14 +233,14 @@ Users.updateUser = (
   }
 
   if (password) {
-    Accounts.setPassword(userId, password);
+    await Accounts.setPasswordAsync(userId, password);
 
     // Send sms message to user for new password
     const params = { userId, password };
     const options = { priority: 'normal', retry: 10 };
 
     // Create a security log
-    SecurityLogs.insert({
+    await SecurityLogs.insertAsync({
       userId,
       operationType: SecurityOperationType.PASSWORD_RESET,
       operationBy: user._id,
@@ -356,7 +251,7 @@ Users.updateUser = (
   }
 
   if (email) {
-    Users.update(userId, {
+    await Users.updateAsync(userId, {
       $set: {
         emails: [
           {
@@ -370,7 +265,7 @@ Users.updateUser = (
       },
     });
   } else {
-    Users.update(userId, {
+    await Users.updateAsync(userId, {
       $unset: {
         emails: '',
       },
@@ -386,14 +281,14 @@ Users.updateUser = (
   return Users.findOneUser(userId);
 };
 
-Users.setPermissions = (
+Users.setPermissions = async (
   { userId, permissions },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  const existingUser = Users.findOneUser(userId);
-  Users.update(userId, { $set: { permissions } });
+  const existingUser = await Users.findOneUser(userId);
+  await Users.updateAsync(userId, { $set: { permissions } });
 
   // Create a security log
   const permissionsAdded = difference(
@@ -405,7 +300,7 @@ Users.setPermissions = (
     permissions
   );
 
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.PERMISSIONS_CHANGED,
     operationBy: user._id,
@@ -423,13 +318,13 @@ Users.setPermissions = (
 
 // Adds the passed instances to the list of existing
 // instances that the user has access to.
-Users.addInstanceAccess = (
+Users.addInstanceAccess = async (
   { userId, instances },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  const existingUser = Users.findOneUser(userId);
+  const existingUser = await Users.findOneUser(userId);
   const instancesToAdd = difference(instances, existingUser.instances || []);
 
   if (instancesToAdd.length === 0) {
@@ -438,14 +333,14 @@ Users.addInstanceAccess = (
     return Users.findOneUser(userId);
   }
 
-  Users.update(userId, {
+  await Users.updateAsync(userId, {
     $set: {
       instances: (existingUser.instances || []).concat(instancesToAdd),
     },
   });
 
   // Create a security log
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
     operationBy: user._id,
@@ -462,23 +357,23 @@ Users.addInstanceAccess = (
 
 // Removes the passed instances from the list of existing
 // instances that the user has access to.
-Users.removeInstanceAccess = (
+Users.removeInstanceAccess = async (
   { userId, instances },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  const existingUser = Users.findOneUser(userId);
+  const existingUser = await Users.findOneUser(userId);
   const instancesToKeep = difference(existingUser.instances || [], instances);
 
-  Users.update(userId, {
+  await Users.updateAsync(userId, {
     $set: {
       instances: instancesToKeep,
     },
   });
 
   // Create a security log
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
     operationBy: user._id,
@@ -493,20 +388,20 @@ Users.removeInstanceAccess = (
   return Users.findOneUser(userId);
 };
 
-Users.setInstanceAccess = (
+Users.setInstanceAccess = async (
   { userId, instances },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  const existingUser = Users.findOneUser(userId);
-  Users.update(userId, { $set: { instances } });
+  const existingUser = await Users.findOneUser(userId);
+  await Users.updateAsync(userId, { $set: { instances } });
 
   // Create a security log
   const instancesAdded = difference(instances, existingUser.instances || []);
   const instancesRemoved = difference(existingUser.instances || [], instances);
 
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
     operationBy: user._id,
@@ -522,20 +417,20 @@ Users.setInstanceAccess = (
   return Users.findOneUser(userId);
 };
 
-Users.setGroups = (
+Users.setGroups = async (
   { userId, groups },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  const existingUser = Users.findOneUser(userId);
-  Users.update(userId, { $set: { groups } });
+  const existingUser = await Users.findOneUser(userId);
+  await Users.updateAsync(userId, { $set: { groups } });
 
   // Create a security log
   const groupsAdded = difference(groups, existingUser.groups || []);
   const groupsRemoved = difference(existingUser.groups || [], groups);
 
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.GROUPS_CHANGED,
     operationBy: user._id,
@@ -551,34 +446,25 @@ Users.setGroups = (
   return Users.findOneUser(userId);
 };
 
-Users.resetPassword = (
+Users.resetPassword = async (
   { userId, userName },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
   const existingUser = userId
-    ? Users.findOneUser(userId)
-    : Accounts.findUserByUsername(userName);
+    ? await Users.findOneUser(userId)
+    : await Accounts.findUserByUsername(userName);
 
   if (!existingUser) {
     throw new Error('User does not exist in the system.');
   }
 
   const password = Random.id(8);
-  Accounts.setPassword(existingUser._id, password);
-
-  // Send sms message to user for new password
-  const params = { userId: existingUser._id, password };
-  const options = { priority: 'normal', retry: 10 };
-  createJob({
-    type: JobTypes.SEND_PASSWORD_RESET_SMS_MESSAGE,
-    params,
-    options,
-  });
+  await Accounts.setPasswordAsync(existingUser._id, password);
 
   // Create a security log
-  SecurityLogs.insert({
+  await SecurityLogs.insertAsync({
     userId: existingUser._id,
     operationType: SecurityOperationType.PASSWORD_RESET,
     operationBy: user._id,
@@ -590,9 +476,9 @@ Users.resetPassword = (
   return Users.findOneUser(existingUser._id);
 };
 
-Users.lockAccount = ({ userId }, user, dataSource, dataSourceDetail) => {
-  Users.update(userId, { $set: { locked: true } });
-  SecurityLogs.insert({
+Users.lockAccount = async ({ userId }, user, dataSource, dataSourceDetail) => {
+  await Users.updateAsync(userId, { $set: { locked: true } });
+  await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.ACCOUNT_LOCKED,
     operationBy: user._id,

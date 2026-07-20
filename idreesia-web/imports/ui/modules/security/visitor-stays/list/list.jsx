@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import dayjs from 'dayjs';
 import { EditOutlined, IdcardOutlined, PlusCircleOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 import {
@@ -275,7 +275,7 @@ class List extends Component {
       showCard && visitorStayId ? (
         <Modal
           closable={false}
-          visible={showCard}
+          open={showCard}
           width={cardType === 'stay-card' ? 400 : 265}
           footer={null}
         >
@@ -291,7 +291,7 @@ class List extends Component {
     const newForm = showNewFormModal ? (
       <Modal
         title="New Stay"
-        visible={showNewFormModal}
+        open={showNewFormModal}
         width={600}
         footer={null}
         onCancel={this.handleCloseNewForm}
@@ -307,7 +307,7 @@ class List extends Component {
       showEditFormModal && visitorStayId ? (
         <Modal
           title="Edit Stay"
-          visible={showEditFormModal}
+          open={showEditFormModal}
           width={600}
           footer={null}
           onCancel={this.handleCloseEditForm}

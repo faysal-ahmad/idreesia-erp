@@ -2,7 +2,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
@@ -12,19 +11,14 @@ export default {
   UserType: {
     person: async userType => {
       if (!userType.personId) return null;
-      return People.findOne(userType.personId);
+      return People.findOneAsync(userType.personId);
     },
 
     karkun: async userType => {
       if (!userType.personId) return null;
-      const person = People.findOne(userType.personId);
+      const person = await People.findOneAsync(userType.personId);
       return People.personToKarkun(person);
     },
-
-    portal: async userType =>
-      Portals.findOne({
-        _id: { $in: userType.instances },
-      }),
   },
 
   Query: {
@@ -35,7 +29,7 @@ export default {
         return null;
       }
 
-      const _user = Users.findOneUser(_id);
+      const _user = await Users.findOneUser(_id);
       if (_user.username === 'erp-admin') {
         _user.permissions = values(PermissionConstants);
       }
@@ -45,7 +39,7 @@ export default {
 
     currentUser: async (obj, {}, { user }) => {
       if (!user) return null;
-      const _user = Users.findOneUser(user._id);
+      const _user = await Users.findOneUser(user._id);
       if (_user.username === 'erp-admin') {
         _user.permissions = values(PermissionConstants);
       }
@@ -58,15 +52,15 @@ export default {
       if (!ids) return names;
 
       const idsToSearch = compact(ids);
-      idsToSearch.forEach(_id => {
-        const user = Users.findOne(_id);
+      for (const _id of idsToSearch) {
+        const user = await Users.findOneAsync(_id);
         if (user.personId) {
-          const person = People.findOne(user.personId);
+          const person = await People.findOneAsync(user.personId);
           names.push(person.sharedData.name);
         } else {
           names.push(user.displayName);
         }
-      });
+      }
 
       return names;
     },
@@ -88,7 +82,7 @@ export default {
       });
 
       if (userId) {
-        Accounts.sendEnrollmentEmail(userId);
+        await Accounts.sendEnrollmentEmail(userId);
       }
 
       return 1;
@@ -115,14 +109,14 @@ export default {
     updateLoginTime: async (obj, {}, { user }) => {
       if (user) {
         const loginTime = new Date();
-        Users.update(user._id, {
+        await Users.updateAsync(user._id, {
           $set: {
             lastLoggedInAt: loginTime,
           },
         });
 
         // Create a security log
-        SecurityLogs.insert({
+        await SecurityLogs.insertAsync({
           userId: user._id,
           operationType: SecurityOperationType.LOGIN,
           operationTime: new Date(),
@@ -136,7 +130,7 @@ export default {
 
     updateLastActiveTime: async (obj, {}, { user }) => {
       if (user) {
-        Users.update(user._id, {
+        await Users.updateAsync(user._id, {
           $set: {
             lastActiveAt: new Date(),
           },

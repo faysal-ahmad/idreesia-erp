@@ -14,20 +14,8 @@ const routersMap = {
     import('/imports/ui/modules/inventory/router')
   ),
   [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/router')),
-  [ModuleNames.accounts]: React.lazy(() =>
-    import('/imports/ui/modules/accounts/router')
-  ),
-  [ModuleNames.operations]: React.lazy(() =>
-    import('/imports/ui/modules/operations/router')
-  ),
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/router')
-  ),
-  [ModuleNames.outstation]: React.lazy(() =>
-    import('/imports/ui/modules/outstation/router')
-  ),
-  [ModuleNames.portals]: React.lazy(() =>
-    import('/imports/ui/modules/portals/router')
   ),
 };
 

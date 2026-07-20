@@ -8,7 +8,7 @@ export default {
     stockItemCount: async itemCategory =>
       StockItems.find({
         categoryId: { $eq: itemCategory._id },
-      }).count(),
+      }).countAsync(),
   },
 
   Query: {
@@ -70,10 +70,10 @@ export default {
 
     removeItemCategory: async (obj, { _id, physicalStoreId }, { user }) => {
       // Check that there are no stock items against this item category.
-      const stockItemCount = StockItems.find({
+      const stockItemCount = await StockItems.find({
         categoryId: { $eq: _id },
         physicalStoreId: { $eq: physicalStoreId },
-      }).count();
+      }).countAsync();
 
       if (stockItemCount === 0) {
         return ItemCategories.removeAsync({

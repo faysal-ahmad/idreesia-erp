@@ -1,6 +1,5 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
-import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 
 export default {
   CityMehfilType: {
@@ -8,12 +7,12 @@ export default {
       People.find({
         isKarkun: true,
         'karkunData.cityMehfilId': { $eq: cityMehfilType._id },
-      }).count(),
+      }).countAsync(),
   },
 
   Query: {
     allCityMehfils: async () =>
-      CityMehfils.find({}, { sort: { name: 1 } }).fetch(),
+      CityMehfils.find({}, { sort: { name: 1 } }).fetchAsync(),
 
     cityMehfilsByCityId: async (obj, { cityId }) =>
       CityMehfils.find(
@@ -21,19 +20,9 @@ export default {
           cityId,
         },
         { sort: { name: 1 } }
-      ).fetch(),
+      ).fetchAsync(),
 
-    cityMehfilsByPortalId: async (obj, { portalId }) => {
-      const portal = Portals.findOne(portalId);
-      return CityMehfils.find(
-        {
-          cityId: { $in: portal.cityIds },
-        },
-        { sort: { name: 1 } }
-      ).fetch();
-    },
-
-    cityMehfilById: async (obj, { _id }) => CityMehfils.findOne(_id),
+    cityMehfilById: async (obj, { _id }) => CityMehfils.findOneAsync(_id),
   },
 
   Mutation: {
@@ -52,7 +41,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      const cityMehfilId = CityMehfils.insert({
+      const cityMehfilId = await CityMehfils.insertAsync({
         name,
         cityId,
         address,
@@ -67,7 +56,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return CityMehfils.findOne(cityMehfilId);
+      return CityMehfils.findOneAsync(cityMehfilId);
     },
 
     updateCityMehfil: async (
@@ -86,7 +75,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      CityMehfils.update(_id, {
+      await CityMehfils.updateAsync(_id, {
         $set: {
           name,
           cityId,
@@ -101,14 +90,14 @@ export default {
         },
       });
 
-      return CityMehfils.findOne(_id);
+      return CityMehfils.findOneAsync(_id);
     },
 
     removeCityMehfil: async (obj, { _id }, { user }) => {
-      const karkunCount = People.find({
+      const karkunCount = await People.find({
         isKarkun: true,
         'karkunData.cityMehfilId': { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (karkunCount > 0) {
         throw new Error(
@@ -116,7 +105,7 @@ export default {
         );
       }
 
-      return CityMehfils.remove(_id);
+      return CityMehfils.removeAsync(_id);
     },
   },
 };

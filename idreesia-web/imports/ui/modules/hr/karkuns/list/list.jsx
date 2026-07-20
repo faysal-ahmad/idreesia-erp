@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import {
   AuditOutlined,
   DeleteOutlined,
@@ -14,7 +14,6 @@ import {
 import {
   Button,
   Dropdown,
-  Menu,
   Pagination,
   Popconfirm,
   Row,
@@ -311,22 +310,32 @@ class List extends Component {
     const { showDownloadButton } = this.props;
     if (!showDownloadButton) return null;
 
-    const menu = (
-      <Menu>
-        <Menu.Item key="1" onClick={this.handlePrintSelected}>
-          <PrinterOutlined />&nbsp;
-          Print Selected
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="2" onClick={this.handleExportSelected}>
-          <DownloadOutlined />&nbsp;
-          Download Selected
-        </Menu.Item>
-      </Menu>
-    );
+    const menuItems = [
+      {
+        key: '1',
+        label: (
+          <>
+            <PrinterOutlined />&nbsp;
+            Print Selected
+          </>
+        ),
+        onClick: this.handlePrintSelected,
+      },
+      { type: 'divider' },
+      {
+        key: '2',
+        label: (
+          <>
+            <DownloadOutlined />&nbsp;
+            Download Selected
+          </>
+        ),
+        onClick: this.handleExportSelected,
+      },
+    ];
 
     return (
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: menuItems }}>
         <Button icon={<SettingOutlined />} size="large" />
       </Dropdown>
     );

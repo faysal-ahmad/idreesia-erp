@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import {
   AppstoreOutlined,
   BookOutlined,
@@ -25,6 +25,19 @@ const IconStyle = {
   fontSize: '20px',
 };
 
+const KeyPrefixHandlers = [
+  ['stock-items', SubModuleNames.stockItems, paths.stockItemsPath],
+  ['status-dashboard', SubModuleNames.statusDashboard, paths.statusDashboardPath],
+  ['issuance-forms', SubModuleNames.issuanceForms, paths.issuanceFormsPath],
+  ['purchase-forms', SubModuleNames.purchaseForms, paths.purchaseFormsPath],
+  ['stock-adjustments', SubModuleNames.stockAdjustments, paths.stockAdjustmentsPath],
+  ['issuance-report', SubModuleNames.issuanceReport, paths.issuanceReportPath],
+  ['purchasing-report', SubModuleNames.purchasingReport, paths.purchasingReportPath],
+  ['vendors', SubModuleNames.vendors, paths.vendorsPath],
+  ['item-categories', SubModuleNames.itemCategories, paths.itemCategoriesPath],
+  ['locations', SubModuleNames.locations, paths.locationsPath],
+];
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -35,172 +48,110 @@ class Sidebar extends Component {
     allAccessiblePhysicalStores: PropTypes.array,
   };
 
-  handleMenuItemSelected = ({ item, key }) => {
+  handleMenuItemSelected = ({ key }) => {
     const { history, setActiveSubModuleName } = this.props;
-    const physicalStoreId = item.props['parent-key'];
 
-    if (key.startsWith('stock-items')) {
-      setActiveSubModuleName(SubModuleNames.stockItems);
-      history.push(paths.stockItemsPath(physicalStoreId));
-    } else if (key.startsWith('status-dashboard')) {
-      setActiveSubModuleName(SubModuleNames.statusDashboard);
-      history.push(paths.statusDashboardPath(physicalStoreId));
-    } else if (key.startsWith('issuance-forms')) {
-      setActiveSubModuleName(SubModuleNames.issuanceForms);
-      history.push(paths.issuanceFormsPath(physicalStoreId));
-    } else if (key.startsWith('purchase-forms')) {
-      setActiveSubModuleName(SubModuleNames.purchaseForms);
-      history.push(paths.purchaseFormsPath(physicalStoreId));
-    } else if (key.startsWith('stock-adjustments')) {
-      setActiveSubModuleName(SubModuleNames.stockAdjustments);
-      history.push(paths.stockAdjustmentsPath(physicalStoreId));
-    } else if (key.startsWith('issuance-report')) {
-      setActiveSubModuleName(SubModuleNames.issuanceReport);
-      history.push(paths.issuanceReportPath(physicalStoreId));
-    } else if (key.startsWith('purchasing-report')) {
-      setActiveSubModuleName(SubModuleNames.purchasingReport);
-      history.push(paths.purchasingReportPath(physicalStoreId));
-    } else if (key.startsWith('vendors')) {
-      setActiveSubModuleName(SubModuleNames.vendors);
-      history.push(paths.vendorsPath(physicalStoreId));
-    } else if (key.startsWith('item-categories')) {
-      setActiveSubModuleName(SubModuleNames.itemCategories);
-      history.push(paths.itemCategoriesPath(physicalStoreId));
-    } else if (key.startsWith('locations')) {
-      setActiveSubModuleName(SubModuleNames.locations);
-      history.push(paths.locationsPath(physicalStoreId));
-    }
+    const handler = KeyPrefixHandlers.find(([prefix]) =>
+      key.startsWith(`${prefix}-`)
+    );
+    if (!handler) return;
+
+    const [prefix, subModuleName, getPath] = handler;
+    const physicalStoreId = key.slice(prefix.length + 1);
+    setActiveSubModuleName(subModuleName);
+    history.push(getPath(physicalStoreId));
   };
 
   render() {
     const { loading, allAccessiblePhysicalStores } = this.props;
     if (loading) return null;
 
-    const subMenus = [];
-
-    allAccessiblePhysicalStores.forEach(physicalStore => {
-      subMenus.push(
-        <Menu.SubMenu
-          key={physicalStore._id}
-          title={
-            <>
-              <AppstoreOutlined style={IconStyle} />
-              <span>{physicalStore.name}</span>
-            </>
-          }
-        >
-          <Menu.Item
-            parent-key={physicalStore._id}
-            key={`stock-items-${physicalStore._id}`}
-          >
-            <DatabaseOutlined style={IconStyle} />
-            <span>Stock Items</span>
-          </Menu.Item>
-          <Menu.Item
-            parent-key={physicalStore._id}
-            key={`status-dashboard-${physicalStore._id}`}
-          >
-            <PieChartOutlined style={IconStyle} />
-            <span>Status Dashboard</span>
-          </Menu.Item>
-          <Menu.SubMenu
-            key={`forms-${physicalStore._id}`}
-            title={
-              <>
-                <FolderOpenOutlined style={IconStyle} />
-                <span>Data Entry</span>
-              </>
-            }
-          >
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`issuance-forms-${physicalStore._id}`}
-            >
-              <FormOutlined style={IconStyle} />
-              <span>Issuance Forms</span>
-            </Menu.Item>
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`purchase-forms-${physicalStore._id}`}
-            >
-              <FormOutlined style={IconStyle} />
-              <span>Purchase Forms</span>
-            </Menu.Item>
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`stock-adjustments-${physicalStore._id}`}
-            >
-              <FormOutlined style={IconStyle} />
-              <span>Stock Adjustments</span>
-            </Menu.Item>
-          </Menu.SubMenu>
-          <Menu.SubMenu
-            key={`reports-${physicalStore._id}`}
-            title={
-              <>
-                <FolderOpenOutlined style={IconStyle} />
-                <span>Reports</span>
-              </>
-            }
-          >
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`issuance-report-${physicalStore._id}`}
-            >
-              <BookOutlined style={IconStyle} />
-              <span>Issuance Report</span>
-            </Menu.Item>
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`purchasing-report-${physicalStore._id}`}
-            >
-              <BookOutlined style={IconStyle} />
-              <span>Purchase Report</span>
-            </Menu.Item>
-          </Menu.SubMenu>
-          <Menu.SubMenu
-            key={`setup-${physicalStore._id}`}
-            title={
-              <>
-                <LaptopOutlined style={IconStyle} />
-                <span>Setup</span>
-              </>
-            }
-          >
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`vendors-${physicalStore._id}`}
-            >
-              <ShopOutlined style={IconStyle} />
-              <span>Vendors</span>
-            </Menu.Item>
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`item-categories-${physicalStore._id}`}
-            >
-              <TagsOutlined style={IconStyle} />
-              <span>Item Categories</span>
-            </Menu.Item>
-            <Menu.Item
-              parent-key={physicalStore._id}
-              key={`locations-${physicalStore._id}`}
-            >
-              <EnvironmentOutlined style={IconStyle} />
-              <span>Locations</span>
-            </Menu.Item>
-          </Menu.SubMenu>
-        </Menu.SubMenu>
-      );
-    });
+    const menuItems = allAccessiblePhysicalStores.map(physicalStore => ({
+      key: physicalStore._id,
+      icon: <AppstoreOutlined style={IconStyle} />,
+      label: physicalStore.name,
+      children: [
+        {
+          key: `stock-items-${physicalStore._id}`,
+          icon: <DatabaseOutlined style={IconStyle} />,
+          label: 'Stock Items',
+        },
+        {
+          key: `status-dashboard-${physicalStore._id}`,
+          icon: <PieChartOutlined style={IconStyle} />,
+          label: 'Status Dashboard',
+        },
+        {
+          key: `forms-${physicalStore._id}`,
+          icon: <FolderOpenOutlined style={IconStyle} />,
+          label: 'Data Entry',
+          children: [
+            {
+              key: `issuance-forms-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Issuance Forms',
+            },
+            {
+              key: `purchase-forms-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Purchase Forms',
+            },
+            {
+              key: `stock-adjustments-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Stock Adjustments',
+            },
+          ],
+        },
+        {
+          key: `reports-${physicalStore._id}`,
+          icon: <FolderOpenOutlined style={IconStyle} />,
+          label: 'Reports',
+          children: [
+            {
+              key: `issuance-report-${physicalStore._id}`,
+              icon: <BookOutlined style={IconStyle} />,
+              label: 'Issuance Report',
+            },
+            {
+              key: `purchasing-report-${physicalStore._id}`,
+              icon: <BookOutlined style={IconStyle} />,
+              label: 'Purchase Report',
+            },
+          ],
+        },
+        {
+          key: `setup-${physicalStore._id}`,
+          icon: <LaptopOutlined style={IconStyle} />,
+          label: 'Setup',
+          children: [
+            {
+              key: `vendors-${physicalStore._id}`,
+              icon: <ShopOutlined style={IconStyle} />,
+              label: 'Vendors',
+            },
+            {
+              key: `item-categories-${physicalStore._id}`,
+              icon: <TagsOutlined style={IconStyle} />,
+              label: 'Item Categories',
+            },
+            {
+              key: `locations-${physicalStore._id}`,
+              icon: <EnvironmentOutlined style={IconStyle} />,
+              label: 'Locations',
+            },
+          ],
+        },
+      ],
+    }));
 
     return (
       <Menu
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
-      >
-        {subMenus}
-      </Menu>
+        items={menuItems}
+      />
     );
   }
 }

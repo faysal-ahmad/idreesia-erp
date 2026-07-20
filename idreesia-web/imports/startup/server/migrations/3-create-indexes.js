@@ -9,34 +9,34 @@ import {
 
 Migrations.add({
   version: 3,
-  up() {
+  async up() {
     // Inventory Indexes
     const stockItems = StockItems.rawCollection();
-    stockItems.createIndex({ name: 'text', company: 'text', details: 'text' });
-    stockItems.createIndex({ categoryId: 1 }, { background: true });
+    await stockItems.createIndex({ name: 'text', company: 'text', details: 'text' });
+    await stockItems.createIndex({ categoryId: 1 }, { background: true });
 
     // HR Indexes
-    Karkuns.rawCollection().createIndex({
+    await Karkuns.rawCollection().createIndex({
       firstName: 'text',
       lastName: 'text',
     });
 
     // Accounts Indexes
     const accountHeads = AccountHeads.rawCollection();
-    accountHeads.createIndex({ number: 1 }, { background: true });
-    accountHeads.createIndex({ parent: 1 }, { background: true });
-    accountHeads.createIndex({ companyId: 1 }, { background: true });
+    await accountHeads.createIndex({ number: 1 }, { background: true });
+    await accountHeads.createIndex({ parent: 1 }, { background: true });
+    await accountHeads.createIndex({ companyId: 1 }, { background: true });
 
     const vouchers = Vouchers.rawCollection();
-    vouchers.createIndex({ companyId: 1 }, { background: true });
-    vouchers.createIndex({ externalReferenceId: 1 }, { background: true });
+    await vouchers.createIndex({ companyId: 1 }, { background: true });
+    await vouchers.createIndex({ externalReferenceId: 1 }, { background: true });
 
     const voucherDetails = VoucherDetails.rawCollection();
-    voucherDetails.createIndex({ companyId: 1 }, { background: true });
-    voucherDetails.createIndex(
+    await voucherDetails.createIndex({ companyId: 1 }, { background: true });
+    await voucherDetails.createIndex(
       { externalReferenceId: 1 },
       { background: true }
     );
-    voucherDetails.createIndex({ accountHeadId: 1 }, { background: true });
+    await voucherDetails.createIndex({ accountHeadId: 1 }, { background: true });
   },
 });

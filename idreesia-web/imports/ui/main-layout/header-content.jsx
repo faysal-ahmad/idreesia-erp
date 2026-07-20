@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout, Menu } from 'antd';
 import { useDispatch } from 'react-redux';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 
 import {
   kebabCase,
@@ -27,14 +27,10 @@ const modulePathsMapping = {
   // ***********************************************
   // Items within this section would be grouped under
   // the node '381-A Operations'
-  [ModuleNames.accounts]: ModulePaths.accounts,
   [ModuleNames.hr]: ModulePaths.hr,
   [ModuleNames.inventory]: ModulePaths.inventory,
-  [ModuleNames.operations]: ModulePaths.operations,
-  [ModuleNames.outstation]: ModulePaths.outstation,
   [ModuleNames.security]: ModulePaths.security,
   // ***********************************************
-  [ModuleNames.portals]: ModulePaths.portals,
 };
 
 const isModuleAccessible = (user, moduleName) => {
@@ -103,7 +99,7 @@ const HeaderContent = ({ history, location, user }) => {
     // accessible to the user 
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName) => {
-      if([ModuleNames.admin, ModuleNames.portals].includes(moduleName) === false) {
+      if(moduleName !== ModuleNames.admin) {
         if (isModuleAccessible(user, moduleName)) {
           childMenuItems.push({ key: moduleName, label: moduleName });
           const modulePath = modulePathsMapping[moduleName];
@@ -120,16 +116,6 @@ const HeaderContent = ({ history, location, user }) => {
         label: '381-A Operations',
         children: childMenuItems,
       });
-    }
-
-    // Add the mehfil portal node if it is accessible to the user
-    if (isModuleAccessible(user, ModuleNames.portals)) {
-      if (isModuleAccessible(user, ModuleNames.portals)) {
-        menuItems.push({ key: ModuleNames.portals, label: ModuleNames.portals });
-        if (pathname.startsWith(ModulePaths.portals)) {
-          selectedMenuItemKey.push(ModuleNames.portals);
-        }
-      }
     }
   }
 

@@ -8,17 +8,17 @@ import {
 
 Migrations.add({
   version: 22,
-  up() {
+  async up() {
     const cities = Cities.rawCollection();
-    cities.createIndex({ region: 1 }, { background: true });
-    cities.createIndex({ country: 1 }, { background: true });
+    await cities.createIndex({ region: 1 }, { background: true });
+    await cities.createIndex({ country: 1 }, { background: true });
 
     const cityMehfils = CityMehfils.rawCollection();
-    cityMehfils.createIndex({ cityId: 1 }, { background: true });
+    await cityMehfils.createIndex({ cityId: 1 }, { background: true });
 
     const amaanatLogs = AmaanatLogs.rawCollection();
-    amaanatLogs.createIndex({ cityId: 1 }, { background: true });
-    amaanatLogs.createIndex({ cityMehfilId: 1 }, { background: true });
-    amaanatLogs.createIndex({ sentDate: 1 }, { background: true });
+    await amaanatLogs.createIndex({ cityId: 1 }, { background: true });
+    await amaanatLogs.createIndex({ cityMehfilId: 1 }, { background: true });
+    await amaanatLogs.createIndex({ sentDate: 1 }, { background: true });
   },
 });

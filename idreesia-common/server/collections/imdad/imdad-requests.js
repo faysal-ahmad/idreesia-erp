@@ -23,13 +23,13 @@ class ImdadRequests extends AggregatableCollection {
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  createImdadRequest(values, user) {
+  async createImdadRequest(values, user) {
     const { requestDate, visitorId, imdadReasonId } = values;
     if (!values.dataSource) {
       throw new Error('Data Source is required to create an Imdad Request.');
     }
 
-    if (!this.isImdadRequestAllowed(visitorId)) {
+    if (!(await this.isImdadRequestAllowed(visitorId))) {
       throw new Error(
         'Visitor already has submitted an imdad request in the last 30 days.'
       );
@@ -48,13 +48,13 @@ class ImdadRequests extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    const imdadRequestId = this.insert(valuesToInsert);
-    return this.findOne(imdadRequestId);
+    const imdadRequestId = await this.insertAsync(valuesToInsert);
+    return this.findOneAsync(imdadRequestId);
   }
 
-  updateImdadRequest(values, user) {
+  async updateImdadRequest(values, user) {
     const { _id } = values;
-    const existingImdadRequest = this.findOne(_id);
+    const existingImdadRequest = await this.findOneAsync(_id);
     const changedValues = this.getChangedValues(
       _id,
       values,
@@ -63,7 +63,7 @@ class ImdadRequests extends AggregatableCollection {
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
-      return this.findOne(_id);
+      return this.findOneAsync(_id);
     }
 
     const date = new Date();
@@ -72,8 +72,8 @@ class ImdadRequests extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    this.update(_id, { $set: valuesToUpdate });
-    return this.findOne(_id);
+    await this.updateAsync(_id, { $set: valuesToUpdate });
+    return this.findOneAsync(_id);
   }
 
   // Iterate through the incoming changed values and check which of the
@@ -109,9 +109,9 @@ class ImdadRequests extends AggregatableCollection {
     return isChanged;
   }
 
-  addAttachment({ _id, attachmentId }, user) {
+  async addAttachment({ _id, attachmentId }, user) {
     const date = new Date();
-    ImdadRequests.update(
+    await ImdadRequests.updateAsync(
       { _id },
       {
         $addToSet: {
@@ -124,12 +124,12 @@ class ImdadRequests extends AggregatableCollection {
       }
     );
 
-    return ImdadRequests.findOne(_id);
+    return ImdadRequests.findOneAsync(_id);
   }
 
-  removeAttachment({ _id, attachmentId }, user) {
+  async removeAttachment({ _id, attachmentId }, user) {
     const date = new Date();
-    ImdadRequests.update(
+    await ImdadRequests.updateAsync(
       { _id },
       {
         $pull: {
@@ -142,8 +142,8 @@ class ImdadRequests extends AggregatableCollection {
       }
     );
 
-    Attachments.remove(attachmentId);
-    return ImdadRequests.findOne(_id);
+    await Attachments.removeAsync(attachmentId);
+    return ImdadRequests.findOneAsync(_id);
   }
   // **************************************************************
   // Query Functions
@@ -203,13 +203,13 @@ class ImdadRequests extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  isImdadRequestAllowed(visitorId) {
+  async isImdadRequestAllowed(visitorId) {
     // Before creating, ensure that there isn't already another record created
     // for last 30 days for this visitor.
     const date = moment()
       .startOf('day')
       .subtract(30, 'days');
-    const previousRequest = this.findOne({
+    const previousRequest = await this.findOneAsync({
       visitorId,
       requestDate: { $gte: date.toDate() },
     });

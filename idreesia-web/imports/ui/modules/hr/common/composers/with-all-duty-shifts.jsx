@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { graphql } from '@apollo/react-hoc';
 
 export default () => WrappedComponent => {
   const WithAllDutyShifts = props => <WrappedComponent {...props} />;

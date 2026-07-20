@@ -12,7 +12,7 @@ const PHONE_COLUMN = 'Mobile No.';
 const EHAD_DURATION_COLUMN = 'Arsa Ehad';
 const REFERENCE_COLUMN = 'Maarfat';
 
-function processJsonRecord(jsonRecord, date, user) {
+async function processJsonRecord(jsonRecord, date, user) {
   try {
     const name = jsonRecord[NAME_COLUMN];
     const parentName = jsonRecord[PARENT_NAME_COLUMN];
@@ -23,15 +23,16 @@ function processJsonRecord(jsonRecord, date, user) {
     const referenceName = jsonRecord[REFERENCE_COLUMN];
 
     if (!cnicNumber && !phoneNumber) return false;
-    if (cnicNumber && People.isCnicInUse(cnicNumber)) return false;
-    if (phoneNumber && People.isContactNumberInUse(phoneNumber)) return false;
+    if (cnicNumber && (await People.isCnicInUse(cnicNumber))) return false;
+    if (phoneNumber && (await People.isContactNumberInUse(phoneNumber)))
+      return false;
 
     const ehadDurationYears = toInteger(ehadDuration);
     const ehadDate = moment()
       .subtract(ehadDurationYears, 'years')
       .toDate();
 
-    People.insert({
+    await People.insertAsync({
       isEmployee: false,
       isKarkun: false,
       userid: null,
@@ -73,20 +74,19 @@ function convertToJson(csvData) {
 }
 
 export async function processCsvData(csvData, date, user) {
-  return convertToJson(csvData).then(jsonArray => {
-    const result = {
-      imported: 0,
-      ignored: 0,
-    };
+  const jsonArray = await convertToJson(csvData);
+  const result = {
+    imported: 0,
+    ignored: 0,
+  };
 
-    jsonArray.forEach(jsonRecord => {
-      if (processJsonRecord(jsonRecord, date, user)) {
-        result.imported++;
-      } else {
-        result.ignored++;
-      }
-    });
+  for (const jsonRecord of jsonArray) {
+    if (await processJsonRecord(jsonRecord, date, user)) {
+      result.imported++;
+    } else {
+      result.ignored++;
+    }
+  }
 
-    return JSON.stringify(result);
-  });
+  return JSON.stringify(result);
 }

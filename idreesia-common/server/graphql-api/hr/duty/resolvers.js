@@ -12,18 +12,18 @@ export default {
     shifts: async dutyType =>
       DutyShifts.find({
         dutyId: { $eq: dutyType._id },
-      }).fetch(),
+      }).fetchAsync(),
     canDelete: async dutyType => {
       // Check if this duty is currently assigned to a karkun
-      const karkunDutiesCount = KarkunDuties.find({
+      const karkunDutiesCount = await KarkunDuties.find({
         dutyId: { $eq: dutyType._id },
-      }).count();
+      }).countAsync();
       if (karkunDutiesCount > 0) return false;
 
       // Check if we have marked attendance against this duty
-      const attendanceCount = Attendances.find({
+      const attendanceCount = await Attendances.find({
         dutyId: { $eq: dutyType._id },
-      }).count();
+      }).countAsync();
       if (attendanceCount > 0) return false;
 
       return true;
@@ -35,15 +35,15 @@ export default {
       Duties.find(
         { isMehfilDuty: { $eq: false } },
         { sort: { name: 1 } }
-      ).fetch(),
+      ).fetchAsync(),
 
     allMehfilDuties: async () =>
       Duties.find(
         { isMehfilDuty: { $eq: true } },
         { sort: { name: 1 } }
-      ).fetch(),
+      ).fetchAsync(),
 
-    dutyById: async (obj, { id }) => Duties.findOne(id),
+    dutyById: async (obj, { id }) => Duties.findOneAsync(id),
   },
 
   Mutation: {
@@ -59,7 +59,7 @@ export default {
       }
 
       const date = new Date();
-      const dutyId = Duties.insert({
+      const dutyId = await Duties.insertAsync({
         name,
         isMehfilDuty,
         description,
@@ -70,7 +70,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return Duties.findOne(dutyId);
+      return Duties.findOneAsync(dutyId);
     },
 
     updateDuty: async (
@@ -85,7 +85,7 @@ export default {
       }
 
       const date = new Date();
-      Duties.update(id, {
+      await Duties.updateAsync(id, {
         $set: {
           name,
           description,
@@ -95,7 +95,7 @@ export default {
         },
       });
 
-      return Duties.findOne(id);
+      return Duties.findOneAsync(id);
     },
 
     removeDuty: async (obj, { _id }, { user }) => {
@@ -105,7 +105,7 @@ export default {
         );
       }
 
-      return Duties.remove(_id);
+      return Duties.removeAsync(_id);
     },
   },
 };

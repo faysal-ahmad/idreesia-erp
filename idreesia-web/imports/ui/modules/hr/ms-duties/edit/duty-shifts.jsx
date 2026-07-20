@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -206,7 +206,7 @@ class List extends Component {
         />
         <Modal
           title="New Shift"
-          visible={showNewForm}
+          open={showNewForm}
           onCancel={this.handleNewShiftCancel}
           width={600}
           footer={null}
@@ -220,7 +220,7 @@ class List extends Component {
         </Modal>
         <Modal
           title="Edit Shift"
-          visible={showEditForm}
+          open={showEditForm}
           onCancel={this.handleEditShiftCancel}
           width={600}
           footer={null}

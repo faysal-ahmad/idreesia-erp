@@ -8,29 +8,29 @@ export default {
     overallUsedCount: async mehfilDutyType =>
       MehfilKarkuns.find({
         dutyId: { $eq: mehfilDutyType._id },
-      }).count(),
+      }).countAsync(),
     mehfilUsedCount: async (mehfilDutyType, args, context, info) => {
       const mehfilId = info?.variableValues?.mehfilId;
       if (mehfilId) {
         return MehfilKarkuns.find({
           mehfilId,
           dutyId: { $eq: mehfilDutyType._id },
-        }).count();
+        }).countAsync();
       }
       return 0;
     },
   },
 
   Query: {
-    allSecurityMehfilDuties: async () => MehfilDuties.find({}).fetch(),
+    allSecurityMehfilDuties: async () => MehfilDuties.find({}).fetchAsync(),
 
-    securityMehfilDutyById: async (obj, { id }) => MehfilDuties.findOne(id),
+    securityMehfilDutyById: async (obj, { id }) => MehfilDuties.findOneAsync(id),
   },
 
   Mutation: {
     createSecurityMehfilDuty: async (obj, { name, urduName }, { user }) => {
       const date = new Date();
-      const mehfilDutyId = MehfilDuties.insert({
+      const mehfilDutyId = await MehfilDuties.insertAsync({
         name,
         urduName,
         createdAt: date,
@@ -39,12 +39,12 @@ export default {
         updatedBy: user._id,
       });
 
-      return MehfilDuties.findOne(mehfilDutyId);
+      return MehfilDuties.findOneAsync(mehfilDutyId);
     },
 
     updateSecurityMehfilDuty: async (obj, { id, name, urduName }, { user }) => {
       const date = new Date();
-      MehfilDuties.update(id, {
+      await MehfilDuties.updateAsync(id, {
         $set: {
           name,
           urduName,
@@ -53,13 +53,13 @@ export default {
         },
       });
 
-      return MehfilDuties.findOne(id);
+      return MehfilDuties.findOneAsync(id);
     },
 
     removeSecurityMehfilDuty: async (obj, { _id }) => {
-      const usedCount = MehfilKarkuns.find({
+      const usedCount = await MehfilKarkuns.find({
         dutyId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (usedCount > 0) {
         throw new Error(
@@ -67,7 +67,7 @@ export default {
         );
       }
 
-      return MehfilDuties.remove(_id);
+      return MehfilDuties.removeAsync(_id);
     },
   },
 };

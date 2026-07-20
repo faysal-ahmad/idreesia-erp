@@ -19,9 +19,9 @@ class Payments extends AggregatableCollection {
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  createPayment(values, user) {
+  async createPayment(values, user) {
     const { paymentNumber, paymentDate } = values;
-    if (!this.isPaymentNoAvailable(paymentNumber, paymentDate)) {
+    if (!(await this.isPaymentNoAvailable(paymentNumber, paymentDate))) {
       throw new Error('This Voucher Number is already used.');
     }
 
@@ -34,8 +34,8 @@ class Payments extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    const paymentId = this.insert(valuesToInsert);
-    AuditLogs.createAuditLog({
+    const paymentId = await this.insertAsync(valuesToInsert);
+    await AuditLogs.createAuditLog({
       entityId: paymentId,
       entityType: EntityType.PAYMENT,
       operationType: OperationType.CREATE,
@@ -44,17 +44,17 @@ class Payments extends AggregatableCollection {
       auditValues: values,
     });
 
-    return this.findOne(paymentId);
+    return this.findOneAsync(paymentId);
   }
 
-  updatePayment(values, user) {
+  async updatePayment(values, user) {
     const { _id } = values;
-    const existingPayment = this.findOne(_id);
+    const existingPayment = await this.findOneAsync(_id);
     const changedValues = this.getChangedValues(_id, values, existingPayment);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
-      return this.findOne(_id);
+      return this.findOneAsync(_id);
     }
 
     const date = new Date();
@@ -63,9 +63,9 @@ class Payments extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    this.update(_id, { $set: valuesToUpdate });
+    await this.updateAsync(_id, { $set: valuesToUpdate });
 
-    AuditLogs.createAuditLog(
+    await AuditLogs.createAuditLog(
       {
         entityId: _id,
         entityType: EntityType.PAYMENT,
@@ -77,12 +77,12 @@ class Payments extends AggregatableCollection {
       existingPayment
     );
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   }
 
-  removePayment(_id, user) {
+  async removePayment(_id, user) {
     const date = new Date();
-    this.update(
+    await this.updateAsync(
       {
         _id,
       },
@@ -95,7 +95,7 @@ class Payments extends AggregatableCollection {
       }
     );
 
-    AuditLogs.createAuditLog({
+    await AuditLogs.createAuditLog({
       entityId: _id,
       entityType: EntityType.PAYMENT,
       operationType: OperationType.DELETE,
@@ -282,7 +282,7 @@ class Payments extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  getNextPaymentNo() {
+  async getNextPaymentNo() {
     const currentDate = moment();
     let year = moment().year();
     if (currentDate.month() <= 5) {
@@ -290,7 +290,7 @@ class Payments extends AggregatableCollection {
     }
     const startDate = moment(`${year}-07-01 00:00:00`, 'YYYY-MM-DD hh:mm:ss');
     const endDate = moment(`${year + 1}-06-30 23:59:59`, 'YYYY-MM-DD hh:mm:ss');
-    const payment = this.findOne(
+    const payment = await this.findOneAsync(
       {
         paymentDate: {
           $gte: startDate.toDate(),
@@ -307,7 +307,7 @@ class Payments extends AggregatableCollection {
     return payment ? payment.paymentNumber + 1 : 1;
   }
 
-  isPaymentNoAvailable(paymentNo, paymentDate) {
+  async isPaymentNoAvailable(paymentNo, paymentDate) {
     const mPaymentDate = moment(paymentDate);
     let year = mPaymentDate.year();
     if (mPaymentDate.month() <= 5) {
@@ -316,7 +316,7 @@ class Payments extends AggregatableCollection {
 
     const startDate = moment(`${year}-07-01 00:00:00`, 'YYYY-MM-DD hh:mm:ss');
     const endDate = moment(`${year + 1}-06-30 23:59:59`, 'YYYY-MM-DD hh:mm:ss');
-    const payment = this.findOne({
+    const payment = await this.findOneAsync({
       paymentNumber: paymentNo,
       paymentDate: {
         $gte: startDate.toDate(),

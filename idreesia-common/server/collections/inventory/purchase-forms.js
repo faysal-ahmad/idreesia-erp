@@ -10,7 +10,7 @@ class PurchaseForms extends AggregatableCollection {
     return purchaseForms;
   }
 
-  getUpdatedForDate(physicalStoreId, date) {
+  async getUpdatedForDate(physicalStoreId, date) {
     return this.find({
       physicalStoreId: { $eq: physicalStoreId },
       updatedAt: {
@@ -21,7 +21,7 @@ class PurchaseForms extends AggregatableCollection {
           .endOf('day')
           .toDate(),
       },
-    }).fetch();
+    }).fetchAsync();
   }
 }
 

@@ -31,14 +31,14 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  createPerson(values, user) {
+  async createPerson(values, user) {
     const {
       dataSource,
       sharedData: { cnicNumber, contactNumber1, contactNumber2 },
     } = values;
-    if (cnicNumber) this.checkCnicNotInUse(cnicNumber);
-    if (contactNumber1) this.checkContactNotInUse(contactNumber1);
-    if (contactNumber2) this.checkContactNotInUse(contactNumber2);
+    if (cnicNumber) await this.checkCnicNotInUse(cnicNumber);
+    if (contactNumber1) await this.checkContactNotInUse(contactNumber1);
+    if (contactNumber2) await this.checkContactNotInUse(contactNumber2);
     if (!dataSource) {
       throw new Error('Data Source is required to create a person.');
     }
@@ -51,8 +51,8 @@ class People extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    const personId = this.insert(valuesToInsert);
-    AuditLogs.createAuditLog({
+    const personId = await this.insertAsync(valuesToInsert);
+    await AuditLogs.createAuditLog({
       entityId: personId,
       entityType: EntityType.PERSON,
       operationType: OperationType.CREATE,
@@ -61,30 +61,30 @@ class People extends AggregatableCollection {
       auditValues: values,
     });
 
-    return this.findOne(personId);
+    return this.findOneAsync(personId);
   }
 
-  updatePerson(values, user) {
+  async updatePerson(values, user) {
     const { _id } = values;
-    const existingPerson = this.findOne(_id);
+    const existingPerson = await this.findOneAsync(_id);
     const changedValues = this.getChangedValues(_id, values, existingPerson);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
-      return this.findOne(_id);
+      return this.findOneAsync(_id);
     }
 
     const cnicNumber = changedValues['sharedData.cnicNumber'];
     const contactNumber1 = changedValues['sharedData.contactNumber1'];
     const contactNumber2 = changedValues['sharedData.contactNumber2'];
     const imageId = changedValues['sharedData.imageId'];
-    if (cnicNumber) this.checkCnicNotInUse(cnicNumber, _id);
-    if (contactNumber1) this.checkContactNotInUse(contactNumber1, _id);
-    if (contactNumber2) this.checkContactNotInUse(contactNumber2, _id);
+    if (cnicNumber) await this.checkCnicNotInUse(cnicNumber, _id);
+    if (contactNumber1) await this.checkContactNotInUse(contactNumber1, _id);
+    if (contactNumber2) await this.checkContactNotInUse(contactNumber2, _id);
 
     if (imageId) {
       if (existingPerson.sharedData.imageId) {
-        Attachments.removeAttachment(existingPerson.sharedData.imageId);
+        await Attachments.removeAttachment(existingPerson.sharedData.imageId);
       }
     }
 
@@ -94,9 +94,9 @@ class People extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    this.update(_id, { $set: valuesToUpdate });
+    await this.updateAsync(_id, { $set: valuesToUpdate });
 
-    AuditLogs.createAuditLog(
+    await AuditLogs.createAuditLog(
       {
         entityId: _id,
         entityType: EntityType.PERSON,
@@ -108,12 +108,12 @@ class People extends AggregatableCollection {
       existingPerson
     );
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   }
 
-  addAttachment({ _id, attachmentId }, user) {
+  async addAttachment({ _id, attachmentId }, user) {
     const date = new Date();
-    this.update(_id, {
+    await this.updateAsync(_id, {
       $addToSet: {
         'karkunData.attachmentIds': attachmentId,
       },
@@ -123,7 +123,7 @@ class People extends AggregatableCollection {
       },
     });
 
-    AuditLogs.createAuditLog({
+    await AuditLogs.createAuditLog({
       entityId: _id,
       entityType: EntityType.PERSON,
       operationType: OperationType.UPDATE,
@@ -132,12 +132,12 @@ class People extends AggregatableCollection {
       auditValues: { attachmentId },
     });
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   }
 
-  removeAttachment({ _id, attachmentId }, user) {
+  async removeAttachment({ _id, attachmentId }, user) {
     const date = new Date();
-    this.update(_id, {
+    await this.updateAsync(_id, {
       $pull: {
         'karkunData.attachmentIds': attachmentId,
       },
@@ -147,9 +147,9 @@ class People extends AggregatableCollection {
       },
     });
 
-    Attachments.removeAttachment(attachmentId);
+    await Attachments.removeAttachment(attachmentId);
 
-    AuditLogs.createAuditLog(
+    await AuditLogs.createAuditLog(
       {
         entityId: _id,
         entityType: EntityType.PERSON,
@@ -163,7 +163,7 @@ class People extends AggregatableCollection {
       }
     );
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   }
 
   // Iterate through the incoming changed values and check which of the
@@ -250,11 +250,11 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Custom Finder Methods
   // **************************************************************
-  findByCnicOrContactNumber(cnicNumber, contactNumber) {
+  async findByCnicOrContactNumber(cnicNumber, contactNumber) {
     let person = null;
 
     if (cnicNumber) {
-      person = this.findOne({
+      person = await this.findOneAsync({
         'sharedData.cnicNumber': { $eq: cnicNumber },
       });
     }
@@ -262,7 +262,7 @@ class People extends AggregatableCollection {
     if (person) return person;
 
     if (contactNumber) {
-      person = this.findOne({
+      person = await this.findOneAsync({
         $or: [
           { 'sharedData.contactNumber1': contactNumber },
           { 'sharedData.contactNumber2': contactNumber },
@@ -276,7 +276,7 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Query Functions
   // **************************************************************
-  buildSearchPipline(params = {}, flags = {}) {
+  async buildSearchPipline(params = {}, flags = {}) {
     const pipeline = [];
     const includeKarkuns = isNil(flags.includeKarkuns)
       ? false
@@ -592,7 +592,7 @@ class People extends AggregatableCollection {
           },
         });
       } else if (region) {
-        const regionCities = Cities.find({ region });
+        const regionCities = await Cities.find({ region }).fetchAsync();
         const regionCityIds = regionCities.map(({ _id }) => _id);
         pipeline.push({
           $match: {
@@ -726,8 +726,8 @@ class People extends AggregatableCollection {
    * - includeVisitors - defaults to false
    * - paginatedResults - defaults to true
    */
-  searchPeople(params = {}, flags = {}) {
-    const pipeline = this.buildSearchPipline(params, flags);
+  async searchPeople(params = {}, flags = {}) {
+    const pipeline = await this.buildSearchPipline(params, flags);
     const { pageIndex = '0', pageSize = '20' } = params;
     const paginatedResults = !isNil(flags.paginatedResults)
       ? flags.paginatedResults
@@ -762,8 +762,8 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  isCnicInUse(cnicNumber) {
-    const person = this.findOne({
+  async isCnicInUse(cnicNumber) {
+    const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
     });
 
@@ -771,8 +771,8 @@ class People extends AggregatableCollection {
     return false;
   }
 
-  checkCnicNotInUse(cnicNumber, personId) {
-    const person = this.findOne({
+  async checkCnicNotInUse(cnicNumber, personId) {
+    const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
     });
 
@@ -783,8 +783,8 @@ class People extends AggregatableCollection {
     }
   }
 
-  isContactNumberInUse(contactNumber) {
-    const person = this.findOne({
+  async isContactNumberInUse(contactNumber) {
+    const person = await this.findOneAsync({
       $or: [
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
         { 'sharedData.contactNumber2': { $eq: contactNumber } },
@@ -795,8 +795,8 @@ class People extends AggregatableCollection {
     return false;
   }
 
-  checkContactNotInUse(contactNumber, personId) {
-    const person = this.findOne({
+  async checkContactNotInUse(contactNumber, personId) {
+    const person = await this.findOneAsync({
       $or: [
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
         { 'sharedData.contactNumber2': { $eq: contactNumber } },
@@ -930,8 +930,8 @@ class People extends AggregatableCollection {
     };
   }
 
-  karkunToPerson(karkun) {
-    const city = karkun.cityId ? Cities.findOne(karkun.cityId) : null;
+  async karkunToPerson(karkun) {
+    const city = karkun.cityId ? await Cities.findOneAsync(karkun.cityId) : null;
 
     let person = {
       _id: karkun._id,

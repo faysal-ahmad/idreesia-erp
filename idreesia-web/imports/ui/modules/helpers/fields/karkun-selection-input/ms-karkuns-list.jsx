@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { useAllMSDuties } from 'meteor/idreesia-common/hooks/hr';

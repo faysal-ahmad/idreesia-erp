@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import moment from 'moment';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';

@@ -71,81 +71,89 @@ class ListFilter extends Component {
     } = this.props;
 
     return (
-      <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
-            <SelectField
-              data={itemCategoriesByPhysicalStoreId}
-              getDataValue={category => category._id}
-              getDataText={category => category.name}
-              fieldName="categoryId"
-              fieldLabel="Category"
-              fieldLayout={formItemLayout}
-              initialValue={categoryId}
-            />
-            <InputTextField
-              fieldName="name"
-              fieldLabel="Name"
-              required={false}
-              fieldLayout={formItemLayout}
-              initialValue={name}
-            />
-            <SelectField
-              fieldName="stockLevel"
-              fieldLabel="Stock Level"
-              required={false}
-              data={[
-                {
-                  label: 'Negative Stock Level',
-                  value: 'negative-stock-level',
-                },
-                {
-                  label: 'Less than Min Stock Level',
-                  value: 'less-than-min-stock-level',
-                },
-              ]}
-              getDataValue={({ value }) => value}
-              getDataText={({ label }) => label}
-              fieldLayout={formItemLayout}
-              initialValue={stockLevel}
-            />
-            <SelectField
-              fieldName="verifyDuration"
-              fieldLabel="Stock Verified"
-              required={false}
-              data={[
-                {
-                  label: 'Less than 3 months ago',
-                  value: 'less-than-3-months-ago',
-                },
-                {
-                  label: 'Between 3 to 6 months ago',
-                  value: 'between-3-to-6-months-ago',
-                },
-                {
-                  label: 'More than 6 months ago',
-                  value: 'more-than-6-months-ago',
-                },
-              ]}
-              getDataValue={({ value }) => value}
-              getDataText={({ label }) => label}
-              fieldLayout={formItemLayout}
-              initialValue={verifyDuration}
-            />
-            <Form.Item {...buttonItemLayout}>
-              <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleReset}>
-                  Reset
-                </Button>
-                &nbsp;
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-              </Row>
-            </Form.Item>
-          </Form>
-        </Collapse.Panel>
-      </Collapse>
+      <Collapse
+        style={ContainerStyle}
+        items={[
+          {
+            key: '1',
+            label: 'Filter',
+            extra: this.refreshButton(),
+            children: (
+              <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
+                <SelectField
+                  data={itemCategoriesByPhysicalStoreId}
+                  getDataValue={category => category._id}
+                  getDataText={category => category.name}
+                  fieldName="categoryId"
+                  fieldLabel="Category"
+                  fieldLayout={formItemLayout}
+                  initialValue={categoryId}
+                />
+                <InputTextField
+                  fieldName="name"
+                  fieldLabel="Name"
+                  required={false}
+                  fieldLayout={formItemLayout}
+                  initialValue={name}
+                />
+                <SelectField
+                  fieldName="stockLevel"
+                  fieldLabel="Stock Level"
+                  required={false}
+                  data={[
+                    {
+                      label: 'Negative Stock Level',
+                      value: 'negative-stock-level',
+                    },
+                    {
+                      label: 'Less than Min Stock Level',
+                      value: 'less-than-min-stock-level',
+                    },
+                  ]}
+                  getDataValue={({ value }) => value}
+                  getDataText={({ label }) => label}
+                  fieldLayout={formItemLayout}
+                  initialValue={stockLevel}
+                />
+                <SelectField
+                  fieldName="verifyDuration"
+                  fieldLabel="Stock Verified"
+                  required={false}
+                  data={[
+                    {
+                      label: 'Less than 3 months ago',
+                      value: 'less-than-3-months-ago',
+                    },
+                    {
+                      label: 'Between 3 to 6 months ago',
+                      value: 'between-3-to-6-months-ago',
+                    },
+                    {
+                      label: 'More than 6 months ago',
+                      value: 'more-than-6-months-ago',
+                    },
+                  ]}
+                  getDataValue={({ value }) => value}
+                  getDataText={({ label }) => label}
+                  fieldLayout={formItemLayout}
+                  initialValue={verifyDuration}
+                />
+                <Form.Item {...buttonItemLayout}>
+                  <Row type="flex" justify="end">
+                    <Button type="default" onClick={this.handleReset}>
+                      Reset
+                    </Button>
+                    &nbsp;
+                    <Button type="primary" htmlType="submit">
+                      Search
+                    </Button>
+                  </Row>
+                </Form.Item>
+              </Form>
+            ),
+          },
+        ]}
+      />
     );
   }
 }

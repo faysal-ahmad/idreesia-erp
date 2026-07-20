@@ -1,15 +1,11 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithAllCompanies,
-  WithAllPortals,
-  WithAllPhysicalStores,
-} from 'meteor/idreesia-common/composers/admin';
+import { WithAllPhysicalStores } from 'meteor/idreesia-common/composers/admin';
 
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
@@ -24,12 +20,8 @@ class InstanceAccess extends Component {
     userId: PropTypes.string,
     userLoading: PropTypes.bool,
     userById: PropTypes.object,
-    allCompaniesLoading: PropTypes.bool,
-    allCompanies: PropTypes.array,
     allPhysicalStoresLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
-    allPortalsLoading: PropTypes.bool,
-    allPortals: PropTypes.array,
     setInstanceAccess: PropTypes.func,
   };
 
@@ -81,17 +73,8 @@ class InstanceAccess extends Component {
       userLoading,
       allPhysicalStoresLoading,
       allPhysicalStores,
-      allCompaniesLoading,
-      allCompanies,
-      allPortalsLoading,
-      allPortals,
     } = this.props;
-    if (
-      userLoading ||
-      allPhysicalStoresLoading ||
-      allCompaniesLoading ||
-      allPortalsLoading
-    ) {
+    if (userLoading || allPhysicalStoresLoading) {
       return null;
     }
 
@@ -100,8 +83,6 @@ class InstanceAccess extends Component {
         <InstanceSelection
           securityEntity={userById}
           allPhysicalStores={allPhysicalStores}
-          allCompanies={allCompanies}
-          allPortals={allPortals}
           ref={is => {
             this.instanceSelection = is;
           }}
@@ -133,9 +114,7 @@ class InstanceAccess extends Component {
 }
 
 export default flowRight(
-  WithAllCompanies(),
   WithAllPhysicalStores(),
-  WithAllPortals(),
   graphql(SET_INSTANCE_ACCESS, {
     name: 'setInstanceAccess',
     options: {

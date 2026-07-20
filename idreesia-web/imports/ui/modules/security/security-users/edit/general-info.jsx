@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { Form } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';

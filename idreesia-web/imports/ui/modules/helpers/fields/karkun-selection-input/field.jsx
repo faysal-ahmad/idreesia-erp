@@ -19,10 +19,7 @@ const Field = ({
   requiredMessage,
   disabled,
 
-  portalId,
   showMsKarkunsList,
-  showOutstationKarkunsList,
-  showPortalKarkunsList,
 }) => {
   const rules = [
     {
@@ -36,10 +33,7 @@ const Field = ({
       <Input
         placeholder={placeholder}
         disabled={disabled}
-        portalId={portalId}
         showMsKarkunsList={showMsKarkunsList}
-        showOutstationKarkunsList={showOutstationKarkunsList}
-        showPortalKarkunsList={showPortalKarkunsList}
       />
     </Form.Item>
   );
@@ -55,18 +49,13 @@ Field.propTypes = {
   requiredMessage: PropTypes.string,
   disabled: PropTypes.bool,
 
-  portalId: PropTypes.string,
   showMsKarkunsList: PropTypes.bool,
-  showOutstationKarkunsList: PropTypes.bool,
-  showPortalKarkunsList: PropTypes.bool,
 };
 
 Field.defaultProps = {
   initialValue: null,
   fieldLayout: formItemLayout,
   showMsKarkunsList: false,
-  showOutstationKarkunsList: false,
-  showPortalKarkunsList: false,
 };
 
 export default Field;

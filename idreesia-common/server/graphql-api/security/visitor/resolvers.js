@@ -15,13 +15,13 @@ export default {
       })),
 
     securityVisitorById: async (obj, { _id }) => {
-      const person = People.findOne(_id);
+      const person = await People.findOneAsync(_id);
       return People.personToVisitor(person);
     },
 
     securityVisitorByCnic: async (obj, { cnicNumbers }) => {
       if (cnicNumbers.length > 0) {
-        const person = People.findOne({
+        const person = await People.findOneAsync({
           'sharedData.cnicNumber': { $in: cnicNumbers },
         });
         return People.personToVisitor(person);
@@ -34,7 +34,7 @@ export default {
       obj,
       { cnicNumber, contactNumber }
     ) => {
-      const person = People.findByCnicOrContactNumber(
+      const person = await People.findByCnicOrContactNumber(
         cnicNumber,
         contactNumber
       );
@@ -45,7 +45,7 @@ export default {
   Mutation: {
     createSecurityVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = People.createPerson(
+      const person = await People.createPerson(
         {
           ...personValues,
           dataSource: DataSource.SECURITY,
@@ -57,21 +57,21 @@ export default {
 
     updateSecurityVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const person = await People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
-    deleteSecurityVisitor: async (obj, { _id }) => People.remove(_id),
+    deleteSecurityVisitor: async (obj, { _id }) => People.removeAsync(_id),
 
     setSecurityVisitorImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const person = await People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 
     updateSecurityVisitorNotes: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const person = await People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },
 

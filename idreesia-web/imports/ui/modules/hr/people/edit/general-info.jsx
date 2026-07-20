@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from 'antd';
@@ -8,7 +8,7 @@ import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
 import {
   WithAllCities,
   WithAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/composers';
+} from 'meteor/idreesia-common/composers/common';
 
 import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 

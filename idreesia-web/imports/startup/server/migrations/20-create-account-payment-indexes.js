@@ -7,16 +7,16 @@ import {
 
 Migrations.add({
   version: 20,
-  up() {
+  async up() {
     const payments = Payments.rawCollection();
-    payments.createIndex({ name: 'text' });
-    payments.createIndex({ cnicNumber: 1 }, { background: true });
-    payments.createIndex({ paymentNumber: 1 }, { background: true });
-    payments.createIndex({ paymentType: 1 }, { background: true });
-    payments.createIndex({ paymentDate: 1 }, { background: true });
-    payments.createIndex({ isDeleted: 1 }, { background: true });
+    await payments.createIndex({ name: 'text' });
+    await payments.createIndex({ cnicNumber: 1 }, { background: true });
+    await payments.createIndex({ paymentNumber: 1 }, { background: true });
+    await payments.createIndex({ paymentType: 1 }, { background: true });
+    await payments.createIndex({ paymentDate: 1 }, { background: true });
+    await payments.createIndex({ isDeleted: 1 }, { background: true });
 
     const paymentsHistory = PaymentsHistory.rawCollection();
-    paymentsHistory.createIndex({ paymentId: 1 }, { background: true });
+    await paymentsHistory.createIndex({ paymentId: 1 }, { background: true });
   },
 });

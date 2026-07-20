@@ -1,7 +1,7 @@
 /* eslint "no-script-url": "off" */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -190,7 +190,7 @@ const DutyParticipation = props => {
       />
 
       <Modal
-        visible={showNewForm}
+        open={showNewForm}
         title="Add Duty"
         okText="Save"
         width={600}
@@ -208,7 +208,7 @@ const DutyParticipation = props => {
       </Modal>
 
       <Modal
-        visible={showEditForm}
+        open={showEditForm}
         title="Edit Duty"
         okText="Save"
         width={600}

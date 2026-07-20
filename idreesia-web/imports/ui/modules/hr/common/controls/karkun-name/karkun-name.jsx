@@ -58,7 +58,7 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
       </div>
       <Modal
         title={karkun.name}
-        visible={showDialog}
+        open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >

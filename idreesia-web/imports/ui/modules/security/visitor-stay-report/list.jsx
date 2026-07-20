@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/react-hoc';
 import dayjs from 'dayjs';
 import { WarningTwoTone } from '@ant-design/icons';
 
@@ -383,7 +383,7 @@ class List extends Component {
         />
         <Modal
           title="Visitor Stay"
-          visible={showViewDialog}
+          open={showViewDialog}
           onCancel={this.handleStayDetailClose}
           width={400}
           footer={[
@@ -400,7 +400,7 @@ class List extends Component {
         </Modal>
         <Modal
           title="Fix Spelling"
-          visible={showFixSpellingDialog}
+          open={showFixSpellingDialog}
           onCancel={this.handleFixSpellingClose}
           width={600}
           footer={null}

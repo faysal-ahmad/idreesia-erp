@@ -1,6 +1,8 @@
 build
 data
+plans
 node_modules
 npm-debug.log
 .history
 .env
+graphify-out

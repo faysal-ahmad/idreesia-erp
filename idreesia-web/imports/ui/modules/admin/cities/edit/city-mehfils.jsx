@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -9,8 +9,6 @@ import {
   Tooltip,
   message,
 } from 'antd';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
   CITY_MEHFILS_BY_CITY_ID,
@@ -21,25 +19,77 @@ import {
 import { default as MehfilNewForm } from './mehfil-new-form';
 import { default as MehfilEditForm } from './mehfil-edit-form';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const List = ({ cityId }) => {
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [cityMehfil, setCityMehfil] = useState(null);
+  const { data } = useQuery(CITY_MEHFILS_BY_CITY_ID, {
+    variables: { cityId },
+  });
+  const [createCityMehfil] = useMutation(CREATE_CITY_MEHFIL, {
+    refetchQueries: ['cityMehfilsByCityId'],
+  });
+  const [updateCityMehfil] = useMutation(UPDATE_CITY_MEHFIL, {
+    refetchQueries: ['cityMehfilsByCityId'],
+  });
+  const [removeCityMehfil] = useMutation(REMOVE_CITY_MEHFIL, {
+    refetchQueries: ['cityMehfilsByCityId'],
+  });
+  const { cityMehfilsByCityId } = data || {};
 
-    cityId: PropTypes.string,
-    cityMehfilsByCityId: PropTypes.array,
-    createCityMehfil: PropTypes.func,
-    updateCityMehfil: PropTypes.func,
-    removeCityMehfil: PropTypes.func,
+  const handleNewClicked = () => {
+    setShowNewForm(true);
   };
 
-  state = {
-    showNewForm: false,
-    showEditForm: false,
-    cityMehfil: null,
+  const handleNewMehfilSave = values => {
+    setShowNewForm(false);
+
+    createCityMehfil({
+      variables: {
+        cityId,
+        ...values,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
   };
 
-  columns = [
+  const handleNewMehfilCancel = () => {
+    setShowNewForm(false);
+  };
+
+  const handleEditClicked = selectedCityMehfil => {
+    setShowEditForm(true);
+    setCityMehfil(selectedCityMehfil);
+  };
+
+  const handleEditMehfilSave = values => {
+    setShowEditForm(false);
+    setCityMehfil(null);
+
+    updateCityMehfil({
+      variables: values,
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const handleEditMehfilCancel = () => {
+    setShowEditForm(false);
+    setCityMehfil(null);
+  };
+
+  const handleDeleteClicked = record => {
+    removeCityMehfil({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const columns = [
     {
       title: 'Mehfil Name',
       dataIndex: 'name',
@@ -80,7 +130,7 @@ class List extends Component {
             <EditOutlined
               className="list-actions-icon"
               onClick={() => {
-                this.handleEditClicked(record);
+                handleEditClicked(record);
               }}
             />
           </Tooltip>
@@ -88,7 +138,7 @@ class List extends Component {
             <DeleteOutlined
               className="list-actions-icon"
               onClick={() => {
-                this.handleDeleteClicked(record);
+                handleDeleteClicked(record);
               }}
             />
           </Tooltip>
@@ -97,150 +147,61 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    this.setState({
-      showNewForm: true,
-    });
-  };
+  return (
+    <>
+      <Table
+        rowKey="_id"
+        dataSource={cityMehfilsByCityId}
+        columns={columns}
+        pagination={false}
+        bordered
+        title={() => (
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={handleNewClicked}
+          >
+            New Mehfil
+          </Button>
+        )}
+      />
+      <Modal
+        title="New Mehfil"
+        open={showNewForm}
+        onCancel={handleNewMehfilCancel}
+        width={600}
+        footer={null}
+      >
+        {showNewForm ? (
+          <MehfilNewForm
+            handleSave={handleNewMehfilSave}
+            handleCancel={handleNewMehfilCancel}
+          />
+        ) : null}
+      </Modal>
+      <Modal
+        title="Edit Mehfil"
+        open={showEditForm}
+        onCancel={handleEditMehfilCancel}
+        width={600}
+        footer={null}
+      >
+        {showEditForm ? (
+          <MehfilEditForm
+            cityMehfil={cityMehfil}
+            handleSave={handleEditMehfilSave}
+            handleCancel={handleEditMehfilCancel}
+          />
+        ) : null}
+      </Modal>
+    </>
+  );
+};
 
-  handleNewMehfilSave = values => {
-    const { createCityMehfil, cityId } = this.props;
-    this.setState({
-      showNewForm: false,
-    });
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  cityId: PropTypes.string,
+};
 
-    createCityMehfil({
-      variables: {
-        cityId,
-        ...values,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  handleNewMehfilCancel = () => {
-    this.setState({
-      showNewForm: false,
-    });
-  };
-
-  handleEditClicked = cityMehfil => {
-    this.setState({
-      showEditForm: true,
-      cityMehfil,
-    });
-  };
-
-  handleEditMehfilSave = values => {
-    const { updateCityMehfil } = this.props;
-    this.setState({
-      showEditForm: false,
-      dutyShift: null,
-    });
-
-    updateCityMehfil({
-      variables: values,
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  handleEditMehfilCancel = () => {
-    this.setState({
-      showEditForm: false,
-      dutyShift: null,
-    });
-  };
-
-  handleDeleteClicked = record => {
-    const { removeCityMehfil } = this.props;
-    removeCityMehfil({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  render() {
-    const { cityMehfilsByCityId } = this.props;
-    const { cityMehfil, showNewForm, showEditForm } = this.state;
-
-    return (
-      <>
-        <Table
-          rowKey="_id"
-          dataSource={cityMehfilsByCityId}
-          columns={this.columns}
-          pagination={false}
-          bordered
-          title={() => (
-            <Button
-              type="primary"
-              icon={<PlusCircleOutlined />}
-              onClick={this.handleNewClicked}
-            >
-              New Mehfil
-            </Button>
-          )}
-        />
-        <Modal
-          title="New Mehfil"
-          open={showNewForm}
-          onCancel={this.handleNewMehfilCancel}
-          width={600}
-          footer={null}
-        >
-          {showNewForm ? (
-            <MehfilNewForm
-              handleSave={this.handleNewMehfilSave}
-              handleCancel={this.handleNewMehfilCancel}
-            />
-          ) : null}
-        </Modal>
-        <Modal
-          title="Edit Mehfil"
-          open={showEditForm}
-          onCancel={this.handleEditMehfilCancel}
-          width={600}
-          footer={null}
-        >
-          {showEditForm ? (
-            <MehfilEditForm
-              cityMehfil={cityMehfil}
-              handleSave={this.handleEditMehfilSave}
-              handleCancel={this.handleEditMehfilCancel}
-            />
-          ) : null}
-        </Modal>
-      </>
-    );
-  }
-}
-
-export default flowRight(
-  graphql(CITY_MEHFILS_BY_CITY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ cityId }) => ({ variables: { cityId } }),
-  }),
-  graphql(CREATE_CITY_MEHFIL, {
-    name: 'createCityMehfil',
-    options: {
-      refetchQueries: ['cityMehfilsByCityId'],
-    },
-  }),
-  graphql(UPDATE_CITY_MEHFIL, {
-    name: 'updateCityMehfil',
-    options: {
-      refetchQueries: ['cityMehfilsByCityId'],
-    },
-  }),
-  graphql(REMOVE_CITY_MEHFIL, {
-    name: 'removeCityMehfil',
-    options: {
-      refetchQueries: ['cityMehfilsByCityId'],
-    },
-  })
-)(List);
+export default List;

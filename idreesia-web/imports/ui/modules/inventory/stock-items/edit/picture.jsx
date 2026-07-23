@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Row, Col, message } from 'antd';
-import { graphql } from '@apollo/react-hoc';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
@@ -56,10 +56,10 @@ class Picture extends Component {
 }
 
 export default flowRight(
-  graphql(SET_STOCK_ITEM_IMAGE, {
+  withMutation(SET_STOCK_ITEM_IMAGE, {
     name: 'setStockItemImage',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
-  }),
+  })
 )(Picture);

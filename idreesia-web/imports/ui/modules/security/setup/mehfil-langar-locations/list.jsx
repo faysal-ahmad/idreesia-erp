@@ -1,24 +1,56 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button, Table, Tooltip, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    allSecurityMehfilLangarLocations: PropTypes.array,
-    removeSecurityMehfilLangarLocation: PropTypes.func,
+const listQuery = gql`
+  query allSecurityMehfilLangarLocations {
+    allSecurityMehfilLangarLocations {
+      _id
+      name
+      urduName
+      overallUsedCount
+    }
+  }
+`;
+
+const removeSecurityMehfilLangarLocationMutation = gql`
+  mutation removeSecurityMehfilLangarLocation($_id: String!) {
+    removeSecurityMehfilLangarLocation(_id: $_id)
+  }
+`;
+
+const List = ({ history }) => {
+  const { data = {} } = useQuery(listQuery);
+  const { allSecurityMehfilLangarLocations } = data;
+  const [removeSecurityMehfilLangarLocation] = useMutation(
+    removeSecurityMehfilLangarLocationMutation,
+    {
+      refetchQueries: ['allSecurityMehfilLangarLocations'],
+    }
+  );
+
+  const handleNewClicked = () => {
+    history.push(paths.mehfilLangarLocationsNewFormPath);
   };
 
-  columns = [
+  const handleDeleteClicked = record => {
+    removeSecurityMehfilLangarLocation({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -41,7 +73,7 @@ class List extends Component {
               <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
-                  this.handleDeleteClicked(record);
+                  handleDeleteClicked(record);
                 }}
               />
             </Tooltip>
@@ -52,72 +84,29 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.mehfilLangarLocationsNewFormPath);
-  };
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={allSecurityMehfilLangarLocations}
+      columns={columns}
+      pagination={{ defaultPageSize: 20 }}
+      bordered
+      title={() => (
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New Langar Location
+        </Button>
+      )}
+    />
+  );
+};
 
-  handleDeleteClicked = record => {
-    const { removeSecurityMehfilLangarLocation } = this.props;
-    removeSecurityMehfilLangarLocation({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-  render() {
-    const { allSecurityMehfilLangarLocations } = this.props;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allSecurityMehfilLangarLocations}
-        columns={this.columns}
-        pagination={{ defaultPageSize: 20 }}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={this.handleNewClicked}
-          >
-            New Langar Location
-          </Button>
-        )}
-      />
-    );
-  }
-}
-
-const listQuery = gql`
-  query allSecurityMehfilLangarLocations {
-    allSecurityMehfilLangarLocations {
-      _id
-      name
-      urduName
-      overallUsedCount
-    }
-  }
-`;
-
-const removeSecurityMehfilLangarLocationMutation = gql`
-  mutation removeSecurityMehfilLangarLocation($_id: String!) {
-    removeSecurityMehfilLangarLocation(_id: $_id)
-  }
-`;
-
-export default flowRight(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(removeSecurityMehfilLangarLocationMutation, {
-    name: 'removeSecurityMehfilLangarLocation',
-    options: {
-      refetchQueries: ['allSecurityMehfilLangarLocations'],
-    },
-  }),
-  WithBreadcrumbs(['Security', 'Mehfil Langar Locations', 'List'])
-)(List);
+export default WithBreadcrumbs(['Security', 'Mehfil Langar Locations', 'List'])(List);

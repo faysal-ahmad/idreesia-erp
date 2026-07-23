@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  withQuery,
+  withMutation,
+} from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import dayjs from 'dayjs';
-import { graphql } from '@apollo/react-hoc';
 import {
   Button,
   Divider,
@@ -39,7 +42,7 @@ import {
 } from '/imports/ui/modules/inventory/common/composers';
 
 import ListFilter from './list-filter';
-import { 
+import {
   APPROVE_PURCHASE_FORMS,
   PAGED_PURCHASE_FORMS,
   REMOVE_PURCHASE_FORMS,
@@ -108,9 +111,7 @@ class List extends Component {
         });
 
         const formattedAttachments = attachments?.map(attachment => (
-          <li key={attachment._id}>
-            {attachment.name}
-          </li>
+          <li key={attachment._id}>{attachment.name}</li>
         ));
 
         if (formattedAttachments?.length > 0) {
@@ -265,14 +266,13 @@ class List extends Component {
     } else if (key === 'delete') {
       Modal.confirm({
         title: 'Delete Purchase Forms',
-        content:
-          'Are you sure you want to delete the selected issuance forms?',
+        content: 'Are you sure you want to delete the selected issuance forms?',
         onOk: () => {
           this.handleDeleteSelected();
         },
       });
     }
-  }
+  };
 
   handleDeleteSelected = () => {
     const { selectedRows } = this.state;
@@ -439,7 +439,7 @@ export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(REMOVE_PURCHASE_FORMS, {
+  withMutation(REMOVE_PURCHASE_FORMS, {
     name: 'removePurchaseForms',
     options: {
       refetchQueries: [
@@ -450,7 +450,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(APPROVE_PURCHASE_FORMS, {
+  withMutation(APPROVE_PURCHASE_FORMS, {
     name: 'approvePurchaseForms',
     options: {
       refetchQueries: [
@@ -460,7 +460,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(PAGED_PURCHASE_FORMS, {
+  withQuery(PAGED_PURCHASE_FORMS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -13,7 +13,10 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import EidReceipts from './eid-receipts';
 
-const EidReceiptsContainer = ({ salariesLoading, salariesByIds, history }) => {
+const EidReceiptsContainer = ({ history, queryParams }) => {
+  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery, {
+    variables: { ids: queryParams.ids },
+  });
   const eidReceiptsRef = useRef(null);
   if (salariesLoading) return null;
 
@@ -38,7 +41,10 @@ const EidReceiptsContainer = ({ salariesLoading, salariesByIds, history }) => {
         Back
       </Button>
       <Divider />
-      <EidReceipts ref={eidReceiptsRef} salariesByIds={salariesByIds} />
+      <EidReceipts
+        ref={eidReceiptsRef}
+        salariesByIds={data && data.salariesByIds}
+      />
     </>
   );
 };
@@ -47,9 +53,7 @@ EidReceiptsContainer.propTypes = {
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
-
-  salariesLoading: PropTypes.bool,
-  salariesByIds: PropTypes.array,
+  queryParams: PropTypes.object,
 };
 
 const salariesByIdsQuery = gql`
@@ -81,11 +85,5 @@ const salariesByIdsQuery = gql`
 
 export default flowRight(
   WithQueryParams(),
-  graphql(salariesByIdsQuery, {
-    props: ({ data }) => ({ salariesLoading: data.loading, ...data }),
-    options: ({ queryParams: { ids } }) => ({
-      variables: { ids },
-    }),
-  }),
   WithBreadcrumbs(['HR', 'Salary Sheets', 'Eid Receipts'])
 )(EidReceiptsContainer);

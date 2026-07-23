@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client/react';
 import {
   Button,
   Popconfirm,
@@ -67,7 +67,7 @@ const List = ({ history }) => {
       });
   };
 
-  columns = [
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -154,7 +154,7 @@ const List = ({ history }) => {
             <Button 
               size="large"
               icon={<SyncOutlined />}
-              onClick={() => { refetch() }}
+              onClick={() => { refetch(); }}
             />
           </div>
         </div>

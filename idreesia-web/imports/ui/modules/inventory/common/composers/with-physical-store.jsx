@@ -1,12 +1,43 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from '@apollo/react-hoc';
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/client/react';
+
+const physicalStoreByIdQuery = gql`
+  query physicalStoreById($id: String!) {
+    physicalStoreById(id: $id) {
+      _id
+      name
+    }
+  }
+`;
+
+export const usePhysicalStore = physicalStoreId => {
+  const { data, loading, ...queryResult } = useQuery(physicalStoreByIdQuery, {
+    variables: { id: physicalStoreId },
+  });
+
+  return {
+    ...queryResult,
+    loading,
+    physicalStoreLoading: loading,
+    physicalStoreById: data ? data.physicalStoreById : null,
+  };
+};
 
 export default () => WrappedComponent => {
   const WithPhysicalStore = props => {
-    const { physicalStoreById, ...rest } = props;
-    return <WrappedComponent physicalStore={physicalStoreById} {...rest} />;
+    const { physicalStoreId } = props;
+    const physicalStoreProps = usePhysicalStore(physicalStoreId);
+    const { physicalStoreById, ...restPhysicalStoreProps } = physicalStoreProps;
+
+    return (
+      <WrappedComponent
+        {...props}
+        {...restPhysicalStoreProps}
+        physicalStore={physicalStoreById}
+      />
+    );
   };
 
   WithPhysicalStore.propTypes = {
@@ -15,19 +46,5 @@ export default () => WrappedComponent => {
     physicalStoreById: PropTypes.object,
   };
 
-  const physicalStoreByIdQuery = gql`
-    query physicalStoreById($id: String!) {
-      physicalStoreById(id: $id) {
-        _id
-        name
-      }
-    }
-  `;
-
-  return graphql(physicalStoreByIdQuery, {
-    props: ({ data }) => ({ physicalStoreLoading: data.loading, ...data }),
-    options: ({ physicalStoreId }) => ({
-      variables: { id: physicalStoreId },
-    }),
-  })(WithPhysicalStore);
+  return WithPhysicalStore;
 };

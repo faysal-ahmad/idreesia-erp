@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import dayjs from 'dayjs';
 import { Button, DatePicker, Spin, Table } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
@@ -241,7 +241,7 @@ const listQuery = gql`
 `;
 
 export default flowRight(
-  graphql(listQuery, {
+  withQuery(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ physicalStoreId, monthString }) => ({
       variables: { physicalStoreId, month: monthString },

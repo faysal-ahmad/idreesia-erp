@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { graphql } from '@apollo/react-hoc';
-import { flowRight } from "lodash";
-import { message } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import { flowRight } from 'lodash';
+import { message } from 'antd';
 
-import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
+import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 import {
   ADD_ISSUANCE_FORM_ATTACHMENT,
   REMOVE_ISSUANCE_FORM_ATTACHMENT,
@@ -23,7 +23,8 @@ class AttachmentsList extends Component {
   };
 
   handleAttachmentAdded = attachmentId => {
-    const { addIssuanceFormAttachment, physicalStoreId, issuanceFormById } = this.props;
+    const { addIssuanceFormAttachment, physicalStoreId, issuanceFormById } =
+      this.props;
     addIssuanceFormAttachment({
       variables: {
         _id: issuanceFormById._id,
@@ -36,11 +37,8 @@ class AttachmentsList extends Component {
   };
 
   handleAttachmentRemoved = attachmentId => {
-    const {
-      removeIssuanceFormAttachment,
-      physicalStoreId,
-      issuanceFormById,
-    } = this.props;
+    const { removeIssuanceFormAttachment, physicalStoreId, issuanceFormById } =
+      this.props;
     removeIssuanceFormAttachment({
       variables: {
         _id: issuanceFormById._id,
@@ -68,10 +66,10 @@ class AttachmentsList extends Component {
 }
 
 export default flowRight(
-  graphql(ADD_ISSUANCE_FORM_ATTACHMENT, {
-    name: "addIssuanceFormAttachment",
+  withMutation(ADD_ISSUANCE_FORM_ATTACHMENT, {
+    name: 'addIssuanceFormAttachment',
   }),
-  graphql(REMOVE_ISSUANCE_FORM_ATTACHMENT, {
-    name: "removeIssuanceFormAttachment",
+  withMutation(REMOVE_ISSUANCE_FORM_ATTACHMENT, {
+    name: 'removeIssuanceFormAttachment',
   })
 )(AttachmentsList);

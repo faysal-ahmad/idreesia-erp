@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { addMonths, format, isBefore, startOfMonth } from 'date-fns';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries, Jobs } from 'meteor/idreesia-common/server/collections/hr';
@@ -8,6 +8,7 @@ import {
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { getPagedSalariesByKarkun } from './queries';
 
 export default {
@@ -45,9 +46,10 @@ export default {
         return [];
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       if (jobId) {
         return Salaries.find({
@@ -108,14 +110,10 @@ export default {
         );
       }
 
-      const formattedCurrentMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const currentMonth = startOfMonth(parseDate(month, Formats.DATE_FORMAT));
+      const formattedCurrentMonth = format(currentMonth, 'MM-yyyy');
 
-      const formattedPreviousMonth = moment(month, Formats.DATE_FORMAT)
-        .subtract(1, 'months')
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedPreviousMonth = format(addMonths(currentMonth, -1), 'MM-yyyy');
 
       return await createMonthlySalaries(
         formattedCurrentMonth,
@@ -180,9 +178,10 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       const date = new Date();
       return Salaries.updateAsync(
@@ -207,9 +206,10 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       const date = new Date();
       return Salaries.updateAsync(
@@ -227,11 +227,11 @@ export default {
     },
 
     deleteSalaries: async (obj, { month, ids }, { user }) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
+        isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
       ) {
         throw new Error(
@@ -256,11 +256,11 @@ export default {
     },
 
     deleteAllSalaries: async (obj, { month }, { user }) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
+        isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
       ) {
         throw new Error(
@@ -279,9 +279,10 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       return Salaries.removeAsync({
         month: formattedMonth,

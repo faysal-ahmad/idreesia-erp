@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
 import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -14,31 +14,21 @@ import { WithAllCities } from 'meteor/idreesia-common/composers/common';
 
 import { PAGED_CITIES, CREATE_CITY } from '../gql';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const NewForm = ({ history, allCitiesLoading, allCities }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [createCity] = useMutation(CREATE_CITY, {
+    refetchQueries: [{ query: PAGED_CITIES }],
+  });
 
-    allCitiesLoading: PropTypes.bool,
-    allCities: PropTypes.array,
-    createCity: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ name, peripheryOf, region, country }) => {
-    const { createCity, history } = this.props;
+  const handleFinish = ({ name, peripheryOf, region, country }) => {
     createCity({
       variables: {
         name,
@@ -55,59 +45,55 @@ class NewForm extends Component {
       });
   };
 
-  getNonPeripheryCities = () => {
-    const { allCities } = this.props;
+  const getNonPeripheryCities = () => {
     return filter(allCities, city => !city.peripheryOf);
   };
 
-  render() {
-    const { allCitiesLoading } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (allCitiesLoading) return null;
-    const nonPeripheryCities = this.getNonPeripheryCities();
+  if (allCitiesLoading) return null;
+  const nonPeripheryCities = getNonPeripheryCities();
 
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="City Name"
-          required
-          requiredMessage="Please input a name for the city."
-        />
-        <SelectField
-          data={nonPeripheryCities}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="peripheryOf"
-          fieldLabel="Periphery Of"
-        />
-        <InputTextField
-          fieldName="region"
-          fieldLabel="Region"
-        />
-        <InputTextField
-          fieldName="country"
-          fieldLabel="Country"
-          initialValue="Pakistan"
-          required
-          requiredMessage="Please input a name for the country."
-        />
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="City Name"
+        required
+        requiredMessage="Please input a name for the city."
+      />
+      <SelectField
+        data={nonPeripheryCities}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="peripheryOf"
+        fieldLabel="Periphery Of"
+      />
+      <InputTextField
+        fieldName="region"
+        fieldLabel="Region"
+      />
+      <InputTextField
+        fieldName="country"
+        fieldLabel="Country"
+        initialValue="Pakistan"
+        required
+        requiredMessage="Please input a name for the country."
+      />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
+
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  allCitiesLoading: PropTypes.bool,
+  allCities: PropTypes.array,
+};
 
 export default flowRight(
   WithAllCities(),
-  graphql(CREATE_CITY, {
-    name: 'createCity',
-    options: {
-      refetchQueries: [{ query: PAGED_CITIES }],
-    },
-  }),
   WithBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'New'])
 )(NewForm);

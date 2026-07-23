@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { LockOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Button, Flex, Pagination, Table } from 'antd';

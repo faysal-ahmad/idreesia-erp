@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Divider, Form } from 'antd';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -93,7 +93,12 @@ class ViewForm extends Component {
           />
 
           <Divider orientation="left">Purchased / Returned Items</Divider>
-          <Form.Item name="items" initialValue={purchaseFormById.items} rules={rules} {...formItemExtendedLayout}>
+          <Form.Item
+            name="items"
+            initialValue={purchaseFormById.items}
+            rules={rules}
+            {...formItemExtendedLayout}
+          >
             <ItemsList
               readOnly
               defaultLabel="Purchased"
@@ -151,7 +156,7 @@ const formQuery = gql`
 `;
 
 export default flowRight(
-  graphql(formQuery, {
+  withQuery(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match }) => {
       const { formId } = match.params;

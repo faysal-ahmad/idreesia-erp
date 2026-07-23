@@ -1,29 +1,35 @@
 import React from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
+
+const withStayAllowedByQuery = gql`
+  query distinctStayAllowedBy {
+    distinctStayAllowedBy
+  }
+`;
 
 export default () => WrappedComponent => {
-  const WithDistinctStayAllowedBy = props => <WrappedComponent {...props} />;
+  const WithDistinctStayAllowedBy = props => {
+    const { data, loading, ...queryResult } = useQuery(withStayAllowedByQuery, {
+      fetchPolicy: "no-cache",
+    });
+
+    return (
+      <WrappedComponent
+        {...props}
+        {...queryResult}
+        loading={loading}
+        distinctStayAllowedByLoading={loading}
+        distinctStayAllowedBy={data ? data.distinctStayAllowedBy : null}
+      />
+    );
+  };
 
   WithDistinctStayAllowedBy.propTypes = {
     distinctStayAllowedByLoading: PropTypes.bool,
     distinctStayAllowedBy: PropTypes.array,
   };
 
-  const withStayAllowedByQuery = gql`
-    query distinctStayAllowedBy {
-      distinctStayAllowedBy
-    }
-  `;
-
-  return graphql(withStayAllowedByQuery, {
-    props: ({ data }) => ({
-      distinctStayAllowedByLoading: data.loading,
-      ...data,
-    }),
-    options: {
-      fetchPolicy: "no-cache",
-    },
-  })(WithDistinctStayAllowedBy);
+  return WithDistinctStayAllowedBy;
 };

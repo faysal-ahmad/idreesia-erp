@@ -1,6 +1,6 @@
-import React, { Fragment, Component } from 'react';
+import React, { Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
@@ -11,42 +11,24 @@ import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
 import { USER_BY_ID, SET_INSTANCE_ACCESS } from '../gql';
 
-class InstanceAccess extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const InstanceAccess = ({
+  userId,
+  history,
+  allPhysicalStoresLoading,
+  allPhysicalStores,
+}) => {
+  const instanceSelection = useRef(null);
+  const { data, loading: userLoading } = useQuery(USER_BY_ID, {
+    variables: { _id: userId },
+  });
+  const [setInstanceAccess] = useMutation(SET_INSTANCE_ACCESS, {
+    refetchQueries: ['pagedUser'],
+  });
+  const { userById } = data || {};
 
-    userId: PropTypes.string,
-    userLoading: PropTypes.bool,
-    userById: PropTypes.object,
-    allPhysicalStoresLoading: PropTypes.bool,
-    allPhysicalStores: PropTypes.array,
-    setInstanceAccess: PropTypes.func,
-  };
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { userById } = nextProps;
-    if (userById && !prevState.initDone) {
-      return {
-        initDone: true,
-        checkedKeys: userById.instances,
-      };
-    }
-
-    return null;
-  }
-
-  state = {
-    initDone: false,
-    expandedKeys: [],
-    checkedKeys: [],
-  };
-
-  handleSave = e => {
+  const handleSave = e => {
     e.preventDefault();
-    const { history, userById, setInstanceAccess } = this.props;
-    const instances = this.instanceSelection.getSelectedInstances();
+    const instances = instanceSelection.current.getSelectedInstances();
 
     setInstanceAccess({
       variables: {
@@ -62,67 +44,56 @@ class InstanceAccess extends Component {
       });
   };
 
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  render() {
-    const {
-      userById,
-      userLoading,
-      allPhysicalStoresLoading,
-      allPhysicalStores,
-    } = this.props;
-    if (userLoading || allPhysicalStoresLoading) {
-      return null;
-    }
-
-    return (
-      <Fragment>
-        <InstanceSelection
-          securityEntity={userById}
-          allPhysicalStores={allPhysicalStores}
-          ref={is => {
-            this.instanceSelection = is;
-          }}
-        />
-        <br />
-        <br />
-        <Row type="flex" justify="start">
-          <Button
-            size="large"
-            icon={<CloseCircleOutlined />}
-            type="default"
-            onClick={this.handleCancel}
-          >
-            Cancel
-          </Button>
-          &nbsp;
-          <Button
-            size="large"
-            icon={<SaveOutlined />}
-            type="primary"
-            onClick={this.handleSave}
-          >
-            Save
-          </Button>
-        </Row>
-      </Fragment>
-    );
+  if (userLoading || allPhysicalStoresLoading) {
+    return null;
   }
-}
+
+  return (
+    <Fragment>
+      <InstanceSelection
+        securityEntity={userById}
+        allPhysicalStores={allPhysicalStores}
+        ref={instanceSelection}
+      />
+      <br />
+      <br />
+      <Row type="flex" justify="start">
+        <Button
+          size="large"
+          icon={<CloseCircleOutlined />}
+          type="default"
+          onClick={handleCancel}
+        >
+          Cancel
+        </Button>
+        &nbsp;
+        <Button
+          size="large"
+          icon={<SaveOutlined />}
+          type="primary"
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </Row>
+    </Fragment>
+  );
+};
+
+InstanceAccess.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  userId: PropTypes.string,
+  allPhysicalStoresLoading: PropTypes.bool,
+  allPhysicalStores: PropTypes.array,
+};
 
 export default flowRight(
-  WithAllPhysicalStores(),
-  graphql(SET_INSTANCE_ACCESS, {
-    name: 'setInstanceAccess',
-    options: {
-      refetchQueries: ['pagedUser'],
-    },
-  }),
-  graphql(USER_BY_ID, {
-    props: ({ data }) => ({ userLoading: data.loading, ...data }),
-    options: ({ userId }) => ({ variables: { _id: userId } }),
-  })
+  WithAllPhysicalStores()
 )(InstanceAccess);

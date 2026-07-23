@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Checkbox, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -19,91 +19,68 @@ const ControlsContainer = {
   width: '100%',
 };
 
-class PrintView extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const PrintView = ({ history, match }) => {
+  const printViewRef = useRef(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+    variables: { _id: match.params.karkunId },
+  });
 
-    formDataLoading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    hrKarkunById: PropTypes.object,
-  };
+  if (formDataLoading) return null;
 
-  constructor(props) {
-    super(props);
-    this.printViewRef = React.createRef();
-  }
+  const { hrKarkunById } = data;
+  const form = showDetails ? (
+    <DetailedForm hrKarkunById={hrKarkunById} />
+  ) : (
+    <NonDetailedForm hrKarkunById={hrKarkunById} />
+  );
 
-  state = {
-    showDetails: false,
-  };
-
-  handleBack = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
-
-  handlePrint = e => {
-    e.preventDefault();
-  };
-
-  render() {
-    const { history, formDataLoading, hrKarkunById } = this.props;
-    if (formDataLoading) return null;
-
-    const form = this.state.showDetails ? (
-      <DetailedForm hrKarkunById={hrKarkunById} />
-    ) : (
-      <NonDetailedForm hrKarkunById={hrKarkunById} />
-    );
-
-    return (
-      <>
-        <div style={ControlsContainer}>
-          <div>
-            <ReactToPrint
-              content={() => this.printViewRef.current}
-              trigger={() => (
-                <Button size="large" type="primary" icon={<PrinterOutlined />}>
-                  Print
-                </Button>
-              )}
-            />
-            &nbsp;
-            <Button
-              size="large"
-              type="primary"
-              onClick={() => {
-                history.goBack();
-              }}
-            >
-              Back
-            </Button>
-          </div>
-          <Checkbox
-            checked={this.state.showDetails}
-            onChange={e => this.setState({ showDetails: e.target.checked })}
+  return (
+    <>
+      <div style={ControlsContainer}>
+        <div>
+          <ReactToPrint
+            content={() => printViewRef.current}
+            trigger={() => (
+              <Button size="large" type="primary" icon={<PrinterOutlined />}>
+                Print
+              </Button>
+            )}
+          />
+          &nbsp;
+          <Button
+            size="large"
+            type="primary"
+            onClick={() => {
+              history.goBack();
+            }}
           >
-            Show Detailed Form
-          </Checkbox>
+            Back
+          </Button>
         </div>
-        <Divider />
-        <div className="form-print-view" ref={this.printViewRef}>
-          {form}
-        </div>
-      </>
-    );
-  }
-}
+        <Checkbox
+          checked={showDetails}
+          onChange={e => setShowDetails(e.target.checked)}
+        >
+          Show Detailed Form
+        </Checkbox>
+      </div>
+      <Divider />
+      <div className="form-print-view" ref={printViewRef}>
+        {form}
+      </div>
+    </>
+  );
+};
+
+PrintView.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  karkunId: PropTypes.string,
+};
 
 export default flowRight(
-  graphql(HR_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
-  }),
   WithBreadcrumbs(['HR', 'Karkuns', 'Print Karkun'])
 )(PrintView);

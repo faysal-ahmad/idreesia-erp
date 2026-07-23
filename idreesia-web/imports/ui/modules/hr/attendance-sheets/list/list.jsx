@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import FileSaver from 'file-saver';
 import {
   DeleteOutlined,
@@ -26,7 +26,6 @@ import {
 
 import {
   filter,
-  flowRight,
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -460,19 +459,31 @@ export class List extends Component {
   }
 }
 
-export default flowRight(
-  graphql(ATTENDANCE_BY_MONTH, {
-    props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
-    options: ({
-      selectedMonth,
-      selectedCategoryId,
-      selectedSubCategoryId,
-    }) => ({
-      variables: {
-        month: selectedMonth.format(Formats.DATE_FORMAT),
-        categoryId: selectedCategoryId,
-        subCategoryId: selectedSubCategoryId,
-      },
-    }),
-  })
-)(List);
+const ListWithAttendance = props => {
+  const { selectedMonth, selectedCategoryId, selectedSubCategoryId } = props;
+  const { data, loading, ...queryResult } = useQuery(ATTENDANCE_BY_MONTH, {
+    variables: {
+      month: selectedMonth.format(Formats.DATE_FORMAT),
+      categoryId: selectedCategoryId,
+      subCategoryId: selectedSubCategoryId,
+    },
+  });
+
+  return (
+    <List
+      {...props}
+      attendanceLoading={loading}
+      loading={loading}
+      {...queryResult}
+      {...(data || {})}
+    />
+  );
+};
+
+ListWithAttendance.propTypes = {
+  selectedMonth: PropTypes.object,
+  selectedCategoryId: PropTypes.string,
+  selectedSubCategoryId: PropTypes.string,
+};
+
+export default ListWithAttendance;

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation } from '@apollo/client/react';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
@@ -10,19 +10,16 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { CREATE_SECURITY_VISITOR } from '../gql';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    createSecurityVisitor: PropTypes.func,
-  };
+const NewForm = ({ history }) => {
+  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR, {
+    refetchQueries: ['pagedSecurityVisitors'],
+  });
 
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFinish = ({
+  const handleFinish = ({
     name,
     parentName,
     cnicNumber,
@@ -38,8 +35,6 @@ class NewForm extends Component {
     educationalQualification,
     meansOfEarning,
   }) => {
-    const { history, createSecurityVisitor } = this.props;
-
     createSecurityVisitor({
       variables: {
         name,
@@ -68,22 +63,19 @@ class NewForm extends Component {
       });
   };
 
-  render() {
-    return (
-      <VisitorsNewForm
-        handleFinish={this.handleFinish}
-        handleCancel={this.handleCancel}
-      />
-    );
-  }
-}
+  return (
+    <VisitorsNewForm
+      handleFinish={handleFinish}
+      handleCancel={handleCancel}
+    />
+  );
+};
+
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
 export default flowRight(
-  graphql(CREATE_SECURITY_VISITOR, {
-    name: 'createSecurityVisitor',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors'],
-    },
-  }),
   WithBreadcrumbs(['Security', 'Visitor Registration', 'New'])
 )(NewForm);

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  withQuery,
+  withMutation,
+} from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import dayjs from 'dayjs';
-import { graphql } from '@apollo/react-hoc';
 import numeral from 'numeral';
 import {
   Button,
@@ -23,7 +26,11 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 
-import { flowRight, groupBy, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  flowRight,
+  groupBy,
+  kebabCase,
+} from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 import ListFilter from './list-filter';
@@ -32,7 +39,7 @@ import {
   PAGED_STOCK_ITEMS,
   RECALCULATE_STOCK_LEVELS,
   REMOVE_STOCK_ITEM,
-  VERIFY_STOCK_ITEM
+  VERIFY_STOCK_ITEM,
 } from '../gql';
 
 const MinStockLevelStyle = {
@@ -108,14 +115,11 @@ class List extends Component {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        onCell: (record) => record.isGroup ? ({ colSpan: showActions ? 7 : 6 }) : ({ colSpan: 1 }),
+        onCell: record =>
+          record.isGroup ? { colSpan: showActions ? 7 : 6 } : { colSpan: 1 },
         render: (text, record) => {
           if (record.isGroup) {
-            return (
-              <div style={GroupNameDivStyle}>
-                {record.name}
-              </div>
-            );
+            return <div style={GroupNameDivStyle}>{record.name}</div>;
           }
 
           // If it's not a top level item then add indent
@@ -127,32 +131,32 @@ class List extends Component {
                 onStockItemNameClicked={this.props.handleItemSelected}
               />
             </div>
-          )
+          );
         },
       },
       {
         title: 'Company',
         dataIndex: 'company',
         key: 'company',
-        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
+        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
       },
       {
         title: 'Details',
         dataIndex: 'details',
         key: 'details',
-        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
+        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
       },
       {
         title: 'Category',
         dataIndex: 'categoryName',
         key: 'categoryName',
-        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
+        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
       },
       {
         title: 'Min Stock',
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
-        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
+        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
         render: (text, record) => {
           let stockLevel = text ? numeral(text).format('0.00') : '';
           if (stockLevel && record.unitOfMeasurement !== 'quantity') {
@@ -166,7 +170,7 @@ class List extends Component {
         title: 'Current Stock',
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
-        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
+        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
         render: (text, record) => {
           let stockLevel = text ? numeral(text).format('0.00') : '';
           if (stockLevel && record.unitOfMeasurement !== 'quantity')
@@ -191,9 +195,7 @@ class List extends Component {
 
           return (
             <Tooltip title={tooltip}>
-              <div style={style}>
-                {stockLevel}
-              </div>
+              <div style={style}>{stockLevel}</div>
             </Tooltip>
           );
         },
@@ -204,7 +206,7 @@ class List extends Component {
       columns.push({
         title: 'Actions',
         key: 'action',
-        onCell: (record) => record.isGroup ? ({ colSpan: 0 }) : ({ colSpan: 1 }),
+        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
         render: (text, record) => {
           const {
             purchaseFormsCount,
@@ -226,28 +228,29 @@ class List extends Component {
           let deleteAction;
 
           if (
-            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount === 0
+            purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
+            0
           ) {
             deleteAction = (
-                <Popconfirm
-                  title="Are you sure you want to delete this stock item?"
-                  onConfirm={() => {
-                    this.handleDeleteClicked(record);
-                  }}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Tooltip title="Delete">
-                    <DeleteOutlined className="list-actions-icon" />
-                  </Tooltip>
-                </Popconfirm>
+              <Popconfirm
+                title="Are you sure you want to delete this stock item?"
+                onConfirm={() => {
+                  this.handleDeleteClicked(record);
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlined className="list-actions-icon" />
+                </Tooltip>
+              </Popconfirm>
             );
           }
 
           return (
             <div className="list-actions-column">
               {verifyAction}
-              {deleteAction}    
+              {deleteAction}
             </div>
           );
         },
@@ -328,7 +331,9 @@ class List extends Component {
   handleVerifyStockLevel = record => {
     const { physicalStoreId, verifyStockItemLevel } = this.props;
     let currentStockLevel = record.currentStockLevel;
-    currentStockLevel = currentStockLevel ? numeral(currentStockLevel).format('0.00') : 0;
+    currentStockLevel = currentStockLevel
+      ? numeral(currentStockLevel).format('0.00')
+      : 0;
     Modal.confirm({
       title: 'Stock Level Verification',
       content: `Have you verified that the current stock level of "${
@@ -476,7 +481,7 @@ class List extends Component {
     );
   };
 
-  getTreeData = (data) => {
+  getTreeData = data => {
     const treeData = [];
     // Convert the flat data received from the server into
     // appropriate shape for showing tree in the table
@@ -490,7 +495,7 @@ class List extends Component {
         treeData.push({
           ...items[0],
           noParent: true,
-      });
+        });
       } else {
         // Insert a parent row under which we will group all the items
         treeData.push({
@@ -503,7 +508,7 @@ class List extends Component {
     });
 
     return treeData;
-  }
+  };
 
   render() {
     const { loading } = this.props;
@@ -552,7 +557,7 @@ class List extends Component {
 }
 
 export default flowRight(
-  graphql(PAGED_STOCK_ITEMS, {
+  withQuery(PAGED_STOCK_ITEMS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({
       physicalStoreId,
@@ -565,31 +570,33 @@ export default flowRight(
     }) => ({
       variables: {
         physicalStoreId,
-        queryString: `?categoryId=${categoryId || ''}&name=${name ||
-          ''}&verifyDuration=${verifyDuration || ''}&stockLevel=${stockLevel ||
-          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+        queryString: `?categoryId=${categoryId || ''}&name=${
+          name || ''
+        }&verifyDuration=${verifyDuration || ''}&stockLevel=${
+          stockLevel || ''
+        }&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       },
     }),
   }),
-  graphql(VERIFY_STOCK_ITEM, {
+  withMutation(VERIFY_STOCK_ITEM, {
     name: 'verifyStockItemLevel',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(REMOVE_STOCK_ITEM, {
+  withMutation(REMOVE_STOCK_ITEM, {
     name: 'removeStockItem',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(MERGE_ATOCK_ITEMS, {
+  withMutation(MERGE_ATOCK_ITEMS, {
     name: 'mergeStockItems',
     options: {
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  graphql(RECALCULATE_STOCK_LEVELS, {
+  withMutation(RECALCULATE_STOCK_LEVELS, {
     name: 'recalculateStockLevels',
     options: {
       refetchQueries: ['pagedStockItems'],

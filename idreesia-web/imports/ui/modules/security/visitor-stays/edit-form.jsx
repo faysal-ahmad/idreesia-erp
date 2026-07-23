@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 import dayjs from 'dayjs';
 
@@ -22,36 +22,27 @@ import {
 } from '/imports/ui/modules/hr/common/composers';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
-class EditForm extends Component {
-  static propTypes = {
-    visitorStayId: PropTypes.string,
-    handleSaveItem: PropTypes.func,
-    updateVisitorStay: PropTypes.func,
+const EditForm = ({
+  handleSaveItem,
+  formDataLoading,
+  visitorStayById,
+  allMSDutiesLoading,
+  allDutyShiftsLoading,
+  distinctStayAllowedByLoading,
+  allMSDuties,
+  allDutyShifts,
+  distinctStayAllowedBy,
+}) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [updateVisitorStay] = useMutation(formMutation, {
+    refetchQueries: ['pagedVisitorStays'],
+  });
 
-    formDataLoading: PropTypes.bool,
-    visitorStayById: PropTypes.object,
-    allMSDuties: PropTypes.array,
-    allMSDutiesLoading: PropTypes.bool,
-    allDutyShifts: PropTypes.array,
-    allDutyShiftsLoading: PropTypes.bool,
-    distinctStayAllowedBy: PropTypes.array,
-    distinctStayAllowedByLoading: PropTypes.bool,
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
   };
-  
-  state = {
-    isFieldsTouched: false,
-  };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
-
-  handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId }) => {
-    const {
-      visitorStayById,
-      handleSaveItem,
-      updateVisitorStay,
-    } = this.props;
+  const handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId }) => {
     updateVisitorStay({
       variables: {
         _id: visitorStayById._id,
@@ -71,78 +62,64 @@ class EditForm extends Component {
       });
   };
 
-  render() {
-    const {
-      formDataLoading,
-      visitorStayById,
-      allMSDutiesLoading,
-      allDutyShiftsLoading,
-      distinctStayAllowedByLoading,
-      allMSDuties,
-      allDutyShifts,
-      distinctStayAllowedBy,
-    } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
+  if (
+    formDataLoading ||
+    allMSDutiesLoading ||
+    allDutyShiftsLoading ||
+    distinctStayAllowedByLoading
+  )
+    return null;
 
-    if (
-      formDataLoading ||
-      allMSDutiesLoading ||
-      allDutyShiftsLoading ||
-      distinctStayAllowedByLoading
-    )
-      return null;
+  const dutyShiftCascaderData = getDutyShiftCascaderData(
+    allMSDuties,
+    allDutyShifts
+  );
 
-    const dutyShiftCascaderData = getDutyShiftCascaderData(
-      allMSDuties,
-      allDutyShifts
-    );
+  return (
+    <Form layout="horizontal"  onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <DateField
+        fieldName="fromDate"
+        fieldLabel="From Date"
+        initialValue={dayjs(Number(visitorStayById.fromDate))}
+        required
+        requiredMessage="Please select from date."
+      />
+      <DateField
+        fieldName="toDate"
+        fieldLabel="To Date"
+        initialValue={dayjs(Number(visitorStayById.toDate))}
+        required
+        requiredMessage="Please select to date."
+      />
+      <AutoCompleteField
+        fieldName="stayAllowedBy"
+        fieldLabel="Stay Allowed By"
+        dataSource={distinctStayAllowedBy}
+        initialValue={visitorStayById.stayAllowedBy}
+      />
+      <SelectField
+        data={StayReasons}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="stayReason"
+        fieldLabel="Stay Reason"
+        initialValue={visitorStayById.stayReason}
+      />
+      <CascaderField
+        data={dutyShiftCascaderData}
+        changeOnSelect={false}
+        fieldName="dutyIdShiftId"
+        fieldLabel="Duty Participation"
+        initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
+      />
 
-    return (
-      <Form layout="horizontal"  onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <DateField
-          fieldName="fromDate"
-          fieldLabel="From Date"
-          initialValue={dayjs(Number(visitorStayById.fromDate))}
-          required
-          requiredMessage="Please select from date."
-        />
-        <DateField
-          fieldName="toDate"
-          fieldLabel="To Date"
-          initialValue={dayjs(Number(visitorStayById.toDate))}
-          required
-          requiredMessage="Please select to date."
-        />
-        <AutoCompleteField
-          fieldName="stayAllowedBy"
-          fieldLabel="Stay Allowed By"
-          dataSource={distinctStayAllowedBy}
-          initialValue={visitorStayById.stayAllowedBy}
-        />
-        <SelectField
-          data={StayReasons}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="stayReason"
-          fieldLabel="Stay Reason"
-          initialValue={visitorStayById.stayReason}
-        />
-        <CascaderField
-          data={dutyShiftCascaderData}
-          changeOnSelect={false}
-          fieldName="dutyIdShiftId"
-          fieldLabel="Duty Participation"
-          initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
-        />
-
-        <FormButtonsSubmit
-          text="Update Stay"
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+      <FormButtonsSubmit
+        text="Update Stay"
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
 
 const formQuery = gql`
   query visitorStayById($_id: String!) {
@@ -192,18 +169,37 @@ const formMutation = gql`
   }
 `;
 
+const EditFormWithData = props => {
+  const { visitorStayId } = props;
+  const { data = {}, loading, ...queryResult } = useQuery(formQuery, {
+    variables: { _id: visitorStayId },
+  });
+
+  return (
+    <EditForm
+      {...props}
+      {...queryResult}
+      {...data}
+      formDataLoading={loading}
+    />
+  );
+};
+
+EditForm.propTypes = {
+  visitorStayId: PropTypes.string,
+  handleSaveItem: PropTypes.func,
+  formDataLoading: PropTypes.bool,
+  visitorStayById: PropTypes.object,
+  allMSDuties: PropTypes.array,
+  allMSDutiesLoading: PropTypes.bool,
+  allDutyShifts: PropTypes.array,
+  allDutyShiftsLoading: PropTypes.bool,
+  distinctStayAllowedBy: PropTypes.array,
+  distinctStayAllowedByLoading: PropTypes.bool,
+};
+
 export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ visitorStayId }) => ({ variables: { _id: visitorStayId } }),
-  }),
-  graphql(formMutation, {
-    name: 'updateVisitorStay',
-    options: {
-      refetchQueries: ['pagedVisitorStays'],
-    },
-  }),
   WithAllMSDuties(),
   WithAllDutyShifts(),
   WithDistinctStayAllowedBy()
-)(EditForm);
+)(EditFormWithData);

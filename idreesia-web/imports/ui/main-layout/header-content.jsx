@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout, Menu } from 'antd';
 import { useDispatch } from 'react-redux';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 
 import {
   kebabCase,

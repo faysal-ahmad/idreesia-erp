@@ -1,24 +1,57 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Table, Tooltip, message } from 'antd';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    allMSDuties: PropTypes.array,
-    removeDuty: PropTypes.func,
+const listQuery = gql`
+  query allMSDuties {
+    allMSDuties {
+      _id
+      name
+      description
+      canDelete
+      shifts {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+const removeDutyMutation = gql`
+  mutation removeDuty($_id: String!) {
+    removeDuty(_id: $_id)
+  }
+`;
+
+const List = ({ history }) => {
+  const { data } = useQuery(listQuery);
+  const [removeDuty] = useMutation(removeDutyMutation, {
+    refetchQueries: ['allMSDuties'],
+  });
+  const { allMSDuties } = data || {};
+
+  const handleNewClicked = () => {
+    history.push(paths.msDutiesNewFormPath);
   };
 
-  columns = [
+  const handleDeleteClicked = record => {
+    removeDuty({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -58,7 +91,7 @@ class List extends Component {
               <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
-                  this.handleDeleteClicked(record);
+                  handleDeleteClicked(record);
                 }}
               />
             </Tooltip>
@@ -70,77 +103,29 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.msDutiesNewFormPath);
-  };
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={allMSDuties}
+      columns={columns}
+      pagination={{ defaultPageSize: 20 }}
+      bordered
+      size="small"
+      title={() => (
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New Duty
+        </Button>
+      )}
+    />
+  );
+};
 
-  handleDeleteClicked = record => {
-    const { removeDuty } = this.props;
-    removeDuty({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
+List.propTypes = {
+  history: PropTypes.object,
+};
 
-  render() {
-    const { allMSDuties } = this.props;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allMSDuties}
-        columns={this.columns}
-        pagination={{ defaultPageSize: 20 }}
-        bordered
-        size="small"
-        title={() => (
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={this.handleNewClicked}
-          >
-            New Duty
-          </Button>
-        )}
-      />
-    );
-  }
-}
-
-const listQuery = gql`
-  query allMSDuties {
-    allMSDuties {
-      _id
-      name
-      description
-      canDelete
-      shifts {
-        _id
-        name
-      }
-    }
-  }
-`;
-
-const removeDutyMutation = gql`
-  mutation removeDuty($_id: String!) {
-    removeDuty(_id: $_id)
-  }
-`;
-
-export default flowRight(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(removeDutyMutation, {
-    name: 'removeDuty',
-    options: {
-      refetchQueries: ['allMSDuties'],
-    },
-  }),
-  WithBreadcrumbs(['HR', 'Duties & Shifts', 'List'])
-)(List);
+export default WithBreadcrumbs(['HR', 'Duties & Shifts', 'List'])(List);

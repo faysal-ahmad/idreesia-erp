@@ -1,14 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { List } from 'antd';
 
-const ViewForm = ({ formDataLoading, visitorStayById }) => {
+const ViewForm = ({ visitorStayId }) => {
+  const { data = {}, loading } = useQuery(formQuery, {
+    variables: { _id: visitorStayId },
+  });
+  const { visitorStayById } = data;
+  const formDataLoading = loading;
   if (formDataLoading) return null;
 
   const fromDate = dayjs(Number(visitorStayById.fromDate)).format('DD MMM, YYYY');
@@ -70,9 +75,4 @@ const formQuery = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ visitorStayId }) => ({ variables: { _id: visitorStayId } }),
-  })
-)(ViewForm);
+export default ViewForm;

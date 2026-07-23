@@ -1,9 +1,8 @@
-import moment from 'moment';
+import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
 function getName() {
-  const timestamp = moment();
-  return `Image_${timestamp.format('DD-MM-YY_HH:mm')}.jpeg`;
+  return `Image_${formatDate(new Date(), 'DD-MM-YY_HH:mm')}.jpeg`;
 }
 
 export async function createAttachment(

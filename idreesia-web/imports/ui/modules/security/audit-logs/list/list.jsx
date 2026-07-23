@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { Link } from 'react-router-dom';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';

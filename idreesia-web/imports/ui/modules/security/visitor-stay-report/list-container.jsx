@@ -5,7 +5,6 @@ import {
   flowRight,
   toSafeInteger,
 } from 'meteor/idreesia-common/utilities/lodash';
-import { Formats } from 'meteor/idreesia-common/constants';
 import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,

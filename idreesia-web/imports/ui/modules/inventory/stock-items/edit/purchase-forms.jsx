@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Table, Tooltip } from 'antd';
 import { FileOutlined, EditOutlined } from '@ant-design/icons';
 
@@ -74,9 +74,7 @@ class List extends Component {
 
         return (
           <div className="list-actions-column">
-            <Tooltip title={tooltipTitle}>
-              {icon}
-            </Tooltip>
+            <Tooltip title={tooltipTitle}>{icon}</Tooltip>
           </div>
         );
       },
@@ -150,7 +148,7 @@ const listQuery = gql`
 `;
 
 export default flowRight(
-  graphql(listQuery, {
+  withQuery(listQuery, {
     props: ({ data }) => ({ ...data }),
     options: ({ physicalStoreId, stockItemId }) => ({
       variables: { physicalStoreId, stockItemId },

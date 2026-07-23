@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { differenceInCalendarDays, startOfDay, startOfMonth } from 'date-fns';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 
@@ -57,9 +57,9 @@ export async function createMonthlySalaries(
     // Ensure that this karkun is a current employee
     let isCurrentEmployee = true;
     if (employmentEndDate) {
-      const currentMonth = moment().startOf('month');
-      const employmentEnd = moment(employmentEndDate).startOf('day');
-      const diff = currentMonth.diff(employmentEnd, 'days');
+      const currentMonth = startOfMonth(new Date());
+      const employmentEnd = startOfDay(new Date(employmentEndDate));
+      const diff = differenceInCalendarDays(currentMonth, employmentEnd);
       if (diff > 0) {
         isCurrentEmployee = false;
       }

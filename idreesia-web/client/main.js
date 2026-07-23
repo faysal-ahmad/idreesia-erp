@@ -7,13 +7,13 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
 import {
+  ApolloLink,
   ApolloClient,
-  ApolloProvider,
   InMemoryCache,
-  HttpLink,
-  from,
 } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { ApolloProvider } from '@apollo/client/react';
+import { HttpLink } from '@apollo/client/link/http';
+import { SetContextLink } from '@apollo/client/link/context';
 
 import './main.css';
 import './attendance.css';
@@ -28,7 +28,7 @@ const store = createStore(combinedReducer);
 
 const httpLink = new HttpLink({ uri: '/graphql' });
 
-const authLink = setContext((_, { headers }) => ({
+const authLink = new SetContextLink(({ headers }) => ({
   headers: {
     ...headers,
     authorization: Accounts._storedLoginToken(),
@@ -36,7 +36,7 @@ const authLink = setContext((_, { headers }) => ({
 }));
 
 const client = new ApolloClient({
-  link: from([authLink, httpLink]),
+  link: ApolloLink.from([authLink, httpLink]),
   cache: new InMemoryCache(),
 });
 

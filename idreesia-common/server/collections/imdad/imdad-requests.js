@@ -1,6 +1,7 @@
-import moment from 'moment';
+import { isEqual, startOfDay, subDays } from 'date-fns';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { ImdadRequest as ImdadRequestSchema } from 'meteor/idreesia-common/server/schemas/imdad';
 import { ImdadRequestStatus } from 'meteor/idreesia-common/constants/imdad';
@@ -37,9 +38,7 @@ class ImdadRequests extends AggregatableCollection {
 
     const date = new Date();
     const valuesToInsert = Object.assign({}, values, {
-      requestDate: moment(requestDate)
-        .startOf('day')
-        .toDate(),
+      requestDate: startOfDay(new Date(requestDate)),
       imdadReasonId,
       status: ImdadRequestStatus.CREATED,
       createdAt: date,
@@ -95,7 +94,10 @@ class ImdadRequests extends AggregatableCollection {
 
     switch (key) {
       case 'requestDate':
-        isChanged = !moment(existingImdadRequest[key]).isSame(moment(newValue));
+        isChanged = !isEqual(
+          new Date(existingImdadRequest[key]),
+          new Date(newValue)
+        );
         break;
 
       case 'approvedImdad':
@@ -170,9 +172,7 @@ class ImdadRequests extends AggregatableCollection {
       pipeline.push({
         $match: {
           requestDate: {
-            $eq: moment(requestDate, Formats.DATE_FORMAT)
-              .startOf('day')
-              .toDate(),
+            $eq: startOfDay(parseDate(requestDate, Formats.DATE_FORMAT)),
           },
         },
       });
@@ -206,12 +206,10 @@ class ImdadRequests extends AggregatableCollection {
   async isImdadRequestAllowed(visitorId) {
     // Before creating, ensure that there isn't already another record created
     // for last 30 days for this visitor.
-    const date = moment()
-      .startOf('day')
-      .subtract(30, 'days');
+    const date = subDays(startOfDay(new Date()), 30);
     const previousRequest = await this.findOneAsync({
       visitorId,
-      requestDate: { $gte: date.toDate() },
+      requestDate: { $gte: date },
     });
 
     if (previousRequest) return false;

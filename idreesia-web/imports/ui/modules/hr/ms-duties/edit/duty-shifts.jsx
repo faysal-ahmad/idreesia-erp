@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-import { graphql } from '@apollo/react-hoc';
+import { format, isValid } from 'date-fns';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -10,8 +10,6 @@ import {
   Tooltip,
   message,
 } from 'antd';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
   DUTY_SHIFTS_BY_DUTY_ID,
@@ -22,93 +20,30 @@ import {
 import { default as ShiftNewForm } from './shift-new-form';
 import { default as ShiftEditForm } from './shift-edit-form';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const List = ({ dutyId }) => {
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [dutyShift, setDutyShift] = useState(null);
+  const { data } = useQuery(DUTY_SHIFTS_BY_DUTY_ID, {
+    variables: { dutyId },
+  });
+  const [createDutyShift] = useMutation(CREATE_DUTY_SHIFT, {
+    refetchQueries: ['dutyShiftsByDutyId'],
+  });
+  const [updateDutyShift] = useMutation(UPDATE_DUTY_SHIFT, {
+    refetchQueries: ['dutyShiftsByDutyId'],
+  });
+  const [removeDutyShift] = useMutation(REMOVE_DUTY_SHIFT, {
+    refetchQueries: ['dutyShiftsByDutyId'],
+  });
+  const { dutyShiftsByDutyId } = data || {};
 
-    dutyId: PropTypes.string,
-    dutyShiftsByDutyId: PropTypes.array,
-    createDutyShift: PropTypes.func,
-    updateDutyShift: PropTypes.func,
-    removeDutyShift: PropTypes.func,
+  const handleNewClicked = () => {
+    setShowNewForm(true);
   };
 
-  state = {
-    showNewForm: false,
-    showEditForm: false,
-    dutyShift: null,
-  };
-
-  columns = [
-    {
-      title: 'Shift Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Start Time',
-      dataIndex: 'startTime',
-      key: 'startTime',
-      render: text => {
-        const startTime = moment(text);
-        return startTime.isValid() ? startTime.format('h:mm a') : null;
-      },
-    },
-    {
-      title: 'End Time',
-      dataIndex: 'endTime',
-      key: 'endTime',
-      render: text => {
-        const endTime = moment(text);
-        return endTime.isValid() ? endTime.format('h:mm a') : null;
-      },
-    },
-    {
-      key: 'action',
-      render: (text, record) => {
-        let deleteAction = null;
-        if (record.canDelete) {
-          deleteAction = (
-            <Tooltip title="Delete">
-              <DeleteOutlined
-                className="list-actions-icon"
-                onClick={() => {
-                  this.handleDeleteClicked(record);
-                }}
-              />
-            </Tooltip>
-          );
-        }
-
-        return (
-          <div className="list-actions-column">
-            <Tooltip title="Edit">
-              <EditOutlined
-                className="list-actions-icon"
-                onClick={() => {
-                  this.handleEditClicked(record);
-                }}
-              />
-            </Tooltip>
-            {deleteAction}
-          </div>
-        );
-      },
-    },
-  ];
-
-  handleNewClicked = () => {
-    this.setState({
-      showNewForm: true,
-    });
-  };
-
-  handleNewShiftSave = ({ name, startTime, endTime, attendanceSheet }) => {
-    const { createDutyShift, dutyId } = this.props;
-    this.setState({
-      showNewForm: false,
-    });
+  const handleNewShiftSave = ({ name, startTime, endTime, attendanceSheet }) => {
+    setShowNewForm(false);
 
     createDutyShift({
       variables: {
@@ -123,37 +58,30 @@ class List extends Component {
     });
   };
 
-  handleNewShiftCancel = () => {
-    this.setState({
-      showNewForm: false,
-    });
+  const handleNewShiftCancel = () => {
+    setShowNewForm(false);
   };
 
-  handleEditClicked = dutyShift => {
-    this.setState({
-      showEditForm: true,
-      dutyShift,
-    });
+  const handleEditClicked = selectedDutyShift => {
+    setShowEditForm(true);
+    setDutyShift(selectedDutyShift);
   };
 
-  handleEditShiftSave = ({
+  const handleEditShiftSave = ({
     _id,
-    dutyId,
+    dutyId: selectedDutyId,
     name,
     startTime,
     endTime,
     attendanceSheet,
   }) => {
-    const { updateDutyShift } = this.props;
-    this.setState({
-      showEditForm: false,
-      dutyShift: null,
-    });
+    setShowEditForm(false);
+    setDutyShift(null);
 
     updateDutyShift({
       variables: {
         _id,
-        dutyId,
+        dutyId: selectedDutyId,
         name,
         startTime,
         endTime,
@@ -164,15 +92,12 @@ class List extends Component {
     });
   };
 
-  handleEditShiftCancel = () => {
-    this.setState({
-      showEditForm: false,
-      dutyShift: null,
-    });
+  const handleEditShiftCancel = () => {
+    setShowEditForm(false);
+    setDutyShift(null);
   };
 
-  handleDeleteClicked = record => {
-    const { removeDutyShift } = this.props;
+  const handleDeleteClicked = record => {
     removeDutyShift({
       variables: {
         _id: record._id,
@@ -182,83 +107,117 @@ class List extends Component {
     });
   };
 
-  render() {
-    const { dutyShiftsByDutyId } = this.props;
-    const { dutyShift, showNewForm, showEditForm } = this.state;
+  const columns = [
+    {
+      title: 'Shift Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Start Time',
+      dataIndex: 'startTime',
+      key: 'startTime',
+      render: text => {
+        const startTime = new Date(text);
+        return isValid(startTime) ? format(startTime, 'h:mm aaa') : null;
+      },
+    },
+    {
+      title: 'End Time',
+      dataIndex: 'endTime',
+      key: 'endTime',
+      render: text => {
+        const endTime = new Date(text);
+        return isValid(endTime) ? format(endTime, 'h:mm aaa') : null;
+      },
+    },
+    {
+      key: 'action',
+      render: (text, record) => {
+        let deleteAction = null;
+        if (record.canDelete) {
+          deleteAction = (
+            <Tooltip title="Delete">
+              <DeleteOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  handleDeleteClicked(record);
+                }}
+              />
+            </Tooltip>
+          );
+        }
 
-    return (
-      <>
-        <Table
-          rowKey="_id"
-          dataSource={dutyShiftsByDutyId}
-          columns={this.columns}
-          pagination={false}
-          bordered
-          title={() => (
-            <Button
-              type="primary"
-              icon={<PlusCircleOutlined />}
-              onClick={this.handleNewClicked}
-            >
-              New Duty Shift
-            </Button>
-          )}
-        />
-        <Modal
-          title="New Shift"
-          open={showNewForm}
-          onCancel={this.handleNewShiftCancel}
-          width={600}
-          footer={null}
-        >
-          {showNewForm ? (
-            <ShiftNewForm
-              handleSave={this.handleNewShiftSave}
-              handleCancel={this.handleNewShiftCancel}
-            />
-          ) : null}
-        </Modal>
-        <Modal
-          title="Edit Shift"
-          open={showEditForm}
-          onCancel={this.handleEditShiftCancel}
-          width={600}
-          footer={null}
-        >
-          {showEditForm ? (
-            <ShiftEditForm
-              dutyShift={dutyShift}
-              handleSave={this.handleEditShiftSave}
-              handleCancel={this.handleEditShiftCancel}
-            />
-          ) : null}
-        </Modal>
-      </>
-    );
-  }
-}
+        return (
+          <div className="list-actions-column">
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  handleEditClicked(record);
+                }}
+              />
+            </Tooltip>
+            {deleteAction}
+          </div>
+        );
+      },
+    },
+  ];
 
-export default flowRight(
-  graphql(DUTY_SHIFTS_BY_DUTY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ dutyId }) => ({ variables: { dutyId } }),
-  }),
-  graphql(CREATE_DUTY_SHIFT, {
-    name: 'createDutyShift',
-    options: {
-      refetchQueries: ['dutyShiftsByDutyId'],
-    },
-  }),
-  graphql(UPDATE_DUTY_SHIFT, {
-    name: 'updateDutyShift',
-    options: {
-      refetchQueries: ['dutyShiftsByDutyId'],
-    },
-  }),
-  graphql(REMOVE_DUTY_SHIFT, {
-    name: 'removeDutyShift',
-    options: {
-      refetchQueries: ['dutyShiftsByDutyId'],
-    },
-  })
-)(List);
+  return (
+    <>
+      <Table
+        rowKey="_id"
+        dataSource={dutyShiftsByDutyId}
+        columns={columns}
+        pagination={false}
+        bordered
+        title={() => (
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={handleNewClicked}
+          >
+            New Duty Shift
+          </Button>
+        )}
+      />
+      <Modal
+        title="New Shift"
+        open={showNewForm}
+        onCancel={handleNewShiftCancel}
+        width={600}
+        footer={null}
+      >
+        {showNewForm ? (
+          <ShiftNewForm
+            handleSave={handleNewShiftSave}
+            handleCancel={handleNewShiftCancel}
+          />
+        ) : null}
+      </Modal>
+      <Modal
+        title="Edit Shift"
+        open={showEditForm}
+        onCancel={handleEditShiftCancel}
+        width={600}
+        footer={null}
+      >
+        {showEditForm ? (
+          <ShiftEditForm
+            dutyShift={dutyShift}
+            handleSave={handleEditShiftSave}
+            handleCancel={handleEditShiftCancel}
+          />
+        ) : null}
+      </Modal>
+    </>
+  );
+};
+
+List.propTypes = {
+  dutyId: PropTypes.string,
+};
+
+export default List;

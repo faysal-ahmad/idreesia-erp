@@ -1,8 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery, useMutation } from '@apollo/client/react';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Row, Col, message } from 'antd';
 import {
@@ -12,16 +11,12 @@ import {
 
 import { SECURITY_VISITOR_BY_ID, SET_SECURITY_VISITOR_IMAGE } from '../gql';
 
-class Picture extends Component {
-  static propTypes = {
-    loading: PropTypes.bool,
-    visitorId: PropTypes.string,
-    securityVisitorById: PropTypes.object,
-    setSecurityVisitorImage: PropTypes.func,
-  };
+const Picture = ({ loading, visitorId, securityVisitorById }) => {
+  const [setSecurityVisitorImage] = useMutation(SET_SECURITY_VISITOR_IMAGE, {
+    refetchQueries: ['pagedSecurityVisitors'],
+  });
 
-  updateImageId = imageId => {
-    const { visitorId, setSecurityVisitorImage } = this.props;
+  const updateImageId = imageId => {
     setSecurityVisitorImage({
       variables: {
         _id: visitorId,
@@ -32,42 +27,49 @@ class Picture extends Component {
     });
   };
 
-  render() {
-    const { loading, securityVisitorById } = this.props;
-    if (loading) return null;
-    const url = getDownloadUrl(securityVisitorById.imageId);
+  if (loading) return null;
+  const url = getDownloadUrl(securityVisitorById.imageId);
 
-    return (
-      <Fragment>
-        <Row>
-          <Col span={16}>
-            <img style={{ maxWidth: '400px' }} src={url} />
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col span={16}>
-            <UploadAttachment onUploadFinish={this.updateImageId} />
-            <TakePicture onPictureTaken={this.updateImageId} />
-          </Col>
-        </Row>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      <Row>
+        <Col span={16}>
+          <img style={{ maxWidth: '400px' }} src={url} />
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col span={16}>
+          <UploadAttachment onUploadFinish={updateImageId} />
+          <TakePicture onPictureTaken={updateImageId} />
+        </Col>
+      </Row>
+    </Fragment>
+  );
+};
 
-export default flowRight(
-  graphql(SET_SECURITY_VISITOR_IMAGE, {
-    name: 'setSecurityVisitorImage',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors'],
-    },
-  }),
-  graphql(SECURITY_VISITOR_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { visitorId } = match.params;
-      return { variables: { _id: visitorId } };
-    },
-  })
-)(Picture);
+const PictureWithData = props => {
+  const { match } = props;
+  const { visitorId } = match.params;
+  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID, {
+    variables: { _id: visitorId },
+  });
+
+  return (
+    <Picture
+      {...props}
+      {...queryResult}
+      {...data}
+      visitorId={visitorId}
+      loading={loading}
+    />
+  );
+};
+
+Picture.propTypes = {
+  loading: PropTypes.bool,
+  visitorId: PropTypes.string,
+  securityVisitorById: PropTypes.object,
+};
+
+export default PictureWithData;

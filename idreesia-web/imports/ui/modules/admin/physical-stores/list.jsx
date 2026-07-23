@@ -1,23 +1,29 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import { Button, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    allPhysicalStores: PropTypes.array,
-  };
+const listQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+      address
+    }
+  }
+`;
 
-  columns = [
+const List = ({ history }) => {
+  const { data } = useQuery(listQuery);
+  const { allPhysicalStores } = data || {};
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -33,46 +39,32 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    const { history } = this.props;
+  const handleNewClicked = () => {
     history.push(paths.physicalStoresNewFormPath);
   };
 
-  render() {
-    const { allPhysicalStores } = this.props;
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allPhysicalStores}
-        columns={this.columns}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={this.handleNewClicked}
-          >
-            New Physical Store
-          </Button>
-        )}
-      />
-    );
-  }
-}
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={allPhysicalStores}
+      columns={columns}
+      bordered
+      title={() => (
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New Physical Store
+        </Button>
+      )}
+    />
+  );
+};
 
-const listQuery = gql`
-  query allPhysicalStores {
-    allPhysicalStores {
-      _id
-      name
-      address
-    }
-  }
-`;
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-export default flowRight(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])
-)(List);
+export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])(List);

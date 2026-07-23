@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 
 import { Formats } from 'meteor/idreesia-common/constants';
+import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from 'antd';
 
@@ -39,10 +39,10 @@ export default class SalaryReceipts extends Component {
   getSalaryReceipts = salary => {
     const { karkun, job } = salary;
     const imageColumn = this.getImageColumn(karkun);
-    const displayMonth = moment(
-      `01-${salary.month}`,
-      Formats.DATE_FORMAT
-    ).format('MMM, YYYY');
+    const displayMonth = formatDate(
+      parseDate(`01-${salary.month}`, Formats.DATE_FORMAT),
+      'MMM, YYYY'
+    );
 
     return (
       <div key={salary._id} className="form-print-view">

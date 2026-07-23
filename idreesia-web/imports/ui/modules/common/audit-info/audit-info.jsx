@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { List, Typography } from 'antd';
 
@@ -12,7 +11,15 @@ const ListStyle = {
   backgroundColor: '#F0F2F5',
 };
 
-const AuditInfo = ({ record, userNamesLoading, userNames }) => {
+const AuditInfo = ({ record }) => {
+  const { data, loading } = useQuery(userNamesQuery, {
+    variables: {
+      ids: [record.createdBy, record.updatedBy, record.approvedBy],
+    },
+  });
+  const userNames = data ? data.userNames : null;
+  const userNamesLoading = loading;
+
   if (userNamesLoading || !userNames || userNames.length === 0) return null;
   const { createdAt, updatedAt, approvedOn } = record;
 
@@ -63,8 +70,6 @@ AuditInfo.propTypes = {
     approvedOn: PropTypes.string,
     approvedBy: PropTypes.string,
   }),
-  userNamesLoading: PropTypes.bool,
-  userNames: PropTypes.array,
 };
 
 const userNamesQuery = gql`
@@ -73,13 +78,4 @@ const userNamesQuery = gql`
   }
 `;
 
-export default flowRight(
-  graphql(userNamesQuery, {
-    props: ({ data }) => ({ userNamesLoading: data.loading, ...data }),
-    options: ({ record }) => ({
-      variables: {
-        ids: [record.createdBy, record.updatedBy, record.approvedBy],
-      },
-    }),
-  })
-)(AuditInfo);
+export default AuditInfo;

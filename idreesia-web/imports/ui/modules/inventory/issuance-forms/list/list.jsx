@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  withQuery,
+  withMutation,
+} from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import dayjs from 'dayjs';
-import { graphql } from '@apollo/react-hoc';
 import {
   Button,
   Divider,
@@ -81,7 +84,7 @@ class List extends Component {
     },
     {
       title: 'Issued To',
-      dataIndex: ['refIssuedTo','name'],
+      dataIndex: ['refIssuedTo', 'name'],
       key: 'refIssuedTo.name',
       render: (text, record) => {
         if (record.handedOverTo) {
@@ -118,9 +121,7 @@ class List extends Component {
         });
 
         const formattedAttachments = attachments?.map(attachment => (
-          <li key={attachment._id}>
-            {attachment.name}
-          </li>
+          <li key={attachment._id}>{attachment.name}</li>
         ));
 
         if (formattedAttachments?.length > 0) {
@@ -275,14 +276,13 @@ class List extends Component {
     } else if (key === 'delete') {
       Modal.confirm({
         title: 'Delete Issuance Forms',
-        content:
-          'Are you sure you want to delete the selected issuance forms?',
+        content: 'Are you sure you want to delete the selected issuance forms?',
         onOk: () => {
           this.handleDeleteSelected();
         },
       });
     }
-  }
+  };
 
   handleApproveSelected = () => {
     const { selectedRows } = this.state;
@@ -290,7 +290,7 @@ class List extends Component {
     const { approveIssuanceForms, physicalStoreId } = this.props;
 
     approveIssuanceForms({
-      variables: { 
+      variables: {
         _ids,
         physicalStoreId,
       },
@@ -376,11 +376,8 @@ class List extends Component {
   };
 
   getTableHeader = () => {
-    const {
-      locationsByPhysicalStoreId,
-      queryParams,
-      refetchListQuery,
-    } = this.props;
+    const { locationsByPhysicalStoreId, queryParams, refetchListQuery } =
+      this.props;
 
     return (
       <div className="list-table-header">
@@ -453,7 +450,7 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
-  graphql(REMOVE_ISSUANCE_FORMS, {
+  withMutation(REMOVE_ISSUANCE_FORMS, {
     name: 'removeIssuanceForms',
     options: {
       refetchQueries: [
@@ -463,7 +460,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(APPROVE_ISSUANCE_FORMS, {
+  withMutation(APPROVE_ISSUANCE_FORMS, {
     name: 'approveIssuanceForms',
     options: {
       refetchQueries: [
@@ -473,7 +470,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(PAGED_ISSUANCE_FORMS, {
+  withQuery(PAGED_ISSUANCE_FORMS, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,30 +12,24 @@ import {
 
 import { IMPORT_SECURITY_VISITORS_CSV_DATA } from '../gql';
 
-class UploadForm extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const UploadForm = ({ history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [importSecurityVisitorsCsvData] = useMutation(
+    IMPORT_SECURITY_VISITORS_CSV_DATA,
+    {
+      refetchQueries: ['pagedSecurityVisitors'],
+    }
+  );
 
-    importSecurityVisitorsCsvData: PropTypes.func,
-  };
-  
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ csv }) => {
-    const { importSecurityVisitorsCsvData, history } = this.props;
+  const handleFinish = ({ csv }) => {
     importSecurityVisitorsCsvData({
       variables: {
         csvData: csv,
@@ -55,33 +49,29 @@ class UploadForm extends Component {
       });
   };
 
-  render() {
-    const isFieldsTouched = this.state.isFieldsTouched;
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputFileField
+        accept=".csv"
+        fieldName="csv"
+        fieldLabel="Visitors Data"
+        required
+        requiredMessage="Select CSV file containing visitor data for upload."
+      />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
 
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputFileField
-          accept=".csv"
-          fieldName="csv"
-          fieldLabel="Visitors Data"
-          required
-          requiredMessage="Select CSV file containing visitor data for upload."
-        />
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+UploadForm.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
 export default flowRight(
-  graphql(IMPORT_SECURITY_VISITORS_CSV_DATA, {
-    name: 'importSecurityVisitorsCsvData',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors'],
-    },
-  }),
   WithBreadcrumbs(['Security', 'Visitor Registration', 'Upload'])
 )(UploadForm);

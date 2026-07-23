@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
-import moment from 'moment';
+import { useQuery } from '@apollo/client/react';
+import { addMonths, startOfMonth } from 'date-fns';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { Row, Col, Spin, message } from 'antd';
 
 const LabelStyle = {
@@ -34,7 +34,11 @@ SearchResultRow.propTypes = {
 };
 
 const SearchResult = props => {
-  const { barcode, loading, attendanceByBarcodeId } = props;
+  const { barcode } = props;
+  const { data = {}, loading } = useQuery(formQuery, {
+    variables: { barcodeId: barcode },
+  });
+  const { attendanceByBarcodeId } = data;
   if (!barcode) return null;
   if (loading) return <Spin size="large" />;
 
@@ -52,9 +56,9 @@ const SearchResult = props => {
     </Col>
   ) : null;
 
-  const displayMonth = moment(`01-${month}`, 'DD-MM-YYYY')
-    .add(1, 'months')
-    .startOf('month');
+  const displayMonth = startOfMonth(
+    addMonths(parseDate(`01-${month}`, 'DD-MM-YYYY'), 1)
+  );
 
   return (
     <Row type="flex" gutter={16}>
@@ -68,7 +72,7 @@ const SearchResult = props => {
         {job ? <SearchResultRow label="Job" value={job.name} /> : null}
         <SearchResultRow
           label="Month"
-          value={displayMonth.format('D MMM YYYY')}
+          value={formatDate(displayMonth, 'D MMM YYYY')}
         />
         <SearchResultRow label="Attendance" value={`${percentage}%`} />
       </Col>
@@ -116,9 +120,4 @@ const formQuery = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ barcode }) => ({ variables: { barcodeId: barcode } }),
-  })
-)(SearchResult);
+export default SearchResult;

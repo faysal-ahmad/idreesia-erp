@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Form } from 'antd';
 
 import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -123,7 +123,7 @@ const formQuery = gql`
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(formQuery, {
+  withQuery(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match, physicalStoreId }) => {
       const { formId } = match.params;

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import {
   AuditOutlined,
   DeleteOutlined,
@@ -22,7 +22,7 @@ import {
   message,
 } from 'antd';
 
-import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import ListFilter from './list-filter';
@@ -37,74 +37,92 @@ const ContactNumberNotSubscribed = {
   color: 'red',
 };
 
-class List extends Component {
-  static propTypes = {
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    name: PropTypes.string,
-    cnicNumber: PropTypes.string,
-    phoneNumber: PropTypes.string,
-    bloodGroup: PropTypes.string,
-    lastTarteeb: PropTypes.string,
-    jobId: PropTypes.string,
-    dutyId: PropTypes.string,
-    dutyShiftId: PropTypes.string,
-    showVolunteers: PropTypes.string,
-    showEmployees: PropTypes.string,
-    setPageParams: PropTypes.func,
-    handleItemSelected: PropTypes.func,
-    showNewButton: PropTypes.bool,
-    showDownloadButton: PropTypes.bool,
-    showSelectionColumn: PropTypes.bool,
-    showPhoneNumbersColumn: PropTypes.bool,
-    showDutiesColumn: PropTypes.bool,
-    showActionsColumn: PropTypes.bool,
-    predefinedFilterName: PropTypes.string,
-    handlePrintClicked: PropTypes.func,
-    handleAuditLogClicked: PropTypes.func,
-    handleNewClicked: PropTypes.func,
-    handleScanClicked: PropTypes.func,
-    handlePrintSelected: PropTypes.func,
+const List = props => {
+  const {
+    pageIndex,
+    pageSize,
+    name,
+    cnicNumber,
+    phoneNumber,
+    bloodGroup,
+    lastTarteeb,
+    jobId,
+    dutyId,
+    dutyShiftId,
+    showVolunteers,
+    showEmployees,
+    setPageParams,
+    handleItemSelected,
+    showNewButton,
+    showDownloadButton,
+    showSelectionColumn,
+    showPhoneNumbersColumn,
+    showDutiesColumn,
+    showActionsColumn,
+    predefinedFilterName,
+    handlePrintClicked,
+    handleAuditLogClicked,
+    handleNewClicked,
+    handleScanClicked,
+    handlePrintSelected,
+  } = props;
 
-    deleteHrKarkun: PropTypes.func,
-    loading: PropTypes.bool,
-    refetchListQuery: PropTypes.func,
-    pagedHrKarkuns: PropTypes.shape({
-      totalResults: PropTypes.number,
-      karkuns: PropTypes.array,
-    }),
+  const [selectedRows, setSelectedRows] = useState([]);
+  const { data = {}, loading, refetch: refetchListQuery } = useQuery(
+    PAGED_HR_KARKUNS,
+    {
+      variables: {
+        filter: {
+          name,
+          cnicNumber,
+          phoneNumber,
+          bloodGroup,
+          lastTarteeb,
+          jobId,
+          dutyId,
+          dutyShiftId,
+          showVolunteers,
+          showEmployees,
+          predefinedFilterName,
+          pageIndex: pageIndex.toString(),
+          pageSize: pageSize.toString(),
+        },
+      },
+    }
+  );
+  const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN, {
+    refetchQueries: ['pagedHrKarkuns'],
+  });
+
+  const handleDeleteClicked = record => {
+    deleteHrKarkun({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
   };
 
-  static defaultProps = {
-    handleItemSelected: noop,
-    handleNewClicked: noop,
-    handleScanClicked: noop,
-    handlePrintClicked: noop,
-  };
-
-  state = {
-    selectedRows: [],
-  };
-
-  nameColumn = {
+  const nameColumn = {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
     render: (text, record) => (
       <KarkunName
         karkun={record}
-        onKarkunNameClicked={this.props.handleItemSelected}
+        onKarkunNameClicked={handleItemSelected}
       />
     ),
   };
 
-  cnicColumn = {
+  const cnicColumn = {
     title: 'CNIC Number',
     dataIndex: 'cnicNumber',
     key: 'cnicNumber',
   };
 
-  phoneNumberColumn = {
+  const phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
     render: (text, record) => {
@@ -144,7 +162,7 @@ class List extends Component {
     },
   };
 
-  dutiesColumn = {
+  const dutiesColumn = {
     title: 'Job / Duties',
     dataIndex: 'duties',
     key: 'duties',
@@ -189,7 +207,7 @@ class List extends Component {
     },
   };
 
-  actionsColumn = {
+  const actionsColumn = {
     key: 'action',
     render: (text, record) => (
       <div className="list-actions-column">
@@ -197,7 +215,7 @@ class List extends Component {
           <PrinterOutlined
             className="list-actions-icon"
             onClick={() => {
-              this.props.handlePrintClicked(record);
+              handlePrintClicked(record);
             }}
           />
         </Tooltip>
@@ -205,14 +223,14 @@ class List extends Component {
           <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
-              this.props.handleAuditLogClicked(record);
+              handleAuditLogClicked(record);
             }}
           />
         </Tooltip>
         <Popconfirm
           title="Are you sure you want to delete this karkun?"
           onConfirm={() => {
-            this.handleDeleteClicked(record);
+            handleDeleteClicked(record);
           }}
           okText="Yes"
           cancelText="No"
@@ -225,71 +243,45 @@ class List extends Component {
     ),
   };
 
-  getColumns = () => {
-    const {
-      showPhoneNumbersColumn,
-      showDutiesColumn,
-      showActionsColumn,
-    } = this.props;
-    const columns = [this.nameColumn, this.cnicColumn];
+  const getColumns = () => {
+    const columns = [nameColumn, cnicColumn];
 
     if (showPhoneNumbersColumn) {
-      columns.push(this.phoneNumberColumn);
+      columns.push(phoneNumberColumn);
     }
 
     if (showDutiesColumn) {
-      columns.push(this.dutiesColumn);
+      columns.push(dutiesColumn);
     }
 
     if (showActionsColumn) {
-      columns.push(this.actionsColumn);
+      columns.push(actionsColumn);
     }
 
     return columns;
   };
 
-  rowSelection = {
+  const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      this.setState({
-        selectedRows,
-      });
+      setSelectedRows(selectedRows);
     },
   };
 
-  onSelect = karkun => {
-    const { handleItemSelected } = this.props;
-    handleItemSelected(karkun);
-  };
-
-  onChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
+  const onChange = (pageIndex, pageSize) => {
     setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
     });
   };
 
-  onShowSizeChange = (pageIndex, pageSize) => {
-    const { setPageParams } = this.props;
+  const onShowSizeChange = (pageIndex, pageSize) => {
     setPageParams({
       pageIndex: pageIndex - 1,
       pageSize,
     });
   };
 
-  handleDeleteClicked = record => {
-    const { deleteHrKarkun } = this.props;
-    deleteHrKarkun({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  handleExportSelected = () => {
-    const { selectedRows } = this.state;
+  const handleExportSelected = () => {
     if (selectedRows.length === 0) return;
 
     const reportArgs = selectedRows.map(row => row._id);
@@ -299,14 +291,12 @@ class List extends Component {
     window.open(url, '_blank');
   };
 
-  handlePrintSelected = () => {
-    const { selectedRows } = this.state;
+  const onPrintSelected = () => {
     if (selectedRows.length === 0) return;
-    this.props.handlePrintSelected(selectedRows);
+    handlePrintSelected(selectedRows);
   };
 
-  getActionsMenu = () => {
-    const { showDownloadButton } = this.props;
+  const getActionsMenu = () => {
     if (!showDownloadButton) return null;
 
     const menuItems = [
@@ -318,7 +308,7 @@ class List extends Component {
             Print Selected
           </>
         ),
-        onClick: this.handlePrintSelected,
+        onClick: onPrintSelected,
       },
       { type: 'divider' },
       {
@@ -329,7 +319,7 @@ class List extends Component {
             Download Selected
           </>
         ),
-        onClick: this.handleExportSelected,
+        onClick: handleExportSelected,
       },
     ];
 
@@ -340,26 +330,7 @@ class List extends Component {
     );
   };
 
-  getTableHeader = () => {
-    const {
-      name,
-      cnicNumber,
-      phoneNumber,
-      bloodGroup,
-      lastTarteeb,
-      jobId,
-      dutyId,
-      dutyShiftId,
-      showVolunteers,
-      showEmployees,
-      setPageParams,
-      refetchListQuery,
-      showNewButton,
-      handleNewClicked,
-      handleScanClicked,
-      predefinedFilterName,
-    } = this.props;
-
+  const getTableHeader = () => {
     let newButton = null;
     if (showNewButton) {
       newButton = (
@@ -412,94 +383,82 @@ class List extends Component {
         <div className="list-table-header-section">
           {listFilter}
           &nbsp;&nbsp;
-          {this.getActionsMenu()}
+          {getActionsMenu()}
         </div>
       </div>
     );
   };
 
-  render() {
-    const { loading, showSelectionColumn } = this.props;
-    if (loading) return null;
+  if (loading || !data.pagedHrKarkuns) return null;
 
-    const {
-      pageIndex,
-      pageSize,
-      pagedHrKarkuns: { totalResults, karkuns },
-    } = this.props;
+  const {
+    pagedHrKarkuns: { totalResults, karkuns },
+  } = data;
 
-    const numPageIndex = pageIndex ? pageIndex + 1 : 1;
-    const numPageSize = pageSize || 20;
+  const numPageIndex = pageIndex ? pageIndex + 1 : 1;
+  const numPageSize = pageSize || 20;
 
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={karkuns}
-        columns={this.getColumns()}
-        title={this.getTableHeader}
-        rowSelection={showSelectionColumn ? this.rowSelection : null}
-        bordered
-        size="small"
-        pagination={false}
-        footer={() => (
-          <Pagination
-            current={numPageIndex}
-            pageSize={numPageSize}
-            showSizeChanger
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
-            onChange={this.onChange}
-            onShowSizeChange={this.onShowSizeChange}
-            total={totalResults}
-          />
-        )}
-      />
-    );
-  }
-}
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={karkuns}
+      columns={getColumns()}
+      title={getTableHeader}
+      rowSelection={showSelectionColumn ? rowSelection : null}
+      bordered
+      size="small"
+      pagination={false}
+      footer={() => (
+        <Pagination
+          current={numPageIndex}
+          pageSize={numPageSize}
+          showSizeChanger
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`
+          }
+          onChange={onChange}
+          onShowSizeChange={onShowSizeChange}
+          total={totalResults}
+        />
+      )}
+    />
+  );
+};
 
-export default flowRight(
-  graphql(DELETE_HR_KARKUN, {
-    name: 'deleteHrKarkun',
-    options: {
-      refetchQueries: ['pagedHrKarkuns'],
-    },
-  }),
-  graphql(PAGED_HR_KARKUNS, {
-    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
-    options: ({
-      name,
-      cnicNumber,
-      phoneNumber,
-      bloodGroup,
-      lastTarteeb,
-      jobId,
-      dutyId,
-      dutyShiftId,
-      showVolunteers,
-      showEmployees,
-      predefinedFilterName,
-      pageIndex,
-      pageSize,
-    }) => ({
-      variables: {
-        filter: {
-          name,
-          cnicNumber,
-          phoneNumber,
-          bloodGroup,
-          lastTarteeb,
-          jobId,
-          dutyId,
-          dutyShiftId,
-          showVolunteers,
-          showEmployees,
-          predefinedFilterName,
-          pageIndex: pageIndex.toString(),
-          pageSize: pageSize.toString(),
-        },
-      },
-    }),
-  })
-)(List);
+List.propTypes = {
+  pageIndex: PropTypes.number,
+  pageSize: PropTypes.number,
+  name: PropTypes.string,
+  cnicNumber: PropTypes.string,
+  phoneNumber: PropTypes.string,
+  bloodGroup: PropTypes.string,
+  lastTarteeb: PropTypes.string,
+  jobId: PropTypes.string,
+  dutyId: PropTypes.string,
+  dutyShiftId: PropTypes.string,
+  showVolunteers: PropTypes.string,
+  showEmployees: PropTypes.string,
+  setPageParams: PropTypes.func,
+  handleItemSelected: PropTypes.func,
+  showNewButton: PropTypes.bool,
+  showDownloadButton: PropTypes.bool,
+  showSelectionColumn: PropTypes.bool,
+  showPhoneNumbersColumn: PropTypes.bool,
+  showDutiesColumn: PropTypes.bool,
+  showActionsColumn: PropTypes.bool,
+  predefinedFilterName: PropTypes.string,
+  handlePrintClicked: PropTypes.func,
+  handleAuditLogClicked: PropTypes.func,
+  handleNewClicked: PropTypes.func,
+  handleScanClicked: PropTypes.func,
+  handlePrintSelected: PropTypes.func,
+};
+
+List.defaultProps = {
+  handleItemSelected: noop,
+  handleNewClicked: noop,
+  handleScanClicked: noop,
+  handlePrintClicked: noop,
+};
+
+export default List;

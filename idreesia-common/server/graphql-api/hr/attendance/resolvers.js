@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { format, isBefore, startOfMonth } from 'date-fns';
 import request from 'request';
 import { google } from 'googleapis';
 
@@ -16,6 +16,7 @@ import {
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { processAttendanceSheet } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
@@ -95,9 +96,10 @@ export default {
         return [];
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       /**
        * categoryId value would either contain the id for a duty, or would contain the string
@@ -173,9 +175,10 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       return await createMonthlyAttendance(formattedMonth, user);
     },
@@ -272,11 +275,11 @@ export default {
     },
 
     deleteAttendances: async (obj, { month, ids }, { user }) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
+        isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
@@ -305,11 +308,11 @@ export default {
       { month, categoryId, subCategoryId },
       { user }
     ) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
+        isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
@@ -328,9 +331,10 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       /**
        * categoryId value would either contain the id for a duty, or would contain the string

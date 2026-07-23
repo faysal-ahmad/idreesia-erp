@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { subMonths } from 'date-fns';
 import { parse } from 'query-string';
 
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
@@ -30,12 +30,8 @@ export async function getStatistics(physicalStoreId) {
     currentStockLevel: { $lt: 0 },
   }).countAsync();
 
-  const m3 = moment()
-    .subtract(3, 'months')
-    .toDate();
-  const m6 = moment()
-    .subtract(6, 'months')
-    .toDate();
+  const m3 = subMonths(new Date(), 3);
+  const m6 = subMonths(new Date(), 6);
 
   const itemsVerifiedLessThanThreeMonthsAgo = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
@@ -108,21 +104,15 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
   }
 
   if (verifyDuration === 'less-than-3-months-ago') {
-    const m3 = moment()
-      .subtract(3, 'months')
-      .toDate();
+    const m3 = subMonths(new Date(), 3);
     pipeline.push({
       $match: {
         $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
       },
     });
   } else if (verifyDuration === 'between-3-to-6-months-ago') {
-    const m3 = moment()
-      .subtract(3, 'months')
-      .toDate();
-    const m6 = moment()
-      .subtract(6, 'months')
-      .toDate();
+    const m3 = subMonths(new Date(), 3);
+    const m6 = subMonths(new Date(), 6);
     pipeline.push({
       $match: {
         $and: [
@@ -133,9 +123,7 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
       },
     });
   } else if (verifyDuration === 'more-than-6-months-ago') {
-    const m6 = moment()
-      .subtract(6, 'months')
-      .toDate();
+    const m6 = subMonths(new Date(), 6);
     pipeline.push({
       $match: {
         $or: [{ verifiedOn: { $eq: null } }, { verifiedOn: { $lt: m6 } }],

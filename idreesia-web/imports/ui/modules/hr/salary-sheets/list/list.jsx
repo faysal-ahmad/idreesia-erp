@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import FileSaver from 'file-saver';
 import {
   CheckCircleOutlined,
@@ -28,7 +28,6 @@ import {
   Tooltip,
 } from 'antd';
 import {
-  flowRight,
   keyBy,
   memoize,
   sortBy,
@@ -590,34 +589,54 @@ export class List extends Component {
   }
 }
 
-export default flowRight(
-  graphql(PREV_MONTH_SALARIES, {
-    props: ({ data }) => ({
-      prevSalariesLoading: data.loading,
-      prevSalaries: data.salariesByMonth,
-      ...data,
-    }),
-    options: ({ selectedMonth, selectedJobId }) => {
-      const previousMonth = selectedMonth.clone().subtract(1, 'month');
-      return {
-        variables: {
-          month: previousMonth.format(Formats.DATE_FORMAT),
-          jobId: selectedJobId,
-        },
-      };
+const ListWithSalaries = props => {
+  const { selectedMonth, selectedJobId } = props;
+  const previousMonth = selectedMonth.clone().subtract(1, 'month');
+
+  const {
+    data: prevSalariesData,
+    loading: prevSalariesLoading,
+    ...prevQueryResult
+  } = useQuery(PREV_MONTH_SALARIES, {
+    variables: {
+      month: previousMonth.format(Formats.DATE_FORMAT),
+      jobId: selectedJobId,
     },
-  }),
-  graphql(CURRENT_MONTH_SALARIES, {
-    props: ({ data }) => ({
-      currentSalariesLoading: data.loading,
-      currentSalaries: data.salariesByMonth,
-      ...data,
-    }),
-    options: ({ selectedMonth, selectedJobId }) => ({
-      variables: {
-        month: selectedMonth.format(Formats.DATE_FORMAT),
-        jobId: selectedJobId,
-      },
-    }),
-  })
-)(List);
+  });
+
+  const {
+    data: currentSalariesData,
+    loading: currentSalariesLoading,
+    ...currentQueryResult
+  } = useQuery(CURRENT_MONTH_SALARIES, {
+    variables: {
+      month: selectedMonth.format(Formats.DATE_FORMAT),
+      jobId: selectedJobId,
+    },
+  });
+
+  return (
+    <List
+      {...props}
+      prevSalariesLoading={prevSalariesLoading}
+      prevSalaries={
+        prevSalariesData ? prevSalariesData.salariesByMonth : undefined
+      }
+      currentSalariesLoading={currentSalariesLoading}
+      currentSalaries={
+        currentSalariesData
+          ? currentSalariesData.salariesByMonth
+          : undefined
+      }
+      prevSalariesQuery={prevQueryResult}
+      currentSalariesQuery={currentQueryResult}
+    />
+  );
+};
+
+ListWithSalaries.propTypes = {
+  selectedMonth: PropTypes.object,
+  selectedJobId: PropTypes.string,
+};
+
+export default ListWithSalaries;

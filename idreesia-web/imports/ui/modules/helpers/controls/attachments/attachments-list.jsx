@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation } from '@apollo/client/react';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -24,7 +24,7 @@ import {
   message,
 } from 'antd';
 
-import { flowRight, noop } from 'meteor/idreesia-common/utilities/lodash';
+import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 
 import {
@@ -50,11 +50,11 @@ const AttachmentsList = ({
   canEditAttachments,
   handleAttachmentAdded,
   handleAttachmentRemoved,
-  updateAttachment,
 }) => {
   const [showForm, setShowForm] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
   const [attachmentForm] = Form.useForm();
+  const [updateAttachment] = useMutation(updateAttachmentMutation);
 
   const mimeTypeIconMap = {
     'image/jpeg': <FileJpgOutlined style={FileIconStyle} />,
@@ -234,7 +234,6 @@ AttachmentsList.propTypes = {
   canEditAttachments: PropTypes.bool,
   handleAttachmentAdded: PropTypes.func,
   handleAttachmentRemoved: PropTypes.func,
-  updateAttachment: PropTypes.func,
 };
 
 AttachmentsList.defaultProps = {
@@ -246,8 +245,4 @@ AttachmentsList.defaultProps = {
   handleAttachmentRemoved: noop,
 };
 
-export default flowRight(
-  graphql(updateAttachmentMutation, {
-    name: 'updateAttachment',
-  })
-)(AttachmentsList);
+export default AttachmentsList;

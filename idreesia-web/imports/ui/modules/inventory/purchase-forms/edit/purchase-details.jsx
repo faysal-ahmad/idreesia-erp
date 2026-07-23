@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import dayjs from 'dayjs';
-import { graphql } from '@apollo/react-hoc';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -39,7 +39,7 @@ class PurchaseDetails extends Component {
 
     updatePurchaseForm: PropTypes.func,
   };
-  
+
   state = {
     isFieldsTouched: false,
   };
@@ -53,7 +53,7 @@ class PurchaseDetails extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
   handleFinish = ({
     purchaseDate,
@@ -119,7 +119,13 @@ class PurchaseDetails extends Component {
 
     return (
       <>
-        <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <Form
+          ref={this.formRef}
+          layout="horizontal"
+          style={FormStyle}
+          onFinish={this.handleFinish}
+          onFieldsChange={this.handleFieldsChange}
+        >
           <DateField
             fieldName="purchaseDate"
             fieldLabel="Purchase Date"
@@ -177,7 +183,12 @@ class PurchaseDetails extends Component {
           />
 
           <Divider orientation="left">Purchased / Returned Items</Divider>
-          <Form.Item name="items" initialValue={purchaseFormById.items} rules={rules} {...formItemExtendedLayout}>
+          <Form.Item
+            name="items"
+            initialValue={purchaseFormById.items}
+            rules={rules}
+            {...formItemExtendedLayout}
+          >
             <ItemsList
               showPrice
               defaultLabel="Purchased"
@@ -200,7 +211,7 @@ class PurchaseDetails extends Component {
 }
 
 export default flowRight(
-  graphql(UPDATE_PURCHASE_FORM, {
+  withMutation(UPDATE_PURCHASE_FORM, {
     name: 'updatePurchaseForm',
     options: {
       refetchQueries: [

@@ -2,11 +2,10 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import { CloseCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Col, Spin } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import StayCard from '../card/stay-card';
@@ -50,7 +49,12 @@ ScanStatus.propTypes = {
 };
 
 const SearchResult = props => {
-  const { barcode, loading, visitorStayById } = props;
+  const { barcode } = props;
+  const { data = {}, loading } = useQuery(formQuery, {
+    variables: { _id: barcode },
+    fetchPolicy: 'network-only',
+  });
+  const { visitorStayById } = data;
   if (!barcode) return null;
   if (loading) return <Spin size="large" />;
 
@@ -128,12 +132,4 @@ const formQuery = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ barcode }) => ({
-      variables: { _id: barcode },
-      fetchPolicy: 'network-only',
-    }),
-  })
-)(SearchResult);
+export default SearchResult;

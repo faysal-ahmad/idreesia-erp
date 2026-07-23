@@ -1,5 +1,5 @@
 import { Random } from 'meteor/random';
-import moment from 'moment';
+import { subMinutes } from 'date-fns';
 import {
   difference,
   get,
@@ -59,11 +59,11 @@ const buildPipeline = params => {
     };
   }
 
-  const now = moment().subtract(3, 'minutes');
+  const now = subMinutes(new Date(), 3);
   if (showActive === 'true' && showInactive === 'false') {
     pipeline.push({
       $match: {
-        lastActiveAt: { $gte: now.toDate() },
+        lastActiveAt: { $gte: now },
       },
     });
   } else if (showActive === 'false' && showInactive === 'true') {
@@ -71,7 +71,7 @@ const buildPipeline = params => {
       $match: {
         $or: [
           { lastActiveAt: { $exists: false } },
-          { lastActiveAt: { $lt: now.toDate() } },
+          { lastActiveAt: { $lt: now } },
         ],
       },
     });
@@ -234,10 +234,6 @@ Users.updateUser = async (
 
   if (password) {
     await Accounts.setPasswordAsync(userId, password);
-
-    // Send sms message to user for new password
-    const params = { userId, password };
-    const options = { priority: 'normal', retry: 10 };
 
     // Create a security log
     await SecurityLogs.insertAsync({

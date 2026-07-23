@@ -1,4 +1,13 @@
-import moment from 'moment';
+import {
+  add,
+  addMonths,
+  endOfDay,
+  endOfMonth,
+  format,
+  isEqual,
+  startOfDay,
+  startOfMonth,
+} from 'date-fns';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { BloodGroups } from 'meteor/idreesia-common/constants/hr';
 import {
@@ -20,6 +29,7 @@ import {
   keys,
   omitBy,
 } from 'meteor/idreesia-common/utilities/lodash';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 class People extends AggregatableCollection {
   constructor(name = 'common-people', options = {}) {
@@ -236,7 +246,7 @@ class People extends AggregatableCollection {
       case 'lastTarteebDate':
       case 'employmentStartDate':
       case 'employmentEndDate':
-        isChanged = !moment(existingValue).isSame(moment(newValue));
+        isChanged = !isEqual(new Date(existingValue), new Date(newValue));
         break;
 
       default:
@@ -371,7 +381,7 @@ class People extends AggregatableCollection {
       pipeline.push({
         $match: {
           'sharedData.ehadDate': {
-            $eq: moment(ehadDate, Formats.DATE_FORMAT).startOf('day').toDate(),
+            $eq: startOfDay(parseDate(ehadDate, Formats.DATE_FORMAT)),
           },
         },
       });
@@ -381,18 +391,14 @@ class People extends AggregatableCollection {
       pipeline.push({
         $match: {
           'sharedData.ehadDate': {
-            $gte: moment(ehadMonth, Formats.MONTH_FORMAT)
-              .startOf('month')
-              .toDate(),
+            $gte: startOfMonth(parseDate(ehadMonth, Formats.MONTH_FORMAT)),
           },
         },
       });
       pipeline.push({
         $match: {
           'sharedData.ehadDate': {
-            $lte: moment(ehadMonth, Formats.MONTH_FORMAT)
-              .endOf('month')
-              .toDate(),
+            $lte: endOfMonth(parseDate(ehadMonth, Formats.MONTH_FORMAT)),
           },
         },
       });
@@ -401,12 +407,12 @@ class People extends AggregatableCollection {
     if (ehadDuration) {
       const { scale, duration } = JSON.parse(ehadDuration);
       if (duration) {
-        const date = moment().startOf('day').subtract(duration, scale);
+        const date = add(startOfDay(new Date()), { [scale]: -duration });
 
         pipeline.push({
           $match: {
             'sharedData.ehadDate': {
-              $gte: moment(date).toDate(),
+              $gte: date,
             },
           },
         });
@@ -428,9 +434,9 @@ class People extends AggregatableCollection {
         pipeline.push({
           $match: {
             updatedAt: {
-              $gte: moment(updatedBetweenDates[0], Formats.DATE_FORMAT)
-                .startOf('day')
-                .toDate(),
+              $gte: startOfDay(
+                parseDate(updatedBetweenDates[0], Formats.DATE_FORMAT)
+              ),
             },
           },
         });
@@ -439,9 +445,9 @@ class People extends AggregatableCollection {
         pipeline.push({
           $match: {
             updatedAt: {
-              $lte: moment(updatedBetweenDates[1], Formats.DATE_FORMAT)
-                .endOf('day')
-                .toDate(),
+              $lte: endOfDay(
+                parseDate(updatedBetweenDates[1], Formats.DATE_FORMAT)
+              ),
             },
           },
         });
@@ -515,14 +521,14 @@ class People extends AggregatableCollection {
       if (lastTarteeb) {
         const { scale, duration } = JSON.parse(lastTarteeb);
         if (duration) {
-          const date = moment().startOf('day').subtract(duration, scale);
+          const date = add(startOfDay(new Date()), { [scale]: -duration });
 
           pipeline.push({
             $match: {
               $or: [
                 { 'karkunData.lastTarteebDate': { $exists: false } },
                 {
-                  'karkunData.lastTarteebDate': { $lte: moment(date).toDate() },
+                  'karkunData.lastTarteebDate': { $lte: date },
                 },
               ],
             },
@@ -533,7 +539,7 @@ class People extends AggregatableCollection {
       if (attendance) {
         const { criteria, percentage } = JSON.parse(attendance);
         if (percentage) {
-          const month = moment().subtract(1, 'month').startOf('month');
+          const month = startOfMonth(addMonths(new Date(), -1));
 
           const criteriaCondition =
             criteria === 'less-than'
@@ -557,7 +563,7 @@ class People extends AggregatableCollection {
                           $eq: ['$karkunId', '$$karkun_id'],
                         },
                         {
-                          $eq: ['$month', month.format('MM-YYYY')],
+                          $eq: ['$month', format(month, 'MM-yyyy')],
                         },
                         criteriaCondition,
                       ],

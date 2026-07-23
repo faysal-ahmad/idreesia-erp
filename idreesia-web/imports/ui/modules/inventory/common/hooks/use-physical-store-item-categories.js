@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 
 const QUERY = gql`
   query itemCategoriesByPhysicalStoreId($physicalStoreId: String!) {

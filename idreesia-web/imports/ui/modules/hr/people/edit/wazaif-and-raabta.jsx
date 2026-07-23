@@ -1,32 +1,29 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from 'antd';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_WAZAIF_AND_RAABTA } from '../gql';
 
-class WazaifAndRaabta extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const WazaifAndRaabta = ({ history, karkunId }) => {
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+    variables: { _id: karkunId },
+  });
+  const [setHrKarkunWazaifAndRaabta] = useMutation(
+    SET_HR_KARKUN_WAZAIF_AND_RAABTA,
+    {
+      refetchQueries: ['pagedHrKarkuns'],
+    }
+  );
+  const { hrKarkunById } = data || {};
 
-    formDataLoading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    hrKarkunById: PropTypes.object,
-    setHrKarkunWazaifAndRaabta: PropTypes.func,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFinish = ({ lastTarteebDate, mehfilRaabta, msRaabta }) => {
-    const { history, karkunId, setHrKarkunWazaifAndRaabta } = this.props;
+  const handleFinish = ({ lastTarteebDate, mehfilRaabta, msRaabta }) => {
     setHrKarkunWazaifAndRaabta({
       variables: {
         _id: karkunId,
@@ -45,29 +42,22 @@ class WazaifAndRaabta extends Component {
       });
   };
 
-  render() {
-    const { formDataLoading, hrKarkunById } = this.props;
-    if (formDataLoading) return null;
+  if (formDataLoading) return null;
 
-    return (
-      <KarkunsWazaifAndRaabta
-        karkun={hrKarkunById}
-        handleFinish={this.handleFinish}
-        handleCancel={this.handleCancel}
-      />
-    );
-  }
-}
+  return (
+    <KarkunsWazaifAndRaabta
+      karkun={hrKarkunById}
+      handleFinish={handleFinish}
+      handleCancel={handleCancel}
+    />
+  );
+};
 
-export default flowRight(
-  graphql(SET_HR_KARKUN_WAZAIF_AND_RAABTA, {
-    name: 'setHrKarkunWazaifAndRaabta',
-    options: {
-      refetchQueries: ['pagedHrKarkuns'],
-    },
-  }),
-  graphql(HR_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ karkunId }) => ({ variables: { _id: karkunId } }),
-  })
-)(WazaifAndRaabta);
+WazaifAndRaabta.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  karkunId: PropTypes.string,
+};
+
+export default WazaifAndRaabta;

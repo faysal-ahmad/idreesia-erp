@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
 import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -14,34 +14,25 @@ import { WithAllCities } from 'meteor/idreesia-common/composers/common';
 
 import { PAGED_CITIES, CITY_BY_ID, UPDATE_CITY } from '../gql';
 
-class GeneralInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const GeneralInfo = ({ history, cityId, allCitiesLoading, allCities }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [updateCity] = useMutation(UPDATE_CITY, {
+    refetchQueries: [{ query: PAGED_CITIES }],
+  });
+  const { data, loading: cityByIdLoading } = useQuery(CITY_BY_ID, {
+    variables: { _id: cityId },
+  });
+  const { cityById } = data || {};
 
-    allCitiesLoading: PropTypes.bool,
-    allCities: PropTypes.array,
-    cityByIdLoading: PropTypes.bool,
-    cityById: PropTypes.object,
-    updateCity: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ name, peripheryOf, country, region }) => {
-    const { history, cityById, updateCity } = this.props;
+  const handleFinish = ({ name, peripheryOf, country, region }) => {
     updateCity({
       variables: {
         _id: cityById._id,
@@ -59,68 +50,62 @@ class GeneralInfo extends Component {
       });
   };
 
-  getNonPeripheryCities = () => {
-    const { allCities } = this.props;
+  const getNonPeripheryCities = () => {
     return filter(allCities, city => !city.peripheryOf);
   };
 
-  render() {
-    const { cityByIdLoading, allCitiesLoading, cityById } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (cityByIdLoading || allCitiesLoading) return null;
-    const nonPeripheryCities = this.getNonPeripheryCities();
+  if (cityByIdLoading || allCitiesLoading) return null;
+  const nonPeripheryCities = getNonPeripheryCities();
 
-    return (
-      <>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-          <InputTextField
-            fieldName="name"
-            fieldLabel="City Name"
-            initialValue={cityById.name}
-            required
-            requiredMessage="Please input a name for the city."
-          />
-          <SelectField
-            data={nonPeripheryCities}
-            getDataValue={({ _id }) => _id}
-            getDataText={({ name }) => name}
-            fieldName="peripheryOf"
-            fieldLabel="Periphery Of"
-            initialValue={cityById.peripheryOf}
-          />
-          <InputTextField
-            fieldName="region"
-            fieldLabel="Region"
-            initialValue={cityById.region}
-          />
-          <InputTextField
-            fieldName="country"
-            fieldLabel="Country"
-            initialValue={cityById.country}
-            required
-            requiredMessage="Please input a name for the country."
-          />
-          <FormButtonsSaveCancel
-            handleCancel={this.handleCancel}
-            isFieldsTouched={isFieldsTouched}
-          />
-        </Form>
-        <AuditInfo record={cityById} />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="City Name"
+          initialValue={cityById.name}
+          required
+          requiredMessage="Please input a name for the city."
+        />
+        <SelectField
+          data={nonPeripheryCities}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="peripheryOf"
+          fieldLabel="Periphery Of"
+          initialValue={cityById.peripheryOf}
+        />
+        <InputTextField
+          fieldName="region"
+          fieldLabel="Region"
+          initialValue={cityById.region}
+        />
+        <InputTextField
+          fieldName="country"
+          fieldLabel="Country"
+          initialValue={cityById.country}
+          required
+          requiredMessage="Please input a name for the country."
+        />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
+      </Form>
+      <AuditInfo record={cityById} />
+    </>
+  );
+};
+
+GeneralInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  cityId: PropTypes.string,
+  allCitiesLoading: PropTypes.bool,
+  allCities: PropTypes.array,
+};
 
 export default flowRight(
-  WithAllCities(),
-  graphql(UPDATE_CITY, {
-    name: 'updateCity',
-    options: {
-      refetchQueries: [{ query: PAGED_CITIES }],
-    },
-  }),
-  graphql(CITY_BY_ID, {
-    props: ({ data }) => ({ cityByIdLoading: data.loading, ...data }),
-    options: ({ cityId }) => ({ variables: { _id: cityId } }),
-  })
+  WithAllCities()
 )(GeneralInfo);

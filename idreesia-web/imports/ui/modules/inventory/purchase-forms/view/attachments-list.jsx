@@ -1,13 +1,13 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from '@apollo/react-hoc';
-import { flowRight } from "lodash";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import { flowRight } from 'lodash';
 
-import { WithPhysicalStoreId } from "/imports/ui/modules/inventory/common/composers";
-import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
+import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
+import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
-const AttachmentsList = ({ purchaseFormById, formDataLoading }) =>{
+const AttachmentsList = ({ purchaseFormById, formDataLoading }) => {
   if (formDataLoading) return null;
 
   return (
@@ -16,7 +16,7 @@ const AttachmentsList = ({ purchaseFormById, formDataLoading }) =>{
       attachments={purchaseFormById.attachments}
     />
   );
-}
+};
 
 AttachmentsList.propTypes = {
   match: PropTypes.object,
@@ -47,7 +47,7 @@ const formQuery = gql`
 
 export default flowRight(
   WithPhysicalStoreId(),
-  graphql(formQuery, {
+  withQuery(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ purchaseFormId }) => ({ variables: { _id: purchaseFormId } }),
   })

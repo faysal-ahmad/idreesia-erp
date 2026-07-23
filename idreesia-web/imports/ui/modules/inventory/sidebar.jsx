@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import {
   AppstoreOutlined,
   BookOutlined,
@@ -27,12 +27,24 @@ const IconStyle = {
 
 const KeyPrefixHandlers = [
   ['stock-items', SubModuleNames.stockItems, paths.stockItemsPath],
-  ['status-dashboard', SubModuleNames.statusDashboard, paths.statusDashboardPath],
+  [
+    'status-dashboard',
+    SubModuleNames.statusDashboard,
+    paths.statusDashboardPath,
+  ],
   ['issuance-forms', SubModuleNames.issuanceForms, paths.issuanceFormsPath],
   ['purchase-forms', SubModuleNames.purchaseForms, paths.purchaseFormsPath],
-  ['stock-adjustments', SubModuleNames.stockAdjustments, paths.stockAdjustmentsPath],
+  [
+    'stock-adjustments',
+    SubModuleNames.stockAdjustments,
+    paths.stockAdjustmentsPath,
+  ],
   ['issuance-report', SubModuleNames.issuanceReport, paths.issuanceReportPath],
-  ['purchasing-report', SubModuleNames.purchasingReport, paths.purchasingReportPath],
+  [
+    'purchasing-report',
+    SubModuleNames.purchasingReport,
+    paths.purchasingReportPath,
+  ],
   ['vendors', SubModuleNames.vendors, paths.vendorsPath],
   ['item-categories', SubModuleNames.itemCategories, paths.itemCategoriesPath],
   ['locations', SubModuleNames.locations, paths.locationsPath],
@@ -167,7 +179,7 @@ const listQuery = gql`
 
 const SidebarContainer = flowRight(
   WithActiveModule(),
-  graphql(listQuery, {
+  withQuery(listQuery, {
     props: ({ data }) => ({ ...data }),
   })
 )(Sidebar);

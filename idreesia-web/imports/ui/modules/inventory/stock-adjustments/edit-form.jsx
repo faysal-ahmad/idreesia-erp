@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import {
+  withQuery,
+  withMutation,
+} from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -52,9 +55,15 @@ class EditForm extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
-  handleFinish = ({ adjustmentDate, adjustedBy, quantity, adjustment, adjustmentReason }) => {
+  handleFinish = ({
+    adjustmentDate,
+    adjustedBy,
+    quantity,
+    adjustment,
+    adjustmentReason,
+  }) => {
     const {
       history,
       updateStockAdjustment,
@@ -82,13 +91,19 @@ class EditForm extends Component {
   };
 
   render() {
-    const { formDataLoading, stockAdjustmentById, physicalStoreId } = this.props;
+    const { formDataLoading, stockAdjustmentById, physicalStoreId } =
+      this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
     if (formDataLoading) return null;
 
     return (
       <>
-        <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <Form
+          layout="horizontal"
+          style={FormStyle}
+          onFinish={this.handleFinish}
+          onFieldsChange={this.handleFieldsChange}
+        >
           <InputTextField
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
@@ -153,8 +168,8 @@ class EditForm extends Component {
 }
 
 const formQuery = gql`
-query stockAdjustmentById($_id: String!, $physicalStoreId: String!) {
-  stockAdjustmentById(_id: $_id, physicalStoreId: $physicalStoreId) {
+  query stockAdjustmentById($_id: String!, $physicalStoreId: String!) {
+    stockAdjustmentById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       physicalStoreId
       stockItemId
@@ -227,7 +242,7 @@ const formMutation = gql`
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(formMutation, {
+  withMutation(formMutation, {
     name: 'updateStockAdjustment',
     options: {
       refetchQueries: [
@@ -237,7 +252,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(formQuery, {
+  withQuery(formQuery, {
     props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
     options: ({ match, physicalStoreId }) => {
       const { formId } = match.params;

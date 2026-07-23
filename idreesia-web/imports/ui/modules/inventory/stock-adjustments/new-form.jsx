@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -49,7 +49,7 @@ class NewForm extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
   handleFinish = ({
     stockItem,
@@ -59,11 +59,7 @@ class NewForm extends Component {
     adjustment,
     adjustmentReason,
   }) => {
-    const {
-      history,
-      physicalStoreId,
-      createStockAdjustment,
-    } = this.props;
+    const { history, physicalStoreId, createStockAdjustment } = this.props;
     const isInflow = adjustment === 'inflow';
     createStockAdjustment({
       variables: {
@@ -89,7 +85,12 @@ class NewForm extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+      <Form
+        layout="horizontal"
+        style={FormStyle}
+        onFinish={this.handleFinish}
+        onFieldsChange={this.handleFieldsChange}
+      >
         <StockItemField
           physicalStoreId={physicalStoreId}
           fieldName="stockItem"
@@ -183,7 +184,7 @@ const formMutation = gql`
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(formMutation, {
+  withMutation(formMutation, {
     name: 'createStockAdjustment',
     options: {
       refetchQueries: [

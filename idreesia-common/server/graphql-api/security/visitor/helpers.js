@@ -1,5 +1,5 @@
 import csv from 'csvtojson';
-import moment from 'moment';
+import { subYears } from 'date-fns';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -28,9 +28,7 @@ async function processJsonRecord(jsonRecord, date, user) {
       return false;
 
     const ehadDurationYears = toInteger(ehadDuration);
-    const ehadDate = moment()
-      .subtract(ehadDurationYears, 'years')
-      .toDate();
+    const ehadDate = subYears(new Date(), ehadDurationYears);
 
     await People.insertAsync({
       isEmployee: false,
@@ -53,7 +51,7 @@ async function processJsonRecord(jsonRecord, date, user) {
       updatedAt: date,
       updatedBy: user._id,
     });
-  } catch (error) {
+  } catch {
     return false;
   }
 

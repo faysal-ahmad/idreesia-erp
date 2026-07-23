@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery, useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { EditOutlined, IdcardOutlined, PlusCircleOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 import {
@@ -14,7 +14,7 @@ import {
   message,
 } from 'antd';
 
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
 import NewForm from '../new-form';
@@ -383,20 +383,27 @@ const formMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'cancelVisitorStay',
-    options: {
-      refetchQueries: ['pagedVisitorStays'],
+const ListWithData = props => {
+  const { visitorId, pageIndex, pageSize } = props;
+  const [cancelVisitorStay] = useMutation(formMutation, {
+    refetchQueries: ['pagedVisitorStays'],
+  });
+  const { data = {}, loading, ...queryResult } = useQuery(listQuery, {
+    variables: {
+      queryString: `?visitorId=${visitorId ||
+        ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
     },
-  }),
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ visitorId, pageIndex, pageSize }) => ({
-      variables: {
-        queryString: `?visitorId=${visitorId ||
-          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
-      },
-    }),
-  })
-)(List);
+  });
+
+  return (
+    <List
+      {...props}
+      {...queryResult}
+      {...data}
+      loading={loading}
+      cancelVisitorStay={cancelVisitorStay}
+    />
+  );
+};
+
+export default ListWithData;

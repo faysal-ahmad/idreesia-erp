@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { ExclamationCircleTwoTone } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Row, Spin, Tabs } from 'antd';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
@@ -53,7 +52,12 @@ SearchResultRow.propTypes = {
 };
 
 const SearchResult = props => {
-  const { cnicNumbers, loading, securityVisitorByCnic } = props;
+  const { cnicNumbers } = props;
+  const { data = {}, loading } = useQuery(SECURITY_VISITOR_BY_CNIC, {
+    variables: { cnicNumbers },
+    fetchPolicy: 'network-only',
+  });
+  const { securityVisitorByCnic } = data;
   if (cnicNumbers.length === 0) return null;
   if (loading) return <Spin size="large" />;
 
@@ -139,17 +143,7 @@ const SearchResult = props => {
 };
 
 SearchResult.propTypes = {
-  loading: PropTypes.bool,
   cnicNumbers: PropTypes.array,
-  securityVisitorByCnic: PropTypes.object,
 };
 
-export default flowRight(
-  graphql(SECURITY_VISITOR_BY_CNIC, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ cnicNumbers }) => ({
-      variables: { cnicNumbers },
-      fetchPolicy: 'network-only',
-    }),
-  })
-)(SearchResult);
+export default SearchResult;

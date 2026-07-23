@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 import dayjs from 'dayjs';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
   InputTextField,
@@ -15,32 +14,26 @@ import { AuditInfo } from '/imports/ui/modules/common';
 
 import { MEHFIL_BY_ID, UPDATE_MEHFIL, ALL_MEHFILS } from './gql';
 
-class EditForm extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const EditForm = ({ match, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const { mehfilId } = match.params;
+  const { loading, data } = useQuery(MEHFIL_BY_ID, {
+    variables: { _id: mehfilId },
+  });
+  const [updateMehfil] = useMutation(UPDATE_MEHFIL, {
+    refetchQueries: [{ query: ALL_MEHFILS }],
+  });
+  const mehfilById = data ? data.mehfilById : null;
 
-    loading: PropTypes.bool,
-    mehfilById: PropTypes.object,
-    updateMehfil: PropTypes.func,
-  };
-  
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ name, mehfilDate }) => {
-    const { history, mehfilById, updateMehfil } = this.props;
+  const handleFinish = ({ name, mehfilDate }) => {
     updateMehfil({
       variables: {
         _id: mehfilById._id,
@@ -56,50 +49,37 @@ class EditForm extends Component {
       });
   };
 
-  render() {
-    const { loading, mehfilById } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading) return null;
+  if (loading) return null;
 
-    return (
-      <>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-          <InputTextField
-            fieldName="name"
-            fieldLabel="Mehfil Name"
-            initialValue={mehfilById.name}
-            required
-            requiredMessage="Please input a name for the Mehfil."
-          />
-          <DateField
-            fieldName="mehfilDate"
-            fieldLabel="Mehfil Date"
-            initialValue={dayjs(Number(mehfilById.mehfilDate))}
-          />
-          <FormButtonsSaveCancel
-            handleCancel={this.handleCancel}
-            isFieldsTouched={isFieldsTouched}
-          />
-        </Form>
-        <AuditInfo record={mehfilById} />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Mehfil Name"
+          initialValue={mehfilById.name}
+          required
+          requiredMessage="Please input a name for the Mehfil."
+        />
+        <DateField
+          fieldName="mehfilDate"
+          fieldLabel="Mehfil Date"
+          initialValue={dayjs(Number(mehfilById.mehfilDate))}
+        />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
+      </Form>
+      <AuditInfo record={mehfilById} />
+    </>
+  );
+};
 
-export default flowRight(
-  graphql(UPDATE_MEHFIL, {
-    name: 'updateMehfil',
-    options: {
-      refetchQueries: [{ query: ALL_MEHFILS }],
-    },
-  }),
-  graphql(MEHFIL_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { mehfilId } = match.params;
-      return { variables: { _id: mehfilId } };
-    },
-  }),
-  WithBreadcrumbs(['Security', 'Mehfils', 'Edit'])
-)(EditForm);
+EditForm.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default WithBreadcrumbs(['Security', 'Mehfils', 'Edit'])(EditForm);

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { filter, find } from 'meteor/idreesia-common/utilities/lodash';
@@ -228,7 +228,7 @@ class ItemsList extends Component {
         pagination={false}
         dataSource={this.state.stockItems}
         title={this.getTableHeader}
-        size='small'
+        size="small"
       />
     );
   }
@@ -245,7 +245,7 @@ const stockItemsByIdQuery = gql`
   }
 `;
 
-export default graphql(stockItemsByIdQuery, {
+export default withQuery(stockItemsByIdQuery, {
   props: ({ data }) => ({ ...data }),
   options: ({ physicalStoreId, value }) => {
     const _ids = value ? value.map(({ stockItemId }) => stockItemId) : [];

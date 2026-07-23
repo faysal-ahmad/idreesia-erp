@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -68,8 +68,8 @@ class ListFilter extends Component {
       },
     } = this.props;
 
-    const mStartDate = moment(startDate, Formats.DATE_FORMAT);
-    const mEndDate = moment(endDate, Formats.DATE_FORMAT);
+    const mStartDate = startDate ? dayjs(startDate, Formats.DATE_FORMAT) : null;
+    const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
     const status = [];
     if (!showApproved || showApproved === 'true') status.push('approved');
     if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');

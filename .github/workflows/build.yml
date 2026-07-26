@@ -39,7 +39,16 @@ jobs:
           meteor-release: 3.5
       
       - run: meteor npm install -g yarn
-      
+
+      - name: Install Workspace Tooling
+        run: meteor yarn install
+
+      - name: Lint Workspace
+        run: meteor yarn run lint
+
+      - name: Typecheck Workspace
+        run: meteor yarn run typecheck
+
       - name: Install Dependencies
         run: meteor yarn install
         working-directory: ./idreesia-web

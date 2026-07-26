@@ -1,0 +1,24 @@
+{
+  "name": "idreesia-mobile",
+  "version": "1.0.1-rc.1",
+  "private": true,
+  "scripts": {
+    "start": "METEOR_PACKAGE_DIRS=../ meteor run --port 3100 --settings ./settings.sample.json",
+    "start:android": "METEOR_PACKAGE_DIRS=../ meteor run android-device --mobile-server http://localhost:3000 --settings ./settings.sample.json",
+    "start:ios": "METEOR_PACKAGE_DIRS=../ meteor run ios-device --mobile-server http://localhost:3000 --settings ./settings.sample.json",
+    "build:android": "METEOR_PACKAGE_DIRS=../ meteor build ./build --server http://localhost:3000 --directory",
+    "build:ios": "METEOR_PACKAGE_DIRS=../ meteor build ./build --server http://localhost:3000 --directory"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7",
+    "meteor-node-stubs": "^1.2.27",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "meteor-babel": "^7.10.7"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

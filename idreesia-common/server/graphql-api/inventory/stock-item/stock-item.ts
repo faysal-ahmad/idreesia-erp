@@ -1,0 +1,112 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type StockItem {
+  _id: String
+  name: String
+  company: String
+  details: String
+  unitOfMeasurement: String
+  categoryId: String
+  imageId: String
+  physicalStoreId: String
+  startingStockLevel: Float
+  minStockLevel: Float
+  currentStockLevel: Float
+  totalStockLevel: Float
+  verifiedOn: String
+
+  formattedName: String
+  categoryName: String
+  purchaseFormsCount: Float
+  issuanceFormsCount: Float
+  stockAdjustmentsCount: Float
+
+  refPhysicalStore: PhysicalStore
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedStockItem {
+  totalResults: Int
+  data: [StockItem]
+}
+
+type InventoryStatistics {
+  physicalStoreId: String
+  itemsWithImages: Int
+  itemsWithoutImages: Int
+  itemsWithPositiveStockLevel: Int
+  itemsWithLessThanMinStockLevel: Int
+  itemsWithNegativeStockLevel: Int
+  itemsVerifiedLessThanThreeMonthsAgo: Int
+  itemsVerifiedThreeToSixMonthsAgo: Int
+  itemsVerifiedMoreThanSixMonthsAgo: Int
+}
+
+extend type Query {
+  pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+
+  stockItemById(_id: String!, physicalStoreId: String!): StockItem
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  inventoryStatistics(physicalStoreId: String!): InventoryStatistics
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+}
+
+extend type Mutation {
+  createStockItem(
+    name: String!
+    company: String
+    details: String
+    unitOfMeasurement: String!
+    categoryId: String!
+    physicalStoreId: String!
+    minStockLevel: Float
+    currentStockLevel: Float
+  ): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateStockItem(
+    _id: String!
+    physicalStoreId: String!
+    name: String!
+    company: String
+    details: String
+    unitOfMeasurement: String!
+    categoryId: String!
+    minStockLevel: Float
+  ): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  verifyStockItemLevel(_id: String!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeStockItem(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  setStockItemImage(_id: String!, physicalStoreId: String!, imageId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  mergeStockItems(_idToKeep: String!, _idsToMerge: [String]!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  recalculateStockLevels(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+`;

@@ -1,0 +1,15 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+extend type Query {
+  pagedSecurityUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [SECURITY_VIEW_USERS, SECURITY_MANAGE_USERS])
+}
+
+extend type Mutation {
+  setSecurityUserPermissions(
+    userId: String!
+    permissions: [String]!
+  ): UserType @checkPermissions(permissions: [SECURITY_MANAGE_USERS])
+}`;

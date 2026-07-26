@@ -1,0 +1,69 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type AttendanceType {
+  _id: String
+  karkunId: String
+  dutyId: String
+  shiftId: String
+  jobId: String
+  month: String
+  attendanceDetails: String
+  presentCount: Int
+  absentCount: Int
+  percentage: Float
+  meetingCardBarcodeId: String
+
+  karkun: KarkunType
+  job: JobType
+  duty: DutyType
+  shift: DutyShiftType
+
+  createdByName: String
+  updatedByName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+type PagedAttendanceType {
+  totalResults: Int
+  data: [AttendanceType]
+}
+extend type Query {
+  attendanceById(_id: String!): AttendanceType
+  pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
+  attendanceByMonth(
+    month: String!
+    categoryId: String
+    subCategoryId: String
+  ): [AttendanceType]
+  attendanceByBarcodeId(barcodeId: String!): AttendanceType
+  attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
+}
+
+extend type Mutation {
+  createAttendances(
+    month: String!
+  ): Int
+
+  updateAttendance(
+    _id: String!
+    attendanceDetails: String
+    presentCount: Int
+    absentCount: Int
+    percentage: Int
+  ): AttendanceType
+
+  importAttendances(
+    month: String!
+    dutyId: String!
+    shiftId: String
+  ): Int
+   
+  deleteAttendances(month: String!, ids: [String]!): Int
+  deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
+}
+`;

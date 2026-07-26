@@ -1,0 +1,90 @@
+// @ts-nocheck
+import React, { useRef } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/client/react';
+import ReactToPrint from 'react-to-print';
+import { Button, Divider } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
+
+import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  WithBreadcrumbs,
+  WithQueryParams,
+} from 'meteor/idreesia-common/composers/common';
+import EidReceipts from './eid-receipts';
+
+const EidReceiptsContainer = ({ history, queryParams }) => {
+  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery, {
+    variables: { ids: queryParams.ids },
+  });
+  const eidReceiptsRef = useRef(null);
+  if (salariesLoading) return null;
+
+  return (
+    <>
+      <ReactToPrint
+        content={() => eidReceiptsRef.current}
+        trigger={() => (
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+            Print Receipts
+          </Button>
+        )}
+      />
+      &nbsp;
+      <Button
+        size="large"
+        type="primary"
+        onClick={() => {
+          history.goBack();
+        }}
+      >
+        Back
+      </Button>
+      <Divider />
+      <EidReceipts
+        ref={eidReceiptsRef}
+        salariesByIds={data && data.salariesByIds}
+      />
+    </>
+  );
+};
+
+EidReceiptsContainer.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  queryParams: PropTypes.object,
+};
+
+const salariesByIdsQuery = gql`
+  query salariesByIds($ids: String!) {
+    salariesByIds(ids: $ids) {
+      _id
+      karkunId
+      month
+      jobId
+      salary
+      karkun {
+        _id
+        name
+        parentName
+        cnicNumber
+        contactNumber1
+        image {
+          _id
+          data
+        }
+      }
+      job {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export default flowRight(
+  WithQueryParams(),
+  WithBreadcrumbs(['HR', 'Salary Sheets', 'Eid Receipts'])
+)(EidReceiptsContainer);

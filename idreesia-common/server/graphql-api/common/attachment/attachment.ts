@@ -1,0 +1,32 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type Attachment {
+  _id: String
+  name: String
+  description: String
+  mimeType: String
+  data: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type Query {
+  attachmentsById(ids: [String]!): [Attachment]
+}
+
+type Mutation {
+  createAttachment(
+    name: String
+    description: String
+    mimeType: String
+    data: String!
+  ): Attachment
+
+  updateAttachment(_id: String!, name: String, description: String): Attachment
+}
+`;

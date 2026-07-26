@@ -1,0 +1,38 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type ItemCategory {
+  _id: String
+  name: String
+  physicalStoreId: String
+  stockItemCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+}
+
+extend type Mutation {
+  createItemCategory(name: String!, physicalStoreId: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  
+  updateItemCategory(_id: String!, physicalStoreId: String!, name: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  
+  removeItemCategory(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+`;

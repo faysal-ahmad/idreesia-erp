@@ -1,0 +1,118 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type IssuanceForm {
+  _id: String
+  issueDate: String
+  issuedBy: String
+  issuedTo: String
+  handedOverTo: String
+  locationId: String
+  physicalStoreId: String
+  items: [ItemWithQuantity]
+  notes: String
+  attachmentIds: [String]
+
+  attachments: [Attachment]
+  refLocation: Location
+  refIssuedBy: KarkunType
+  refIssuedTo: KarkunType
+  refPhysicalStore: PhysicalStore
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedIssuanceForm {
+  totalResults: Int
+  data: [IssuanceForm]
+}
+
+extend type Query {
+  issuanceFormById(
+    _id: String!
+    physicalStoreId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  issuanceFormsByStockItem(
+    physicalStoreId: String!
+    stockItemId: String!
+  ): [IssuanceForm]
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  issuanceFormsByMonth(
+    physicalStoreId: String!
+    month: String!
+  ): [IssuanceForm]
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  pagedIssuanceForms(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedIssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+extend type Mutation {
+  createIssuanceForm(
+    issueDate: String!
+    issuedBy: String!
+    issuedTo: String!
+    handedOverTo: String
+    physicalStoreId: String!
+    locationId: String
+    items: [ItemWithQuantityInput]
+    notes: String
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateIssuanceForm(
+    _id: String!
+    issueDate: String!
+    issuedBy: String!
+    issuedTo: String!
+    handedOverTo: String
+    physicalStoreId: String!
+    locationId: String
+    items: [ItemWithQuantityInput]
+    notes: String
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  approveIssuanceForms(physicalStoreId: String!, _ids: [String]!): [IssuanceForm]
+  @checkPermissions(permissions: [IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  addIssuanceFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeIssuanceFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeIssuanceForms(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+`;

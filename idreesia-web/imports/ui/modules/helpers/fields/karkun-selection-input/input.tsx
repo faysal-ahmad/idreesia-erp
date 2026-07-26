@@ -1,0 +1,89 @@
+// @ts-nocheck
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { EditOutlined } from '@ant-design/icons';
+
+import { Tabs, Drawer, Input } from 'antd';
+import MSKarkunsList from './ms-karkuns-list';
+
+const ContainerStyle = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  width: '100%',
+};
+
+export default class CustomInput extends Component {
+  static propTypes = {
+    value: PropTypes.object,
+    disabled: PropTypes.bool,
+    placeholder: PropTypes.string,
+    onChange: PropTypes.func,
+
+    showMsKarkunsList: PropTypes.bool,
+  };
+
+  state = {
+    showSelectionForm: false,
+  };
+
+  handleEditClick = () => {
+    const { disabled } = this.props;
+    if (!disabled) {
+      this.setState({
+        showSelectionForm: true,
+      });
+    }
+  };
+
+  handleClose = () => {
+    this.setState({
+      showSelectionForm: false,
+    });
+  };
+
+  setSelectedValue = karkun => {
+    const { onChange } = this.props;
+    this.handleClose();
+    if (onChange) {
+      onChange(karkun);
+    }
+  };
+
+  render() {
+    const { placeholder, value, showMsKarkunsList } = this.props;
+
+    const containersNode = [];
+
+    if (showMsKarkunsList) {
+      containersNode.push(
+        <Tabs.TabPane tab="MS Karkuns" key="1">
+          <MSKarkunsList handleSelectItem={this.setSelectedValue} />
+        </Tabs.TabPane>
+      );
+    }
+
+    return (
+      <Fragment>
+        <Drawer
+          title="Select a Karkun"
+          width={800}
+          onClose={this.handleClose}
+          open={this.state.showSelectionForm}
+        >
+          <Tabs>{containersNode}</Tabs>
+        </Drawer>
+        <div style={ContainerStyle}>
+          <Input
+            type="text"
+            value={value ? value.name : ''}
+            readOnly
+            addonAfter={<EditOutlined onClick={this.handleEditClick} />}
+            placeholder={placeholder}
+          />
+        </div>
+      </Fragment>
+    );
+  }
+}

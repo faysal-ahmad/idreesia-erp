@@ -1,0 +1,44 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type MehfilKarkunType {
+  _id: String
+  mehfilId: String
+  karkunId: String
+  dutyId: String
+  dutyDetail: String
+  dutyCardBarcodeId: String
+
+  karkun: PersonType
+  mehfil: MehfilType
+  duty: MehfilDutyType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  mehfilKarkunsByMehfilId(mehfilId: String!, dutyId: String): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+}
+
+extend type Mutation {
+  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyId: String!): MehfilKarkunType
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
+  setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
+  removeMehfilKarkun(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+}
+`;

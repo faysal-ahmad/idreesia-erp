@@ -1,0 +1,53 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type UserGroupType {
+  _id: String
+  name: String
+  moduleName: String
+  description: String
+  permissions: [String]
+  instances: [String]
+}
+
+type PagedUserGroupType {
+  totalResults: Int
+  data: [UserGroupType]
+}
+
+extend type Query {
+  pagedUserGroups(queryString: String): PagedUserGroupType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+  
+  userGroupById(_id: String!): UserGroupType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+}
+
+extend type Mutation {
+  createUserGroup(
+    name: String!
+    moduleName: String!
+    description: String
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  updateUserGroup(
+    _id: String!
+    name: String
+    description: String
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  deleteUserGroup(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+  
+  setUserGroupPermissions(
+    _id: String!
+    permissions: [String]!
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  setUserGroupInstanceAccess(
+    _id: String!
+    instances: [String]!
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+}
+`;

@@ -1,0 +1,37 @@
+// @ts-nocheck
+import gql from 'graphql-tag';
+
+export default gql`
+type MehfilType {
+  _id: String
+  name: String
+  mehfilDate: String
+
+  karkunCount: Int
+  mehfilKarkuns: MehfilKarkunType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allMehfils: [MehfilType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  mehfilById(_id: String!): MehfilType
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+}
+
+extend type Mutation {
+  createMehfil(name: String!, mehfilDate: String!): MehfilType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  updateMehfil(_id: String!, name: String!, mehfilDate: String): MehfilType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  removeMehfil(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}
+`;

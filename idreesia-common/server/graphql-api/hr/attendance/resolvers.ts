@@ -1,0 +1,363 @@
+// @ts-nocheck
+import { format, isBefore, startOfMonth } from 'date-fns';
+import request from 'request';
+import { google } from 'googleapis';
+
+import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
+import { People } from 'meteor/idreesia-common/server/collections/common';
+import {
+  Attendances,
+  Jobs,
+  Duties,
+  DutyShifts,
+} from 'meteor/idreesia-common/server/collections/hr';
+import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
+import {
+  Formats,
+  Permissions as PermissionConstants,
+} from 'meteor/idreesia-common/constants';
+import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
+import { processAttendanceSheet } from './helpers';
+import { getPagedAttendanceByKarkun } from './queries';
+
+export default {
+  AttendanceType: {
+    karkun: async attendanceType => {
+      const person = await People.findOneAsync({
+        _id: { $eq: attendanceType.karkunId },
+      });
+      return People.personToKarkun(person);
+    },
+    job: async attendanceType => {
+      if (!attendanceType.jobId) return null;
+      return Jobs.findOneAsync({
+        _id: { $eq: attendanceType.jobId },
+      });
+    },
+    duty: async attendanceType => {
+      if (!attendanceType.dutyId) return null;
+      return Duties.findOneAsync({
+        _id: { $eq: attendanceType.dutyId },
+      });
+    },
+    shift: async attendanceType => {
+      if (!attendanceType.shiftId) return null;
+      return DutyShifts.findOneAsync({
+        _id: { $eq: attendanceType.shiftId },
+      });
+    },
+  },
+
+  Query: {
+    attendanceById: async (obj, { _id }, { user }) => {
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        return null;
+      }
+
+      return Attendances.findOneAsync(_id);
+    },
+
+    pagedAttendanceByKarkun: async (obj, { queryString }, { user }) => {
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        return {
+          attendance: [],
+          totalResults: 0,
+        };
+      }
+      return getPagedAttendanceByKarkun(queryString);
+    },
+
+    attendanceByMonth: async (
+      obj,
+      { month, categoryId, subCategoryId },
+      { user }
+    ) => {
+      if (!categoryId) return [];
+
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        return [];
+      }
+
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
+
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need to return attendance of employees with the
+       * selected job.
+       */
+      let query;
+      if (categoryId === 'all_jobs') {
+        query = {
+          month: formattedMonth,
+        };
+        if (subCategoryId) {
+          query.jobId = subCategoryId;
+        } else {
+          query.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        query = {
+          month: formattedMonth,
+          dutyId: categoryId,
+        };
+        if (subCategoryId) query.shiftId = subCategoryId;
+      }
+
+      return Attendances.find(query).fetchAsync();
+    },
+
+    attendanceByBarcodeId: async (obj, { barcodeId }, { user }) => {
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+          PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
+        ])
+      ) {
+        return null;
+      }
+
+      return Attendances.findOneAsync({
+        meetingCardBarcodeId: { $eq: barcodeId },
+      });
+    },
+
+    attendanceByBarcodeIds: async (obj, { barcodeIds }, { user }) => {
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_VIEW_KARKUNS,
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        return [];
+      }
+
+      const barcodeIdsArray = barcodeIds.split(',');
+      return Attendances.find({
+        meetingCardBarcodeId: { $in: barcodeIdsArray },
+      }).fetchAsync();
+    },
+  },
+
+  Mutation: {
+    createAttendances: async (obj, { month }, { user }) => {
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage attendances in the System.'
+        );
+      }
+
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
+
+      return await createMonthlyAttendance(formattedMonth, user);
+    },
+
+    updateAttendance: async (
+      obj,
+      { _id, attendanceDetails, presentCount, absentCount, percentage },
+      { user }
+    ) => {
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to manage attendances in the System.'
+        );
+      }
+
+      const date = new Date();
+      await Attendances.updateAsync(_id, {
+        $set: {
+          attendanceDetails,
+          presentCount: toInteger(presentCount),
+          absentCount: toInteger(absentCount),
+          percentage: toInteger(percentage),
+          updatedAt: date,
+          updatedBy: user._id,
+        },
+      });
+
+      return Attendances.findOneAsync(_id);
+    },
+
+    importAttendances: async (obj, { month, dutyId, shiftId }, { user }) => {
+      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
+        throw new Error(
+          'You do not have permission to manage attendances in the System.'
+        );
+      }
+
+      let attendanceSheetId;
+      if (!shiftId) {
+        // Check if we have an attendance sheet associated with the passed duty
+        const duty = await Duties.findOneAsync(dutyId);
+        attendanceSheetId = duty.attendanceSheet;
+      } else {
+        const dutyShift = await DutyShifts.findOneAsync(shiftId);
+        attendanceSheetId = dutyShift.attendanceSheet;
+      }
+
+      if (!attendanceSheetId) {
+        throw new Error(
+          'Could not find an associated google sheet for attendance.'
+        );
+      }
+
+      const authFile = JSON.parse(Assets.getText('private/auth/google.json'));
+      const scopes = [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.readonly',
+      ];
+
+      const jwt = new google.auth.JWT(
+        authFile.client_email,
+        null,
+        authFile.private_key,
+        scopes
+      );
+
+      return new Promise((resolve, reject) => {
+        jwt.authorize((err, authResponse) => {
+          if (err) reject(err);
+          const accessToken = authResponse.access_token;
+          const options = {
+            uri: `https://www.googleapis.com/drive/v3/files/${attendanceSheetId}/export?mimeType=text/csv`,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+
+          request.get(options, (error, response, body) => {
+            if (error) reject(error);
+            // If the request is successfule, we get the csv data in the body
+
+            processAttendanceSheet(body, month, dutyId, shiftId)
+              .then(result => resolve(result))
+              .catch(e => reject(e));
+          });
+        });
+      });
+    },
+
+    deleteAttendances: async (obj, { month, ids }, { user }) => {
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
+
+      if (
+        isBefore(passedMonth, currentMonth) &&
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances for past months in the System.'
+        );
+      }
+
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances in the System.'
+        );
+      }
+
+      return Attendances.removeAsync({
+        _id: { $in: ids },
+      });
+    },
+
+    deleteAllAttendances: async (
+      obj,
+      { month, categoryId, subCategoryId },
+      { user }
+    ) => {
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
+
+      if (
+        isBefore(passedMonth, currentMonth) &&
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances for past months in the System.'
+        );
+      }
+
+      if (
+        !hasOnePermission(user, [
+          PermissionConstants.HR_MANAGE_KARKUNS,
+          PermissionConstants.HR_DELETE_DATA,
+        ])
+      ) {
+        throw new Error(
+          'You do not have permission to remove attendances in the System.'
+        );
+      }
+
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
+
+      /**
+       * categoryId value would either contain the id for a duty, or would contain the string
+       * 'all_jobs' in which case we need toremove attendance of employees with the
+       * selected job.
+       */
+      const removeCriteria = {
+        month: formattedMonth,
+      };
+
+      if (categoryId === 'all_jobs') {
+        if (subCategoryId) {
+          removeCriteria.jobId = subCategoryId;
+        } else {
+          removeCriteria.jobId = { $exists: true, $ne: null };
+        }
+      } else {
+        removeCriteria.dutyId = categoryId;
+        if (subCategoryId) removeCriteria.shiftId = subCategoryId;
+      }
+
+      return Attendances.removeAsync(removeCriteria);
+    },
+  },
+};

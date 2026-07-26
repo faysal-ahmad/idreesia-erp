@@ -40,7 +40,7 @@ export default {
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return [];
@@ -85,7 +85,7 @@ export default {
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return {
@@ -102,7 +102,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -139,7 +139,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -232,7 +232,7 @@ export default {
 
       if (
         isBefore(passedMonth, currentMonth) &&
-        !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
@@ -242,7 +242,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -261,7 +261,7 @@ export default {
 
       if (
         isBefore(passedMonth, currentMonth) &&
-        !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
@@ -271,7 +271,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(

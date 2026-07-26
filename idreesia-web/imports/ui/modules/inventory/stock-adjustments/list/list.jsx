@@ -460,7 +460,7 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   withMutation(formMutationRemove, {
-    name: 's',
+    name: 'removeStockAdjustments',
     options: {
       refetchQueries: [
         'pagedStockAdjustments',

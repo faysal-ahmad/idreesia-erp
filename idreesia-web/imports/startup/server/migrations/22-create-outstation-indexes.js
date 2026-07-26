@@ -1,7 +1,6 @@
 import { Migrations } from 'meteor/percolate:migrations';
 
 import {
-  AmaanatLogs,
   Cities,
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
@@ -16,9 +15,9 @@ Migrations.add({
     const cityMehfils = CityMehfils.rawCollection();
     await cityMehfils.createIndex({ cityId: 1 }, { background: true });
 
-    const amaanatLogs = AmaanatLogs.rawCollection();
-    await amaanatLogs.createIndex({ cityId: 1 }, { background: true });
-    await amaanatLogs.createIndex({ cityMehfilId: 1 }, { background: true });
-    await amaanatLogs.createIndex({ sentDate: 1 }, { background: true });
+    /*
+    Legacy accounts-amaanat-logs indexes are intentionally skipped for now
+    because the collection has been removed from the active app.
+    */
   },
 });

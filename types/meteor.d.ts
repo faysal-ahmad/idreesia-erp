@@ -89,6 +89,47 @@ declare module 'meteor/accounts-base' {
   }
 }
 
+declare module 'meteor/mongo' {
+  export namespace Mongo {
+    interface CollectionOptions<TDocument> {
+      connection?: unknown;
+      idGeneration?: string;
+      transform?(document: TDocument): unknown;
+      [key: string]: unknown;
+    }
+
+    interface RawCollection<TDocument> {
+      aggregate<TResult = TDocument>(
+        pipeline?: readonly unknown[],
+        options?: unknown
+      ): {
+        toArray(): Promise<TResult[]>;
+      };
+    }
+
+    class Collection<TDocument = Record<string, unknown>> {
+      constructor(
+        name: string,
+        options?: CollectionOptions<TDocument>
+      );
+      attachSchema(schema: unknown): void;
+      find(selector?: unknown, options?: unknown): unknown;
+      findOneAsync(
+        selector?: unknown,
+        options?: unknown
+      ): Promise<TDocument | undefined>;
+      insertAsync(document: Partial<TDocument>): Promise<string>;
+      updateAsync(
+        selector: unknown,
+        modifier: unknown,
+        options?: unknown
+      ): Promise<number>;
+      removeAsync(selector: unknown): Promise<number>;
+      rawCollection(): RawCollection<TDocument>;
+    }
+  }
+}
+
 declare module 'meteor/react-meteor-data' {
   export function useTracker<T>(
     reactiveFn: () => T,

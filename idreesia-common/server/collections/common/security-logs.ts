@@ -1,20 +1,40 @@
-// @ts-nocheck
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { SecurityLog as SecurityLogSchema } from 'meteor/idreesia-common/server/schemas/common';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 
-class SecurityLogs extends AggregatableCollection {
+interface SecurityLogDocument {
+  _id?: string;
+  userId?: string;
+  groupId?: string;
+  operationType: string;
+  operationDetails?: Record<string, unknown>;
+  operationTime: Date;
+  operationBy?: string;
+  dataSource: string;
+  dataSourceDetail?: string;
+}
+
+interface SearchSecurityLogsParams {
+  dataSources?: string[];
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+class SecurityLogs extends AggregatableCollection<SecurityLogDocument> {
   constructor(name = 'common-security-log', options = {}) {
-    const securityLogs = super(name, options);
-    securityLogs.attachSchema(SecurityLogSchema);
-    return securityLogs;
+    super(name, options);
+    this.attachSchema(SecurityLogSchema);
   }
 
   // **************************************************************
   // Query Functions
   // **************************************************************
-  searchSecurityLogs(params = {}) {
-    const pipeline = [];
+  searchSecurityLogs(params: SearchSecurityLogsParams = {}) {
+    const pipeline: Record<string, unknown>[] = [];
 
     const { dataSources, pageIndex = '0', pageSize = '20' } = params;
     pipeline.push({
@@ -35,8 +55,8 @@ class SecurityLogs extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const securityLogs = this.aggregate(resultsPipeline);
-    const totalResults = this.aggregate(countingPipeline);
+    const securityLogs = this.aggregate<SecurityLogDocument>(resultsPipeline);
+    const totalResults = this.aggregate<CountResult>(countingPipeline);
 
     return Promise.all([securityLogs, totalResults]).then(results => ({
       data: results[0],

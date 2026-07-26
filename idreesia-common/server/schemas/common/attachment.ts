@@ -1,4 +1,3 @@
-// @ts-nocheck
 import SimpleSchema from 'simpl-schema';
 
 import { identifiable, timestamps } from './';

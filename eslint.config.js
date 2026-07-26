@@ -196,6 +196,7 @@ module.exports = [
     rules: {
       camelcase: 'off',
       'import/no-extraneous-dependencies': 'off',
+      'max-classes-per-file': 'off',
       'no-var': 'off',
       'vars-on-top': 'off',
       '@typescript-eslint/no-unused-vars': 'off',

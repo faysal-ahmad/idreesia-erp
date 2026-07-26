@@ -1,19 +1,28 @@
-// @ts-nocheck
 import { Mongo } from 'meteor/mongo';
 
 import { Attachment as AttachmentSchema } from 'meteor/idreesia-common/server/schemas/common';
 import { RemovedAttachments } from 'meteor/idreesia-common/server/collections/common';
 
-class Attachments extends Mongo.Collection {
-  constructor(name = 'common-attachments', options = {}) {
-    const attachments = super(name, options);
-    attachments.attachSchema(AttachmentSchema);
-    return attachments;
+interface AttachmentDocument {
+  _id?: string;
+  name?: string;
+  description?: string;
+  mimeType: string;
+  data: string;
+}
+
+class Attachments extends Mongo.Collection<AttachmentDocument> {
+  constructor(
+    name = 'common-attachments',
+    options: Mongo.CollectionOptions<AttachmentDocument> = {}
+  ) {
+    super(name, options);
+    this.attachSchema(AttachmentSchema);
   }
 
-  async removeAttachment(attachmentId) {
+  async removeAttachment(attachmentId: string): Promise<void> {
     const attachment = await this.findOneAsync(attachmentId);
-    await RemovedAttachments.insertAsync(attachment);
+    await RemovedAttachments.insertAsync(attachment as AttachmentDocument);
     await this.removeAsync(attachmentId);
   }
 }

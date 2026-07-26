@@ -49,6 +49,7 @@
     "redux": "4.2.0",
     "regenerator-runtime": "^0.14.1",
     "rxjs": "7.8.2",
+    "simpl-schema": "3.2.0",
     "typescript": "6.0.3"
   },
   "scripts": {

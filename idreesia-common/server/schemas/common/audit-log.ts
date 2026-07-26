@@ -1,4 +1,3 @@
-// @ts-nocheck
 import SimpleSchema from 'simpl-schema';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {

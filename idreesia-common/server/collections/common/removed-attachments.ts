@@ -1,13 +1,22 @@
-// @ts-nocheck
 import { Mongo } from 'meteor/mongo';
 
 import { Attachment as AttachmentSchema } from 'meteor/idreesia-common/server/schemas/common';
 
-class RemovedAttachments extends Mongo.Collection {
-  constructor(name = 'common-removed-attachments', options = {}) {
-    const removedAttachments = super(name, options);
-    removedAttachments.attachSchema(AttachmentSchema);
-    return removedAttachments;
+interface AttachmentDocument {
+  _id?: string;
+  name?: string;
+  description?: string;
+  mimeType: string;
+  data: string;
+}
+
+class RemovedAttachments extends Mongo.Collection<AttachmentDocument> {
+  constructor(
+    name = 'common-removed-attachments',
+    options: Mongo.CollectionOptions<AttachmentDocument> = {}
+  ) {
+    super(name, options);
+    this.attachSchema(AttachmentSchema);
   }
 }
 

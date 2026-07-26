@@ -1,15 +1,13 @@
 name: Release Application
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - develop
       - master
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.sha }}
   cancel-in-progress: false
 
 permissions:
@@ -19,21 +17,52 @@ permissions:
 
 jobs:
   release:
-    if: github.event.pull_request.merged == true && (github.event.pull_request.base.ref != 'master' || (github.event.pull_request.head.ref == 'develop' && github.event.pull_request.head.repo.full_name == github.repository))
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.ref }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Resolve Merged PR
+        id: merged-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const base = context.ref.replace('refs/heads/', '');
+            const { owner, repo } = context.repo;
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'closed',
+              base,
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 20,
+            });
+            const merged = pulls.find((pr) => pr.merge_commit_sha === context.sha);
+            if (!merged) {
+              core.setFailed(`Could not find merged PR for ${context.sha} on ${base}.`);
+              return;
+            }
+            if (
+              base === 'master' &&
+              (merged.head.ref !== 'develop' || merged.head.repo.full_name !== `${owner}/${repo}`)
+            ) {
+              core.setFailed('Releases to master must come from the develop branch in this repository.');
+              return;
+            }
+            core.setOutput('number', merged.number);
+            core.setOutput('labels', JSON.stringify(merged.labels.map((label) => label.name)));
 
       - name: Check Existing Release Version
         id: existing-release
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.ref_name }}
+          PR_NUMBER: ${{ steps.merged-pr.outputs.number }}
         run: |
           git fetch origin "${BASE_REF}" --tags
           release_commit=$(git log "origin/${BASE_REF}" --grep="for PR #${PR_NUMBER}" -n 1 --format=%H || true)
@@ -48,23 +77,19 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "commit=$release_commit" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout PR Merge Commit
-        if: steps.existing-release.outputs.version == ''
-        run: git checkout -B "release-pr-${{ github.event.pull_request.number }}" "${{ github.event.pull_request.merge_commit_sha }}"
-
       - name: Resolve Release Version
         id: release-version
         env:
-          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          PR_LABELS: ${{ steps.merged-pr.outputs.labels }}
           EXISTING_VERSION: ${{ steps.existing-release.outputs.version }}
         run: |
           if [ -n "$EXISTING_VERSION" ]; then
             node scripts/resolve-release-version.mjs \
-              --branch "${{ github.event.pull_request.base.ref }}" \
+              --branch "${{ github.ref_name }}" \
               --resolved-version "$EXISTING_VERSION"
           else
             node scripts/resolve-release-version.mjs \
-              --branch "${{ github.event.pull_request.base.ref }}" \
+              --branch "${{ github.ref_name }}" \
               --labels "$PR_LABELS" \
               --write
           fi
@@ -92,8 +117,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json idreesia-web/package.json
           if ! git diff --cached --quiet; then
-            git commit -m "chore(release): ${{ steps.release-version.outputs.version }} for PR #${{ github.event.pull_request.number }} [skip ci]"
-            git push origin HEAD:${{ github.event.pull_request.base.ref }}
+            git commit -m "chore(release): ${{ steps.release-version.outputs.version }} for PR #${{ steps.merged-pr.outputs.number }} [skip ci]"
+            git push origin HEAD:${{ github.ref_name }}
           fi
 
       - name: Tag Release Version
@@ -102,7 +127,7 @@ jobs:
           if git rev-parse "$tag" >/dev/null 2>&1; then
             echo "Tag $tag already exists"
           else
-            git tag -a "$tag" -m "Release ${{ steps.release-version.outputs.version }} for PR #${{ github.event.pull_request.number }}"
+            git tag -a "$tag" -m "Release ${{ steps.release-version.outputs.version }} for PR #${{ steps.merged-pr.outputs.number }}"
             git push origin "$tag"
           fi
 

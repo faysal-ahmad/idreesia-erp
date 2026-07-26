@@ -1,5 +1,6 @@
 {
   "name": "idreesia-apps-suite",
+  "version": "1.0.0",
   "private": true,
   "devDependencies": {
     "@babel/core": "^7",
@@ -27,7 +28,8 @@
     "docker:up": "yarn compose up -d",
     "docker:down": "yarn compose down",
     "lint": "eslint \"idreesia-common/**/*.{js,jsx}\" \"idreesia-web/{client,imports,server}/**/*.{js,jsx}\"",
-    "lint:fix": "yarn lint --fix"
+    "lint:fix": "yarn lint --fix",
+    "release:resolve": "node scripts/resolve-release-version.mjs"
   },
   "lint-staged": {
     "*.{js,jsx}": [

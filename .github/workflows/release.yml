@@ -1,26 +1,92 @@
 name: Release Application
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
+      - develop
       - master
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency: ${{ github.workflow }}-${{ github.event.pull_request.base.ref }}
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: read
 
 jobs:
   release:
+    if: github.event.pull_request.merged == true && (github.event.pull_request.base.ref != 'master' || (github.event.pull_request.head.ref == 'develop' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+
+      - name: Check Existing Release Version
+        id: existing-release
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          subject=$(git log --grep="for PR #${PR_NUMBER}" -n 1 --format=%s || true)
+          version=$(echo "$subject" | sed -nE 's/^chore\(release\): ([^ ]+) for PR #[0-9]+ \[skip ci\]$/\1/p')
+          if [ -z "$version" ]; then
+            version=$(git for-each-ref refs/tags --format='%(refname:short)|%(contents:subject)' | sed -nE "s/^v([^|]+)\\|Release [^ ]+ for PR #${PR_NUMBER}$/\\1/p" | sort -V | tail -n 1)
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve Release Version
+        id: release-version
+        env:
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          EXISTING_VERSION: ${{ steps.existing-release.outputs.version }}
+        run: |
+          if [ -n "$EXISTING_VERSION" ]; then
+            node scripts/resolve-release-version.mjs \
+              --branch "${{ github.event.pull_request.base.ref }}" \
+              --resolved-version "$EXISTING_VERSION"
+          else
+            node scripts/resolve-release-version.mjs \
+              --branch "${{ github.event.pull_request.base.ref }}" \
+              --labels "$PR_LABELS" \
+              --write
+          fi
+
+      - name: Checkout Existing Release Tag
+        if: steps.existing-release.outputs.version != ''
+        run: git checkout "v${{ steps.release-version.outputs.version }}"
+
+      - name: Commit Release Version
+        if: steps.existing-release.outputs.version == ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json idreesia-web/package.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(release): ${{ steps.release-version.outputs.version }} for PR #${{ github.event.pull_request.number }} [skip ci]"
+            git push origin HEAD:${{ github.event.pull_request.base.ref }}
+          fi
+
+      - name: Tag Release Version
+        run: |
+          tag="v${{ steps.release-version.outputs.version }}"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "Tag $tag already exists"
+          else
+            git tag -a "$tag" -m "Release ${{ steps.release-version.outputs.version }} for PR #${{ github.event.pull_request.number }}"
+            git push origin "$tag"
+          fi
 
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v2
-        with: 
+        with:
           meteor-release: 3.5
-      
+
       - run: meteor npm install -g yarn
-      
+
       - name: Install Dependencies
         run: meteor yarn install
         working-directory: ./idreesia-web
@@ -30,13 +96,26 @@ jobs:
         working-directory: ./idreesia-web
 
       - name: Build Docker Container
-        run: docker build -t faysalahmad/idreesia-web idreesia-web
-
-      - name: Login to Docker Hub
         env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-        run: docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/idreesia-web
+          DOCKER_TAGS: ${{ steps.release-version.outputs.docker_tags }}
+        run: |
+          IFS=',' read -ra TAGS <<< "$DOCKER_TAGS"
+          BUILD_ARGS=()
+          for tag in "${TAGS[@]}"; do
+            BUILD_ARGS+=("-t" "$IMAGE_NAME:$tag")
+          done
+          docker build "${BUILD_ARGS[@]}" idreesia-web
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
 
       - name: Push Docker Container
-        run: docker push faysalahmad/idreesia-web
+        env:
+          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/idreesia-web
+          DOCKER_TAGS: ${{ steps.release-version.outputs.docker_tags }}
+        run: |
+          IFS=',' read -ra TAGS <<< "$DOCKER_TAGS"
+          for tag in "${TAGS[@]}"; do
+            docker push "$IMAGE_NAME:$tag"
+          done

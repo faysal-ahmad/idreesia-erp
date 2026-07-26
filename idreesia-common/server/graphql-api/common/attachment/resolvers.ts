@@ -1,11 +1,25 @@
-// @ts-nocheck
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
 import { createAttachment } from './utilities';
 
+interface AttachmentArgs {
+  _id: string;
+  ids: string[];
+  name?: string;
+  description?: string;
+  mimeType?: string;
+  data: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+}
+
 export default {
   Query: {
-    attachmentsById: async (obj, { ids }) =>
+    attachmentsById: async (_obj: unknown, { ids }: Pick<AttachmentArgs, 'ids'>) =>
       await Attachments.find({
         _id: { $in: ids },
       }).fetchAsync(),
@@ -13,9 +27,9 @@ export default {
 
   Mutation: {
     createAttachment: async (
-      obj,
-      { name, description, mimeType, data },
-      { user }
+      _obj: unknown,
+      { name, description, mimeType, data }: AttachmentArgs,
+      { user }: ResolverContext
     ) => {
       const attachmentId = await createAttachment(
         { name, description, mimeType, data },
@@ -25,7 +39,11 @@ export default {
       return Attachments.findOneAsync(attachmentId);
     },
 
-    updateAttachment: async (obj, { _id, name, description }, { user }) => {
+    updateAttachment: async (
+      _obj: unknown,
+      { _id, name, description }: AttachmentArgs,
+      { user }: ResolverContext
+    ) => {
       const date = new Date();
       await Attachments.updateAsync(_id, {
         $set: {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
@@ -10,7 +9,7 @@ Migrations.add({
     for (const user of users) {
       const { permissions } = user;
       if (permissions) {
-        const updatedPermissions = permissions.map(permission =>
+        const updatedPermissions = permissions.map((permission: string) =>
           permission.replace('communication', 'operations')
         );
         await Users.updateAsync(user._id, {

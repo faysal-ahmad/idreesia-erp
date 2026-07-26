@@ -1,11 +1,16 @@
-// @ts-nocheck
 import { Attendances } from 'meteor/idreesia-common/server/collections/hr';
 import { parse } from 'query-string';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 
-export function getPagedAttendanceByKarkun(queryString) {
+type PipelineStage = Record<string, unknown>;
+
+interface CountResult {
+  total: number;
+}
+
+export function getPagedAttendanceByKarkun(queryString: string) {
   const params = parse(queryString);
-  const pipeline = [];
+  const pipeline: PipelineStage[] = [];
   const { pageIndex = '0', pageSize = '20', karkunId } = params;
 
   pipeline.push({
@@ -20,8 +25,8 @@ export function getPagedAttendanceByKarkun(queryString) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
   const resultsPipeline = pipeline.concat([
     {
       $sort: {
@@ -37,7 +42,7 @@ export function getPagedAttendanceByKarkun(queryString) {
   ]);
 
   const karkunAttendences = Attendances.aggregate(resultsPipeline);
-  const totalResults = Attendances.aggregate(countingPipeline);
+  const totalResults = Attendances.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([karkunAttendences, totalResults]).then(results => ({
     attendance: results[0],

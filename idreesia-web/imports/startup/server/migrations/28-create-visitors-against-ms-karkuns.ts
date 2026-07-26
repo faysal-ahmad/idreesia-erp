@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
@@ -10,6 +9,7 @@ Migrations.add({
   version: 28,
   async up() {
     const user = await Meteor.users.findOneAsync({ username: 'erp-admin' });
+    if (!user) throw new Error('Admin user not found.');
     let multanCity = await Cities.findOneAsync({ name: 'Multan', country: 'Pakistan' });
     if (!multanCity) {
       const date = new Date();
@@ -24,6 +24,7 @@ Migrations.add({
 
       multanCity = await Cities.findOneAsync(multanCityId);
     }
+    if (!multanCity) throw new Error('Multan city not found.');
 
     // Remove the dummy 'Pindaal Incharge' karkun
     await Karkuns.removeAsync({ name: 'Pindaal Incharge' });
@@ -53,6 +54,7 @@ Migrations.add({
         let updateImageId = null;
         if (karkun.imageId) {
           const image = await Attachments.findOneAsync(karkun.imageId);
+          if (!image) continue;
           updateImageId = await Attachments.insertAsync({
             name: image.name,
             description: image.description,

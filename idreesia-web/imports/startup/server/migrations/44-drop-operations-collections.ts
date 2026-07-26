@@ -1,15 +1,14 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 
 import { ImdadReasons, ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 
 const NamespaceNotFound = 26;
 
-async function dropIfExists(db, name) {
+async function dropIfExists(db: { dropCollection(name: string): Promise<unknown> | void }, name: string) {
   try {
     await db.dropCollection(name);
   } catch (error) {
-    if (error.code !== NamespaceNotFound) throw error;
+    if ((error as { code?: number }).code !== NamespaceNotFound) throw error;
   }
 }
 

@@ -1,9 +1,10 @@
-// @ts-nocheck
-import React from 'react';
+import React, { ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
 
+
+type AnyProps = Record<string, any>;
 const locationsListQuery = gql`
   query locationsByPhysicalStoreId($physicalStoreId: String!) {
     locationsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
@@ -21,8 +22,8 @@ const locationsListQuery = gql`
   }
 `;
 
-export const useLocationsByPhysicalStore = physicalStoreId => {
-  const { data, loading, ...queryResult } = useQuery(locationsListQuery, {
+export const useLocationsByPhysicalStore = (physicalStoreId: string) => {
+  const { data, loading, ...queryResult } = useQuery(locationsListQuery as any, {
     variables: { physicalStoreId },
   });
 
@@ -30,16 +31,16 @@ export const useLocationsByPhysicalStore = physicalStoreId => {
     ...queryResult,
     loading,
     locationsLoading: loading,
-    locationsByPhysicalStoreId: data ? data.locationsByPhysicalStoreId : null,
+    locationsByPhysicalStoreId: (data as any)?.locationsByPhysicalStoreId ?? null,
   };
 };
 
-export default () => WrappedComponent => {
-  const WithLocationsByPhysicalStore = props => {
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithLocationsByPhysicalStore = (props: AnyProps) => {
     const { physicalStoreId } = props;
     const locationsProps = useLocationsByPhysicalStore(physicalStoreId);
 
-    return <WrappedComponent {...props} {...locationsProps} />;
+    return React.createElement(WrappedComponent as any, { ...props, ...locationsProps });
   };
 
   WithLocationsByPhysicalStore.propTypes = {

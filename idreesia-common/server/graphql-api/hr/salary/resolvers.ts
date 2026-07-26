@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { addMonths, format, isBefore, startOfMonth } from 'date-fns';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -12,7 +11,12 @@ import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-lo
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { getPagedSalariesByKarkun } from './queries';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   SalaryType: {
     karkun: async salaryType => {
       const person = await People.findOneAsync({
@@ -291,3 +295,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

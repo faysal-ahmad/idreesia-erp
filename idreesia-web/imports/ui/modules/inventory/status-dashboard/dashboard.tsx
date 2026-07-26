@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -12,17 +11,51 @@ import {
   WithPhysicalStoreId,
 } from '/imports/ui/modules/inventory/common/composers';
 
-const Dashboard = props => {
+const AntBadge = Badge as any;
+const AntDescriptions = Descriptions as any;
+const AntDescriptionsItem = Descriptions.Item as any;
+const AntSpin = Spin as any;
+
+interface InventoryStatistics {
+  itemsWithImages: number;
+  itemsWithoutImages: number;
+  itemsWithPositiveStockLevel: number;
+  itemsWithLessThanMinStockLevel: number;
+  itemsWithNegativeStockLevel: number;
+  itemsVerifiedLessThanThreeMonthsAgo: number;
+  itemsVerifiedThreeToSixMonthsAgo: number;
+  itemsVerifiedMoreThanSixMonthsAgo: number;
+}
+
+interface DashboardProps {
+  loading?: boolean;
+  physicalStoreId?: string;
+  inventoryStatistics?: InventoryStatistics;
+}
+
+const emptyStatistics: InventoryStatistics = {
+  itemsWithImages: 0,
+  itemsWithoutImages: 0,
+  itemsWithPositiveStockLevel: 0,
+  itemsWithLessThanMinStockLevel: 0,
+  itemsWithNegativeStockLevel: 0,
+  itemsVerifiedLessThanThreeMonthsAgo: 0,
+  itemsVerifiedThreeToSixMonthsAgo: 0,
+  itemsVerifiedMoreThanSixMonthsAgo: 0,
+};
+
+const Dashboard = (props: DashboardProps) => {
   const { loading, inventoryStatistics } = props;
   if (loading) {
-    return <Spin size="large" />;
+    return <AntSpin size="large" />;
   }
+  const statistics = inventoryStatistics ?? emptyStatistics;
 
   return (
     <>
-      <Descriptions title="Stock Items" bordered>
-        <Descriptions.Item label="Items Count">
-          <Badge
+      <AntDescriptions title="Stock Items" bordered>
+        <AntDescriptionsItem label="Items Count">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{
@@ -31,82 +64,82 @@ const Dashboard = props => {
               fontWeight: 'bold',
             }}
             count={
-              inventoryStatistics.itemsWithImages +
-              inventoryStatistics.itemsWithoutImages
+              statistics.itemsWithImages +
+              statistics.itemsWithoutImages
             }
           />
-        </Descriptions.Item>
-        <Descriptions.Item label="With Images">
-          <Badge
+        </AntDescriptionsItem>
+        <AntDescriptionsItem label="With Images">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'green' }}
-            count={inventoryStatistics.itemsWithImages}
+            count={statistics.itemsWithImages}
           />
-        </Descriptions.Item>
-        <Descriptions.Item label="Without Images">
-          <Badge
+        </AntDescriptionsItem>
+        <AntDescriptionsItem label="Without Images">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'red' }}
-            count={inventoryStatistics.itemsWithoutImages}
+            count={statistics.itemsWithoutImages}
           />
-        </Descriptions.Item>
-      </Descriptions>
+        </AntDescriptionsItem>
+      </AntDescriptions>
       <div style={{ height: '20px' }} />
-      <Descriptions title="Stock Levels" bordered>
-        <Descriptions.Item label="Positive">
-          <Badge
+      <AntDescriptions title="Stock Levels" bordered>
+        <AntDescriptionsItem label="Positive">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'green' }}
-            count={inventoryStatistics.itemsWithPositiveStockLevel}
+            count={statistics.itemsWithPositiveStockLevel}
           />
-        </Descriptions.Item>
-        <Descriptions.Item label="Less than minimum">
-          <Badge
+        </AntDescriptionsItem>
+        <AntDescriptionsItem label="Less than minimum">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'orange' }}
-            count={inventoryStatistics.itemsWithLessThanMinStockLevel}
+            count={statistics.itemsWithLessThanMinStockLevel}
           />
-        </Descriptions.Item>
-        <Descriptions.Item label="Negative">
-          <Badge
+        </AntDescriptionsItem>
+        <AntDescriptionsItem label="Negative">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'red' }}
-            count={inventoryStatistics.itemsWithNegativeStockLevel}
+            count={statistics.itemsWithNegativeStockLevel}
           />
-        </Descriptions.Item>
-      </Descriptions>
+        </AntDescriptionsItem>
+      </AntDescriptions>
       <div style={{ height: '20px' }} />
-      <Descriptions title="Stock Level Verified" bordered>
-        <Descriptions.Item label="Less than 3 months ago">
-          <Badge
+      <AntDescriptions title="Stock Level Verified" bordered>
+        <AntDescriptionsItem label="Less than 3 months ago">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'green' }}
-            count={inventoryStatistics.itemsVerifiedLessThanThreeMonthsAgo}
+            count={statistics.itemsVerifiedLessThanThreeMonthsAgo}
           />
-        </Descriptions.Item>
-        <Descriptions.Item label="Between 3 to 6 months ago">
-          <Badge
+        </AntDescriptionsItem>
+        <AntDescriptionsItem label="Between 3 to 6 months ago">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'orange' }}
-            count={inventoryStatistics.itemsVerifiedThreeToSixMonthsAgo}
+            count={statistics.itemsVerifiedThreeToSixMonthsAgo}
           />
-        </Descriptions.Item>
-        <Descriptions.Item label="More than 6 months ago">
-          <Badge
+        </AntDescriptionsItem>
+        <AntDescriptionsItem label="More than 6 months ago">
+          <AntBadge
             showZero
             overflowCount={9999}
             style={{ backgroundColor: 'red' }}
-            count={inventoryStatistics.itemsVerifiedMoreThanSixMonthsAgo}
+            count={statistics.itemsVerifiedMoreThanSixMonthsAgo}
           />
-        </Descriptions.Item>
-      </Descriptions>
+        </AntDescriptionsItem>
+      </AntDescriptions>
     </>
   );
 };
@@ -139,15 +172,15 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   withQuery(query, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId }) => ({
+    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
+    options: ({ physicalStoreId }: DashboardProps) => ({
       variables: { physicalStoreId },
     }),
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: { name: string } }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Status Dashboard`;
     }
     return `Inventory, Status Dashboard`;
   })
-)(Dashboard);
+)(Dashboard as any);

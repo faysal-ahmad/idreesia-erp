@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Accounts } from 'meteor/accounts-base';
 import { Migrations } from 'meteor/percolate:migrations';
 import {
@@ -17,6 +16,7 @@ Migrations.add({
   version: 5,
   async up() {
     const adminUser = await Accounts.findUserByUsername('erp-admin');
+    if (!adminUser) throw new Error('Admin user not found.');
     const date = new Date();
 
     // Rename itemCategoryId to categoryId
@@ -37,6 +37,7 @@ Migrations.add({
     }).fetchAsync();
     for (const stockItem of stockItems) {
       const itemType = await ItemTypes.findOneAsync(stockItem.itemTypeId);
+      if (!itemType) continue;
       await StockItems.updateAsync(stockItem._id, {
         $set: {
           name: itemType.name,

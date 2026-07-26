@@ -1,4 +1,3 @@
-// @ts-nocheck
 import csv from 'csvtojson';
 import { subYears } from 'date-fns';
 
@@ -13,7 +12,17 @@ const PHONE_COLUMN = 'Mobile No.';
 const EHAD_DURATION_COLUMN = 'Arsa Ehad';
 const REFERENCE_COLUMN = 'Maarfat';
 
-async function processJsonRecord(jsonRecord, date, user) {
+type CsvRecord = Record<string, string | undefined>;
+
+interface UserRef {
+  _id: string;
+}
+
+async function processJsonRecord(
+  jsonRecord: CsvRecord,
+  date: Date,
+  user: UserRef
+) {
   try {
     const name = jsonRecord[NAME_COLUMN];
     const parentName = jsonRecord[PARENT_NAME_COLUMN];
@@ -59,20 +68,15 @@ async function processJsonRecord(jsonRecord, date, user) {
   return true;
 }
 
-function convertToJson(csvData) {
-  return new Promise((resolve, reject) => {
-    csv()
-      .fromString(csvData)
-      .then(jsonArray => {
-        resolve(jsonArray);
-      })
-      .catch(err => {
-        reject(err);
-      });
-  });
+function convertToJson(csvData: string) {
+  return csv().fromString(csvData) as unknown as Promise<CsvRecord[]>;
 }
 
-export async function processCsvData(csvData, date, user) {
+export async function processCsvData(
+  csvData: string,
+  date: Date,
+  user: UserRef
+) {
   const jsonArray = await convertToJson(csvData);
   const result = {
     imported: 0,

@@ -1,19 +1,29 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { processCsvData } from './helpers';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   Query: {
     pagedSecurityVisitors: async (obj, { filter }) =>
       People.searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,
-      }).then(result => ({
-        data: result.data.map(person => People.personToVisitor(person)),
-        totalResults: result.totalResults,
-      })),
+      }).then(result => {
+        const pagedResult = result as {
+          data: Parameters<typeof People.personToVisitor>[0][];
+          totalResults: number;
+        };
+        return {
+          data: pagedResult.data.map(person => People.personToVisitor(person)),
+          totalResults: pagedResult.totalResults,
+        };
+      }),
 
     securityVisitorById: async (obj, { _id }) => {
       const person = await People.findOneAsync(_id);
@@ -80,3 +90,5 @@ export default {
       processCsvData(csvData, new Date(), user),
   },
 };
+
+export default resolvers;

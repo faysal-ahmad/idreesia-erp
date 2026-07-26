@@ -1,10 +1,14 @@
-// @ts-nocheck
 import {
   Mehfils,
   MehfilKarkuns,
 } from 'meteor/idreesia-common/server/collections/security';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   MehfilType: {
     karkunCount: async mehfilType =>
       MehfilKarkuns.find({
@@ -67,3 +71,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

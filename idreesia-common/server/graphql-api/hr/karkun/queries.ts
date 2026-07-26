@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
@@ -8,7 +7,19 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
-export async function getKarkunsByPredefinedFilter(params) {
+type PipelineStage = Record<string, unknown>;
+
+interface CountResult {
+  total: number;
+}
+
+interface RawCollectionWithDistinct {
+  distinct(fieldName: string, query?: Record<string, unknown>): Promise<string[]>;
+}
+
+export async function getKarkunsByPredefinedFilter(
+  params: Record<string, string | undefined>
+) {
   const {
     predefinedFilterName,
     predefinedFilterStoreId,
@@ -16,35 +27,41 @@ export async function getKarkunsByPredefinedFilter(params) {
     pageSize = '20',
   } = params;
 
-  let karkunIds = [];
+  let karkunIds: string[] = [];
+  const purchaseFormsRaw =
+    PurchaseForms.rawCollection() as unknown as RawCollectionWithDistinct;
+  const issuanceFormsRaw =
+    IssuanceForms.rawCollection() as unknown as RawCollectionWithDistinct;
+  const stockAdjustmentsRaw =
+    StockAdjustments.rawCollection() as unknown as RawCollectionWithDistinct;
 
   switch (predefinedFilterName) {
     case PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY:
-      karkunIds = await PurchaseForms.rawCollection().distinct('receivedBy', {
+      karkunIds = await purchaseFormsRaw.distinct('receivedBy', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO:
-      karkunIds = await PurchaseForms.rawCollection().distinct('purchasedBy', {
+      karkunIds = await purchaseFormsRaw.distinct('purchasedBy', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY:
-      karkunIds = await IssuanceForms.rawCollection().distinct('issuedBy', {
+      karkunIds = await issuanceFormsRaw.distinct('issuedBy', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY:
-      karkunIds = await IssuanceForms.rawCollection().distinct('issuedTo', {
+      karkunIds = await issuanceFormsRaw.distinct('issuedTo', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY:
-      karkunIds = await StockAdjustments.rawCollection().distinct('adjustedBy');
+      karkunIds = await stockAdjustmentsRaw.distinct('adjustedBy');
       break;
 
     default:
@@ -52,7 +69,7 @@ export async function getKarkunsByPredefinedFilter(params) {
       break;
   }
 
-  const pipeline = [
+  const pipeline: PipelineStage[] = [
     {
       $match: {
         _id: { $in: karkunIds },
@@ -64,8 +81,8 @@ export async function getKarkunsByPredefinedFilter(params) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
   const resultsPipeline = pipeline.concat([
     { $sort: { 'sharedData.name': 1 } },
     { $skip: nPageIndex * nPageSize },
@@ -73,7 +90,7 @@ export async function getKarkunsByPredefinedFilter(params) {
   ]);
 
   const people = People.aggregate(resultsPipeline);
-  const totalResults = People.aggregate(countingPipeline);
+  const totalResults = People.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([people, totalResults]).then(results => {
     const karkuns = results[0].map(person => People.personToKarkun(person));

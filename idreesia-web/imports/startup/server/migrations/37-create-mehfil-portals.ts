@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
@@ -19,7 +18,7 @@ Migrations.add({
             peripheryOf: city._id,
           }).fetchAsync();
           // Create a portal for this city
-          const cityIds = [city._id].concat(peripheryCities.map(pc => pc._id));
+          const cityIds = [city._id].concat(peripheryCities.map((pc: { _id?: string }) => pc._id).filter(Boolean));
           await Portals.insertAsync({
             name: city.name,
             cityIds,

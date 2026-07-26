@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 
 import { AccountMonthlyBalances } from 'meteor/idreesia-common/server/collections/accounts';

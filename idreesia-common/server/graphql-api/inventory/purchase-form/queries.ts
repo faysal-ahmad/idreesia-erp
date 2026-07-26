@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
 import { parse } from 'query-string';
 
@@ -7,8 +6,17 @@ import { PurchaseForms } from 'meteor/idreesia-common/server/collections/invento
 import { Formats } from 'meteor/idreesia-common/constants';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
-export function getPurchaseFormsByStockItemId(physicalStoreId, stockItemId) {
-  const pipeline = [
+type PipelineStage = Record<string, unknown>;
+
+interface CountResult {
+  total: number;
+}
+
+export function getPurchaseFormsByStockItemId(
+  physicalStoreId: string,
+  stockItemId: string
+) {
+  const pipeline: PipelineStage[] = [
     {
       $match: {
         physicalStoreId: { $eq: physicalStoreId },
@@ -27,10 +35,13 @@ export function getPurchaseFormsByStockItemId(physicalStoreId, stockItemId) {
   return PurchaseForms.aggregate(pipeline);
 }
 
-export function getPurchaseFormsByMonth(physicalStoreId, monthString) {
+export function getPurchaseFormsByMonth(
+  physicalStoreId: string,
+  monthString: string
+) {
   const month = parseDate(monthString, Formats.DATE_FORMAT);
 
-  const pipeline = [
+  const pipeline: PipelineStage[] = [
     {
       $match: {
         physicalStoreId: { $eq: physicalStoreId },
@@ -52,9 +63,12 @@ export function getPurchaseFormsByMonth(physicalStoreId, monthString) {
   return PurchaseForms.aggregate(pipeline);
 }
 
-export default function getPurchaseForms(queryString, physicalStoreId) {
+export default function getPurchaseForms(
+  queryString: string,
+  physicalStoreId: string
+) {
   const params = parse(queryString);
-  const pipeline = [
+  const pipeline: PipelineStage[] = [
     {
       $match: {
         physicalStoreId: { $eq: physicalStoreId },
@@ -71,6 +85,9 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     pageIndex = '0',
     pageSize = '20',
   } = params;
+  const startDateText = typeof startDate === 'string' ? startDate : '';
+  const endDateText = typeof endDate === 'string' ? endDate : '';
+  const vendorIdText = typeof vendorId === 'string' ? vendorId : '';
 
   if (showApproved === 'false' && showUnapproved === 'false') {
     return {
@@ -91,29 +108,29 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     });
   }
 
-  if (startDate) {
+  if (startDateText) {
     pipeline.push({
       $match: {
         purchaseDate: {
-          $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
+          $gte: startOfDay(parseDate(startDateText, Formats.DATE_FORMAT)),
         },
       },
     });
   }
 
-  if (endDate) {
+  if (endDateText) {
     pipeline.push({
       $match: {
         purchaseDate: {
-          $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
+          $lte: endOfDay(parseDate(endDateText, Formats.DATE_FORMAT)),
         },
       },
     });
   }
 
-  if (vendorId) {
+  if (vendorIdText) {
     pipeline.push({
-      $match: { vendorId: { $eq: vendorId } },
+      $match: { vendorId: { $eq: vendorIdText } },
     });
   }
 
@@ -121,8 +138,8 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
   const resultsPipeline = pipeline.concat([
     { $sort: { purchaseDate: -1 } },
     { $skip: nPageIndex * nPageSize },
@@ -130,7 +147,7 @@ export default function getPurchaseForms(queryString, physicalStoreId) {
   ]);
 
   const purchaseForms = PurchaseForms.aggregate(resultsPipeline);
-  const totalResults = PurchaseForms.aggregate(countingPipeline);
+  const totalResults = PurchaseForms.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([purchaseForms, totalResults]).then(results => ({
     data: results[0],

@@ -57,7 +57,7 @@ interface PersonDocument extends LooseRecord {
 type PersonInput = LooseRecord & {
   _id?: string;
   dataSource?: string;
-  sharedData: LooseRecord;
+  sharedData?: LooseRecord;
   visitorData?: LooseRecord;
   karkunData?: LooseRecord;
   employeeData?: LooseRecord;
@@ -91,8 +91,9 @@ class People extends AggregatableCollection<PersonDocument> {
   async createPerson(values: PersonInput, user: UserRef) {
     const {
       dataSource,
-      sharedData: { cnicNumber, contactNumber1, contactNumber2 },
+      sharedData = {},
     } = values;
+    const { cnicNumber, contactNumber1, contactNumber2 } = sharedData;
     if (cnicNumber) await this.checkCnicNotInUse(cnicNumber);
     if (contactNumber1) await this.checkContactNotInUse(contactNumber1);
     if (contactNumber2) await this.checkContactNotInUse(contactNumber2);
@@ -121,8 +122,11 @@ class People extends AggregatableCollection<PersonDocument> {
     return this.findOneAsync(personId);
   }
 
-  async updatePerson(values: PersonInput & { _id: string }, user: UserRef) {
+  async updatePerson(values: PersonInput, user: UserRef) {
     const { _id } = values;
+    if (!_id) {
+      throw new Error('Person id is required.');
+    }
     const existingPerson = await this.findOneAsync(_id);
     const changedValues = this.getChangedValues(_id, values, existingPerson);
 
@@ -881,7 +885,9 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   // Conversion Functions
   // **************************************************************
-  personToVisitor(person: PersonDocument) {
+  personToVisitor(person: PersonDocument | null | undefined) {
+    if (!person) return null;
+    const sharedData = person.sharedData ?? {};
     return {
       _id: person._id,
       dataSource: person.dataSource,
@@ -890,21 +896,21 @@ class People extends AggregatableCollection<PersonDocument> {
       updatedAt: person.updatedAt,
       updatedBy: person.updatedBy,
 
-      name: person.sharedData.name,
-      parentName: person.sharedData.parentName,
-      cnicNumber: person.sharedData.cnicNumber,
-      ehadDate: person.sharedData.ehadDate,
-      birthDate: person.sharedData.birthDate,
-      referenceName: person.sharedData.referenceName,
-      contactNumber1: person.sharedData.contactNumber1,
-      contactNumber2: person.sharedData.contactNumber2,
-      contactNumber1Subscribed: person.sharedData.contactNumber1Subscribed,
-      contactNumber2Subscribed: person.sharedData.contactNumber2Subscribed,
-      currentAddress: person.sharedData.currentAddress,
-      permanentAddress: person.sharedData.permanentAddress,
-      educationalQualification: person.sharedData.educationalQualification,
-      meansOfEarning: person.sharedData.meansOfEarning,
-      imageId: person.sharedData.imageId,
+      name: sharedData.name,
+      parentName: sharedData.parentName,
+      cnicNumber: sharedData.cnicNumber,
+      ehadDate: sharedData.ehadDate,
+      birthDate: sharedData.birthDate,
+      referenceName: sharedData.referenceName,
+      contactNumber1: sharedData.contactNumber1,
+      contactNumber2: sharedData.contactNumber2,
+      contactNumber1Subscribed: sharedData.contactNumber1Subscribed,
+      contactNumber2Subscribed: sharedData.contactNumber2Subscribed,
+      currentAddress: sharedData.currentAddress,
+      permanentAddress: sharedData.permanentAddress,
+      educationalQualification: sharedData.educationalQualification,
+      meansOfEarning: sharedData.meansOfEarning,
+      imageId: sharedData.imageId,
 
       city: person.visitorData?.city,
       country: person.visitorData?.country,
@@ -952,7 +958,9 @@ class People extends AggregatableCollection<PersonDocument> {
     return person;
   }
 
-  personToKarkun(person: PersonDocument) {
+  personToKarkun(person: PersonDocument | null | undefined) {
+    if (!person) return null;
+    const sharedData = person.sharedData ?? {};
     return {
       _id: person._id,
       dataSource: person.dataSource,
@@ -961,24 +969,24 @@ class People extends AggregatableCollection<PersonDocument> {
       updatedAt: person.updatedAt,
       updatedBy: person.updatedBy,
 
-      name: person.sharedData.name,
-      parentName: person.sharedData.parentName,
-      cnicNumber: person.sharedData.cnicNumber,
-      ehadDate: person.sharedData.ehadDate,
-      birthDate: person.sharedData.birthDate,
-      deathDate: person.sharedData.deathDate,
-      referenceName: person.sharedData.referenceName,
-      contactNumber1: person.sharedData.contactNumber1,
-      contactNumber2: person.sharedData.contactNumber2,
-      contactNumber1Subscribed: person.sharedData.contactNumber1Subscribed,
-      contactNumber2Subscribed: person.sharedData.contactNumber2Subscribed,
-      emailAddress: person.sharedData.emailAddress,
-      currentAddress: person.sharedData.currentAddress,
-      permanentAddress: person.sharedData.permanentAddress,
-      bloodGroup: person.sharedData.bloodGroup,
-      educationalQualification: person.sharedData.educationalQualification,
-      meansOfEarning: person.sharedData.meansOfEarning,
-      imageId: person.sharedData.imageId,
+      name: sharedData.name,
+      parentName: sharedData.parentName,
+      cnicNumber: sharedData.cnicNumber,
+      ehadDate: sharedData.ehadDate,
+      birthDate: sharedData.birthDate,
+      deathDate: sharedData.deathDate,
+      referenceName: sharedData.referenceName,
+      contactNumber1: sharedData.contactNumber1,
+      contactNumber2: sharedData.contactNumber2,
+      contactNumber1Subscribed: sharedData.contactNumber1Subscribed,
+      contactNumber2Subscribed: sharedData.contactNumber2Subscribed,
+      emailAddress: sharedData.emailAddress,
+      currentAddress: sharedData.currentAddress,
+      permanentAddress: sharedData.permanentAddress,
+      bloodGroup: sharedData.bloodGroup,
+      educationalQualification: sharedData.educationalQualification,
+      meansOfEarning: sharedData.meansOfEarning,
+      imageId: sharedData.imageId,
 
       cityId: person.karkunData?.cityId,
       cityMehfilId: person.karkunData?.cityMehfilId,

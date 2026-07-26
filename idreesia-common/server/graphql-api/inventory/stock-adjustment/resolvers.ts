@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type DataLoader from 'dataloader';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   StockAdjustments,
@@ -9,58 +9,96 @@ import getStockAdjustments, {
   getStockAdjustmentsByStockItemId,
 } from './queries';
 
+interface StockAdjustment {
+  _id: string;
+  physicalStoreId: string;
+  stockItemId: string;
+  adjustmentDate?: Date;
+  adjustedBy: string;
+  quantity: number;
+  isInflow?: boolean;
+  adjustmentReason?: string;
+}
+
+interface StockAdjustmentArgs extends StockAdjustment {
+  queryString: string;
+  _ids: string[];
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+  loaders: {
+    common: {
+      people: DataLoader<string, unknown>;
+    };
+    inventory: {
+      stockItems: DataLoader<string, unknown>;
+      physicalStores: DataLoader<string, unknown>;
+    };
+  };
+}
+
 export default {
   StockAdjustment: {
     refStockItem: async (
-      stockAdjustment,
-      args,
+      stockAdjustment: StockAdjustment,
+      _args: unknown,
       {
         loaders: {
           inventory: { stockItems },
         },
-      }
+      }: ResolverContext
     ) => stockItems.load(stockAdjustment.stockItemId),
     refAdjustedBy: async (
-      stockAdjustment,
-      args,
+      stockAdjustment: StockAdjustment,
+      _args: unknown,
       {
         loaders: {
           common: { people },
         },
-      }
+      }: ResolverContext
     ) => {
       const person = await people.load(stockAdjustment.adjustedBy);
-      return People.personToKarkun(person);
+      return People.personToKarkun(person as Parameters<typeof People.personToKarkun>[0]);
     },
     refPhysicalStore: async (
-      stockAdjustment,
-      args,
+      stockAdjustment: StockAdjustment,
+      _args: unknown,
       {
         loaders: {
           inventory: { physicalStores },
         },
-      }
+      }: ResolverContext
     ) => {
       return physicalStores.load(stockAdjustment.physicalStoreId);
     },
   },
   Query: {
-    stockAdjustmentById: async (obj, { _id }, { user }) => {
+    stockAdjustmentById: async (
+      _obj: unknown,
+      { _id }: Pick<StockAdjustmentArgs, '_id'>
+    ) => {
       return StockAdjustments.findOneAsync(_id);
     },
 
     stockAdjustmentsByStockItem: async (
-      obj,
-      { physicalStoreId, stockItemId },
-      { user }
+      _obj: unknown,
+      { physicalStoreId, stockItemId }: Pick<
+        StockAdjustmentArgs,
+        'physicalStoreId' | 'stockItemId'
+      >
     ) => {
       return getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId);
     },
 
     pagedStockAdjustments: async (
-      obj,
-      { physicalStoreId, queryString },
-      { user }
+      _obj: unknown,
+      { physicalStoreId, queryString }: Pick<
+        StockAdjustmentArgs,
+        'physicalStoreId' | 'queryString'
+      >
     ) => {
       return getStockAdjustments(queryString, physicalStoreId);
     },
@@ -68,7 +106,7 @@ export default {
 
   Mutation: {
     createStockAdjustment: async (
-      obj,
+      _obj: unknown,
       {
         physicalStoreId,
         stockItemId,
@@ -77,8 +115,8 @@ export default {
         quantity,
         isInflow,
         adjustmentReason,
-      },
-      { user }
+      }: StockAdjustmentArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       const stockAdjustmentId = await StockAdjustments.insertAsync({
@@ -105,34 +143,40 @@ export default {
     },
 
     updateStockAdjustment: async (
-      obj,
-      { _id, adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
-      { user }
+      _obj: unknown,
+      { _id, adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason }:
+        StockAdjustmentArgs,
+      { user }: ResolverContext
     ) => {
       const existingAdjustment = await StockAdjustments.findOneAsync(_id);
+      if (!existingAdjustment) {
+        throw new Error('Stock adjustment not found.');
+      }
+      const typedExistingAdjustment =
+        existingAdjustment as unknown as StockAdjustment;
 
       // Undo the effect of previous values
-      if (existingAdjustment.isInflow) {
+      if (typedExistingAdjustment.isInflow) {
         await StockItems.decrementCurrentLevel(
-          existingAdjustment.stockItemId,
-          existingAdjustment.quantity
+          typedExistingAdjustment.stockItemId,
+          typedExistingAdjustment.quantity
         );
       } else {
         await StockItems.incrementCurrentLevel(
-          existingAdjustment.stockItemId,
-          existingAdjustment.quantity
+          typedExistingAdjustment.stockItemId,
+          typedExistingAdjustment.quantity
         );
       }
 
       // Apply the effect of new values
       if (isInflow) {
         await StockItems.incrementCurrentLevel(
-          existingAdjustment.stockItemId,
+          typedExistingAdjustment.stockItemId,
           quantity
         );
       } else {
         await StockItems.decrementCurrentLevel(
-          existingAdjustment.stockItemId,
+          typedExistingAdjustment.stockItemId,
           quantity
         );
       }
@@ -161,9 +205,9 @@ export default {
     },
 
     approveStockAdjustments: async (
-      obj,
-      { _ids, physicalStoreId },
-      { user }
+      _obj: unknown,
+      { _ids, physicalStoreId }: Pick<StockAdjustmentArgs, '_ids' | 'physicalStoreId'>,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await StockAdjustments.updateAsync(
@@ -189,9 +233,8 @@ export default {
     },
 
     removeStockAdjustments: async (
-      obj,
-      { _ids, physicalStoreId },
-      { user }
+      _obj: unknown,
+      { _ids, physicalStoreId }: Pick<StockAdjustmentArgs, '_ids' | 'physicalStoreId'>
     ) => {
       const existingAdjustments = StockAdjustments.find({
         _id: { $in: _ids },
@@ -200,7 +243,7 @@ export default {
         approvedBy: { $exists: false },
       });
 
-      await existingAdjustments.forEachAsync(async existingAdjustment => {
+      await existingAdjustments.forEachAsync(async (existingAdjustment: StockAdjustment) => {
         // Undo the effect of this adjustment
         if (existingAdjustment.isInflow) {
           await StockItems.decrementCurrentLevel(

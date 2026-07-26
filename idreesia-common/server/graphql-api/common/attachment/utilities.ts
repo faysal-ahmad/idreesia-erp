@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
@@ -7,8 +6,18 @@ function getName() {
 }
 
 export async function createAttachment(
-  { name, description, mimeType, data },
-  { user }
+  {
+    name,
+    description,
+    mimeType,
+    data,
+  }: {
+    name?: string;
+    description?: string;
+    mimeType?: string;
+    data: string;
+  },
+  { user }: { user: { _id: string } }
 ) {
   let updateData = data;
   if (data.startsWith('data:image/jpeg;base64,')) {

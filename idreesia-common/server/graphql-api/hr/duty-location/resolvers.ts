@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   DutyLocations,
   KarkunDuties,
@@ -6,7 +5,12 @@ import {
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   DutyLocationType: {
     usedCount: async dutyLocationType =>
       KarkunDuties.find({
@@ -79,3 +83,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

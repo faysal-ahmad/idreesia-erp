@@ -1,11 +1,33 @@
-// @ts-nocheck
+import type DataLoader from 'dataloader';
 import {
   PurchaseForms,
   IssuanceForms,
   Locations,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-async function isLocationInUse(locationId, physicalStoreId) {
+interface LocationType {
+  _id: string;
+  physicalStoreId: string;
+  parentId?: string;
+}
+
+interface LocationArgs extends LocationType {
+  name?: string;
+  description?: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+  loaders: {
+    inventory: {
+      locations: DataLoader<string, unknown>;
+    };
+  };
+}
+
+async function isLocationInUse(locationId: string, physicalStoreId: string) {
   // If this has any child locations then it is in use
   const childCount = await Locations.find({
     parentId: locationId,
@@ -30,28 +52,31 @@ async function isLocationInUse(locationId, physicalStoreId) {
 export default {
   Location: {
     refParent: async (
-      location,
-      args,
+      location: LocationType,
+      _args: unknown,
       {
         loaders: {
           inventory: { locations },
         },
-      }
+      }: ResolverContext
     ) => {
       if (location.parentId) {
         return locations.load(location.parentId);
       }
       return null;
     },
-    isInUse: async location =>
+    isInUse: async (location: LocationType) =>
       isLocationInUse(location._id, location.physicalStoreId),
   },
   Query: {
-    locationById: async (obj, { _id }, { user }) => {
+    locationById: async (_obj: unknown, { _id }: Pick<LocationArgs, '_id'>) => {
       return Locations.findOneAsync(_id);
     },
 
-    locationsByPhysicalStoreId: async (obj, { physicalStoreId }, { user }) => {
+    locationsByPhysicalStoreId: async (
+      _obj: unknown,
+      { physicalStoreId }: Pick<LocationArgs, 'physicalStoreId'>
+    ) => {
       return Locations.find(
         {
           physicalStoreId: { $eq: physicalStoreId },
@@ -63,9 +88,9 @@ export default {
 
   Mutation: {
     createLocation: async (
-      obj,
-      { name, physicalStoreId, parentId, description },
-      { user }
+      _obj: unknown,
+      { name, physicalStoreId, parentId, description }: LocationArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       const locationId = await Locations.insertAsync({
@@ -83,9 +108,9 @@ export default {
     },
 
     updateLocation: async (
-      obj,
-      { _id, physicalStoreId, name, parentId, description },
-      { user }
+      _obj: unknown,
+      { _id, physicalStoreId, name, parentId, description }: LocationArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await Locations.updateAsync(
@@ -107,7 +132,10 @@ export default {
       return Locations.findOneAsync(_id);
     },
 
-    removeLocation: async (obj, { _id, physicalStoreId }, { user }) => {
+    removeLocation: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: LocationArgs
+    ) => {
       const inUse = await isLocationInUse(_id, physicalStoreId);
       if (!inUse) {
         return Locations.removeAsync({

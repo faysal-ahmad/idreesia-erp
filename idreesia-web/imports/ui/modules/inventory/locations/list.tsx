@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -26,16 +25,52 @@ import {
   LOCATIONS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const List = ({ history }) => {
+const AntButton = Button as any;
+const AntPopconfirm = Popconfirm as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntSyncOutlined = SyncOutlined as any;
+const RouterLink = Link as any;
+
+interface RouteParams {
+  physicalStoreId: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface ListProps {
+  history: HistoryLike;
+}
+
+interface LocationRecord {
+  _id: string;
+  name: string;
+  parentId?: string;
+  description?: string;
+  isInUse?: boolean;
+  refParent?: {
+    name?: string;
+  };
+}
+
+interface LocationsData {
+  locationsByPhysicalStoreId: LocationRecord[];
+}
+
+const List = ({ history }: ListProps) => {
   const dispatch = useDispatch();
-  const { physicalStoreId } = useParams();
+  const { physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const [removeLocation] = useMutation(REMOVE_LOCATION, {
-    refetchQueries: [{ 
-      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
+  const [removeLocation] = useMutation(REMOVE_LOCATION as any, {
+    refetchQueries: [{
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID as any,
       variables: {
         physicalStoreId,
-      }
+      },
     }],
   });
   
@@ -47,13 +82,13 @@ const List = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'List']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
   const handleNewClicked = () => {
     history.push(paths.locationsNewFormPath(physicalStoreId));
   };
 
-  const handleDeleteClicked = location => {
+  const handleDeleteClicked = (location: LocationRecord) => {
     removeLocation({
       variables: {
         _id: location._id,
@@ -63,40 +98,40 @@ const List = ({ history }) => {
       .then(() => {
         message.success('Location has been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link
+      render: (text: string, record: LocationRecord) => (
+        <RouterLink
           to={`${paths.locationsEditFormPath(
             physicalStoreId,
             record._id
           )}`}
         >
           {text}
-        </Link>
+        </RouterLink>
       ),
     },
     {
       title: 'Parent Location',
       dataIndex: 'parentId',
       key: 'parentId',
-      render: (text, record) => (
-        <Link
+      render: (_text: unknown, record: LocationRecord) => (
+        <RouterLink
           to={`${paths.itemCategoriesEditFormPath(
             physicalStoreId,
             record.parentId
           )}`}
         >
           {record.refParent ? record.refParent.name : ''}
-        </Link>
+        </RouterLink>
       ),
     },
     {
@@ -107,13 +142,13 @@ const List = ({ history }) => {
     {
       title: 'Actions',
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: LocationRecord) => {
         const { isInUse } = record;
 
         if (!isInUse) {
           return (
             <div className="list-actions-column">
-              <Popconfirm
+              <AntPopconfirm
                 title="Are you sure you want to delete this location?"
                 onConfirm={() => {
                   handleDeleteClicked(record);
@@ -121,10 +156,10 @@ const List = ({ history }) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+                <AntTooltip title="Delete">
+                  <AntDeleteOutlined className="list-actions-icon" />
+                </AntTooltip>
+              </AntPopconfirm>
             </div>
           );
         }
@@ -134,40 +169,45 @@ const List = ({ history }) => {
     },
   ];
 
-  const { data, loading, refetch } = useQuery(LOCATIONS_BY_PHYSICAL_STORE_ID, {
-    variables: { physicalStoreId }
-  });
+  const { data, loading, refetch } = useQuery(
+    LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+    {
+      variables: { physicalStoreId },
+    }
+  );
   
   if (loading) return null;
-  const { locationsByPhysicalStoreId } = data;
+  const { locationsByPhysicalStoreId } = (data as LocationsData) ?? {
+    locationsByPhysicalStoreId: [],
+  };
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={locationsByPhysicalStoreId}
       columns={columns}
       bordered
       title={() => (
         <div className="list-table-header">
-          <Button
+          <AntButton
             type="primary"
-            icon={<PlusCircleOutlined />}
+            icon={<AntPlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Location
-          </Button>
+          </AntButton>
           <div className="list-table-header-section">
-            <Button 
+            <AntButton
               size="large"
-              icon={<SyncOutlined />}
-              onClick={() => { refetch() }}
+              icon={<AntSyncOutlined />}
+              onClick={() => { refetch(); }}
             />
           </div>
         </div>
       )}
     />
   );
-}
+};
 
 List.propTypes = {
   history: PropTypes.object,

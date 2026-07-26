@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Accounts } from 'meteor/accounts-base';
 import { Migrations } from 'meteor/percolate:migrations';
 import { Companies } from 'meteor/idreesia-common/server/collections/accounts';
@@ -16,6 +15,7 @@ Migrations.add({
   version: 2,
   async up() {
     const adminUser = await Accounts.findUserByUsername('erp-admin');
+    if (!adminUser) throw new Error('Admin user not found.');
     let company = await Companies.findOneAsync({ name: 'Anjuman Jamia Masjid' });
     if (!company) {
       const date = new Date();

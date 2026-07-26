@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import {
@@ -9,7 +8,12 @@ import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getKarkunsByPredefinedFilter } from './queries';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   Query: {
     hrKarkunById: async (obj, { _id }) => {
       const person = await People.findOneAsync(_id);
@@ -19,7 +23,9 @@ export default {
     hrKarkunsById: async (obj, { _ids }) => {
       const idsArray = _ids.split(',');
       const people = await People.find({ _id: { $in: idsArray } }).fetchAsync();
-      return people.map(person => People.personToKarkun(person));
+      return people.map((person: Parameters<typeof People.personToKarkun>[0]) =>
+        People.personToKarkun(person)
+      );
     },
 
     pagedHrKarkuns: async (obj, { filter }) => {
@@ -49,16 +55,23 @@ export default {
           includeKarkuns: filter.showVolunteers === 'true',
           includeEmployees: filter.showEmployees === 'true',
         }
-      ).then(result => ({
-        karkuns: result.data.map(person => People.personToKarkun(person)),
-        totalResults: result.totalResults,
-      }));
+      ).then(result => {
+        const pagedResult = result as {
+          data: Parameters<typeof People.personToKarkun>[0][];
+          totalResults: number;
+        };
+        return {
+          karkuns: pagedResult.data.map(person => People.personToKarkun(person)),
+          totalResults: pagedResult.totalResults,
+        };
+      });
     },
   },
 
   Mutation: {
     createHrKarkun: async (obj, values, { user }) => {
       const multanCity = await Cities.getMultanCity();
+      if (!multanCity) throw new Error('Multan city is not configured.');
       const personValues = await People.karkunToPerson({
         ...values,
         isKarkun: true,
@@ -120,3 +133,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

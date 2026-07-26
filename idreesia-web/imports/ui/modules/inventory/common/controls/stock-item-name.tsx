@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -7,6 +6,11 @@ import { PictureOutlined } from '@ant-design/icons';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+
+const AntAvatar = Avatar as any;
+const AntModal = Modal as any;
+const AntPictureOutlined = PictureOutlined as any;
+const RouterLink = Link as any;
 
 const NameDivStyle = {
   display: 'flex',
@@ -18,7 +22,22 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const StockItemName = ({ stockItem, onStockItemNameClicked }) => {
+interface StockItem {
+  _id: string;
+  physicalStoreId: string;
+  name: string;
+  imageId?: string;
+}
+
+interface StockItemNameProps {
+  stockItem?: StockItem | null;
+  onStockItemNameClicked?(stockItem: StockItem): void;
+}
+
+const StockItemName = ({
+  stockItem,
+  onStockItemNameClicked,
+}: StockItemNameProps) => {
   const [showDialog, setShowDialog] = useState(false);
   if (!stockItem) return null;
 
@@ -31,22 +50,24 @@ const StockItemName = ({ stockItem, onStockItemNameClicked }) => {
       {stockItem.name}
     </div>
   ) : (
-    <Link
+    <RouterLink
       to={paths.stockItemsEditFormPath(
         stockItem.physicalStoreId,
         stockItem._id
       )}
     >
       {stockItem.name}
-    </Link>
+    </RouterLink>
   );
 
-  let imageUrl;
-  let avatarNode = <Avatar shape="square" size="large" icon={<PictureOutlined />} />;
+  let imageUrl: string | undefined;
+  let avatarNode = (
+    <AntAvatar shape="square" size="large" icon={<AntPictureOutlined />} />
+  );
   if (stockItem.imageId) {
-    imageUrl = getDownloadUrl(stockItem.imageId);
+    imageUrl = getDownloadUrl(stockItem.imageId) ?? undefined;
     avatarNode = (
-      <Avatar
+      <AntAvatar
         shape="square"
         size="large"
         src={imageUrl}
@@ -59,19 +80,19 @@ const StockItemName = ({ stockItem, onStockItemNameClicked }) => {
 
   return (
     <>
-      <div style={NameDivStyle}>
+      <div style={NameDivStyle as any}>
         {avatarNode}
         &nbsp;&nbsp;
         {nameNode}
       </div>
-      <Modal
+      <AntModal
         title={stockItem.name}
         open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
-        <img src={imageUrl} />
-      </Modal>
+        {imageUrl ? <img src={imageUrl} alt={stockItem.name} /> : null}
+      </AntModal>
     </>
   );
 };

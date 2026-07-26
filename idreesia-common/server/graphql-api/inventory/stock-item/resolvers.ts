@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type DataLoader from 'dataloader';
 import {
   StockItems,
   PurchaseForms,
@@ -9,9 +9,41 @@ import {
 import { getPagedStockItems, getStatistics } from './queries';
 import { mergeStockItems, recalculateStockLevels } from './helpers';
 
+interface StockItem {
+  _id: string;
+  physicalStoreId: string;
+  name?: string;
+  company?: string;
+  details?: string;
+  unitOfMeasurement?: string;
+  categoryId?: string;
+  minStockLevel?: number;
+  currentStockLevel?: number;
+  imageId?: string;
+}
+
+interface StockItemArgs extends StockItem {
+  queryString: string;
+  _ids: string[];
+  _idToKeep: string;
+  _idsToMerge: string[];
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+  loaders: {
+    inventory: {
+      itemCategories: DataLoader<string, unknown>;
+      physicalStores: DataLoader<string, unknown>;
+    };
+  };
+}
+
 export default {
   StockItem: {
-    formattedName: async stockItem => {
+    formattedName: async (stockItem: StockItem) => {
       const { name, company, details } = stockItem;
       let formattedName = name;
       if (company) {
@@ -23,18 +55,21 @@ export default {
       return formattedName;
     },
     categoryName: async (
-      stockItem,
-      args,
+      stockItem: StockItem,
+      _args: unknown,
       {
         loaders: {
           inventory: { itemCategories },
         },
-      }
+      }: ResolverContext
     ) => {
-      const itemCategory = await itemCategories.load(stockItem.categoryId);
-      return itemCategory.name;
+      if (!stockItem.categoryId) return null;
+      const itemCategory = (await itemCategories.load(stockItem.categoryId)) as
+        | { name?: string }
+        | undefined;
+      return itemCategory?.name;
     },
-    purchaseFormsCount: async stockItem =>
+    purchaseFormsCount: async (stockItem: StockItem) =>
       PurchaseForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         items: {
@@ -43,7 +78,7 @@ export default {
           },
         },
       }).countAsync(),
-    issuanceFormsCount: async stockItem =>
+    issuanceFormsCount: async (stockItem: StockItem) =>
       IssuanceForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         items: {
@@ -52,19 +87,19 @@ export default {
           },
         },
       }).countAsync(),
-    stockAdjustmentsCount: async stockItem =>
+    stockAdjustmentsCount: async (stockItem: StockItem) =>
       StockAdjustments.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         stockItemId: { $eq: stockItem._id },
       }).countAsync(),
     refPhysicalStore: async (
-      stockItem,
-      args,
+      stockItem: StockItem,
+      _args: unknown,
       {
         loaders: {
           inventory: { physicalStores },
         },
-      }
+      }: ResolverContext
     ) => {
       return physicalStores.load(stockItem.physicalStoreId);
     },
@@ -72,18 +107,20 @@ export default {
 
   Query: {
     pagedStockItems: async (
-      obj,
-      { physicalStoreId, queryString },
-      { user }
+      _obj: unknown,
+      { physicalStoreId, queryString }: StockItemArgs
     ) => {
       return getPagedStockItems(queryString, physicalStoreId);
     },
 
-    stockItemById: async (obj, { _id }, { user }) => {
+    stockItemById: async (_obj: unknown, { _id }: Pick<StockItemArgs, '_id'>) => {
       return StockItems.findOneAsync(_id);
     },
 
-    stockItemsById: async (obj, { physicalStoreId, _ids }, { user }) => {
+    stockItemsById: async (
+      _obj: unknown,
+      { physicalStoreId, _ids }: Pick<StockItemArgs, 'physicalStoreId' | '_ids'>
+    ) => {
       if (!_ids || _ids.length === 0) return [];
       return StockItems.find({
         _id: { $in: _ids },
@@ -91,14 +128,17 @@ export default {
       }).fetchAsync();
     },
 
-    inventoryStatistics: async (obj, { physicalStoreId }, { user }) => {
+    inventoryStatistics: async (
+      _obj: unknown,
+      { physicalStoreId }: Pick<StockItemArgs, 'physicalStoreId'>
+    ) => {
       return getStatistics(physicalStoreId);
     },
   },
 
   Mutation: {
     createStockItem: async (
-      obj,
+      _obj: unknown,
       {
         name,
         company,
@@ -108,8 +148,8 @@ export default {
         physicalStoreId,
         minStockLevel,
         currentStockLevel,
-      },
-      { user }
+      }: StockItemArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       const stockItemId = await StockItems.insertAsync({
@@ -132,7 +172,7 @@ export default {
     },
 
     updateStockItem: async (
-      obj,
+      _obj: unknown,
       {
         _id,
         physicalStoreId,
@@ -142,8 +182,8 @@ export default {
         unitOfMeasurement,
         categoryId,
         minStockLevel,
-      },
-      { user }
+      }: StockItemArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await StockItems.updateAsync(
@@ -168,7 +208,11 @@ export default {
       return StockItems.findOneAsync(_id);
     },
 
-    verifyStockItemLevel: async (obj, { _id, physicalStoreId }, { user }) => {
+    verifyStockItemLevel: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: Pick<StockItemArgs, '_id' | 'physicalStoreId'>,
+      { user }: ResolverContext
+    ) => {
       const date = new Date();
       await StockItems.updateAsync(
         {
@@ -187,7 +231,10 @@ export default {
       return StockItems.findOneAsync(_id);
     },
 
-    removeStockItem: async (obj, { _id, physicalStoreId }, { user }) => {
+    removeStockItem: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: Pick<StockItemArgs, '_id' | 'physicalStoreId'>
+    ) => {
       // Check that there are no purchase/issuance forms, or stock adjustments
       // against this stock item.
       const purchaseFormsCount = await PurchaseForms.find({
@@ -225,9 +272,9 @@ export default {
     },
 
     setStockItemImage: async (
-      obj,
-      { _id, physicalStoreId, imageId },
-      { user }
+      _obj: unknown,
+      { _id, physicalStoreId, imageId }: StockItemArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await StockItems.updateAsync(
@@ -248,24 +295,20 @@ export default {
     },
 
     mergeStockItems: async (
-      obj,
-      { _idToKeep, _idsToMerge, physicalStoreId },
-      { user }
+      _obj: unknown,
+      { _idToKeep, _idsToMerge, physicalStoreId }: StockItemArgs
     ) => {
       await mergeStockItems(_idToKeep, _idsToMerge, physicalStoreId);
       return StockItems.findOneAsync(_idToKeep);
     },
 
     recalculateStockLevels: async (
-      obj,
-      { _ids, physicalStoreId },
-      { user }
+      _obj: unknown,
+      { _ids, physicalStoreId }: Pick<StockItemArgs, '_ids' | 'physicalStoreId'>
     ) => {
-      await _ids.reduce(
-        (prevPromise, id) =>
-          prevPromise.then(() => recalculateStockLevels(id, physicalStoreId)),
-        Promise.resolve()
-      );
+      for (const id of _ids) {
+        await recalculateStockLevels(id, physicalStoreId);
+      }
 
       return StockItems.find({
         _id: { $in: _ids },

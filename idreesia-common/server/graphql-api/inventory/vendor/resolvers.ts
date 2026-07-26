@@ -1,22 +1,40 @@
-// @ts-nocheck
 import {
   Vendors,
   PurchaseForms,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
+interface Vendor {
+  _id: string;
+  physicalStoreId: string;
+  name?: string;
+  contactPerson?: string;
+  contactNumber?: string;
+  address?: string;
+  notes?: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+}
+
 export default {
   Vendor: {
-    usageCount: async vendor =>
+    usageCount: async (vendor: Vendor) =>
       PurchaseForms.find({
         vendorId: { $eq: vendor._id },
       }).countAsync(),
   },
   Query: {
-    vendorById: async (obj, { _id }) => {
+    vendorById: async (_obj: unknown, { _id }: Pick<Vendor, '_id'>) => {
       return Vendors.findOneAsync(_id);
     },
 
-    vendorsByPhysicalStoreId: async (obj, { physicalStoreId }) => {
+    vendorsByPhysicalStoreId: async (
+      _obj: unknown,
+      { physicalStoreId }: Pick<Vendor, 'physicalStoreId'>
+    ) => {
       return Vendors.find(
         {
           physicalStoreId: { $eq: physicalStoreId },
@@ -28,9 +46,9 @@ export default {
 
   Mutation: {
     createVendor: async (
-      obj,
-      { name, physicalStoreId, contactPerson, contactNumber, address, notes },
-      { user }
+      _obj: unknown,
+      { name, physicalStoreId, contactPerson, contactNumber, address, notes }: Vendor,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       const vendorId = await Vendors.insertAsync({
@@ -50,7 +68,7 @@ export default {
     },
 
     updateVendor: async (
-      obj,
+      _obj: unknown,
       {
         _id,
         physicalStoreId,
@@ -59,8 +77,8 @@ export default {
         contactNumber,
         address,
         notes,
-      },
-      { user }
+      }: Vendor,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await Vendors.updateAsync(
@@ -84,7 +102,10 @@ export default {
       return Vendors.findOneAsync(_id);
     },
 
-    removeVendor: async (obj, { _id, physicalStoreId }) => {
+    removeVendor: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: Pick<Vendor, '_id' | 'physicalStoreId'>
+    ) => {
       const purchaseFormsCount = await PurchaseForms.find({
         vendorId: { $eq: _id },
         physicalStoreId: { $eq: physicalStoreId },

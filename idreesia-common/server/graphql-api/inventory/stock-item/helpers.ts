@@ -1,5 +1,3 @@
-// @ts-nocheck
-import { reduce } from 'meteor/idreesia-common/utilities/lodash';
 import {
   StockItems,
   IssuanceForms,
@@ -7,7 +5,27 @@ import {
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-async function mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId) {
+interface ItemEntry extends Record<string, unknown> {
+  stockItemId: string;
+  isInflow?: boolean;
+  quantity: number;
+}
+
+interface FormWithItems {
+  _id?: string;
+  items?: ItemEntry[];
+}
+
+interface StockLevelChange {
+  isInflow?: boolean;
+  quantity: number;
+}
+
+async function mergeIssuanceForms(
+  _idToKeep: string,
+  _idsToMerge: string[],
+  physicalStoreId: string
+) {
   const issuanceForms = await IssuanceForms.find({
     physicalStoreId: { $eq: physicalStoreId },
     items: {
@@ -15,11 +33,11 @@ async function mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId) {
         stockItemId: { $in: _idsToMerge },
       },
     },
-  }).fetchAsync();
+  }).fetchAsync() as FormWithItems[];
 
   await Promise.all(
     issuanceForms.map(issuanceForm => {
-      const { items } = issuanceForm;
+      const { items = [] } = issuanceForm;
       const updatedItems = items.map(item => {
         if (_idsToMerge.indexOf(item.stockItemId) !== -1) {
           return Object.assign({}, item, { stockItemId: _idToKeep });
@@ -28,6 +46,7 @@ async function mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId) {
         return item;
       });
 
+      if (!issuanceForm._id) return Promise.resolve(0);
       return IssuanceForms.updateAsync(issuanceForm._id, {
         $set: { items: updatedItems },
       });
@@ -35,7 +54,11 @@ async function mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId) {
   );
 }
 
-async function mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId) {
+async function mergePurchaseForms(
+  _idToKeep: string,
+  _idsToMerge: string[],
+  physicalStoreId: string
+) {
   const purchaseForms = await PurchaseForms.find({
     physicalStoreId: { $eq: physicalStoreId },
     items: {
@@ -43,11 +66,11 @@ async function mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId) {
         stockItemId: { $in: _idsToMerge },
       },
     },
-  }).fetchAsync();
+  }).fetchAsync() as FormWithItems[];
 
   await Promise.all(
     purchaseForms.map(purchaseForm => {
-      const { items } = purchaseForm;
+      const { items = [] } = purchaseForm;
       const updatedItems = items.map(item => {
         if (_idsToMerge.indexOf(item.stockItemId) !== -1) {
           return Object.assign({}, item, { stockItemId: _idToKeep });
@@ -56,6 +79,7 @@ async function mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId) {
         return item;
       });
 
+      if (!purchaseForm._id) return Promise.resolve(0);
       return PurchaseForms.updateAsync(purchaseForm._id, {
         $set: { items: updatedItems },
       });
@@ -63,7 +87,11 @@ async function mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId) {
   );
 }
 
-async function mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId) {
+async function mergeStockAdjustments(
+  _idToKeep: string,
+  _idsToMerge: string[],
+  physicalStoreId: string
+) {
   return StockAdjustments.updateAsync(
     {
       physicalStoreId: { $eq: physicalStoreId },
@@ -79,18 +107,18 @@ async function mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId) {
 }
 
 async function mergeStartingStockLevels(
-  _idToKeep,
-  _idsToMerge,
-  physicalStoreId
+  _idToKeep: string,
+  _idsToMerge: string[],
+  physicalStoreId: string
 ) {
   const stockItems = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     _id: { $in: [_idToKeep, ..._idsToMerge] },
   }).fetchAsync();
 
-  const newStartingStockLevel = reduce(
-    stockItems,
-    (accumulator, { startingStockLevel }) => accumulator + startingStockLevel,
+  const newStartingStockLevel = stockItems.reduce(
+    (accumulator: number, { startingStockLevel = 0 }) =>
+      accumulator + startingStockLevel,
     0
   );
 
@@ -107,9 +135,9 @@ async function mergeStartingStockLevels(
   );
 }
 
-export async function recalculateStockLevels(id, physicalStoreId) {
+export async function recalculateStockLevels(id: string, physicalStoreId: string) {
   const stockItem = await StockItems.findOneAsync(id);
-  const { startingStockLevel } = stockItem;
+  const { startingStockLevel = 0 } = stockItem ?? {};
   let currentStockLevel = startingStockLevel;
 
   const issuanceForms = await IssuanceForms.find({
@@ -121,8 +149,8 @@ export async function recalculateStockLevels(id, physicalStoreId) {
     },
   });
 
-  await issuanceForms.forEachAsync(issuanceForm => {
-    const { items } = issuanceForm;
+  await issuanceForms.forEachAsync((issuanceForm: FormWithItems) => {
+    const { items = [] } = issuanceForm;
     items.forEach(({ stockItemId, isInflow, quantity }) => {
       if (stockItemId === id) {
         currentStockLevel = isInflow
@@ -141,8 +169,8 @@ export async function recalculateStockLevels(id, physicalStoreId) {
     },
   });
 
-  await purchaseForms.forEachAsync(purchaseForm => {
-    const { items } = purchaseForm;
+  await purchaseForms.forEachAsync((purchaseForm: FormWithItems) => {
+    const { items = [] } = purchaseForm;
     items.forEach(({ stockItemId, isInflow, quantity }) => {
       if (stockItemId === id) {
         currentStockLevel = isInflow
@@ -157,7 +185,7 @@ export async function recalculateStockLevels(id, physicalStoreId) {
     stockItemId: { $eq: id },
   });
 
-  await stockAdjustments.forEachAsync(({ isInflow, quantity }) => {
+  await stockAdjustments.forEachAsync(({ isInflow, quantity }: StockLevelChange) => {
     currentStockLevel = isInflow
       ? currentStockLevel + quantity
       : currentStockLevel - quantity;
@@ -169,7 +197,11 @@ export async function recalculateStockLevels(id, physicalStoreId) {
   });
 }
 
-export async function mergeStockItems(_idToKeep, _idsToMerge, physicalStoreId) {
+export async function mergeStockItems(
+  _idToKeep: string,
+  _idsToMerge: string[],
+  physicalStoreId: string
+) {
   await mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId);
   await mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId);
   await mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId);

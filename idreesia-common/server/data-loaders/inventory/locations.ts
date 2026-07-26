@@ -1,15 +1,17 @@
-// @ts-nocheck
 import keyBy from 'lodash/keyBy';
 import DataLoader from 'dataloader';
 import { Locations } from 'meteor/idreesia-common/server/collections/inventory';
 
-export async function getLocations(locationIds) {
+type LoaderRecord = Record<string, unknown>;
+
+export async function getLocations(locationIds: readonly string[]) {
   const locations = await Locations.find({
     _id: { $in: locationIds },
   }).fetchAsync();
 
-  const locationsMap = keyBy(locations, '_id');
+  const locationsMap = keyBy(locations, '_id') as Record<string, LoaderRecord>;
   return locationIds.map(id => locationsMap[id]);
 }
 
-export const locationsDataLoader = () => new DataLoader(getLocations);
+export const locationsDataLoader = () =>
+  new DataLoader<string, LoaderRecord | undefined>(getLocations);

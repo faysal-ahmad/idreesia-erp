@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -16,7 +15,63 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
-class Report extends Component {
+const AntButton = Button as any;
+const AntDatePickerMonth = DatePicker.MonthPicker as any;
+const AntSpin = Spin as any;
+const AntTable = Table as any;
+const AntLeftOutlined = LeftOutlined as any;
+const AntRightOutlined = RightOutlined as any;
+const StockItemNameComponent = StockItemName as any;
+
+interface LocationRecord {
+  _id: string;
+  name: string;
+}
+
+interface IssuanceItem {
+  stockItemId: string;
+  quantity: number;
+  isInflow: boolean;
+  refStockItem: {
+    name: string;
+    imageId?: string;
+    categoryName?: string;
+    unitOfMeasurement?: string;
+  };
+}
+
+interface IssuanceForm {
+  locationId?: string;
+  items: IssuanceItem[];
+}
+
+interface LocationSummary {
+  locationId: string;
+  locationName: string;
+  quantity: number;
+}
+
+interface IssuanceSummaryItem {
+  stockItemId: string;
+  stockItemName: string;
+  stockItemImageId?: string;
+  categoryName?: string;
+  unitOfMeasurement?: string;
+  byLocation: Record<string, LocationSummary>;
+  quantity: number;
+}
+
+interface ReportProps {
+  month: dayjs.Dayjs;
+  monthString: string;
+  physicalStoreId?: string;
+  setPageParams(params: { month: dayjs.Dayjs | null }): void;
+  loading?: boolean;
+  locations?: LocationRecord[];
+  issuanceFormsByMonth?: IssuanceForm[];
+}
+
+class Report extends Component<ReportProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -30,12 +85,12 @@ class Report extends Component {
     issuanceFormsByMonth: PropTypes.array,
   };
 
-  columns = [
+  columns: any[] = [
     {
       title: 'Item Name',
       dataIndex: 'stockItemName',
       key: 'stockItemName',
-      render: (text, record) => {
+      render: (_text: unknown, record: IssuanceSummaryItem) => {
         const { physicalStoreId } = this.props;
         const stockItem = {
           _id: record.stockItemId,
@@ -43,7 +98,7 @@ class Report extends Component {
           name: record.stockItemName,
           imageId: record.stockItemImageId,
         };
-        return <StockItemName stockItem={stockItem} />;
+        return <StockItemNameComponent stockItem={stockItem} />;
       },
     },
     {
@@ -55,8 +110,8 @@ class Report extends Component {
       title: 'Issued',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (text, record) => {
-        let quantity = text;
+      render: (text: number, record: IssuanceSummaryItem) => {
+        let quantity: number | string = text;
         if (record.unitOfMeasurement !== 'quantity') {
           quantity = `${quantity} ${record.unitOfMeasurement}`;
         }
@@ -68,10 +123,13 @@ class Report extends Component {
       title: 'Issued (By Location)',
       dataIndex: 'byLocation',
       key: 'byLocation',
-      render: (byLocation, record) => {
+      render: (
+        byLocation: Record<string, LocationSummary>,
+        record: IssuanceSummaryItem
+      ) => {
         const locationIds = keys(byLocation);
-        const locationNodes = [];
-        locationIds.forEach(locationId => {
+        const locationNodes: React.ReactNode[] = [];
+        locationIds.forEach((locationId: string) => {
           const locationObj = byLocation[locationId];
           let nodeText = `${locationObj.locationName} - ${locationObj.quantity}`;
           if (record.unitOfMeasurement !== 'quantity') {
@@ -86,7 +144,7 @@ class Report extends Component {
     },
   ];
 
-  handleMonthChange = value => {
+  handleMonthChange = (value: dayjs.Dayjs | null) => {
     const { setPageParams } = this.props;
     setPageParams({
       month: value,
@@ -112,24 +170,24 @@ class Report extends Component {
     return (
       <div className="list-table-header">
         <div>
-          <Button
+          <AntButton
             type="primary"
             shape="circle"
-            icon={<LeftOutlined />}
+            icon={<AntLeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
-          <DatePicker.MonthPicker
+          <AntDatePickerMonth
             allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
             value={month}
           />
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             type="primary"
             shape="circle"
-            icon={<RightOutlined />}
+            icon={<AntRightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>
@@ -138,16 +196,16 @@ class Report extends Component {
   };
 
   getIssuanceSummary = () => {
-    const { locations } = this.props;
+    const { locations = [] } = this.props;
     const locationsMap = keyBy(locations, '_id');
-    const issuanceSummary = [];
-    const issuanceSummaryMap = {};
+    const issuanceSummary: IssuanceSummaryItem[] = [];
+    const issuanceSummaryMap: Record<string, IssuanceSummaryItem> = {};
 
     const { issuanceFormsByMonth } = this.props;
     if (!issuanceFormsByMonth) return null;
-    issuanceFormsByMonth.forEach(issuanceForm => {
+    issuanceFormsByMonth.forEach((issuanceForm: IssuanceForm) => {
       const { locationId, items } = issuanceForm;
-      items.forEach(item => {
+      items.forEach((item: IssuanceItem) => {
         let summaryItem = issuanceSummaryMap[item.stockItemId];
         if (!summaryItem) {
           summaryItem = {
@@ -202,11 +260,11 @@ class Report extends Component {
   render() {
     const { loading } = this.props;
     if (loading) {
-      return <Spin size="large" />;
+      return <AntSpin size="large" />;
     }
 
     return (
-      <Table
+      <AntTable
         rowKey="stockItemId"
         title={this.getTableHeader}
         dataSource={this.getIssuanceSummary()}
@@ -243,9 +301,15 @@ const listQuery = gql`
 
 export default flowRight(
   withQuery(listQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId, monthString }) => ({
+    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
+    options: ({
+      physicalStoreId,
+      monthString,
+    }: {
+      physicalStoreId?: string;
+      monthString?: string;
+    }) => ({
       variables: { physicalStoreId, month: monthString },
     }),
   })
-)(Report);
+)(Report as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import path from 'path';
 import { config } from 'dotenv';
 
@@ -7,7 +6,7 @@ import { config } from 'dotenv';
 import 'meteor/aldeed:collection2/static';
 
 config({
-  path: path.resolve(process.env.PWD, '.env'),
+  path: path.resolve(process.env.PWD ?? process.cwd(), '.env'),
 });
 
 import './configure-services';
@@ -30,17 +29,17 @@ import {
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
 // Build GraphQL schema based on SDL definitions and resolvers maps
-let schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
+let schema: any = makeExecutableSchema({
+  typeDefs: typeDefs as any,
+  resolvers: resolvers as any,
 });
 
-schema = CheckPermissionsDirective(schema);
-schema = CheckInstanceAccessDirective(schema);
+schema = CheckPermissionsDirective(schema) as any;
+schema = CheckInstanceAccessDirective(schema) as any;
 
 const server = new ApolloServer({
-  schema,
-  formatError: apolloErrorFormatter,
+  schema: schema as any,
+  formatError: apolloErrorFormatter as any,
 });
 
 const startServer = async () => {

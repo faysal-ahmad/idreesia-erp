@@ -1,9 +1,13 @@
-// @ts-nocheck
 import filter from 'lodash/filter';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { DataSource, ModuleNames } from 'meteor/idreesia-common/constants';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   Query: {
     pagedSecurityUsers: async () => {
       const usersFilter = {
@@ -20,8 +24,8 @@ export default {
       { user }
     ) => {
       // Get the existing permissions for the user
-      const userWithPermissions = Users.findOneUser(userId);
-      const existingPermissions = userWithPermissions.permissions;
+      const userWithPermissions = await Users.findOneUser(userId);
+      const existingPermissions = userWithPermissions.permissions ?? [];
       // Filter out the existing permissions for the security module
       const filteredPermissions = filter(
         existingPermissions,
@@ -37,3 +41,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

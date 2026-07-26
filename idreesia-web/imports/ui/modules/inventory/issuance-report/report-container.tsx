@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -14,7 +13,31 @@ import {
 
 import Report from './report';
 
-class ReportContainer extends Component {
+interface PhysicalStore {
+  name: string;
+}
+
+interface LocationRecord {
+  _id: string;
+  name: string;
+}
+
+interface ReportContainerProps {
+  physicalStoreId?: string;
+  physicalStoreLoading?: boolean;
+  physicalStore?: PhysicalStore;
+  locationsLoading?: boolean;
+  locationsByPhysicalStoreId?: LocationRecord[];
+}
+
+interface ReportContainerState {
+  month: dayjs.Dayjs;
+}
+
+class ReportContainer extends Component<
+  ReportContainerProps,
+  ReportContainerState
+> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -30,7 +53,7 @@ class ReportContainer extends Component {
     month: dayjs(),
   };
 
-  setPageParams = pageParams => {
+  setPageParams = (pageParams: Pick<ReportContainerState, 'month'>) => {
     this.setState(pageParams);
   };
 
@@ -63,10 +86,10 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Reports, Issuance Report`;
     }
     return `Inventory, Reports, Issuance Report`;
   })
-)(ReportContainer);
+)(ReportContainer as any);

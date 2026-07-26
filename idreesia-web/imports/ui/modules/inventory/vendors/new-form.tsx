@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
@@ -19,17 +18,42 @@ import {
   VENDORS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+
+interface RouteParams {
+  physicalStoreId: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface NewFormProps {
+  history: HistoryLike;
+}
+
+interface VendorFormValues {
+  name: string;
+  contactPerson?: string;
+  contactNumber?: string;
+  address?: string;
+  notes?: string;
+}
+
+const NewForm = ({ history }: NewFormProps) => {
   const dispatch = useDispatch();
-  const { physicalStoreId } = useParams();
+  const { physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createVendor] = useMutation(CREATE_VENDOR, {
-    refetchQueries: [{ 
-      query: VENDORS_BY_PHYSICAL_STORE_ID,
+  const [createVendor] = useMutation(CREATE_VENDOR as any, {
+    refetchQueries: [{
+      query: VENDORS_BY_PHYSICAL_STORE_ID as any,
       variables: {
         physicalStoreId,
-      }
+      },
     }],
   });
 
@@ -41,7 +65,7 @@ const NewForm = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'New']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
   const handleCancel = () => {
     history.goBack();
@@ -49,9 +73,15 @@ const NewForm = ({ history }) => {
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
-  }
+  };
 
-  const handleFinish = ({ name, contactPerson, contactNumber, address, notes }) => {
+  const handleFinish = ({
+    name,
+    contactPerson,
+    contactNumber,
+    address,
+    notes,
+  }: VendorFormValues) => {
     createVendor({
       variables: {
         name,
@@ -66,42 +96,46 @@ const NewForm = ({ history }) => {
         message.success('New vendor was created successfully.', 5);
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={handleFieldsChange}
+    >
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the vendor."
       />
-      <InputTextField
+      <TextField
         fieldName="contactPerson"
         fieldLabel="Contact Person"
       />
-      <InputTextField
+      <TextField
         fieldName="contactNumber"
         fieldLabel="Contact Number"
       />
-      <InputTextAreaField
+      <TextAreaField
         fieldName="address"
         fieldLabel="Address"
       />
-      <InputTextAreaField
+      <TextAreaField
         fieldName="notes"
         fieldLabel="Notes"
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
-}
+};
 
 NewForm.propTypes = {
   history: PropTypes.object,

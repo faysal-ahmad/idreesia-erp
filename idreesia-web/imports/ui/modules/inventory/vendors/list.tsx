@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -26,16 +25,50 @@ import {
   VENDORS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const List = ({ history }) => {
+const AntButton = Button as any;
+const AntPopconfirm = Popconfirm as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntSyncOutlined = SyncOutlined as any;
+const RouterLink = Link as any;
+
+interface RouteParams {
+  physicalStoreId: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface ListProps {
+  history: HistoryLike;
+}
+
+interface Vendor {
+  _id: string;
+  name: string;
+  contactPerson?: string;
+  contactNumber?: string;
+  address?: string;
+  usageCount?: number;
+}
+
+interface VendorsData {
+  vendorsByPhysicalStoreId: Vendor[];
+}
+
+const List = ({ history }: ListProps) => {
   const dispatch = useDispatch();
-  const { physicalStoreId } = useParams();
+  const { physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const [removeVendor] = useMutation(REMOVE_VENDOR, {
-    refetchQueries: [{ 
-      query: VENDORS_BY_PHYSICAL_STORE_ID,
+  const [removeVendor] = useMutation(REMOVE_VENDOR as any, {
+    refetchQueries: [{
+      query: VENDORS_BY_PHYSICAL_STORE_ID as any,
       variables: {
         physicalStoreId,
-      }
+      },
     }],
   });
   
@@ -47,13 +80,13 @@ const List = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'List']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
   const handleNewClicked = () => {
     history.push(paths.vendorsNewFormPath(physicalStoreId));
   };
 
-  const handleDeleteClicked = vendor => {
+  const handleDeleteClicked = (vendor: Vendor) => {
     removeVendor({
       variables: {
         _id: vendor._id,
@@ -63,25 +96,25 @@ const List = ({ history }) => {
       .then(() => {
         message.success('Vendor has been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link
+      render: (text: string, record: Vendor) => (
+        <RouterLink
           to={`${paths.vendorsEditFormPath(
             physicalStoreId,
             record._id
           )}`}
         >
           {text}
-        </Link>
+        </RouterLink>
       ),
     },
     {
@@ -102,13 +135,13 @@ const List = ({ history }) => {
     {
       title: 'Actions',
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: Vendor) => {
         const { usageCount } = record;
 
         if (usageCount === 0) {
           return (
             <div className="list-actions-column">
-              <Popconfirm
+              <AntPopconfirm
                 title="Are you sure you want to delete this vendor?"
                 onConfirm={() => {
                   handleDeleteClicked(record);
@@ -116,10 +149,10 @@ const List = ({ history }) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+                <AntTooltip title="Delete">
+                  <AntDeleteOutlined className="list-actions-icon" />
+                </AntTooltip>
+              </AntPopconfirm>
             </div>
           );
         }
@@ -129,32 +162,37 @@ const List = ({ history }) => {
     },
   ];
 
-  const { data, loading, refetch } = useQuery(VENDORS_BY_PHYSICAL_STORE_ID, {
-    variables: { physicalStoreId }
-  });
+  const { data, loading, refetch } = useQuery(
+    VENDORS_BY_PHYSICAL_STORE_ID as any,
+    {
+      variables: { physicalStoreId },
+    }
+  );
   
   if (loading) return null;
-  const { vendorsByPhysicalStoreId } = data;
+  const { vendorsByPhysicalStoreId } = (data as VendorsData) ?? {
+    vendorsByPhysicalStoreId: [],
+  };
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={vendorsByPhysicalStoreId}
       columns={columns}
       bordered
       title={() => (
         <div className="list-table-header">
-          <Button
+          <AntButton
             type="primary"
-            icon={<PlusCircleOutlined />}
+            icon={<AntPlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Vendor
-          </Button>
+          </AntButton>
           <div className="list-table-header-section">
-            <Button 
+            <AntButton
               size="large"
-              icon={<SyncOutlined />}
+              icon={<AntSyncOutlined />}
               onClick={() => { refetch(); }}
             />
           </div>
@@ -162,7 +200,7 @@ const List = ({ history }) => {
       )}
     />
   );
-}
+};
 
 List.propTypes = {
   history: PropTypes.object,

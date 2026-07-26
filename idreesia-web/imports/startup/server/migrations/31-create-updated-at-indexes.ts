@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';

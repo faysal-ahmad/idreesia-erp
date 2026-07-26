@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
@@ -21,17 +20,48 @@ import {
   UPDATE_ITEM_CATEGORY,
 } from './gql';
 
-const EditForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+
+interface RouteParams {
+  physicalStoreId: string;
+  itemCategoryId: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface EditFormProps {
+  history: HistoryLike;
+}
+
+interface ItemCategory {
+  _id: string;
+  name: string;
+}
+
+interface ItemCategoryData {
+  itemCategoryById: ItemCategory;
+}
+
+interface ItemCategoryFormValues {
+  name: string;
+}
+
+const EditForm = ({ history }: EditFormProps) => {
   const dispatch = useDispatch();
-  const { physicalStoreId, itemCategoryId } = useParams();
+  const { physicalStoreId, itemCategoryId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [updateItemCategory] = useMutation(UPDATE_ITEM_CATEGORY, {
-    refetchQueries: [{ 
-      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
+  const [updateItemCategory] = useMutation(UPDATE_ITEM_CATEGORY as any, {
+    refetchQueries: [{
+      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID as any,
       variables: {
         physicalStoreId,
-      }
+      },
     }],
   });
   
@@ -43,14 +73,15 @@ const EditForm = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'Edit']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
-  const { data, loading } = useQuery(ITEM_CATEGORY_BY_ID, {
-    variables: { _id: itemCategoryId, physicalStoreId }
+  const { data, loading } = useQuery(ITEM_CATEGORY_BY_ID as any, {
+    variables: { _id: itemCategoryId, physicalStoreId },
   });
 
   if (loading) return null;
-  const { itemCategoryById } = data;
+  const { itemCategoryById } = (data as ItemCategoryData) ?? {};
+  if (!itemCategoryById) return null;
 
   const handleCancel = () => {
     history.push(paths.itemCategoriesPath(physicalStoreId));
@@ -58,9 +89,9 @@ const EditForm = ({ history }) => {
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
-  }
+  };
 
-  const handleFinish = ({ name }) => {
+  const handleFinish = ({ name }: ItemCategoryFormValues) => {
     updateItemCategory({
       variables: {
         _id: itemCategoryById._id,
@@ -72,30 +103,34 @@ const EditForm = ({ history }) => {
         message.success('Item category was updated successfully.', 5);
         history.push(paths.itemCategoriesPath(physicalStoreId));
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
     <>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
+      <AntForm
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
+      >
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           initialValue={itemCategoryById.name}
           required
           requiredMessage="Please input a name for the item category."
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={itemCategoryById} />
+      </AntForm>
+      <AuditInfoComponent record={itemCategoryById} />
     </>
   );
-}
+};
 
 EditForm.propTypes = {
   history: PropTypes.object,

@@ -1,9 +1,10 @@
-// @ts-nocheck
-import React from 'react';
+import React, { ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
 
+
+type AnyProps = Record<string, any>;
 const physicalStoreByIdQuery = gql`
   query physicalStoreById($id: String!) {
     physicalStoreById(id: $id) {
@@ -13,8 +14,8 @@ const physicalStoreByIdQuery = gql`
   }
 `;
 
-export const usePhysicalStore = physicalStoreId => {
-  const { data, loading, ...queryResult } = useQuery(physicalStoreByIdQuery, {
+export const usePhysicalStore = (physicalStoreId: string) => {
+  const { data, loading, ...queryResult } = useQuery(physicalStoreByIdQuery as any, {
     variables: { id: physicalStoreId },
   });
 
@@ -22,23 +23,21 @@ export const usePhysicalStore = physicalStoreId => {
     ...queryResult,
     loading,
     physicalStoreLoading: loading,
-    physicalStoreById: data ? data.physicalStoreById : null,
+    physicalStoreById: (data as any)?.physicalStoreById ?? null,
   };
 };
 
-export default () => WrappedComponent => {
-  const WithPhysicalStore = props => {
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithPhysicalStore = (props: AnyProps) => {
     const { physicalStoreId } = props;
     const physicalStoreProps = usePhysicalStore(physicalStoreId);
     const { physicalStoreById, ...restPhysicalStoreProps } = physicalStoreProps;
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...restPhysicalStoreProps}
-        physicalStore={physicalStoreById}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...restPhysicalStoreProps,
+      physicalStore: physicalStoreById,
+    });
   };
 
   WithPhysicalStore.propTypes = {

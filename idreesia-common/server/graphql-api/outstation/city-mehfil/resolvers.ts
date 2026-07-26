@@ -1,10 +1,31 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
 
+interface CityMehfilType {
+  _id: string;
+}
+
+interface CityMehfilArgs {
+  _id: string;
+  name?: string;
+  cityId?: string;
+  address?: string;
+  mehfilStartYear?: string;
+  timingDetails?: string;
+  lcdAvailability?: string;
+  tabAvailability?: string;
+  otherMehfilDetails?: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+}
+
 export default {
   CityMehfilType: {
-    karkunCount: async cityMehfilType =>
+    karkunCount: async (cityMehfilType: CityMehfilType) =>
       People.find({
         isKarkun: true,
         'karkunData.cityMehfilId': { $eq: cityMehfilType._id },
@@ -15,7 +36,10 @@ export default {
     allCityMehfils: async () =>
       CityMehfils.find({}, { sort: { name: 1 } }).fetchAsync(),
 
-    cityMehfilsByCityId: async (obj, { cityId }) =>
+    cityMehfilsByCityId: async (
+      _obj: unknown,
+      { cityId }: Pick<CityMehfilArgs, 'cityId'>
+    ) =>
       CityMehfils.find(
         {
           cityId,
@@ -23,12 +47,15 @@ export default {
         { sort: { name: 1 } }
       ).fetchAsync(),
 
-    cityMehfilById: async (obj, { _id }) => CityMehfils.findOneAsync(_id),
+    cityMehfilById: async (
+      _obj: unknown,
+      { _id }: Pick<CityMehfilArgs, '_id'>
+    ) => CityMehfils.findOneAsync(_id),
   },
 
   Mutation: {
     createCityMehfil: async (
-      obj,
+      _obj: unknown,
       {
         name,
         cityId,
@@ -38,8 +65,8 @@ export default {
         lcdAvailability,
         tabAvailability,
         otherMehfilDetails,
-      },
-      { user }
+      }: CityMehfilArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       const cityMehfilId = await CityMehfils.insertAsync({
@@ -61,7 +88,7 @@ export default {
     },
 
     updateCityMehfil: async (
-      obj,
+      _obj: unknown,
       {
         _id,
         name,
@@ -72,8 +99,8 @@ export default {
         lcdAvailability,
         tabAvailability,
         otherMehfilDetails,
-      },
-      { user }
+      }: CityMehfilArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await CityMehfils.updateAsync(_id, {
@@ -94,7 +121,10 @@ export default {
       return CityMehfils.findOneAsync(_id);
     },
 
-    removeCityMehfil: async (obj, { _id }, { user }) => {
+    removeCityMehfil: async (
+      _obj: unknown,
+      { _id }: Pick<CityMehfilArgs, '_id'>
+    ) => {
       const karkunCount = await People.find({
         isKarkun: true,
         'karkunData.cityMehfilId': { $eq: _id },

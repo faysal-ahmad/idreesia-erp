@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   PurchaseForms,
   StockItems,
@@ -13,7 +12,18 @@ import getPurchaseForms, {
   getPurchaseFormsByMonth,
 } from './queries';
 
-export default {
+interface FormItem {
+  stockItemId: string;
+  quantity: number;
+  isInflow?: boolean;
+}
+
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   PurchaseForm: {
     attachments: async (
       purchaseForm,
@@ -27,7 +37,9 @@ export default {
       const { attachmentIds } = purchaseForm;
       if (attachmentIds && attachmentIds.length > 0) {
         return Promise.all(
-          attachmentIds.map(attachmentId => attachments.load(attachmentId))
+          attachmentIds.map((attachmentId: string) =>
+            attachments.load(attachmentId)
+          )
         );
       }
 
@@ -155,7 +167,7 @@ export default {
       });
 
       await Promise.all(
-        items.map(({ stockItemId, quantity, isInflow }) => {
+        items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
             return StockItems.incrementCurrentLevel(stockItemId, quantity);
           }
@@ -183,10 +195,16 @@ export default {
       { user }
     ) => {
       const existingForm = await PurchaseForms.findOneAsync(_id);
-      const { items: existingItems } = existingForm;
+      if (!existingForm) {
+        throw new Error('Purchase form not found.');
+      }
+      const typedExistingForm = existingForm as unknown as {
+        items: FormItem[];
+      };
+      const { items: existingItems } = typedExistingForm;
       // Undo the effect of all previous items
       await Promise.all(
-        existingItems.map(({ stockItemId, quantity, isInflow }) => {
+        existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
             return StockItems.decrementCurrentLevel(stockItemId, quantity);
           }
@@ -197,7 +215,7 @@ export default {
 
       // Apply the effect of new incoming items
       await Promise.all(
-        items.map(({ stockItemId, quantity, isInflow }) => {
+        items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
             return StockItems.incrementCurrentLevel(stockItemId, quantity);
           }
@@ -312,10 +330,10 @@ export default {
         approvedBy: { $exists: false },
       });
 
-      await existingPurchaseForms.forEachAsync(async existingForm => {
+      await existingPurchaseForms.forEachAsync(async (existingForm: any) => {
         const { items: existingItems } = existingForm;
         await Promise.all(
-          existingItems.map(({ stockItemId, quantity, isInflow }) => {
+          existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
             if (isInflow) {
               return StockItems.decrementCurrentLevel(stockItemId, quantity);
             }
@@ -329,3 +347,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

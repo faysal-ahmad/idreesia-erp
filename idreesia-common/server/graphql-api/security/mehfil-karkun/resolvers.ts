@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Random } from 'meteor/random';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
@@ -7,7 +6,12 @@ import {
   MehfilDuties,
 } from 'meteor/idreesia-common/server/collections/security';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   MehfilKarkunType: {
     mehfil: async mehfilKarkunType =>
       Mehfils.findOneAsync(mehfilKarkunType.mehfilId),
@@ -89,3 +93,5 @@ export default {
     removeMehfilKarkun: async (obj, { _id }) => MehfilKarkuns.removeAsync(_id),
   },
 };
+
+export default resolvers;

@@ -1,13 +1,26 @@
-// @ts-nocheck
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
-export default function getCityMehfilCascaderData(allCities, allMehfils) {
+interface City {
+  _id: string;
+  name: string;
+}
+
+interface Mehfil {
+  _id: string;
+  name: string;
+  cityId: string;
+}
+
+export default function getCityMehfilCascaderData(
+  allCities?: City[] | null,
+  allMehfils?: Mehfil[] | null
+) {
   if (!allCities || !allMehfils) return null;
 
   const data = allCities.map(city => {
     const cityMehfils = filter(
       allMehfils,
-      mehfil => mehfil.cityId === city._id
+      (mehfil: Mehfil) => mehfil.cityId === city._id
     );
 
     const dataItem = {

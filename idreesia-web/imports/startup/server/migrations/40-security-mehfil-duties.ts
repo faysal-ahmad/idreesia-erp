@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 import { MehfilDuties as MehfilDutiesList } from 'meteor/idreesia-common/constants/security';
 import {
@@ -15,6 +14,7 @@ Migrations.add({
     const adminUser = await Meteor.users.findOneAsync({
       username: 'erp-admin',
     });
+    if (!adminUser) throw new Error('Admin user not found.');
     const date = new Date();
     for (const mehfilDuty of MehfilDutiesList) {
       const newMehfilDutyId = await MehfilDuties.insertAsync({

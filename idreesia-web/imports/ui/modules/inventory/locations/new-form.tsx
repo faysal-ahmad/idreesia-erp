@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
@@ -21,17 +20,53 @@ import {
   LOCATIONS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const TreeField = TreeSelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+
+interface RouteParams {
+  physicalStoreId: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+  push(path: string): void;
+}
+
+interface NewFormProps {
+  history: HistoryLike;
+}
+
+interface LocationRecord {
+  _id: string;
+  name: string;
+  parentId?: string | null;
+  description?: string;
+}
+
+interface LocationsData {
+  locationsByPhysicalStoreId: LocationRecord[];
+}
+
+interface LocationFormValues {
+  name: string;
+  parentId?: string | null;
+  description?: string;
+}
+
+const NewForm = ({ history }: NewFormProps) => {
   const dispatch = useDispatch();
-  const { physicalStoreId } = useParams();
+  const { physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createLocation] = useMutation(CREATE_LOCATION, {
-    refetchQueries: [{ 
-      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
+  const [createLocation] = useMutation(CREATE_LOCATION as any, {
+    refetchQueries: [{
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID as any,
       variables: {
         physicalStoreId,
-      }
+      },
     }],
   });
 
@@ -43,14 +78,19 @@ const NewForm = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'New']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
-  const { data: locationsData, loading: locationsDataLoading } = useQuery(LOCATIONS_BY_PHYSICAL_STORE_ID, {
-    variables: { physicalStoreId }
-  });
+  const { data: locationsData, loading: locationsDataLoading } = useQuery(
+    LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+    {
+      variables: { physicalStoreId },
+    }
+  );
 
   if (locationsDataLoading) return null;
-  const { locationsByPhysicalStoreId } = locationsData;
+  const { locationsByPhysicalStoreId } = (locationsData as LocationsData) ?? {
+    locationsByPhysicalStoreId: [],
+  };
 
   const handleCancel = () => {
     history.goBack();
@@ -58,9 +98,13 @@ const NewForm = ({ history }) => {
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
-  }
+  };
 
-  const handleFinish = ({ name, parentId, description }) => {
+  const handleFinish = ({
+    name,
+    parentId,
+    description,
+  }: LocationFormValues) => {
     createLocation({
       variables: { name, physicalStoreId, parentId, description },
     })
@@ -68,35 +112,39 @@ const NewForm = ({ history }) => {
         message.success('New location was created successfully.', 5);
         history.push(paths.locationsPath(physicalStoreId));
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={handleFieldsChange}
+    >
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the location."
       />
-      <TreeSelectField
+      <TreeField
         data={locationsByPhysicalStoreId}
         fieldName="parentId"
         fieldLabel="Parent Location"
       />
-      <InputTextAreaField
+      <TextAreaField
         fieldName="description"
         fieldLabel="Description"
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
-}
+};
 
 NewForm.propTypes = {
   history: PropTypes.object,

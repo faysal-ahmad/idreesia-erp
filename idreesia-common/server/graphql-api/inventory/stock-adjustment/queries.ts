@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { endOfDay, startOfDay } from 'date-fns';
 import { parse } from 'query-string';
 
@@ -7,8 +6,17 @@ import { StockAdjustments } from 'meteor/idreesia-common/server/collections/inve
 import { Formats } from 'meteor/idreesia-common/constants';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
-export function getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId) {
-  const pipeline = [
+type PipelineStage = Record<string, unknown>;
+
+interface CountResult {
+  total: number;
+}
+
+export function getStockAdjustmentsByStockItemId(
+  physicalStoreId: string,
+  stockItemId: string
+) {
+  const pipeline: PipelineStage[] = [
     {
       $match: {
         physicalStoreId: { $eq: physicalStoreId },
@@ -23,9 +31,12 @@ export function getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId) {
   return StockAdjustments.aggregate(pipeline);
 }
 
-export default function getStockAdjustments(queryString, physicalStoreId) {
+export default function getStockAdjustments(
+  queryString: string,
+  physicalStoreId: string
+) {
   const params = parse(queryString);
-  const pipeline = [
+  const pipeline: PipelineStage[] = [
     {
       $match: {
         physicalStoreId: { $eq: physicalStoreId },
@@ -42,6 +53,9 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
     pageIndex = '0',
     pageSize = '20',
   } = params;
+  const stockItemIdText = typeof stockItemId === 'string' ? stockItemId : '';
+  const startDateText = typeof startDate === 'string' ? startDate : '';
+  const endDateText = typeof endDate === 'string' ? endDate : '';
 
   if (showApproved === 'false' && showUnapproved === 'false') {
     return {
@@ -62,29 +76,29 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
     });
   }
 
-  if (stockItemId) {
+  if (stockItemIdText) {
     pipeline.push({
       $match: {
-        stockItemId: { $eq: stockItemId },
+        stockItemId: { $eq: stockItemIdText },
       },
     });
   }
 
-  if (startDate) {
+  if (startDateText) {
     pipeline.push({
       $match: {
         adjustmentDate: {
-          $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
+          $gte: startOfDay(parseDate(startDateText, Formats.DATE_FORMAT)),
         },
       },
     });
   }
 
-  if (endDate) {
+  if (endDateText) {
     pipeline.push({
       $match: {
         adjustmentDate: {
-          $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
+          $lte: endOfDay(parseDate(endDateText, Formats.DATE_FORMAT)),
         },
       },
     });
@@ -94,8 +108,8 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
   const resultsPipeline = pipeline.concat([
     { $sort: { adjustmentDate: -1 } },
     { $skip: nPageIndex * nPageSize },
@@ -103,7 +117,7 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
   ]);
 
   const data = StockAdjustments.aggregate(resultsPipeline);
-  const totalResults = StockAdjustments.aggregate(countingPipeline);
+  const totalResults = StockAdjustments.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([data, totalResults]).then(results => ({
     data: results[0],

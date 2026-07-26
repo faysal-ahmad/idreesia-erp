@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import {
@@ -7,7 +6,12 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   Query: {
     hrPersonById: async (obj, { _id }) => People.findOneAsync(_id),
 
@@ -21,6 +25,12 @@ export default {
         name: 'Multan',
         country: 'Pakistan',
       });
+      if (!multanCity) {
+        return {
+          data: [],
+          totalResults: 0,
+        };
+      }
       return People.searchPeople(
         {
           ...filter,
@@ -38,6 +48,7 @@ export default {
   Mutation: {
     createHrPerson: async (obj, values, { user }) => {
       const multanCity = await Cities.getMultanCity();
+      if (!multanCity) throw new Error('Multan city is not configured.');
       const personValues = await People.karkunToPerson({
         ...values,
         isKarkun: true,
@@ -99,3 +110,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

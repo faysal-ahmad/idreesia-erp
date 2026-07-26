@@ -1,8 +1,12 @@
-// @ts-nocheck
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { EntityType } from 'meteor/idreesia-common/constants/audit';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   Query: {
     pagedSecurityAuditLogs: async (obj, { filter }) => {
       const updatedFilter = Object.assign({}, filter, {
@@ -13,3 +17,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

@@ -26,6 +26,9 @@ declare namespace Meteor {
       backendUrl?: string;
       [key: string]: unknown;
     };
+    private?: {
+      [key: string]: unknown;
+    };
     [key: string]: unknown;
   }
 }
@@ -34,10 +37,18 @@ interface MeteorGlobal {
   settings: Meteor.Settings;
   absoluteUrl(path?: string): string;
   startup(callback: () => void): void;
+  bindEnvironment<TArgs extends unknown[], TReturn>(
+    callback: (...args: TArgs) => TReturn
+  ): (...args: TArgs) => TReturn;
   userId(): string | null;
   isClient: boolean;
   isCordova?: boolean;
   isServer: boolean;
+  users: import('meteor/mongo').Mongo.Collection<{
+    _id: string;
+    username?: string;
+    [key: string]: unknown;
+  }>;
 }
 
 declare const Meteor: MeteorGlobal;
@@ -87,6 +98,29 @@ declare module 'meteor/accounts-base' {
     logout(callback?: MeteorCallback): void;
     userId(): string | null;
   }
+
+  export const Accounts: {
+    emailTemplates: {
+      from?: string;
+      [key: string]: unknown;
+    };
+    urls: {
+      resetPassword?(token: string): string;
+      enrollAccount?(token: string): string;
+      [key: string]: unknown;
+    };
+    createUserAsync(options: Record<string, unknown>): Promise<string>;
+    findUserByUsername(
+      username: string
+    ): Promise<Record<string, unknown> | null>;
+    findUserByEmail(email: string): Promise<Record<string, unknown> | null>;
+    sendEnrollmentEmail(userId: string): Promise<void>;
+    updateOrCreateUserFromExternalService(
+      serviceName: string,
+      serviceData: Record<string, unknown>,
+      options: Record<string, unknown>
+    ): string | undefined | Promise<string | undefined>;
+  };
 }
 
 declare module 'meteor/mongo' {
@@ -99,21 +133,32 @@ declare module 'meteor/mongo' {
     }
 
     interface RawCollection<TDocument> {
+      collectionName: string;
       aggregate<TResult = TDocument>(
         pipeline?: readonly unknown[],
         options?: unknown
       ): {
         toArray(): Promise<TResult[]>;
       };
+      createIndex(keys: unknown, options?: unknown): Promise<string>;
+      dropIndex(indexName: string): Promise<unknown>;
+      distinct<TResult = unknown>(
+        fieldName: string,
+        query?: unknown
+      ): Promise<TResult[]>;
     }
 
     interface Cursor<TDocument> {
       countAsync(): Promise<number>;
       fetch(): TDocument[];
       fetchAsync(): Promise<TDocument[]>;
+      forEachAsync(
+        callback: (document: TDocument) => void | Promise<void>
+      ): Promise<void>;
     }
 
     class Collection<TDocument = Record<string, unknown>> {
+      _name: string;
       constructor(
         name: string,
         options?: CollectionOptions<TDocument>
@@ -132,8 +177,18 @@ declare module 'meteor/mongo' {
       ): Promise<number>;
       removeAsync(selector: unknown): Promise<number>;
       rawCollection(): RawCollection<TDocument>;
+      rawDatabase(): {
+        dropCollection(
+          name: string,
+          callback?: (error?: Error | null) => void
+        ): Promise<unknown> | void;
+      };
     }
   }
+
+  export const Assets: {
+    getText(path: string): string;
+  };
 }
 
 declare module 'meteor/react-meteor-data' {
@@ -142,6 +197,17 @@ declare module 'meteor/react-meteor-data' {
     deps?: import('react').DependencyList
   ): T;
 }
+
+declare const Assets: {
+  getText(path: string): string;
+};
+
+declare const ServiceConfiguration: {
+  configurations: {
+    upsert(selector: unknown, modifier: unknown): void;
+    upsertAsync(selector: unknown, modifier: unknown): Promise<void>;
+  };
+};
 
 declare module 'meteor/idreesia-common/*';
 declare module 'meteor/*';

@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { WebApp } from 'meteor/webapp';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
+import type { Request, Response } from 'express';
 
 import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
@@ -25,6 +25,7 @@ const ReportGenerators = {
   OutstationKarkuns: exportKarkuns,
   OutstationMembers: exportVisitors,
 };
+type ReportName = keyof typeof ReportGenerators;
 
 Meteor.startup(() => {
   const app = express();
@@ -37,15 +38,18 @@ Meteor.startup(() => {
   app.get(
     '/generate-report',
     bodyParser.urlencoded({ extended: false }),
-    Meteor.bindEnvironment(async (req, res) => {
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
       const { reportName, reportArgs } = req.query;
-      const reportGenerator = ReportGenerators[reportName];
+      const reportGenerator =
+        typeof reportName === 'string'
+          ? ReportGenerators[reportName as ReportName]
+          : undefined;
       if (reportGenerator) {
         const report = await reportGenerator(reportArgs);
         res.writeHead(200, {
           'Content-Type': 'application/vnd.ms-excel',
           'Content-Disposition': `attachment; filename=${kebabCase(
-            reportName
+            String(reportName)
           )}.xlsx`,
         });
         res.end(report);
@@ -64,9 +68,9 @@ Meteor.startup(() => {
   app.get(
     '/download-file',
     bodyParser.urlencoded({ extended: false }),
-    Meteor.bindEnvironment(async (req, res) => {
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
       const { attachmentId } = req.query;
-      if (attachmentId) {
+      if (typeof attachmentId === 'string') {
         const attachment = await Attachments.findOneAsync(attachmentId);
         if (attachment) {
           const imgData = Buffer.from(attachment.data, 'base64');
@@ -93,9 +97,11 @@ Meteor.startup(() => {
    */
   app.post(
     '/upload-file',
-    upload.single('file'),
-    Meteor.bindEnvironment(async (req, res) => {
-      const { file } = req;
+    upload.single('file') as any,
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
+      const { file } = req as Request & {
+        file: Express.Multer.File;
+      };
       const attachment = {
         name: file.originalname,
         mimeType: file.mimetype,
@@ -113,7 +119,7 @@ Meteor.startup(() => {
   app.post(
     '/upload-base64-file',
     bodyParser.json({ limit: '5mb' }),
-    Meteor.bindEnvironment(async (req, res) => {
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
       const { name, mimeType, data } = req.body;
       const attachment = {
         name,
@@ -125,5 +131,5 @@ Meteor.startup(() => {
     })
   );
 
-  WebApp.connectHandlers.use(app);
+  WebApp.connectHandlers.use(app as any);
 });

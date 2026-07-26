@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   Jobs,
   KarkunDuties,
@@ -12,9 +11,28 @@ import {
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
 
+interface PersonSharedDataType {
+  imageId?: string;
+}
+
+interface PersonKarkunDataType {
+  _id: string;
+  cityId?: string;
+  cityMehfilId?: string;
+  attachmentIds?: string[];
+}
+
+interface PersonEmployeeDataType {
+  jobId?: string;
+}
+
+interface PagedPeopleArgs {
+  filter?: Record<string, unknown>;
+}
+
 export default {
   PersonSharedDataType: {
-    image: async personSharedDataType => {
+    image: async (personSharedDataType: PersonSharedDataType) => {
       const { imageId } = personSharedDataType;
       if (imageId) {
         return Attachments.findOneAsync({ _id: { $eq: imageId } });
@@ -24,19 +42,19 @@ export default {
     },
   },
   PersonKarkunDataType: {
-    city: async personKarkunDataType => {
+    city: async (personKarkunDataType: PersonKarkunDataType) => {
       if (!personKarkunDataType.cityId) return null;
       return Cities.findOneAsync(personKarkunDataType.cityId);
     },
-    cityMehfil: async personKarkunDataType => {
+    cityMehfil: async (personKarkunDataType: PersonKarkunDataType) => {
       if (!personKarkunDataType.cityMehfilId) return null;
       return CityMehfils.findOneAsync(personKarkunDataType.cityMehfilId);
     },
-    duties: async personKarkunDataType =>
+    duties: async (personKarkunDataType: PersonKarkunDataType) =>
       KarkunDuties.find({
         karkunId: { $eq: personKarkunDataType._id },
       }).fetchAsync(),
-    attachments: async personKarkunDataType => {
+    attachments: async (personKarkunDataType: PersonKarkunDataType) => {
       const { attachmentIds } = personKarkunDataType;
       if (attachmentIds && attachmentIds.length > 0) {
         return Attachments.find({ _id: { $in: attachmentIds } }).fetchAsync();
@@ -46,14 +64,14 @@ export default {
     },
   },
   PersonEmployeeDataType: {
-    job: async personEmployeeDataType => {
+    job: async (personEmployeeDataType: PersonEmployeeDataType) => {
       if (!personEmployeeDataType.jobId) return null;
       return Jobs.findOneAsync(personEmployeeDataType.jobId);
     },
   },
 
   Query: {
-    pagedPeople: async (obj, { filter }) =>
+    pagedPeople: async (_obj: unknown, { filter }: PagedPeopleArgs) =>
       People.searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,

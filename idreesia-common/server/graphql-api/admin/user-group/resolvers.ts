@@ -1,28 +1,68 @@
-// @ts-nocheck
 import { UserGroups } from 'meteor/idreesia-common/server/collections/admin';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
+interface UserRef {
+  _id: string;
+}
+
+interface ResolverContext {
+  user: UserRef;
+}
+
+interface UserGroupArgs {
+  _id: string;
+  queryString: string;
+  name: string;
+  moduleName: string;
+  description?: string;
+  permissions: string[];
+  instances: string[];
+}
+
 export default {
   Query: {
-    pagedUserGroups: async (obj, { queryString }) =>
+    pagedUserGroups: async (
+      _obj: unknown,
+      { queryString }: Pick<UserGroupArgs, 'queryString'>
+    ) =>
       UserGroups.searchGroups(queryString),
 
-    userGroupById: async (obj, { _id }) => UserGroups.findOneAsync(_id),
+    userGroupById: async (_obj: unknown, { _id }: Pick<UserGroupArgs, '_id'>) =>
+      UserGroups.findOneAsync(_id),
   },
 
   Mutation: {
-    createUserGroup: async (obj, params, { user }) =>
+    createUserGroup: async (
+      _obj: unknown,
+      params: UserGroupArgs,
+      { user }: ResolverContext
+    ) =>
       UserGroups.createGroup(params, user),
 
-    updateUserGroup: async (obj, params, { user }) =>
+    updateUserGroup: async (
+      _obj: unknown,
+      params: UserGroupArgs,
+      { user }: ResolverContext
+    ) =>
       UserGroups.updateGroup(params, user),
 
-    deleteUserGroup: async (obj, { _id }) => UserGroups.removeGroup(_id),
+    deleteUserGroup: async (
+      _obj: unknown,
+      { _id }: Pick<UserGroupArgs, '_id'>
+    ) => UserGroups.removeGroup({ _id }),
 
-    setUserGroupPermissions: async (obj, params, { user }) =>
+    setUserGroupPermissions: async (
+      _obj: unknown,
+      params: UserGroupArgs,
+      { user }: ResolverContext
+    ) =>
       UserGroups.setPermissions(params, user, DataSource.ADMIN),
 
-    setUserGroupInstanceAccess: async (obj, params, { user }) =>
+    setUserGroupInstanceAccess: async (
+      _obj: unknown,
+      params: UserGroupArgs,
+      { user }: ResolverContext
+    ) =>
       UserGroups.setInstanceAccess(params, user, DataSource.ADMIN),
   },
 };

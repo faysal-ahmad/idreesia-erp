@@ -1,42 +1,50 @@
-// @ts-nocheck
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
+interface SecurityLogType {
+  userId?: string;
+  operationBy: string;
+}
+
+interface PersonRecord {
+  sharedData?: {
+    name?: string;
+    imageId?: string;
+  };
+}
+
+async function getUserPerson(userId: string | undefined) {
+  if (!userId) return { user: null, person: null };
+  const user = await Users.findOneUser(userId);
+  const person = user.personId
+    ? ((await People.findOneAsync(user.personId)) as PersonRecord | null)
+    : null;
+  return { user, person };
+}
+
 export default {
   SecurityLogType: {
-    userName: async securityLogType => {
-      const user = await Users.findOneUser(securityLogType.userId);
-      const person = user.personId
-        ? await People.findOneAsync(user.personId)
-        : null;
-      if (person) return person.sharedData.name;
-      return user.displayName;
+    userName: async (securityLogType: SecurityLogType) => {
+      const { user, person } = await getUserPerson(securityLogType.userId);
+      if (person) return person.sharedData?.name;
+      return user?.displayName;
     },
 
-    userImageId: async securityLogType => {
-      const user = await Users.findOneUser(securityLogType.userId);
-      const person = user.personId
-        ? await People.findOneAsync(user.personId)
-        : null;
-      if (person) return person.sharedData.imageId;
+    userImageId: async (securityLogType: SecurityLogType) => {
+      const { person } = await getUserPerson(securityLogType.userId);
+      if (person) return person.sharedData?.imageId;
       return null;
     },
 
-    operationByName: async securityLogType => {
-      const user = await Users.findOneUser(securityLogType.operationBy);
-      const person = user.personId
-        ? await People.findOneAsync(user.personId)
-        : null;
-      if (person) return person.sharedData.name;
-      return user.displayName;
+    operationByName: async (securityLogType: SecurityLogType) => {
+      const { user, person } = await getUserPerson(securityLogType.operationBy);
+      if (person) return person.sharedData?.name;
+      return user?.displayName;
     },
 
-    operationByImageId: async securityLogType => {
-      const user = await Users.findOneUser(securityLogType.operationBy);
-      const person = user.personId
-        ? await People.findOneAsync(user.personId)
-        : null;
-      if (person) return person.sharedData.imageId;
+    operationByImageId: async (securityLogType: SecurityLogType) => {
+      const { person } = await getUserPerson(securityLogType.operationBy);
+      if (person) return person.sharedData?.imageId;
       return null;
     },
   },

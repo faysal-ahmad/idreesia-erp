@@ -1,5 +1,9 @@
-// @ts-nocheck
-const allUnitOfMeasurements = [
+interface UnitOfMeasurement {
+  _id: string;
+  name: string;
+}
+
+const allUnitOfMeasurements: UnitOfMeasurement[] = [
   { _id: 'quantity', name: 'Quantity' },
   { _id: 'in', name: 'Length (in)' },
   { _id: 'ft', name: 'Length (ft)' },

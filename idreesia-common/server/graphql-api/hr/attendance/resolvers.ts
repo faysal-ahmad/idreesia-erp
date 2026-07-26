@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { format, isBefore, startOfMonth } from 'date-fns';
 import request from 'request';
 import { google } from 'googleapis';
@@ -21,7 +20,12 @@ import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { processAttendanceSheet } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   AttendanceType: {
     karkun: async attendanceType => {
       const person = await People.findOneAsync({
@@ -107,21 +111,17 @@ export default {
        * 'all_jobs' in which case we need to return attendance of employees with the
        * selected job.
        */
-      let query;
+      const query: Record<string, unknown> = {};
       if (categoryId === 'all_jobs') {
-        query = {
-          month: formattedMonth,
-        };
+        query.month = formattedMonth;
         if (subCategoryId) {
           query.jobId = subCategoryId;
         } else {
           query.jobId = { $exists: true, $ne: null };
         }
       } else {
-        query = {
-          month: formattedMonth,
-          dutyId: categoryId,
-        };
+        query.month = formattedMonth;
+        query.dutyId = categoryId;
         if (subCategoryId) query.shiftId = subCategoryId;
       }
 
@@ -226,9 +226,11 @@ export default {
       if (!shiftId) {
         // Check if we have an attendance sheet associated with the passed duty
         const duty = await Duties.findOneAsync(dutyId);
+        if (!duty) throw new Error('Could not find the selected duty.');
         attendanceSheetId = duty.attendanceSheet;
       } else {
         const dutyShift = await DutyShifts.findOneAsync(shiftId);
+        if (!dutyShift) throw new Error('Could not find the selected duty shift.');
         attendanceSheetId = dutyShift.attendanceSheet;
       }
 
@@ -245,16 +247,19 @@ export default {
         'https://www.googleapis.com/auth/drive.readonly',
       ];
 
-      const jwt = new google.auth.JWT(
-        authFile.client_email,
-        null,
-        authFile.private_key,
-        scopes
-      );
+      const jwt = new google.auth.JWT({
+        email: authFile.client_email,
+        key: authFile.private_key,
+        scopes,
+      });
 
       return new Promise((resolve, reject) => {
         jwt.authorize((err, authResponse) => {
           if (err) reject(err);
+          if (!authResponse) {
+            reject(new Error('Google authorization failed.'));
+            return;
+          }
           const accessToken = authResponse.access_token;
           const options = {
             uri: `https://www.googleapis.com/drive/v3/files/${attendanceSheetId}/export?mimeType=text/csv`,
@@ -263,7 +268,11 @@ export default {
             },
           };
 
-          request.get(options, (error, response, body) => {
+          (request.get as any)(options, (
+            error: Error | null,
+            _response: unknown,
+            body: string
+          ) => {
             if (error) reject(error);
             // If the request is successfule, we get the csv data in the body
 
@@ -342,7 +351,7 @@ export default {
        * 'all_jobs' in which case we need toremove attendance of employees with the
        * selected job.
        */
-      const removeCriteria = {
+      const removeCriteria: Record<string, unknown> = {
         month: formattedMonth,
       };
 
@@ -361,3 +370,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

@@ -1,9 +1,10 @@
-// @ts-nocheck
-import React from 'react';
+import React, { ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
 
+
+type AnyProps = Record<string, any>;
 const itemCategoriesListQuery = gql`
   query itemCategoriesByPhysicalStoreId($physicalStoreId: String!) {
     itemCategoriesByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
@@ -15,8 +16,8 @@ const itemCategoriesListQuery = gql`
   }
 `;
 
-export const useItemCategoriesByPhysicalStore = physicalStoreId => {
-  const { data, loading, ...queryResult } = useQuery(itemCategoriesListQuery, {
+export const useItemCategoriesByPhysicalStore = (physicalStoreId: string) => {
+  const { data, loading, ...queryResult } = useQuery(itemCategoriesListQuery as any, {
     variables: { physicalStoreId },
   });
 
@@ -24,19 +25,17 @@ export const useItemCategoriesByPhysicalStore = physicalStoreId => {
     ...queryResult,
     loading,
     itemCategoriesLoading: loading,
-    itemCategoriesByPhysicalStoreId: data
-      ? data.itemCategoriesByPhysicalStoreId
-      : null,
+    itemCategoriesByPhysicalStoreId: (data as any)?.itemCategoriesByPhysicalStoreId ?? null,
   };
 };
 
-export default () => WrappedComponent => {
-  const WithItemCategoriesByPhysicalStore = props => {
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithItemCategoriesByPhysicalStore = (props: AnyProps) => {
     const { physicalStoreId } = props;
     const itemCategoriesProps =
       useItemCategoriesByPhysicalStore(physicalStoreId);
 
-    return <WrappedComponent {...props} {...itemCategoriesProps} />;
+    return React.createElement(WrappedComponent as any, { ...props, ...itemCategoriesProps });
   };
 
   WithItemCategoriesByPhysicalStore.propTypes = {

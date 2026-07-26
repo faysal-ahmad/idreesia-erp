@@ -1,7 +1,12 @@
-// @ts-nocheck
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-export const AdminPermissionsData = {
+interface PermissionNode {
+  title: string;
+  key: string;
+  children?: PermissionNode[];
+}
+
+export const AdminPermissionsData: PermissionNode = {
   title: 'Admin',
   key: 'module-admin',
   children: [
@@ -54,7 +59,7 @@ export const AdminPermissionsData = {
   ],
 };
 
-export const HrPermissionsData = {
+export const HrPermissionsData: PermissionNode = {
   title: 'HR',
   key: 'module-hr',
   children: [
@@ -105,7 +110,7 @@ export const HrPermissionsData = {
   ],
 };
 
-export const InventoryPermissionsData = {
+export const InventoryPermissionsData: PermissionNode = {
   title: 'Inventory',
   key: 'module-inventory',
   children: [
@@ -180,7 +185,7 @@ export const InventoryPermissionsData = {
   ],
 };
 
-export const SecurityPermissionsData = {
+export const SecurityPermissionsData: PermissionNode = {
   title: 'Security',
   key: 'module-security',
   children: [

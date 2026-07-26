@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Random } from 'meteor/random';
 import csv from 'csvtojson';
 
@@ -13,8 +12,10 @@ const NAME_COLUMN = 'Name';
 const CNIC_COLUMN = 'CNIC';
 const PHONE_COLUMN = 'Phone No.';
 
-function getAttendanceValues(jsonRecord) {
-  const attendanceDetails = {};
+type CsvRecord = Record<string, string | undefined>;
+
+function getAttendanceValues(jsonRecord: CsvRecord) {
+  const attendanceDetails: Record<string, string> = {};
 
   let presentCount = 0;
   let absentCount = 0;
@@ -44,7 +45,12 @@ function getAttendanceValues(jsonRecord) {
   };
 }
 
-async function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
+async function processJsonRecord(
+  jsonRecord: CsvRecord,
+  month: string,
+  dutyId: string,
+  shiftId?: string
+) {
   try {
     const karkunCnic = jsonRecord[CNIC_COLUMN];
     const karkunName = jsonRecord[NAME_COLUMN];
@@ -114,6 +120,9 @@ async function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
       attendance = await Attendances.findOneAsync(attendanceId);
     }
 
+    if (!attendance) {
+      throw new Error('Attendance could not be created.');
+    }
     let meetingCardBarcodeId = attendance.meetingCardBarcodeId;
     if (!meetingCardBarcodeId) {
       meetingCardBarcodeId = Random.id(8);
@@ -131,20 +140,16 @@ async function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
   }
 }
 
-function convertToJson(csvData) {
-  return new Promise((resolve, reject) => {
-    csv()
-      .fromString(csvData)
-      .then(jsonArray => {
-        resolve(jsonArray);
-      })
-      .catch(err => {
-        reject(err);
-      });
-  });
+function convertToJson(csvData: string) {
+  return csv().fromString(csvData) as unknown as Promise<CsvRecord[]>;
 }
 
-export async function processAttendanceSheet(csvData, month, dutyId, shiftId) {
+export async function processAttendanceSheet(
+  csvData: string,
+  month: string,
+  dutyId: string,
+  shiftId?: string
+) {
   return convertToJson(csvData).then(async jsonArray => {
     for (const jsonRecord of jsonArray) {
       await processJsonRecord(jsonRecord, month, dutyId, shiftId);

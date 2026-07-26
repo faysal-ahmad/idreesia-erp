@@ -10,6 +10,10 @@ interface CityDocument {
   country?: string;
   peripheryOf?: string;
   region?: string;
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string;
   [key: string]: unknown;
 }
 

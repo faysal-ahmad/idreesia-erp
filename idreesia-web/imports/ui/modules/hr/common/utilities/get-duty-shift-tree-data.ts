@@ -1,11 +1,24 @@
-// @ts-nocheck
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
-export default function getDutyShiftTreeData(allMSDuties, allDutyShifts) {
+interface Duty {
+  _id: string;
+  name: string;
+}
+
+interface DutyShift {
+  _id: string;
+  name: string;
+  dutyId: string;
+}
+
+export default function getDutyShiftTreeData(
+  allMSDuties: Duty[],
+  allDutyShifts: DutyShift[]
+) {
   const data = allMSDuties.map(duty => {
     const dutyShifts = filter(
       allDutyShifts,
-      dutyShift => dutyShift.dutyId === duty._id
+      (dutyShift: DutyShift) => dutyShift.dutyId === duty._id
     );
     const dataItem = {
       value: duty._id,

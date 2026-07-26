@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -26,7 +25,42 @@ const IconStyle = {
   fontSize: '20px',
 };
 
-const KeyPrefixHandlers = [
+const AntMenu = Menu as any;
+const Icons = {
+  AppstoreOutlined: AppstoreOutlined as any,
+  BookOutlined: BookOutlined as any,
+  DatabaseOutlined: DatabaseOutlined as any,
+  EnvironmentOutlined: EnvironmentOutlined as any,
+  FolderOpenOutlined: FolderOpenOutlined as any,
+  FormOutlined: FormOutlined as any,
+  LaptopOutlined: LaptopOutlined as any,
+  PieChartOutlined: PieChartOutlined as any,
+  ShopOutlined: ShopOutlined as any,
+  TagsOutlined: TagsOutlined as any,
+};
+
+interface PhysicalStore {
+  _id: string;
+  name: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface SidebarProps {
+  history: HistoryLike;
+  activeModuleName?: string;
+  activeSubModuleName?: string;
+  setActiveSubModuleName(subModuleName: string): void;
+  loading?: boolean;
+  allAccessiblePhysicalStores?: PhysicalStore[];
+}
+
+type PathBuilder = (physicalStoreId?: string) => string;
+type KeyPrefixHandler = [string, string, PathBuilder];
+
+const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['stock-items', SubModuleNames.stockItems, paths.stockItemsPath],
   [
     'status-dashboard',
@@ -51,7 +85,7 @@ const KeyPrefixHandlers = [
   ['locations', SubModuleNames.locations, paths.locationsPath],
 ];
 
-class Sidebar extends Component {
+class Sidebar extends Component<SidebarProps> {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -61,7 +95,7 @@ class Sidebar extends Component {
     allAccessiblePhysicalStores: PropTypes.array,
   };
 
-  handleMenuItemSelected = ({ key }) => {
+  handleMenuItemSelected = ({ key }: { key: string }) => {
     const { history, setActiveSubModuleName } = this.props;
 
     const handler = KeyPrefixHandlers.find(([prefix]) =>
@@ -76,81 +110,81 @@ class Sidebar extends Component {
   };
 
   render() {
-    const { loading, allAccessiblePhysicalStores } = this.props;
+    const { loading, allAccessiblePhysicalStores = [] } = this.props;
     if (loading) return null;
 
-    const menuItems = allAccessiblePhysicalStores.map(physicalStore => ({
+    const menuItems = allAccessiblePhysicalStores.map((physicalStore: PhysicalStore) => ({
       key: physicalStore._id,
-      icon: <AppstoreOutlined style={IconStyle} />,
+      icon: <Icons.AppstoreOutlined style={IconStyle} />,
       label: physicalStore.name,
       children: [
         {
           key: `stock-items-${physicalStore._id}`,
-          icon: <DatabaseOutlined style={IconStyle} />,
+          icon: <Icons.DatabaseOutlined style={IconStyle} />,
           label: 'Stock Items',
         },
         {
           key: `status-dashboard-${physicalStore._id}`,
-          icon: <PieChartOutlined style={IconStyle} />,
+          icon: <Icons.PieChartOutlined style={IconStyle} />,
           label: 'Status Dashboard',
         },
         {
           key: `forms-${physicalStore._id}`,
-          icon: <FolderOpenOutlined style={IconStyle} />,
+          icon: <Icons.FolderOpenOutlined style={IconStyle} />,
           label: 'Data Entry',
           children: [
             {
               key: `issuance-forms-${physicalStore._id}`,
-              icon: <FormOutlined style={IconStyle} />,
+              icon: <Icons.FormOutlined style={IconStyle} />,
               label: 'Issuance Forms',
             },
             {
               key: `purchase-forms-${physicalStore._id}`,
-              icon: <FormOutlined style={IconStyle} />,
+              icon: <Icons.FormOutlined style={IconStyle} />,
               label: 'Purchase Forms',
             },
             {
               key: `stock-adjustments-${physicalStore._id}`,
-              icon: <FormOutlined style={IconStyle} />,
+              icon: <Icons.FormOutlined style={IconStyle} />,
               label: 'Stock Adjustments',
             },
           ],
         },
         {
           key: `reports-${physicalStore._id}`,
-          icon: <FolderOpenOutlined style={IconStyle} />,
+          icon: <Icons.FolderOpenOutlined style={IconStyle} />,
           label: 'Reports',
           children: [
             {
               key: `issuance-report-${physicalStore._id}`,
-              icon: <BookOutlined style={IconStyle} />,
+              icon: <Icons.BookOutlined style={IconStyle} />,
               label: 'Issuance Report',
             },
             {
               key: `purchasing-report-${physicalStore._id}`,
-              icon: <BookOutlined style={IconStyle} />,
+              icon: <Icons.BookOutlined style={IconStyle} />,
               label: 'Purchase Report',
             },
           ],
         },
         {
           key: `setup-${physicalStore._id}`,
-          icon: <LaptopOutlined style={IconStyle} />,
+          icon: <Icons.LaptopOutlined style={IconStyle} />,
           label: 'Setup',
           children: [
             {
               key: `vendors-${physicalStore._id}`,
-              icon: <ShopOutlined style={IconStyle} />,
+              icon: <Icons.ShopOutlined style={IconStyle} />,
               label: 'Vendors',
             },
             {
               key: `item-categories-${physicalStore._id}`,
-              icon: <TagsOutlined style={IconStyle} />,
+              icon: <Icons.TagsOutlined style={IconStyle} />,
               label: 'Item Categories',
             },
             {
               key: `locations-${physicalStore._id}`,
-              icon: <EnvironmentOutlined style={IconStyle} />,
+              icon: <Icons.EnvironmentOutlined style={IconStyle} />,
               label: 'Locations',
             },
           ],
@@ -159,7 +193,7 @@ class Sidebar extends Component {
     }));
 
     return (
-      <Menu
+      <AntMenu
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
@@ -181,7 +215,7 @@ const listQuery = gql`
 const SidebarContainer = flowRight(
   WithActiveModule(),
   withQuery(listQuery, {
-    props: ({ data }) => ({ ...data }),
+    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
   })
-)(Sidebar);
+)(Sidebar as any);
 export default SidebarContainer;

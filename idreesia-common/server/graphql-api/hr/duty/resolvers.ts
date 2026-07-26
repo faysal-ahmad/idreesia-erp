@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   Duties,
   DutyShifts,
@@ -8,7 +7,12 @@ import {
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   DutyType: {
     shifts: async dutyType =>
       DutyShifts.find({
@@ -110,3 +114,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

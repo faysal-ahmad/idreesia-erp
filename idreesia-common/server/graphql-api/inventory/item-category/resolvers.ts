@@ -1,26 +1,42 @@
-// @ts-nocheck
 import {
   ItemCategories,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
+interface ItemCategory {
+  _id: string;
+}
+
+interface ItemCategoryArgs extends ItemCategory {
+  name?: string;
+  physicalStoreId: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+  };
+}
+
 export default {
   ItemCategory: {
-    stockItemCount: async itemCategory =>
+    stockItemCount: async (itemCategory: ItemCategory) =>
       StockItems.find({
         categoryId: { $eq: itemCategory._id },
       }).countAsync(),
   },
 
   Query: {
-    itemCategoryById: async (obj, { _id }) => {
+    itemCategoryById: async (
+      _obj: unknown,
+      { _id }: Pick<ItemCategoryArgs, '_id'>
+    ) => {
       return ItemCategories.findOneAsync(_id);
     },
 
     itemCategoriesByPhysicalStoreId: async (
-      obj,
-      { physicalStoreId },
-      { user }
+      _obj: unknown,
+      { physicalStoreId }: Pick<ItemCategoryArgs, 'physicalStoreId'>
     ) => {
       return ItemCategories.find(
         {
@@ -32,7 +48,11 @@ export default {
   },
 
   Mutation: {
-    createItemCategory: async (obj, { name, physicalStoreId }, { user }) => {
+    createItemCategory: async (
+      _obj: unknown,
+      { name, physicalStoreId }: ItemCategoryArgs,
+      { user }: ResolverContext
+    ) => {
       const date = new Date();
       const itemCategoryId = await ItemCategories.insertAsync({
         name,
@@ -47,9 +67,9 @@ export default {
     },
 
     updateItemCategory: async (
-      obj,
-      { _id, name, physicalStoreId },
-      { user }
+      _obj: unknown,
+      { _id, name, physicalStoreId }: ItemCategoryArgs,
+      { user }: ResolverContext
     ) => {
       const date = new Date();
       await ItemCategories.updateAsync(
@@ -69,7 +89,10 @@ export default {
       return ItemCategories.findOneAsync(_id);
     },
 
-    removeItemCategory: async (obj, { _id, physicalStoreId }, { user }) => {
+    removeItemCategory: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: ItemCategoryArgs
+    ) => {
       // Check that there are no stock items against this item category.
       const stockItemCount = await StockItems.find({
         categoryId: { $eq: _id },

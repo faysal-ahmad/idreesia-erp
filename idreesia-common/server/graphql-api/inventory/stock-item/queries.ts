@@ -1,10 +1,15 @@
-// @ts-nocheck
 import { subMonths } from 'date-fns';
 import { parse } from 'query-string';
 
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 
-export async function getStatistics(physicalStoreId) {
+type PipelineStage = Record<string, unknown>;
+
+interface StockItemGroupResult {
+  _id: string;
+}
+
+export async function getStatistics(physicalStoreId: string) {
   const itemsWithImages = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     imageId: { $ne: null },
@@ -66,7 +71,10 @@ export async function getStatistics(physicalStoreId) {
   };
 }
 
-export async function getPagedStockItems(queryString, physicalStoreId) {
+export async function getPagedStockItems(
+  queryString: string,
+  physicalStoreId: string
+) {
   const params = parse(queryString);
   const {
     categoryId,
@@ -76,16 +84,21 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
     pageIndex = '0',
     pageSize = '20',
   } = params;
-  const pipeline = [];
+  const pipeline: PipelineStage[] = [];
+  const nameText = typeof name === 'string' ? name : '';
+  const categoryIdText = typeof categoryId === 'string' ? categoryId : '';
+  const stockLevelText = typeof stockLevel === 'string' ? stockLevel : '';
+  const verifyDurationText =
+    typeof verifyDuration === 'string' ? verifyDuration : '';
 
-  if (name) {
-    if (name.length === 1) {
+  if (nameText) {
+    if (nameText.length === 1) {
       pipeline.push({
-        $match: { name: { $regex: `^${name}` } },
+        $match: { name: { $regex: `^${nameText}` } },
       });
     } else {
       pipeline.push({
-        $match: { $text: { $search: name } },
+        $match: { $text: { $search: nameText } },
       });
     }
   }
@@ -96,22 +109,22 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
     },
   });
 
-  if (categoryId) {
+  if (categoryIdText) {
     pipeline.push({
       $match: {
-        categoryId: { $eq: categoryId },
+        categoryId: { $eq: categoryIdText },
       },
     });
   }
 
-  if (verifyDuration === 'less-than-3-months-ago') {
+  if (verifyDurationText === 'less-than-3-months-ago') {
     const m3 = subMonths(new Date(), 3);
     pipeline.push({
       $match: {
         $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
       },
     });
-  } else if (verifyDuration === 'between-3-to-6-months-ago') {
+  } else if (verifyDurationText === 'between-3-to-6-months-ago') {
     const m3 = subMonths(new Date(), 3);
     const m6 = subMonths(new Date(), 6);
     pipeline.push({
@@ -123,7 +136,7 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
         ],
       },
     });
-  } else if (verifyDuration === 'more-than-6-months-ago') {
+  } else if (verifyDurationText === 'more-than-6-months-ago') {
     const m6 = subMonths(new Date(), 6);
     pipeline.push({
       $match: {
@@ -132,13 +145,13 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
     });
   }
 
-  if (stockLevel === 'negative-stock-level') {
+  if (stockLevelText === 'negative-stock-level') {
     pipeline.push({
       $match: {
         currentStockLevel: { $lt: 0 },
       },
     });
-  } else if (stockLevel === 'less-than-min-stock-level') {
+  } else if (stockLevelText === 'less-than-min-stock-level') {
     pipeline.push({
       $match: {
         minStockLevel: { $ne: null },
@@ -154,13 +167,15 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
     { $sort: { _id: 1 } },
   ]);
 
-  const groupResults = await StockItems.aggregate(groupingPipeline);
+  const groupResults = await StockItems.aggregate<StockItemGroupResult>(
+    groupingPipeline
+  );
   // Build an array of all the stock item names in the result
   // We will be using the contents of this array to do pagination
   const allNames = groupResults.map(item => item._id);
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
   const pagedNames = allNames.slice(
     nPageIndex * nPageSize,
     nPageIndex * nPageSize + nPageSize

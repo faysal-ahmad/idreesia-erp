@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -15,6 +14,69 @@ import {
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
+
+const AntButton = Button as any;
+const AntDatePickerMonth = DatePicker.MonthPicker as any;
+const AntSpin = Spin as any;
+const AntRow = Row as any;
+const AntTable = Table as any;
+const AntLeftOutlined = LeftOutlined as any;
+const AntRightOutlined = RightOutlined as any;
+const StockItemNameComponent = StockItemName as any;
+
+interface LocationRecord {
+  _id: string;
+  name: string;
+}
+
+interface PurchaseItem {
+  stockItemId: string;
+  quantity: number;
+  isInflow: boolean;
+  price: number;
+  refStockItem: {
+    name: string;
+    imageId?: string;
+    categoryName?: string;
+    unitOfMeasurement?: string;
+  };
+}
+
+interface PurchaseForm {
+  locationId?: string;
+  items: PurchaseItem[];
+}
+
+interface LocationSummary {
+  locationId: string;
+  locationName: string;
+  quantity: number;
+}
+
+interface PurchaseSummaryItem {
+  stockItemId: string;
+  stockItemName: string;
+  stockItemImageId?: string;
+  categoryName?: string;
+  unitOfMeasurement?: string;
+  byLocation: Record<string, LocationSummary>;
+  inflow: number;
+  outflow: number;
+  quantity: number;
+  cost: number;
+}
+
+interface PurchaseFormsData {
+  purchaseFormsByMonth: PurchaseForm[];
+}
+
+interface ReportProps {
+  physicalStoreId?: string;
+  month: dayjs.Dayjs;
+  monthString?: string;
+  locations?: LocationRecord[];
+  setPageParams(params: { month: dayjs.Dayjs | null }): void;
+}
 
 const LIST_QUERY = gql`
   query purchaseFormsByMonth($physicalStoreId: String!, $month: String!) {
@@ -43,30 +105,30 @@ const Report = ({
   physicalStoreId,
   month,
   monthString,
-  locations,
+  locations = [],
   setPageParams,
-}) => {
-  const { data, loading } = useQuery(LIST_QUERY, {
+}: ReportProps) => {
+  const { data, loading } = useQuery(LIST_QUERY as any, {
     variables: { physicalStoreId, month: monthString },
   });
 
   if (loading) {
-    return <Spin size="large" />;
+    return <AntSpin size="large" />;
   }
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Item Name',
       dataIndex: 'stockItemName',
       key: 'stockItemName',
-      render: (text, record) => {
+      render: (_text: unknown, record: PurchaseSummaryItem) => {
         const stockItem = {
           _id: record.stockItemId,
           physicalStoreId,
           name: record.stockItemName,
           imageId: record.stockItemImageId,
         };
-        return <StockItemName stockItem={stockItem} />;
+        return <StockItemNameComponent stockItem={stockItem} />;
       },
     },
     {
@@ -78,8 +140,8 @@ const Report = ({
       title: 'Purchased',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (text, record) => {
-        let quantity = text;
+      render: (text: number, record: PurchaseSummaryItem) => {
+        let quantity: number | string = text;
         if (record.unitOfMeasurement !== 'quantity') {
           quantity = `${quantity} ${record.unitOfMeasurement}`;
         }
@@ -91,17 +153,20 @@ const Report = ({
       title: 'Purchased (By Location)',
       dataIndex: 'byLocation',
       key: 'byLocation',
-      render: (byLocation, record) => {
+      render: (
+        byLocation: Record<string, LocationSummary>,
+        record: PurchaseSummaryItem
+      ) => {
         const locationIds = keys(byLocation);
-        const locationNodes = [];
-        locationIds.forEach(locationId => {
+        const locationNodes: React.ReactNode[] = [];
+        locationIds.forEach((locationId: string) => {
           const locationObj = byLocation[locationId];
           let nodeText = `${locationObj.locationName} - ${locationObj.quantity}`;
           if (record.unitOfMeasurement !== 'quantity') {
             nodeText = `${nodeText} ${record.unitOfMeasurement}`;
           }
 
-          locationNodes.push(<Row key={locationId}>{nodeText}</Row>);
+          locationNodes.push(<AntRow key={locationId}>{nodeText}</AntRow>);
         });
 
         return locationNodes;
@@ -110,7 +175,7 @@ const Report = ({
     {
       title: 'Unit Price (Rs)',
       key: 'unitPrice',
-      render: (text, record) => {
+      render: (_text: unknown, record: PurchaseSummaryItem) => {
         const { quantity, cost } = record;
         const unitPrice = (cost / quantity).toFixed(0);
         return numeral(unitPrice).format('0,0');
@@ -120,11 +185,11 @@ const Report = ({
       title: 'Total Cost (Rs)',
       dataIndex: 'cost',
       key: 'cost',
-      render: text => numeral(text).format('0,0'),
+      render: (text: number) => numeral(text).format('0,0'),
     },
   ];
 
-  const handleMonthChange = value => {
+  const handleMonthChange = (value: dayjs.Dayjs | null) => {
     setPageParams({
       month: value,
     });
@@ -143,13 +208,15 @@ const Report = ({
   };
 
   const locationsMap = keyBy(locations, '_id');
-  const { purchaseFormsByMonth } = data;
-  const purchaseSummary = [];
-  const purchaseSummaryMap = {};
+  const { purchaseFormsByMonth } = (data as PurchaseFormsData) ?? {
+    purchaseFormsByMonth: [],
+  };
+  const purchaseSummary: PurchaseSummaryItem[] = [];
+  const purchaseSummaryMap: Record<string, PurchaseSummaryItem> = {};
 
-  purchaseFormsByMonth.forEach(purchaseForm => {
+  purchaseFormsByMonth.forEach((purchaseForm: PurchaseForm) => {
     const { locationId, items } = purchaseForm;
-    items.forEach(item => {
+    items.forEach((item: PurchaseItem) => {
       let summaryItem = purchaseSummaryMap[item.stockItemId];
       if (!summaryItem) {
         summaryItem = {
@@ -215,24 +282,24 @@ const Report = ({
   const getTableHeader = () => (
     <div className="list-table-header">
       <div className="list-table-header-section">
-        <Button
+        <AntButton
           type="primary"
           shape="circle"
-          icon={<LeftOutlined />}
+          icon={<AntLeftOutlined />}
           onClick={handleMonthGoBack}
         />
         &nbsp;&nbsp;
-        <DatePicker.MonthPicker
+        <AntDatePickerMonth
           allowClear={false}
           format="MMM, YYYY"
           onChange={handleMonthChange}
           value={month}
         />
         &nbsp;&nbsp;
-        <Button
+        <AntButton
           type="primary"
           shape="circle"
-          icon={<RightOutlined />}
+          icon={<AntRightOutlined />}
           onClick={handleMonthGoForward}
         />
       </div>
@@ -245,7 +312,7 @@ const Report = ({
   );
 
   return (
-    <Table
+    <AntTable
       rowKey="stockItemId"
       title={getTableHeader}
       dataSource={sortedPurchaseSummary}

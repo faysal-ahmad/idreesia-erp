@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { parse } from 'query-string';
 import { endOfDay, startOfDay } from 'date-fns';
 
@@ -28,20 +27,26 @@ const sortOrderMapping = {
   desc: -1,
 };
 
-async function getVisitorIdsByNameSearch(name) {
-  const pipeline = [
+type PipelineStage = Record<string, unknown>;
+
+interface CountResult {
+  total: number;
+}
+
+async function getVisitorIdsByNameSearch(name: string) {
+  const pipeline: PipelineStage[] = [
     { $match: { $text: { $search: name } } },
     { $sort: { score: { $meta: 'textScore' } } },
     { $limit: 50 },
   ];
 
   const visitors = await People.aggregate(pipeline);
-  return visitors.map(({ _id }) => _id);
+  return visitors.map(({ _id }: { _id: string }) => _id);
 }
 
-export async function getVisitorStays(queryString) {
+export async function getVisitorStays(queryString: string) {
   const params = parse(queryString);
-  const pipeline = [];
+  const pipeline: PipelineStage[] = [];
 
   const {
     visitorId,
@@ -56,34 +61,45 @@ export async function getVisitorStays(queryString) {
     pageIndex = DEFAULT_PAGE_INDEX,
     pageSize = DEFAULT_PAGE_SIZE,
   } = params;
+  const visitorIdText = typeof visitorId === 'string' ? visitorId : '';
+  const startDateText = typeof startDate === 'string' ? startDate : '';
+  const endDateText = typeof endDate === 'string' ? endDate : '';
+  const nameText = typeof name === 'string' ? name : '';
+  const cityText = typeof city === 'string' ? city : '';
+  const stayReasonText = typeof stayReason === 'string' ? stayReason : '';
+  const additionalInfoText =
+    typeof additionalInfo === 'string' ? additionalInfo : '';
+  const sortByText = typeof sortBy === 'string' ? sortBy : DEFAULT_SORT_BY;
+  const sortOrderText =
+    typeof sortOrder === 'string' ? sortOrder : DEFAULT_SORT_ORDER;
 
-  if (!sortOrderMapping[sortOrder])
+  if (!sortOrderMapping[sortOrderText as keyof typeof sortOrderMapping])
     throw new Error('Invalid value passed for sortOrder');
-  if (!sortByColumnMapping[sortBy])
+  if (!sortByColumnMapping[sortByText as keyof typeof sortByColumnMapping])
     throw new Error('Invalid column name passed for sortBy');
 
-  if (visitorId) {
+  if (visitorIdText) {
     pipeline.push({
       $match: {
-        visitorId: { $eq: visitorId },
+        visitorId: { $eq: visitorIdText },
       },
     });
   }
 
-  if (startDate) {
+  if (startDateText) {
     pipeline.push({
       $match: {
         fromDate: {
-          $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
+          $gte: startOfDay(parseDate(startDateText, Formats.DATE_FORMAT)),
         },
       },
     });
   }
-  if (endDate) {
+  if (endDateText) {
     pipeline.push({
       $match: {
         toDate: {
-          $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
+          $lte: endOfDay(parseDate(endDateText, Formats.DATE_FORMAT)),
         },
       },
     });
@@ -98,8 +114,8 @@ export async function getVisitorStays(queryString) {
     },
   });
 
-  if (name) {
-    const visitorIds = await getVisitorIdsByNameSearch(name);
+  if (nameText) {
+    const visitorIds = await getVisitorIdsByNameSearch(nameText);
     pipeline.push({
       $match: {
         'visitor._id': { $in: visitorIds },
@@ -107,30 +123,30 @@ export async function getVisitorStays(queryString) {
     });
   }
 
-  if (city) {
+  if (cityText) {
     pipeline.push({
       $match: {
-        'visitor.visitorData.city': { $eq: city },
+        'visitor.visitorData.city': { $eq: cityText },
       },
     });
   }
 
-  if (stayReason) {
+  if (stayReasonText) {
     pipeline.push({
       $match: {
-        stayReason: { $eq: stayReason },
+        stayReason: { $eq: stayReasonText },
       },
     });
   }
 
-  if (additionalInfo) {
-    if (additionalInfo === 'has-notes') {
+  if (additionalInfoText) {
+    if (additionalInfoText === 'has-notes') {
       pipeline.push({
         $match: {
           'visitor.visitorData.otherNotes': { $exists: true, $nin: ['', null] },
         },
       });
-    } else if (additionalInfo === 'has-criminal-record') {
+    } else if (additionalInfoText === 'has-criminal-record') {
       pipeline.push({
         $match: {
           'visitor.visitorData.criminalRecord': {
@@ -139,7 +155,7 @@ export async function getVisitorStays(queryString) {
           },
         },
       });
-    } else if (additionalInfo === 'has-notes-or-criminal-record') {
+    } else if (additionalInfoText === 'has-notes-or-criminal-record') {
       pipeline.push({
         $match: {
           $or: [
@@ -165,18 +181,21 @@ export async function getVisitorStays(queryString) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
 
-  const sortByColumnName = sortByColumnMapping[sortBy];
+  const sortByColumnName =
+    sortByColumnMapping[sortByText as keyof typeof sortByColumnMapping];
+  const sortDirection =
+    sortOrderMapping[sortOrderText as keyof typeof sortOrderMapping];
   const resultsPipeline = pipeline.concat([
-    { $sort: { [sortByColumnName]: sortOrderMapping[sortOrder] } },
+    { $sort: { [sortByColumnName]: sortDirection } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);
 
   const visitors = VisitorStays.aggregate(resultsPipeline);
-  const totalResults = VisitorStays.aggregate(countingPipeline);
+  const totalResults = VisitorStays.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([visitors, totalResults]).then(results => ({
     data: results[0],

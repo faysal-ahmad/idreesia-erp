@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   IssuanceForms,
   StockItems,
@@ -13,7 +12,18 @@ import getIssuanceForms, {
   getIssuanceFormsByStockItemId,
 } from './queries';
 
-export default {
+interface FormItem {
+  stockItemId: string;
+  quantity: number;
+  isInflow?: boolean;
+}
+
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   IssuanceForm: {
     attachments: async (
       issuanceForm,
@@ -27,7 +37,9 @@ export default {
       const { attachmentIds } = issuanceForm;
       if (attachmentIds && attachmentIds.length > 0) {
         return Promise.all(
-          attachmentIds.map(attachmentId => attachments.load(attachmentId))
+          attachmentIds.map((attachmentId: string) =>
+            attachments.load(attachmentId)
+          )
         );
       }
 
@@ -139,7 +151,7 @@ export default {
       });
 
       await Promise.all(
-        items.map(({ stockItemId, quantity, isInflow }) => {
+        items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
             return StockItems.incrementCurrentLevel(stockItemId, quantity);
           }
@@ -167,14 +179,22 @@ export default {
       { user }
     ) => {
       const existingForm = await IssuanceForms.findOneAsync(_id);
-      if (existingForm.approvedOn || existingForm.approvedBy) {
+      if (!existingForm) {
+        throw new Error('Issuance form not found.');
+      }
+      const typedExistingForm = existingForm as unknown as {
+        approvedOn?: Date;
+        approvedBy?: string;
+        items: FormItem[];
+      };
+      if (typedExistingForm.approvedOn || typedExistingForm.approvedBy) {
         throw new Error('You cannot update an already approved Issuance Form.');
       }
 
-      const { items: existingItems } = existingForm;
+      const { items: existingItems } = typedExistingForm;
       // Undo the effect of all previous items
       await Promise.all(
-        existingItems.map(({ stockItemId, quantity, isInflow }) => {
+        existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
             return StockItems.decrementCurrentLevel(stockItemId, quantity);
           }
@@ -185,7 +205,7 @@ export default {
 
       // Apply the effect of new incoming items
       await Promise.all(
-        items.map(({ stockItemId, quantity, isInflow }) => {
+        items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
             return StockItems.incrementCurrentLevel(stockItemId, quantity);
           }
@@ -300,10 +320,10 @@ export default {
         approvedBy: { $exists: false },
       });
 
-      await existingIssuanceForms.forEachAsync(async existingForm => {
+      await existingIssuanceForms.forEachAsync(async (existingForm: any) => {
         const { items: existingItems } = existingForm;
         return Promise.all(
-          existingItems.map(({ stockItemId, quantity, isInflow }) => {
+          existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
             if (isInflow) {
               return StockItems.decrementCurrentLevel(stockItemId, quantity);
             }
@@ -317,3 +337,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

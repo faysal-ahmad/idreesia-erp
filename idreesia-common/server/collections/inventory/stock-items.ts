@@ -6,6 +6,8 @@ import { StockItem as StockItemModel } from 'meteor/idreesia-common/server/model
 interface StockItemDocument {
   _id?: string;
   currentStockLevel?: number;
+  startingStockLevel?: number;
+  physicalStoreId?: string;
   [key: string]: unknown;
 }
 

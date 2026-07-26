@@ -1,11 +1,16 @@
-// @ts-nocheck
 import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 import { parse } from 'query-string';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 
-export function getPagedSalariesByKarkun(queryString) {
+type PipelineStage = Record<string, unknown>;
+
+interface CountResult {
+  total: number;
+}
+
+export function getPagedSalariesByKarkun(queryString: string) {
   const params = parse(queryString);
-  const pipeline = [];
+  const pipeline: PipelineStage[] = [];
   const { pageIndex = '0', pageSize = '20', karkunId } = params;
 
   pipeline.push({
@@ -18,8 +23,8 @@ export function getPagedSalariesByKarkun(queryString) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(pageIndex, 10);
-  const nPageSize = parseInt(pageSize, 10);
+  const nPageIndex = parseInt(String(pageIndex), 10);
+  const nPageSize = parseInt(String(pageSize), 10);
   const resultsPipeline = pipeline.concat([
     { $sort: { createdAt: -1 } },
     { $skip: nPageIndex * nPageSize },
@@ -27,7 +32,7 @@ export function getPagedSalariesByKarkun(queryString) {
   ]);
 
   const karkunSalaries = Salaries.aggregate(resultsPipeline);
-  const totalResults = Salaries.aggregate(countingPipeline);
+  const totalResults = Salaries.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([karkunSalaries, totalResults]).then(results => ({
     salaries: results[0],

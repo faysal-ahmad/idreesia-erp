@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -26,16 +25,47 @@ import {
   ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const List = ({ history }) => {
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntPopconfirm = Popconfirm as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntSyncOutlined = SyncOutlined as any;
+const RouterLink = Link as any;
+
+interface RouteParams {
+  physicalStoreId: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface ListProps {
+  history: HistoryLike;
+}
+
+interface ItemCategory {
+  _id: string;
+  name: string;
+  stockItemCount?: number;
+}
+
+interface ItemCategoriesData {
+  itemCategoriesByPhysicalStoreId: ItemCategory[];
+}
+
+const List = ({ history }: ListProps) => {
   const dispatch = useDispatch();
-  const { physicalStoreId } = useParams();
+  const { physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const [removeItemCategory] = useMutation(REMOVE_ITEM_CATEGORY, {
-    refetchQueries: [{ 
-      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
+  const [removeItemCategory] = useMutation(REMOVE_ITEM_CATEGORY as any, {
+    refetchQueries: [{
+      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID as any,
       variables: {
         physicalStoreId,
-      }
+      },
     }],
   });
   
@@ -47,13 +77,13 @@ const List = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'List']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
   const handleNewClicked = () => {
     history.push(paths.itemCategoriesNewFormPath(physicalStoreId));
   };
 
-  const handleDeleteClicked = itemCategory => {
+  const handleDeleteClicked = (itemCategory: ItemCategory) => {
     removeItemCategory({
       variables: {
         _id: itemCategory._id,
@@ -63,25 +93,25 @@ const List = ({ history }) => {
       .then(() => {
         message.success('Item category has been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link
+      render: (text: string, record: ItemCategory) => (
+        <RouterLink
           to={`${paths.itemCategoriesEditFormPath(
             physicalStoreId,
             record._id
           )}`}
         >
           {text}
-        </Link>
+        </RouterLink>
       ),
     },
     {
@@ -92,13 +122,13 @@ const List = ({ history }) => {
     {
       title: 'Actions',
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: ItemCategory) => {
         const { stockItemCount } = record;
 
         if (stockItemCount === 0) {
           return (
             <div className="list-actions-column">
-              <Popconfirm
+              <AntPopconfirm
                 title="Are you sure you want to delete this item category?"
                 onConfirm={() => {
                   handleDeleteClicked(record);
@@ -106,10 +136,10 @@ const List = ({ history }) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+                <AntTooltip title="Delete">
+                  <AntDeleteOutlined className="list-actions-icon" />
+                </AntTooltip>
+              </AntPopconfirm>
             </div>
           );
         }
@@ -119,40 +149,46 @@ const List = ({ history }) => {
     },
   ];
 
-  const { data, loading, refetch } = useQuery(ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID, {
-    variables: { physicalStoreId }
-  });
+  const { data, loading, refetch } = useQuery(
+    ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID as any,
+    {
+      variables: { physicalStoreId },
+    }
+  );
   
   if (loading) return null;
-  const { itemCategoriesByPhysicalStoreId } = data;
+  const { itemCategoriesByPhysicalStoreId } =
+    (data as ItemCategoriesData) ?? {
+      itemCategoriesByPhysicalStoreId: [],
+    };
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={itemCategoriesByPhysicalStoreId}
       columns={columns}
       bordered
       title={() => (
         <div className="list-table-header">
-          <Button
+          <AntButton
             type="primary"
-            icon={<PlusCircleOutlined />}
+            icon={<AntPlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Item Category
-          </Button>
+          </AntButton>
           <div className="list-table-header-section">
-            <Button 
+            <AntButton
               size="large"
-              icon={<SyncOutlined />}
-              onClick={() => { refetch() }}
+              icon={<AntSyncOutlined />}
+              onClick={() => { refetch(); }}
             />
           </div>
         </div>
       )}
     />
   );
-}
+};
 
 List.propTypes = {
   history: PropTypes.object,

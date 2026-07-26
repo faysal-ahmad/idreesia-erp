@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
@@ -20,8 +19,18 @@ const QUERY = gql`
   }
 `;
 
-export const usePhysicalStoreLocations = physicalStoreId => {
-  const { data, loading, refetch } = useQuery(QUERY, {
+interface Location {
+  _id: string;
+  name: string;
+  [key: string]: unknown;
+}
+
+interface PhysicalStoreLocationsQueryData {
+  locationsByPhysicalStoreId: Location[] | null;
+}
+
+export const usePhysicalStoreLocations = (physicalStoreId: string) => {
+  const { data, loading, refetch } = useQuery(QUERY as any, {
     variables: {
       physicalStoreId,
     },
@@ -29,10 +38,12 @@ export const usePhysicalStoreLocations = physicalStoreId => {
 
   useEffect(() => {
     refetch();
-  }, [physicalStoreId]);
+  }, [physicalStoreId, refetch]);
 
   return {
-    locationsByPhysicalStoreId: data ? data.locationsByPhysicalStoreId : null,
+    locationsByPhysicalStoreId: (
+      data as PhysicalStoreLocationsQueryData | undefined
+    )?.locationsByPhysicalStoreId ?? null,
     locationsByPhysicalStoreIdLoading: loading,
   };
 };

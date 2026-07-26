@@ -1,4 +1,3 @@
-// @ts-nocheck
 import dayjs from 'dayjs';
 
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
@@ -11,7 +10,12 @@ import { VisitorStays } from 'meteor/idreesia-common/server/collections/security
 
 import { getVisitorStays } from './queries';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   VisitorStayType: {
     isValid: async visitorStay => {
       const toDate = dayjs(Number(visitorStay.toDate));
@@ -44,6 +48,7 @@ export default {
         ? await DutyShifts.findOneAsync(visitorStay.shiftId)
         : null;
 
+      if (!duty) return null;
       if (!shift) return duty.name;
       return `${duty.name} - ${shift.name}`;
     },
@@ -58,7 +63,10 @@ export default {
     visitorStayById: async (obj, { _id }) => VisitorStays.findOneAsync(_id),
 
     distinctStayAllowedBy: async () => {
-      const distinctValues = await VisitorStays.rawCollection().distinct(
+      const rawCollection = VisitorStays.rawCollection() as unknown as {
+        distinct(fieldName: string): Promise<unknown[]>;
+      };
+      const distinctValues = await rawCollection.distinct(
         'stayAllowedBy'
       );
 
@@ -182,3 +190,5 @@ export default {
     deleteVisitorStay: async (obj, { _id }) => VisitorStays.removeAsync(_id),
   },
 };
+
+export default resolvers;

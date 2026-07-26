@@ -1,8 +1,7 @@
-// @ts-nocheck
 import dayjs from 'dayjs';
 import { Formats } from 'meteor/idreesia-common/constants';
 
-const fieldDisplayNamesMap = {
+const fieldDisplayNamesMap: Record<string, string> = {
   name: 'Name',
   parentName: 'Parent Name',
   cnicNumber: 'CNIC',
@@ -29,16 +28,21 @@ const fieldDisplayNamesMap = {
   dataSource: 'Source',
 };
 
-const fieldValueFormatterMap = {
-  ehadDate: val => dayjs(val).format(Formats.DATE_FORMAT),
-  birthDate: val => dayjs(val).format(Formats.DATE_FORMAT),
-  lastTarteebDate: val => dayjs(val).format(Formats.DATE_FORMAT),
+const fieldValueFormatterMap: Record<string, (val: unknown) => string> = {
+  ehadDate: val => dayjs(val as string | number | Date).format(Formats.DATE_FORMAT),
+  birthDate: val => dayjs(val as string | number | Date).format(Formats.DATE_FORMAT),
+  lastTarteebDate: val =>
+    dayjs(val as string | number | Date).format(Formats.DATE_FORMAT),
 };
 
 export default function getFormattedValue({
   fieldName,
   changedFrom,
   changedTo,
+}: {
+  fieldName: string;
+  changedFrom: unknown;
+  changedTo: unknown;
 }) {
   const fieldDisplayName = fieldDisplayNamesMap[fieldName];
   const fieldValueFormatter = fieldValueFormatterMap[fieldName];

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 import { isString, toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';

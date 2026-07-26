@@ -9,6 +9,10 @@ interface AttachmentDocument {
   description?: string;
   mimeType: string;
   data: string;
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string;
 }
 
 class Attachments extends Mongo.Collection<AttachmentDocument> {

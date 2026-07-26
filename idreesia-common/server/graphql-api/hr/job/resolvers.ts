@@ -1,10 +1,14 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Jobs } from 'meteor/idreesia-common/server/collections/hr';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   JobType: {
     usedCount: async jobType =>
       People.find({
@@ -69,3 +73,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

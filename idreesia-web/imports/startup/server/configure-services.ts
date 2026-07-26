@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Accounts } from 'meteor/accounts-base';
 
 // Update default values for the email workflows
@@ -10,7 +9,12 @@ Accounts.urls.enrollAccount = function enroll(token) {
   return Meteor.absoluteUrl(`set-initial-password/${token}`);
 };
 
-const googleService = Meteor.settings.private.oAuth.google;
+const privateSettings = Meteor.settings.private as {
+  oAuth?: {
+    google?: Record<string, unknown>;
+  };
+};
+const googleService = privateSettings.oAuth?.google ?? {};
 
 ServiceConfiguration.configurations
   .upsertAsync(
@@ -19,7 +23,7 @@ ServiceConfiguration.configurations
       $set: googleService,
     }
   )
-  .catch(error => {
+  .catch((error: Error) => {
     // eslint-disable-next-line no-console
     console.error('Failed to configure Google OAuth service', error);
   });
@@ -29,9 +33,9 @@ const updateOrCreateUserFromExternalServiceOriginal =
 
 // eslint-disable-next-line func-names
 Accounts.updateOrCreateUserFromExternalService = async function (
-  serviceName,
-  serviceData,
-  options
+  serviceName: string,
+  serviceData: Record<string, unknown>,
+  options: Record<string, unknown>
 ) {
   if (serviceName === 'google') {
     const { email } = serviceData;

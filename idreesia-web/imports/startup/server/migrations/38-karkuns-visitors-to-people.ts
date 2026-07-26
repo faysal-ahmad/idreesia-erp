@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 // import { keyBy } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Accounts } from 'meteor/accounts-base';
 import { Migrations } from 'meteor/percolate:migrations';
 

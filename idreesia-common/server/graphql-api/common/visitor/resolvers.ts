@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import {
   Attachments,
@@ -8,9 +7,37 @@ import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
+interface VisitorType {
+  imageId?: string;
+}
+
+interface PagedVisitorsArgs {
+  filter?: Record<string, unknown>;
+}
+
+interface FixCitySpellingArgs {
+  existingSpelling: string;
+  newSpelling: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+    username?: string;
+    locked?: boolean;
+    permissions?: string[];
+  };
+}
+
+interface PeopleRawCollection {
+  distinct(fieldName: string): Promise<unknown[]>;
+}
+
+type PersonDocument = Parameters<typeof People.personToVisitor>[0];
+
 export default {
   VisitorType: {
-    image: async visitorType => {
+    image: async (visitorType: VisitorType) => {
       const { imageId } = visitorType;
       if (imageId) {
         return Attachments.findOneAsync({ _id: { $eq: imageId } });
@@ -22,31 +49,41 @@ export default {
 
   Query: {
     distinctCities: async () => {
-      const cities = await People.rawCollection().distinct('visitorData.city');
+      const cities = await (
+        People.rawCollection() as unknown as PeopleRawCollection
+      ).distinct('visitorData.city');
       return compact(cities);
     },
 
     distinctCountries: async () => {
-      const countries = await People.rawCollection().distinct(
+      const countries = await (
+        People.rawCollection() as unknown as PeopleRawCollection
+      ).distinct(
         'visitorData.country'
       );
       return compact(countries);
     },
 
-    pagedVisitors: async (obj, { filter }) =>
+    pagedVisitors: async (_obj: unknown, { filter }: PagedVisitorsArgs) =>
       People.searchPeople(filter, {
         includeVisitors: true,
-      }).then(result => ({
-        data: result.data.map(person => People.personToVisitor(person)),
-        totalResults: result.totalResults,
-      })),
+      }).then(result => {
+        const pagedResult = result as {
+          data: PersonDocument[];
+          totalResults: number;
+        };
+        return {
+          data: pagedResult.data.map(person => People.personToVisitor(person)),
+          totalResults: pagedResult.totalResults,
+        };
+      }),
   },
 
   Mutation: {
     fixCitySpelling: async (
-      obj,
-      { existingSpelling, newSpelling },
-      { user }
+      _obj: unknown,
+      { existingSpelling, newSpelling }: FixCitySpellingArgs,
+      { user }: ResolverContext
     ) => {
       if (
         !hasOnePermission(user, [PermissionConstants.SECURITY_MANAGE_VISITORS])

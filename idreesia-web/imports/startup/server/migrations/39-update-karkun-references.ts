@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Migrations } from 'meteor/percolate:migrations';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -34,7 +33,7 @@ Migrations.add({
     }
 
     // Utility function to update the karkunId references in other collections
-    const convertCollection = async collection => {
+    const convertCollection = async (collection: { find(selector?: unknown): { fetchAsync(): Promise<Array<Record<string, any>>> }; updateAsync(selector: unknown, modifier: unknown): Promise<number> }) => {
       const records = await collection.find({}).fetchAsync();
       for (const record of records) {
         const karkunId = record.karkunId;

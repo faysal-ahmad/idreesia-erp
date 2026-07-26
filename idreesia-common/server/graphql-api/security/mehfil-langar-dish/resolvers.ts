@@ -1,10 +1,14 @@
-// @ts-nocheck
 import {
   MehfilLangarDishes,
   MehfilLangarDetails,
 } from 'meteor/idreesia-common/server/collections/security';
 
-export default {
+type ResolverField = ((...args: any[]) => any) | ResolverMap;
+interface ResolverMap {
+  [key: string]: ResolverField;
+}
+
+const resolvers: ResolverMap = {
   MehfilLangarDishType: {
     overallUsedCount: async mehfilLangarDishType =>
       MehfilLangarDetails.find({
@@ -71,3 +75,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

@@ -1,8 +1,17 @@
-// @ts-nocheck
-import React from 'react';
+import React, { type ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+type AnyProps = Record<string, unknown>;
+
+interface CurrentUserData {
+  currentUser: {
+    _id: string;
+    username?: string | null;
+    permissions?: string[] | null;
+  } | null;
+}
 
 const formQuery = gql`
   query currentUser {
@@ -14,9 +23,11 @@ const formQuery = gql`
   }
 `;
 
-export default () => WrappedComponent => {
-  const WithLoggedInUser = props => {
-    const { data, loading, ...queryResult } = useQuery(formQuery);
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithLoggedInUser: React.FC<AnyProps> = props => {
+    const { data, loading, ...queryResult } = useQuery<CurrentUserData>(
+      formQuery
+    );
 
     return (
       <WrappedComponent

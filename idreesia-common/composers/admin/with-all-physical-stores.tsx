@@ -1,8 +1,16 @@
-// @ts-nocheck
-import React from 'react';
+import React, { type ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+type AnyProps = Record<string, unknown>;
+
+interface AllPhysicalStoresData {
+  allPhysicalStores: Array<{
+    _id: string;
+    name: string;
+  }>;
+}
 
 const allPhysicalStoresQuery = gql`
   query allPhysicalStores {
@@ -13,9 +21,11 @@ const allPhysicalStoresQuery = gql`
   }
 `;
 
-export default () => WrappedComponent => {
-  const WithAllPhysicalStores = props => {
-    const { data, loading, ...queryResult } = useQuery(allPhysicalStoresQuery);
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithAllPhysicalStores: React.FC<AnyProps> = props => {
+    const { data, loading, ...queryResult } = useQuery<AllPhysicalStoresData>(
+      allPhysicalStoresQuery
+    );
 
     return (
       <WrappedComponent

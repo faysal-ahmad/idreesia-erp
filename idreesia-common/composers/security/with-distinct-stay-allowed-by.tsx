@@ -1,8 +1,13 @@
-// @ts-nocheck
-import React from "react";
+import React, { type ComponentType } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { useQuery } from '@apollo/client/react';
+
+type AnyProps = Record<string, unknown>;
+
+interface DistinctStayAllowedByData {
+  distinctStayAllowedBy: string[];
+}
 
 const withStayAllowedByQuery = gql`
   query distinctStayAllowedBy {
@@ -10,11 +15,14 @@ const withStayAllowedByQuery = gql`
   }
 `;
 
-export default () => WrappedComponent => {
-  const WithDistinctStayAllowedBy = props => {
-    const { data, loading, ...queryResult } = useQuery(withStayAllowedByQuery, {
-      fetchPolicy: "no-cache",
-    });
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithDistinctStayAllowedBy: React.FC<AnyProps> = props => {
+    const { data, loading, ...queryResult } = useQuery<DistinctStayAllowedByData>(
+      withStayAllowedByQuery,
+      {
+        fetchPolicy: "no-cache",
+      }
+    );
 
     return (
       <WrappedComponent

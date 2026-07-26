@@ -1,6 +1,10 @@
-// @ts-nocheck
+import type { WatchQueryFetchPolicy } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+interface DistinctCountriesData {
+  distinctCountries: string[];
+}
 
 const QUERY = gql`
   query distinctCountries {
@@ -8,8 +12,10 @@ const QUERY = gql`
   }
 `;
 
-const useDistinctCountries = (fetchPolicy = 'no-cache') => {
-  const { data, loading, refetch } = useQuery(QUERY, {
+const useDistinctCountries = (
+  fetchPolicy: WatchQueryFetchPolicy = 'no-cache'
+) => {
+  const { data, loading, refetch } = useQuery<DistinctCountriesData>(QUERY, {
     fetchPolicy,
   });
 

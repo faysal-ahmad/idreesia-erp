@@ -1,6 +1,15 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+interface JobOption {
+  _id: string;
+  name: string;
+  description?: string | null;
+}
+
+interface AllJobsData {
+  allJobs: JobOption[];
+}
 
 const QUERY = gql`
   query allJobs {
@@ -13,7 +22,7 @@ const QUERY = gql`
 `;
 
 const useAllJobs = () => {
-  const { data, loading } = useQuery(QUERY);
+  const { data, loading } = useQuery<AllJobsData>(QUERY);
   return {
     allJobs: data ? data.allJobs : null,
     allJobsLoading: loading,

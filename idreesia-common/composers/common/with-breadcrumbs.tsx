@@ -1,12 +1,20 @@
-// @ts-nocheck
-import React, { Component } from 'react';
+import React, { Component, type ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import type { Dispatch } from 'redux';
 
 import { setBreadcrumbs as setBreadcrumbsAction } from 'meteor/idreesia-common/action-creators';
 
-export default breadcrumbs => WrappedComponent => {
-  class WithBreadcrumbs extends Component {
+type AnyProps = Record<string, unknown>;
+
+interface WithBreadcrumbsProps extends AnyProps {
+  setBreadcrumbs(breadcrumbs: unknown[]): void;
+}
+
+export default (breadcrumbs: unknown[]) => (
+  WrappedComponent: ComponentType<AnyProps>
+) => {
+  class WithBreadcrumbs extends Component<WithBreadcrumbsProps> {
     static propTypes = {
       setBreadcrumbs: PropTypes.func,
     };
@@ -21,14 +29,16 @@ export default breadcrumbs => WrappedComponent => {
     }
   }
 
-  const mapDispatchToProps = dispatch => ({
-    setBreadcrumbs: bc => {
+  const mapDispatchToProps = (dispatch: Dispatch) => ({
+    setBreadcrumbs: (bc: unknown[]) => {
       dispatch(setBreadcrumbsAction(bc));
     },
   });
 
-  return connect(
+  const enhance = connect(
     null,
     mapDispatchToProps
-  )(WithBreadcrumbs);
+  ) as unknown as (component: unknown) => ComponentType<AnyProps>;
+
+  return enhance(WithBreadcrumbs);
 };

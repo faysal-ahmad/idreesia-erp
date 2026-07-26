@@ -1,8 +1,18 @@
-// @ts-nocheck
-import React from 'react';
+import React, { type ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+type AnyProps = Record<string, unknown>;
+
+interface AllCityMehfilsData {
+  allCityMehfils: Array<{
+    _id: string;
+    cityId: string;
+    name: string;
+    address?: string | null;
+  }>;
+}
 
 const withAllCityMehfilsQuery = gql`
   query allCityMehfils {
@@ -15,9 +25,11 @@ const withAllCityMehfilsQuery = gql`
   }
 `;
 
-export default () => WrappedComponent => {
-  const WithAllCityMehfils = props => {
-    const { data, loading, ...queryResult } = useQuery(withAllCityMehfilsQuery);
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithAllCityMehfils: React.FC<AnyProps> = props => {
+    const { data, loading, ...queryResult } = useQuery<AllCityMehfilsData>(
+      withAllCityMehfilsQuery
+    );
 
     return (
       <WrappedComponent

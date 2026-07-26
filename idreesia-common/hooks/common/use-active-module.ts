@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -6,16 +5,25 @@ import {
   setActiveSubModuleName as setActiveSubModuleNameAction,
 } from 'meteor/idreesia-common/action-creators';
 
+interface ActiveModuleState {
+  activeModuleName?: string | null;
+  activeSubModuleName?: string | null;
+}
+
 const useActiveModule = () => {
   const dispatch = useDispatch();
-  const activeModuleName = useSelector(state => state.activeModuleName);
-  const activeSubModuleName = useSelector(state => state.activeSubModuleName);
+  const activeModuleName = useSelector(
+    (state: ActiveModuleState) => state.activeModuleName
+  );
+  const activeSubModuleName = useSelector(
+    (state: ActiveModuleState) => state.activeSubModuleName
+  );
 
-  const setActiveModuleName = moduleName => {
+  const setActiveModuleName = (moduleName: string | null) => {
     dispatch(setActiveModuleNameAction(moduleName));
   };
 
-  const setActiveSubModuleName = subModuleName => {
+  const setActiveSubModuleName = (subModuleName: string | null) => {
     dispatch(setActiveSubModuleNameAction(subModuleName));
   };
 

@@ -1,12 +1,20 @@
-// @ts-nocheck
-import React, { Component } from 'react';
+import React, { Component, type ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import type { Dispatch } from 'redux';
 
 import { setBreadcrumbs as setBreadcrumbsAction } from 'meteor/idreesia-common/action-creators';
 
-export default getBreadcrumbs => WrappedComponent => {
-  class WithDynamicBreadcrumbs extends Component {
+type AnyProps = Record<string, unknown>;
+
+interface WithDynamicBreadcrumbsProps extends AnyProps {
+  setBreadcrumbs(breadcrumbs: string[]): void;
+}
+
+export default (getBreadcrumbs: (props: AnyProps) => string) => (
+  WrappedComponent: ComponentType<AnyProps>
+) => {
+  class WithDynamicBreadcrumbs extends Component<WithDynamicBreadcrumbsProps> {
     static propTypes = {
       setBreadcrumbs: PropTypes.func,
     };
@@ -19,7 +27,7 @@ export default getBreadcrumbs => WrappedComponent => {
       setBreadcrumbs(breadcrumbs);
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: WithDynamicBreadcrumbsProps) {
       const { setBreadcrumbs } = this.props;
       const prevBreadcrumbs = getBreadcrumbs(prevProps);
       const newBreadcrumbs = getBreadcrumbs(this.props);
@@ -34,14 +42,16 @@ export default getBreadcrumbs => WrappedComponent => {
     }
   }
 
-  const mapDispatchToProps = dispatch => ({
-    setBreadcrumbs: bc => {
+  const mapDispatchToProps = (dispatch: Dispatch) => ({
+    setBreadcrumbs: (bc: string[]) => {
       dispatch(setBreadcrumbsAction(bc));
     },
   });
 
-  return connect(
+  const enhance = connect(
     null,
     mapDispatchToProps
-  )(WithDynamicBreadcrumbs);
+  ) as unknown as (component: unknown) => ComponentType<AnyProps>;
+
+  return enhance(WithDynamicBreadcrumbs);
 };

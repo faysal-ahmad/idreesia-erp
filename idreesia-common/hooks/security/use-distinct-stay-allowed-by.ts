@@ -1,6 +1,10 @@
-// @ts-nocheck
+import type { WatchQueryFetchPolicy } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+interface DistinctStayAllowedByData {
+  distinctStayAllowedBy: string[];
+}
 
 const QUERY = gql`
   query distinctStayAllowedBy {
@@ -8,8 +12,10 @@ const QUERY = gql`
   }
 `;
 
-const useDistinctStayAllowedBy = (fetchPolicy = 'no-cache') => {
-  const { data, loading, refetch } = useQuery(QUERY, {
+const useDistinctStayAllowedBy = (
+  fetchPolicy: WatchQueryFetchPolicy = 'no-cache'
+) => {
+  const { data, loading, refetch } = useQuery<DistinctStayAllowedByData>(QUERY, {
     fetchPolicy,
   });
 

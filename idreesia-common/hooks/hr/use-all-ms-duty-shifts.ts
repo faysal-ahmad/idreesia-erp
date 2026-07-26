@@ -1,6 +1,17 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+
+interface DutyShiftOption {
+  _id: string;
+  dutyId: string;
+  name: string;
+  startTime?: string | null;
+  endTime?: string | null;
+}
+
+interface AllDutyShiftsData {
+  allDutyShifts: DutyShiftOption[];
+}
 
 const QUERY = gql`
   query allDutyShifts {
@@ -15,7 +26,7 @@ const QUERY = gql`
 `;
 
 const useAllMSDutyShifts = () => {
-  const { data, loading } = useQuery(QUERY);
+  const { data, loading } = useQuery<AllDutyShiftsData>(QUERY);
   return {
     allMSDutyShifts: data ? data.allDutyShifts : null,
     allMSDutyShiftsLoading: loading,

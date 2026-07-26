@@ -1,8 +1,13 @@
-// @ts-nocheck
-import React from "react";
+import React, { type ComponentType } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { useQuery } from '@apollo/client/react';
+
+type AnyProps = Record<string, unknown>;
+
+interface DistinctCitiesData {
+  distinctCities: string[];
+}
 
 const withDistinctCitiesQuery = gql`
   query distinctCities {
@@ -10,11 +15,14 @@ const withDistinctCitiesQuery = gql`
   }
 `;
 
-export default () => WrappedComponent => {
-  const WithDistinctCities = props => {
-    const { data, loading, ...queryResult } = useQuery(withDistinctCitiesQuery, {
-      fetchPolicy: "no-cache",
-    });
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithDistinctCities: React.FC<AnyProps> = props => {
+    const { data, loading, ...queryResult } = useQuery<DistinctCitiesData>(
+      withDistinctCitiesQuery,
+      {
+        fetchPolicy: "no-cache",
+      }
+    );
 
     return (
       <WrappedComponent

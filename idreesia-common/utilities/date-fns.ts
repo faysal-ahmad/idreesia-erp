@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { format, parse } from 'date-fns';
 
 export function toDateFnsFormat(formatString: string): string {

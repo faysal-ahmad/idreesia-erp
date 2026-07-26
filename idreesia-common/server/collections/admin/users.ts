@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { Random } from 'meteor/random';
+import type { Mongo } from 'meteor/mongo';
 import { subMinutes } from 'date-fns';
 import {
   difference,
@@ -9,14 +9,120 @@ import {
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 
-const Users = Meteor.users;
+type LooseRecord = Record<string, any>;
 
-Users.aggregate = (pipelines, options) => {
-  const rawCollection = Users.rawCollection();
-  return rawCollection.aggregate(pipelines, options).toArray();
+interface AppUser extends LooseRecord {
+  _id: string;
+  username?: string;
+  emails?: Array<{ address?: string; verified?: boolean }>;
+  profile?: { name?: string };
+  personId?: string;
+  locked?: boolean;
+  lastLoggedInAt?: Date;
+  lastActiveAt?: Date;
+  permissions?: string[];
+  instances?: string[];
+  groups?: string[];
+}
+
+interface MappedUser extends LooseRecord {
+  _id: string;
+  permissions: string[];
+  instances: string[];
+  groups: string[];
+}
+
+interface UserRef {
+  _id: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+interface UserSearchResult {
+  totalResults: number;
+  data: MappedUser[];
+}
+
+interface UsersCollection extends Mongo.Collection<AppUser> {
+  aggregate<TResult = AppUser>(
+    pipelines: LooseRecord[],
+    options?: unknown
+  ): Promise<TResult[]>;
+  findOneUser(userId: string | null): Promise<MappedUser>;
+  findByPersonIds(personIds: string[]): Promise<MappedUser[]>;
+  searchUsers(params: LooseRecord): Promise<UserSearchResult> | UserSearchResult;
+  createUser(
+    values: LooseRecord,
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  updateUser(
+    values: LooseRecord,
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  setPermissions(
+    values: { userId: string; permissions: string[] },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  addInstanceAccess(
+    values: { userId: string; instances: string[] },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  removeInstanceAccess(
+    values: { userId: string; instances: string[] },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  setInstanceAccess(
+    values: { userId: string; instances: string[] },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  setGroups(
+    values: { userId: string; groups: string[] },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  resetPassword(
+    values: { userId?: string; userName?: string },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+  lockAccount(
+    values: { userId: string },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
+}
+
+declare const Accounts: {
+  createUserAsync(options: LooseRecord): Promise<string>;
+  findUserByUsername(userName?: string): Promise<AppUser | null>;
+  setPasswordAsync(userId: string, password: string): Promise<void>;
 };
 
-const mapUser = user => ({
+const Users = (Meteor as unknown as { users: UsersCollection }).users;
+
+Users.aggregate = <TResult = AppUser>(pipelines: LooseRecord[], options?: unknown) => {
+  const rawCollection = Users.rawCollection();
+  return rawCollection.aggregate<TResult>(pipelines, options).toArray();
+};
+
+const mapUser = (user: AppUser): MappedUser => ({
   _id: user._id,
   username: user.username,
   email: get(user, 'emails.0.address', null),
@@ -31,8 +137,8 @@ const mapUser = user => ({
   groups: user.groups || [],
 });
 
-const buildPipeline = params => {
-  const pipeline = [];
+const buildPipeline = (params: LooseRecord): LooseRecord[] | UserSearchResult => {
+  const pipeline: LooseRecord[] = [];
   const {
     showLocked,
     showUnlocked,
@@ -98,21 +204,24 @@ const buildPipeline = params => {
 };
 
 Users.findOneUser = async userId => {
-  const user = await Meteor.users.findOneAsync(userId);
-  return mapUser(user);
+  const user = await Users.findOneAsync(userId);
+  return mapUser(user as AppUser);
 };
 
-Users.findByPersonIds = async personIds => {
+Users.findByPersonIds = async (personIds: string[]) => {
   const users = await Users.find({
     personId: { $in: personIds },
   }).fetchAsync();
 
-  return users.map(user => mapUser(user));
+  return users.map((user: AppUser) => mapUser(user));
 };
 
 Users.searchUsers = params => {
   const { pageIndex = '0', pageSize = '20' } = params;
   const pipeline = buildPipeline(params);
+  if (!Array.isArray(pipeline)) {
+    return pipeline;
+  }
   const countingPipeline = pipeline.concat({
     $count: 'total',
   });
@@ -125,8 +234,8 @@ Users.searchUsers = params => {
     { $limit: nPageSize },
   ]);
 
-  const users = Users.aggregate(resultsPipeline);
-  const totalResults = Users.aggregate(countingPipeline);
+  const users = Users.aggregate<AppUser>(resultsPipeline);
+  const totalResults = Users.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([users, totalResults]).then(results => ({
     totalResults: get(results[1], ['0', 'total'], 0),

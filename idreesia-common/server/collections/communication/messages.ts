@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { endOfDay, startOfDay } from 'date-fns';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
@@ -7,17 +6,36 @@ import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Message as MessageSchema } from 'meteor/idreesia-common/server/schemas/communication';
 
-class Messages extends AggregatableCollection {
+interface MessageDocument {
+  _id?: string;
+  source?: string;
+  sentDate?: Date;
+  createdAt?: Date;
+  [key: string]: unknown;
+}
+
+interface SearchMessagesFilter {
+  source?: string;
+  startDate?: string;
+  endDate?: string;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+class Messages extends AggregatableCollection<MessageDocument> {
   constructor(name = 'communication-messages', options = {}) {
-    const messages = super(name, options);
-    messages.attachSchema(MessageSchema);
-    return messages;
+    super(name, options);
+    this.attachSchema(MessageSchema);
   }
 
   // **************************************************************
   // Query Functions
   // **************************************************************
-  searchMessages(filter) {
+  searchMessages(filter: SearchMessagesFilter) {
     const {
       source,
       startDate,
@@ -25,7 +43,7 @@ class Messages extends AggregatableCollection {
       pageIndex = '0',
       pageSize = '20',
     } = filter;
-    const pipeline = [];
+    const pipeline: Record<string, unknown>[] = [];
 
     if (source) {
       pipeline.push({
@@ -66,8 +84,8 @@ class Messages extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const messages = this.aggregate(resultsPipeline);
-    const totalResults = this.aggregate(countingPipeline);
+    const messages = this.aggregate<MessageDocument>(resultsPipeline);
+    const totalResults = this.aggregate<CountResult>(countingPipeline);
 
     return Promise.all([messages, totalResults]).then(results => ({
       data: results[0],

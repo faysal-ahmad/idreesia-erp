@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { UserGroup as UserGroupSchema } from 'meteor/idreesia-common/server/schemas/admin';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
@@ -7,16 +6,53 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { difference, get } from 'meteor/idreesia-common/utilities/lodash';
 import { parse } from 'query-string';
 
-class UserGroups extends AggregatableCollection {
+interface UserRef {
+  _id: string;
+}
+
+interface UserGroupDocument {
+  _id?: string;
+  name: string;
+  moduleName: string;
+  description?: string;
+  permissions?: string[];
+  instances?: string[];
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+interface GroupValues {
+  _id: string;
+  name: string;
+  moduleName?: string;
+  description?: string;
+}
+
+interface PermissionsValues {
+  _id: string;
+  permissions: string[];
+}
+
+interface InstanceAccessValues {
+  _id: string;
+  instances: string[];
+}
+
+class UserGroups extends AggregatableCollection<UserGroupDocument> {
   constructor(name = 'user-groups', options = {}) {
-    const userGroups = super(name, options);
-    userGroups.attachSchema(UserGroupSchema);
-    return userGroups;
+    super(name, options);
+    this.attachSchema(UserGroupSchema);
   }
 
-  searchGroups = queryString => {
+  searchGroups = (queryString: string) => {
     const params = parse(queryString);
-    const pipeline = [];
+    const pipeline: Record<string, unknown>[] = [];
 
     const { pageIndex = '0', pageSize = '20' } = params;
 
@@ -24,16 +60,16 @@ class UserGroups extends AggregatableCollection {
       $count: 'total',
     });
 
-    const nPageIndex = parseInt(pageIndex, 10);
-    const nPageSize = parseInt(pageSize, 10);
+    const nPageIndex = parseInt(String(pageIndex), 10);
+    const nPageSize = parseInt(String(pageSize), 10);
     const resultsPipeline = pipeline.concat([
       { $sort: { name: 1 } },
       { $skip: nPageIndex * nPageSize },
       { $limit: nPageSize },
     ]);
 
-    const userGroups = this.aggregate(resultsPipeline);
-    const totalResults = this.aggregate(countingPipeline);
+    const userGroups = this.aggregate<UserGroupDocument>(resultsPipeline);
+    const totalResults = this.aggregate<CountResult>(countingPipeline);
 
     return Promise.all([userGroups, totalResults]).then(results => ({
       data: results[0],
@@ -45,7 +81,10 @@ class UserGroups extends AggregatableCollection {
   // Common Create/Update methods for UserGroups.
   // Used from Admin/Outstation/Portals.
   // *******************************************************************
-  async createGroup({ name, moduleName, description }, user) {
+  async createGroup(
+    { name, moduleName, description }: Omit<GroupValues, '_id'>,
+    user: UserRef
+  ) {
     const existingGroup = await this.findOneAsync({ name });
     if (existingGroup) {
       throw new Error(`User Group name '${name}' is already in use.`);
@@ -65,9 +104,9 @@ class UserGroups extends AggregatableCollection {
     return this.findOneAsync(newUserGroupId);
   }
 
-  async updateGroup({ _id, name, description }, user) {
+  async updateGroup({ _id, name, description }: GroupValues, user: UserRef) {
     const date = new Date();
-    await UserGroups.updateAsync(_id, {
+    await this.updateAsync(_id, {
       $set: {
         name,
         description,
@@ -76,10 +115,10 @@ class UserGroups extends AggregatableCollection {
       },
     });
 
-    return UserGroups.findOneAsync(_id);
+    return this.findOneAsync(_id);
   }
 
-  async removeGroup({ _id }) {
+  async removeGroup({ _id }: { _id: string }) {
     // Check if there are users that have been assigned to
     // this group.
     const groupUserCount = await Users.find({
@@ -90,14 +129,14 @@ class UserGroups extends AggregatableCollection {
       throw new Error(`This Group is currently in use and cannot be deleted.`);
     }
 
-    return UserGroups.removeAsync(_id);
+    return this.removeAsync(_id);
   }
 
   setPermissions = async (
-    { _id, permissions },
-    user,
-    dataSource,
-    dataSourceDetail = null
+    { _id, permissions }: PermissionsValues,
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail: string | null = null
   ) => {
     const existingGroup = await this.findOneAsync(_id);
     await this.updateAsync(_id, { $set: { permissions } });
@@ -105,10 +144,10 @@ class UserGroups extends AggregatableCollection {
     // Create a security log
     const permissionsAdded = difference(
       permissions,
-      existingGroup.permissions || []
+      existingGroup?.permissions || []
     );
     const permissionsRemoved = difference(
-      existingGroup.permissions || [],
+      existingGroup?.permissions || [],
       permissions
     );
 
@@ -129,18 +168,18 @@ class UserGroups extends AggregatableCollection {
   };
 
   setInstanceAccess = async (
-    { _id, instances },
-    user,
-    dataSource,
-    dataSourceDetail = null
+    { _id, instances }: InstanceAccessValues,
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail: string | null = null
   ) => {
     const existingGroup = await this.findOneAsync(_id);
     await this.updateAsync(_id, { $set: { instances } });
 
     // Create a security log
-    const instancesAdded = difference(instances, existingGroup.instances || []);
+    const instancesAdded = difference(instances, existingGroup?.instances || []);
     const instancesRemoved = difference(
-      existingGroup.instances || [],
+      existingGroup?.instances || [],
       instances
     );
 

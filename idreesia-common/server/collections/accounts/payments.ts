@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { endOfDay, getMonth, getYear, isEqual, parse, startOfDay } from 'date-fns';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Payment as PaymentSchema } from 'meteor/idreesia-common/server/schemas/accounts';
@@ -11,17 +10,44 @@ import {
   OperationType,
 } from 'meteor/idreesia-common/constants/audit';
 
-class Payments extends AggregatableCollection {
+interface UserRef {
+  _id: string;
+}
+
+interface PaymentDocument {
+  _id?: string;
+  paymentNumber?: number;
+  paymentDate?: Date | string;
+  isDeleted?: boolean;
+  [key: string]: any;
+}
+
+interface PaymentSearchParams {
+  paymentNumber?: number;
+  name?: string;
+  cnicNumber?: string;
+  paymentTypeId?: string;
+  startDate?: string;
+  endDate?: string;
+  updatedBetween?: string;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+class Payments extends AggregatableCollection<PaymentDocument> {
   constructor(name = 'accounts-payments', options = {}) {
-    const payments = super(name, options);
-    payments.attachSchema(PaymentSchema);
-    return payments;
+    super(name, options);
+    this.attachSchema(PaymentSchema);
   }
 
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  async createPayment(values, user) {
+  async createPayment(values: PaymentDocument, user: UserRef) {
     const { paymentNumber, paymentDate } = values;
     if (!(await this.isPaymentNoAvailable(paymentNumber, paymentDate))) {
       throw new Error('This Voucher Number is already used.');
@@ -49,10 +75,13 @@ class Payments extends AggregatableCollection {
     return this.findOneAsync(paymentId);
   }
 
-  async updatePayment(values, user) {
+  async updatePayment(values: PaymentDocument, user: UserRef) {
     const { _id } = values;
+    if (!_id) {
+      throw new Error('Payment id is required.');
+    }
     const existingPayment = await this.findOneAsync(_id);
-    const changedValues = this.getChangedValues(_id, values, existingPayment);
+    const changedValues = this.getChangedValues(values, existingPayment);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
@@ -76,13 +105,13 @@ class Payments extends AggregatableCollection {
         operationTime: date,
         auditValues: changedValues,
       },
-      existingPayment
+      existingPayment ?? null
     );
 
     return this.findOneAsync(_id);
   }
 
-  async removePayment(_id, user) {
+  async removePayment(_id: string, user: UserRef) {
     const date = new Date();
     await this.updateAsync(
       {
@@ -110,8 +139,11 @@ class Payments extends AggregatableCollection {
 
   // Iterate through the incoming changed values and check which of the
   // values have actually changed.
-  getChangedValues(_id, newValues, existingPayment) {
-    const changedValues = {};
+  getChangedValues(
+    newValues: PaymentDocument,
+    existingPayment?: PaymentDocument
+  ) {
+    const changedValues: Record<string, unknown> = {};
     forOwn(newValues, (newValue, key) => {
       if (this.isValueChanged(key, newValue, existingPayment)) {
         changedValues[key] = newValue;
@@ -121,13 +153,20 @@ class Payments extends AggregatableCollection {
     return changedValues;
   }
 
-  isValueChanged(key, newValue, existingPayment) {
+  isValueChanged(
+    key: string,
+    newValue: unknown,
+    existingPayment: PaymentDocument = {}
+  ) {
     if (!existingPayment[key] && !newValue) return false;
     let isChanged;
 
     switch (key) {
       case 'paymentDate':
-        isChanged = !isEqual(new Date(existingPayment[key]), new Date(newValue));
+        isChanged = !isEqual(
+          new Date(existingPayment[key] as string | number | Date),
+          new Date(newValue as string | number | Date)
+        );
         break;
 
       default:
@@ -141,7 +180,7 @@ class Payments extends AggregatableCollection {
   // **************************************************************
   // Query Functions
   // **************************************************************
-  async getPaymentIdsByNameSearch(name) {
+  async getPaymentIdsByNameSearch(name: string) {
     const pipeline = [
       { $match: { $text: { $search: name } } },
       {
@@ -153,12 +192,12 @@ class Payments extends AggregatableCollection {
       { $limit: 50 },
     ];
 
-    const payments = await this.aggregate(pipeline);
+    const payments = await this.aggregate<PaymentDocument>(pipeline);
     return payments.map(({ _id }) => _id);
   }
 
-  async getPayments(params = {}) {
-    const pipeline = [
+  async getPayments(params: PaymentSearchParams = {}) {
+    const pipeline: Record<string, unknown>[] = [
       {
         $match: {
           isDeleted: { $eq: false },
@@ -232,7 +271,7 @@ class Payments extends AggregatableCollection {
     }
 
     if (updatedBetween) {
-      const updatedBetweenDates = JSON.parse(updatedBetween);
+      const updatedBetweenDates = JSON.parse(updatedBetween) as string[];
 
       if (updatedBetweenDates[0]) {
         pipeline.push({
@@ -268,8 +307,8 @@ class Payments extends AggregatableCollection {
     const countingPipeline = pipeline.concat({
       $count: 'total',
     });
-    const payments = this.aggregate(resultsPipeline);
-    const totalResults = this.aggregate(countingPipeline);
+    const payments = this.aggregate<PaymentDocument>(resultsPipeline);
+    const totalResults = this.aggregate<CountResult>(countingPipeline);
 
     return Promise.all([payments, totalResults]).then(results => ({
       data: results[0],
@@ -302,11 +341,14 @@ class Payments extends AggregatableCollection {
       }
     );
 
-    return payment ? payment.paymentNumber + 1 : 1;
+    return payment ? (payment.paymentNumber ?? 0) + 1 : 1;
   }
 
-  async isPaymentNoAvailable(paymentNo, paymentDate) {
-    const mPaymentDate = new Date(paymentDate);
+  async isPaymentNoAvailable(
+    paymentNo: number | undefined,
+    paymentDate: Date | string | undefined
+  ) {
+    const mPaymentDate = new Date(paymentDate ?? '');
     let year = getYear(mPaymentDate);
     if (getMonth(mPaymentDate) <= 5) {
       year -= 1;

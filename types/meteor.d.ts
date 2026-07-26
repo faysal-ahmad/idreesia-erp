@@ -107,13 +107,19 @@ declare module 'meteor/mongo' {
       };
     }
 
+    interface Cursor<TDocument> {
+      countAsync(): Promise<number>;
+      fetch(): TDocument[];
+      fetchAsync(): Promise<TDocument[]>;
+    }
+
     class Collection<TDocument = Record<string, unknown>> {
       constructor(
         name: string,
         options?: CollectionOptions<TDocument>
       );
       attachSchema(schema: unknown): void;
-      find(selector?: unknown, options?: unknown): unknown;
+      find(selector?: unknown, options?: unknown): Cursor<TDocument>;
       findOneAsync(
         selector?: unknown,
         options?: unknown

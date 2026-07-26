@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { isEqual, startOfDay, subDays } from 'date-fns';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
@@ -15,17 +14,46 @@ import {
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
 
-class ImdadRequests extends AggregatableCollection {
+interface UserRef {
+  _id: string;
+}
+
+interface ImdadRequestDocument {
+  _id?: string;
+  requestDate?: Date | string;
+  visitorId?: string;
+  imdadReasonId?: string;
+  dataSource?: string;
+  attachmentIds?: string[];
+  [key: string]: any;
+}
+
+interface AttachmentValues {
+  _id: string;
+  attachmentId: string;
+}
+
+interface GetPagedDataParams {
+  visitorId?: string;
+  requestDate?: string;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+class ImdadRequests extends AggregatableCollection<ImdadRequestDocument> {
   constructor(name = 'imdad-imdad-requests', options = {}) {
-    const imdadRequests = super(name, options);
-    imdadRequests.attachSchema(ImdadRequestSchema);
-    return imdadRequests;
+    super(name, options);
+    this.attachSchema(ImdadRequestSchema);
   }
 
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  async createImdadRequest(values, user) {
+  async createImdadRequest(values: ImdadRequestDocument, user: UserRef) {
     const { requestDate, visitorId, imdadReasonId } = values;
     if (!values.dataSource) {
       throw new Error('Data Source is required to create an Imdad Request.');
@@ -39,7 +67,7 @@ class ImdadRequests extends AggregatableCollection {
 
     const date = new Date();
     const valuesToInsert = Object.assign({}, values, {
-      requestDate: startOfDay(new Date(requestDate)),
+      requestDate: startOfDay(new Date(requestDate ?? '')),
       imdadReasonId,
       status: ImdadRequestStatus.CREATED,
       createdAt: date,
@@ -52,14 +80,13 @@ class ImdadRequests extends AggregatableCollection {
     return this.findOneAsync(imdadRequestId);
   }
 
-  async updateImdadRequest(values, user) {
+  async updateImdadRequest(values: ImdadRequestDocument, user: UserRef) {
     const { _id } = values;
+    if (!_id) {
+      throw new Error('Imdad Request id is required.');
+    }
     const existingImdadRequest = await this.findOneAsync(_id);
-    const changedValues = this.getChangedValues(
-      _id,
-      values,
-      existingImdadRequest
-    );
+    const changedValues = this.getChangedValues(values, existingImdadRequest);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
@@ -78,8 +105,11 @@ class ImdadRequests extends AggregatableCollection {
 
   // Iterate through the incoming changed values and check which of the
   // values have actually changed.
-  getChangedValues(_id, newValues, existingImdadRequest) {
-    const changedValues = {};
+  getChangedValues(
+    newValues: ImdadRequestDocument,
+    existingImdadRequest?: ImdadRequestDocument
+  ) {
+    const changedValues: Record<string, unknown> = {};
     forOwn(newValues, (newValue, key) => {
       if (this.isValueChanged(key, newValue, existingImdadRequest)) {
         changedValues[key] = newValue;
@@ -89,15 +119,19 @@ class ImdadRequests extends AggregatableCollection {
     return changedValues;
   }
 
-  isValueChanged(key, newValue, existingImdadRequest) {
+  isValueChanged(
+    key: string,
+    newValue: unknown,
+    existingImdadRequest: ImdadRequestDocument = {}
+  ) {
     if (!existingImdadRequest[key] && !newValue) return false;
     let isChanged;
 
     switch (key) {
       case 'requestDate':
         isChanged = !isEqual(
-          new Date(existingImdadRequest[key]),
-          new Date(newValue)
+          new Date(existingImdadRequest[key] as string | number | Date),
+          new Date(newValue as string | number | Date)
         );
         break;
 
@@ -112,9 +146,9 @@ class ImdadRequests extends AggregatableCollection {
     return isChanged;
   }
 
-  async addAttachment({ _id, attachmentId }, user) {
+  async addAttachment({ _id, attachmentId }: AttachmentValues, user: UserRef) {
     const date = new Date();
-    await ImdadRequests.updateAsync(
+    await this.updateAsync(
       { _id },
       {
         $addToSet: {
@@ -127,12 +161,15 @@ class ImdadRequests extends AggregatableCollection {
       }
     );
 
-    return ImdadRequests.findOneAsync(_id);
+    return this.findOneAsync(_id);
   }
 
-  async removeAttachment({ _id, attachmentId }, user) {
+  async removeAttachment(
+    { _id, attachmentId }: AttachmentValues,
+    user: UserRef
+  ) {
     const date = new Date();
-    await ImdadRequests.updateAsync(
+    await this.updateAsync(
       { _id },
       {
         $pull: {
@@ -146,13 +183,13 @@ class ImdadRequests extends AggregatableCollection {
     );
 
     await Attachments.removeAsync(attachmentId);
-    return ImdadRequests.findOneAsync(_id);
+    return this.findOneAsync(_id);
   }
   // **************************************************************
   // Query Functions
   // **************************************************************
-  getPagedData(params) {
-    const pipeline = [];
+  getPagedData(params: GetPagedDataParams) {
+    const pipeline: Record<string, unknown>[] = [];
 
     const {
       visitorId,
@@ -192,8 +229,8 @@ class ImdadRequests extends AggregatableCollection {
       { $limit: nPageSize },
     ]);
 
-    const imdadRequests = this.aggregate(resultsPipeline);
-    const totalResults = this.aggregate(countingPipeline);
+    const imdadRequests = this.aggregate<ImdadRequestDocument>(resultsPipeline);
+    const totalResults = this.aggregate<CountResult>(countingPipeline);
 
     return Promise.all([imdadRequests, totalResults]).then(results => ({
       data: results[0],
@@ -204,7 +241,7 @@ class ImdadRequests extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  async isImdadRequestAllowed(visitorId) {
+  async isImdadRequestAllowed(visitorId: string | undefined) {
     // Before creating, ensure that there isn't already another record created
     // for last 30 days for this visitor.
     const date = subDays(startOfDay(new Date()), 30);

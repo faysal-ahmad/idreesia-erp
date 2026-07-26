@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   add,
   addMonths,
@@ -32,17 +31,64 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
-class People extends AggregatableCollection {
+type LooseRecord = Record<string, any>;
+
+interface UserRef {
+  _id: string;
+}
+
+interface PersonDocument extends LooseRecord {
+  _id: string;
+  dataSource?: string;
+  isVisitor?: boolean;
+  isKarkun?: boolean;
+  isEmployee?: boolean;
+  userId?: string;
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string;
+  sharedData: LooseRecord;
+  visitorData?: LooseRecord | null;
+  karkunData?: LooseRecord | null;
+  employeeData?: LooseRecord | null;
+}
+
+type PersonInput = LooseRecord & {
+  _id?: string;
+  dataSource?: string;
+  sharedData: LooseRecord;
+  visitorData?: LooseRecord;
+  karkunData?: LooseRecord;
+  employeeData?: LooseRecord;
+};
+
+interface AttachmentInput {
+  _id: string;
+  attachmentId: string;
+}
+
+interface SearchFlags {
+  includeKarkuns?: boolean;
+  includeEmployees?: boolean;
+  includeVisitors?: boolean;
+  paginatedResults?: boolean;
+}
+
+interface CountResult {
+  total: number;
+}
+
+class People extends AggregatableCollection<PersonDocument> {
   constructor(name = 'common-people', options = {}) {
-    const people = super(name, options);
-    people.attachSchema(PersonSchema);
-    return people;
+    super(name, options);
+    this.attachSchema(PersonSchema);
   }
 
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  async createPerson(values, user) {
+  async createPerson(values: PersonInput, user: UserRef) {
     const {
       dataSource,
       sharedData: { cnicNumber, contactNumber1, contactNumber2 },
@@ -75,7 +121,7 @@ class People extends AggregatableCollection {
     return this.findOneAsync(personId);
   }
 
-  async updatePerson(values, user) {
+  async updatePerson(values: PersonInput & { _id: string }, user: UserRef) {
     const { _id } = values;
     const existingPerson = await this.findOneAsync(_id);
     const changedValues = this.getChangedValues(_id, values, existingPerson);
@@ -94,7 +140,7 @@ class People extends AggregatableCollection {
     if (contactNumber2) await this.checkContactNotInUse(contactNumber2, _id);
 
     if (imageId) {
-      if (existingPerson.sharedData.imageId) {
+      if (existingPerson?.sharedData.imageId) {
         await Attachments.removeAttachment(existingPerson.sharedData.imageId);
       }
     }
@@ -116,13 +162,13 @@ class People extends AggregatableCollection {
         operationTime: date,
         auditValues: changedValues,
       },
-      existingPerson
+      existingPerson || null
     );
 
     return this.findOneAsync(_id);
   }
 
-  async addAttachment({ _id, attachmentId }, user) {
+  async addAttachment({ _id, attachmentId }: AttachmentInput, user: UserRef) {
     const date = new Date();
     await this.updateAsync(_id, {
       $addToSet: {
@@ -146,7 +192,10 @@ class People extends AggregatableCollection {
     return this.findOneAsync(_id);
   }
 
-  async removeAttachment({ _id, attachmentId }, user) {
+  async removeAttachment(
+    { _id, attachmentId }: AttachmentInput,
+    user: UserRef
+  ) {
     const date = new Date();
     await this.updateAsync(_id, {
       $pull: {
@@ -179,8 +228,12 @@ class People extends AggregatableCollection {
 
   // Iterate through the incoming changed values and check which of the
   // values have actually changed.
-  getChangedValues(_id, newPerson, existingPerson) {
-    const changedValues = {};
+  getChangedValues(
+    _id: string,
+    newPerson: PersonInput,
+    existingPerson: PersonDocument | undefined
+  ) {
+    const changedValues: LooseRecord = {};
     const topLevelProps = ['isVisitor', 'isKarkun', 'isEmployee', 'userId'];
     topLevelProps.forEach(prop => {
       const newValue = newPerson[prop];
@@ -237,7 +290,7 @@ class People extends AggregatableCollection {
     return changedValues;
   }
 
-  isValueChanged(key, newValue, existingValue) {
+  isValueChanged(key: string, newValue: unknown, existingValue: unknown) {
     if (isNil(existingValue) && isNil(newValue)) return false;
     let isChanged;
 
@@ -247,7 +300,10 @@ class People extends AggregatableCollection {
       case 'lastTarteebDate':
       case 'employmentStartDate':
       case 'employmentEndDate':
-        isChanged = !isEqual(new Date(existingValue), new Date(newValue));
+        isChanged = !isEqual(
+          new Date(existingValue as string | number | Date),
+          new Date(newValue as string | number | Date)
+        );
         break;
 
       default:
@@ -261,8 +317,8 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Custom Finder Methods
   // **************************************************************
-  async findByCnicOrContactNumber(cnicNumber, contactNumber) {
-    let person = null;
+  async findByCnicOrContactNumber(cnicNumber?: string, contactNumber?: string) {
+    let person: PersonDocument | null | undefined = null;
 
     if (cnicNumber) {
       person = await this.findOneAsync({
@@ -287,8 +343,8 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Query Functions
   // **************************************************************
-  async buildSearchPipline(params = {}, flags = {}) {
-    const pipeline = [];
+  async buildSearchPipline(params: LooseRecord = {}, flags: SearchFlags = {}) {
+    const pipeline: LooseRecord[] = [];
     const includeKarkuns = isNil(flags.includeKarkuns)
       ? false
       : flags.includeKarkuns;
@@ -370,7 +426,8 @@ class People extends AggregatableCollection {
     }
 
     if (bloodGroup) {
-      const convertedBloodGroupValue = BloodGroups[bloodGroup];
+      const convertedBloodGroupValue =
+        BloodGroups[bloodGroup as keyof typeof BloodGroups];
       pipeline.push({
         $match: {
           'sharedData.bloodGroup': { $eq: convertedBloodGroupValue },
@@ -600,7 +657,7 @@ class People extends AggregatableCollection {
         });
       } else if (region) {
         const regionCities = await Cities.find({ region }).fetchAsync();
-        const regionCityIds = regionCities.map(({ _id }) => _id);
+        const regionCityIds = regionCities.map(({ _id }: { _id: string }) => _id);
         pipeline.push({
           $match: {
             'karkunData.cityId': { $in: regionCityIds },
@@ -733,7 +790,7 @@ class People extends AggregatableCollection {
    * - includeVisitors - defaults to false
    * - paginatedResults - defaults to true
    */
-  async searchPeople(params = {}, flags = {}) {
+  async searchPeople(params: LooseRecord = {}, flags: SearchFlags = {}) {
     const pipeline = await this.buildSearchPipline(params, flags);
     const { pageIndex = '0', pageSize = '20' } = params;
     const paginatedResults = !isNil(flags.paginatedResults)
@@ -753,8 +810,8 @@ class People extends AggregatableCollection {
         { $limit: nPageSize },
       ]);
 
-      const people = this.aggregate(resultsPipeline);
-      const totalResults = this.aggregate(countingPipeline);
+      const people = this.aggregate<PersonDocument>(resultsPipeline);
+      const totalResults = this.aggregate<CountResult>(countingPipeline);
 
       return Promise.all([people, totalResults]).then(results => ({
         data: results[0],
@@ -769,7 +826,7 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  async isCnicInUse(cnicNumber) {
+  async isCnicInUse(cnicNumber: string) {
     const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
     });
@@ -778,7 +835,7 @@ class People extends AggregatableCollection {
     return false;
   }
 
-  async checkCnicNotInUse(cnicNumber, personId) {
+  async checkCnicNotInUse(cnicNumber: string, personId?: string) {
     const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
     });
@@ -790,7 +847,7 @@ class People extends AggregatableCollection {
     }
   }
 
-  async isContactNumberInUse(contactNumber) {
+  async isContactNumberInUse(contactNumber: string) {
     const person = await this.findOneAsync({
       $or: [
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
@@ -802,7 +859,7 @@ class People extends AggregatableCollection {
     return false;
   }
 
-  async checkContactNotInUse(contactNumber, personId) {
+  async checkContactNotInUse(contactNumber: string, personId?: string) {
     const person = await this.findOneAsync({
       $or: [
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
@@ -820,7 +877,7 @@ class People extends AggregatableCollection {
   // **************************************************************
   // Conversion Functions
   // **************************************************************
-  personToVisitor(person) {
+  personToVisitor(person: PersonDocument) {
     return {
       _id: person._id,
       dataSource: person.dataSource,
@@ -855,8 +912,8 @@ class People extends AggregatableCollection {
     };
   }
 
-  visitorToPerson(visitor) {
-    let person = {
+  visitorToPerson(visitor: LooseRecord) {
+    let person: LooseRecord = {
       _id: visitor._id,
       isVisitor: true,
       dataSource: visitor.dataSource,
@@ -891,7 +948,7 @@ class People extends AggregatableCollection {
     return person;
   }
 
-  personToKarkun(person) {
+  personToKarkun(person: PersonDocument) {
     return {
       _id: person._id,
       dataSource: person.dataSource,
@@ -937,10 +994,10 @@ class People extends AggregatableCollection {
     };
   }
 
-  async karkunToPerson(karkun) {
+  async karkunToPerson(karkun: LooseRecord) {
     const city = karkun.cityId ? await Cities.findOneAsync(karkun.cityId) : null;
 
-    let person = {
+    let person: LooseRecord = {
       _id: karkun._id,
       isKarkun: true,
       isEmployee: karkun.isEmployee,

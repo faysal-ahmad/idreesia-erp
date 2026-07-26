@@ -1,13 +1,11 @@
-// @ts-nocheck
 import { Mongo } from 'meteor/mongo';
 
 import { Duty as DutySchema } from 'meteor/idreesia-common/server/schemas/hr';
 
 class Duties extends Mongo.Collection {
   constructor(name = 'hr-duties', options = {}) {
-    const duties = super(name, options);
-    duties.attachSchema(DutySchema);
-    return duties;
+    super(name, options);
+    this.attachSchema(DutySchema);
   }
 }
 

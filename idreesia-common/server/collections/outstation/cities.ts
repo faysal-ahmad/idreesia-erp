@@ -1,15 +1,33 @@
-// @ts-nocheck
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { City as CitySchema } from 'meteor/idreesia-common/server/schemas/outstation';
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
-class Cities extends AggregatableCollection {
+interface CityDocument {
+  _id?: string;
+  name?: string;
+  country?: string;
+  peripheryOf?: string;
+  region?: string;
+  [key: string]: unknown;
+}
+
+interface SearchCitiesParams {
+  peripheryOf?: string;
+  region?: string;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface CountResult {
+  total: number;
+}
+
+class Cities extends AggregatableCollection<CityDocument> {
   constructor(name = 'outstation-cities', options = {}) {
-    const cities = super(name, options);
-    cities.attachSchema(CitySchema);
-    return cities;
+    super(name, options);
+    this.attachSchema(CitySchema);
   }
 
   getMultanCity() {
@@ -22,8 +40,8 @@ class Cities extends AggregatableCollection {
   // **************************************************************
   // Query Functions
   // **************************************************************
-  searchCities(params) {
-    const pipeline = [];
+  searchCities(params: SearchCitiesParams) {
+    const pipeline: Record<string, unknown>[] = [];
 
     const {
       peripheryOf,
@@ -60,8 +78,8 @@ class Cities extends AggregatableCollection {
       $count: 'total',
     });
 
-    const cities = this.aggregate(resultsPipeline);
-    const totalResults = this.aggregate(countingPipeline);
+    const cities = this.aggregate<CityDocument>(resultsPipeline);
+    const totalResults = this.aggregate<CountResult>(countingPipeline);
 
     return Promise.all([cities, totalResults]).then(results => ({
       data: results[0],
@@ -72,7 +90,7 @@ class Cities extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  async canSafelyDeleteCity(cityId) {
+  async canSafelyDeleteCity(cityId: string) {
     // Check that there are no mehfils associated with this city
     const cityMehfil = await CityMehfils.findOneAsync({ cityId });
     if (cityMehfil) return false;

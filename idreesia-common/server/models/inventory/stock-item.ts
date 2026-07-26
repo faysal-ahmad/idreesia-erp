@@ -1,8 +1,13 @@
-// @ts-nocheck
-import { assign } from "lodash";
+import { assign } from 'lodash';
 
 export default class StockItem {
-  constructor(doc) {
+  _id?: string;
+  name?: string;
+  company?: string;
+  details?: string;
+  currentStockLevel?: number;
+
+  constructor(doc: Partial<StockItem>) {
     assign(this, doc);
   }
 

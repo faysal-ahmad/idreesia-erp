@@ -4,14 +4,14 @@ import { get } from 'meteor/idreesia-common/utilities/lodash';
 
 interface SecurityLogDocument {
   _id?: string;
-  userId?: string;
-  groupId?: string;
+  userId?: string | null;
+  groupId?: string | null;
   operationType: string;
   operationDetails?: Record<string, unknown>;
   operationTime: Date;
   operationBy?: string;
   dataSource: string;
-  dataSourceDetail?: string;
+  dataSourceDetail?: string | null;
 }
 
 interface SearchSecurityLogsParams {

@@ -47,7 +47,7 @@ class AuditLogs extends AggregatableCollection<AuditLogDocument> {
       operationBy,
       operationTime,
     }: CreateAuditLogValues,
-    existingEntity: Record<string, unknown> | null
+    existingEntity: Record<string, unknown> | null = null
   ) {
     await this.insertAsync({
       entityId,

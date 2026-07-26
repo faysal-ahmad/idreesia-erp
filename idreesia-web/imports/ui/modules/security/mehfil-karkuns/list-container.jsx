@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation } from '@apollo/client/react';
 
 import { Modal, message } from 'antd';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -203,7 +203,7 @@ class ListContainer extends Component {
         />
         <Modal
           title="Edit Duty Details"
-          visible={showEditForm}
+          open={showEditForm}
           onCancel={this.handleEditMehfilKarkunClose}
           width={600}
           footer={null}
@@ -215,10 +215,22 @@ class ListContainer extends Component {
   }
 }
 
+const ListContainerWithData = props => {
+  const [addMehfilKarkun] = useMutation(ADD_MEHFIL_KARKUN);
+  const [setDutyDetail] = useMutation(SET_DUTY_DETAIL);
+  const [removeMehfilKarkun] = useMutation(REMOVE_MEHFIL_KARKUN);
+
+  return (
+    <ListContainer
+      {...props}
+      addMehfilKarkun={addMehfilKarkun}
+      setDutyDetail={setDutyDetail}
+      removeMehfilKarkun={removeMehfilKarkun}
+    />
+  );
+};
+
 export default flowRight(
-  graphql(ADD_MEHFIL_KARKUN, { name: 'addMehfilKarkun' }),
-  graphql(SET_DUTY_DETAIL, { name: 'setDutyDetail' }),
-  graphql(REMOVE_MEHFIL_KARKUN, { name: 'removeMehfilKarkun' }),
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),
@@ -229,4 +241,4 @@ export default flowRight(
     }
     return `Security, Mehfils, Karkun Duties`;
   })
-)(ListContainer);
+)(ListContainerWithData);

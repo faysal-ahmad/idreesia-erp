@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -14,10 +14,12 @@ import {
 import RashanReceipts from './rashan-receipts';
 
 const RashanReceiptsContainer = ({
-  salariesLoading,
-  salariesByIds,
   history,
+  queryParams,
 }) => {
+  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery, {
+    variables: { ids: queryParams.ids },
+  });
   const rashanReceiptsRef = useRef(null);
   if (salariesLoading) return null;
 
@@ -42,7 +44,10 @@ const RashanReceiptsContainer = ({
         Back
       </Button>
       <Divider />
-      <RashanReceipts ref={rashanReceiptsRef} salariesByIds={salariesByIds} />
+      <RashanReceipts
+        ref={rashanReceiptsRef}
+        salariesByIds={data && data.salariesByIds}
+      />
     </>
   );
 };
@@ -51,9 +56,7 @@ RashanReceiptsContainer.propTypes = {
   match: PropTypes.object,
   history: PropTypes.object,
   location: PropTypes.object,
-
-  salariesLoading: PropTypes.bool,
-  salariesByIds: PropTypes.array,
+  queryParams: PropTypes.object,
 };
 
 const salariesByIdsQuery = gql`
@@ -85,11 +88,5 @@ const salariesByIdsQuery = gql`
 
 export default flowRight(
   WithQueryParams(),
-  graphql(salariesByIdsQuery, {
-    props: ({ data }) => ({ salariesLoading: data.loading, ...data }),
-    options: ({ queryParams: { ids } }) => ({
-      variables: { ids },
-    }),
-  }),
   WithBreadcrumbs(['HR', 'Salary Sheets', 'Rashan Receipts'])
 )(RashanReceiptsContainer);

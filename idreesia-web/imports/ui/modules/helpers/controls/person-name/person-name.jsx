@@ -81,7 +81,7 @@ const PersonName = ({ person, onPersonNameClicked, showLargeImage }) => {
       </div>
       <Modal
         title={person.name}
-        visible={showDialog}
+        open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >

@@ -7,9 +7,7 @@ import { Tree } from 'antd';
 class InstanceSelection extends Component {
   static propTypes = {
     securityEntity: PropTypes.object,
-    allCompanies: PropTypes.array,
     allPhysicalStores: PropTypes.array,
-    allPortals: PropTypes.array,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -61,7 +59,7 @@ class InstanceSelection extends Component {
   };
 
   render() {
-    const { allPhysicalStores, allCompanies, allPortals } = this.props;
+    const { allPhysicalStores } = this.props;
 
     const accessData = [
       {
@@ -70,22 +68,6 @@ class InstanceSelection extends Component {
         children: allPhysicalStores.map(physicalStore => ({
           title: physicalStore.name,
           key: physicalStore._id,
-        })),
-      },
-      {
-        title: 'Companies',
-        key: 'module-accounts-companies',
-        children: allCompanies.map(company => ({
-          title: company.name,
-          key: company._id,
-        })),
-      },
-      {
-        title: 'Portals',
-        key: 'module-portals',
-        children: allPortals.map(portal => ({
-          title: portal.name,
-          key: portal._id,
         })),
       },
     ];

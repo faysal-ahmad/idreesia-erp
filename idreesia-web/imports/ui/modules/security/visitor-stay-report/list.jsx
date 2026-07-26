@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useQuery, useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { WarningTwoTone } from '@ant-design/icons';
 
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import {
@@ -383,7 +383,7 @@ class List extends Component {
         />
         <Modal
           title="Visitor Stay"
-          visible={showViewDialog}
+          open={showViewDialog}
           onCancel={this.handleStayDetailClose}
           width={400}
           footer={[
@@ -400,7 +400,7 @@ class List extends Component {
         </Modal>
         <Modal
           title="Fix Spelling"
-          visible={showFixSpellingDialog}
+          open={showFixSpellingDialog}
           onCancel={this.handleFixSpellingClose}
           width={600}
           footer={null}
@@ -412,25 +412,30 @@ class List extends Component {
   }
 }
 
-export default flowRight(
-  graphql(PAGED_VISITOR_STAYS, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ queryString }) => ({
-      variables: {
-        queryString,
-      },
-    }),
-  }),
-  graphql(FIX_CITY_SPELLING, {
-    name: 'fixCitySpelling',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
+const ListWithData = props => {
+  const { queryString } = props;
+  const { data = {}, loading, ...queryResult } = useQuery(PAGED_VISITOR_STAYS, {
+    variables: {
+      queryString,
     },
-  }),
-  graphql(FIX_NAME_SPELLING, {
-    name: 'fixNameSpelling',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
-    },
-  })
-)(List);
+  });
+  const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING, {
+    refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
+  });
+  const [fixNameSpelling] = useMutation(FIX_NAME_SPELLING, {
+    refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
+  });
+
+  return (
+    <List
+      {...props}
+      {...queryResult}
+      {...data}
+      loading={loading}
+      fixCitySpelling={fixCitySpelling}
+      fixNameSpelling={fixNameSpelling}
+    />
+  );
+};
+
+export default ListWithData;

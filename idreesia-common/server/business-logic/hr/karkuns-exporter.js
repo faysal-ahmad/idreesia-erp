@@ -1,11 +1,11 @@
-import XLSX from 'xlsx';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
-export function exportKarkuns(karkunIdsString) {
+export async function exportKarkuns(karkunIdsString) {
   const karkunIds = karkunIdsString.split(',');
-  const people = People.find({
+  const people = await People.find({
     _id: { $in: karkunIds },
-  }).fetch();
+  }).fetchAsync();
 
   let index = 1;
   const sheetData = people.map(person => ({
@@ -17,9 +17,5 @@ export function exportKarkuns(karkunIdsString) {
     'Blood Group': person.sharedData.bloodGroup,
   }));
 
-  const ws = XLSX.utils.json_to_sheet(sheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Karkuns');
-  const data = XLSX.write(wb, { type: 'buffer' });
-  return Buffer.from(data);
+  return createWorkbookBuffer(sheetData, 'Karkuns');
 }

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import XLSX from 'xlsx';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
@@ -7,6 +6,7 @@ import {
   PurchaseForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
+import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
 export async function exportPurchaseForms(purchaseFormIdsString) {
   const purchaseFormIds = purchaseFormIdsString.split(',');
@@ -14,7 +14,7 @@ export async function exportPurchaseForms(purchaseFormIdsString) {
     _id: { $in: purchaseFormIds },
   }).fetchAsync();
 
-  const sheetData = Promise.all(
+  const sheetData = await Promise.all(
     purchaseForms.map(async purchaseForm => {
       const purchaseDate = dayjs(Number(purchaseForm.purchaseDate)).format(
         'DD MMM, YYYY'
@@ -52,9 +52,5 @@ export async function exportPurchaseForms(purchaseFormIdsString) {
     })
   );
 
-  const ws = XLSX.utils.json_to_sheet(sheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Purchase Forms');
-  const data = XLSX.write(wb, { type: 'buffer' });
-  return Buffer.from(data);
+  return createWorkbookBuffer(sheetData, 'Purchase Forms');
 }

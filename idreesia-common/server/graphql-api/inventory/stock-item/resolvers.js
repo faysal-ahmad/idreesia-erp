@@ -41,7 +41,7 @@ export default {
             stockItemId: { $eq: stockItem._id },
           },
         },
-      }).count(),
+      }).countAsync(),
     issuanceFormsCount: async stockItem =>
       IssuanceForms.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
@@ -50,12 +50,12 @@ export default {
             stockItemId: { $eq: stockItem._id },
           },
         },
-      }).count(),
+      }).countAsync(),
     stockAdjustmentsCount: async stockItem =>
       StockAdjustments.find({
         physicalStoreId: { $eq: stockItem.physicalStoreId },
         stockItemId: { $eq: stockItem._id },
-      }).count(),
+      }).countAsync(),
     refPhysicalStore: async (
       stockItem,
       args,
@@ -189,26 +189,26 @@ export default {
     removeStockItem: async (obj, { _id, physicalStoreId }, { user }) => {
       // Check that there are no purchase/issuance forms, or stock adjustments
       // against this stock item.
-      const purchaseFormsCount = PurchaseForms.find({
+      const purchaseFormsCount = await PurchaseForms.find({
         physicalStoreId: { $eq: physicalStoreId },
         items: {
           $elemMatch: {
             stockItemId: { $eq: _id },
           },
         },
-      }).count();
-      const issuanceFormsCount = IssuanceForms.find({
+      }).countAsync();
+      const issuanceFormsCount = await IssuanceForms.find({
         physicalStoreId: { $eq: physicalStoreId },
         items: {
           $elemMatch: {
             stockItemId: { $eq: _id },
           },
         },
-      }).count();
-      const stockAdjustmentsCount = StockAdjustments.find({
+      }).countAsync();
+      const stockAdjustmentsCount = await StockAdjustments.find({
         physicalStoreId: { $eq: physicalStoreId },
         stockItemId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (
         purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===

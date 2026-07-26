@@ -4,9 +4,9 @@ import { Messages } from 'meteor/idreesia-common/server/collections/communicatio
 
 Migrations.add({
   version: 32,
-  up() {
-    const messages = Messages.find({}).fetch();
-    messages.forEach(message => {
+  async up() {
+    const messages = await Messages.find({}).fetchAsync();
+    for (const message of messages) {
       const { recepientFilters } = message;
       const recepientFilter = recepientFilters[0];
       if (recepientFilter.jobId) {
@@ -25,11 +25,11 @@ Migrations.add({
         }
       }
 
-      Messages.update(message._id, {
+      await Messages.updateAsync(message._id, {
         $set: {
           recepientFilters: [recepientFilter],
         },
       });
-    });
+    }
   },
 });

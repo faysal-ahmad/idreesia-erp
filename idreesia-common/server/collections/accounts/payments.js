@@ -1,8 +1,9 @@
-import moment from 'moment';
+import { endOfDay, getMonth, getYear, isEqual, parse, startOfDay } from 'date-fns';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Payment as PaymentSchema } from 'meteor/idreesia-common/server/schemas/accounts';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { get, forOwn, keys } from 'meteor/idreesia-common/utilities/lodash';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import {
   EntityType,
@@ -19,9 +20,9 @@ class Payments extends AggregatableCollection {
   // **************************************************************
   // Create/Update Methods
   // **************************************************************
-  createPayment(values, user) {
+  async createPayment(values, user) {
     const { paymentNumber, paymentDate } = values;
-    if (!this.isPaymentNoAvailable(paymentNumber, paymentDate)) {
+    if (!(await this.isPaymentNoAvailable(paymentNumber, paymentDate))) {
       throw new Error('This Voucher Number is already used.');
     }
 
@@ -34,8 +35,8 @@ class Payments extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    const paymentId = this.insert(valuesToInsert);
-    AuditLogs.createAuditLog({
+    const paymentId = await this.insertAsync(valuesToInsert);
+    await AuditLogs.createAuditLog({
       entityId: paymentId,
       entityType: EntityType.PAYMENT,
       operationType: OperationType.CREATE,
@@ -44,17 +45,17 @@ class Payments extends AggregatableCollection {
       auditValues: values,
     });
 
-    return this.findOne(paymentId);
+    return this.findOneAsync(paymentId);
   }
 
-  updatePayment(values, user) {
+  async updatePayment(values, user) {
     const { _id } = values;
-    const existingPayment = this.findOne(_id);
+    const existingPayment = await this.findOneAsync(_id);
     const changedValues = this.getChangedValues(_id, values, existingPayment);
 
     if (keys(changedValues).length === 0) {
       // Nothing actually changed
-      return this.findOne(_id);
+      return this.findOneAsync(_id);
     }
 
     const date = new Date();
@@ -63,9 +64,9 @@ class Payments extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    this.update(_id, { $set: valuesToUpdate });
+    await this.updateAsync(_id, { $set: valuesToUpdate });
 
-    AuditLogs.createAuditLog(
+    await AuditLogs.createAuditLog(
       {
         entityId: _id,
         entityType: EntityType.PAYMENT,
@@ -77,12 +78,12 @@ class Payments extends AggregatableCollection {
       existingPayment
     );
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   }
 
-  removePayment(_id, user) {
+  async removePayment(_id, user) {
     const date = new Date();
-    this.update(
+    await this.updateAsync(
       {
         _id,
       },
@@ -95,7 +96,7 @@ class Payments extends AggregatableCollection {
       }
     );
 
-    AuditLogs.createAuditLog({
+    await AuditLogs.createAuditLog({
       entityId: _id,
       entityType: EntityType.PAYMENT,
       operationType: OperationType.DELETE,
@@ -125,7 +126,7 @@ class Payments extends AggregatableCollection {
 
     switch (key) {
       case 'paymentDate':
-        isChanged = !moment(existingPayment[key]).isSame(moment(newValue));
+        isChanged = !isEqual(new Date(existingPayment[key]), new Date(newValue));
         break;
 
       default:
@@ -213,9 +214,7 @@ class Payments extends AggregatableCollection {
       pipeline.push({
         $match: {
           paymentDate: {
-            $gte: moment(startDate, Formats.DATE_FORMAT)
-              .startOf('day')
-              .toDate(),
+            $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
           },
         },
       });
@@ -225,9 +224,7 @@ class Payments extends AggregatableCollection {
       pipeline.push({
         $match: {
           paymentDate: {
-            $lte: moment(endDate, Formats.DATE_FORMAT)
-              .endOf('day')
-              .toDate(),
+            $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
           },
         },
       });
@@ -240,9 +237,9 @@ class Payments extends AggregatableCollection {
         pipeline.push({
           $match: {
             updatedAt: {
-              $gte: moment(updatedBetweenDates[0], Formats.DATE_FORMAT)
-                .startOf('day')
-                .toDate(),
+              $gte: startOfDay(
+                parseDate(updatedBetweenDates[0], Formats.DATE_FORMAT)
+              ),
             },
           },
         });
@@ -251,9 +248,9 @@ class Payments extends AggregatableCollection {
         pipeline.push({
           $match: {
             updatedAt: {
-              $lte: moment(updatedBetweenDates[1], Formats.DATE_FORMAT)
-                .endOf('day')
-                .toDate(),
+              $lte: endOfDay(
+                parseDate(updatedBetweenDates[1], Formats.DATE_FORMAT)
+              ),
             },
           },
         });
@@ -282,19 +279,19 @@ class Payments extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  getNextPaymentNo() {
-    const currentDate = moment();
-    let year = moment().year();
-    if (currentDate.month() <= 5) {
+  async getNextPaymentNo() {
+    const currentDate = new Date();
+    let year = getYear(currentDate);
+    if (getMonth(currentDate) <= 5) {
       year -= 1;
     }
-    const startDate = moment(`${year}-07-01 00:00:00`, 'YYYY-MM-DD hh:mm:ss');
-    const endDate = moment(`${year + 1}-06-30 23:59:59`, 'YYYY-MM-DD hh:mm:ss');
-    const payment = this.findOne(
+    const startDate = parse(`${year}-07-01 00:00:00`, 'yyyy-MM-dd HH:mm:ss', new Date());
+    const endDate = parse(`${year + 1}-06-30 23:59:59`, 'yyyy-MM-dd HH:mm:ss', new Date());
+    const payment = await this.findOneAsync(
       {
         paymentDate: {
-          $gte: startDate.toDate(),
-          $lte: endDate.toDate(),
+          $gte: startDate,
+          $lte: endDate,
         },
       },
       {
@@ -307,20 +304,20 @@ class Payments extends AggregatableCollection {
     return payment ? payment.paymentNumber + 1 : 1;
   }
 
-  isPaymentNoAvailable(paymentNo, paymentDate) {
-    const mPaymentDate = moment(paymentDate);
-    let year = mPaymentDate.year();
-    if (mPaymentDate.month() <= 5) {
+  async isPaymentNoAvailable(paymentNo, paymentDate) {
+    const mPaymentDate = new Date(paymentDate);
+    let year = getYear(mPaymentDate);
+    if (getMonth(mPaymentDate) <= 5) {
       year -= 1;
     }
 
-    const startDate = moment(`${year}-07-01 00:00:00`, 'YYYY-MM-DD hh:mm:ss');
-    const endDate = moment(`${year + 1}-06-30 23:59:59`, 'YYYY-MM-DD hh:mm:ss');
-    const payment = this.findOne({
+    const startDate = parse(`${year}-07-01 00:00:00`, 'yyyy-MM-dd HH:mm:ss', new Date());
+    const endDate = parse(`${year + 1}-06-30 23:59:59`, 'yyyy-MM-dd HH:mm:ss', new Date());
+    const payment = await this.findOneAsync({
       paymentNumber: paymentNo,
       paymentDate: {
-        $gte: startDate.toDate(),
-        $lte: endDate.toDate(),
+        $gte: startDate,
+        $lte: endDate,
       },
     });
 

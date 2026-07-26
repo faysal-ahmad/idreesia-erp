@@ -1,91 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button, Table, Tooltip, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    allDutyLocations: PropTypes.array,
-    removeDutyLocation: PropTypes.func,
-  };
-
-  columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>
-      ),
-    },
-    {
-      key: 'action',
-      render: (text, record) => {
-        if (record.usedCount === 0) {
-          return (
-            <Tooltip title="Delete">
-              <DeleteOutlined
-                className="list-actions-icon"
-                onClick={() => {
-                  this.handleDeleteClicked(record);
-                }}
-              />
-            </Tooltip>
-          );
-        }
-        return null;
-      },
-    },
-  ];
-
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.dutyLocationsNewFormPath);
-  };
-
-  handleDeleteClicked = record => {
-    const { removeDutyLocation } = this.props;
-    removeDutyLocation({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
-
-  render() {
-    const { allDutyLocations } = this.props;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allDutyLocations}
-        columns={this.columns}
-        pagination={{ defaultPageSize: 20 }}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={this.handleNewClicked}
-          >
-            New Duty Location
-          </Button>
-        )}
-      />
-    );
-  }
-}
 
 const listQuery = gql`
   query allDutyLocations {
@@ -103,15 +25,79 @@ const removeDutyLocationMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(removeDutyLocationMutation, {
-    name: 'removeDutyLocation',
-    options: {
-      refetchQueries: ['allDutyLocations'],
+const List = ({ history }) => {
+  const { data } = useQuery(listQuery);
+  const [removeDutyLocation] = useMutation(removeDutyLocationMutation, {
+    refetchQueries: ['allDutyLocations'],
+  });
+  const { allDutyLocations } = data || {};
+
+  const handleNewClicked = () => {
+    history.push(paths.dutyLocationsNewFormPath);
+  };
+
+  const handleDeleteClicked = record => {
+    removeDutyLocation({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, record) => (
+        <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>
+      ),
     },
-  }),
-  WithBreadcrumbs(['HR', 'Duty Locations', 'List'])
-)(List);
+    {
+      key: 'action',
+      render: (text, record) => {
+        if (record.usedCount === 0) {
+          return (
+            <Tooltip title="Delete">
+              <DeleteOutlined
+                className="list-actions-icon"
+                onClick={() => {
+                  handleDeleteClicked(record);
+                }}
+              />
+            </Tooltip>
+          );
+        }
+        return null;
+      },
+    },
+  ];
+
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={allDutyLocations}
+      columns={columns}
+      pagination={{ defaultPageSize: 20 }}
+      bordered
+      title={() => (
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New Duty Location
+        </Button>
+      )}
+    />
+  );
+};
+
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default WithBreadcrumbs(['HR', 'Duty Locations', 'List'])(List);

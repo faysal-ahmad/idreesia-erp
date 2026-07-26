@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Avatar, Dropdown, Menu } from 'antd';
+import { Avatar, Dropdown } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 
@@ -69,20 +69,18 @@ const UserMenu = ({ history }) => {
     avatar = <Avatar size="large" src={url} />;
   }
 
-  const menu = (
-    <Menu
-      style={{ height: '100%', borderRight: 0 }}
-      onClick={handleMenuItemClicked}
-    >
-      <Menu.Item key="change-password">Change Password</Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="logout">Logout</Menu.Item>
-    </Menu>
-  );
+  const menuItems = [
+    { key: 'change-password', label: 'Change Password' },
+    { type: 'divider' },
+    { key: 'logout', label: 'Logout' },
+  ];
 
   return (
     <>
-      <Dropdown overlay={menu} placement="bottomLeft">
+      <Dropdown
+        menu={{ items: menuItems, onClick: handleMenuItemClicked }}
+        placement="bottomLeft"
+      >
         <div style={ContainerStyle}>
           <div style={{ color: '#FFFFFF' }}>{userName}</div>
           &nbsp; &nbsp;

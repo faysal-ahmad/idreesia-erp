@@ -1,7 +1,7 @@
 /* eslint "no-script-url": "off" */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -14,11 +14,10 @@ import {
   message,
 } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithAllMSDuties,
-  WithAllDutyShifts,
-  WithAllDutyLocations,
+  useAllMSDuties,
+  useAllDutyShifts,
+  useAllDutyLocations,
 } from '/imports/ui/modules/hr/common/composers';
 
 import DutyForm from './duty-form';
@@ -30,11 +29,32 @@ import {
 } from '../gql';
 
 const DutyParticipation = props => {
+  const { match, karkunId } = props;
   const [showNewForm, setShowNewForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
   const [newDutyForm] = Form.useForm();
   const [editDutyForm] = Form.useForm();
+  const { data } = useQuery(KARKUN_DUTIES_BY_KARKUN_ID, {
+    variables: { karkunId: match.params.karkunId },
+  });
+  const [createKarkunDuty] = useMutation(CREATE_KARKUN_DUTY, {
+    refetchQueries: ['karkunDutiesByKarkunId'],
+  });
+  const [updateKarkunDuty] = useMutation(UPDATE_KARKUN_DUTY, {
+    refetchQueries: ['karkunDutiesByKarkunId'],
+  });
+  const [removeKarkunDuty] = useMutation(REMOVE_KARKUN_DUTY, {
+    refetchQueries: [
+      'pagedHrKarkuns',
+      'karkunDutiesByKarkunId',
+      'allMSDuties',
+    ],
+  });
+  const { allMSDuties } = useAllMSDuties();
+  const { allDutyShifts } = useAllDutyShifts();
+  const { allDutyLocations } = useAllDutyLocations();
+  const { karkunDutiesByKarkunId } = data || {};
 
   const handleNewClicked = () => {
     setShowNewForm(true);
@@ -46,7 +66,6 @@ const DutyParticipation = props => {
   };
 
   const handleDeleteClicked = record => {
-    const { removeKarkunDuty } = props;
     removeKarkunDuty({
       variables: {
         _id: record._id,
@@ -65,7 +84,6 @@ const DutyParticipation = props => {
   };
 
   const handleNewDutyFormSaved = () => {
-    const { karkunId, createKarkunDuty } = props;
     newDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }) => {
       setShowNewForm(false);
       createKarkunDuty({
@@ -86,7 +104,6 @@ const DutyParticipation = props => {
 
   const handleEditDutyFormSaved = () => {
     const { _id } = defaultValues;
-    const { karkunId, updateKarkunDuty } = props;
     editDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }) => {
       setShowEditForm(false);
       updateKarkunDuty({
@@ -164,13 +181,6 @@ const DutyParticipation = props => {
     },
   ];
 
-  const {
-    karkunDutiesByKarkunId,
-    allMSDuties,
-    allDutyShifts,
-    allDutyLocations,
-  } = props;
-
   return (
     <>
       <Table
@@ -190,7 +200,7 @@ const DutyParticipation = props => {
       />
 
       <Modal
-        visible={showNewForm}
+        open={showNewForm}
         title="Add Duty"
         okText="Save"
         width={600}
@@ -208,7 +218,7 @@ const DutyParticipation = props => {
       </Modal>
 
       <Modal
-        visible={showEditForm}
+        open={showEditForm}
         title="Edit Duty"
         okText="Save"
         width={600}
@@ -226,7 +236,7 @@ const DutyParticipation = props => {
       </Modal>
     </>
   );
-}
+};
 
 DutyParticipation.propTypes = {
   match: PropTypes.object,
@@ -234,46 +244,6 @@ DutyParticipation.propTypes = {
   location: PropTypes.object,
 
   karkunId: PropTypes.string,
-  karkunDutiesByKarkunId: PropTypes.array,
-  allMSDuties: PropTypes.array,
-  allDutyShifts: PropTypes.array,
-  allDutyLocations: PropTypes.array,
-  createKarkunDuty: PropTypes.func,
-  updateKarkunDuty: PropTypes.func,
-  removeKarkunDuty: PropTypes.func,
 };
 
-export default flowRight(
-  graphql(KARKUN_DUTIES_BY_KARKUN_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { karkunId } };
-    },
-  }),
-  graphql(CREATE_KARKUN_DUTY, {
-    name: 'createKarkunDuty',
-    options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
-    },
-  }),
-  graphql(UPDATE_KARKUN_DUTY, {
-    name: 'updateKarkunDuty',
-    options: {
-      refetchQueries: ['karkunDutiesByKarkunId'],
-    },
-  }),
-  graphql(REMOVE_KARKUN_DUTY, {
-    name: 'removeKarkunDuty',
-    options: {
-      refetchQueries: [
-        'pagedHrKarkuns',
-        'karkunDutiesByKarkunId',
-        'allMSDuties',
-      ],
-    },
-  }),
-  WithAllMSDuties(),
-  WithAllDutyShifts(),
-  WithAllDutyLocations()
-)(DutyParticipation);
+export default DutyParticipation;

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import moment from 'moment';
+import { addMonths, format, startOfMonth } from 'date-fns';
 
 import { CardTypes } from 'meteor/idreesia-common/constants/hr';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 const barcodeOptions = {
   width: 1,
@@ -70,13 +71,13 @@ export default class Cards extends Component {
     let subHeading = '';
     let className = 'subheading_card_k';
 
-    const month = moment(`01-${attendance.month}`, 'DD-MM-YYYY')
-      .add(1, 'months')
-      .startOf('month');
+    const month = startOfMonth(
+      addMonths(parseDate(`01-${attendance.month}`, 'DD-MM-YYYY'), 1)
+    );
 
     if (cardType === CardTypes.NAAM_I_MUBARIK_MEETING) {
       subHeading = ` نام مبارک میٹنگ - یکم ${
-        MonthTranslations[month.format('MMM')]
+        MonthTranslations[format(month, 'MMM')]
       }`;
     } else if (cardType === CardTypes.RABI_UL_AWAL_LANGAR) {
       subHeading = '١٢ ربیع الاول - لنگر شریف تقسیم';

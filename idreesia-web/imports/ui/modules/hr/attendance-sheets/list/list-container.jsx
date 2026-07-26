@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation } from '@apollo/client/react';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,43 +12,37 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import { Modal, message } from 'antd';
 import {
-  WithAllJobs,
-  WithAllMSDuties,
-  WithAllDutyShifts,
+  useAllJobs,
+  useAllMSDuties,
+  useAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List from './list';
 import EditForm from './edit-form';
 
-class ListContainer extends Component {
-  static propTypes = {
-    allMSDuties: PropTypes.array,
-    allMSDutiesLoading: PropTypes.bool,
-    allDutyShifts: PropTypes.array,
-    allDutyShiftsLoading: PropTypes.bool,
-    allJobs: PropTypes.array,
-    allJobsLoading: PropTypes.bool,
-    createAttendances: PropTypes.func,
-    updateAttendance: PropTypes.func,
-    deleteAttendances: PropTypes.func,
-    deleteAllAttendances: PropTypes.func,
-    importAttendances: PropTypes.func,
+const mutationOptions = {
+  refetchQueries: ['attendanceByMonth'],
+};
 
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-  };
+const ListContainer = ({ history, location, queryParams }) => {
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [attendance, setAttendance] = useState(null);
 
-  state = {
-    showEditForm: false,
-    attendance: null,
-  };
+  const { allJobs, allJobsLoading } = useAllJobs();
+  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
+  const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
 
-  setPageParams = newParams => {
-    const { queryParams, history, location } = this.props;
+  const [createAttendances] = useMutation(createMutation, mutationOptions);
+  const [updateAttendance] = useMutation(updateMutation, mutationOptions);
+  const [deleteAttendances] = useMutation(deleteMutation, mutationOptions);
+  const [deleteAllAttendances] = useMutation(
+    deleteAllMutation,
+    mutationOptions
+  );
+  const [importAttendances] = useMutation(importMutation, mutationOptions);
+
+  const setPageParams = newParams => {
     const {
       selectedCategoryId,
       selectedSubCategoryId,
@@ -74,26 +68,19 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleEditAttendance = attendance => {
-    this.setState({
-      showEditForm: true,
-      attendance,
-    });
+  const handleEditAttendance = selectedAttendance => {
+    setShowEditForm(true);
+    setAttendance(selectedAttendance);
   };
 
-  handleEditAttendanceCancel = () => {
-    this.setState({
-      showEditForm: false,
-      attendance: null,
-    });
+  const handleEditAttendanceCancel = () => {
+    setShowEditForm(false);
+    setAttendance(null);
   };
 
-  handleEditAttendanceSave = values => {
-    const { updateAttendance } = this.props;
-    this.setState({
-      showEditForm: false,
-      attendance: null,
-    });
+  const handleEditAttendanceSave = values => {
+    setShowEditForm(false);
+    setAttendance(null);
 
     updateAttendance({
       variables: values,
@@ -102,11 +89,9 @@ class ListContainer extends Component {
     });
   };
 
-  handleImportFromGoogleSheet = () => {
-    const {
-      importAttendances,
-      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
-    } = this.props;
+  const handleImportFromGoogleSheet = () => {
+    const { selectedMonth, selectedCategoryId, selectedSubCategoryId } =
+      queryParams;
 
     if (selectedCategoryId) {
       importAttendances({
@@ -125,11 +110,8 @@ class ListContainer extends Component {
     }
   };
 
-  handleCreateMissingAttendances = () => {
-    const {
-      createAttendances,
-      queryParams: { selectedMonth },
-    } = this.props;
+  const handleCreateMissingAttendances = () => {
+    const { selectedMonth } = queryParams;
 
     const _selectedMonth = selectedMonth
       ? `01-${selectedMonth}`
@@ -151,38 +133,34 @@ class ListContainer extends Component {
       });
   };
 
-  handleViewMeetingCards = (selectedRows, cardType) => {
+  const handleViewMeetingCards = (selectedRows, cardType) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
-    const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
     const path = `${paths.attendanceSheetsMeetingCardsPath}?cardType=${cardType}&barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
-  handleViewKarkunCards = selectedRows => {
+  const handleViewKarkunCards = selectedRows => {
     if (!selectedRows || selectedRows.length === 0) return;
 
-    const { history } = this.props;
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
     const barcodeIdsString = barcodeIds.join(',');
     const path = `${paths.attendanceSheetsKarkunCardsPath}?barcodeIds=${barcodeIdsString}`;
     history.push(path);
   };
 
-  handlePrintKarkunsList = selectedRows => {
+  const handlePrintKarkunsList = selectedRows => {
     if (!selectedRows || selectedRows.length === 0) return;
 
-    const { history } = this.props;
     const karkunIds = selectedRows.map(row => row.karkunId);
     history.push(
       `${paths.karkunsPrintListPath}?karkunIds=${karkunIds.join(',')}`
     );
   };
 
-  handlePrintAttendanceSheet = () => {
-    const { queryParams, history } = this.props;
+  const handlePrintAttendanceSheet = () => {
     const {
       selectedCategoryId,
       selectedSubCategoryId,
@@ -193,13 +171,10 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleDeleteSelectedAttendances = selectedAttendances => {
+  const handleDeleteSelectedAttendances = selectedAttendances => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
-    const {
-      deleteAttendances,
-      queryParams: { selectedMonth },
-    } = this.props;
+    const { selectedMonth } = queryParams;
 
     const _selectedMonth = selectedMonth
       ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
@@ -220,11 +195,9 @@ class ListContainer extends Component {
       });
   };
 
-  handleDeleteAllAttendances = () => {
-    const {
-      deleteAllAttendances,
-      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
-    } = this.props;
+  const handleDeleteAllAttendances = () => {
+    const { selectedMonth, selectedCategoryId, selectedSubCategoryId } =
+      queryParams;
 
     const _selectedMonth = selectedMonth
       ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
@@ -250,71 +223,67 @@ class ListContainer extends Component {
     }
   };
 
-  handleItemSelected = karkun => {
-    const { history } = this.props;
+  const handleItemSelected = karkun => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
-  render() {
-    const {
-      allJobs,
-      allMSDuties,
-      allDutyShifts,
-      allJobsLoading,
-      allMSDutiesLoading,
-      allDutyShiftsLoading,
-    } = this.props;
-    if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
-      return null;
+  if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
+    return null;
 
-    const {
-      queryParams: { selectedMonth, selectedCategoryId, selectedSubCategoryId },
-    } = this.props;
+  const { selectedMonth, selectedCategoryId, selectedSubCategoryId } =
+    queryParams;
 
-    const _selectedMonth = selectedMonth
-      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : dayjs();
+  const _selectedMonth = selectedMonth
+    ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
+    : dayjs();
 
-    return (
-      <>
-        <List
-          selectedCategoryId={selectedCategoryId}
-          selectedSubCategoryId={selectedSubCategoryId}
-          selectedMonth={_selectedMonth}
-          setPageParams={this.setPageParams}
-          handleEditAttendance={this.handleEditAttendance}
-          handleCreateMissingAttendances={this.handleCreateMissingAttendances}
-          handleImportFromGoogleSheet={this.handleImportFromGoogleSheet}
-          handleViewMeetingCards={this.handleViewMeetingCards}
-          handleViewKarkunCards={this.handleViewKarkunCards}
-          handlePrintKarkunsList={this.handlePrintKarkunsList}
-          handlePrintAttendanceSheet={this.handlePrintAttendanceSheet}
-          handleDeleteSelectedAttendances={this.handleDeleteSelectedAttendances}
-          handleDeleteAllAttendances={this.handleDeleteAllAttendances}
-          handleItemSelected={this.handleItemSelected}
-          allJobs={allJobs}
-          allMSDuties={allMSDuties}
-          allDutyShifts={allDutyShifts}
-        />
-        {this.state.showEditForm ? (
-          <Modal
-            title="Update Attendance"
-            visible={this.state.showEditForm}
-            onCancel={this.handleEditAttendanceCancel}
-            width={500}
-            footer={null}
-          >
-            <EditForm
-              attendance={this.state.attendance}
-              handleSave={this.handleEditAttendanceSave}
-              handleCancel={this.handleEditAttendanceCancel}
-            />
-          </Modal>
-        ) : null}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <List
+        selectedCategoryId={selectedCategoryId}
+        selectedSubCategoryId={selectedSubCategoryId}
+        selectedMonth={_selectedMonth}
+        setPageParams={setPageParams}
+        handleEditAttendance={handleEditAttendance}
+        handleCreateMissingAttendances={handleCreateMissingAttendances}
+        handleImportFromGoogleSheet={handleImportFromGoogleSheet}
+        handleViewMeetingCards={handleViewMeetingCards}
+        handleViewKarkunCards={handleViewKarkunCards}
+        handlePrintKarkunsList={handlePrintKarkunsList}
+        handlePrintAttendanceSheet={handlePrintAttendanceSheet}
+        handleDeleteSelectedAttendances={handleDeleteSelectedAttendances}
+        handleDeleteAllAttendances={handleDeleteAllAttendances}
+        handleItemSelected={handleItemSelected}
+        allJobs={allJobs}
+        allMSDuties={allMSDuties}
+        allDutyShifts={allDutyShifts}
+      />
+      {showEditForm ? (
+        <Modal
+          title="Update Attendance"
+          open={showEditForm}
+          onCancel={handleEditAttendanceCancel}
+          width={500}
+          footer={null}
+        >
+          <EditForm
+            attendance={attendance}
+            handleSave={handleEditAttendanceSave}
+            handleCancel={handleEditAttendanceCancel}
+          />
+        </Modal>
+      ) : null}
+    </>
+  );
+};
+
+ListContainer.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  queryString: PropTypes.string,
+  queryParams: PropTypes.object,
+};
 
 const createMutation = gql`
   mutation createAttendances($month: String!) {
@@ -377,39 +346,6 @@ const importMutation = gql`
 `;
 
 export default flowRight(
-  graphql(createMutation, {
-    name: 'createAttendances',
-    options: {
-      refetchQueries: ['attendanceByMonth'],
-    },
-  }),
-  graphql(updateMutation, {
-    name: 'updateAttendance',
-    options: {
-      refetchQueries: ['attendanceByMonth'],
-    },
-  }),
-  graphql(deleteMutation, {
-    name: 'deleteAttendances',
-    options: {
-      refetchQueries: ['attendanceByMonth'],
-    },
-  }),
-  graphql(deleteAllMutation, {
-    name: 'deleteAllAttendances',
-    options: {
-      refetchQueries: ['attendanceByMonth'],
-    },
-  }),
-  graphql(importMutation, {
-    name: 'importAttendances',
-    options: {
-      refetchQueries: ['attendanceByMonth'],
-    },
-  }),
   WithQueryParams(),
-  WithAllJobs(),
-  WithAllMSDuties(),
-  WithAllDutyShifts(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'List'])
 )(ListContainer);

@@ -1,5 +1,0 @@
-directive @checkInstanceAccess(
-  instanceIdArgName: String!,
-  returnType: String,
-  dataFieldName: String,
-) on FIELD_DEFINITION

@@ -1,49 +1,47 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   DateField,
   SelectField,
   SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { WithAllJobs } from '/imports/ui/modules/hr/common/composers';
+import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
-class EmploymentInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const EmploymentInfo = ({ match, history, karkunId }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+    variables: { _id: match.params.karkunId },
+  });
+  const [setHrKarkunEmploymentInfo] = useMutation(
+    SET_HR_KARKUN_EMPLOYMENT_INFO,
+    {
+      refetchQueries: ['pagedHrKarkuns', 'allJobs'],
+    }
+  );
+  const { allJobs, allJobsLoading } = useAllJobs();
+  const { hrKarkunById } = data || {};
 
-    formDataLoading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    hrKarkunById: PropTypes.object,
-    allJobs: PropTypes.array,
-    allJobsLoading: PropTypes.bool,
-    setHrKarkunEmploymentInfo: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ isEmployee, jobId, employmentStartDate, employmentEndDate }) => {
-    const { history, karkunId, setHrKarkunEmploymentInfo } = this.props;
+  const handleFinish = ({
+    isEmployee,
+    jobId,
+    employmentStartDate,
+    employmentEndDate,
+  }) => {
     setHrKarkunEmploymentInfo({
       variables: {
         _id: karkunId,
@@ -61,76 +59,59 @@ class EmploymentInfo extends Component {
       });
   };
 
-  render() {
-    const {
-      formDataLoading,
-      allJobsLoading,
-      hrKarkunById,
-      allJobs,
-    } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (formDataLoading || allJobsLoading) return null;
+  if (formDataLoading || allJobsLoading) return null;
 
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <SwitchField
-          fieldName="isEmployee"
-          fieldLabel="Is Employee"
-          initialValue={hrKarkunById.isEmployee || false}
-        />
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <SwitchField
+        fieldName="isEmployee"
+        fieldLabel="Is Employee"
+        initialValue={hrKarkunById.isEmployee || false}
+      />
 
-        <SelectField
-          fieldName="jobId"
-          fieldLabel="Current Job"
-          required={false}
-          data={allJobs}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          initialValue={hrKarkunById.jobId}
-        />
+      <SelectField
+        fieldName="jobId"
+        fieldLabel="Current Job"
+        required={false}
+        data={allJobs}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        initialValue={hrKarkunById.jobId}
+      />
 
-        <DateField
-          fieldName="employmentStartDate"
-          fieldLabel="Start Date"
-          initialValue={
-            hrKarkunById.employmentStartDate
-              ? dayjs(Number(hrKarkunById.employmentStartDate))
-              : null
-          }
-        />
+      <DateField
+        fieldName="employmentStartDate"
+        fieldLabel="Start Date"
+        initialValue={
+          hrKarkunById.employmentStartDate
+            ? dayjs(Number(hrKarkunById.employmentStartDate))
+            : null
+        }
+      />
 
-        <DateField
-          fieldName="employmentEndDate"
-          fieldLabel="End Date"
-          initialValue={
-            hrKarkunById.employmentEndDate
-              ? dayjs(Number(hrKarkunById.employmentEndDate))
-              : null
-          }
-        />
+      <DateField
+        fieldName="employmentEndDate"
+        fieldLabel="End Date"
+        initialValue={
+          hrKarkunById.employmentEndDate
+            ? dayjs(Number(hrKarkunById.employmentEndDate))
+            : null
+        }
+      />
 
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
 
-export default flowRight(
-  graphql(SET_HR_KARKUN_EMPLOYMENT_INFO, {
-    name: 'setHrKarkunEmploymentInfo',
-    options: {
-      refetchQueries: ['pagedHrKarkuns', 'allJobs'],
-    },
-  }),
-  graphql(HR_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
-  }),
-  WithAllJobs()
-)(EmploymentInfo);
+EmploymentInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  karkunId: PropTypes.string,
+};
+
+export default EmploymentInfo;

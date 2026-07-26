@@ -5,9 +5,9 @@ import { createAttachment } from './utilities';
 export default {
   Query: {
     attachmentsById: async (obj, { ids }) =>
-      Attachments.find({
+      await Attachments.find({
         _id: { $in: ids },
-      }).fetch(),
+      }).fetchAsync(),
   },
 
   Mutation: {
@@ -16,17 +16,17 @@ export default {
       { name, description, mimeType, data },
       { user }
     ) => {
-      const attachmentId = createAttachment(
+      const attachmentId = await createAttachment(
         { name, description, mimeType, data },
         { user }
       );
 
-      return Attachments.findOne(attachmentId);
+      return Attachments.findOneAsync(attachmentId);
     },
 
     updateAttachment: async (obj, { _id, name, description }, { user }) => {
       const date = new Date();
-      Attachments.update(_id, {
+      await Attachments.updateAsync(_id, {
         $set: {
           name,
           description,
@@ -35,7 +35,7 @@ export default {
         },
       });
 
-      return Attachments.findOne(_id);
+      return Attachments.findOneAsync(_id);
     },
   },
 };

@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
-import XLSX from 'xlsx';
 
 import {
   StockAdjustments,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
 function getFormattedName(stockItem) {
   const { name, company, details } = stockItem;
@@ -52,9 +52,5 @@ export async function exportStockAdjustmentForms(stockAdjustmentFormIdsString) {
     })
   );
 
-  const ws = XLSX.utils.json_to_sheet(sheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Stock Adjustment Forms');
-  const data = XLSX.write(wb, { type: 'buffer' });
-  return Buffer.from(data);
+  return createWorkbookBuffer(sheetData, 'Stock Adjustment Forms');
 }

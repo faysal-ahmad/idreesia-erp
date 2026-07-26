@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import dayjs from 'dayjs';
-import { graphql } from 'react-apollo';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -38,7 +38,7 @@ class IssuanceDetails extends Component {
 
     updateIssuanceForm: PropTypes.func,
   };
-  
+
   state = {
     isFieldsTouched: false,
   };
@@ -52,7 +52,7 @@ class IssuanceDetails extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
   handleFinish = ({
     issueDate,
@@ -69,13 +69,11 @@ class IssuanceDetails extends Component {
       updateIssuanceForm,
       issuanceFormById: { _id },
     } = this.props;
-    const updatedItems = items.map(
-      ({ stockItemId, quantity, isInflow }) => ({
-        stockItemId,
-        quantity,
-        isInflow,
-      })
-    );
+    const updatedItems = items.map(({ stockItemId, quantity, isInflow }) => ({
+      stockItemId,
+      quantity,
+      isInflow,
+    }));
     updateIssuanceForm({
       variables: {
         _id,
@@ -98,11 +96,8 @@ class IssuanceDetails extends Component {
   };
 
   render() {
-    const {
-      issuanceFormById,
-      locationsByPhysicalStoreId,
-      physicalStoreId,
-    } = this.props;
+    const { issuanceFormById, locationsByPhysicalStoreId, physicalStoreId } =
+      this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
 
     const rules = [
@@ -114,7 +109,13 @@ class IssuanceDetails extends Component {
 
     return (
       <>
-        <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <Form
+          ref={this.formRef}
+          layout="horizontal"
+          style={FormStyle}
+          onFinish={this.handleFinish}
+          onFieldsChange={this.handleFieldsChange}
+        >
           <DateField
             fieldName="issueDate"
             fieldLabel="Issue Date"
@@ -169,7 +170,12 @@ class IssuanceDetails extends Component {
           />
 
           <Divider orientation="left">Issued / Returned Items</Divider>
-          <Form.Item name="items" initialValue={issuanceFormById.items} rules={rules} {...formItemExtendedLayout}>
+          <Form.Item
+            name="items"
+            initialValue={issuanceFormById.items}
+            rules={rules}
+            {...formItemExtendedLayout}
+          >
             <ItemsList
               defaultLabel="Issued"
               inflowLabel="Returned"
@@ -191,7 +197,7 @@ class IssuanceDetails extends Component {
 }
 
 export default flowRight(
-  graphql(UPDATE_ISSUANCE_FORM, {
+  withMutation(UPDATE_ISSUANCE_FORM, {
     name: 'updateIssuanceForm',
     options: {
       refetchQueries: [

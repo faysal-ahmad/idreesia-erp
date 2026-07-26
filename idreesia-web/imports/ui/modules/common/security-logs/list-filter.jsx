@@ -46,42 +46,50 @@ const ListFilter = props => {
   } = props;
 
   return (
-    <Collapse style={ContainerStyle}>
-      <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onFinish={handleFinish}>
-          <SelectField
-            fieldName="dataSource"
-            fieldLabel="Data Source"
-            required={false}
-            data={[
-              {
-                label: 'Outstation',
-                value: DataSource.OUTSTATION,
-              },
-              {
-                label: 'Portals',
-                value: DataSource.PORTAL,
-              },
-            ]}
-            getDataValue={({ value }) => value}
-            getDataText={({ label }) => label}
-            initialValue={dataSource}
-            fieldLayout={formItemLayout}
-          />
-          <Form.Item {...buttonItemLayout}>
-            <Row type="flex" justify="end">
-              <Button type="default" onClick={handleReset}>
-                Reset
-              </Button>
-              &nbsp;
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Collapse.Panel>
-    </Collapse>
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: refreshButton(),
+          children: (
+            <Form layout="horizontal" onFinish={handleFinish}>
+              <SelectField
+                fieldName="dataSource"
+                fieldLabel="Data Source"
+                required={false}
+                data={[
+                  {
+                    label: 'Outstation',
+                    value: DataSource.OUTSTATION,
+                  },
+                  {
+                    label: 'Portals',
+                    value: DataSource.PORTAL,
+                  },
+                ]}
+                getDataValue={({ value }) => value}
+                getDataText={({ label }) => label}
+                initialValue={dataSource}
+                fieldLayout={formItemLayout}
+              />
+              <Form.Item {...buttonItemLayout}>
+                <Row type="flex" justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
   );
 };
 

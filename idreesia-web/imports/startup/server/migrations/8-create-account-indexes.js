@@ -4,17 +4,17 @@ import { AccountMonthlyBalances } from 'meteor/idreesia-common/server/collection
 
 Migrations.add({
   version: 8,
-  up() {
+  async up() {
     const accountMonthlyCalculations = AccountMonthlyBalances.rawCollection();
-    accountMonthlyCalculations.createIndex(
+    await accountMonthlyCalculations.createIndex(
       { companyId: 1 },
       { background: true }
     );
-    accountMonthlyCalculations.createIndex(
+    await accountMonthlyCalculations.createIndex(
       { accountHeadId: 1 },
       { background: true }
     );
-    accountMonthlyCalculations.createIndex(
+    await accountMonthlyCalculations.createIndex(
       { monthString: 1 },
       { background: true }
     );

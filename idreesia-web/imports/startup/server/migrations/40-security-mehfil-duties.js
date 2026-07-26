@@ -7,16 +7,16 @@ import {
 
 Migrations.add({
   version: 40,
-  up() {
+  async up() {
     // Insert the existing mehfil duties defined as constants into
     // the collection. Also update the mehfil karkuns to point to
     // these new duties in the collection.
-    const adminUser = Meteor.users.findOne({
+    const adminUser = await Meteor.users.findOneAsync({
       username: 'erp-admin',
     });
     const date = new Date();
-    MehfilDutiesList.forEach(mehfilDuty => {
-      const newMehfilDutyId = MehfilDuties.insert({
+    for (const mehfilDuty of MehfilDutiesList) {
+      const newMehfilDutyId = await MehfilDuties.insertAsync({
         name: mehfilDuty.name,
         urduName: mehfilDuty.urduName,
         createdAt: date,
@@ -25,7 +25,7 @@ Migrations.add({
         updatedBy: adminUser._id,
       });
 
-      MehfilKarkuns.update(
+      await MehfilKarkuns.updateAsync(
         {
           dutyName: mehfilDuty._id,
         },
@@ -39,6 +39,6 @@ Migrations.add({
         },
         { multi: true }
       );
-    });
+    }
   },
 });

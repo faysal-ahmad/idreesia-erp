@@ -1,16 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Row, Spin, message } from 'antd';
-import moment from 'moment';
+import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 import { Card } from '../mehfil-karkuns/print/karkun-cards/named-cards';
 
 const SearchResult = props => {
-  const { barcode, loading, mehfilKarkunByBarcodeId } = props;
+  const { barcode } = props;
+  const { data = {}, loading } = useQuery(formQuery, {
+    variables: { barcode },
+  });
+  const { mehfilKarkunByBarcodeId } = data;
   if (!barcode) return null;
   if (loading) return <Spin size="large" />;
 
@@ -20,9 +23,10 @@ const SearchResult = props => {
   }
 
   const { mehfil } = mehfilKarkunByBarcodeId;
-  const mehfilName = `${mehfil.name} - ${moment(
-    Number(mehfil.mehfilDate)
-  ).format('DD MMM, YYYY')}`;
+  const mehfilName = `${mehfil.name} - ${formatDate(
+    new Date(Number(mehfil.mehfilDate)),
+    'DD MMM, YYYY'
+  )}`;
 
   return (
     <>
@@ -78,9 +82,4 @@ const formQuery = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ barcode }) => ({ variables: { barcode } }),
-  })
-)(SearchResult);
+export default SearchResult;

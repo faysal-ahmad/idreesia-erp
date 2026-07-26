@@ -6,6 +6,27 @@ import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const menuItems = [
+  {
+    key: 'access',
+    label: 'Access Management',
+    children: [
+      { key: 'users', label: 'Users' },
+      { key: 'user-groups', label: 'User Groups' },
+    ],
+  },
+  {
+    key: 'instances',
+    label: 'Instance Management',
+    children: [{ key: 'physical-stores', label: 'Physical Stores' }],
+  },
+  {
+    key: 'locations',
+    label: 'Locations Management',
+    children: [{ key: 'cities', label: 'Cities & Mehfils' }],
+  },
+];
+
 class Sidebar extends Component {
   static propTypes = {
     history: PropTypes.object,
@@ -18,11 +39,6 @@ class Sidebar extends Component {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
-      case 'admin-jobs':
-        setActiveSubModuleName(SubModuleNames.adminJobs);
-        history.push(paths.adminJobsPath);
-        break;
-
       case 'users':
         setActiveSubModuleName(SubModuleNames.users);
         history.push(paths.usersPath);
@@ -38,9 +54,9 @@ class Sidebar extends Component {
         history.push(paths.physicalStoresPath);
         break;
 
-      case 'companies':
-        setActiveSubModuleName(SubModuleNames.companies);
-        history.push(paths.companiesPath);
+      case 'cities':
+        setActiveSubModuleName(SubModuleNames.cities);
+        history.push(paths.citiesPath);
         break;
 
       default:
@@ -54,17 +70,8 @@ class Sidebar extends Component {
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
-      >
-        <Menu.Item key="admin-jobs">Admin Jobs</Menu.Item>
-        <Menu.SubMenu key="access" title={<span>Access Management </span>}>
-          <Menu.Item key="users">Users</Menu.Item>
-          <Menu.Item key="user-groups">User Groups</Menu.Item>
-        </Menu.SubMenu>
-        <Menu.SubMenu key="instances" title={<span>Instance Management</span>}>
-          <Menu.Item key="companies">Companies</Menu.Item>
-          <Menu.Item key="physical-stores">Physical Stores</Menu.Item>
-        </Menu.SubMenu>
-      </Menu>
+        items={menuItems}
+      />
     );
   }
 }

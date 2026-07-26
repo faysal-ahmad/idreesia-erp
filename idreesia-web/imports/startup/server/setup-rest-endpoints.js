@@ -63,10 +63,10 @@ Meteor.startup(() => {
   app.get(
     '/download-file',
     bodyParser.urlencoded({ extended: false }),
-    Meteor.bindEnvironment((req, res) => {
+    Meteor.bindEnvironment(async (req, res) => {
       const { attachmentId } = req.query;
       if (attachmentId) {
-        const attachment = Attachments.findOne(attachmentId);
+        const attachment = await Attachments.findOneAsync(attachmentId);
         if (attachment) {
           const imgData = Buffer.from(attachment.data, 'base64');
           res.removeHeader('Pragma');
@@ -93,14 +93,14 @@ Meteor.startup(() => {
   app.post(
     '/upload-file',
     upload.single('file'),
-    Meteor.bindEnvironment((req, res) => {
+    Meteor.bindEnvironment(async (req, res) => {
       const { file } = req;
       const attachment = {
         name: file.originalname,
         mimeType: file.mimetype,
         data: file.buffer.toString('base64'),
       };
-      const attachmentId = Attachments.insert(attachment);
+      const attachmentId = await Attachments.insertAsync(attachment);
       res.writeHead(200);
       res.end(attachmentId);
     })
@@ -112,14 +112,14 @@ Meteor.startup(() => {
   app.post(
     '/upload-base64-file',
     bodyParser.json({ limit: '5mb' }),
-    Meteor.bindEnvironment((req, res) => {
+    Meteor.bindEnvironment(async (req, res) => {
       const { name, mimeType, data } = req.body;
       const attachment = {
         name,
         mimeType,
         data,
       };
-      const attachmentId = Attachments.insert(attachment);
+      const attachmentId = await Attachments.insertAsync(attachment);
       res.send(JSON.stringify({ attachmentId }));
     })
   );

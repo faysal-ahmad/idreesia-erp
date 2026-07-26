@@ -4,23 +4,23 @@ import {
   Locations,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-function isLocationInUse(locationId, physicalStoreId) {
+async function isLocationInUse(locationId, physicalStoreId) {
   // If this has any child locations then it is in use
-  const childCount = Locations.find({
+  const childCount = await Locations.find({
     parentId: locationId,
     physicalStoreId,
-  }).count();
+  }).countAsync();
   if (childCount > 0) return true;
   // Check if it is being used in any purchase/issuance forms
-  const purchaseFormCount = PurchaseForms.find({
+  const purchaseFormCount = await PurchaseForms.find({
     locationId,
     physicalStoreId,
-  }).count();
+  }).countAsync();
   if (purchaseFormCount > 0) return true;
-  const issuanceFormCount = IssuanceForms.find({
+  const issuanceFormCount = await IssuanceForms.find({
     locationId,
     physicalStoreId,
-  }).count();
+  }).countAsync();
   if (issuanceFormCount > 0) return true;
 
   return false;
@@ -107,7 +107,7 @@ export default {
     },
 
     removeLocation: async (obj, { _id, physicalStoreId }, { user }) => {
-      const inUse = isLocationInUse(_id, physicalStoreId);
+      const inUse = await isLocationInUse(_id, physicalStoreId);
       if (!inUse) {
         return Locations.removeAsync({
           _id: { $eq: _id },

@@ -1,0 +1,33 @@
+import gql from 'graphql-tag';
+
+export default gql`
+type ItemWithQuantity {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+
+  refStockItem: StockItem
+}
+
+input ItemWithQuantityInput {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+}
+
+type ItemWithQuantityAndPrice {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+  price: Float
+
+  refStockItem: StockItem
+}
+
+input ItemWithQuantityAndPriceInput {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+  price: Float
+}
+`;

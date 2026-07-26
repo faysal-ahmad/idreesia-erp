@@ -79,85 +79,92 @@ class ListFilter extends Component {
     const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
 
     return (
-      <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1">
-          <Form layout="horizontal" onFinish={this.handleFinish}>
-            <DateField
-              fieldName="startDate"
-              fieldLabel="Start Date"
-              fieldLayout={formItemLayout}
-              required={false}
-              initialValue={mStartDate}
-            />
-            <DateField
-              fieldName="endDate"
-              fieldLabel="End Date"
-              fieldLayout={formItemLayout}
-              required={false}
-              initialValue={mEndDate}
-            />
-            <InputTextField
-              fieldName="name"
-              fieldLabel="Name"
-              required={false}
-              fieldLayout={formItemLayout}
-              initialValue={name}
-            />
-            <AutoCompleteField
-              fieldName="city"
-              fieldLabel="City"
-              fieldLayout={formItemLayout}
-              dataSource={distinctCities}
-              initialValue={city}
-              required={false}
-            />
-            <SelectField
-              data={StayReasons}
-              getDataValue={({ _id }) => _id}
-              getDataText={({ name: _name }) => _name}
-              initialValue={stayReason}
-              fieldName="stayReason"
-              fieldLabel="Stay Reason"
-              fieldLayout={formItemLayout}
-            />
-            <SelectField
-              fieldName="additionalInfo"
-              fieldLabel="Additional Info"
-              required={false}
-              data={[
-                {
-                  label: 'Has Associated Notes',
-                  value: 'has-notes',
-                },
-                {
-                  label: 'Has Crimial Record',
-                  value: 'has-criminal-record',
-                },
-                {
-                  label: 'Has Notes or Crimial Record',
-                  value: 'has-notes-or-criminal-record',
-                },
-              ]}
-              getDataValue={({ value }) => value}
-              getDataText={({ label }) => label}
-              initialValue={additionalInfo}
-              fieldLayout={formItemLayout}
-            />
+      <Collapse
+        style={ContainerStyle}
+        items={[
+          {
+            key: '1',
+            label: 'Filter',
+            children: (
+              <Form layout="horizontal" onFinish={this.handleFinish}>
+                <DateField
+                  fieldName="startDate"
+                  fieldLabel="Start Date"
+                  fieldLayout={formItemLayout}
+                  required={false}
+                  initialValue={mStartDate}
+                />
+                <DateField
+                  fieldName="endDate"
+                  fieldLabel="End Date"
+                  fieldLayout={formItemLayout}
+                  required={false}
+                  initialValue={mEndDate}
+                />
+                <InputTextField
+                  fieldName="name"
+                  fieldLabel="Name"
+                  required={false}
+                  fieldLayout={formItemLayout}
+                  initialValue={name}
+                />
+                <AutoCompleteField
+                  fieldName="city"
+                  fieldLabel="City"
+                  fieldLayout={formItemLayout}
+                  dataSource={distinctCities}
+                  initialValue={city}
+                  required={false}
+                />
+                <SelectField
+                  data={StayReasons}
+                  getDataValue={({ _id }) => _id}
+                  getDataText={({ name: _name }) => _name}
+                  initialValue={stayReason}
+                  fieldName="stayReason"
+                  fieldLabel="Stay Reason"
+                  fieldLayout={formItemLayout}
+                />
+                <SelectField
+                  fieldName="additionalInfo"
+                  fieldLabel="Additional Info"
+                  required={false}
+                  data={[
+                    {
+                      label: 'Has Associated Notes',
+                      value: 'has-notes',
+                    },
+                    {
+                      label: 'Has Crimial Record',
+                      value: 'has-criminal-record',
+                    },
+                    {
+                      label: 'Has Notes or Crimial Record',
+                      value: 'has-notes-or-criminal-record',
+                    },
+                  ]}
+                  getDataValue={({ value }) => value}
+                  getDataText={({ label }) => label}
+                  initialValue={additionalInfo}
+                  fieldLayout={formItemLayout}
+                />
 
-            <Form.Item {...buttonItemLayout}>
-              <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleReset}>
-                  Reset
-                </Button>
-                &nbsp;
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-              </Row>
-            </Form.Item>
-          </Form>
-        </Collapse.Panel>
-      </Collapse>
+                <Form.Item {...buttonItemLayout}>
+                  <Row type="flex" justify="end">
+                    <Button type="default" onClick={this.handleReset}>
+                      Reset
+                    </Button>
+                    &nbsp;
+                    <Button type="primary" htmlType="submit">
+                      Search
+                    </Button>
+                  </Row>
+                </Form.Item>
+              </Form>
+            ),
+          },
+        ]}
+      />
     );
   }
 }

@@ -1,26 +1,42 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { Button, Table, Tooltip, message } from 'antd';
 import { DeleteOutlined, PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { ALL_MEHFILS, REMOVE_MEHFIL } from './gql';
 
-class List extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    allMehfils: PropTypes.array,
-    removeMehfil: PropTypes.func,
+const List = ({ history }) => {
+  const { data = {} } = useQuery(ALL_MEHFILS);
+  const { allMehfils } = data;
+  const [removeMehfil] = useMutation(REMOVE_MEHFIL, {
+    refetchQueries: [{ query: ALL_MEHFILS }],
+  });
+
+  const handleNewClicked = () => {
+    history.push(paths.mehfilsNewFormPath);
   };
 
-  columns = [
+  const handleDeleteClicked = record => {
+    removeMehfil({
+      variables: {
+        _id: record._id,
+      },
+    }).catch(error => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const handleKarkunsClicked = record => {
+    history.push(paths.mehfilsKarkunListPath(record._id));
+  };
+
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -52,7 +68,7 @@ class List extends Component {
             <TeamOutlined
               className="list-actions-icon"
               onClick={() => {
-                this.handleKarkunsClicked(record);
+                handleKarkunsClicked(record);
               }}
             />
           </Tooltip>
@@ -65,7 +81,7 @@ class List extends Component {
               <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
-                  this.handleDeleteClicked(record);
+                  handleDeleteClicked(record);
                 }}
               />
             </Tooltip>
@@ -82,60 +98,29 @@ class List extends Component {
     },
   ];
 
-  handleNewClicked = () => {
-    const { history } = this.props;
-    history.push(paths.mehfilsNewFormPath);
-  };
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={allMehfils}
+      columns={columns}
+      pagination={{ defaultPageSize: 20 }}
+      bordered
+      title={() => (
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New Mehfil
+        </Button>
+      )}
+    />
+  );
+};
 
-  handleDeleteClicked = record => {
-    const { removeMehfil } = this.props;
-    removeMehfil({
-      variables: {
-        _id: record._id,
-      },
-    }).catch(error => {
-      message.error(error.message, 5);
-    });
-  };
+List.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
 
-  handleKarkunsClicked = record => {
-    const { history } = this.props;
-    history.push(paths.mehfilsKarkunListPath(record._id));
-  };
-
-  render() {
-    const { allMehfils } = this.props;
-
-    return (
-      <Table
-        rowKey="_id"
-        dataSource={allMehfils}
-        columns={this.columns}
-        pagination={{ defaultPageSize: 20 }}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={this.handleNewClicked}
-          >
-            New Mehfil
-          </Button>
-        )}
-      />
-    );
-  }
-}
-
-export default flowRight(
-  graphql(ALL_MEHFILS, {
-    props: ({ data }) => ({ ...data }),
-  }),
-  graphql(REMOVE_MEHFIL, {
-    name: 'removeMehfil',
-    options: {
-      refetchQueries: [{ query: ALL_MEHFILS }],
-    },
-  }),
-  WithBreadcrumbs(['Security', 'Mehfils', 'List'])
-)(List);
+export default WithBreadcrumbs(['Security', 'Mehfils', 'List'])(List);

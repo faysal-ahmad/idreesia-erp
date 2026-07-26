@@ -43,7 +43,7 @@ function getAttendanceValues(jsonRecord) {
   };
 }
 
-function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
+async function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
   try {
     const karkunCnic = jsonRecord[CNIC_COLUMN];
     const karkunName = jsonRecord[NAME_COLUMN];
@@ -53,11 +53,11 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
 
     let person;
     if (karkunCnic) {
-      person = People.findOne({
+      person = await People.findOneAsync({
         'sharedData.cnicNumber': { $eq: karkunCnic },
       });
     } else {
-      person = People.findOne({
+      person = await People.findOneAsync({
         'sharedData.contactNumber1': { $eq: phoneNumber },
       });
     }
@@ -72,13 +72,13 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     // to this dutyId/shiftId
     let karkunDuty;
     if (shiftId) {
-      karkunDuty = KarkunDuties.findOne({
+      karkunDuty = await KarkunDuties.findOneAsync({
         karkunId: person._id,
         dutyId,
         shiftId,
       });
     } else {
-      karkunDuty = KarkunDuties.findOne({
+      karkunDuty = await KarkunDuties.findOneAsync({
         karkunId: person._id,
         dutyId,
       });
@@ -89,20 +89,20 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     // If there is already an attendance present for this karkun/month/duty/shift combination
     // then update that, otherwise insert a new one.
     let attendance = shiftId
-      ? Attendances.findOne({
+      ? await Attendances.findOneAsync({
           karkunId: person._id,
           dutyId,
           shiftId,
           month,
         })
-      : Attendances.findOne({
+      : await Attendances.findOneAsync({
           karkunId: person._id,
           dutyId,
           month,
         });
 
     if (!attendance) {
-      const attendanceId = Attendances.insert({
+      const attendanceId = await Attendances.insertAsync({
         karkunId: person._id,
         dutyId,
         shiftId,
@@ -110,7 +110,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
         meetingCardBarcodeId: Random.id(8),
       });
 
-      attendance = Attendances.findOne(attendanceId);
+      attendance = await Attendances.findOneAsync(attendanceId);
     }
 
     let meetingCardBarcodeId = attendance.meetingCardBarcodeId;
@@ -119,7 +119,7 @@ function processJsonRecord(jsonRecord, month, dutyId, shiftId) {
     }
 
     const attendanceValues = getAttendanceValues(jsonRecord);
-    Attendances.update(attendance._id, {
+    await Attendances.updateAsync(attendance._id, {
       $set: Object.assign({}, attendanceValues, {
         meetingCardBarcodeId,
       }),
@@ -144,10 +144,10 @@ function convertToJson(csvData) {
 }
 
 export async function processAttendanceSheet(csvData, month, dutyId, shiftId) {
-  return convertToJson(csvData).then(jsonArray => {
-    jsonArray.forEach(jsonRecord => {
-      processJsonRecord(jsonRecord, month, dutyId, shiftId);
-    });
+  return convertToJson(csvData).then(async jsonArray => {
+    for (const jsonRecord of jsonArray) {
+      await processJsonRecord(jsonRecord, month, dutyId, shiftId);
+    }
 
     return jsonArray.length;
   });

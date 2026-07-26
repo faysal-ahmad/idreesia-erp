@@ -8,14 +8,14 @@ export default {
     overallUsedCount: async mehfilLangarLocationType =>
       MehfilLangarDetails.find({
         langarLocationId: { $eq: mehfilLangarLocationType._id },
-      }).count(),
+      }).countAsync(),
   },
 
   Query: {
     allSecurityMehfilLangarLocations: async () =>
-      MehfilLangarLocations.find({}).fetch(),
+      MehfilLangarLocations.find({}).fetchAsync(),
     securityMehfilLangarLocationById: async (obj, { id }) =>
-      MehfilLangarLocations.findOne(id),
+      MehfilLangarLocations.findOneAsync(id),
   },
 
   Mutation: {
@@ -25,7 +25,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      const mehfilLangarLocationId = MehfilLangarLocations.insert({
+      const mehfilLangarLocationId = await MehfilLangarLocations.insertAsync({
         name,
         urduName,
         createdAt: date,
@@ -34,7 +34,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return MehfilLangarLocations.findOne(mehfilLangarLocationId);
+      return MehfilLangarLocations.findOneAsync(mehfilLangarLocationId);
     },
 
     updateSecurityMehfilLangarLocation: async (
@@ -43,7 +43,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      MehfilLangarLocations.update(id, {
+      await MehfilLangarLocations.updateAsync(id, {
         $set: {
           name,
           urduName,
@@ -52,13 +52,13 @@ export default {
         },
       });
 
-      return MehfilLangarLocations.findOne(id);
+      return MehfilLangarLocations.findOneAsync(id);
     },
 
     removeSecurityMehfilLangarLocation: async (obj, { _id }) => {
-      const usedCount = MehfilLangarDetails.find({
+      const usedCount = await MehfilLangarDetails.find({
         langarLocationId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (usedCount > 0) {
         throw new Error(
@@ -66,7 +66,7 @@ export default {
         );
       }
 
-      return MehfilLangarLocations.remove(_id);
+      return MehfilLangarLocations.removeAsync(_id);
     },
   },
 };

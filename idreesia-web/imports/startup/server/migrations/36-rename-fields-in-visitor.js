@@ -4,9 +4,9 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 36,
-  up() {
+  async up() {
     // Rename the address field to current address in visitors
-    Visitors.update(
+    await Visitors.updateAsync(
       {},
       {
         $rename: { address: 'currentAddress' },

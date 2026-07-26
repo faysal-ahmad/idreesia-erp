@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -14,14 +14,13 @@ import {
 import Cards from './cards';
 import { ATTENDANCE_BY_BARCODE_IDS } from '../../gql';
 
-const CardsContainer = ({
-  attendanceLoading,
-  attendanceByBarcodeIds,
-  history,
-  queryParams,
-}) => {
+const CardsContainer = ({ history, queryParams }) => {
   const meetingCardsRef = useRef(null);
-  if (attendanceLoading) return null;
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS, {
+    variables: { barcodeIds: queryParams.barcodeIds },
+  });
+
+  if (loading) return null;
 
   const { cardType } = queryParams;
   if (!cardType) return null;
@@ -50,7 +49,9 @@ const CardsContainer = ({
       <Cards
         ref={meetingCardsRef}
         cardType={cardType}
-        attendanceByBarcodeIds={attendanceByBarcodeIds}
+        attendanceByBarcodeIds={
+          data ? data.attendanceByBarcodeIds : undefined
+        }
       />
     </>
   );
@@ -61,18 +62,9 @@ CardsContainer.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
   queryParams: PropTypes.object,
-
-  attendanceLoading: PropTypes.bool,
-  attendanceByBarcodeIds: PropTypes.array,
 };
 
 export default flowRight(
   WithQueryParams(),
-  graphql(ATTENDANCE_BY_BARCODE_IDS, {
-    props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
-    options: ({ queryParams: { barcodeIds } }) => ({
-      variables: { barcodeIds },
-    }),
-  }),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'Meeting Cards'])
 )(CardsContainer);

@@ -4,8 +4,6 @@ import { EditOutlined } from '@ant-design/icons';
 
 import { Tabs, Drawer, Input } from 'antd';
 import MSKarkunsList from './ms-karkuns-list';
-import OutstationKarkunsList from './outstation-karkuns-list';
-import PortalKarkunsList from './portal-karkuns-list';
 
 const ContainerStyle = {
   display: 'flex',
@@ -22,10 +20,7 @@ export default class CustomInput extends Component {
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
 
-    portalId: PropTypes.string,
     showMsKarkunsList: PropTypes.bool,
-    showOutstationKarkunsList: PropTypes.bool,
-    showPortalKarkunsList: PropTypes.bool,
   };
 
   state = {
@@ -56,14 +51,7 @@ export default class CustomInput extends Component {
   };
 
   render() {
-    const {
-      placeholder,
-      value,
-      portalId,
-      showMsKarkunsList,
-      showOutstationKarkunsList,
-      showPortalKarkunsList,
-    } = this.props;
+    const { placeholder, value, showMsKarkunsList } = this.props;
 
     const containersNode = [];
 
@@ -75,32 +63,13 @@ export default class CustomInput extends Component {
       );
     }
 
-    if (showOutstationKarkunsList) {
-      containersNode.push(
-        <Tabs.TabPane tab="Outstation Karkuns" key="2">
-          <OutstationKarkunsList handleSelectItem={this.setSelectedValue} />
-        </Tabs.TabPane>
-      );
-    }
-
-    if (showPortalKarkunsList) {
-      containersNode.push(
-        <Tabs.TabPane tab="Portal Karkuns" key="3">
-          <PortalKarkunsList
-            portalId={portalId}
-            handleSelectItem={this.setSelectedValue}
-          />
-        </Tabs.TabPane>
-      );
-    }
-
     return (
       <Fragment>
         <Drawer
           title="Select a Karkun"
           width={800}
           onClose={this.handleClose}
-          visible={this.state.showSelectionForm}
+          open={this.state.showSelectionForm}
         >
           <Tabs>{containersNode}</Tabs>
         </Drawer>

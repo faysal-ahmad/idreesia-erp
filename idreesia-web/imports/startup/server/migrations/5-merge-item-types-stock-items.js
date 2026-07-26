@@ -14,29 +14,29 @@ import {
  */
 Migrations.add({
   version: 5,
-  up() {
-    const adminUser = Accounts.findUserByUsername('erp-admin');
+  async up() {
+    const adminUser = await Accounts.findUserByUsername('erp-admin');
     const date = new Date();
 
     // Rename itemCategoryId to categoryId
-    let stockItems = StockItems.find({
+    let stockItems = await StockItems.find({
       itemCategoryId: { $exists: true },
-    }).fetch();
-    stockItems.forEach(stockItem => {
-      StockItems.update(stockItem._id, {
+    }).fetchAsync();
+    for (const stockItem of stockItems) {
+      await StockItems.updateAsync(stockItem._id, {
         $set: {
           categoryId: stockItem.itemCategoryId,
         },
       });
-    });
+    }
 
     // Update existing stock items with attributes from item types
-    stockItems = StockItems.find({
+    stockItems = await StockItems.find({
       itemTypeId: { $exists: true },
-    }).fetch();
-    stockItems.forEach(stockItem => {
-      const itemType = ItemTypes.findOne(stockItem.itemTypeId);
-      StockItems.update(stockItem._id, {
+    }).fetchAsync();
+    for (const stockItem of stockItems) {
+      const itemType = await ItemTypes.findOneAsync(stockItem.itemTypeId);
+      await StockItems.updateAsync(stockItem._id, {
         $set: {
           name: itemType.name,
           company: itemType.company,
@@ -46,20 +46,20 @@ Migrations.add({
           imageId: itemType.imageId,
         },
       });
-    });
+    }
 
     // Create stock items from item types for which stock items do not exist
-    const itemTypes = ItemTypes.find({}).fetch();
-    const physicalStores = PhysicalStores.find({}).fetch();
-    physicalStores.forEach(physicalStore => {
-      itemTypes.forEach(itemType => {
-        const stockItem = StockItems.findOne({
+    const itemTypes = await ItemTypes.find({}).fetchAsync();
+    const physicalStores = await PhysicalStores.find({}).fetchAsync();
+    for (const physicalStore of physicalStores) {
+      for (const itemType of itemTypes) {
+        const stockItem = await StockItems.findOneAsync({
           physicalStoreId: physicalStore._id,
           itemTypeId: itemType._id,
         });
 
         if (!stockItem) {
-          StockItems.insert({
+          await StockItems.insertAsync({
             physicalStoreId: physicalStore._id,
             name: itemType.name,
             company: itemType.company,
@@ -77,11 +77,11 @@ Migrations.add({
             updatedBy: adminUser._id,
           });
         }
-      });
-    });
+      }
+    }
 
     // Remove itemTypeId value from all stock items
-    StockItems.update(
+    await StockItems.updateAsync(
       {},
       {
         $unset: {

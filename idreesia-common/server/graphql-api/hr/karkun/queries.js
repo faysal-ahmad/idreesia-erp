@@ -7,7 +7,7 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
-export function getKarkunsByPredefinedFilter(params) {
+export async function getKarkunsByPredefinedFilter(params) {
   const {
     predefinedFilterName,
     predefinedFilterStoreId,
@@ -16,55 +16,34 @@ export function getKarkunsByPredefinedFilter(params) {
   } = params;
 
   let karkunIds = [];
-  let distincFunction;
 
   switch (predefinedFilterName) {
     case PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY:
-      distincFunction = Meteor.wrapAsync(
-        PurchaseForms.rawCollection().distinct,
-        PurchaseForms.rawCollection()
-      );
-      karkunIds = distincFunction('receivedBy', {
+      karkunIds = await PurchaseForms.rawCollection().distinct('receivedBy', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO:
-      distincFunction = Meteor.wrapAsync(
-        PurchaseForms.rawCollection().distinct,
-        PurchaseForms.rawCollection()
-      );
-      karkunIds = distincFunction('purchasedBy', {
+      karkunIds = await PurchaseForms.rawCollection().distinct('purchasedBy', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY:
-      distincFunction = Meteor.wrapAsync(
-        IssuanceForms.rawCollection().distinct,
-        IssuanceForms.rawCollection()
-      );
-      karkunIds = distincFunction('issuedBy', {
+      karkunIds = await IssuanceForms.rawCollection().distinct('issuedBy', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY:
-      distincFunction = Meteor.wrapAsync(
-        IssuanceForms.rawCollection().distinct,
-        IssuanceForms.rawCollection()
-      );
-      karkunIds = distincFunction('issuedTo', {
+      karkunIds = await IssuanceForms.rawCollection().distinct('issuedTo', {
         physicalStoreId: predefinedFilterStoreId,
       });
       break;
 
     case PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY:
-      distincFunction = Meteor.wrapAsync(
-        StockAdjustments.rawCollection().distinct,
-        StockAdjustments.rawCollection()
-      );
-      karkunIds = distincFunction('adjustedBy');
+      karkunIds = await StockAdjustments.rawCollection().distinct('adjustedBy');
       break;
 
     default:

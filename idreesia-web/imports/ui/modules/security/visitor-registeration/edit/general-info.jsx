@@ -1,32 +1,22 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { message } from 'antd';
 import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { UPDATE_SECURITY_VISITOR, SECURITY_VISITOR_BY_ID } from '../gql';
 
-class GeneralInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const GeneralInfo = ({ history, formDataLoading, securityVisitorById }) => {
+  const [updateSecurityVisitor] = useMutation(UPDATE_SECURITY_VISITOR, {
+    refetchQueries: ['pagedSecurityVisitors'],
+  });
 
-    formDataLoading: PropTypes.bool,
-    visitorId: PropTypes.string,
-    securityVisitorById: PropTypes.object,
-    updateSecurityVisitor: PropTypes.func,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.push(`${paths.visitorRegistrationListPath}`);
   };
 
-  handleFinish = ({
+  const handleFinish = ({
     name,
     parentName,
     cnicNumber,
@@ -42,8 +32,6 @@ class GeneralInfo extends Component {
     educationalQualification,
     meansOfEarning,
   }) => {
-    const { history, securityVisitorById, updateSecurityVisitor } = this.props;
-    console.log(ehadDate);
     updateSecurityVisitor({
       variables: {
         _id: securityVisitorById._id,
@@ -71,32 +59,41 @@ class GeneralInfo extends Component {
       });
   };
 
-  render() {
-    const { formDataLoading, securityVisitorById } = this.props;
-    if (formDataLoading) return null;
+  if (formDataLoading) return null;
 
-    return (
-      <VisitorsGeneralInfo
-        visitor={securityVisitorById}
-        handleFinish={this.handleFinish}
-        handleCancel={this.handleCancel}
-      />
-    );
-  }
-}
+  return (
+    <VisitorsGeneralInfo
+      visitor={securityVisitorById}
+      handleFinish={handleFinish}
+      handleCancel={handleCancel}
+    />
+  );
+};
 
-export default flowRight(
-  graphql(UPDATE_SECURITY_VISITOR, {
-    name: 'updateSecurityVisitor',
-    options: {
-      refetchQueries: ['pagedSecurityVisitors'],
-    },
-  }),
-  graphql(SECURITY_VISITOR_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { visitorId } = match.params;
-      return { variables: { _id: visitorId } };
-    },
-  })
-)(GeneralInfo);
+const GeneralInfoWithData = props => {
+  const { match } = props;
+  const { visitorId } = match.params;
+  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID, {
+    variables: { _id: visitorId },
+  });
+
+  return (
+    <GeneralInfo
+      {...props}
+      {...queryResult}
+      {...data}
+      formDataLoading={loading}
+    />
+  );
+};
+
+GeneralInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  formDataLoading: PropTypes.bool,
+  visitorId: PropTypes.string,
+  securityVisitorById: PropTypes.object,
+};
+
+export default GeneralInfoWithData;

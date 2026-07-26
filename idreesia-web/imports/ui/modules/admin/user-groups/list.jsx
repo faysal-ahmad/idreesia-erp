@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { DeleteOutlined, TeamOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
   Button,

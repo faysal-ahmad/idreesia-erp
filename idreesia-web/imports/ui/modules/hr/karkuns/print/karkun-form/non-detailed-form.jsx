@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import moment from 'moment';
 import { Col, Divider, Row } from 'antd';
 
+import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { DisplayItem } from '/imports/ui/modules/helpers/controls';
 
@@ -65,7 +65,7 @@ export class NonDetailedForm extends Component {
       hrKarkunById.job,
       hrKarkunById.duties
     );
-    const timestamp = moment().format('DD MMM, YYYY');
+    const timestamp = formatDate(new Date(), 'DD MMM, YYYY');
 
     return (
       <div className="form-print-view" ref={this.printViewRef}>

@@ -1,10 +1,11 @@
 import { parse } from 'query-string';
-import moment from 'moment';
+import { endOfDay, startOfDay } from 'date-fns';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import {
   DEFAULT_PAGE_INDEX,
   DEFAULT_PAGE_SIZE,
@@ -72,9 +73,7 @@ export async function getVisitorStays(queryString) {
     pipeline.push({
       $match: {
         fromDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT)
-            .startOf('day')
-            .toDate(),
+          $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
         },
       },
     });
@@ -83,9 +82,7 @@ export async function getVisitorStays(queryString) {
     pipeline.push({
       $match: {
         toDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT)
-            .endOf('day')
-            .toDate(),
+          $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
         },
       },
     });

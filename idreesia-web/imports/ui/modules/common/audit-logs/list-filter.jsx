@@ -44,29 +44,37 @@ const ListFilter = props => {
   } = props;
 
   return (
-    <Collapse style={ContainerStyle}>
-      <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onFinish={handleFinish}>
-          <InputTextField
-            fieldName="entityId"
-            fieldLabel="Entity ID"
-            fieldLayout={formItemLayout}
-            initialValue={entityId}
-          />
-          <Form.Item {...buttonItemLayout}>
-            <Row type="flex" justify="end">
-              <Button type="default" onClick={handleReset}>
-                Reset
-              </Button>
-              &nbsp;
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Collapse.Panel>
-    </Collapse>
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: refreshButton(),
+          children: (
+            <Form layout="horizontal" onFinish={handleFinish}>
+              <InputTextField
+                fieldName="entityId"
+                fieldLabel="Entity ID"
+                fieldLayout={formItemLayout}
+                initialValue={entityId}
+              />
+              <Form.Item {...buttonItemLayout}>
+                <Row type="flex" justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
   );
 };
 

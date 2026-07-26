@@ -1,10 +1,9 @@
-import XLSX from 'xlsx';
-
 import {
   StockItems,
   ItemCategories,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { keyBy } from 'meteor/idreesia-common/utilities/lodash';
+import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
 export async function exportStockItems(physicalStoreId) {
   // Get all the item categories for this physical store
@@ -41,9 +40,5 @@ export async function exportStockItems(physicalStoreId) {
     };
   });
 
-  const ws = XLSX.utils.json_to_sheet(sheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Stock Items');
-  const data = XLSX.write(wb, { type: 'buffer' });
-  return Buffer.from(data);
+  return createWorkbookBuffer(sheetData, 'Stock Items');
 }

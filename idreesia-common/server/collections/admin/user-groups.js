@@ -44,14 +44,14 @@ class UserGroups extends AggregatableCollection {
   // Common Create/Update methods for UserGroups.
   // Used from Admin/Outstation/Portals.
   // *******************************************************************
-  createGroup({ name, moduleName, description }, user) {
-    const existingGroup = this.findOne({ name });
+  async createGroup({ name, moduleName, description }, user) {
+    const existingGroup = await this.findOneAsync({ name });
     if (existingGroup) {
       throw new Error(`User Group name '${name}' is already in use.`);
     }
 
     const date = new Date();
-    const newUserGroupId = this.insert({
+    const newUserGroupId = await this.insertAsync({
       name,
       moduleName,
       description,
@@ -61,12 +61,12 @@ class UserGroups extends AggregatableCollection {
       updatedBy: user._id,
     });
 
-    return this.findOne(newUserGroupId);
+    return this.findOneAsync(newUserGroupId);
   }
 
-  updateGroup({ _id, name, description }, user) {
+  async updateGroup({ _id, name, description }, user) {
     const date = new Date();
-    UserGroups.update(_id, {
+    await UserGroups.updateAsync(_id, {
       $set: {
         name,
         description,
@@ -75,31 +75,31 @@ class UserGroups extends AggregatableCollection {
       },
     });
 
-    return UserGroups.findOne(_id);
+    return UserGroups.findOneAsync(_id);
   }
 
-  removeGroup({ _id }) {
+  async removeGroup({ _id }) {
     // Check if there are users that have been assigned to
     // this group.
-    const groupUserCount = Users.find({
+    const groupUserCount = await Users.find({
       groups: { $in: [_id] },
-    }).count();
+    }).countAsync();
 
     if (groupUserCount > 0) {
       throw new Error(`This Group is currently in use and cannot be deleted.`);
     }
 
-    return UserGroups.remove(_id);
+    return UserGroups.removeAsync(_id);
   }
 
-  setPermissions = (
+  setPermissions = async (
     { _id, permissions },
     user,
     dataSource,
     dataSourceDetail = null
   ) => {
-    const existingGroup = this.findOne(_id);
-    this.update(_id, { $set: { permissions } });
+    const existingGroup = await this.findOneAsync(_id);
+    await this.updateAsync(_id, { $set: { permissions } });
 
     // Create a security log
     const permissionsAdded = difference(
@@ -111,7 +111,7 @@ class UserGroups extends AggregatableCollection {
       permissions
     );
 
-    SecurityLogs.insert({
+    await SecurityLogs.insertAsync({
       groupId: _id,
       operationType: SecurityOperationType.PERMISSIONS_CHANGED,
       operationBy: user._id,
@@ -124,17 +124,17 @@ class UserGroups extends AggregatableCollection {
       dataSourceDetail,
     });
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   };
 
-  setInstanceAccess = (
+  setInstanceAccess = async (
     { _id, instances },
     user,
     dataSource,
     dataSourceDetail = null
   ) => {
-    const existingGroup = this.findOne(_id);
-    this.update(_id, { $set: { instances } });
+    const existingGroup = await this.findOneAsync(_id);
+    await this.updateAsync(_id, { $set: { instances } });
 
     // Create a security log
     const instancesAdded = difference(instances, existingGroup.instances || []);
@@ -143,7 +143,7 @@ class UserGroups extends AggregatableCollection {
       instances
     );
 
-    SecurityLogs.insert({
+    await SecurityLogs.insertAsync({
       groupId: _id,
       operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
       operationBy: user._id,
@@ -156,7 +156,7 @@ class UserGroups extends AggregatableCollection {
       dataSourceDetail,
     });
 
-    return this.findOne(_id);
+    return this.findOneAsync(_id);
   };
 }
 

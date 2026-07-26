@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { format, isBefore, startOfMonth } from 'date-fns';
 import request from 'request';
 import { google } from 'googleapis';
 
@@ -16,32 +16,33 @@ import {
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { processAttendanceSheet } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
 export default {
   AttendanceType: {
     karkun: async attendanceType => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: attendanceType.karkunId },
       });
       return People.personToKarkun(person);
     },
     job: async attendanceType => {
       if (!attendanceType.jobId) return null;
-      return Jobs.findOne({
+      return Jobs.findOneAsync({
         _id: { $eq: attendanceType.jobId },
       });
     },
     duty: async attendanceType => {
       if (!attendanceType.dutyId) return null;
-      return Duties.findOne({
+      return Duties.findOneAsync({
         _id: { $eq: attendanceType.dutyId },
       });
     },
     shift: async attendanceType => {
       if (!attendanceType.shiftId) return null;
-      return DutyShifts.findOne({
+      return DutyShifts.findOneAsync({
         _id: { $eq: attendanceType.shiftId },
       });
     },
@@ -59,7 +60,7 @@ export default {
         return null;
       }
 
-      return Attendances.findOne(_id);
+      return Attendances.findOneAsync(_id);
     },
 
     pagedAttendanceByKarkun: async (obj, { queryString }, { user }) => {
@@ -95,9 +96,10 @@ export default {
         return [];
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       /**
        * categoryId value would either contain the id for a duty, or would contain the string
@@ -122,7 +124,7 @@ export default {
         if (subCategoryId) query.shiftId = subCategoryId;
       }
 
-      return Attendances.find(query).fetch();
+      return Attendances.find(query).fetchAsync();
     },
 
     attendanceByBarcodeId: async (obj, { barcodeId }, { user }) => {
@@ -137,7 +139,7 @@ export default {
         return null;
       }
 
-      return Attendances.findOne({
+      return Attendances.findOneAsync({
         meetingCardBarcodeId: { $eq: barcodeId },
       });
     },
@@ -156,7 +158,7 @@ export default {
       const barcodeIdsArray = barcodeIds.split(',');
       return Attendances.find({
         meetingCardBarcodeId: { $in: barcodeIdsArray },
-      }).fetch();
+      }).fetchAsync();
     },
   },
 
@@ -173,11 +175,12 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
-      return createMonthlyAttendance(formattedMonth, user);
+      return await createMonthlyAttendance(formattedMonth, user);
     },
 
     updateAttendance: async (
@@ -197,7 +200,7 @@ export default {
       }
 
       const date = new Date();
-      Attendances.update(_id, {
+      await Attendances.updateAsync(_id, {
         $set: {
           attendanceDetails,
           presentCount: toInteger(presentCount),
@@ -208,7 +211,7 @@ export default {
         },
       });
 
-      return Attendances.findOne(_id);
+      return Attendances.findOneAsync(_id);
     },
 
     importAttendances: async (obj, { month, dutyId, shiftId }, { user }) => {
@@ -221,10 +224,10 @@ export default {
       let attendanceSheetId;
       if (!shiftId) {
         // Check if we have an attendance sheet associated with the passed duty
-        const duty = Duties.findOne(dutyId);
+        const duty = await Duties.findOneAsync(dutyId);
         attendanceSheetId = duty.attendanceSheet;
       } else {
-        const dutyShift = DutyShifts.findOne(shiftId);
+        const dutyShift = await DutyShifts.findOneAsync(shiftId);
         attendanceSheetId = dutyShift.attendanceSheet;
       }
 
@@ -272,11 +275,11 @@ export default {
     },
 
     deleteAttendances: async (obj, { month, ids }, { user }) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
+        isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
@@ -295,7 +298,7 @@ export default {
         );
       }
 
-      return Attendances.remove({
+      return Attendances.removeAsync({
         _id: { $in: ids },
       });
     },
@@ -305,11 +308,11 @@ export default {
       { month, categoryId, subCategoryId },
       { user }
     ) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
+        isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
@@ -328,9 +331,10 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       /**
        * categoryId value would either contain the id for a duty, or would contain the string
@@ -352,7 +356,7 @@ export default {
         if (subCategoryId) removeCriteria.shiftId = subCategoryId;
       }
 
-      return Attendances.remove(removeCriteria);
+      return Attendances.removeAsync(removeCriteria);
     },
   },
 };

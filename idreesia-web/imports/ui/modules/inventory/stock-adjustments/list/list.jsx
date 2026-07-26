@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import {
+  withQuery,
+  withMutation,
+} from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import {
   Button,
   Dropdown,
@@ -104,7 +107,7 @@ class List extends Component {
       title: 'Adjustment Date',
       dataIndex: 'adjustmentDate',
       key: 'adjustmentDate',
-      render: text => text ? dayjs(Number(text)).format('DD MMM, YYYY') : '',
+      render: text => (text ? dayjs(Number(text)).format('DD MMM, YYYY') : ''),
     },
     {
       title: 'Adjusted By',
@@ -161,13 +164,8 @@ class List extends Component {
   };
 
   refreshPage = newParams => {
-    const {
-      approvalStatus,
-      startDate,
-      endDate,
-      pageIndex,
-      pageSize,
-    } = newParams;
+    const { approvalStatus, startDate, endDate, pageIndex, pageSize } =
+      newParams;
     const { queryParams, history, location } = this.props;
 
     let showApprovedVal;
@@ -241,7 +239,7 @@ class List extends Component {
         },
       });
     }
-  }
+  };
 
   handleDeleteSelected = () => {
     const { selectedRows } = this.state;
@@ -407,7 +405,10 @@ const formMutationRemove = gql`
 `;
 
 const formMutationApprove = gql`
-  mutation approveStockAdjustments($physicalStoreId: String!, $_ids: [String]!) {
+  mutation approveStockAdjustments(
+    $physicalStoreId: String!
+    $_ids: [String]!
+  ) {
     approveStockAdjustments(physicalStoreId: $physicalStoreId, _ids: $_ids) {
       _id
       physicalStoreId
@@ -458,8 +459,8 @@ export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(formMutationRemove, {
-    name: 's',
+  withMutation(formMutationRemove, {
+    name: 'removeStockAdjustments',
     options: {
       refetchQueries: [
         'pagedStockAdjustments',
@@ -468,7 +469,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(formMutationApprove, {
+  withMutation(formMutationApprove, {
     name: 'approveStockAdjustments',
     options: {
       refetchQueries: [
@@ -478,7 +479,7 @@ export default flowRight(
       ],
     },
   }),
-  graphql(listQuery, {
+  withQuery(listQuery, {
     props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
     options: ({ physicalStoreId, queryString }) => ({
       variables: { physicalStoreId, queryString },

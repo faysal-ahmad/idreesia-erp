@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from 'antd';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
@@ -12,21 +11,14 @@ import {
   REMOVE_HR_KARKUN_ATTACHMENT,
 } from '../gql';
 
-class AttachmentsList extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const AttachmentsList = ({ karkunId, match }) => {
+  const { data, loading } = useQuery(HR_KARKUN_BY_ID, {
+    variables: { _id: match.params.karkunId },
+  });
+  const [addHrKarkunAttachment] = useMutation(ADD_HR_KARKUN_ATTACHMENT);
+  const [removeHrKarkunAttachment] = useMutation(REMOVE_HR_KARKUN_ATTACHMENT);
 
-    loading: PropTypes.bool,
-    karkunId: PropTypes.string,
-    hrKarkunById: PropTypes.object,
-    addHrKarkunAttachment: PropTypes.func,
-    removeHrKarkunAttachment: PropTypes.func,
-  };
-
-  handleAttachmentAdded = attachmentId => {
-    const { addHrKarkunAttachment, karkunId } = this.props;
+  const handleAttachmentAdded = attachmentId => {
     addHrKarkunAttachment({
       variables: {
         _id: karkunId,
@@ -37,8 +29,7 @@ class AttachmentsList extends Component {
     });
   };
 
-  handleAttachmentRemoved = attachmentId => {
-    const { removeHrKarkunAttachment, karkunId } = this.props;
+  const handleAttachmentRemoved = attachmentId => {
     removeHrKarkunAttachment({
       variables: {
         _id: karkunId,
@@ -49,34 +40,25 @@ class AttachmentsList extends Component {
     });
   };
 
-  render() {
-    const { hrKarkunById, loading } = this.props;
-    if (loading) return null;
+  if (loading) return null;
 
-    return (
-      <AttachmentsListControl
-        canUploadDocument
-        canEditAttachments
-        attachments={hrKarkunById.attachments}
-        handleAttachmentAdded={this.handleAttachmentAdded}
-        handleAttachmentRemoved={this.handleAttachmentRemoved}
-      />
-    );
-  }
-}
+  return (
+    <AttachmentsListControl
+      canUploadDocument
+      canEditAttachments
+      attachments={data.hrKarkunById.attachments}
+      handleAttachmentAdded={handleAttachmentAdded}
+      handleAttachmentRemoved={handleAttachmentRemoved}
+    />
+  );
+};
 
-export default flowRight(
-  graphql(HR_KARKUN_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
-  }),
-  graphql(ADD_HR_KARKUN_ATTACHMENT, {
-    name: 'addHrKarkunAttachment',
-  }),
-  graphql(REMOVE_HR_KARKUN_ATTACHMENT, {
-    name: 'removeHrKarkunAttachment',
-  })
-)(AttachmentsList);
+AttachmentsList.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  karkunId: PropTypes.string,
+};
+
+export default AttachmentsList;

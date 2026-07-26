@@ -4,9 +4,9 @@ import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';
 
 Migrations.add({
   version: 11,
-  up() {
-    const vouchers = Vouchers.find({}).fetch();
-    vouchers.forEach(voucher => {
+  async up() {
+    const vouchers = await Vouchers.find({}).fetchAsync();
+    for (const voucher of vouchers) {
       const { voucherNumber } = voucher;
 
       if (voucherNumber && isString(voucherNumber)) {
@@ -26,13 +26,13 @@ Migrations.add({
           newVoucherNumber = voucherNumber.slice(4);
         }
 
-        Vouchers.update(voucher._id, {
+        await Vouchers.updateAsync(voucher._id, {
           $set: {
             voucherType,
             voucherNumber: toInteger(newVoucherNumber),
           },
         });
       }
-    });
+    }
   },
 });

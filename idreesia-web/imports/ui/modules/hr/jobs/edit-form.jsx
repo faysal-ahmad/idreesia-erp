@@ -1,10 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
@@ -13,79 +12,6 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
-
-class EditForm extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-
-    loading: PropTypes.bool,
-    jobById: PropTypes.object,
-    updateJob: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.jobsPath);
-  };
-
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
-
-  handleFinish = ({ name, description }) => {
-    const { history, jobById, updateJob } = this.props;
-    updateJob({
-      variables: {
-        id: jobById._id,
-        name,
-        description,
-      },
-    })
-      .then(() => {
-        history.push(paths.jobsPath);
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  };
-
-  render() {
-    const { loading, jobById } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading) return null;
-
-    return (
-      <Fragment>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-          <InputTextField
-            fieldName="name"
-            fieldLabel="Job Name"
-            initialValue={jobById.name}
-            required
-            requiredMessage="Please input a name for the job."
-          />
-          <InputTextAreaField
-            disabled
-            fieldName="description"
-            fieldLabel="Description"
-            initialValue={jobById.description}
-          />
-          <FormButtonsSaveCancel
-            handleCancel={this.handleCancel}
-            isFieldsTouched={isFieldsTouched}
-          />
-        </Form>
-        <AuditInfo record={jobById} />
-      </Fragment>
-    );
-  }
-}
 
 const formQuery = gql`
   query jobById($id: String!) {
@@ -115,19 +41,73 @@ const formMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'updateJob',
-    options: {
-      refetchQueries: ['allJobs'],
-    },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { jobId } = match.params;
-      return { variables: { id: jobId } };
-    },
-  }),
-  WithBreadcrumbs(['HR', 'Jobs', 'Edit'])
-)(EditForm);
+const EditForm = ({ match, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const { jobId } = match.params;
+  const { loading, data } = useQuery(formQuery, {
+    variables: { id: jobId },
+  });
+  const [updateJob] = useMutation(formMutation, {
+    refetchQueries: ['allJobs'],
+  });
+  const jobById = data ? data.jobById : null;
+
+  const handleCancel = () => {
+    history.push(paths.jobsPath);
+  };
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
+
+  const handleFinish = ({ name, description }) => {
+    updateJob({
+      variables: {
+        id: jobById._id,
+        name,
+        description,
+      },
+    })
+      .then(() => {
+        history.push(paths.jobsPath);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  if (loading) return null;
+
+  return (
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Job Name"
+          initialValue={jobById.name}
+          required
+          requiredMessage="Please input a name for the job."
+        />
+        <InputTextAreaField
+          disabled
+          fieldName="description"
+          fieldLabel="Description"
+          initialValue={jobById.description}
+        />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
+      </Form>
+      <AuditInfo record={jobById} />
+    </Fragment>
+  );
+};
+
+EditForm.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default WithBreadcrumbs(['HR', 'Jobs', 'Edit'])(EditForm);

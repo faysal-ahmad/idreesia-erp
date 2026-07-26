@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client/react';
 import gql from 'graphql-tag';
 import dayjs from 'dayjs';
 import numeral from 'numeral';

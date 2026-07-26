@@ -5,20 +5,6 @@ export const AdminPermissionsData = {
   key: 'module-admin',
   children: [
     {
-      title: 'Admin Jobs',
-      key: 'module-admin-admin-jobs',
-      children: [
-        {
-          title: 'View Admin Jobs',
-          key: PermissionConstants.ADMIN_VIEW_ADMIN_JOBS,
-        },
-        {
-          title: 'Manage Admin Jobs',
-          key: PermissionConstants.ADMIN_MANAGE_ADMIN_JOBS,
-        },
-      ],
-    },
-    {
       title: 'Users & Groups',
       key: 'module-admin-users-and-groups',
       children: [
@@ -37,20 +23,6 @@ export const AdminPermissionsData = {
       key: 'module-admin-instance-management',
       children: [
         {
-          title: 'Accounts',
-          key: 'module-admin-companies',
-          children: [
-            {
-              title: 'View Companies',
-              key: PermissionConstants.ADMIN_VIEW_COMPANIES,
-            },
-            {
-              title: 'Manage Companies',
-              key: PermissionConstants.ADMIN_MANAGE_COMPANIES,
-            },
-          ],
-        },
-        {
           title: 'Physical Stores',
           key: 'module-admin-physical-stores',
           children: [
@@ -62,82 +34,19 @@ export const AdminPermissionsData = {
         },
       ],
     },
-  ],
-};
-
-export const AccountsPermissionsData = {
-  title: 'Accounts',
-  key: 'module-accounts',
-  children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.ACCOUNTS_DELETE_DATA,
-    },
-    {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.ACCOUNTS_MANAGE_SETUP_DATA,
-    },
-    {
-      title: 'View Audit Logs',
-      key: PermissionConstants.ACCOUNTS_VIEW_AUDIT_LOGS,
-    },
-    {
-      title: 'Account Heads',
-      key: 'module-accounts-account-heads',
+      title: 'Locations Management',
+      key: 'module-admin-locations-management',
       children: [
         {
-          title: 'View Account Heads',
-          key: PermissionConstants.ACCOUNTS_VIEW_ACCOUNT_HEADS,
-        },
-        {
-          title: 'Manage Account Heads',
-          key: PermissionConstants.ACCOUNTS_MANAGE_ACCOUNT_HEADS,
-        },
-      ],
-    },
-    {
-      title: 'View Activity Sheet',
-      key: PermissionConstants.ACCOUNTS_VIEW_ACTIVTY_SHEET,
-    },
-    {
-      title: 'Vouchers',
-      key: 'module-accounts-vouchers',
-      children: [
-        {
-          title: 'View Vouchers',
-          key: PermissionConstants.ACCOUNTS_VIEW_VOUCHERS,
-        },
-        {
-          title: 'Manage Vouchers',
-          key: PermissionConstants.ACCOUNTS_MANAGE_VOUCHERS,
-        },
-      ],
-    },
-    {
-      title: 'Payments',
-      key: 'module-accounts-payments',
-      children: [
-        {
-          title: 'View Payments',
-          key: PermissionConstants.ACCOUNTS_VIEW_PAYMENTS,
-        },
-        {
-          title: 'Manage Payments',
-          key: PermissionConstants.ACCOUNTS_MANAGE_PAYMENTS,
-        },
-      ],
-    },
-    {
-      title: 'Amaanat Logs',
-      key: 'module-accounts-amaanat-logs',
-      children: [
-        {
-          title: 'View Amaanat Logs',
-          key: PermissionConstants.ACCOUNTS_VIEW_AMAANAT_LOGS,
-        },
-        {
-          title: 'Manage Amaanat Logs',
-          key: PermissionConstants.ACCOUNTS_MANAGE_AMAANAT_LOGS,
+          title: 'Cities & Mehfils',
+          key: 'module-admin-cities',
+          children: [
+            {
+              title: 'Manage Cities & Mehfils',
+              key: PermissionConstants.ADMIN_MANAGE_CITIES,
+            },
+          ],
         },
       ],
     },
@@ -270,134 +179,6 @@ export const InventoryPermissionsData = {
   ],
 };
 
-export const OutstationPermissionsData = {
-  title: 'Outstation',
-  key: 'module-outstation',
-  children: [
-    {
-      title: 'Delete Data',
-      key: PermissionConstants.OUTSTATION_DELETE_DATA,
-    },
-    {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.OUTSTATION_MANAGE_SETUP_DATA,
-    },
-    {
-      title: 'Members',
-      key: 'module-outstation-members',
-      children: [
-        {
-          title: 'View Members',
-          key: PermissionConstants.OUTSTATION_VIEW_MEMBERS,
-        },
-        {
-          title: 'Manage Members',
-          key: PermissionConstants.OUTSTATION_MANAGE_MEMBERS,
-        },
-      ],
-    },
-    {
-      title: 'Karkuns',
-      key: 'module-outstation-karkuns',
-      children: [
-        {
-          title: 'View Karkuns',
-          key: PermissionConstants.OUTSTATION_VIEW_KARKUNS,
-        },
-        {
-          title: 'Manage Karkuns',
-          key: PermissionConstants.OUTSTATION_MANAGE_KARKUNS,
-        },
-      ],
-    },
-    {
-      title: 'Portal Users and Groups',
-      key: 'module-outstation-portal-users-and-groups',
-      children: [
-        {
-          title: 'View Users and Groups',
-          key: PermissionConstants.OUTSTATION_VIEW_PORTAL_USERS_AND_GROUPS,
-        },
-        {
-          title: 'Manage Users and Groups',
-          key: PermissionConstants.OUTSTATION_MANAGE_PORTAL_USERS_AND_GROUPS,
-        },
-      ],
-    },
-  ],
-};
-
-export const PortalsPermissionsData = {
-  title: 'Portals',
-  key: 'module-portals',
-  children: [
-    {
-      title: 'Members',
-      key: 'module-portals-members',
-      children: [
-        {
-          title: 'View Members',
-          key: PermissionConstants.PORTALS_VIEW_MEMBERS,
-        },
-        {
-          title: 'Manage Members',
-          key: PermissionConstants.PORTALS_MANAGE_MEMBERS,
-        },
-      ],
-    },
-    {
-      title: 'Karkuns',
-      key: 'module-portals-karkuns',
-      children: [
-        {
-          title: 'View Karkuns',
-          key: PermissionConstants.PORTALS_VIEW_KARKUNS,
-        },
-        {
-          title: 'Manage Karkuns',
-          key: PermissionConstants.PORTALS_MANAGE_KARKUNS,
-        },
-        {
-          title: 'Manage Karkun Attendances',
-          key: PermissionConstants.PORTALS_MANAGE_KARKUN_ATTENDANCES,
-        },
-      ],
-    },
-    {
-      title: 'Amaanat Logs',
-      key: 'module-portals-amaanat-logs',
-      children: [
-        {
-          title: 'View Amaanat Logs',
-          key: PermissionConstants.PORTALS_VIEW_AMAANAT_LOGS,
-        },
-        {
-          title: 'Manage Amaanat Logs',
-          key: PermissionConstants.PORTALS_MANAGE_AMAANAT_LOGS,
-        },
-      ],
-    },
-    {
-      title: 'Administration',
-      key: 'module-portals-administration',
-      children: [
-        {
-          title: 'View Users & Groups',
-          key: PermissionConstants.PORTALS_VIEW_USERS_AND_GROUPS,
-        },
-        /*{
-          title: 'Manage Users & Groups',
-          key: PermissionConstants.PORTALS_MANAGE_USERS_AND_GROUPS,
-        },*/
-        {
-          title: 'View Audit Logs',
-          key: PermissionConstants.PORTALS_VIEW_AUDIT_LOGS,
-        },
-      ],
-    },
-  ],
-};
-
 export const SecurityPermissionsData = {
   title: 'Security',
   key: 'module-security',
@@ -469,98 +250,3 @@ export const SecurityPermissionsData = {
   ],
 };
 
-export const OperationsPermissionsData = {
-  title: 'Operations',
-  key: 'module-operations',
-  children: [
-    {
-      title: 'Delete Data',
-      key: PermissionConstants.OP_DELETE_DATA,
-    },
-    {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.OP_MANAGE_SETUP_DATA,
-    },
-    {
-      title: 'Visitors',
-      key: 'module-operations-visitors',
-      children: [
-        {
-          title: 'View Visitors',
-          key: PermissionConstants.OP_VIEW_VISITORS,
-        },
-        {
-          title: 'Manage Visitors',
-          key: PermissionConstants.OP_MANAGE_VISITORS,
-        },
-      ],
-    },
-    {
-      title: 'Imdad Requests',
-      key: 'module-operations-imdad-requests',
-      children: [
-        {
-          title: 'View Imdad Requests',
-          key: PermissionConstants.OP_VIEW_IMDAD_REQUESTS,
-        },
-        {
-          title: 'Manage Imdad Requests',
-          key: PermissionConstants.OP_MANAGE_IMDAD_REQUESTS,
-        },
-      ],
-    },
-  ],
-};
-
-export const OperationsWazaifPermissionsData = {
-  title: 'Operations Wazaif',
-  key: 'module-operations-wazaif',
-  children: [
-    {
-      title: 'Wazaif Data',
-      key: 'module-operations-wazaif-data',
-      children: [
-        {
-          title: 'View Wazaif Data',
-          key: PermissionConstants.OP_WAZAIF_VIEW_DATA,
-        },
-        {
-          title: 'Manage Wazaif Data',
-          key: PermissionConstants.OP_WAZAIF_MANAGE_DATA,
-        },
-        {
-          title: 'Approve Wazaif Data',
-          key: PermissionConstants.OP_WAZAIF_APPROVE_DATA,
-        },
-      ],
-    },
-    {
-      title: 'Wazaif Setup Data',
-      key: 'module-operations-wazaif-setup-data',
-      children: [
-        {
-          title: 'View Wazaif Setup Data',
-          key: PermissionConstants.OP_WAZAIF_VIEW_SETUP_DATA,
-        },
-        {
-          title: 'Manage Wazaif Setup Data',
-          key: PermissionConstants.OP_WAZAIF_MANAGE_SETUP_DATA,
-        },
-      ],
-    },
-    {
-      title: 'Wazaif Security Data',
-      key: 'module-operations-wazaif-security-data',
-      children: [
-        {
-          title: 'View Wazaif Security Data',
-          key: PermissionConstants.OP_WAZAIF_VIEW_SECURITY_DATA,
-        },
-        {
-          title: 'Manage Wazaif Security Data',
-          key: PermissionConstants.OP_WAZAIF_MANAGE_SECURITY_DATA,
-        },
-      ],
-    },
-  ],
-};

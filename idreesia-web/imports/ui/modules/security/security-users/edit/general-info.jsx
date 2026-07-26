@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 import { Form } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   InputTextField,
   SwitchField,
@@ -12,77 +11,83 @@ import {
 
 import { USER_BY_ID } from '../gql';
 
-class GeneralInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-
-    loading: PropTypes.bool,
-    userId: PropTypes.string,
-    userById: PropTypes.object,
-  };
-
-  handleClose = () => {
-    const { history } = this.props;
+const GeneralInfo = ({ history, loading, userById }) => {
+  const handleClose = () => {
     history.goBack();
   };
 
-  render() {
-    const { loading, userById } = this.props;
-    if (loading) return null;
+  if (loading) return null;
 
-    return (
-      <Form layout="horizontal">
-        <InputTextField
-          fieldName="userName"
-          fieldLabel="User name"
-          disabled
-          initialValue={userById.username}
-        />
+  return (
+    <Form layout="horizontal">
+      <InputTextField
+        fieldName="userName"
+        fieldLabel="User name"
+        disabled
+        initialValue={userById.username}
+      />
 
-        <SwitchField
-          fieldName="locked"
-          fieldLabel="Locked"
-          initialValue={userById.locked}
-        />
+      <SwitchField
+        fieldName="locked"
+        fieldLabel="Locked"
+        initialValue={userById.locked}
+      />
 
-        <InputTextField
-          fieldName="password"
-          fieldLabel="Password"
-          type="password"
-        />
+      <InputTextField
+        fieldName="password"
+        fieldLabel="Password"
+        type="password"
+      />
 
-        <InputTextField
-          fieldName="email"
-          fieldLabel="Google Email"
-          initialValue={userById.email}
-        />
+      <InputTextField
+        fieldName="email"
+        fieldLabel="Google Email"
+        initialValue={userById.email}
+      />
 
-        <InputTextField
-          fieldName="displayName"
-          fieldLabel="Display Name"
-          initialValue={userById.displayName}
-        />
+      <InputTextField
+        fieldName="displayName"
+        fieldLabel="Display Name"
+        initialValue={userById.displayName}
+      />
 
-        <InputTextField
-          fieldName="personName"
-          fieldLabel="Person Name"
-          disabled
-          initialValue={userById.person ? userById.person.sharedData.name : ''}
-        />
+      <InputTextField
+        fieldName="personName"
+        fieldLabel="Person Name"
+        disabled
+        initialValue={userById.person ? userById.person.sharedData.name : ''}
+      />
 
-        <FormButtonsClose
-          handleClose={this.handleClose}
-        />
-      </Form>
-    );
-  }
-}
+      <FormButtonsClose
+        handleClose={handleClose}
+      />
+    </Form>
+  );
+};
 
-export default flowRight(
-  graphql(USER_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ userId }) => ({ variables: { _id: userId } }),
-  })
-)(GeneralInfo);
+const GeneralInfoWithData = props => {
+  const { userId } = props;
+  const { data = {}, loading, ...queryResult } = useQuery(USER_BY_ID, {
+    variables: { _id: userId },
+  });
+
+  return (
+    <GeneralInfo
+      {...props}
+      {...queryResult}
+      {...data}
+      loading={loading}
+    />
+  );
+};
+
+GeneralInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  loading: PropTypes.bool,
+  userId: PropTypes.string,
+  userById: PropTypes.object,
+};
+
+export default GeneralInfoWithData;

@@ -12,7 +12,6 @@ export { default as TakePicture } from './picture/take-picture';
 export { default as UploadAttachment } from './upload/upload-attachment';
 export { default as AttachmentsList } from './attachments/attachments-list';
 export { default as PersonName } from './person-name/person-name';
-export { default as WazeefaName } from './wazeefa-name/wazeefa-name';
 export { default as SearchResultRow } from './search-result/search-result-row';
 export { default as RefreshButton } from './refresh-button/refresh-button';
 export {
@@ -20,10 +19,6 @@ export {
 } from './ehad-duration/ehad-duration-display';
 
 export { default as InputFile } from './file/input-file';
-
-export {
-  default as KarkunSelectionButton,
-} from './karkun-selection-button/button';
 
 export {
   default as PeopleSelectionButton,

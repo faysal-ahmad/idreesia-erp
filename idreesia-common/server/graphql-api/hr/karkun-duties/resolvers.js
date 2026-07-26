@@ -9,28 +9,30 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   KarkunDutyType: {
-    duty: async karkunDutyType => Duties.findOne(karkunDutyType.dutyId),
+    duty: async karkunDutyType => Duties.findOneAsync(karkunDutyType.dutyId),
     shift: async karkunDutyType => {
       if (!karkunDutyType.shiftId) return null;
-      return DutyShifts.findOne(karkunDutyType.shiftId);
+      return DutyShifts.findOneAsync(karkunDutyType.shiftId);
     },
     location: async karkunDutyType => {
       if (!karkunDutyType.locationId) return null;
-      return DutyLocations.findOne(karkunDutyType.locationId);
+      return DutyLocations.findOneAsync(karkunDutyType.locationId);
     },
 
     dutyName: async karkunDutyType => {
-      const duty = Duties.findOne(karkunDutyType.dutyId);
+      const duty = await Duties.findOneAsync(karkunDutyType.dutyId);
       return duty ? duty.name : null;
     },
     shiftName: async karkunDutyType => {
       if (!karkunDutyType.shiftId) return null;
-      const shift = DutyShifts.findOne(karkunDutyType.shiftId);
+      const shift = await DutyShifts.findOneAsync(karkunDutyType.shiftId);
       return shift ? shift.name : null;
     },
     locationName: async karkunDutyType => {
       if (!karkunDutyType.locationId) return null;
-      const location = DutyLocations.findOne(karkunDutyType.locationId);
+      const location = await DutyLocations.findOneAsync(
+        karkunDutyType.locationId
+      );
       return location ? location.name : null;
     },
   },
@@ -39,8 +41,8 @@ export default {
     karkunDutiesByKarkunId: async (obj, { karkunId }) =>
       KarkunDuties.find({
         karkunId: { $eq: karkunId },
-      }).fetch(),
-    karkunDutyById: async (obj, { _id }) => KarkunDuties.findOne(_id),
+      }).fetchAsync(),
+    karkunDutyById: async (obj, { _id }) => KarkunDuties.findOneAsync(_id),
   },
 
   Mutation: {
@@ -73,8 +75,8 @@ export default {
         role,
         daysOfWeek,
       };
-      const karkunDutyId = KarkunDuties.insert(newDuty);
-      return KarkunDuties.findOne(karkunDutyId);
+      const karkunDutyId = await KarkunDuties.insertAsync(newDuty);
+      return KarkunDuties.findOneAsync(karkunDutyId);
     },
 
     updateKarkunDuty: async (
@@ -97,7 +99,7 @@ export default {
         }
       */
 
-      KarkunDuties.update(_id, {
+      await KarkunDuties.updateAsync(_id, {
         $set: {
           karkunId,
           dutyId,
@@ -108,7 +110,7 @@ export default {
         },
       });
 
-      return KarkunDuties.findOne(_id);
+      return KarkunDuties.findOneAsync(_id);
     },
 
     removeKarkunDuty: async (obj, { _id }, { user }) => {
@@ -118,7 +120,7 @@ export default {
         );
       }
 
-      return KarkunDuties.remove(_id);
+      return KarkunDuties.removeAsync(_id);
     },
   },
 };

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useQuery, useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { EditOutlined, IdcardOutlined, PlusCircleOutlined, SolutionOutlined, StopOutlined } from '@ant-design/icons';
 import {
@@ -14,7 +14,7 @@ import {
   message,
 } from 'antd';
 
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
 import NewForm from '../new-form';
@@ -275,7 +275,7 @@ class List extends Component {
       showCard && visitorStayId ? (
         <Modal
           closable={false}
-          visible={showCard}
+          open={showCard}
           width={cardType === 'stay-card' ? 400 : 265}
           footer={null}
         >
@@ -291,7 +291,7 @@ class List extends Component {
     const newForm = showNewFormModal ? (
       <Modal
         title="New Stay"
-        visible={showNewFormModal}
+        open={showNewFormModal}
         width={600}
         footer={null}
         onCancel={this.handleCloseNewForm}
@@ -307,7 +307,7 @@ class List extends Component {
       showEditFormModal && visitorStayId ? (
         <Modal
           title="Edit Stay"
-          visible={showEditFormModal}
+          open={showEditFormModal}
           width={600}
           footer={null}
           onCancel={this.handleCloseEditForm}
@@ -383,20 +383,27 @@ const formMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'cancelVisitorStay',
-    options: {
-      refetchQueries: ['pagedVisitorStays'],
+const ListWithData = props => {
+  const { visitorId, pageIndex, pageSize } = props;
+  const [cancelVisitorStay] = useMutation(formMutation, {
+    refetchQueries: ['pagedVisitorStays'],
+  });
+  const { data = {}, loading, ...queryResult } = useQuery(listQuery, {
+    variables: {
+      queryString: `?visitorId=${visitorId ||
+        ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
     },
-  }),
-  graphql(listQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ visitorId, pageIndex, pageSize }) => ({
-      variables: {
-        queryString: `?visitorId=${visitorId ||
-          ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
-      },
-    }),
-  })
-)(List);
+  });
+
+  return (
+    <List
+      {...props}
+      {...queryResult}
+      {...data}
+      loading={loading}
+      cancelVisitorStay={cancelVisitorStay}
+    />
+  );
+};
+
+export default ListWithData;

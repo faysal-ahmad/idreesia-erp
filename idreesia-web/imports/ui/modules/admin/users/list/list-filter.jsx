@@ -10,7 +10,6 @@ import {
 } from 'antd';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { useAllPortals } from 'meteor/idreesia-common/hooks/portals';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   CheckboxGroupField,
@@ -31,10 +30,7 @@ const buttonItemLayout = {
 };
 
 const ListFilter = props => {
-  const { allPortals, allPortalsLoading } = useAllPortals();
-  if (allPortalsLoading) return null;
-
-  const handleFinish = ({ status, moduleAccess, portalAccess }) => {
+  const handleFinish = ({ status, moduleAccess }) => {
     const { setPageParams } = props;
     setPageParams({
       showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
@@ -42,7 +38,6 @@ const ListFilter = props => {
       showActive: status.indexOf('active') !== -1 ? 'true' : 'false',
       showInactive: status.indexOf('inactive') !== -1 ? 'true' : 'false',
       moduleAccess,
-      portalAccess,
       pageIndex: '0',
     });
   };
@@ -55,7 +50,6 @@ const ListFilter = props => {
       showActive: 'true',
       showInactive: 'true',
       moduleAccess: '',
-      portalAccess: '',
       pageIndex: '0',
     });
   };
@@ -82,7 +76,6 @@ const ListFilter = props => {
     showActive,
     showInactive,
     moduleAccess,
-    portalAccess,
   } = props;
 
   const status = [];
@@ -97,59 +90,53 @@ const ListFilter = props => {
     text: name,
   }));
 
-  const portalsData = allPortals.map(portal => ({
-    value: portal._id,
-    text: portal.name,
-  }));
-
   return (
-    <Collapse style={ContainerStyle}>
-      <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form layout="horizontal" onFinish={handleFinish}>
-          <CheckboxGroupField
-            fieldName="status"
-            fieldLabel="Status"
-            fieldLayout={formItemLayout}
-            options={[
-              { label: 'Locked Users', value: 'locked' },
-              { label: 'Unlocked Users', value: 'unlocked' },
-              { label: 'Currently Active', value: 'active' },
-              { label: 'Currently Inactive', value: 'inactive' },
-            ]}
-            initialValue={status}
-          />
-          <SelectField
-            data={moduleNamesData}
-            getDataValue={({ value }) => value}
-            getDataText={({ text }) => text}
-            initialValue={moduleAccess}
-            fieldName="moduleAccess"
-            fieldLabel="Module Access"
-            fieldLayout={formItemLayout}
-          />
-          <SelectField
-            data={portalsData}
-            getDataValue={({ value }) => value}
-            getDataText={({ text }) => text}
-            initialValue={portalAccess}
-            fieldName="portalAccess"
-            fieldLabel="Portal Access"
-            fieldLayout={formItemLayout}
-          />
-          <Form.Item {...buttonItemLayout}>
-            <Row type="flex" justify="end">
-              <Button type="default" onClick={handleReset}>
-                Reset
-              </Button>
-              &nbsp;
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Collapse.Panel>
-    </Collapse>
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: refreshButton(),
+          children: (
+            <Form layout="horizontal" onFinish={handleFinish}>
+              <CheckboxGroupField
+                fieldName="status"
+                fieldLabel="Status"
+                fieldLayout={formItemLayout}
+                options={[
+                  { label: 'Locked Users', value: 'locked' },
+                  { label: 'Unlocked Users', value: 'unlocked' },
+                  { label: 'Currently Active', value: 'active' },
+                  { label: 'Currently Inactive', value: 'inactive' },
+                ]}
+                initialValue={status}
+              />
+              <SelectField
+                data={moduleNamesData}
+                getDataValue={({ value }) => value}
+                getDataText={({ text }) => text}
+                initialValue={moduleAccess}
+                fieldName="moduleAccess"
+                fieldLabel="Module Access"
+                fieldLayout={formItemLayout}
+              />
+              <Form.Item {...buttonItemLayout}>
+                <Row type="flex" justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
   );
 };
 
@@ -159,7 +146,6 @@ ListFilter.propTypes = {
   showActive: PropTypes.string,
   showInactive: PropTypes.string,
   moduleAccess: PropTypes.string,
-  portalAccess: PropTypes.string,
   setPageParams: PropTypes.func,
   refreshData: PropTypes.func,
 };

@@ -1,35 +1,25 @@
-import React, { Fragment, Component } from 'react';
+import React, { Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
-class InstanceAccess extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const InstanceAccess = ({ groupId, history }) => {
+  const instanceSelection = useRef(null);
+  const { data: groupData, loading: groupLoading } = useQuery(formQuery, {
+    variables: { _id: groupId },
+  });
+  const { data: physicalStoresData, loading: physicalStoresListLoading } = useQuery(physicalStoresListQuery);
+  const [setUserGroupInstanceAccess] = useMutation(formMutation);
+  const { userGroupById } = groupData || {};
+  const { allPhysicalStores } = physicalStoresData || {};
 
-    groupId: PropTypes.string,
-    groupLoading: PropTypes.bool,
-    userGroupById: PropTypes.object,
-    companiesListLoading: PropTypes.bool,
-    allCompanies: PropTypes.array,
-    physicalStoresListLoading: PropTypes.bool,
-    allPhysicalStores: PropTypes.array,
-    portalsListLoading: PropTypes.bool,
-    allPortals: PropTypes.array,
-    setUserGroupInstanceAccess: PropTypes.func,
-  };
-
-  handleSave = e => {
+  const handleSave = e => {
     e.preventDefault();
-    const { history, userGroupById, setUserGroupInstanceAccess } = this.props;
-    const instances = this.instanceSelection.getSelectedInstances();
+    const instances = instanceSelection.current.getSelectedInstances();
     setUserGroupInstanceAccess({
       variables: {
         _id: userGroupById._id,
@@ -44,66 +34,51 @@ class InstanceAccess extends Component {
       });
   };
 
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  render() {
-    const {
-      userGroupById,
-      groupLoading,
-      physicalStoresListLoading,
-      allPhysicalStores,
-      companiesListLoading,
-      allCompanies,
-      portalsListLoading,
-      allPortals,
-    } = this.props;
-    if (
-      groupLoading ||
-      physicalStoresListLoading ||
-      companiesListLoading ||
-      portalsListLoading
-    )
-      return null;
+  if (groupLoading || physicalStoresListLoading) return null;
 
-    return (
-      <Fragment>
-        <InstanceSelection
-          securityEntity={userGroupById}
-          allPhysicalStores={allPhysicalStores}
-          allCompanies={allCompanies}
-          allPortals={allPortals}
-          ref={is => {
-            this.instanceSelection = is;
-          }}
-        />
-        <br />
-        <br />
-        <Row type="flex" justify="start">
-          <Button
-            size="large"
-            icon={<CloseCircleOutlined />}
-            type="default"
-            onClick={this.handleCancel}
-          >
-            Cancel
-          </Button>
-          &nbsp;
-          <Button
-            size="large"
-            icon={<SaveOutlined />}
-            type="primary"
-            onClick={this.handleSave}
-          >
-            Save
-          </Button>
-        </Row>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      <InstanceSelection
+        securityEntity={userGroupById}
+        allPhysicalStores={allPhysicalStores}
+        ref={instanceSelection}
+      />
+      <br />
+      <br />
+      <Row type="flex" justify="start">
+        <Button
+          size="large"
+          icon={<CloseCircleOutlined />}
+          type="default"
+          onClick={handleCancel}
+        >
+          Cancel
+        </Button>
+        &nbsp;
+        <Button
+          size="large"
+          icon={<SaveOutlined />}
+          type="primary"
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </Row>
+    </Fragment>
+  );
+};
+
+InstanceAccess.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  groupId: PropTypes.string,
+};
 
 const formMutation = gql`
   mutation setUserGroupInstanceAccess($_id: String!, $instances: [String]!) {
@@ -132,39 +107,4 @@ const physicalStoresListQuery = gql`
   }
 `;
 
-const companiesListQuery = gql`
-  query allCompanies {
-    allCompanies {
-      _id
-      name
-    }
-  }
-`;
-
-const portalsListQuery = gql`
-  query allPortals {
-    allPortals {
-      _id
-      name
-    }
-  }
-`;
-
-export default flowRight(
-  graphql(formMutation, {
-    name: 'setUserGroupInstanceAccess',
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ groupLoading: data.loading, ...data }),
-    options: ({ groupId }) => ({ variables: { _id: groupId } }),
-  }),
-  graphql(physicalStoresListQuery, {
-    props: ({ data }) => ({ physicalStoresListLoading: data.loading, ...data }),
-  }),
-  graphql(companiesListQuery, {
-    props: ({ data }) => ({ companiesListLoading: data.loading, ...data }),
-  }),
-  graphql(portalsListQuery, {
-    props: ({ data }) => ({ portalsListLoading: data.loading, ...data }),
-  })
-)(InstanceAccess);
+export default InstanceAccess;

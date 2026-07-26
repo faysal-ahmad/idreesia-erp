@@ -1,9 +1,10 @@
-import moment from 'moment';
+import { endOfDay, startOfDay } from 'date-fns';
 import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { StockAdjustments } from 'meteor/idreesia-common/server/collections/inventory';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 export function getStockAdjustmentsByStockItemId(physicalStoreId, stockItemId) {
   const pipeline = [
@@ -72,9 +73,7 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         adjustmentDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT)
-            .startOf('day')
-            .toDate(),
+          $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
         },
       },
     });
@@ -84,9 +83,7 @@ export default function getStockAdjustments(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         adjustmentDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT)
-            .endOf('day')
-            .toDate(),
+          $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
         },
       },
     });

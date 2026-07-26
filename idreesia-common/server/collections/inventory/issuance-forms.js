@@ -1,5 +1,6 @@
-import moment from 'moment';
+import { endOfDay, startOfDay } from 'date-fns';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { IssuanceForm as IssuanceFormSchema } from 'meteor/idreesia-common/server/schemas/inventory';
 
@@ -10,18 +11,14 @@ class IssuanceForms extends AggregatableCollection {
     return issuanceForms;
   }
 
-  getUpdatedForDate(physicalStoreId, date) {
+  async getUpdatedForDate(physicalStoreId, date) {
     return this.find({
       physicalStoreId: { $eq: physicalStoreId },
       updatedAt: {
-        $gte: moment(date, Formats.DATE_FORMAT)
-          .startOf('day')
-          .toDate(),
-        $lte: moment(date, Formats.DATE_FORMAT)
-          .endOf('day')
-          .toDate(),
+        $gte: startOfDay(parseDate(date, Formats.DATE_FORMAT)),
+        $lte: endOfDay(parseDate(date, Formats.DATE_FORMAT)),
       },
-    }).fetch();
+    }).fetchAsync();
   }
 }
 

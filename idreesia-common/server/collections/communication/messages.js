@@ -1,7 +1,8 @@
-import moment from 'moment';
+import { endOfDay, startOfDay } from 'date-fns';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { Message as MessageSchema } from 'meteor/idreesia-common/server/schemas/communication';
 
@@ -37,9 +38,7 @@ class Messages extends AggregatableCollection {
       pipeline.push({
         $match: {
           sentDate: {
-            $gte: moment(startDate, Formats.DATE_FORMAT)
-              .startOf('day')
-              .toDate(),
+            $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
           },
         },
       });
@@ -48,9 +47,7 @@ class Messages extends AggregatableCollection {
       pipeline.push({
         $match: {
           sentDate: {
-            $lte: moment(endDate, Formats.DATE_FORMAT)
-              .endOf('day')
-              .toDate(),
+            $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
           },
         },
       });

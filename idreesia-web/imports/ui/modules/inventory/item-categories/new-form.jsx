@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client/react';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';

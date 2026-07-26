@@ -3,10 +3,10 @@ import { VoucherDetails } from 'meteor/idreesia-common/server/collections/accoun
 
 Migrations.add({
   version: 4,
-  up() {
-    const vds = VoucherDetails.find({}).fetch();
-    vds.forEach(voucherDetail => {
-      VoucherDetails.update(voucherDetail._id, {
+  async up() {
+    const vds = await VoucherDetails.find({}).fetchAsync();
+    for (const voucherDetail of vds) {
+      await VoucherDetails.updateAsync(voucherDetail._id, {
         $set: {
           accountHeadId: voucherDetail.categoryId,
         },
@@ -14,6 +14,6 @@ Migrations.add({
           categoryId: '',
         },
       });
-    });
+    }
   },
 });

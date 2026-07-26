@@ -8,14 +8,14 @@ export default {
     overallUsedCount: async mehfilLangarDishType =>
       MehfilLangarDetails.find({
         langarDishId: { $eq: mehfilLangarDishType._id },
-      }).count(),
+      }).countAsync(),
   },
 
   Query: {
     allSecurityMehfilLangarDishes: async () =>
-      MehfilLangarDishes.find({}).fetch(),
+      MehfilLangarDishes.find({}).fetchAsync(),
     securityMehfilLangarDishById: async (obj, { id }) =>
-      MehfilLangarDishes.findOne(id),
+      MehfilLangarDishes.findOneAsync(id),
   },
 
   Mutation: {
@@ -25,7 +25,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      const mehfilLangarDishId = MehfilLangarDishes.insert({
+      const mehfilLangarDishId = await MehfilLangarDishes.insertAsync({
         name,
         urduName,
         createdAt: date,
@@ -34,7 +34,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return MehfilLangarDishes.findOne(mehfilLangarDishId);
+      return MehfilLangarDishes.findOneAsync(mehfilLangarDishId);
     },
 
     updateSecurityMehfilLangarDish: async (
@@ -43,7 +43,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      MehfilLangarDishes.update(id, {
+      await MehfilLangarDishes.updateAsync(id, {
         $set: {
           name,
           urduName,
@@ -52,13 +52,13 @@ export default {
         },
       });
 
-      return MehfilLangarDishes.findOne(id);
+      return MehfilLangarDishes.findOneAsync(id);
     },
 
     removeSecurityMehfilLangarDish: async (obj, { _id }) => {
-      const usedCount = MehfilLangarDetails.find({
+      const usedCount = await MehfilLangarDetails.find({
         langarDishId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (usedCount > 0) {
         throw new Error(
@@ -66,7 +66,7 @@ export default {
         );
       }
 
-      return MehfilLangarDishes.remove(_id);
+      return MehfilLangarDishes.removeAsync(_id);
     },
   },
 };

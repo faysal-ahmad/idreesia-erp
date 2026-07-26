@@ -74,7 +74,7 @@ const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }) => {
       </div>
       <Modal
         title={visitor.name}
-        visible={showDialog}
+        open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >

@@ -1,7 +1,6 @@
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { AggregatableCollection } from 'meteor/idreesia-common/server/collections';
 import { City as CitySchema } from 'meteor/idreesia-common/server/schemas/outstation';
-import { Portals } from 'meteor/idreesia-common/server/collections/portals';
 import { CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
@@ -13,11 +12,12 @@ class Cities extends AggregatableCollection {
   }
 
   getMultanCity() {
-    return this.findOne({
+    return this.findOneAsync({
       name: 'Multan',
       country: 'Pakistan',
     });
   }
+
   // **************************************************************
   // Query Functions
   // **************************************************************
@@ -27,7 +27,6 @@ class Cities extends AggregatableCollection {
     const {
       peripheryOf,
       region,
-      portalId,
       pageIndex = '0',
       pageSize = '20',
     } = params;
@@ -44,15 +43,6 @@ class Cities extends AggregatableCollection {
       pipeline.push({
         $match: {
           region: { $eq: region },
-        },
-      });
-    }
-
-    if (portalId) {
-      const portal = Portals.findOne(portalId);
-      pipeline.push({
-        $match: {
-          _id: { $in: portal.cityIds },
         },
       });
     }
@@ -81,13 +71,13 @@ class Cities extends AggregatableCollection {
   // **************************************************************
   // Utility Functions
   // **************************************************************
-  canSafelyDeleteCity(cityId) {
+  async canSafelyDeleteCity(cityId) {
     // Check that there are no mehfils associated with this city
-    const cityMehfil = CityMehfils.findOne({ cityId });
+    const cityMehfil = await CityMehfils.findOneAsync({ cityId });
     if (cityMehfil) return false;
 
     // Check that there are currently no karkuns assigned to this city
-    const karkun = People.findOne({ 'karkunData.cityId': cityId });
+    const karkun = await People.findOneAsync({ 'karkunData.cityId': cityId });
     if (karkun) return false;
 
     return true;

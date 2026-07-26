@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
@@ -29,7 +29,10 @@ const Dashboard = props => {
               color: '#000',
               fontWeight: 'bold',
             }}
-            count={inventoryStatistics.itemsWithImages + inventoryStatistics.itemsWithoutImages}
+            count={
+              inventoryStatistics.itemsWithImages +
+              inventoryStatistics.itemsWithoutImages
+            }
           />
         </Descriptions.Item>
         <Descriptions.Item label="With Images">
@@ -134,7 +137,7 @@ const query = gql`
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  graphql(query, {
+  withQuery(query, {
     props: ({ data }) => ({ ...data }),
     options: ({ physicalStoreId }) => ({
       variables: { physicalStoreId },

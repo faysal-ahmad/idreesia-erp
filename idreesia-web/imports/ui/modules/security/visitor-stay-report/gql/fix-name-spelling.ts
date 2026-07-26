@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const FIX_NAME_SPELLING = gql`

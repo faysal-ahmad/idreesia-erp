@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const DUTY_SHIFTS_BY_DUTY_ID = gql`

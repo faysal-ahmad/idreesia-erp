@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as IssuanceForm } from "./issuance-form";
 export { default as ItemCategory } from "./item-category";
 export { default as ItemType } from "./item-type";

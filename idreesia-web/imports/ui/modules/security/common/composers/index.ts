@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as WithMehfilId } from './with-mehfil-id';
 export { default as WithMehfil } from './with-mehfil';
 export { default as WithAllMehfilDuties } from './with-all-mehfil-duties';

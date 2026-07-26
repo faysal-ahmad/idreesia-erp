@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const REMOVE_CITY = gql`

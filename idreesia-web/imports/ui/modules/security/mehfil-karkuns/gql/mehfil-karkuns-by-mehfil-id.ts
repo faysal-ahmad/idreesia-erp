@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const MEHFIL_KARKUNS_BY_MEHFIL_ID = gql`

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const MessageStatus = {
   WAITING_APPROVAL: 'waiting-approval',
   APPROVED: 'approved',

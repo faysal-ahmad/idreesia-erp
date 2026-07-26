@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as IssuanceFormsList } from './list/list';
 export { default as IssuanceFormsNewForm } from './new/new-form';
 export { default as IssuanceFormsEditForm } from './edit/edit-form';

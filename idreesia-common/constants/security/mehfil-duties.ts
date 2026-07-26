@@ -1,4 +1,3 @@
-// @ts-nocheck
 const MehfilDuties = [
   {
     _id: 'special-security',

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const ADD_ISSUANCE_FORM_ATTACHMENT = gql`

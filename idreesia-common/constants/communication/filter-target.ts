@@ -1,4 +1,3 @@
-// @ts-nocheck
 const FilterTarget = {
   MS_KARKUNS: 'ms-karkuns',
   OUTSTATION_KARKUNS: 'outstation-karkuns',

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const ATTENDANCE_BY_MONTH = gql`

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const KARKUN_DUTIES_BY_KARKUN_ID = gql`

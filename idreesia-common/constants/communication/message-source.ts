@@ -1,4 +1,3 @@
-// @ts-nocheck
 const MessageSource = {
   OPERATIONS: 'operations',
   HR: 'hr',

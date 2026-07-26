@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as StockAdjustmentsList } from './list/list';
 export { default as StockAdjustmentsNewForm } from './new-form';
 export { default as StockAdjustmentsEditForm } from './edit-form';

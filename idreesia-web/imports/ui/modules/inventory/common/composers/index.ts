@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as WithPhysicalStoreId } from "./with-physical-store-id";
 export { default as WithPhysicalStore } from "./with-physical-store";
 export {

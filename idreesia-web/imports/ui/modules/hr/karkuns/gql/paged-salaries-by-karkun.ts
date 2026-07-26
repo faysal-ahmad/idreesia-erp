@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const PAGED_SALARIES_BY_KARKUN = gql`

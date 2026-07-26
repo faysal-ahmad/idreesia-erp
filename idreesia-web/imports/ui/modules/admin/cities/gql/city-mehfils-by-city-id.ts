@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const CITY_MEHFILS_BY_CITY_ID = gql`

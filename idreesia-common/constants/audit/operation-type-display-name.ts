@@ -1,4 +1,3 @@
-// @ts-nocheck
 import OperationType from './operation-type';
 
 const OperationTypeDisplayName = {

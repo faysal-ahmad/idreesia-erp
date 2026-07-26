@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const PURCHASE_FORM_BY_ID = gql`

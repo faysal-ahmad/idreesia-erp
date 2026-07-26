@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as PAGED_CITIES } from './paged-cities';
 export { default as CITY_BY_ID } from './city-by-id';
 export { default as CREATE_CITY } from './create-city';

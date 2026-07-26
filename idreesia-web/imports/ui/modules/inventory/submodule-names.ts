@@ -1,4 +1,3 @@
-// @ts-nocheck
 const SubModuleNames = {
   stockItems: 'Stock Items',
   issuanceForms: 'Issuance Forms',

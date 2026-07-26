@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { CREATE_VENDOR } from './create-vendor';
 export { REMOVE_VENDOR } from './remove-vendor';
 export { UPDATE_VENDOR } from './update-vendor';

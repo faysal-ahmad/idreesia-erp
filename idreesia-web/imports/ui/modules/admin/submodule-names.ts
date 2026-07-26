@@ -1,4 +1,3 @@
-// @ts-nocheck
 const SubModuleNames = {
   users: 'Users',
   userGroups: 'User Groups',

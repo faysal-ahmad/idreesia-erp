@@ -1,4 +1,3 @@
-// @ts-nocheck
 const ModuleNames = {
   admin: 'Admin',
   hr: 'HR',

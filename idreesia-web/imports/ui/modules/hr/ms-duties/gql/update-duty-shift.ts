@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const UPDATE_DUTY_SHIFT = gql`

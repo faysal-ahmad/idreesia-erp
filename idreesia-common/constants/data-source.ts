@@ -1,4 +1,3 @@
-// @ts-nocheck
 const DataSource = {
   JOBS: 'jobs',
   ADMIN: 'admin',

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as AttendanceSheetsList } from './list/list-container';
 export {
   default as AttendanceSheetsPrintMeetingCards,

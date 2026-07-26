@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as PeopleList } from './list/list-container';
 export { default as PersonNewForm } from './new/new-form';
 export { default as PersonEditForm } from './edit/edit-form';

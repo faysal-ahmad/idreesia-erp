@@ -1,4 +1,3 @@
-// @ts-nocheck
 const ModulePaths = {
   admin: '/admin',
   inventory: '/inventory',

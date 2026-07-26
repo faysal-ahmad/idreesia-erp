@@ -1,4 +1,3 @@
-// @ts-nocheck
 const OperationType = {
   CREATE: 'create',
   UPDATE: 'update',

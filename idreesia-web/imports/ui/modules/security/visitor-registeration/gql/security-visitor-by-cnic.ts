@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const SECURITY_VISITOR_BY_CNIC = gql`

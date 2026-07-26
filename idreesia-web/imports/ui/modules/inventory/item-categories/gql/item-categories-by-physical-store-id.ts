@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID = gql`

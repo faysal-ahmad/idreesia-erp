@@ -1,4 +1,3 @@
-// @ts-nocheck
 const PredefinedFilterNames = {
   PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY:
     "purchase-forms_received-by_returned-by",

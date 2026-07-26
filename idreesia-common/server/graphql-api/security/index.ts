@@ -1,4 +1,3 @@
-// @ts-nocheck
 export {
   default as filterByInstanceAccess,
 } from './common/filter-by-instance-access';

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as SalarySheetsList } from './list/list-container';
 export {
   default as SalarySheetsSalaryReceipts,

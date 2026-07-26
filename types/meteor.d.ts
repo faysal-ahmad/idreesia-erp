@@ -30,14 +30,20 @@ declare namespace Meteor {
   }
 }
 
+interface MeteorGlobal {
+  settings: Meteor.Settings;
+  absoluteUrl(path?: string): string;
+  startup(callback: () => void): void;
+  userId(): string | null;
+  isClient: boolean;
+  isCordova?: boolean;
+  isServer: boolean;
+}
+
+declare const Meteor: MeteorGlobal;
+
 declare module 'meteor/meteor' {
-  export const Meteor: {
-    settings: Meteor.Settings;
-    startup(callback: () => void): void;
-    userId(): string | null;
-    isClient: boolean;
-    isServer: boolean;
-  };
+  export const Meteor: MeteorGlobal;
 }
 
 declare module 'meteor/ddp-client' {

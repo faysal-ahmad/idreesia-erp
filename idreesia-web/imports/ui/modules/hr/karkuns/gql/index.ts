@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as PAGED_HR_KARKUNS } from './paged-hr-karkuns';
 export { default as CREATE_HR_KARKUN } from './create-hr-karkun';
 export { default as UPDATE_HR_KARKUN } from './update-hr-karkun';

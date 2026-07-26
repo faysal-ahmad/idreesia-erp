@@ -1,4 +1,3 @@
-// @ts-nocheck
 const SubModuleNames = {
   jobs: 'Jobs',
   msDuties: 'Duties & Shifts',

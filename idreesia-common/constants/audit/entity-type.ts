@@ -1,4 +1,3 @@
-// @ts-nocheck
 const EntityType = {
   USER: 'user',
   PERSON: 'person',

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as FormButtonsClose } from './form-btns-close';
 export { default as FormButtonsSubmit } from './form-btns-submit';
 export { default as FormButtonsSaveCancel } from './form-btns-save-cancel';

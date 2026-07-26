@@ -1,4 +1,3 @@
-// @ts-nocheck
 const SubModuleNames = {
   karkunCardVerification: 'Karkun Card Verification',
   visitorRegistration: 'Visitor Registration',

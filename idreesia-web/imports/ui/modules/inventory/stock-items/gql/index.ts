@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { CREATE_STOCK_ITEM } from './create-stock-item';
 export { MERGE_ATOCK_ITEMS } from './merge-stock-items';
 export { PAGED_STOCK_ITEMS } from './paged-stock-items';

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const ADD_PURCHASE_FORM_ATTACHMENT = gql`

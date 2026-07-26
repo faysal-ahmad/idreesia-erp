@@ -1,4 +1,3 @@
-// @ts-nocheck
 const SecurityOperationType = {
   ACCOUNT_CREATED: 'account-created',
   ACCOUNT_LOCKED: 'account-locked',

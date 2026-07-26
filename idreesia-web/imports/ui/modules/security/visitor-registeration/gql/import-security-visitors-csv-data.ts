@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const IMPORT_SECURITY_VISITORS_CSV_DATA = gql`

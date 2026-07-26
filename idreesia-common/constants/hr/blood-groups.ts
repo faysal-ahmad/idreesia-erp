@@ -1,4 +1,3 @@
-// @ts-nocheck
 const BloodGroups = {
   'A-': 'A-',
   Aplus: 'A+',

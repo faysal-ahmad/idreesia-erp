@@ -1,4 +1,3 @@
-// @ts-nocheck
 import SecurityOperationType from './security-operation-type';
 
 const SecurityOperationTypeDisplayName = {

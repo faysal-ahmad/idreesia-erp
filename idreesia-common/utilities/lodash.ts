@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as assign } from 'lodash/assign';
 export { default as capitalize } from 'lodash/capitalize';
 export { default as compact } from 'lodash/compact';

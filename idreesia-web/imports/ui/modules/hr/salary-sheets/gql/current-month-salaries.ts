@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const CURRENT_MONTH_SALARIES = gql`

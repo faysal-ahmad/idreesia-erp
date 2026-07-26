@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as WithActiveModule } from './with-active-module';
 export { default as WithAllCities } from './with-all-cities';
 export { default as WithAllCityMehfils } from './with-all-city-mehfils';

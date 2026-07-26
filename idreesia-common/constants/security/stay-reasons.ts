@@ -1,4 +1,3 @@
-// @ts-nocheck
 const stayReasons = [
   { _id: 'nishast-duty', name: 'Nishast Duty' },
   { _id: 'nishast-duty-co', name: 'Nishast Duty (CO)' },

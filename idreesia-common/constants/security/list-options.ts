@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const DEFAULT_SORT_ORDER = 'desc';
 export const DEFAULT_SORT_BY = 'stayDate';
 

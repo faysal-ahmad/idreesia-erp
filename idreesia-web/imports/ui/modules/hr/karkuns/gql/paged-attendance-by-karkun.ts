@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const PAGED_ATTENDANCE_BY_KARKUN = gql`

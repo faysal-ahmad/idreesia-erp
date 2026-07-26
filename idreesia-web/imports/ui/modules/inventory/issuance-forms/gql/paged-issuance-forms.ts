@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const PAGED_ISSUANCE_FORMS = gql`

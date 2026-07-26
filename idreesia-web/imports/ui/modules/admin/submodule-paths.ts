@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {

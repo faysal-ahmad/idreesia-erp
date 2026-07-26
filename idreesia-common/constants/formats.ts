@@ -1,4 +1,3 @@
-// @ts-nocheck
 const Formats = {
   MONTH_FORMAT: 'MM-YYYY',
   DATE_FORMAT: 'DD-MM-YYYY',

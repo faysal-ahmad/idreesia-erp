@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const SET_HR_KARKUN_WAZAIF_AND_RAABTA = gql`

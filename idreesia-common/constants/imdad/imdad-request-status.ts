@@ -1,4 +1,3 @@
-// @ts-nocheck
 const ImdadRequestStatus = {
   CREATED: 'Created',
   PENDING_INVESTIGATION: 'Pending Investigation',

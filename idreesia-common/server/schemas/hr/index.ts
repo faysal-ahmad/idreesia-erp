@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as Job } from './job';
 export { default as Duty } from './duty';
 export { default as DutyShift } from './duty-shift';

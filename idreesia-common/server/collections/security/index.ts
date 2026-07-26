@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as Mehfils } from './mehfils';
 export { default as MehfilDuties } from './mehfil-duties';
 export { default as MehfilKarkuns } from './mehfil-karkuns';

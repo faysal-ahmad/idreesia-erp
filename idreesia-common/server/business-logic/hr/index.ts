@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { canDeleteKarkun } from './can-delete-karkun';
 export { deleteKarkun } from './delete-karkun';
 export { createMonthlyAttendance } from './create-monthly-attendance';

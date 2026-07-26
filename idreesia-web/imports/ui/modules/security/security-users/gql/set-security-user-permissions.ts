@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 const SET_SECURITY_USER_PERMISSIONS = gql`

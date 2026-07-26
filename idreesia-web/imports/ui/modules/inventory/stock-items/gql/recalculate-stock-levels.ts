@@ -1,4 +1,3 @@
-// @ts-nocheck
 import gql from 'graphql-tag';
 
 export const RECALCULATE_STOCK_LEVELS = gql`

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export {
   default as InstanceSelection,
 } from './access-management/instance-selection';

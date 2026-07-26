@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { merge } from 'meteor/idreesia-common/utilities/lodash';
 
 /**

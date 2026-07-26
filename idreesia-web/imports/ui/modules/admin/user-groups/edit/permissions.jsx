@@ -1,34 +1,27 @@
-import React, { Fragment, Component } from 'react';
+import React, { Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
 
-class Permissions extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const Permissions = ({ groupId, history }) => {
+  const permissionSelection = useRef(null);
+  const { data, loading } = useQuery(formQuery, {
+    variables: { _id: groupId },
+  });
+  const [setUserGroupPermissions] = useMutation(formMutation);
+  const { userGroupById } = data || {};
 
-    groupId: PropTypes.string,
-    loading: PropTypes.bool,
-    userGroupById: PropTypes.object,
-    setUserGroupPermissions: PropTypes.func,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleSave = e => {
+  const handleSave = e => {
     e.preventDefault();
-    const { history, userGroupById, setUserGroupPermissions } = this.props;
-    const permissions = this.permissionSelection.getSelectedPermissions();
+    const permissions = permissionSelection.current.getSelectedPermissions();
 
     setUserGroupPermissions({
       variables: {
@@ -44,43 +37,46 @@ class Permissions extends Component {
       });
   };
 
-  render() {
-    const { userGroupById, loading } = this.props;
-    if (loading) return null;
+  if (loading) return null;
 
-    return (
-      <Fragment>
-        <PermissionSelection
-          securityEntity={userGroupById}
-          ref={is => {
-            this.permissionSelection = is;
-          }}
-        />
-        <br />
-        <br />
-        <Row type="flex" justify="start">
-          <Button
-            size="large"
-            icon={<CloseCircleOutlined />}
-            type="default"
-            onClick={this.handleCancel}
-          >
-            Cancel
-          </Button>
-          &nbsp;
-          <Button
-            size="large"
-            icon={<SaveOutlined />}
-            type="primary"
-            onClick={this.handleSave}
-          >
-            Save
-          </Button>
-        </Row>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      <PermissionSelection
+        securityEntity={userGroupById}
+        ref={permissionSelection}
+      />
+      <br />
+      <br />
+      <Row type="flex" justify="start">
+        <Button
+          size="large"
+          icon={<CloseCircleOutlined />}
+          type="default"
+          onClick={handleCancel}
+        >
+          Cancel
+        </Button>
+        &nbsp;
+        <Button
+          size="large"
+          icon={<SaveOutlined />}
+          type="primary"
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </Row>
+    </Fragment>
+  );
+};
+
+Permissions.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  groupId: PropTypes.string,
+};
 
 const formQuery = gql`
   query userGroupById($_id: String!) {
@@ -100,12 +96,4 @@ const formMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'setUserGroupPermissions',
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ groupId }) => ({ variables: { _id: groupId } }),
-  })
-)(Permissions);
+export default Permissions;

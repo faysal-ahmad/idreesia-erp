@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Form, message } from 'antd';
 import numeral from 'numeral';
 
@@ -37,9 +37,16 @@ class EditForm extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
-  handleFinish = ({ name, company, details, categoryId, unitOfMeasurement, minStockLevel }) => {
+  handleFinish = ({
+    name,
+    company,
+    details,
+    categoryId,
+    unitOfMeasurement,
+    minStockLevel,
+  }) => {
     const { stockItemById, updateStockItem, history } = this.props;
     updateStockItem({
       variables: {
@@ -64,10 +71,14 @@ class EditForm extends Component {
   render() {
     const isFieldsTouched = this.state.isFieldsTouched;
     const { stockItemById, itemCategoriesByPhysicalStoreId } = this.props;
- 
+
     return (
       <>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <Form
+          layout="horizontal"
+          onFinish={this.handleFinish}
+          onFieldsChange={this.handleFieldsChange}
+        >
           <InputTextField
             fieldName="name"
             fieldLabel="Name"
@@ -117,7 +128,9 @@ class EditForm extends Component {
             disabled
             fieldName="currentStockLevel"
             fieldLabel="Current Stock Level"
-            initialValue={numeral(stockItemById.currentStockLevel).format('0.00')}
+            initialValue={numeral(stockItemById.currentStockLevel).format(
+              '0.00'
+            )}
           />
           <InputNumberField
             fieldName="minStockLevel"
@@ -136,7 +149,7 @@ class EditForm extends Component {
 }
 
 export default flowRight(
-  graphql(UPDATE_STOCK_ITEM, {
+  withMutation(UPDATE_STOCK_ITEM, {
     name: 'updateStockItem',
     options: {
       refetchQueries: ['pagedStockItems'],

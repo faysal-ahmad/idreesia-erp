@@ -12,7 +12,6 @@ import {
 import { 
   CloseCircleOutlined,
   DeleteOutlined,
-  EditOutlined,
   LeftOutlined,
   RightOutlined,
   SaveOutlined,

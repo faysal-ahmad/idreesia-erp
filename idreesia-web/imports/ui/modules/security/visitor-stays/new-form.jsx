@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -21,22 +21,21 @@ import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
-class NewForm extends Component {
-  static propTypes = {
-    visitorId: PropTypes.string,
-    handleAddItem: PropTypes.func,
-    createVisitorStay: PropTypes.func,
+const NewForm = ({
+  visitorId,
+  handleAddItem,
+  allMSDutiesLoading,
+  allDutyShiftsLoading,
+  distinctStayAllowedByLoading,
+  allMSDuties,
+  allDutyShifts,
+  distinctStayAllowedBy,
+}) => {
+  const [createVisitorStay] = useMutation(formMutation, {
+    refetchQueries: ['pagedVisitorStays'],
+  });
 
-    allMSDuties: PropTypes.array,
-    allMSDutiesLoading: PropTypes.bool,
-    allDutyShifts: PropTypes.array,
-    allDutyShiftsLoading: PropTypes.bool,
-    distinctStayAllowedBy: PropTypes.array,
-    distinctStayAllowedByLoading: PropTypes.bool,
-  };
-
-  handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId }) => {
-    const { visitorId, handleAddItem, createVisitorStay } = this.props;
+  const handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId }) => {
     createVisitorStay({
       variables: {
         visitorId,
@@ -55,63 +54,52 @@ class NewForm extends Component {
       });
   };
 
-  render() {
-    const {
-      allMSDutiesLoading,
-      allDutyShiftsLoading,
-      distinctStayAllowedByLoading,
-      allMSDuties,
-      allDutyShifts,
-      distinctStayAllowedBy,
-    } = this.props;
+  if (
+    allMSDutiesLoading ||
+    allDutyShiftsLoading ||
+    distinctStayAllowedByLoading
+  )
+    return null;
 
-    if (
-      allMSDutiesLoading ||
-      allDutyShiftsLoading ||
-      distinctStayAllowedByLoading
-    )
-      return null;
+  const dutyShiftCascaderData = getDutyShiftCascaderData(
+    allMSDuties,
+    allDutyShifts
+  );
 
-      const dutyShiftCascaderData = getDutyShiftCascaderData(
-      allMSDuties,
-      allDutyShifts
-    );
+  return (
+    <Form layout="horizontal" onFinish={handleFinish}>
+      <InputNumberField
+        fieldName="numOfDays"
+        fieldLabel="Num of Days"
+        initialValue={1}
+        minValue={1}
+      />
+      <AutoCompleteField
+        fieldName="stayAllowedBy"
+        fieldLabel="Stay Allowed By"
+        dataSource={distinctStayAllowedBy}
+      />
+      <SelectField
+        data={StayReasons}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name }) => name}
+        fieldName="stayReason"
+        fieldLabel="Stay Reason"
+      />
+      <CascaderField
+        data={dutyShiftCascaderData}
+        changeOnSelect={false}
+        fieldName="dutyIdShiftId"
+        fieldLabel="Duty Participation"
+      />
 
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish}>
-        <InputNumberField
-          fieldName="numOfDays"
-          fieldLabel="Num of Days"
-          initialValue={1}
-          minValue={1}
-        />
-        <AutoCompleteField
-          fieldName="stayAllowedBy"
-          fieldLabel="Stay Allowed By"
-          dataSource={distinctStayAllowedBy}
-        />
-        <SelectField
-          data={StayReasons}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
-          fieldName="stayReason"
-          fieldLabel="Stay Reason"
-        />
-        <CascaderField
-          data={dutyShiftCascaderData}
-          changeOnSelect={false}
-          fieldName="dutyIdShiftId"
-          fieldLabel="Duty Participation"
-        />
-
-        <FormButtonsSubmit
-          text="Add Stay"
-          isFieldsTouched
-        />
-      </Form>
-    );
-  }
-}
+      <FormButtonsSubmit
+        text="Add Stay"
+        isFieldsTouched
+      />
+    </Form>
+  );
+};
 
 const formMutation = gql`
   mutation createVisitorStay(
@@ -142,13 +130,18 @@ const formMutation = gql`
   }
 `;
 
+NewForm.propTypes = {
+  visitorId: PropTypes.string,
+  handleAddItem: PropTypes.func,
+  allMSDuties: PropTypes.array,
+  allMSDutiesLoading: PropTypes.bool,
+  allDutyShifts: PropTypes.array,
+  allDutyShiftsLoading: PropTypes.bool,
+  distinctStayAllowedBy: PropTypes.array,
+  distinctStayAllowedByLoading: PropTypes.bool,
+};
+
 export default flowRight(
-  graphql(formMutation, {
-    name: 'createVisitorStay',
-    options: {
-      refetchQueries: ['pagedVisitorStays'],
-    },
-  }),
   WithAllMSDuties(),
   WithAllDutyShifts(),
   WithDistinctStayAllowedBy()

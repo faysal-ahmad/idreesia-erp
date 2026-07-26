@@ -252,7 +252,7 @@ export default {
       return PurchaseForms.find({
         physicalStoreId,
         _id: { $in: _ids },
-      });
+      }).fetchAsync();
     },
 
     addPurchaseFormAttachment: async (

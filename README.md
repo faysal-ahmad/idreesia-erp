@@ -3,3 +3,5 @@
 This is a custom built ERP to automate and digitize the processes for `Idreesia`, a non-profit organization, to fulfill the requirements and process flows of the organization.
 
 Head over to the [Project Wiki](https://github.com/faysal-ahmad/idreesia-erp/wiki) for overview of the ERP features and other implementation details.
+
+See [Versioning Strategy](docs/versioning-strategy.md) for the PR label based release candidate and stable Docker image versioning flow.

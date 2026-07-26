@@ -240,7 +240,7 @@ export default {
       return IssuanceForms.find({
         physicalStoreId,
         _id: { $in: _ids },
-      });
+      }).fetchAsync();
     },
 
     addIssuanceFormAttachment: async (

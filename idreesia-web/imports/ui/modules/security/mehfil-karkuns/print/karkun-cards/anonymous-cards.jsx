@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
-import moment from 'moment';
+import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { UserOutlined } from '@ant-design/icons';
 
 import { Avatar } from 'antd';
@@ -48,7 +48,7 @@ export const Card = ({ dutyName }) => {
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">381 Karkun</h1>
       <div className="mehfil_card_barcode">
-        <Barcode value={moment().format('DDMMYYYY')} {...barcodeOptions} />
+        <Barcode value={formatDate(new Date(), 'DDMMYYYY')} {...barcodeOptions} />
       </div>
     </div>
   );

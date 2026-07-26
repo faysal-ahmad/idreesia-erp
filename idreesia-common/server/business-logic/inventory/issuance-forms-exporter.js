@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import XLSX from 'xlsx';
 
 import {
   Locations,
@@ -7,6 +6,7 @@ import {
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
 export async function exportIsssuanceForms(issuanceFormIdsString) {
   const issuanceFormIds = issuanceFormIdsString.split(',');
@@ -55,9 +55,5 @@ export async function exportIsssuanceForms(issuanceFormIdsString) {
     })
   );
 
-  const ws = XLSX.utils.json_to_sheet(sheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Issuance Forms');
-  const data = XLSX.write(wb, { type: 'buffer' });
-  return Buffer.from(data);
+  return createWorkbookBuffer(sheetData, 'Issuance Forms');
 }

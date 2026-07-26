@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client/react';
 import { LockOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Button, Flex, Pagination, Table } from 'antd';
@@ -71,7 +71,6 @@ const List = ({ history, location }) => {
       'showActive',
       'showInactive',
       'moduleAccess',
-      'portalAccess',
       'pageIndex',
       'pageSize',
     ],
@@ -113,7 +112,6 @@ const List = ({ history, location }) => {
     showActive,
     showInactive,
     moduleAccess,
-    portalAccess,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -136,7 +134,6 @@ const List = ({ history, location }) => {
         showActive={showActive}
         showInactive={showInactive}
         moduleAccess={moduleAccess}
-        portalAccess={portalAccess}
         setPageParams={setPageParams}
         refreshData={refetch}
       />

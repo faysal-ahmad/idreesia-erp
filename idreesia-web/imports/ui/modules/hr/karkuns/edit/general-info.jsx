@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from 'antd';
@@ -8,32 +8,31 @@ import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
 import {
   WithAllCities,
   WithAllCityMehfils,
-} from '/imports/ui/modules/outstation/common/composers';
+} from 'meteor/idreesia-common/composers/common';
 
 import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 
-class GeneralInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const GeneralInfo = ({
+  allCities,
+  allCitiesLoading,
+  allCityMehfils,
+  allCityMehfilsLoading,
+  history,
+  karkunId,
+  match,
+}) => {
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+    variables: { _id: match.params.karkunId },
+  });
+  const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
+    refetchQueries: ['pagedHrKarkuns'],
+  });
 
-    karkunId: PropTypes.string,
-    allCities: PropTypes.array,
-    allCitiesLoading: PropTypes.bool,
-    allCityMehfils: PropTypes.array,
-    allCityMehfilsLoading: PropTypes.bool,
-    hrKarkunById: PropTypes.object,
-    formDataLoading: PropTypes.bool,
-    updateHrKarkun: PropTypes.func,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFinish = ({
+  const handleFinish = ({
     name,
     parentName,
     cnicNumber,
@@ -51,7 +50,6 @@ class GeneralInfo extends Component {
     deathDate,
     referenceName,
   }) => {
-    const { history, karkunId, updateHrKarkun } = this.props;
     updateHrKarkun({
       variables: {
         _id: karkunId,
@@ -82,45 +80,34 @@ class GeneralInfo extends Component {
       });
   };
 
-  render() {
-    const {
-      allCities,
-      allCitiesLoading,
-      allCityMehfils,
-      allCityMehfilsLoading,
-      formDataLoading,
-      hrKarkunById,
-    } = this.props;
-    if (formDataLoading || allCitiesLoading || allCityMehfilsLoading)
-      return null;
+  if (formDataLoading || allCitiesLoading || allCityMehfilsLoading)
+    return null;
 
-    return (
-      <KarkunsGeneralInfo
-        karkun={hrKarkunById}
-        handleFinish={this.handleFinish}
-        handleCancel={this.handleCancel}
-        showCityMehfilField
-        cities={allCities}
-        cityMehfils={allCityMehfils}
-      />
-    );
-  }
-}
+  return (
+    <KarkunsGeneralInfo
+      karkun={data.hrKarkunById}
+      handleFinish={handleFinish}
+      handleCancel={handleCancel}
+      showCityMehfilField
+      cities={allCities}
+      cityMehfils={allCityMehfils}
+    />
+  );
+};
+
+GeneralInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  karkunId: PropTypes.string,
+  allCities: PropTypes.array,
+  allCitiesLoading: PropTypes.bool,
+  allCityMehfils: PropTypes.array,
+  allCityMehfilsLoading: PropTypes.bool,
+};
 
 export default flowRight(
   WithAllCities(),
-  WithAllCityMehfils(),
-  graphql(UPDATE_HR_KARKUN, {
-    name: 'updateHrKarkun',
-    options: {
-      refetchQueries: ['pagedHrKarkuns'],
-    },
-  }),
-  graphql(HR_KARKUN_BY_ID, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
-      const { karkunId } = match.params;
-      return { variables: { _id: karkunId } };
-    },
-  })
+  WithAllCityMehfils()
 )(GeneralInfo);

@@ -1,26 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
+
+const allPhysicalStoresQuery = gql`
+  query allPhysicalStores {
+    allPhysicalStores {
+      _id
+      name
+    }
+  }
+`;
 
 export default () => WrappedComponent => {
-  const WithAllPhysicalStores = props => <WrappedComponent {...props} />;
+  const WithAllPhysicalStores = props => {
+    const { data, loading, ...queryResult } = useQuery(allPhysicalStoresQuery);
+
+    return (
+      <WrappedComponent
+        {...props}
+        {...queryResult}
+        loading={loading}
+        allPhysicalStoresLoading={loading}
+        allPhysicalStores={data ? data.allPhysicalStores : null}
+      />
+    );
+  };
 
   WithAllPhysicalStores.propTypes = {
     allPhysicalStoresLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
   };
 
-  const allPhysicalStoresQuery = gql`
-    query allPhysicalStores {
-      allPhysicalStores {
-        _id
-        name
-      }
-    }
-  `;
-
-  return graphql(allPhysicalStoresQuery, {
-    props: ({ data }) => ({ allPhysicalStoresLoading: data.loading, ...data }),
-  })(WithAllPhysicalStores);
+  return WithAllPhysicalStores;
 };

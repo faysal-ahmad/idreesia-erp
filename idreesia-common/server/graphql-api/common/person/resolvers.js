@@ -16,7 +16,7 @@ export default {
     image: async personSharedDataType => {
       const { imageId } = personSharedDataType;
       if (imageId) {
-        return Attachments.findOne({ _id: { $eq: imageId } });
+        return Attachments.findOneAsync({ _id: { $eq: imageId } });
       }
 
       return null;
@@ -25,20 +25,20 @@ export default {
   PersonKarkunDataType: {
     city: async personKarkunDataType => {
       if (!personKarkunDataType.cityId) return null;
-      return Cities.findOne(personKarkunDataType.cityId);
+      return Cities.findOneAsync(personKarkunDataType.cityId);
     },
     cityMehfil: async personKarkunDataType => {
       if (!personKarkunDataType.cityMehfilId) return null;
-      return CityMehfils.findOne(personKarkunDataType.cityMehfilId);
+      return CityMehfils.findOneAsync(personKarkunDataType.cityMehfilId);
     },
     duties: async personKarkunDataType =>
       KarkunDuties.find({
         karkunId: { $eq: personKarkunDataType._id },
-      }).fetch(),
+      }).fetchAsync(),
     attachments: async personKarkunDataType => {
       const { attachmentIds } = personKarkunDataType;
       if (attachmentIds && attachmentIds.length > 0) {
-        return Attachments.find({ _id: { $in: attachmentIds } }).fetch();
+        return Attachments.find({ _id: { $in: attachmentIds } }).fetchAsync();
       }
 
       return [];
@@ -47,7 +47,7 @@ export default {
   PersonEmployeeDataType: {
     job: async personEmployeeDataType => {
       if (!personEmployeeDataType.jobId) return null;
-      return Jobs.findOne(personEmployeeDataType.jobId);
+      return Jobs.findOneAsync(personEmployeeDataType.jobId);
     },
   },
 

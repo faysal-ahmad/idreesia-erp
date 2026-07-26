@@ -1,10 +1,43 @@
-import React from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/client/react';
+
+const vendorsListQuery = gql`
+  query vendorsByPhysicalStoreId($physicalStoreId: String!) {
+    vendorsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
+      _id
+      name
+      physicalStoreId
+      contactPerson
+      contactNumber
+      address
+      notes
+      usageCount
+    }
+  }
+`;
+
+export const useVendorsByPhysicalStore = physicalStoreId => {
+  const { data, loading, ...queryResult } = useQuery(vendorsListQuery, {
+    variables: { physicalStoreId },
+  });
+
+  return {
+    ...queryResult,
+    loading,
+    vendorsLoading: loading,
+    vendorsByPhysicalStoreId: data ? data.vendorsByPhysicalStoreId : null,
+  };
+};
 
 export default () => WrappedComponent => {
-  const WithVendorsByPhysicalStore = props => <WrappedComponent {...props} />;
+  const WithVendorsByPhysicalStore = props => {
+    const { physicalStoreId } = props;
+    const vendorsProps = useVendorsByPhysicalStore(physicalStoreId);
+
+    return <WrappedComponent {...props} {...vendorsProps} />;
+  };
 
   WithVendorsByPhysicalStore.propTypes = {
     physicalStoreId: PropTypes.string,
@@ -12,23 +45,5 @@ export default () => WrappedComponent => {
     vendorsByPhysicalStoreId: PropTypes.array,
   };
 
-  const vendorsListQuery = gql`
-    query vendorsByPhysicalStoreId($physicalStoreId: String!) {
-      vendorsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
-        _id
-        name
-        physicalStoreId
-        contactPerson
-        contactNumber
-        address
-        notes
-        usageCount
-      }
-    }
-  `;
-
-  return graphql(vendorsListQuery, {
-    props: ({ data }) => ({ vendorsLoading: data.loading, ...data }),
-    options: ({ physicalStoreId }) => ({ variables: { physicalStoreId } }),
-  })(WithVendorsByPhysicalStore);
+  return WithVendorsByPhysicalStore;
 };

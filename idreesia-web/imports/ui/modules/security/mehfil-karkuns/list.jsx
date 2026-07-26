@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { Button, Row, Select, Table, Tooltip } from 'antd';
 import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { flowRight, sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { PersonName, PeopleSelectionButton } from '/imports/ui/modules/helpers/controls';
 
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
@@ -281,19 +281,28 @@ export class List extends Component {
   }
 }
 
-export default flowRight(
-  graphql(MEHFIL_KARKUNS_BY_MEHFIL_ID, {
-    props: ({ data }) => ({
-      mehfilKarkunsLoading: data.loading,
-      refetchMehfilKarkuns: data.refetch,
-      ...data,
-    }),
-    options: ({ mehfilId, dutyId }) => ({
+const ListWithData = props => {
+  const { mehfilId, dutyId } = props;
+  const { data = {}, loading, refetch, ...queryResult } = useQuery(
+    MEHFIL_KARKUNS_BY_MEHFIL_ID,
+    {
       fetchPolicy: "cache-and-network",
       variables: {
         mehfilId,
         dutyId,
       },
-    }),
-  })
-)(List);
+    }
+  );
+
+  return (
+    <List
+      {...props}
+      {...queryResult}
+      {...data}
+      mehfilKarkunsLoading={loading}
+      refetchMehfilKarkuns={refetch}
+    />
+  );
+};
+
+export default ListWithData;

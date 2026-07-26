@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -47,7 +47,7 @@ class NewForm extends Component {
     locationsByPhysicalStoreId: PropTypes.array,
     createPurchaseForm: PropTypes.func,
   };
-  
+
   state = {
     isFieldsTouched: false,
   };
@@ -61,7 +61,7 @@ class NewForm extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
   handleFinish = ({
     purchaseDate,
@@ -112,7 +112,13 @@ class NewForm extends Component {
     ];
 
     return (
-      <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+      <Form
+        ref={this.formRef}
+        layout="horizontal"
+        style={FormStyle}
+        onFinish={this.handleFinish}
+        onFieldsChange={this.handleFieldsChange}
+      >
         <DateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"
@@ -235,7 +241,7 @@ export default flowRight(
   WithPhysicalStore(),
   WithVendorsByPhysicalStore(),
   WithLocationsByPhysicalStore(),
-  graphql(formMutation, {
+  withMutation(formMutation, {
     name: 'createPurchaseForm',
     options: {
       refetchQueries: [

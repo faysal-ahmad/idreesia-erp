@@ -15,52 +15,52 @@ import {
 
 Migrations.add({
   version: 39,
-  up() {
+  async up() {
     // Update the karkunId field in Users and also rename to personId
-    const users = Users.find({}).fetch();
-    users.forEach(user => {
+    const users = await Users.find({}).fetchAsync();
+    for (const user of users) {
       const karkunId = user.karkunId;
       if (karkunId) {
-        const person = People.findOne({ 'karkunData.karkunId': karkunId });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': karkunId });
         if (person) {
-          Users.update(user._id, {
+          await Users.updateAsync(user._id, {
             $set: {
               personId: person._id,
             },
           });
         }
       }
-    });
+    }
 
     // Utility function to update the karkunId references in other collections
-    const convertCollection = collection => {
-      const records = collection.find({}).fetch();
-      records.forEach(record => {
+    const convertCollection = async collection => {
+      const records = await collection.find({}).fetchAsync();
+      for (const record of records) {
         const karkunId = record.karkunId;
-        const person = People.findOne({ 'karkunData.karkunId': karkunId });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': karkunId });
         if (person) {
-          collection.update(record._id, {
+          await collection.updateAsync(record._id, {
             $set: {
               karkunId: person._id,
             },
           });
         }
-      });
+      }
     };
 
-    convertCollection(Attendances);
-    convertCollection(KarkunDuties);
-    convertCollection(Salaries);
-    convertCollection(MehfilKarkuns);
+    await convertCollection(Attendances);
+    await convertCollection(KarkunDuties);
+    await convertCollection(Salaries);
+    await convertCollection(MehfilKarkuns);
 
     // Update references in the IssuanceForms collection
-    const issuanceForms = IssuanceForms.find({}).fetch();
-    issuanceForms.forEach(issuanceForm => {
+    const issuanceForms = await IssuanceForms.find({}).fetchAsync();
+    for (const issuanceForm of issuanceForms) {
       const { issuedBy, issuedTo } = issuanceForm;
       if (issuedBy) {
-        const person = People.findOne({ 'karkunData.karkunId': issuedBy });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': issuedBy });
         if (person) {
-          IssuanceForms.update(issuanceForm._id, {
+          await IssuanceForms.updateAsync(issuanceForm._id, {
             $set: {
               issuedBy: person._id,
             },
@@ -68,25 +68,25 @@ Migrations.add({
         }
       }
       if (issuedTo) {
-        const person = People.findOne({ 'karkunData.karkunId': issuedTo });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': issuedTo });
         if (person) {
-          IssuanceForms.update(issuanceForm._id, {
+          await IssuanceForms.updateAsync(issuanceForm._id, {
             $set: {
               issuedTo: person._id,
             },
           });
         }
       }
-    });
+    }
 
     // Update references in the PurchaseForms collection
-    const purchaseForms = PurchaseForms.find({}).fetch();
-    purchaseForms.forEach(purchaseForm => {
+    const purchaseForms = await PurchaseForms.find({}).fetchAsync();
+    for (const purchaseForm of purchaseForms) {
       const { receivedBy, purchasedBy } = purchaseForm;
       if (receivedBy) {
-        const person = People.findOne({ 'karkunData.karkunId': receivedBy });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': receivedBy });
         if (person) {
-          PurchaseForms.update(purchaseForm._id, {
+          await PurchaseForms.updateAsync(purchaseForm._id, {
             $set: {
               receivedBy: person._id,
             },
@@ -94,31 +94,31 @@ Migrations.add({
         }
       }
       if (purchasedBy) {
-        const person = People.findOne({ 'karkunData.karkunId': purchasedBy });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': purchasedBy });
         if (person) {
-          PurchaseForms.update(purchaseForm._id, {
+          await PurchaseForms.updateAsync(purchaseForm._id, {
             $set: {
               purchasedBy: person._id,
             },
           });
         }
       }
-    });
+    }
 
     // Update references in the StockAdjustments collection
-    const stockAdjustments = StockAdjustments.find({}).fetch();
-    stockAdjustments.forEach(stockAdjustment => {
+    const stockAdjustments = await StockAdjustments.find({}).fetchAsync();
+    for (const stockAdjustment of stockAdjustments) {
       const { adjustedBy } = stockAdjustment;
       if (adjustedBy) {
-        const person = People.findOne({ 'karkunData.karkunId': adjustedBy });
+        const person = await People.findOneAsync({ 'karkunData.karkunId': adjustedBy });
         if (person) {
-          StockAdjustments.update(stockAdjustment._id, {
+          await StockAdjustments.updateAsync(stockAdjustment._id, {
             $set: {
               adjustedBy: person._id,
             },
           });
         }
       }
-    });
+    }
   },
 });

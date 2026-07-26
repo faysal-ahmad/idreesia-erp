@@ -4,20 +4,20 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 
 Migrations.add({
   version: 34,
-  up() {
-    const users = Users.find({}).fetch();
-    users.forEach(user => {
+  async up() {
+    const users = await Users.find({}).fetchAsync();
+    for (const user of users) {
       const { permissions } = user;
       if (permissions) {
         const updatedPermissions = permissions.map(permission =>
           permission.replace('communication', 'operations')
         );
-        Users.update(user._id, {
+        await Users.updateAsync(user._id, {
           $set: {
             permissions: updatedPermissions,
           },
         });
       }
-    });
+    }
   },
 });

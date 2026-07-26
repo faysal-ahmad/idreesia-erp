@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Form } from 'antd';
 
 import {
@@ -54,13 +54,13 @@ class EditForm extends Component {
             fieldName="startTime"
             fieldLabel="Start Time"
             initialValue={
-              dutyShift.startTime ? moment(dutyShift.startTime) : null
+              dutyShift.startTime ? dayjs(dutyShift.startTime) : null
             }
           />
           <TimeField
             fieldName="endTime"
             fieldLabel="End Time"
-            initialValue={dutyShift.endTime ? moment(dutyShift.endTime) : null}
+            initialValue={dutyShift.endTime ? dayjs(dutyShift.endTime) : null}
           />
           <InputTextField
             fieldName="attendanceSheet"

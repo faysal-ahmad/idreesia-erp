@@ -3,10 +3,10 @@ import { Migrations } from 'meteor/percolate:migrations';
 
 Migrations.add({
   version: 12,
-  up() {
-    const guestUser = Accounts.findUserByUsername('erp-guest');
+  async up() {
+    const guestUser = await Accounts.findUserByUsername('erp-guest');
     if (!guestUser) {
-      Accounts.createUser({
+      await Accounts.createUserAsync({
         username: 'erp-guest',
         password: 'p@ssw0rd',
       });

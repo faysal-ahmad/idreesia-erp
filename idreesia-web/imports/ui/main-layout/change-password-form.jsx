@@ -28,7 +28,7 @@ const ChangePasswordForm = ({ showForm, handlePasswordChanged, handlePasswordCha
   return (
     <Modal
       title="Change Password"
-      visible={showForm}
+      open={showForm}
       onOk={handleSubmit}
       onCancel={handlePasswordChangeCancelled}
     >

@@ -9,18 +9,18 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 export default {
   DutyShiftType: {
-    duty: async dutyShiftType => Duties.findOne(dutyShiftType.dutyId),
+    duty: async dutyShiftType => Duties.findOneAsync(dutyShiftType.dutyId),
     canDelete: async dutyShiftType => {
       // Check if this shift is currently assigned to a karkun
-      const karkunDutiesCount = KarkunDuties.find({
+      const karkunDutiesCount = await KarkunDuties.find({
         shiftId: { $eq: dutyShiftType._id },
-      }).count();
+      }).countAsync();
       if (karkunDutiesCount > 0) return false;
 
       // Check if we have marked attendance against this shift
-      const attendanceCount = Attendances.find({
+      const attendanceCount = await Attendances.find({
         shiftId: { $eq: dutyShiftType._id },
-      }).count();
+      }).countAsync();
       if (attendanceCount > 0) return false;
 
       return true;
@@ -29,14 +29,14 @@ export default {
 
   Query: {
     allDutyShifts: async () =>
-      DutyShifts.find({}, { sort: { dutyId: 1 } }).fetch(),
+      DutyShifts.find({}, { sort: { dutyId: 1 } }).fetchAsync(),
 
     dutyShiftsByDutyId: async (obj, { dutyId }) =>
       DutyShifts.find({
         dutyId,
-      }).fetch(),
+      }).fetchAsync(),
 
-    dutyShiftById: async (obj, { id }) => DutyShifts.findOne(id),
+    dutyShiftById: async (obj, { id }) => DutyShifts.findOneAsync(id),
   },
 
   Mutation: {
@@ -52,7 +52,7 @@ export default {
       }
 
       const date = new Date();
-      const dutyShiftId = DutyShifts.insert({
+      const dutyShiftId = await DutyShifts.insertAsync({
         name,
         dutyId,
         startTime,
@@ -64,7 +64,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return DutyShifts.findOne(dutyShiftId);
+      return DutyShifts.findOneAsync(dutyShiftId);
     },
 
     updateDutyShift: async (
@@ -79,7 +79,7 @@ export default {
       }
 
       const date = new Date();
-      DutyShifts.update(_id, {
+      await DutyShifts.updateAsync(_id, {
         $set: {
           name,
           dutyId,
@@ -91,7 +91,7 @@ export default {
         },
       });
 
-      return DutyShifts.findOne(_id);
+      return DutyShifts.findOneAsync(_id);
     },
 
     removeDutyShift: async (obj, { _id }, { user }) => {
@@ -101,9 +101,9 @@ export default {
         );
       }
 
-      const usedCount = KarkunDuties.find({
+      const usedCount = await KarkunDuties.find({
         shiftId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (usedCount > 0) {
         throw new Error(
@@ -111,7 +111,7 @@ export default {
         );
       }
 
-      return DutyShifts.remove(_id);
+      return DutyShifts.removeAsync(_id);
     },
   },
 };

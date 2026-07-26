@@ -1,9 +1,10 @@
-import moment from 'moment';
+import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
 import { parse } from 'query-string';
 
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 import { IssuanceForms } from 'meteor/idreesia-common/server/collections/inventory';
 import { Formats } from 'meteor/idreesia-common/constants';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 export function getIssuanceFormsByStockItemId(physicalStoreId, stockItemId) {
   const pipeline = [
@@ -26,7 +27,7 @@ export function getIssuanceFormsByStockItemId(physicalStoreId, stockItemId) {
 }
 
 export function getIssuanceFormsByMonth(physicalStoreId, monthString) {
-  const month = moment(monthString, Formats.DATE_FORMAT);
+  const month = parseDate(monthString, Formats.DATE_FORMAT);
 
   const pipeline = [
     {
@@ -37,8 +38,8 @@ export function getIssuanceFormsByMonth(physicalStoreId, monthString) {
     {
       $match: {
         issueDate: {
-          $gte: month.startOf('month').toDate(),
-          $lte: month.endOf('month').toDate(),
+          $gte: startOfMonth(month),
+          $lte: endOfMonth(month),
         },
       },
     },
@@ -101,7 +102,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         issueDate: {
-          $gte: moment(startDate, Formats.DATE_FORMAT).startOf('day').toDate(),
+          $gte: startOfDay(parseDate(startDate, Formats.DATE_FORMAT)),
         },
       },
     });
@@ -110,7 +111,7 @@ export default function getIssuanceForms(queryString, physicalStoreId) {
     pipeline.push({
       $match: {
         issueDate: {
-          $lte: moment(endDate, Formats.DATE_FORMAT).endOf('day').toDate(),
+          $lte: endOfDay(parseDate(endDate, Formats.DATE_FORMAT)),
         },
       },
     });

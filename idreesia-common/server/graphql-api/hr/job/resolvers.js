@@ -8,12 +8,12 @@ export default {
     usedCount: async jobType =>
       People.find({
         'employeeData.jobId': { $eq: jobType._id },
-      }).count(),
+      }).countAsync(),
   },
 
   Query: {
-    allJobs: async () => Jobs.find({}, { sort: { name: 1 } }).fetch(),
-    jobById: async (obj, { id }) => Jobs.findOne(id),
+    allJobs: async () => Jobs.find({}, { sort: { name: 1 } }).fetchAsync(),
+    jobById: async (obj, { id }) => Jobs.findOneAsync(id),
   },
 
   Mutation: {
@@ -25,7 +25,7 @@ export default {
       }
 
       const date = new Date();
-      const jobId = Jobs.insert({
+      const jobId = await Jobs.insertAsync({
         name,
         description,
         createdAt: date,
@@ -34,7 +34,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return Jobs.findOne(jobId);
+      return Jobs.findOneAsync(jobId);
     },
 
     updateJob: async (obj, { id, name, description }, { user }) => {
@@ -45,7 +45,7 @@ export default {
       }
 
       const date = new Date();
-      Jobs.update(id, {
+      await Jobs.updateAsync(id, {
         $set: {
           name,
           description,
@@ -54,7 +54,7 @@ export default {
         },
       });
 
-      return Jobs.findOne(id);
+      return Jobs.findOneAsync(id);
     },
 
     removeJob: async (obj, { _id }, { user }) => {
@@ -64,7 +64,7 @@ export default {
         );
       }
 
-      return Jobs.remove(_id);
+      return Jobs.removeAsync(_id);
     },
   },
 };

@@ -14,20 +14,8 @@ const sidebarsMap = {
     import('/imports/ui/modules/inventory/sidebar')
   ),
   [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/sidebar')),
-  [ModuleNames.accounts]: React.lazy(() =>
-    import('/imports/ui/modules/accounts/sidebar')
-  ),
-  [ModuleNames.operations]: React.lazy(() =>
-    import('/imports/ui/modules/operations/sidebar')
-  ),
   [ModuleNames.security]: React.lazy(() =>
     import('/imports/ui/modules/security/sidebar')
-  ),
-  [ModuleNames.outstation]: React.lazy(() =>
-    import('/imports/ui/modules/outstation/sidebar')
-  ),
-  [ModuleNames.portals]: React.lazy(() =>
-    import('/imports/ui/modules/portals/sidebar')
   ),
 };
 
@@ -52,7 +40,7 @@ const SidebarContent = props => {
 
   return (
     <Flex vertical>
-      <Flex justify='center' horizontal>
+      <Flex justify='center'>
         {
           sidebarCollapsed ? <div>&nbsp;</div> : (
             <Typography.Title ellipsis level={4}>{activeModuleName}</Typography.Title>

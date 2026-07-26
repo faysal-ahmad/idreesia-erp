@@ -8,18 +8,18 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 31,
-  up() {
-    Users.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
-    Payments.rawCollection().createIndex(
+  async up() {
+    await Users.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
+    await Payments.rawCollection().createIndex(
       { updatedAt: 1 },
       { background: true }
     );
-    Vouchers.rawCollection().createIndex(
+    await Vouchers.rawCollection().createIndex(
       { updatedAt: 1 },
       { background: true }
     );
-    Karkuns.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
-    Visitors.rawCollection().createIndex(
+    await Karkuns.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
+    await Visitors.rawCollection().createIndex(
       { updatedAt: 1 },
       { background: true }
     );

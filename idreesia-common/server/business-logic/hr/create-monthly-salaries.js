@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { differenceInCalendarDays, startOfDay, startOfMonth } from 'date-fns';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 
@@ -40,26 +40,26 @@ export function getMonthlySalaryValues(prevMonthSalary) {
   };
 }
 
-export function createMonthlySalaries(
+export async function createMonthlySalaries(
   formattedCurrentMonth,
   formattedPreviousMonth,
   user
 ) {
   let counter = 0;
   // Get all the people who are employees and have a job assigned to them
-  const people = People.find({
+  const people = await People.find({
     isEmployee: true,
     'employeeData.jobId': { $exists: true, $ne: null },
-  }).fetch();
+  }).fetchAsync();
 
   const date = new Date();
-  people.forEach(({ _id, employeeData: { jobId, employmentEndDate } }) => {
+  for (const { _id, employeeData: { jobId, employmentEndDate } } of people) {
     // Ensure that this karkun is a current employee
     let isCurrentEmployee = true;
     if (employmentEndDate) {
-      const currentMonth = moment().startOf('month');
-      const employmentEnd = moment(employmentEndDate).startOf('day');
-      const diff = currentMonth.diff(employmentEnd, 'days');
+      const currentMonth = startOfMonth(new Date());
+      const employmentEnd = startOfDay(new Date(employmentEndDate));
+      const diff = differenceInCalendarDays(currentMonth, employmentEnd);
       if (diff > 0) {
         isCurrentEmployee = false;
       }
@@ -67,7 +67,7 @@ export function createMonthlySalaries(
 
     if (isCurrentEmployee) {
       // Create a new salary if one does not exist for this karkun/month/job combination
-      const existingCurrentMonthSalary = Salaries.findOne({
+      const existingCurrentMonthSalary = await Salaries.findOneAsync({
         karkunId: _id,
         jobId,
         month: formattedCurrentMonth,
@@ -76,7 +76,7 @@ export function createMonthlySalaries(
       if (!existingCurrentMonthSalary) {
         counter++;
 
-        const existingPreviousMonthSalary = Salaries.findOne({
+        const existingPreviousMonthSalary = await Salaries.findOneAsync({
           karkunId: _id,
           jobId,
           month: formattedPreviousMonth,
@@ -85,7 +85,7 @@ export function createMonthlySalaries(
         const salaryValues = getMonthlySalaryValues(
           existingPreviousMonthSalary
         );
-        Salaries.insert({
+        await Salaries.insertAsync({
           karkunId: _id,
           jobId,
           month: formattedCurrentMonth,
@@ -95,7 +95,7 @@ export function createMonthlySalaries(
         });
       }
     }
-  });
+  }
 
   return counter;
 }

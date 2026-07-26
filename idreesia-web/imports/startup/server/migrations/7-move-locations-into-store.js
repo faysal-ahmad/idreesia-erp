@@ -6,17 +6,17 @@ import {
 
 Migrations.add({
   version: 7,
-  up() {
-    const physicalStores = PhysicalStores.find({}).fetch();
+  async up() {
+    const physicalStores = await PhysicalStores.find({}).fetchAsync();
     const physicalStore = physicalStores[0];
 
-    const locations = Locations.find({}).fetch();
-    locations.forEach(location => {
-      Locations.update(location._id, {
+    const locations = await Locations.find({}).fetchAsync();
+    for (const location of locations) {
+      await Locations.updateAsync(location._id, {
         $set: {
           physicalStoreId: physicalStore._id,
         },
       });
-    });
+    }
   },
 });

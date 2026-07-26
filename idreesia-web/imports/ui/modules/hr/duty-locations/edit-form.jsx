@@ -1,10 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
@@ -12,72 +11,6 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
-
-class EditForm extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-
-    loading: PropTypes.bool,
-    dutyLocationById: PropTypes.object,
-    updateDutyLocation: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
-    history.push(paths.dutyLocationsPath);
-  };
-
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
-
-  handleFinish = ({ name }) => {
-    const { history, dutyLocationById, updateDutyLocation } = this.props;
-    updateDutyLocation({
-      variables: {
-        id: dutyLocationById._id,
-        name,
-      },
-    })
-      .then(() => {
-        history.push(paths.dutyLocationsPath);
-      })
-      .catch(error => {
-        message.error(error.message, 5);
-      });
-  };
-
-  render() {
-    const { loading, dutyLocationById } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading) return null;
-
-    return (
-      <Fragment>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-          <InputTextField
-            fieldName="name"
-            fieldLabel="Name"
-            initialValue={dutyLocationById.name}
-            required
-            requiredMessage="Please input a name for the duty location."
-          />
-          <FormButtonsSaveCancel
-            handleCancel={this.handleCancel}
-            isFieldsTouched={isFieldsTouched}
-          />
-        </Form>
-        <AuditInfo record={dutyLocationById} />
-      </Fragment>
-    );
-  }
-}
 
 const formQuery = gql`
   query dutyLocationById($id: String!) {
@@ -105,19 +38,66 @@ const formMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'updateDutyLocation',
-    options: {
-      refetchQueries: ['allDutyLocations'],
-    },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ match }) => {
-      const { dutyLocationId } = match.params;
-      return { variables: { id: dutyLocationId } };
-    },
-  }),
-  WithBreadcrumbs(['HR', 'Duty Locations', 'Edit'])
-)(EditForm);
+const EditForm = ({ match, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const { dutyLocationId } = match.params;
+  const { data, loading } = useQuery(formQuery, {
+    variables: { id: dutyLocationId },
+  });
+  const [updateDutyLocation] = useMutation(formMutation, {
+    refetchQueries: ['allDutyLocations'],
+  });
+  const { dutyLocationById } = data || {};
+
+  const handleCancel = () => {
+    history.push(paths.dutyLocationsPath);
+  };
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
+
+  const handleFinish = ({ name }) => {
+    updateDutyLocation({
+      variables: {
+        id: dutyLocationById._id,
+        name,
+      },
+    })
+      .then(() => {
+        history.push(paths.dutyLocationsPath);
+      })
+      .catch(error => {
+        message.error(error.message, 5);
+      });
+  };
+
+  if (loading || !dutyLocationById) return null;
+
+  return (
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={dutyLocationById.name}
+          required
+          requiredMessage="Please input a name for the duty location."
+        />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
+      </Form>
+      <AuditInfo record={dutyLocationById} />
+    </Fragment>
+  );
+};
+
+EditForm.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default WithBreadcrumbs(['HR', 'Duty Locations', 'Edit'])(EditForm);

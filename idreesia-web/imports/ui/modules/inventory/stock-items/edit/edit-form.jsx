@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client/react';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { 

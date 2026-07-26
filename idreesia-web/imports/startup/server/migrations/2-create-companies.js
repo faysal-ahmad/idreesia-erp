@@ -13,9 +13,9 @@ const config = {
 
 Migrations.add({
   version: 2,
-  up() {
-    const adminUser = Accounts.findUserByUsername('erp-admin');
-    let company = Companies.findOne({ name: 'Anjuman Jamia Masjid' });
+  async up() {
+    const adminUser = await Accounts.findUserByUsername('erp-admin');
+    let company = await Companies.findOneAsync({ name: 'Anjuman Jamia Masjid' });
     if (!company) {
       const date = new Date();
       const connectivitySettings = JSON.stringify(
@@ -24,7 +24,7 @@ Migrations.add({
         })
       );
 
-      Companies.insert({
+      await Companies.insertAsync({
         name: 'Anjuman Jamia Masjid',
         importData: true,
         connectivitySettings,
@@ -35,7 +35,7 @@ Migrations.add({
       });
     }
 
-    company = Companies.findOne({ name: 'Eastern Breeze Foundation' });
+    company = await Companies.findOneAsync({ name: 'Eastern Breeze Foundation' });
     if (!company) {
       const date = new Date();
       const connectivitySettings = JSON.stringify(
@@ -44,7 +44,7 @@ Migrations.add({
         })
       );
 
-      Companies.insert({
+      await Companies.insertAsync({
         name: 'Eastern Breeze Foundation',
         importData: true,
         connectivitySettings,

@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   InputTextField,
   SwitchField,
@@ -13,33 +12,25 @@ import {
 
 import { USER_BY_ID, PAGED_USERS, UPDATE_USER } from '../gql';
 
-class GeneralInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const GeneralInfo = ({ userId, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const { data, loading } = useQuery(USER_BY_ID, {
+    variables: { _id: userId },
+  });
+  const [updateUser] = useMutation(UPDATE_USER, {
+    refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
+  });
+  const { userById } = data || {};
 
-    loading: PropTypes.bool,
-    userId: PropTypes.string,
-    userById: PropTypes.object,
-    updateUser: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ password, email, displayName, locked }) => {
-    const { history, userById, updateUser } = this.props;
+  const handleFinish = ({ password, email, displayName, locked }) => {
     if (email && !email.includes('@gmail.com')) {
       message.error('This is not a valid Google Email.', 5);
       return;
@@ -62,80 +53,72 @@ class GeneralInfo extends Component {
       });
   };
 
-  render() {
-    const { loading, userById } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading) return null;
+  if (loading) return null;
 
-    const karkunField = userById.personId ? (
+  const karkunField = userById.personId ? (
+    <InputTextField
+      fieldName="karkunName"
+      fieldLabel="Karkun Name"
+      disabled
+      initialValue={userById.karkun ? userById.karkun.name : ''}
+    />
+  ) : (
+    <KarkunSelectionInputField
+      fieldName="karkun"
+      fieldLabel="Karkun Name"
+      showMsKarkunsList
+    />
+  );
+
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
       <InputTextField
-        fieldName="karkunName"
-        fieldLabel="Karkun Name"
+        fieldName="userName"
+        fieldLabel="User name"
         disabled
-        initialValue={userById.karkun ? userById.karkun.name : ''}
+        initialValue={userById.username}
       />
-    ) : (
-      <KarkunSelectionInputField
-        fieldName="karkun"
-        fieldLabel="Karkun Name"
-        showMsKarkunsList
-        showOutstationKarkunsList
+
+      <SwitchField
+        fieldName="locked"
+        fieldLabel="Locked"
+        initialValue={userById.locked}
       />
-    );
 
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="userName"
-          fieldLabel="User name"
-          disabled
-          initialValue={userById.username}
-        />
+      <InputTextField
+        fieldName="password"
+        fieldLabel="Password"
+        type="password"
+      />
 
-        <SwitchField
-          fieldName="locked"
-          fieldLabel="Locked"
-          initialValue={userById.locked}
-        />
+      <InputTextField
+        fieldName="email"
+        fieldLabel="Google Email"
+        initialValue={userById.email}
+      />
 
-        <InputTextField
-          fieldName="password"
-          fieldLabel="Password"
-          type="password"
-        />
+      <InputTextField
+        fieldName="displayName"
+        fieldLabel="Display Name"
+        initialValue={userById.displayName}
+      />
 
-        <InputTextField
-          fieldName="email"
-          fieldLabel="Google Email"
-          initialValue={userById.email}
-        />
+      {karkunField}
 
-        <InputTextField
-          fieldName="displayName"
-          fieldLabel="Display Name"
-          initialValue={userById.displayName}
-        />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
 
-        {karkunField}
+GeneralInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
 
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+  userId: PropTypes.string,
+};
 
-export default flowRight(
-  graphql(UPDATE_USER, {
-    name: 'updateUser',
-    options: {
-      refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
-    },
-  }),
-  graphql(USER_BY_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ userId }) => ({ variables: { _id: userId } }),
-  })
-)(GeneralInfo);
+export default GeneralInfo;

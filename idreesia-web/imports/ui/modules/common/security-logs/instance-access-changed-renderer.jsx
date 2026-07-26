@@ -13,7 +13,7 @@ const InstanceAccessRemoved = {
   color: 'red',
 };
 
-const InstanceAccessChangedRenderer = ({ record, allPortals }) => {
+const InstanceAccessChangedRenderer = ({ record }) => {
   const { operationType, operationDetails } = record;
   const { instancesAdded = [], instancesRemoved = [] } = operationDetails;
 
@@ -24,22 +24,16 @@ const InstanceAccessChangedRenderer = ({ record, allPortals }) => {
   ];
 
   instancesAdded.forEach((instance, index) => {
-    const portal = allPortals.find(p => p._id === instance);
     instances.push(
       <Row key={`permission-added-${index}`}>
-        <span style={InstanceAccessAdded}>
-          {portal ? `${portal.name} Portal` : instance}
-        </span>
+        <span style={InstanceAccessAdded}>{instance}</span>
       </Row>
     );
   });
   instancesRemoved.forEach((instance, index) => {
-    const portal = allPortals.find(p => p._id === instance);
     instances.push(
       <Row key={`permission-removed-${index}`}>
-        <span style={InstanceAccessRemoved}>
-          {portal ? `${portal.name} Portal` : instance}
-        </span>
+        <span style={InstanceAccessRemoved}>{instance}</span>
       </Row>
     );
   });
@@ -49,7 +43,6 @@ const InstanceAccessChangedRenderer = ({ record, allPortals }) => {
 
 InstanceAccessChangedRenderer.propTypes = {
   record: PropTypes.object,
-  allPortals: PropTypes.array,
 };
 
 export default InstanceAccessChangedRenderer;

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client/react';
 
 import { Formats } from 'meteor/idreesia-common/constants';
+import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { Table, Pagination } from 'antd';
 import {
   DEFAULT_PAGE_INDEX_INT,
@@ -18,8 +18,8 @@ const columns = [
     dataIndex: 'month',
     key: 'month',
     render: text => {
-      const date = moment(`01-${text}`, Formats.DATE_FORMAT);
-      return date.format('MMM, YYYY');
+      const date = parseDate(`01-${text}`, Formats.DATE_FORMAT);
+      return formatDate(date, 'MMM, YYYY');
     },
   },
   {

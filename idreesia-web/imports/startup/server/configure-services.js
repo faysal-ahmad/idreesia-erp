@@ -11,25 +11,30 @@ Accounts.urls.enrollAccount = function enroll(token) {
 
 const googleService = Meteor.settings.private.oAuth.google;
 
-ServiceConfiguration.configurations.upsert(
-  { service: 'google' },
-  {
-    $set: googleService,
-  }
-);
+ServiceConfiguration.configurations
+  .upsertAsync(
+    { service: 'google' },
+    {
+      $set: googleService,
+    }
+  )
+  .catch(error => {
+    // eslint-disable-next-line no-console
+    console.error('Failed to configure Google OAuth service', error);
+  });
 
 const updateOrCreateUserFromExternalServiceOriginal =
   Accounts.updateOrCreateUserFromExternalService;
 
 // eslint-disable-next-line func-names
-Accounts.updateOrCreateUserFromExternalService = function (
+Accounts.updateOrCreateUserFromExternalService = async function (
   serviceName,
   serviceData,
   options
 ) {
   if (serviceName === 'google') {
     const { email } = serviceData;
-    const updatedDocs = Meteor.users.update(
+    const updatedDocs = await Meteor.users.updateAsync(
       { 'emails.0.address': email },
       {
         $set: {

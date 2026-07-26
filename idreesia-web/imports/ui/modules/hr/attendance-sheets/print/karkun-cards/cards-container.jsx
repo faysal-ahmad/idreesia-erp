@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import {
   AutoComplete,
@@ -36,15 +36,18 @@ const InputControlsContainer = {
 };
 
 const CardsContainer = ({
-  attendanceLoading,
-  attendanceByBarcodeIds,
   history,
+  queryParams,
 }) => {
   const [cardHeading, setCardHeading] = useState(CardHeadings[0]);
   const [cardSubHeading, setCardSubHeading] = useState(null);
   const [showDutyInfo, setShowDutyInfo] = useState(false);
   const meetingCardsRef = useRef(null);
-  if (attendanceLoading) return null;
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS, {
+    variables: { barcodeIds: queryParams.barcodeIds },
+  });
+
+  if (loading) return null;
 
   const cardHeadingInput = (
     <AutoComplete
@@ -111,7 +114,9 @@ const CardsContainer = ({
         cardHeading={cardHeading}
         cardSubHeading={cardSubHeading}
         showDutyInfo={showDutyInfo}
-        attendanceByBarcodeIds={attendanceByBarcodeIds}
+        attendanceByBarcodeIds={
+          data ? data.attendanceByBarcodeIds : undefined
+        }
       />
     </>
   );
@@ -122,18 +127,9 @@ CardsContainer.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
   queryParams: PropTypes.object,
-
-  attendanceLoading: PropTypes.bool,
-  attendanceByBarcodeIds: PropTypes.array,
 };
 
 export default flowRight(
   WithQueryParams(),
-  graphql(ATTENDANCE_BY_BARCODE_IDS, {
-    props: ({ data }) => ({ attendanceLoading: data.loading, ...data }),
-    options: ({ queryParams: { barcodeIds } }) => ({
-      variables: { barcodeIds },
-    }),
-  }),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'Karkun Cards'])
 )(CardsContainer);

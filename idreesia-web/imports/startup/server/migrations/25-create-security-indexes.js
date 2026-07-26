@@ -4,8 +4,8 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 25,
-  up() {
+  async up() {
     const visitors = Visitors.rawCollection();
-    visitors.createIndex({ ehadDate: 1 }, { background: true });
+    await visitors.createIndex({ ehadDate: 1 }, { background: true });
   },
 });

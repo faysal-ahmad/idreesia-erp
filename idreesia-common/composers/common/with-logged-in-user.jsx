@@ -1,35 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useQuery } from '@apollo/client/react';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+const formQuery = gql`
+  query currentUser {
+    currentUser {
+      _id
+      username
+      permissions
+    }
+  }
+`;
 
 export default () => WrappedComponent => {
-  const WithLoggedInUser = props => <WrappedComponent {...props} />;
+  const WithLoggedInUser = props => {
+    const { data, loading, ...queryResult } = useQuery(formQuery);
+
+    return (
+      <WrappedComponent
+        {...props}
+        {...queryResult}
+        loading={loading}
+        userLoading={loading}
+        user={data ? data.currentUser : null}
+        currentUser={data ? data.currentUser : null}
+      />
+    );
+  };
 
   WithLoggedInUser.propTypes = {
     userLoading: PropTypes.bool,
     user: PropTypes.object,
   };
 
-  const formQuery = gql`
-    query currentUser {
-      currentUser {
-        _id
-        username
-        permissions
-      }
-    }
-  `;
-
-  return flowRight(
-    graphql(formQuery, {
-      props: ({ data }) => ({
-        userLoading: data.loading,
-        user: data.currentUser,
-        ...data,
-      }),
-    })
-  )(WithLoggedInUser);
+  return WithLoggedInUser;
 };

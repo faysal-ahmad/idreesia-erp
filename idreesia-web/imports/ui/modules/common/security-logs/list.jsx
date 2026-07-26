@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithAllPortals } from 'meteor/idreesia-common/composers/admin';
 import {
   SecurityOperationType,
   SecurityOperationTypeDisplayName,
@@ -23,12 +22,8 @@ class AuditLogsList extends Component {
     handleDeleteItem: PropTypes.func,
     setPageParams: PropTypes.func,
 
-    allCompaniesLoading: PropTypes.bool,
-    allCompanies: PropTypes.array,
     allPhysicalStoresLoading: PropTypes.bool,
     allPhysicalStores: PropTypes.array,
-    allPortalsLoading: PropTypes.bool,
-    allPortals: PropTypes.array,
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
     pagedData: PropTypes.shape({
@@ -87,19 +82,13 @@ class AuditLogsList extends Component {
       dataIndex: 'auditValues',
       key: 'auditValues',
       render: (values, record) => {
-        const { allPortals } = this.props;
         const { operationType } = record;
         if (operationType === SecurityOperationType.PERMISSIONS_CHANGED) {
           return <PermissionsChangedRenderer record={record} />;
         } else if (
           operationType === SecurityOperationType.INSTANCE_ACCESS_CHANGED
         ) {
-          return (
-            <InstanceAccessChangedRenderer
-              record={record}
-              allPortals={allPortals}
-            />
-          );
+          return <InstanceAccessChangedRenderer record={record} />;
         }
 
         return SecurityOperationTypeDisplayName[operationType];
@@ -117,15 +106,11 @@ class AuditLogsList extends Component {
 
   render() {
     const {
-      allPortalsLoading,
       listHeader,
       pageIndex,
       pageSize,
       pagedData: { totalResults, data },
     } = this.props;
-    if (allPortalsLoading) {
-      return null;
-    }
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
@@ -157,4 +142,4 @@ class AuditLogsList extends Component {
   }
 }
 
-export default flowRight(WithAllPortals())(AuditLogsList);
+export default flowRight()(AuditLogsList);

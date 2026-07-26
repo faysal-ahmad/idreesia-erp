@@ -4,8 +4,8 @@ import { StockItems } from 'meteor/idreesia-common/server/collections/inventory'
 
 Migrations.add({
   version: 41,
-  up() {
+  async up() {
     const stockItems = StockItems.rawCollection();
-    stockItems.createIndex({ name: 1 }, { background: false });
+    await stockItems.createIndex({ name: 1 }, { background: false });
   },
 });

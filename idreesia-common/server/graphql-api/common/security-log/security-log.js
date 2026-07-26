@@ -1,0 +1,30 @@
+import gql from 'graphql-tag';
+
+export default gql`
+type SecurityLogType {
+  _id: String
+  userId: String
+  operationType: String
+  operationDetails: JSONObject
+  operationTime: String
+  operationBy: String
+  dataSource: String
+  dataSourceDetail: String
+
+  userName: String
+  userImageId: String
+  operationByName: String
+  operationByImageId: String
+}
+
+input SecurityLogFilter {
+  dataSource: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedSecurityLogType {
+  totalResults: Int
+  data: [SecurityLogType]
+}
+`;

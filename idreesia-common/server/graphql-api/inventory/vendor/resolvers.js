@@ -8,7 +8,7 @@ export default {
     usageCount: async vendor =>
       PurchaseForms.find({
         vendorId: { $eq: vendor._id },
-      }).count(),
+      }).countAsync(),
   },
   Query: {
     vendorById: async (obj, { _id }) => {
@@ -84,10 +84,10 @@ export default {
     },
 
     removeVendor: async (obj, { _id, physicalStoreId }) => {
-      const purchaseFormsCount = PurchaseForms.find({
+      const purchaseFormsCount = await PurchaseForms.find({
         vendorId: { $eq: _id },
         physicalStoreId: { $eq: physicalStoreId },
-      }).count();
+      }).countAsync();
 
       if (purchaseFormsCount === 0) {
         return Vendors.removeAsync({

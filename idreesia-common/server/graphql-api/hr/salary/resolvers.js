@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { addMonths, format, isBefore, startOfMonth } from 'date-fns';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries, Jobs } from 'meteor/idreesia-common/server/collections/hr';
@@ -8,25 +8,26 @@ import {
   Permissions as PermissionConstants,
 } from 'meteor/idreesia-common/constants';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
+import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { getPagedSalariesByKarkun } from './queries';
 
 export default {
   SalaryType: {
     karkun: async salaryType => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: salaryType.karkunId },
       });
       return People.personToKarkun(person);
     },
     job: async salaryType => {
       if (!salaryType.jobId) return null;
-      return Jobs.findOne({
+      return Jobs.findOneAsync({
         _id: { $eq: salaryType.jobId },
       });
     },
     approver: async salaryType => {
       if (!salaryType.approvedBy) return null;
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: salaryType.approvedBy },
       });
       return People.personToKarkun(person);
@@ -39,26 +40,27 @@ export default {
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return [];
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       if (jobId) {
         return Salaries.find({
           month: formattedMonth,
           jobId,
-        }).fetch();
+        }).fetchAsync();
       }
 
       return Salaries.find({
         month: formattedMonth,
-      }).fetch();
+      }).fetchAsync();
     },
 
     salariesByIds: async (obj, { ids }, { user }) => {
@@ -75,7 +77,7 @@ export default {
       const idsArray = ids.split(',');
       return Salaries.find({
         _id: { $in: idsArray },
-      }).fetch();
+      }).fetchAsync();
     },
 
     pagedSalariesByKarkun: async (obj, { queryString }, { user }) => {
@@ -83,7 +85,7 @@ export default {
         !hasOnePermission(user, [
           PermissionConstants.HR_VIEW_EMPLOYEES,
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         return {
@@ -100,7 +102,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -108,16 +110,12 @@ export default {
         );
       }
 
-      const formattedCurrentMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const currentMonth = startOfMonth(parseDate(month, Formats.DATE_FORMAT));
+      const formattedCurrentMonth = format(currentMonth, 'MM-yyyy');
 
-      const formattedPreviousMonth = moment(month, Formats.DATE_FORMAT)
-        .subtract(1, 'months')
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedPreviousMonth = format(addMonths(currentMonth, -1), 'MM-yyyy');
 
-      return createMonthlySalaries(
+      return await createMonthlySalaries(
         formattedCurrentMonth,
         formattedPreviousMonth,
         user
@@ -141,7 +139,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -150,7 +148,7 @@ export default {
       }
 
       const date = new Date();
-      Salaries.update(_id, {
+      await Salaries.updateAsync(_id, {
         $set: {
           salary,
           openingLoan,
@@ -170,7 +168,7 @@ export default {
         },
       });
 
-      return Salaries.findOne(_id);
+      return Salaries.findOneAsync(_id);
     },
 
     approveSalaries: async (obj, { month, ids }, { user }) => {
@@ -180,12 +178,13 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       const date = new Date();
-      return Salaries.update(
+      return Salaries.updateAsync(
         {
           _id: { $in: ids },
           month: formattedMonth,
@@ -207,12 +206,13 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
       const date = new Date();
-      return Salaries.update(
+      return Salaries.updateAsync(
         {
           month: formattedMonth,
         },
@@ -227,12 +227,12 @@ export default {
     },
 
     deleteSalaries: async (obj, { month, ids }, { user }) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
+        isBefore(passedMonth, currentMonth) &&
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
@@ -242,7 +242,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -250,18 +250,18 @@ export default {
         );
       }
 
-      return Salaries.remove({
+      return Salaries.removeAsync({
         _id: { $in: ids },
       });
     },
 
     deleteAllSalaries: async (obj, { month }, { user }) => {
-      const currentMonth = moment().startOf('month');
-      const passedMonth = moment(month, Formats.DATE_FORMAT);
+      const currentMonth = startOfMonth(new Date());
+      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
       if (
-        passedMonth.isBefore(currentMonth) &&
-        !hasOnePermission(user, [PermissionConstants.HR_DELETE_EMPLOYEES])
+        isBefore(passedMonth, currentMonth) &&
+        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
@@ -271,7 +271,7 @@ export default {
       if (
         !hasOnePermission(user, [
           PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_EMPLOYEES,
+          PermissionConstants.HR_DELETE_DATA,
         ])
       ) {
         throw new Error(
@@ -279,11 +279,12 @@ export default {
         );
       }
 
-      const formattedMonth = moment(month, Formats.DATE_FORMAT)
-        .startOf('month')
-        .format('MM-YYYY');
+      const formattedMonth = format(
+        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
+        'MM-yyyy'
+      );
 
-      return Salaries.remove({
+      return Salaries.removeAsync({
         month: formattedMonth,
       });
     },

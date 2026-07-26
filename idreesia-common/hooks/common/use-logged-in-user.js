@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client/react';
 import { useSelector } from 'react-redux';
 
 const formQuery = gql`

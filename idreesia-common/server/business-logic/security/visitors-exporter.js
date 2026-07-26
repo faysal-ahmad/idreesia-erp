@@ -1,18 +1,17 @@
-import XLSX from 'xlsx';
-
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
-export function exportVisitors(visitorIdsString) {
+export async function exportVisitors(visitorIdsString) {
   let people;
 
   if (visitorIdsString === 'all') {
-    people = People.find({ isVisitor: true }).fetch();
+    people = await People.find({ isVisitor: true }).fetchAsync();
   } else {
     const visitorIds = visitorIdsString.split(',');
-    people = People.find({
+    people = await People.find({
       _id: { $in: visitorIds },
       isVisitor: true,
-    }).fetch();
+    }).fetchAsync();
   }
 
   let index = 1;
@@ -25,9 +24,5 @@ export function exportVisitors(visitorIdsString) {
     'City/Country': `${person.visitorData?.city}, ${person.visitorData?.country}`,
   }));
 
-  const ws = XLSX.utils.json_to_sheet(sheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Visitors');
-  const data = XLSX.write(wb, { type: 'buffer' });
-  return Buffer.from(data);
+  return createWorkbookBuffer(sheetData, 'Visitors');
 }

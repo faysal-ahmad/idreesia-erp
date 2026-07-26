@@ -184,7 +184,7 @@ export default {
       return StockAdjustments.find({
         physicalStoreId,
         _id: { $in: _ids },
-      });
+      }).fetchAsync();
     },
 
     removeStockAdjustments: async (

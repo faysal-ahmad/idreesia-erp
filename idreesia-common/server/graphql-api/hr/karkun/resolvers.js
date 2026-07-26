@@ -11,18 +11,18 @@ import { getKarkunsByPredefinedFilter } from './queries';
 export default {
   Query: {
     hrKarkunById: async (obj, { _id }) => {
-      const person = People.findOne(_id);
+      const person = await People.findOneAsync(_id);
       return People.personToKarkun(person);
     },
 
     hrKarkunsById: async (obj, { _ids }) => {
       const idsArray = _ids.split(',');
-      const people = People.find({ _id: { $in: idsArray } }).fetch();
+      const people = await People.find({ _id: { $in: idsArray } }).fetchAsync();
       return people.map(person => People.personToKarkun(person));
     },
 
     pagedHrKarkuns: async (obj, { filter }) => {
-      const multanCity = Cities.findOne({
+      const multanCity = await Cities.findOneAsync({
         name: 'Multan',
         country: 'Pakistan',
       });
@@ -57,8 +57,8 @@ export default {
 
   Mutation: {
     createHrKarkun: async (obj, values, { user }) => {
-      const multanCity = Cities.getMultanCity();
-      const personValues = People.karkunToPerson({
+      const multanCity = await Cities.getMultanCity();
+      const personValues = await People.karkunToPerson({
         ...values,
         isKarkun: true,
         isVisitor: true,
@@ -69,18 +69,18 @@ export default {
           country: multanCity.country,
         },
       });
-      const person = People.createPerson(personValues, user);
+      const person = await People.createPerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     updateHrKarkun: async (obj, values, { user }) => {
-      const personValues = People.karkunToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const personValues = await People.karkunToPerson(values);
+      const person = await People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     deleteHrKarkun: async (obj, { _id }) => {
-      if (canDeleteKarkun(_id)) {
+      if (await canDeleteKarkun(_id)) {
         return deleteKarkun(_id);
       }
 
@@ -88,30 +88,33 @@ export default {
     },
 
     setHrKarkunWazaifAndRaabta: async (obj, values, { user }) => {
-      const personValues = People.karkunToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const personValues = await People.karkunToPerson(values);
+      const person = await People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     setHrKarkunEmploymentInfo: async (obj, values, { user }) => {
-      const personValues = People.karkunToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const personValues = await People.karkunToPerson(values);
+      const person = await People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     setHrKarkunProfileImage: async (obj, values, { user }) => {
-      const personValues = People.karkunToPerson(values);
-      const person = People.updatePerson(personValues, user);
+      const personValues = await People.karkunToPerson(values);
+      const person = await People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },
 
     addHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) => {
-      const person = People.addAttachment({ _id, attachmentId }, user);
+      const person = await People.addAttachment({ _id, attachmentId }, user);
       return People.personToKarkun(person);
     },
 
     removeHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) => {
-      const person = People.removeAttachment({ _id, attachmentId }, user);
+      const person = await People.removeAttachment(
+        { _id, attachmentId },
+        user
+      );
       return People.personToKarkun(person);
     },
   },

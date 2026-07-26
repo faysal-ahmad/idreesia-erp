@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -32,7 +32,7 @@ class NewForm extends Component {
     itemCategoriesByPhysicalStoreId: PropTypes.array,
     createStockItem: PropTypes.func,
   };
-  
+
   state = {
     isFieldsTouched: false,
   };
@@ -44,7 +44,7 @@ class NewForm extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
   handleFinish = ({
     name,
@@ -77,15 +77,17 @@ class NewForm extends Component {
   };
 
   render() {
-    const {
-      itemCategoriesLoading,
-      itemCategoriesByPhysicalStoreId,
-    } = this.props;
+    const { itemCategoriesLoading, itemCategoriesByPhysicalStoreId } =
+      this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
     if (itemCategoriesLoading) return null;
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+      <Form
+        layout="horizontal"
+        onFinish={this.handleFinish}
+        onFieldsChange={this.handleFieldsChange}
+      >
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
@@ -139,12 +141,11 @@ class NewForm extends Component {
   }
 }
 
-
 export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithItemCategoriesByPhysicalStore(),
-  graphql(CREATE_STOCK_ITEM, {
+  withMutation(CREATE_STOCK_ITEM, {
     name: 'createStockItem',
     options: {
       refetchQueries: ['pagedStockItems'],

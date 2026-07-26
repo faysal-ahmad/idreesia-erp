@@ -10,12 +10,12 @@ export default {
     usedCount: async dutyLocationType =>
       KarkunDuties.find({
         locationId: { $eq: dutyLocationType._id },
-      }).count(),
+      }).countAsync(),
   },
 
   Query: {
-    allDutyLocations: async () => DutyLocations.find({}).fetch(),
-    dutyLocationById: async (obj, { id }) => DutyLocations.findOne(id),
+    allDutyLocations: async () => DutyLocations.find({}).fetchAsync(),
+    dutyLocationById: async (obj, { id }) => DutyLocations.findOneAsync(id),
   },
 
   Mutation: {
@@ -27,7 +27,7 @@ export default {
       }
 
       const date = new Date();
-      const dutyLocationId = DutyLocations.insert({
+      const dutyLocationId = await DutyLocations.insertAsync({
         name,
         createdAt: date,
         createdBy: user._id,
@@ -35,7 +35,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return DutyLocations.findOne(dutyLocationId);
+      return DutyLocations.findOneAsync(dutyLocationId);
     },
 
     updateDutyLocation: async (obj, { id, name }, { user }) => {
@@ -46,7 +46,7 @@ export default {
       }
 
       const date = new Date();
-      DutyLocations.update(id, {
+      await DutyLocations.updateAsync(id, {
         $set: {
           name,
           updatedAt: date,
@@ -54,7 +54,7 @@ export default {
         },
       });
 
-      return DutyLocations.findOne(id);
+      return DutyLocations.findOneAsync(id);
     },
 
     removeDutyLocation: async (obj, { _id }, { user }) => {
@@ -64,9 +64,9 @@ export default {
         );
       }
 
-      const usedCount = KarkunDuties.find({
+      const usedCount = await KarkunDuties.find({
         locationId: { $eq: _id },
-      }).count();
+      }).countAsync();
 
       if (usedCount > 0) {
         throw new Error(
@@ -74,7 +74,7 @@ export default {
         );
       }
 
-      return DutyLocations.remove(_id);
+      return DutyLocations.removeAsync(_id);
     },
   },
 };

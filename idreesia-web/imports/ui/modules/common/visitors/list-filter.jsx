@@ -162,64 +162,72 @@ const ListFilter = ({
   );
 
   return (
-    <Collapse style={ContainerStyle}>
-      <Collapse.Panel header="Filter" key="1" extra={refreshButton()}>
-        <Form form={form} layout="horizontal" onFinish={handleFinish}>
-          <InputTextField
-            fieldName="name"
-            fieldLabel="Name"
-            required={false}
-            fieldLayout={formItemLayout}
-            initialValue={name}
-          />
-          <InputCnicField
-            fieldName="cnicNumber"
-            fieldLabel="CNIC Number"
-            required={false}
-            requiredMessage="Please input a valid CNIC number."
-            fieldLayout={formItemLayout}
-            initialValue={cnicNumber}
-          />
-          <InputMobileField
-            fieldName="phoneNumber"
-            fieldLabel="Phone Number"
-            required={false}
-            fieldLayout={formItemLayout}
-            initialValue={phoneNumber}
-          />
-          <SelectField
-            data={distinctCities}
-            getDataValue={cityName => cityName}
-            getDataText={cityName => cityName}
-            initialValue={city}
-            fieldName="city"
-            fieldLabel="City"
-            fieldLayout={formItemLayout}
-          />
-          <EhadDurationFilterField
-            fieldName="ehadDuration"
-            fieldLabel="Ehad Duration"
-            required={false}
-            fieldLayout={formItemLayout}
-            initialValue={ehadDuration}
-          />
-          {additionalInfoFilter}
-          {dataSourceFilter}
-          {updatedBetweenField}
-          <Form.Item {...buttonItemLayout}>
-            <Row type="flex" justify="end">
-              <Button type="default" onClick={handleReset}>
-                Reset
-              </Button>
-              &nbsp;
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Collapse.Panel>
-    </Collapse>
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: refreshButton(),
+          children: (
+            <Form form={form} layout="horizontal" onFinish={handleFinish}>
+              <InputTextField
+                fieldName="name"
+                fieldLabel="Name"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={name}
+              />
+              <InputCnicField
+                fieldName="cnicNumber"
+                fieldLabel="CNIC Number"
+                required={false}
+                requiredMessage="Please input a valid CNIC number."
+                fieldLayout={formItemLayout}
+                initialValue={cnicNumber}
+              />
+              <InputMobileField
+                fieldName="phoneNumber"
+                fieldLabel="Phone Number"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={phoneNumber}
+              />
+              <SelectField
+                data={distinctCities}
+                getDataValue={cityName => cityName}
+                getDataText={cityName => cityName}
+                initialValue={city}
+                fieldName="city"
+                fieldLabel="City"
+                fieldLayout={formItemLayout}
+              />
+              <EhadDurationFilterField
+                fieldName="ehadDuration"
+                fieldLabel="Ehad Duration"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={ehadDuration}
+              />
+              {additionalInfoFilter}
+              {dataSourceFilter}
+              {updatedBetweenField}
+              <Form.Item {...buttonItemLayout}>
+                <Row type="flex" justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
   );
 };
 

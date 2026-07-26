@@ -12,7 +12,7 @@ export default {
     image: async visitorType => {
       const { imageId } = visitorType;
       if (imageId) {
-        return Attachments.findOne({ _id: { $eq: imageId } });
+        return Attachments.findOneAsync({ _id: { $eq: imageId } });
       }
 
       return null;
@@ -21,21 +21,15 @@ export default {
 
   Query: {
     distinctCities: async () => {
-      const distincFunction = Meteor.wrapAsync(
-        People.rawCollection().distinct,
-        People.rawCollection()
-      );
-
-      return compact(distincFunction('visitorData.city'));
+      const cities = await People.rawCollection().distinct('visitorData.city');
+      return compact(cities);
     },
 
     distinctCountries: async () => {
-      const distincFunction = Meteor.wrapAsync(
-        People.rawCollection().distinct,
-        People.rawCollection()
+      const countries = await People.rawCollection().distinct(
+        'visitorData.country'
       );
-
-      return compact(distincFunction('visitorData.country'));
+      return compact(countries);
     },
 
     pagedVisitors: async (obj, { filter }) =>
@@ -63,7 +57,7 @@ export default {
 
       // If a city matching the existing spellings is present in the outstation
       // cities list, then do not allow updating the spellings.
-      const outstationCity = Cities.findOne({
+      const outstationCity = await Cities.findOneAsync({
         name: existingSpelling,
       });
 
@@ -74,7 +68,7 @@ export default {
       }
 
       const date = new Date();
-      const count = People.update(
+      const count = await People.updateAsync(
         {
           'visitorData.city': { $eq: existingSpelling },
         },

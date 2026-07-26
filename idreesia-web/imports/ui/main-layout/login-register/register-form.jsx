@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Card, Divider, Flex, Form, Input, Typography, message } from 'antd';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client/react';
 
 import { REGISTER_USER } from '../gql';
 

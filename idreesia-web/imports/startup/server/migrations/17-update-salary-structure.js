@@ -4,8 +4,8 @@ import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 
 Migrations.add({
   version: 17,
-  up() {
-    Salaries.update(
+  async up() {
+    await Salaries.updateAsync(
       {},
       {
         $set: {

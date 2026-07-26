@@ -5,18 +5,18 @@ import {
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
 
-export function createMonthlyAttendance(formattedMonth, user) {
+export async function createMonthlyAttendance(formattedMonth, user) {
   let counter = 0;
   // Get all the people who are employees and have a job assigned to them
-  const people = People.find({
+  const people = await People.find({
     isEmployee: true,
     'employeeData.jobId': { $exists: true, $ne: null },
-  }).fetch();
+  }).fetchAsync();
 
   const date = new Date();
-  people.forEach(({ _id, employeeData: { jobId } }) => {
+  for (const { _id, employeeData: { jobId } } of people) {
     // Create a new attendance if one does not exist for this karkun/month/job combination
-    const existingAttendance = Attendances.findOne({
+    const existingAttendance = await Attendances.findOneAsync({
       karkunId: _id,
       jobId,
       month: formattedMonth,
@@ -24,7 +24,7 @@ export function createMonthlyAttendance(formattedMonth, user) {
 
     if (!existingAttendance) {
       counter++;
-      Attendances.insert({
+      await Attendances.insertAsync({
         karkunId: _id,
         jobId,
         month: formattedMonth,
@@ -37,15 +37,15 @@ export function createMonthlyAttendance(formattedMonth, user) {
         createdBy: user._id,
       });
     }
-  });
+  }
 
   // Get all the current karkun duties
-  const karkunDuties = KarkunDuties.find({}).fetch();
+  const karkunDuties = await KarkunDuties.find({}).fetchAsync();
 
-  karkunDuties.forEach(({ karkunId, dutyId, shiftId }) => {
+  for (const { karkunId, dutyId, shiftId } of karkunDuties) {
     // If there is already an attendance present for this karkun/month/duty/shift combination
     // then update that, otherwise insert a new one.
-    const existingAttendance = Attendances.findOne({
+    const existingAttendance = await Attendances.findOneAsync({
       karkunId,
       dutyId,
       shiftId,
@@ -54,7 +54,7 @@ export function createMonthlyAttendance(formattedMonth, user) {
 
     if (!existingAttendance) {
       counter++;
-      Attendances.insert({
+      await Attendances.insertAsync({
         karkunId,
         dutyId,
         shiftId,
@@ -66,7 +66,7 @@ export function createMonthlyAttendance(formattedMonth, user) {
         meetingCardBarcodeId: Random.id(8),
       });
     }
-  });
+  }
 
   return counter;
 }

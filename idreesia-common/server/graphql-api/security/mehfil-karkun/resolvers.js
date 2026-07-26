@@ -9,10 +9,11 @@ import {
 export default {
   MehfilKarkunType: {
     mehfil: async mehfilKarkunType =>
-      Mehfils.findOne(mehfilKarkunType.mehfilId),
+      Mehfils.findOneAsync(mehfilKarkunType.mehfilId),
     duty: async mehfilKarkunType =>
-      MehfilDuties.findOne(mehfilKarkunType.dutyId),
-    karkun: async mehfilKarkunType => People.findOne(mehfilKarkunType.karkunId),
+      MehfilDuties.findOneAsync(mehfilKarkunType.dutyId),
+    karkun: async mehfilKarkunType =>
+      People.findOneAsync(mehfilKarkunType.karkunId),
   },
 
   Query: {
@@ -21,28 +22,28 @@ export default {
         return MehfilKarkuns.find(
           { mehfilId, dutyId },
           { $sort: { dutyId: 1 } }
-        ).fetch();
+        ).fetchAsync();
       }
 
-      return MehfilKarkuns.find({ mehfilId }).fetch();
+      return MehfilKarkuns.find({ mehfilId }).fetchAsync();
     },
 
     mehfilKarkunsByIds: async (obj, { ids }) => {
       const idsArray = ids.split(',');
       return MehfilKarkuns.find({
         _id: { $in: idsArray },
-      }).fetch();
+      }).fetchAsync();
     },
 
     mehfilKarkunByBarcodeId: async (obj, { barcode }) =>
-      MehfilKarkuns.findOne({
+      MehfilKarkuns.findOneAsync({
         dutyCardBarcodeId: barcode,
       }),
   },
 
   Mutation: {
     addMehfilKarkun: async (obj, { mehfilId, karkunId, dutyId }, { user }) => {
-      const existingMehfilKarkun = MehfilKarkuns.findOne({
+      const existingMehfilKarkun = await MehfilKarkuns.findOneAsync({
         mehfilId,
         karkunId,
         dutyId,
@@ -51,7 +52,7 @@ export default {
       if (existingMehfilKarkun) return existingMehfilKarkun;
 
       const date = new Date();
-      const mehfilKarkunId = MehfilKarkuns.insert({
+      const mehfilKarkunId = await MehfilKarkuns.insertAsync({
         mehfilId,
         karkunId,
         dutyId,
@@ -62,12 +63,12 @@ export default {
         updatedBy: user._id,
       });
 
-      return MehfilKarkuns.findOne(mehfilKarkunId);
+      return MehfilKarkuns.findOneAsync(mehfilKarkunId);
     },
 
     setDutyDetail: async (obj, { ids, dutyDetail }, { user }) => {
       const date = new Date();
-      MehfilKarkuns.update(
+      await MehfilKarkuns.updateAsync(
         {
           _id: { $in: ids },
         },
@@ -81,9 +82,9 @@ export default {
         { multi: true }
       );
 
-      return MehfilKarkuns.find({ _id: { $in: ids } }).fetch();
+      return MehfilKarkuns.find({ _id: { $in: ids } }).fetchAsync();
     },
 
-    removeMehfilKarkun: async (obj, { _id }) => MehfilKarkuns.remove(_id),
+    removeMehfilKarkun: async (obj, { _id }) => MehfilKarkuns.removeAsync(_id),
   },
 };

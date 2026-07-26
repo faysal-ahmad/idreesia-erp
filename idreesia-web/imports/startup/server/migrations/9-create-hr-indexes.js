@@ -4,8 +4,8 @@ import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 
 Migrations.add({
   version: 9,
-  up() {
+  async up() {
     const karkuns = Karkuns.rawCollection();
-    karkuns.createIndex({ city: 1 }, { background: true });
+    await karkuns.createIndex({ city: 1 }, { background: true });
   },
 });

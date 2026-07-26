@@ -1,60 +1,56 @@
-import moment from 'moment';
+import { subMonths } from 'date-fns';
 import { parse } from 'query-string';
 
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 
-export function getStatistics(physicalStoreId) {
-  const itemsWithImages = StockItems.find({
+export async function getStatistics(physicalStoreId) {
+  const itemsWithImages = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     imageId: { $ne: null },
-  }).count();
+  }).countAsync();
 
-  const itemsWithoutImages = StockItems.find({
+  const itemsWithoutImages = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     $or: [{ imageId: { $exists: false } }, { imageId: { $eq: null } }],
-  }).count();
+  }).countAsync();
 
-  const itemsWithPositiveStockLevel = StockItems.find({
+  const itemsWithPositiveStockLevel = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     currentStockLevel: { $gt: 0 },
-  }).count();
+  }).countAsync();
 
-  const itemsWithLessThanMinStockLevel = StockItems.find({
+  const itemsWithLessThanMinStockLevel = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     minStockLevel: { $ne: null },
     $expr: { $gt: ['$minStockLevel', '$currentStockLevel'] },
-  }).count();
+  }).countAsync();
 
-  const itemsWithNegativeStockLevel = StockItems.find({
+  const itemsWithNegativeStockLevel = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     currentStockLevel: { $lt: 0 },
-  }).count();
+  }).countAsync();
 
-  const m3 = moment()
-    .subtract(3, 'months')
-    .toDate();
-  const m6 = moment()
-    .subtract(6, 'months')
-    .toDate();
+  const m3 = subMonths(new Date(), 3);
+  const m6 = subMonths(new Date(), 6);
 
-  const itemsVerifiedLessThanThreeMonthsAgo = StockItems.find({
+  const itemsVerifiedLessThanThreeMonthsAgo = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
-  }).count();
+  }).countAsync();
 
-  const itemsVerifiedThreeToSixMonthsAgo = StockItems.find({
+  const itemsVerifiedThreeToSixMonthsAgo = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     $and: [
       { verifiedOn: { $ne: null } },
       { verifiedOn: { $gt: m6 } },
       { verifiedOn: { $lt: m3 } },
     ],
-  }).count();
+  }).countAsync();
 
-  const itemsVerifiedMoreThanSixMonthsAgo = StockItems.find({
+  const itemsVerifiedMoreThanSixMonthsAgo = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
     $or: [{ verifiedOn: { $eq: null } }, { verifiedOn: { $lt: m6 } }],
-  }).count();
+  }).countAsync();
 
   return {
     physicalStoreId,
@@ -108,21 +104,15 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
   }
 
   if (verifyDuration === 'less-than-3-months-ago') {
-    const m3 = moment()
-      .subtract(3, 'months')
-      .toDate();
+    const m3 = subMonths(new Date(), 3);
     pipeline.push({
       $match: {
         $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
       },
     });
   } else if (verifyDuration === 'between-3-to-6-months-ago') {
-    const m3 = moment()
-      .subtract(3, 'months')
-      .toDate();
-    const m6 = moment()
-      .subtract(6, 'months')
-      .toDate();
+    const m3 = subMonths(new Date(), 3);
+    const m6 = subMonths(new Date(), 6);
     pipeline.push({
       $match: {
         $and: [
@@ -133,9 +123,7 @@ export async function getPagedStockItems(queryString, physicalStoreId) {
       },
     });
   } else if (verifyDuration === 'more-than-6-months-ago') {
-    const m6 = moment()
-      .subtract(6, 'months')
-      .toDate();
+    const m6 = subMonths(new Date(), 6);
     pipeline.push({
       $match: {
         $or: [{ verifiedOn: { $eq: null } }, { verifiedOn: { $lt: m6 } }],

@@ -4,11 +4,11 @@ import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/securit
 
 Migrations.add({
   version: 18,
-  up() {
+  async up() {
     const mehfilKarkuns = MehfilKarkuns.rawCollection();
-    mehfilKarkuns.createIndex({ mehfilId: 1 }, { background: true });
-    mehfilKarkuns.createIndex({ karkunId: 1 }, { background: true });
-    mehfilKarkuns.createIndex({ dutyName: 1 }, { background: true });
-    mehfilKarkuns.createIndex({ dutyCardBarcodeId: 1 }, { background: true });
+    await mehfilKarkuns.createIndex({ mehfilId: 1 }, { background: true });
+    await mehfilKarkuns.createIndex({ karkunId: 1 }, { background: true });
+    await mehfilKarkuns.createIndex({ dutyName: 1 }, { background: true });
+    await mehfilKarkuns.createIndex({ dutyCardBarcodeId: 1 }, { background: true });
   },
 });

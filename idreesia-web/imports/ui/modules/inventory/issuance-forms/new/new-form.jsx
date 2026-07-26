@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
 import { Divider, Form, message } from 'antd';
 
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
@@ -57,7 +57,7 @@ class NewForm extends Component {
 
   handleFieldsChange = () => {
     this.setState({ isFieldsTouched: true });
-  }
+  };
 
   handleFinish = ({
     issueDate,
@@ -90,7 +90,8 @@ class NewForm extends Component {
   };
 
   render() {
-    const { physicalStoreId, locationsLoading, locationsByPhysicalStoreId } = this.props;
+    const { physicalStoreId, locationsLoading, locationsByPhysicalStoreId } =
+      this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
     if (locationsLoading) return null;
 
@@ -102,7 +103,13 @@ class NewForm extends Component {
     ];
 
     return (
-      <Form ref={this.formRef} layout="horizontal" style={FormStyle} onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+      <Form
+        ref={this.formRef}
+        layout="horizontal"
+        style={FormStyle}
+        onFinish={this.handleFinish}
+        onFieldsChange={this.handleFieldsChange}
+      >
         <DateField
           fieldName="issueDate"
           fieldLabel="Issue Date"
@@ -176,7 +183,7 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   WithLocationsByPhysicalStore(),
-  graphql(CREATE_ISSUANCE_FORM, {
+  withMutation(CREATE_ISSUANCE_FORM, {
     name: 'createIssuanceForm',
     options: {
       refetchQueries: [

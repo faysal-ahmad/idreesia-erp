@@ -7,18 +7,18 @@ import {
 
 Migrations.add({
   version: 15,
-  up() {
+  async up() {
     const attendances = Attendances.rawCollection();
-    attendances.createIndex({ karkunId: 1 }, { background: false });
-    attendances.createIndex({ dutyId: 1 }, { background: false });
-    attendances.createIndex({ shiftId: 1 }, { background: false });
-    attendances.createIndex({ jobId: 1 }, { background: false });
-    attendances.createIndex({ month: 1 }, { background: false });
-    attendances.createIndex({ meetingCardBarcodeId: 1 }, { background: false });
+    await attendances.createIndex({ karkunId: 1 }, { background: false });
+    await attendances.createIndex({ dutyId: 1 }, { background: false });
+    await attendances.createIndex({ shiftId: 1 }, { background: false });
+    await attendances.createIndex({ jobId: 1 }, { background: false });
+    await attendances.createIndex({ month: 1 }, { background: false });
+    await attendances.createIndex({ meetingCardBarcodeId: 1 }, { background: false });
 
     const salaries = Salaries.rawCollection();
-    salaries.createIndex({ karkunId: 1 }, { background: false });
-    salaries.createIndex({ jobId: 1 }, { background: false });
-    salaries.createIndex({ month: 1 }, { background: false });
+    await salaries.createIndex({ karkunId: 1 }, { background: false });
+    await salaries.createIndex({ jobId: 1 }, { background: false });
+    await salaries.createIndex({ month: 1 }, { background: false });
   },
 });

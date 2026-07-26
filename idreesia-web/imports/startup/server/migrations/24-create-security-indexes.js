@@ -4,9 +4,9 @@ import { VisitorMulakaats } from 'meteor/idreesia-common/server/collections/secu
 
 Migrations.add({
   version: 24,
-  up() {
+  async up() {
     const visitorMulakaats = VisitorMulakaats.rawCollection();
-    visitorMulakaats.createIndex({ visitorId: 1 }, { background: true });
-    visitorMulakaats.createIndex({ mulakaatDate: 1 }, { background: true });
+    await visitorMulakaats.createIndex({ visitorId: 1 }, { background: true });
+    await visitorMulakaats.createIndex({ mulakaatDate: 1 }, { background: true });
   },
 });

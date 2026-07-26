@@ -6,8 +6,8 @@ import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 33,
-  up() {
-    ImdadRequests.update(
+  async up() {
+    await ImdadRequests.updateAsync(
       {
         dataSource: 'telephone-room',
       },
@@ -19,7 +19,7 @@ Migrations.add({
       { multi: true }
     );
 
-    Visitors.update(
+    await Visitors.updateAsync(
       {
         dataSource: 'telephone-room',
       },
@@ -31,19 +31,19 @@ Migrations.add({
       { multi: true }
     );
 
-    const users = Users.find({}).fetch();
-    users.forEach(user => {
+    const users = await Users.find({}).fetchAsync();
+    for (const user of users) {
       const { permissions } = user;
       if (permissions) {
         const updatedPermissions = permissions.map(permission =>
           permission.replace('telephone-room', 'operations')
         );
-        Users.update(user._id, {
+        await Users.updateAsync(user._id, {
           $set: {
             permissions: updatedPermissions,
           },
         });
       }
-    });
+    }
   },
 });

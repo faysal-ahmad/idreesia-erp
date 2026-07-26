@@ -21,26 +21,26 @@ export default {
       return dayjs().isAfter(toDate);
     },
     refVisitor: async visitorStay => {
-      const person = People.findOne({
+      const person = await People.findOneAsync({
         _id: { $eq: visitorStay.visitorId },
       });
       return People.personToVisitor(person);
     },
     dutyName: async visitorStay => {
       if (!visitorStay.dutyId) return null;
-      const duty = Duties.findOne(visitorStay.dutyId);
+      const duty = await Duties.findOneAsync(visitorStay.dutyId);
       return duty ? duty.name : null;
     },
     shiftName: async visitorStay => {
       if (!visitorStay.shiftId) return null;
-      const shift = DutyShifts.findOne(visitorStay.shiftId);
+      const shift = await DutyShifts.findOneAsync(visitorStay.shiftId);
       return shift ? shift.name : null;
     },
     dutyShiftName: async visitorStay => {
       if (!visitorStay.dutyId) return null;
-      const duty = Duties.findOne(visitorStay.dutyId);
+      const duty = await Duties.findOneAsync(visitorStay.dutyId);
       const shift = visitorStay.shiftId
-        ? DutyShifts.findOne(visitorStay.shiftId)
+        ? await DutyShifts.findOneAsync(visitorStay.shiftId)
         : null;
 
       if (!shift) return duty.name;
@@ -54,15 +54,14 @@ export default {
     pagedVisitorStaysByVisitorId: async (obj, { visitorId }) =>
       getVisitorStays(`?visitorId=${visitorId}&pageSize=5`),
 
-    visitorStayById: async (obj, { _id }) => VisitorStays.findOne(_id),
+    visitorStayById: async (obj, { _id }) => VisitorStays.findOneAsync(_id),
 
     distinctStayAllowedBy: async () => {
-      const distincFunction = Meteor.wrapAsync(
-        VisitorStays.rawCollection().distinct,
-        VisitorStays.rawCollection()
+      const distinctValues = await VisitorStays.rawCollection().distinct(
+        'stayAllowedBy'
       );
 
-      return compact(distincFunction('stayAllowedBy'));
+      return compact(distinctValues);
     },
   },
 
@@ -87,7 +86,7 @@ export default {
 
       // Before creating a stay, ensure that there isn't already another stay created
       // for the current date for this visitor.
-      const existingStay = VisitorStays.findOne({
+      const existingStay = await VisitorStays.findOneAsync({
         visitorId,
         fromDate: fromDate.startOf('day').toDate(),
         cancelledDate: { $exists: false },
@@ -98,7 +97,7 @@ export default {
       }
 
       const date = new Date();
-      const visitorStayId = VisitorStays.insert({
+      const visitorStayId = await VisitorStays.insertAsync({
         visitorId,
         fromDate: fromDate.startOf('day').toDate(),
         toDate: toDate.endOf('day').toDate(),
@@ -113,7 +112,7 @@ export default {
         updatedBy: user._id,
       });
 
-      return VisitorStays.findOne(visitorStayId);
+      return VisitorStays.findOneAsync(visitorStayId);
     },
 
     updateVisitorStay: async (
@@ -126,7 +125,7 @@ export default {
       const numOfDays = mToDate.diff(mFromDate, 'days') + 1;
 
       const date = new Date();
-      VisitorStays.update(_id, {
+      await VisitorStays.updateAsync(_id, {
         $set: {
           fromDate: mFromDate.startOf('day').toDate(),
           toDate: mToDate.endOf('day').toDate(),
@@ -140,7 +139,7 @@ export default {
         },
       });
 
-      return VisitorStays.findOne(_id);
+      return VisitorStays.findOneAsync(_id);
     },
 
     fixNameSpelling: async (
@@ -149,7 +148,7 @@ export default {
       { user }
     ) => {
       const date = new Date();
-      const count = VisitorStays.update(
+      const count = await VisitorStays.updateAsync(
         {
           stayAllowedBy: { $eq: existingSpelling },
         },
@@ -168,7 +167,7 @@ export default {
 
     cancelVisitorStay: async (obj, { _id }, { user }) => {
       const date = new Date();
-      VisitorStays.update(_id, {
+      await VisitorStays.updateAsync(_id, {
         $set: {
           cancelledDate: date,
           updatedAt: date,
@@ -176,9 +175,9 @@ export default {
         },
       });
 
-      return VisitorStays.findOne(_id);
+      return VisitorStays.findOneAsync(_id);
     },
 
-    deleteVisitorStay: async (obj, { _id }) => VisitorStays.remove(_id),
+    deleteVisitorStay: async (obj, { _id }) => VisitorStays.removeAsync(_id),
   },
 };

@@ -7,12 +7,12 @@ import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
 Migrations.add({
   version: 28,
-  up() {
-    const user = Meteor.users.findOne({ username: 'erp-admin' });
-    let multanCity = Cities.findOne({ name: 'Multan', country: 'Pakistan' });
+  async up() {
+    const user = await Meteor.users.findOneAsync({ username: 'erp-admin' });
+    let multanCity = await Cities.findOneAsync({ name: 'Multan', country: 'Pakistan' });
     if (!multanCity) {
       const date = new Date();
-      const multanCityId = Cities.insert({
+      const multanCityId = await Cities.insertAsync({
         name: 'Multan',
         country: 'Pakistan',
         createdAt: date,
@@ -21,13 +21,13 @@ Migrations.add({
         updatedBy: user._id,
       });
 
-      multanCity = Cities.findOne(multanCityId);
+      multanCity = await Cities.findOneAsync(multanCityId);
     }
 
     // Remove the dummy 'Pindaal Incharge' karkun
-    Karkuns.remove({ name: 'Pindaal Incharge' });
+    await Karkuns.removeAsync({ name: 'Pindaal Incharge' });
 
-    Karkuns.update(
+    await Karkuns.updateAsync(
       { cityId: { $exists: false } },
       {
         $set: {
@@ -38,21 +38,21 @@ Migrations.add({
     );
 
     const date = new Date();
-    const msKarkuns = Karkuns.find({ cityId: multanCity._id }).fetch();
-    msKarkuns.forEach(karkun => {
+    const msKarkuns = await Karkuns.find({ cityId: multanCity._id }).fetchAsync();
+    for (const karkun of msKarkuns) {
       if (
         karkun.parentName &&
         karkun.cnicNumber &&
         karkun.contactNumber1 &&
         karkun.ehadDate &&
         karkun.referenceName &&
-        !Visitors.isCnicInUse(karkun.cnicNumber) &&
-        !Visitors.isContactNumberInUse(karkun.contactNumber1)
+        !(await Visitors.isCnicInUse(karkun.cnicNumber)) &&
+        !(await Visitors.isContactNumberInUse(karkun.contactNumber1))
       ) {
         let updateImageId = null;
         if (karkun.imageId) {
-          const image = Attachments.findOne(karkun.imageId);
-          updateImageId = Attachments.insert({
+          const image = await Attachments.findOneAsync(karkun.imageId);
+          updateImageId = await Attachments.insertAsync({
             name: image.name,
             description: image.description,
             mimeType: image.mimeType,
@@ -64,7 +64,7 @@ Migrations.add({
           });
         }
 
-        Visitors.insert({
+        await Visitors.insertAsync({
           karkunId: karkun._id,
           name: karkun.name,
           parentName: karkun.parentName,
@@ -83,6 +83,6 @@ Migrations.add({
           updatedBy: user._id,
         });
       }
-    });
+    }
   },
 });

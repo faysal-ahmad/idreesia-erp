@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { graphql } from 'react-apollo';
-import moment from 'moment';
+import { useQuery } from '@apollo/client/react';
+import { addMonths, startOfMonth } from 'date-fns';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { Row, Col, Spin, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
@@ -44,10 +44,16 @@ SearchResultRow.propTypes = {
 };
 
 const SearchResult = props => {
-  const { barcode, loading, attendanceByBarcodeId } = props;
+  const { barcode } = props;
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_ID, {
+    variables: { barcodeId: barcode },
+    skip: !barcode,
+  });
+
   if (!barcode) return null;
   if (loading) return <Spin size="large" />;
 
+  const attendanceByBarcodeId = data ? data.attendanceByBarcodeId : null;
   if (!attendanceByBarcodeId) {
     message.error(`No records found against scanned barcode ${barcode}`, 2);
     return null;
@@ -62,9 +68,9 @@ const SearchResult = props => {
     </Col>
   ) : null;
 
-  const displayMonth = moment(`01-${month}`, 'DD-MM-YYYY')
-    .add(1, 'months')
-    .startOf('month');
+  const displayMonth = startOfMonth(
+    addMonths(parseDate(`01-${month}`, 'DD-MM-YYYY'), 1)
+  );
 
   return (
     <Row type="flex" gutter={16}>
@@ -82,7 +88,7 @@ const SearchResult = props => {
         {job ? <SearchResultRow label="Job" value={job.name} /> : null}
         <SearchResultRow
           label="Month"
-          value={displayMonth.format('D MMM YYYY')}
+          value={formatDate(displayMonth, 'D MMM YYYY')}
         />
         <SearchResultRow label="Attendance" value={`${percentage}%`} />
       </Col>
@@ -91,14 +97,7 @@ const SearchResult = props => {
 };
 
 SearchResult.propTypes = {
-  loading: PropTypes.bool,
   barcode: PropTypes.string,
-  attendanceByBarcodeId: PropTypes.object,
 };
 
-export default flowRight(
-  graphql(ATTENDANCE_BY_BARCODE_ID, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ barcode }) => ({ variables: { barcodeId: barcode } }),
-  })
-)(SearchResult);
+export default SearchResult;

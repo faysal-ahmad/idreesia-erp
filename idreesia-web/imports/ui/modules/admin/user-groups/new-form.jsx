@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { flowRight, values } from 'meteor/idreesia-common/utilities/lodash';
+import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import {
   InputTextField,
@@ -15,28 +15,21 @@ import {
 
 import { CREATE_USER_GROUP } from './gql';
 
-class NewForm extends Component {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    createUserGroup: PropTypes.func,
-  };
+const NewForm = ({ history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [createUserGroup] = useMutation(CREATE_USER_GROUP, {
+    refetchQueries: ['pagedUserGroups'],
+  });
 
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ name, moduleName, description }) => {
-    const { createUserGroup, history } = this.props;
+  const handleFinish = ({ name, moduleName, description }) => {
     createUserGroup({
       variables: {
         name,
@@ -52,53 +45,47 @@ class NewForm extends Component {
       });
   };
 
-  render() {
-    const isFieldsTouched = this.state.isFieldsTouched;
-    const moduleNames = values(ModuleNames);
-    const moduleNamesData = moduleNames.map(name => ({
-      value: name,
-      text: name,
-    }));
-  
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Group name"
-          required
-          requiredMessage="Please input a name for the group."
-        />
+  const moduleNames = values(ModuleNames);
+  const moduleNamesData = moduleNames.map(name => ({
+    value: name,
+    text: name,
+  }));
 
-        <SelectField
-          data={moduleNamesData}
-          getDataValue={({ value }) => value}
-          getDataText={({ text }) => text}
-          fieldName="moduleName"
-          fieldLabel="Module Name"
-          required
-          requiredMessage="Please select a module for the group."
-        />
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Group name"
+        required
+        requiredMessage="Please input a name for the group."
+      />
 
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-        />
+      <SelectField
+        data={moduleNamesData}
+        getDataValue={({ value }) => value}
+        getDataText={({ text }) => text}
+        fieldName="moduleName"
+        fieldLabel="Module Name"
+        required
+        requiredMessage="Please select a module for the group."
+      />
 
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+      <InputTextAreaField
+        fieldName="description"
+        fieldLabel="Description"
+      />
 
-export default flowRight(
-  graphql(CREATE_USER_GROUP, {
-    name: 'createUserGroup',
-    options: {
-      refetchQueries: ['pagedUserGroups'],
-    },
-  }),
-  WithBreadcrumbs(['Admin', 'User Groups', 'New'])
-)(NewForm);
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
+
+NewForm.propTypes = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+};
+
+export default WithBreadcrumbs(['Admin', 'User Groups', 'New'])(NewForm);

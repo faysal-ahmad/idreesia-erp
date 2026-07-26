@@ -10,10 +10,10 @@ class Attachments extends Mongo.Collection {
     return attachments;
   }
 
-  removeAttachment(attachmentId) {
-    const attachment = this.findOne(attachmentId);
-    RemovedAttachments.insert(attachment);
-    this.remove(attachmentId);
+  async removeAttachment(attachmentId) {
+    const attachment = await this.findOneAsync(attachmentId);
+    await RemovedAttachments.insertAsync(attachment);
+    await this.removeAsync(attachmentId);
   }
 }
 

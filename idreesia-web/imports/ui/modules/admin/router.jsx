@@ -2,12 +2,6 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
-import {
-  AdminJobsList,
-  AdminJobsNewAccountsImport,
-  AdminJobsNewVouchersImport,
-  AdminJobsNewAccountsCalculation,
-} from './admin-jobs';
 import { UsersNewForm, UsersEditForm, UsersList } from './users';
 import {
   UserGroupsNewForm,
@@ -19,28 +13,10 @@ import {
   PhysicalStoresEditForm,
   PhysicalStoresList,
 } from './physical-stores';
-import {
-  CompaniesNewForm,
-  CompaniesEditForm,
-  CompaniesList,
-} from './companies';
+import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 
 const Router = () => (
   <Switch>
-    <Route
-      path={paths.adminJobsNewAccountsImportPath}
-      component={AdminJobsNewAccountsImport}
-    />
-    <Route
-      path={paths.adminJobsNewVouchersImportPath}
-      component={AdminJobsNewVouchersImport}
-    />
-    <Route
-      path={paths.adminJobsNewAccountsCalculationPath}
-      component={AdminJobsNewAccountsCalculation}
-    />
-    <Route path={paths.adminJobsPath} component={AdminJobsList} />
-
     <Route path={paths.usersNewFormPath} component={UsersNewForm} />
     <Route path={paths.usersEditFormPath} component={UsersEditForm} />
     <Route path={paths.usersPath} component={UsersList} />
@@ -59,9 +35,9 @@ const Router = () => (
     />
     <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
-    <Route path={paths.companiesNewFormPath} component={CompaniesNewForm} />
-    <Route path={paths.companiesEditFormPath} component={CompaniesEditForm} />
-    <Route path={paths.companiesPath} component={CompaniesList} />
+    <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
+    <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />
+    <Route path={paths.citiesPath} component={CitiesList} />
   </Switch>
 );
 

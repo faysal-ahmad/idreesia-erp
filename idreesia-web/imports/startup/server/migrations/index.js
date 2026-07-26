@@ -42,11 +42,14 @@ import './38-karkuns-visitors-to-people';
 import './39-update-karkun-references';
 import './40-security-mehfil-duties';
 import './41-inventory-stockitem-indexes';
+import './42-drop-accounts-collections';
+import './43-drop-companies-portals-amaanat-logs';
+import './44-drop-operations-collections';
 
 Migrations.config({
   log: true,
 });
 
-Meteor.startup(() => {
-  Migrations.migrateTo('latest');
+Meteor.startup(async () => {
+  await Migrations.migrateTo('latest');
 });

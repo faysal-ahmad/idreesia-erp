@@ -1,46 +1,37 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class GeneralInfo extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
+const GeneralInfo = ({ groupId, history }) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const { data, loading } = useQuery(formQuery, {
+    variables: { _id: groupId },
+  });
+  const [updateUserGroup] = useMutation(formMutation, {
+    refetchQueries: ['pagedUserGroups'],
+  });
+  const { userGroupById } = data || {};
 
-    loading: PropTypes.bool,
-    groupId: PropTypes.string,
-    userGroupById: PropTypes.object,
-    updateUserGroup: PropTypes.func,
-  };
-
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  }
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
+  };
 
-  handleFinish = ({ name, description }) => {
-    const { history, userGroupById, updateUserGroup } = this.props;
+  const handleFinish = ({ name, description }) => {
     updateUserGroup({
       variables: {
-        _id: userGroupById.user._id,
+        _id: userGroupById._id,
         name,
         description,
       },
@@ -53,32 +44,37 @@ class GeneralInfo extends Component {
       });
   };
 
-  render() {
-    const { loading, userGroupById } = this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (loading) return null;
+  if (loading || !userGroupById) return null;
 
-    return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Name"
-          initialValue={userGroupById.name}
-        />
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        initialValue={userGroupById.name}
+      />
 
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-        />
+      <InputTextAreaField
+        fieldName="description"
+        fieldLabel="Description"
+        initialValue={userGroupById.description}
+      />
 
-        <FormButtonsSaveCancel
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-    );
-  }
-}
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
+
+GeneralInfo.propTypes = {
+  match: PropTypes.object,
+  history: PropTypes.object,
+  location: PropTypes.object,
+
+  groupId: PropTypes.string,
+};
 
 const formQuery = gql`
   query userGroupById($_id: String!) {
@@ -104,15 +100,4 @@ const formMutation = gql`
   }
 `;
 
-export default flowRight(
-  graphql(formMutation, {
-    name: 'updateUserGroup',
-    options: {
-      refetchQueries: ['pagedUserGroups'],
-    },
-  }),
-  graphql(formQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ groupId }) => ({ variables: { _id: groupId } }),
-  })
-)(GeneralInfo);
+export default GeneralInfo;

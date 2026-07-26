@@ -138,99 +138,111 @@ class ListFilter extends Component {
       karkunTypes.push('employees');
 
     return (
-      <Collapse style={ContainerStyle}>
-        <Collapse.Panel header="Filter" key="1" extra={this.refreshButton()}>
-          <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
-            <CheckboxGroupField
-              fieldName="karkunType"
-              fieldLabel="Karkun Type"
-              fieldLayout={formItemLayout}
-              options={[
-                { label: 'Volunteers', value: 'volunteers' },
-                { label: 'Employees', value: 'employees' },
-              ]}
-              initialValue={karkunTypes}
-            />
-            <InputTextField
-              fieldName="name"
-              fieldLabel="Name"
-              required={false}
-              fieldLayout={formItemLayout}
-              initialValue={name}
-            />
-            <InputCnicField
-              fieldName="cnicNumber"
-              fieldLabel="CNIC Number"
-              required={false}
-              requiredMessage="Please input a valid CNIC number."
-              fieldLayout={formItemLayout}
-              initialValue={cnicNumber}
-            />
-            <InputTextField
-              fieldName="phoneNumber"
-              fieldLabel="Phone Number"
-              required={false}
-              fieldLayout={formItemLayout}
-              initialValue={phoneNumber}
-            />
-            <SelectField
-              fieldName="bloodGroup"
-              fieldLabel="Blood Group"
-              required={false}
-              data={[
-                { label: 'A-', value: 'A-' },
-                { label: 'A+', value: 'Aplus' },
-                { label: 'B-', value: 'B-' },
-                { label: 'B+', value: 'Bplus' },
-                { label: 'AB-', value: 'AB-' },
-                { label: 'AB+', value: 'ABplus' },
-                { label: 'O-', value: 'O-' },
-                { label: 'O+', value: 'Oplus' },
-              ]}
-              getDataValue={({ value }) => value}
-              getDataText={({ label }) => label}
-              fieldLayout={formItemLayout}
-              initialValue={bloodGroup}
-            />
-            <LastTarteebFilterField
-              fieldName="lastTarteeb"
-              fieldLabel="Last Tarteeb"
-              required={false}
-              fieldLayout={formItemLayout}
-              initialValue={lastTarteeb}
-            />
-            <SelectField
-              fieldName="jobId"
-              fieldLabel="Job"
-              required={false}
-              data={allJobs}
-              getDataValue={({ _id }) => _id}
-              getDataText={({ name: _name }) => _name}
-              fieldLayout={formItemLayout}
-              initialValue={jobId}
-            />
-            <CascaderField
-              data={dutyShiftCascaderData}
-              fieldName="dutyIdShiftId"
-              fieldLabel="Duty/Shift"
-              fieldLayout={formItemLayout}
-              initialValue={[dutyId, dutyShiftId]}
-              required={false}
-            />
-            <Form.Item {...buttonItemLayout}>
-              <Row type="flex" justify="end">
-                <Button type="default" onClick={this.handleReset}>
-                  Reset
-                </Button>
-                &nbsp;
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-              </Row>
-            </Form.Item>
-          </Form>
-        </Collapse.Panel>
-      </Collapse>
+      <Collapse
+        style={ContainerStyle}
+        items={[
+          {
+            key: '1',
+            label: 'Filter',
+            extra: this.refreshButton(),
+            children: (
+              <Form
+                ref={this.formRef}
+                layout="horizontal"
+                onFinish={this.handleFinish}
+              >
+                <CheckboxGroupField
+                  fieldName="karkunType"
+                  fieldLabel="Karkun Type"
+                  fieldLayout={formItemLayout}
+                  options={[
+                    { label: 'Volunteers', value: 'volunteers' },
+                    { label: 'Employees', value: 'employees' },
+                  ]}
+                  initialValue={karkunTypes}
+                />
+                <InputTextField
+                  fieldName="name"
+                  fieldLabel="Name"
+                  required={false}
+                  fieldLayout={formItemLayout}
+                  initialValue={name}
+                />
+                <InputCnicField
+                  fieldName="cnicNumber"
+                  fieldLabel="CNIC Number"
+                  required={false}
+                  requiredMessage="Please input a valid CNIC number."
+                  fieldLayout={formItemLayout}
+                  initialValue={cnicNumber}
+                />
+                <InputTextField
+                  fieldName="phoneNumber"
+                  fieldLabel="Phone Number"
+                  required={false}
+                  fieldLayout={formItemLayout}
+                  initialValue={phoneNumber}
+                />
+                <SelectField
+                  fieldName="bloodGroup"
+                  fieldLabel="Blood Group"
+                  required={false}
+                  data={[
+                    { label: 'A-', value: 'A-' },
+                    { label: 'A+', value: 'Aplus' },
+                    { label: 'B-', value: 'B-' },
+                    { label: 'B+', value: 'Bplus' },
+                    { label: 'AB-', value: 'AB-' },
+                    { label: 'AB+', value: 'ABplus' },
+                    { label: 'O-', value: 'O-' },
+                    { label: 'O+', value: 'Oplus' },
+                  ]}
+                  getDataValue={({ value }) => value}
+                  getDataText={({ label }) => label}
+                  fieldLayout={formItemLayout}
+                  initialValue={bloodGroup}
+                />
+                <LastTarteebFilterField
+                  fieldName="lastTarteeb"
+                  fieldLabel="Last Tarteeb"
+                  required={false}
+                  fieldLayout={formItemLayout}
+                  initialValue={lastTarteeb}
+                />
+                <SelectField
+                  fieldName="jobId"
+                  fieldLabel="Job"
+                  required={false}
+                  data={allJobs}
+                  getDataValue={({ _id }) => _id}
+                  getDataText={({ name: _name }) => _name}
+                  fieldLayout={formItemLayout}
+                  initialValue={jobId}
+                />
+                <CascaderField
+                  data={dutyShiftCascaderData}
+                  fieldName="dutyIdShiftId"
+                  fieldLabel="Duty/Shift"
+                  fieldLayout={formItemLayout}
+                  initialValue={[dutyId, dutyShiftId]}
+                  required={false}
+                />
+                <Form.Item {...buttonItemLayout}>
+                  <Row type="flex" justify="end">
+                    <Button type="default" onClick={this.handleReset}>
+                      Reset
+                    </Button>
+                    &nbsp;
+                    <Button type="primary" htmlType="submit">
+                      Search
+                    </Button>
+                  </Row>
+                </Form.Item>
+              </Form>
+            ),
+          },
+        ]}
+      />
     );
   }
 }

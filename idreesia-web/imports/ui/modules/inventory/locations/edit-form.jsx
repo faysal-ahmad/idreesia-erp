@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/client/react';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { AuditInfo } from '/imports/ui/modules/common';
@@ -61,9 +61,9 @@ const EditForm = ({ history }) => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
+  const handleFieldsChange = () => {
     setIsFieldsTouched(true);
-  }
+  };
 
   const handleFinish = ({ name, parentId, description }) => {
     updateLocation({

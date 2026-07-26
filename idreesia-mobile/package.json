@@ -6,8 +6,9 @@
     "start": "METEOR_PACKAGE_DIRS=../ meteor run --port 3100 --settings ./settings.sample.json",
     "start:android": "METEOR_PACKAGE_DIRS=../ meteor run android-device --mobile-server http://localhost:3000 --settings ./settings.sample.json",
     "start:ios": "METEOR_PACKAGE_DIRS=../ meteor run ios-device --mobile-server http://localhost:3000 --settings ./settings.sample.json",
-    "build:android": "METEOR_PACKAGE_DIRS=../ meteor build ./build --server http://localhost:3000 --directory",
-    "build:ios": "METEOR_PACKAGE_DIRS=../ meteor build ./build --server http://localhost:3000 --directory"
+    "build:android": "METEOR_PACKAGE_DIRS=../ meteor build ../build/idreesia-mobile-android --server http://localhost:3000 --directory",
+    "build:ios": "METEOR_PACKAGE_DIRS=../ meteor build ../build/idreesia-mobile-ios --server http://localhost:3000 --directory",
+    "typecheck": "../node_modules/.bin/tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@babel/runtime": "^7",

@@ -657,7 +657,11 @@ class People extends AggregatableCollection<PersonDocument> {
         });
       } else if (region) {
         const regionCities = await Cities.find({ region }).fetchAsync();
-        const regionCityIds = regionCities.map(({ _id }: { _id: string }) => _id);
+        const regionCityIds = regionCities
+          .map((city: { _id?: string }) => city._id)
+          .filter((cityId: string | undefined): cityId is string =>
+            Boolean(cityId)
+          );
         pipeline.push({
           $match: {
             'karkunData.cityId': { $in: regionCityIds },

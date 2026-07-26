@@ -23,5 +23,7 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
     );
   };
 
-  return withRouter(WithQueryParams) as unknown as ComponentType<AnyProps>;
+  return withRouter(
+    WithQueryParams as unknown as ComponentType<RouteComponentProps & AnyProps>
+  ) as unknown as ComponentType<AnyProps>;
 };

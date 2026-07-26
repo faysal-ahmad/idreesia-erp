@@ -6,7 +6,7 @@ This repository uses PR labels to drive application package versions and Docker 
 
 The root `package.json` and `idreesia-web/package.json` files are kept at the same version. The initial version is `1.0.0`.
 
-The release workflow updates both files and commits the version change back to the target branch. Because `develop` and `master` require changes through pull requests, the release workflow uses a Personal Access Token (PAT) stored as `GH_PERSONAL_ACCESS_TOKEN` so the version commit and release tag are pushed by an actor that is allowed to bypass the repository rule.
+The release workflow runs on pushes to `develop` and `master`, resolves the merged PR from the pushed merge commit, updates both files, and commits the version change back to the target branch. Because `develop` and `master` require changes through pull requests, the release workflow uses a Personal Access Token (PAT) stored as `GH_PERSONAL_ACCESS_TOKEN` so the version commit and release tag are pushed by an actor that is allowed to bypass the repository rule.
 
 ## Labels
 

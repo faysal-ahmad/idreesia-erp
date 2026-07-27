@@ -4,7 +4,7 @@ const PAGED_ATTENDANCE_BY_KARKUN = gql`
   query pagedAttendanceByKarkun($queryString: String) {
     pagedAttendanceByKarkun(queryString: $queryString) {
       totalResults
-      attendance {
+      data {
         _id
         dutyId
         shiftId

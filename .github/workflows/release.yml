@@ -71,7 +71,7 @@ jobs:
             subject=$(git log -1 --format=%s "$release_commit")
           fi
           version=$(echo "$subject" | sed -nE 's/^chore\(release\): ([^ ]+) for PR #[0-9]+ \[skip ci\]$/\1/p')
-          if [ -z "$version" ]; then
+          if [ "$BASE_REF" = "master" ] && [ -z "$version" ]; then
             version=$(git for-each-ref refs/tags --format='%(refname:short)|%(contents:subject)' | sed -nE "s/^v([^|]+)\\|Release [^ ]+ for PR #${PR_NUMBER}$/\\1/p" | sort -V | tail -n 1)
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
@@ -80,18 +80,23 @@ jobs:
       - name: Resolve Release Version
         id: release-version
         env:
+          BRANCH: ${{ github.ref_name }}
           PR_LABELS: ${{ steps.merged-pr.outputs.labels }}
           EXISTING_VERSION: ${{ steps.existing-release.outputs.version }}
         run: |
           if [ -n "$EXISTING_VERSION" ]; then
             node scripts/resolve-release-version.mjs \
-              --branch "${{ github.ref_name }}" \
+              --branch "$BRANCH" \
               --resolved-version "$EXISTING_VERSION"
-          else
+          elif [ "$BRANCH" = "develop" ]; then
             node scripts/resolve-release-version.mjs \
-              --branch "${{ github.ref_name }}" \
+              --branch "$BRANCH" \
               --labels "$PR_LABELS" \
               --write
+          else
+            node scripts/resolve-release-version.mjs \
+              --branch "$BRANCH" \
+              --labels "$PR_LABELS"
           fi
 
       - name: Checkout Existing Release Ref
@@ -111,7 +116,7 @@ jobs:
           fi
 
       - name: Commit Release Version
-        if: steps.existing-release.outputs.version == ''
+        if: ${{ github.ref_name == 'develop' && steps.existing-release.outputs.version == '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -122,6 +127,7 @@ jobs:
           fi
 
       - name: Tag Release Version
+        if: ${{ github.ref_name == 'master' }}
         run: |
           tag="v${{ steps.release-version.outputs.version }}"
           if git rev-parse "$tag" >/dev/null 2>&1; then
@@ -173,17 +179,3 @@ jobs:
           for tag in "${TAGS[@]}"; do
             docker push "$IMAGE_NAME:$tag"
           done
-
-      - name: Record Master Release In Develop History
-        if: ${{ github.ref_name == 'master' }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin master develop
-          git checkout -B develop origin/develop
-          if git merge-base --is-ancestor origin/master HEAD; then
-            echo "Master is already recorded in develop history."
-          else
-            git merge --no-ff -s ours origin/master -m "chore(release): record master release in develop history [skip ci]"
-            git push origin HEAD:develop
-          fi

@@ -90,7 +90,7 @@ Permissions.propTypes = {
 };
 
 const formQuery = gql`
-  query userGroupById($_id: String!) {
+  query userGroupPermissionsById($_id: String!) {
     userGroupById(_id: $_id) {
       _id
       permissions

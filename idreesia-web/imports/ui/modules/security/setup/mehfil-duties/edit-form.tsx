@@ -13,7 +13,7 @@ import {
 import { AuditInfo } from '/imports/ui/modules/common';
 
 const formQuery = gql`
-  query securityMehfilDutyById($id: String!) {
+  query setupSecurityMehfilDutyById($id: String!) {
     securityMehfilDutyById(id: $id) {
       _id
       name

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const USER_BY_ID = gql`
-  query userById($_id: String!) {
+  query securityUserById($_id: String!) {
     userById(_id: $_id) {
       _id
       username

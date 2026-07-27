@@ -13,7 +13,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 const formQuery = gql`
-  query physicalStoreById($id: String!) {
+  query adminPhysicalStoreById($id: String!) {
     physicalStoreById(id: $id) {
       _id
       name

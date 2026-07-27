@@ -10,7 +10,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 const listQuery = gql`
-  query allSecurityMehfilDuties {
+  query setupAllSecurityMehfilDuties {
     allSecurityMehfilDuties {
       _id
       name

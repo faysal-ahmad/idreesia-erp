@@ -66,7 +66,7 @@ ViewForm.propTypes = {
 };
 
 const formQuery = gql`
-  query visitorStayById($_id: String!) {
+  query viewVisitorStayById($_id: String!) {
     visitorStayById(_id: $_id) {
       _id
       visitorId

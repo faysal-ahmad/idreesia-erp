@@ -90,7 +90,7 @@ const StayCardContainer = ({
 };
 
 const formQueryVisitor = gql`
-  query securityVisitorById($_id: String!) {
+  query visitorStayCardSecurityVisitorById($_id: String!) {
     securityVisitorById(_id: $_id) {
       _id
       name
@@ -110,7 +110,7 @@ const formQueryVisitor = gql`
 `;
 
 const formQueryVisitorStay = gql`
-  query visitorStayById($_id: String!) {
+  query visitorStayCardById($_id: String!) {
     visitorStayById(_id: $_id) {
       _id
       fromDate

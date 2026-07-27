@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const SET_HR_KARKUN_EMPLOYMENT_INFO = gql`
-  mutation setHrKarkunEmploymentInfo(
+  mutation setKarkunEmploymentInfo(
     $_id: String!
     $isEmployee: Boolean!
     $jobId: String

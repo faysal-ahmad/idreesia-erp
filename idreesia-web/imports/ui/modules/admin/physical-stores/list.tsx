@@ -10,7 +10,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 const listQuery = gql`
-  query allPhysicalStores {
+  query adminAllPhysicalStores {
     allPhysicalStores {
       _id
       name

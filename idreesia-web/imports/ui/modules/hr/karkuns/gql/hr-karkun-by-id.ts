@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const HR_KARKUN_BY_ID = gql`
-  query hrKarkunById($_id: String!) {
+  query hrKarkunByIdForKarkuns($_id: String!) {
     hrKarkunById(_id: $_id) {
       _id
       name

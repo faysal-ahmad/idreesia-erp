@@ -2,12 +2,16 @@ import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { useQuery } from '@apollo/client/react';
 import gql from "graphql-tag";
+import type {
+  ComposerSecurityMehfilDutyByIdQuery,
+  ComposerSecurityMehfilDutyByIdQueryVariables,
+} from '../../../../../../../types/generated/client-operations';
 
 type AnyProps = Record<string, any>;
 
 const securityMehfilDutyByIdQuery = gql`
-  query securityMehfilDutyById($_id: String!) {
-    securityMehfilDutyById(_id: $_id) {
+  query composerSecurityMehfilDutyById($id: String!) {
+    securityMehfilDutyById(id: $id) {
       _id
       name
       urduName
@@ -20,18 +24,22 @@ const securityMehfilDutyByIdQuery = gql`
 `;
 
 export const useMehfilDuty = (mehfilDutyId?: string) => {
-  const { loading, data = {}, ...queryProps } = useQuery(
+  const { loading, data, ...queryProps } = useQuery<
+    ComposerSecurityMehfilDutyByIdQuery,
+    ComposerSecurityMehfilDutyByIdQueryVariables
+  >(
     securityMehfilDutyByIdQuery as any,
     {
-      variables: { _id: mehfilDutyId },
+      variables: { id: mehfilDutyId ?? '' },
+      skip: !mehfilDutyId,
     }
   );
 
   return {
     ...queryProps,
-    ...(data as AnyProps),
+    ...(data ?? {}),
     loading,
-    mehfilDutyById: (data as any).securityMehfilDutyById,
+    mehfilDutyById: data?.securityMehfilDutyById,
     securityMehfilDutyByIdLoading: loading,
   };
 };

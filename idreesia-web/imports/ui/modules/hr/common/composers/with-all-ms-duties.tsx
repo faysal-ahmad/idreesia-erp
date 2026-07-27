@@ -7,7 +7,7 @@ type AnyProps = Record<string, any>;
 interface QueryData { allMSDuties?: unknown[] | null; }
 
 const ALL_MS_DUTIES_QUERY = gql`
-  query allMSDuties {
+  query composerAllMSDuties {
     allMSDuties {
       _id
       name

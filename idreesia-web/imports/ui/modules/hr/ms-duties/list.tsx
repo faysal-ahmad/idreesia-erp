@@ -10,7 +10,7 @@ import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const listQuery = gql`
-  query allMSDuties {
+  query listAllMSDuties {
     allMSDuties {
       _id
       name

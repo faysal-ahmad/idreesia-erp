@@ -69,7 +69,7 @@ SalaryReceiptsContainer.propTypes = {
 };
 
 const salariesByIdsQuery = gql`
-  query salariesByIds($ids: String!) {
+  query salaryReceiptSalariesByIds($ids: String!) {
     salariesByIds(ids: $ids) {
       _id
       karkunId

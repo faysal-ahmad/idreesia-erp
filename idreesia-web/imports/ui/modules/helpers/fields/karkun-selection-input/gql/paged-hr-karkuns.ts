@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const PAGED_HR_KARKUNS = gql`
-  query pagedHrKarkuns($filter: KarkunFilter) {
+  query helperPagedHrKarkuns($filter: KarkunFilter) {
     pagedHrKarkuns(filter: $filter) {
       totalResults
       karkuns {

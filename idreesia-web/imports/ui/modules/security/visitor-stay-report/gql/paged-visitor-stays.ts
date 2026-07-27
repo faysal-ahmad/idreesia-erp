@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const PAGED_VISITOR_STAYS = gql`
-  query pagedVisitorStays($queryString: String!) {
+  query reportPagedVisitorStays($queryString: String!) {
     pagedVisitorStays(queryString: $queryString) {
       totalResults
       data {

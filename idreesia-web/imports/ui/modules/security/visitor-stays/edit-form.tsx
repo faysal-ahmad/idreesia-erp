@@ -147,7 +147,7 @@ const EditForm = ({
 };
 
 const formQuery = gql`
-  query visitorStayById($_id: String!) {
+  query editVisitorStayById($_id: String!) {
     visitorStayById(_id: $_id) {
       _id
       visitorId

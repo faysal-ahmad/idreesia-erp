@@ -87,7 +87,7 @@ GeneralInfo.propTypes = {
 };
 
 const formQuery = gql`
-  query userGroupById($_id: String!) {
+  query userGroupGeneralInfoById($_id: String!) {
     userGroupById(_id: $_id) {
       _id
       name

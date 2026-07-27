@@ -158,7 +158,7 @@ class ViewForm extends Component<ViewFormProps> {
 }
 
 const formQuery = gql`
-  query purchaseFormById($_id: String!, $physicalStoreId: String!) {
+  query purchaseFormDetailsById($_id: String!, $physicalStoreId: String!) {
     purchaseFormById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       purchaseDate

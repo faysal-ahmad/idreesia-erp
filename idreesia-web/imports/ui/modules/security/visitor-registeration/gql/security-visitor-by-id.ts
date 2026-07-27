@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const SECURITY_VISITOR_BY_ID = gql`
-  query securityVisitorById($_id: String!) {
+  query securityRegistrationVisitorById($_id: String!) {
     securityVisitorById(_id: $_id) {
       _id
       name

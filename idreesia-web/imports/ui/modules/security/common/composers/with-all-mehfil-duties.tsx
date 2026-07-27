@@ -2,11 +2,15 @@ import React, { ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 import gql from 'graphql-tag';
+import type {
+  ComposerAllSecurityMehfilDutiesQuery,
+  ComposerAllSecurityMehfilDutiesQueryVariables,
+} from '../../../../../../../types/generated/client-operations';
 
 type AnyProps = Record<string, any>;
 
 const withAllSecurityMehfilDutiesQuery = gql`
-  query allSecurityMehfilDuties($mehfilId: String) {
+  query composerAllSecurityMehfilDuties($mehfilId: String) {
     allSecurityMehfilDuties(mehfilId: $mehfilId) {
       _id
       name
@@ -18,7 +22,10 @@ const withAllSecurityMehfilDutiesQuery = gql`
 `;
 
 export const useAllSecurityMehfilDuties = (mehfilId?: string) => {
-  const { loading, data = {}, refetch, ...queryProps } = useQuery(
+  const { loading, data, refetch, ...queryProps } = useQuery<
+    ComposerAllSecurityMehfilDutiesQuery,
+    ComposerAllSecurityMehfilDutiesQueryVariables
+  >(
     withAllSecurityMehfilDutiesQuery as any,
     {
       variables: { mehfilId },
@@ -27,7 +34,7 @@ export const useAllSecurityMehfilDuties = (mehfilId?: string) => {
 
   return {
     ...queryProps,
-    ...(data as AnyProps),
+    ...(data ?? {}),
     loading,
     allSecurityMehfilDutiesLoading: loading,
     refetchAllSecurityMehfilDuties: refetch,

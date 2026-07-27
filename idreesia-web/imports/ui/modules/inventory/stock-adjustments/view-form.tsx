@@ -136,7 +136,7 @@ class ViewForm extends Component<ViewFormProps> {
 }
 
 const formQuery = gql`
-  query stockAdjustmentById($_id: String!, $physicalStoreId: String!) {
+  query viewStockAdjustmentById($_id: String!, $physicalStoreId: String!) {
     stockAdjustmentById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       physicalStoreId

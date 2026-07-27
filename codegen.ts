@@ -2,9 +2,10 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   schema: ['types/generated/schema.graphql'],
-  // Client operation generation is intentionally deferred until duplicate
-  // operation names in feature modules are made unique.
-  documents: [],
+  documents: [
+    'idreesia-web/{client,imports}/**/*.{ts,tsx}',
+    'idreesia-mobile/{client,imports}/**/*.{ts,tsx}',
+  ],
   generates: {
     'types/generated/graphql.ts': {
       plugins: ['typescript', 'typescript-resolvers'],
@@ -14,8 +15,15 @@ const config: CodegenConfig = {
         useIndexSignature: true,
       },
     },
+    'types/generated/client-operations.ts': {
+      plugins: ['typescript-operations'],
+      config: {
+        avoidOptionals: false,
+        importSchemaTypesFrom: 'types/generated/graphql',
+        maybeValue: 'T | null',
+      },
+    },
   },
-  ignoreNoDocuments: true,
 };
 
 export default config;

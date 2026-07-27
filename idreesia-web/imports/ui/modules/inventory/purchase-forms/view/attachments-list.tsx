@@ -55,7 +55,7 @@ AttachmentsList.propTypes = {
 };
 
 const formQuery = gql`
-  query purchaseFormById($_id: String!, $physicalStoreId: String!) {
+  query purchaseFormAttachmentsById($_id: String!, $physicalStoreId: String!) {
     purchaseFormById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       attachments {

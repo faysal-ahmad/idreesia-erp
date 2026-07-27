@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
 
 const QUERY = gql`
-  query physicalStoreById($id: String!) {
+  query useInventoryPhysicalStoreById($id: String!) {
     physicalStoreById(id: $id) {
       _id
       name

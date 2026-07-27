@@ -417,7 +417,7 @@ class List extends Component<ListProps, ListState> {
 }
 
 const listQuery = gql`
-  query pagedVisitorStays($queryString: String!) {
+  query visitorStaysPagedVisitorStays($queryString: String!) {
     pagedVisitorStays(queryString: $queryString) {
       totalResults
       data {

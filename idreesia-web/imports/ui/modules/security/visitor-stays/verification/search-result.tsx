@@ -135,7 +135,7 @@ SearchResult.propTypes = {
 };
 
 const formQuery = gql`
-  query visitorStayById($_id: String!) {
+  query verificationVisitorStayById($_id: String!) {
     visitorStayById(_id: $_id) {
       _id
       visitorId

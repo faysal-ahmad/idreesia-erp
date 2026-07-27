@@ -102,7 +102,7 @@ const formMutation = gql`
 `;
 
 const formQuery = gql`
-  query userGroupById($_id: String!) {
+  query userGroupInstanceAccessById($_id: String!) {
     userGroupById(_id: $_id) {
       _id
       instances
@@ -111,7 +111,7 @@ const formQuery = gql`
 `;
 
 const physicalStoresListQuery = gql`
-  query allPhysicalStores {
+  query userGroupInstanceAllPhysicalStores {
     allPhysicalStores {
       _id
       name

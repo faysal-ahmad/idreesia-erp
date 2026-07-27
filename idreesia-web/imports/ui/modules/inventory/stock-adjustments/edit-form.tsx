@@ -236,7 +236,7 @@ class EditForm extends Component<EditFormProps, EditFormState> {
 }
 
 const formQuery = gql`
-  query stockAdjustmentById($_id: String!, $physicalStoreId: String!) {
+  query editStockAdjustmentById($_id: String!, $physicalStoreId: String!) {
     stockAdjustmentById(_id: $_id, physicalStoreId: $physicalStoreId) {
       _id
       physicalStoreId

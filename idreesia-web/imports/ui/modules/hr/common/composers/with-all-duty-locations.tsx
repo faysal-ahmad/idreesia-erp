@@ -7,7 +7,7 @@ type AnyProps = Record<string, any>;
 interface QueryData { allDutyLocations?: unknown[] | null; }
 
 const ALL_DUTY_LOCATIONS_QUERY = gql`
-  query allDutyLocations {
+  query composerAllDutyLocations {
     allDutyLocations {
       _id
       name

@@ -6,7 +6,7 @@ import { useQuery } from '@apollo/client/react';
 
 type AnyProps = Record<string, any>;
 const physicalStoreByIdQuery = gql`
-  query physicalStoreById($id: String!) {
+  query inventoryPhysicalStoreById($id: String!) {
     physicalStoreById(id: $id) {
       _id
       name

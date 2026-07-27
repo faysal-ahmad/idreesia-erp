@@ -53,7 +53,14 @@ export async function createMonthlySalaries(
   }).fetchAsync();
 
   const date = new Date();
-  for (const { _id, employeeData: { jobId, employmentEndDate } } of people) {
+  for (const { _id, employeeData } of people) {
+    const jobId = employeeData?.jobId;
+    if (!jobId) {
+      continue;
+    }
+
+    const employmentEndDate = employeeData?.employmentEndDate;
+
     // Ensure that this karkun is a current employee
     let isCurrentEmployee = true;
     if (employmentEndDate) {

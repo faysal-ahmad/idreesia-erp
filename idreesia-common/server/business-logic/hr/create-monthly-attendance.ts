@@ -14,7 +14,12 @@ export async function createMonthlyAttendance(formattedMonth: string, user: { _i
   }).fetchAsync();
 
   const date = new Date();
-  for (const { _id, employeeData: { jobId } } of people) {
+  for (const { _id, employeeData } of people) {
+    const jobId = employeeData?.jobId;
+    if (!jobId) {
+      continue;
+    }
+
     // Create a new attendance if one does not exist for this karkun/month/job combination
     const existingAttendance = await Attendances.findOneAsync({
       karkunId: _id,

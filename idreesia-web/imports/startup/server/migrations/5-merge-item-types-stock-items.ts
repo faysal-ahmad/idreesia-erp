@@ -54,16 +54,18 @@ Migrations.add({
     const itemTypes = await ItemTypes.find({}).fetchAsync();
     const physicalStores = await PhysicalStores.find({}).fetchAsync();
     for (const physicalStore of physicalStores) {
+      const physicalStoreId = String(physicalStore._id);
       for (const itemTypeRecord of itemTypes) {
-      const itemType = itemTypeRecord as Record<string, any>;
+        const itemType = itemTypeRecord as Record<string, any>;
+        const itemTypeId = String(itemType._id);
         const stockItem = await StockItems.findOneAsync({
-          physicalStoreId: physicalStore._id,
-          itemTypeId: itemType._id,
+          physicalStoreId,
+          itemTypeId,
         });
 
         if (!stockItem) {
           await StockItems.insertAsync({
-            physicalStoreId: physicalStore._id,
+            physicalStoreId,
             name: itemType.name,
             company: itemType.company,
             details: itemType.details,

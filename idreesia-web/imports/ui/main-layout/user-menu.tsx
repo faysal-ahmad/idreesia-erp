@@ -25,7 +25,6 @@ const AntAvatar = Avatar as any;
 const AntDropdown = Dropdown as any;
 const AntUserOutlined = UserOutlined as any;
 const ChangePassword = ChangePasswordForm as any;
-type AnyRecord = Record<string, any>;
 interface HistoryLike { push(path: string): void; }
 interface Props { history: HistoryLike; }
 

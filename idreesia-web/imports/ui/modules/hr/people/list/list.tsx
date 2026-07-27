@@ -188,7 +188,8 @@ const List = (props: Props) => {
     title: 'Job / Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: (duties: AnyRecord[] = [], record: AnyRecord) => {
+    render: (duties: AnyRecord[] | undefined, record: AnyRecord) => {
+      const normalizedDuties = duties ?? [];
       let jobName: React.ReactNode[] = [];
       let dutyNames: React.ReactNode[] = [];
 
@@ -197,9 +198,9 @@ const List = (props: Props) => {
         jobName = [<RouterLink to={jobTabLink}>{record.job.name}</RouterLink>];
       }
 
-      if (duties.length > 0) {
+      if (normalizedDuties.length > 0) {
         const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=4`;
-        dutyNames = duties.map((duty: AnyRecord) => {
+        dutyNames = normalizedDuties.map((duty: AnyRecord) => {
           let dutyName = duty.dutyName;
           if (duty.shiftName) {
             dutyName = `${duty.dutyName} - ${duty.shiftName}`;

@@ -25,7 +25,6 @@ const AntPlusCircleOutlined = PlusCircleOutlined as any;
 interface HistoryLike { push(path: string): void; }
 interface ListProps { history: HistoryLike; }
 interface ListRecord { _id: string; name: string; description?: string; usedCount?: number; }
-interface ListData { allJobs?: ListRecord[]; }
 
 const List = ({ history }: ListProps) => {
   const { allJobs, allJobsLoading } = useAllJobs();

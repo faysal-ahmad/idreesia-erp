@@ -16,7 +16,6 @@ const PermissionSelectionControl = PermissionSelection as any;
 interface HistoryLike { goBack(): void; }
 interface UserGroup { _id: string; permissions?: string[]; instances?: string[]; }
 interface QueryData { userGroupById?: UserGroup | null; }
-interface PhysicalStoresData { allPhysicalStores?: unknown[] | null; }
 interface Props { groupId?: string | null; history: HistoryLike; }
 
 const Permissions = ({ groupId, history }: Props) => {

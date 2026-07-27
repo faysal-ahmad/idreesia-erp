@@ -18,12 +18,10 @@ const AntForm = Form as any;
 const TextField = InputTextField as any;
 const SelectInputField = SelectField as any;
 const SaveCancelButtons = FormButtonsSaveCancel as any;
-type AnyRecord = Record<string, any>;
 interface City { _id: string; name?: string; peripheryOf?: string | null; country?: string; region?: string; }
 interface HistoryLike { goBack(): void; }
 interface FormValues { name: string; peripheryOf?: string | null; region?: string; country?: string; }
 interface Props { history: HistoryLike; cityId?: string | null; allCitiesLoading?: boolean; allCities?: City[]; }
-interface QueryData { cityById?: City | null; }
 
 const NewForm = ({ history, allCitiesLoading, allCities }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);

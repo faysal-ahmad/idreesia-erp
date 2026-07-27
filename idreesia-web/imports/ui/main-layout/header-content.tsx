@@ -17,7 +17,6 @@ import { UPDATE_LAST_ACTIVE_TIME } from './gql';
 const AntLayout = Layout as any;
 const AntMenu = Menu as any;
 const UserMenuControl = UserMenu as any;
-type AnyRecord = Record<string, any>;
 interface HistoryLike { push(path: string): void; }
 interface LocationLike { pathname: string; }
 interface UserLike { permissions?: string[]; }

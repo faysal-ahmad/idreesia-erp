@@ -30,7 +30,6 @@ const AttendanceContainer = {
 
 const AntButton = Button as any;
 const AntCascader = Cascader as any;
-const AntDatePicker = DatePicker as any;
 const MonthPicker = (DatePicker as any).MonthPicker;
 const AntDropdown = Dropdown as any;
 const AntModal = Modal as any;

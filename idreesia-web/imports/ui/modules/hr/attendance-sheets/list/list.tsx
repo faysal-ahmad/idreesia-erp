@@ -55,7 +55,6 @@ const KarkunNameDisplay = KarkunName as any;
 type AnyRecord = Record<string, any>;
 interface ListProps extends AnyRecord { selectedMonth: any; selectedCategoryId?: string; selectedSubCategoryId?: string; allJobs: AnyRecord[]; allMSDuties: AnyRecord[]; allDutyShifts: AnyRecord[]; attendanceByMonth?: AnyRecord[]; setPageParams(params: AnyRecord): void; }
 interface ListState { selectedRows: AnyRecord[]; }
-interface QueryData { attendanceByMonth?: AnyRecord[]; }
 
 const CascaderStyle = {
   width: '300px',

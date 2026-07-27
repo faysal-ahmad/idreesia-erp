@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
-const withTracker = (require('meteor/react-meteor-data') as any).withTracker;
 import { useDispatch } from 'react-redux';
+
+const withTracker = (require('meteor/react-meteor-data') as any).withTracker;
 
 /**
  * Workaround to get dayjs latest version to work with

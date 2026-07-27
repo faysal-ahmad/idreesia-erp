@@ -47,11 +47,12 @@ export default class KarkunsList extends Component<Props> {
     title: 'Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: (duties: AnyRecord[] = [], record: AnyRecord) => {
+    render: (duties: AnyRecord[] | undefined, record: AnyRecord) => {
+      const normalizedDuties = duties ?? [];
       let dutyNames: React.ReactNode[] = [];
 
-      if (duties.length > 0) {
-        dutyNames = duties.map((duty: AnyRecord) => {
+      if (normalizedDuties.length > 0) {
+        dutyNames = normalizedDuties.map((duty: AnyRecord) => {
           let dutyName = duty.dutyName;
           if (duty.shiftName) {
             dutyName = `${dutyName} - ${duty.shiftName}`;

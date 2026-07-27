@@ -25,7 +25,6 @@ import {
 
 const AntModal = Modal as any;
 const KarkunsList = List as any;
-const DutyEditForm = EditForm as any;
 
 interface HistoryLike { push(path: string): void; }
 interface LocationLike { pathname: string; }

@@ -99,14 +99,16 @@ class ListFilter extends Component {
                   fieldLabel="Start Date"
                   fieldLayout={formItemLayout}
                   required={false}
-                  initialValue={mStartDate.isValid() ? mStartDate : null}
+                  initialValue={
+                    mStartDate && mStartDate.isValid() ? mStartDate : null
+                  }
                 />
                 <DateField
                   fieldName="endDate"
                   fieldLabel="End Date"
                   fieldLayout={formItemLayout}
                   required={false}
-                  initialValue={mEndDate.isValid() ? mEndDate : null}
+                  initialValue={mEndDate && mEndDate.isValid() ? mEndDate : null}
                 />
                 <TreeSelectField
                   data={allLocations}

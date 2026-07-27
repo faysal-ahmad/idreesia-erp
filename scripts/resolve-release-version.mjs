@@ -198,7 +198,7 @@ function resolveMasterVersion({ currentVersion, bump, hasStableTags }) {
 
 function dockerTagsFor(version, branch) {
   if (branch === 'develop') {
-    return [version];
+    return [];
   }
 
   const parsed = parseVersion(version);

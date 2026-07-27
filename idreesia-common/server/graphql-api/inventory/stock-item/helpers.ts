@@ -185,7 +185,8 @@ export async function recalculateStockLevels(id: string, physicalStoreId: string
     stockItemId: { $eq: id },
   });
 
-  await stockAdjustments.forEachAsync(({ isInflow, quantity }: StockLevelChange) => {
+  await stockAdjustments.forEachAsync((stockAdjustmentRecord: unknown) => {
+    const { isInflow, quantity } = stockAdjustmentRecord as unknown as StockLevelChange;
     currentStockLevel = isInflow
       ? currentStockLevel + quantity
       : currentStockLevel - quantity;

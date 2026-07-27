@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -8,11 +7,34 @@ import { flowRight } from 'lodash';
 import { WithPhysicalStoreId } from '/imports/ui/modules/inventory/common/composers';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
-const AttachmentsList = ({ purchaseFormById, formDataLoading }) => {
+const AttachmentsListControlComponent = AttachmentsListControl as any;
+
+interface Attachment {
+  _id: string;
+  name: string;
+  description?: string;
+  mimeType?: string;
+}
+
+interface PurchaseForm {
+  _id: string;
+  attachments?: Attachment[];
+}
+
+interface AttachmentsListProps {
+  purchaseFormById?: PurchaseForm;
+  formDataLoading?: boolean;
+}
+
+const AttachmentsList = ({
+  purchaseFormById,
+  formDataLoading,
+}: AttachmentsListProps) => {
   if (formDataLoading) return null;
+  if (!purchaseFormById) return null;
 
   return (
-    <AttachmentsListControl
+    <AttachmentsListControlComponent
       canEditAttachments={false}
       attachments={purchaseFormById.attachments}
     />
@@ -49,7 +71,12 @@ const formQuery = gql`
 export default flowRight(
   WithPhysicalStoreId(),
   withQuery(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ purchaseFormId }) => ({ variables: { _id: purchaseFormId } }),
+    props: ({ data }: { data: Record<string, any> }) => ({
+      formDataLoading: data.loading,
+      ...data,
+    }),
+    options: ({ purchaseFormId }: { purchaseFormId?: string }) => ({
+      variables: { _id: purchaseFormId },
+    }),
   })
-)(AttachmentsList);
+)(AttachmentsList as any);

@@ -320,9 +320,9 @@ const resolvers: ResolverMap = {
         approvedBy: { $exists: false },
       });
 
-      await existingIssuanceForms.forEachAsync(async (existingForm: any) => {
+      await existingIssuanceForms.forEachAsync(async (existingForm: any): Promise<void> => {
         const { items: existingItems } = existingForm;
-        return Promise.all(
+        await Promise.all(
           existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
             if (isInflow) {
               return StockItems.decrementCurrentLevel(stockItemId, quantity);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -12,45 +11,72 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { ALL_MEHFILS, REMOVE_MEHFIL } from './gql';
 
-const List = ({ history }) => {
-  const { data = {} } = useQuery(ALL_MEHFILS);
-  const { allMehfils } = data;
-  const [removeMehfil] = useMutation(REMOVE_MEHFIL, {
-    refetchQueries: [{ query: ALL_MEHFILS }],
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntTeamOutlined = TeamOutlined as any;
+const RouterLink = Link as any;
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface ListProps {
+  history: HistoryLike;
+}
+
+interface Mehfil {
+  _id: string;
+  name: string;
+  mehfilDate: string | number;
+  karkunCount?: number;
+}
+
+interface MehfilsData {
+  allMehfils?: Mehfil[];
+}
+
+const List = ({ history }: ListProps) => {
+  const { data = {} } = useQuery(ALL_MEHFILS as any);
+  const { allMehfils = [] } = data as MehfilsData;
+  const [removeMehfil] = useMutation(REMOVE_MEHFIL as any, {
+    refetchQueries: [{ query: ALL_MEHFILS as any }],
   });
 
   const handleNewClicked = () => {
     history.push(paths.mehfilsNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: Mehfil) => {
     removeMehfil({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const handleKarkunsClicked = record => {
+  const handleKarkunsClicked = (record: Mehfil) => {
     history.push(paths.mehfilsKarkunListPath(record._id));
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.mehfilsEditFormPath(record._id)}`}>{text}</Link>
+      render: (text: string, record: Mehfil) => (
+        <RouterLink to={`${paths.mehfilsEditFormPath(record._id)}`}>{text}</RouterLink>
       ),
     },
     {
       title: 'Mehfil Date',
       dataIndex: 'mehfilDate',
       key: 'mehfilDate',
-      render: text => {
+      render: (text: string | number) => {
         const mehfilDate = dayjs(Number(text));
         return mehfilDate.format('DD MMM, YYYY');
       },
@@ -63,29 +89,29 @@ const List = ({ history }) => {
     {
       key: 'action',
       width: 50,
-      render: (text, record) => {
+      render: (_text: unknown, record: Mehfil) => {
         const karkunsAction = (
-          <Tooltip key="karkuns" title="Karkuns">
-            <TeamOutlined
+          <AntTooltip key="karkuns" title="Karkuns">
+            <AntTeamOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleKarkunsClicked(record);
               }}
             />
-          </Tooltip>
+          </AntTooltip>
         );
 
         let deleteAction = null;
         if (record.karkunCount === 0) {
           deleteAction = (
-            <Tooltip key="delete" title="Delete">
-              <DeleteOutlined
+            <AntTooltip key="delete" title="Delete">
+              <AntDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           );
         }
 
@@ -100,20 +126,20 @@ const List = ({ history }) => {
   ];
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={allMehfils}
       columns={columns}
       pagination={{ defaultPageSize: 20 }}
       bordered
       title={() => (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Mehfil
-        </Button>
+        </AntButton>
       )}
     />
   );
@@ -124,4 +150,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Security', 'Mehfils', 'List'])(List);
+export default WithBreadcrumbs(['Security', 'Mehfils', 'List'])(List as any);

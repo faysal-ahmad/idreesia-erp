@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
@@ -17,7 +16,65 @@ import { AuditInfo } from '/imports/ui/modules/common';
 import allUnitOfMeasurements from '../all-unit-of-measurements';
 import { UPDATE_STOCK_ITEM } from '../gql';
 
-class EditForm extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const NumberField = InputNumberField as any;
+const SelectInputField = SelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface StockItem {
+  _id: string;
+  physicalStoreId: string;
+  name: string;
+  company?: string;
+  details?: string;
+  categoryId?: string;
+  unitOfMeasurement?: string;
+  startingStockLevel?: number;
+  currentStockLevel?: number;
+  minStockLevel?: number;
+}
+
+interface ItemCategory {
+  _id: string;
+  name: string;
+}
+
+interface SelectOption {
+  _id: string;
+  name: string;
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface EditFormProps {
+  history: HistoryLike;
+  stockItemById: StockItem;
+  itemCategoriesByPhysicalStoreId?: ItemCategory[];
+  updateStockItem: MutateFunction;
+}
+
+interface EditFormState {
+  isFieldsTouched: boolean;
+}
+
+interface StockItemFormValues {
+  name: string;
+  company?: string;
+  details?: string;
+  categoryId?: string;
+  unitOfMeasurement?: string;
+  minStockLevel?: number;
+}
+
+class EditForm extends Component<EditFormProps, EditFormState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -47,7 +104,7 @@ class EditForm extends Component {
     categoryId,
     unitOfMeasurement,
     minStockLevel,
-  }) => {
+  }: StockItemFormValues) => {
     const { stockItemById, updateStockItem, history } = this.props;
     updateStockItem({
       variables: {
@@ -64,7 +121,7 @@ class EditForm extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -75,57 +132,57 @@ class EditForm extends Component {
 
     return (
       <>
-        <Form
+        <AntForm
           layout="horizontal"
           onFinish={this.handleFinish}
           onFieldsChange={this.handleFieldsChange}
         >
-          <InputTextField
+          <TextField
             fieldName="name"
             fieldLabel="Name"
             initialValue={stockItemById.name}
             required
             requiredMessage="Please input a name for the stock item."
           />
-          <InputTextField
+          <TextField
             fieldName="company"
             fieldLabel="Company"
             initialValue={stockItemById.company}
             required={false}
           />
-          <InputTextField
+          <TextField
             fieldName="details"
             fieldLabel="Details"
             initialValue={stockItemById.details}
             required={false}
           />
-          <SelectField
-            data={itemCategoriesByPhysicalStoreId}
-            getDataValue={({ _id }) => _id}
-            getDataText={({ name }) => name}
+          <SelectInputField
+            data={itemCategoriesByPhysicalStoreId ?? []}
+            getDataValue={({ _id }: SelectOption) => _id}
+            getDataText={({ name }: SelectOption) => name}
             fieldName="categoryId"
             fieldLabel="Category"
             required
             requiredMessage="Please select an item category."
             initialValue={stockItemById.categoryId}
           />
-          <SelectField
+          <SelectInputField
             data={allUnitOfMeasurements}
-            getDataValue={({ _id }) => _id}
-            getDataText={({ name }) => name}
+            getDataValue={({ _id }: SelectOption) => _id}
+            getDataText={({ name }: SelectOption) => name}
             fieldName="unitOfMeasurement"
             fieldLabel="Measurement Unit"
             required
             requiredMessage="Please select a unit of measurement."
             initialValue={stockItemById.unitOfMeasurement}
           />
-          <InputNumberField
+          <NumberField
             disabled
             fieldName="startingStockLevel"
             fieldLabel="Starting Stock Level"
             initialValue={stockItemById.startingStockLevel}
           />
-          <InputNumberField
+          <NumberField
             disabled
             fieldName="currentStockLevel"
             fieldLabel="Current Stock Level"
@@ -133,17 +190,17 @@ class EditForm extends Component {
               '0.00'
             )}
           />
-          <InputNumberField
+          <NumberField
             fieldName="minStockLevel"
             fieldLabel="Min Stock Level"
             initialValue={stockItemById.minStockLevel}
           />
-          <FormButtonsSaveCancel
+          <SaveCancelButtons
             handleCancel={this.handleCancel}
             isFieldsTouched={isFieldsTouched}
           />
-        </Form>
-        <AuditInfo record={stockItemById} />
+        </AntForm>
+        <AuditInfoComponent record={stockItemById} />
       </>
     );
   }
@@ -156,4 +213,4 @@ export default flowRight(
       refetchQueries: ['pagedStockItems'],
     },
   })
-)(EditForm);
+)(EditForm as any);

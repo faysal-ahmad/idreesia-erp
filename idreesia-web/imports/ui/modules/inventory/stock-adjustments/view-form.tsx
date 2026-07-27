@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -24,7 +23,52 @@ const FormStyle = {
   width: '800px',
 };
 
-class ViewForm extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const AdjustmentDateField = DateField as any;
+const TextAreaField = InputTextAreaField as any;
+const CloseButton = FormButtonsClose as any;
+const AuditInfoComponent = AuditInfo as any;
+
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface MatchLike {
+  params: {
+    formId: string;
+  };
+}
+
+interface StockAdjustment {
+  _id: string;
+  physicalStoreId: string;
+  adjustmentDate: string;
+  quantity: number;
+  isInflow: boolean;
+  adjustmentReason?: string;
+  refStockItem: {
+    formattedName: string;
+  };
+  refAdjustedBy: {
+    name: string;
+  };
+}
+
+interface ViewFormProps {
+  history: HistoryLike;
+  match: MatchLike;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  formDataLoading?: boolean;
+  stockAdjustmentById?: StockAdjustment;
+}
+
+class ViewForm extends Component<ViewFormProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -42,7 +86,7 @@ class ViewForm extends Component {
 
   render() {
     const { formDataLoading, stockAdjustmentById } = this.props;
-    if (formDataLoading) {
+    if (formDataLoading || !stockAdjustmentById) {
       return null;
     }
 
@@ -55,37 +99,37 @@ class ViewForm extends Component {
 
     return (
       <>
-        <Form layout="horizontal" style={FormStyle} onFinish={noop}>
-          <InputTextField
+        <AntForm layout="horizontal" style={FormStyle} onFinish={noop}>
+          <TextField
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
             initialValue={stockAdjustmentById.refStockItem.formattedName}
           />
-          <InputTextField
+          <TextField
             fieldName="adjustment"
             fieldLabel="Adjustment"
             initialValue={adjustment}
           />
-          <InputTextField
+          <TextField
             fieldName="adjustedBy"
             fieldLabel="Adjusted By"
             initialValue={stockAdjustmentById.refAdjustedBy.name}
           />
-          <DateField
+          <AdjustmentDateField
             fieldName="adjustedDate"
             fieldLabel="Adjusted Date"
             initialValue={dayjs(Number(stockAdjustmentById.adjustmentDate))}
           />
 
-          <InputTextAreaField
+          <TextAreaField
             fieldName="adjustmentReason"
             fieldLabel="Adjustment Reason"
             initialValue={stockAdjustmentById.adjustmentReason}
           />
 
-          <FormButtonsClose handleClose={this.handleClose} />
-        </Form>
-        <AuditInfo record={stockAdjustmentById} />
+          <CloseButton handleClose={this.handleClose} />
+        </AntForm>
+        <AuditInfoComponent record={stockAdjustmentById} />
       </>
     );
   }
@@ -125,16 +169,26 @@ export default flowRight(
   WithPhysicalStoreId(),
   WithPhysicalStore(),
   withQuery(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match, physicalStoreId }) => {
+    props: ({ data }: { data: Record<string, any> }) => ({
+      formDataLoading: data.loading,
+      ...data,
+    }),
+    options: ({
+      match,
+      physicalStoreId,
+    }: {
+      match?: MatchLike;
+      physicalStoreId?: string;
+    }) => {
+      if (!match) return { variables: { _id: '', physicalStoreId } };
       const { formId } = match.params;
       return { variables: { _id: formId, physicalStoreId } };
     },
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Stock Adjustments, View`;
     }
     return `Inventory, Stock Adjustments, View`;
   })
-)(ViewForm);
+)(ViewForm as any);

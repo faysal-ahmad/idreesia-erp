@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
@@ -13,10 +12,28 @@ import {
 
 import { CREATE_MEHFIL, ALL_MEHFILS } from './gql';
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const FormDateField = DateField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface NewFormProps {
+  history: HistoryLike;
+}
+
+interface MehfilFormValues {
+  name: string;
+  mehfilDate: string | number | Date;
+}
+
+const NewForm = ({ history }: NewFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createMehfil] = useMutation(CREATE_MEHFIL, {
-    refetchQueries: [{ query: ALL_MEHFILS }],
+  const [createMehfil] = useMutation(CREATE_MEHFIL as any, {
+    refetchQueries: [{ query: ALL_MEHFILS as any }],
   });
 
   const handleCancel = () => {
@@ -27,14 +44,14 @@ const NewForm = ({ history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, mehfilDate }) => {
+  const handleFinish = ({ name, mehfilDate }: MehfilFormValues) => {
     createMehfil({
       variables: {
         name,
         mehfilDate,
       },
     })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       })
       .finally(() => {
@@ -43,24 +60,24 @@ const NewForm = ({ history }) => {
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Mehfil Name"
         required
         requiredMessage="Please input a name for the mehfil."
       />
-      <DateField
+      <FormDateField
         fieldName="mehfilDate"
         fieldLabel="Mehfil Date"
         required
         requiredMessage="Please input a date for the mehfil."
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -69,4 +86,4 @@ NewForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Security', 'Mehfils', 'New'])(NewForm);
+export default WithBreadcrumbs(['Security', 'Mehfils', 'New'])(NewForm as any);

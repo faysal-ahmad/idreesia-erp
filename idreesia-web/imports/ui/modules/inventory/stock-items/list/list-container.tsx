@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -18,7 +17,50 @@ import {
 
 import List from './list';
 
-class ListContainer extends Component {
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface LocationLike {
+  pathname: string;
+}
+
+interface QueryParams {
+  categoryId?: string;
+  name?: string;
+  verifyDuration?: string;
+  stockLevel?: string;
+  pageIndex?: string | number;
+  pageSize?: string | number;
+}
+
+interface StockItem {
+  _id: string;
+}
+
+interface ListContainerProps {
+  history: HistoryLike;
+  location: LocationLike;
+  queryString?: string;
+  queryParams: QueryParams;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+}
+
+interface PageParams {
+  name?: string | null;
+  categoryId?: string | null;
+  verifyDuration?: string | null;
+  stockLevel?: string | null;
+  pageIndex?: number;
+  pageSize?: number;
+}
+
+class ListContainer extends Component<ListContainerProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -28,7 +70,7 @@ class ListContainer extends Component {
     physicalStore: PropTypes.object,
   };
 
-  setPageParams = newParams => {
+  setPageParams = (newParams: PageParams) => {
     const {
       name,
       categoryId,
@@ -40,30 +82,30 @@ class ListContainer extends Component {
     const { queryParams, history, location } = this.props;
 
     let nameVal;
-    if (newParams.hasOwnProperty('name')) nameVal = name || '';
+    if (Object.prototype.hasOwnProperty.call(newParams, 'name')) nameVal = name || '';
     else nameVal = queryParams.name || '';
 
     let categoryIdVal;
-    if (newParams.hasOwnProperty('categoryId'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'categoryId'))
       categoryIdVal = categoryId || '';
     else categoryIdVal = queryParams.categoryId || '';
 
     let verifyDurationVal;
-    if (newParams.hasOwnProperty('verifyDuration'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'verifyDuration'))
       verifyDurationVal = verifyDuration || '';
     else verifyDurationVal = queryParams.verifyDuration || '';
 
     let stockLevelVal;
-    if (newParams.hasOwnProperty('stockLevel'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'stockLevel'))
       stockLevelVal = stockLevel || '';
     else stockLevelVal = queryParams.stockLevel || '';
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
     const path = `${location.pathname}?name=${nameVal}&categoryId=${categoryIdVal}&verifyDuration=${verifyDurationVal}&stockLevel=${stockLevelVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
@@ -75,7 +117,7 @@ class ListContainer extends Component {
     history.push(paths.stockItemsNewFormPath(physicalStoreId));
   };
 
-  handleItemSelected = stockItem => {
+  handleItemSelected = (stockItem: StockItem) => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.stockItemsEditFormPath(physicalStoreId, stockItem._id));
   };
@@ -120,10 +162,10 @@ export default flowRight(
   WithQueryParams(),
   WithPhysicalStoreId(),
   WithPhysicalStore(),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Stock Items, List`;
     }
     return `Inventory, Stock Items, List`;
   })
-)(ListContainer);
+)(ListContainer as any);

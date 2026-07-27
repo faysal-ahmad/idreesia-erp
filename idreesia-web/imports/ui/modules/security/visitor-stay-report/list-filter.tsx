@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -28,7 +27,24 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-class ListFilter extends Component {
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntRow = Row as any;
+const AntButton = Button as any;
+const AutoComplete = AutoCompleteField as any;
+const TextField = InputTextField as any;
+const FormDateField = DateField as any;
+const DropdownField = SelectField as any;
+interface QueryParams { [key: string]: string | undefined; }
+interface FilterValues { startDate?: unknown; endDate?: unknown; name?: string; city?: string; stayReason?: string; additionalInfo?: string; }
+interface SelectOption { _id?: string; name?: string; label?: string; value?: string; }
+interface ListFilterProps {
+  setPageParams(params: Record<string, unknown>): void;
+  queryParams: QueryParams;
+  distinctCities?: string[];
+}
+
+class ListFilter extends Component<ListFilterProps> {
   static propTypes = {
     setPageParams: PropTypes.func,
     queryParams: PropTypes.object,
@@ -37,11 +53,11 @@ class ListFilter extends Component {
     distinctCities: PropTypes.array,
   };
 
-  handleFinish = ({ startDate, endDate, name, city, stayReason, additionalInfo }) => {
+  handleFinish = ({ startDate, endDate, name, city, stayReason, additionalInfo }: FilterValues) => {
     const { setPageParams } = this.props;
     setPageParams({
-      startDate: startDate ? dayjs(startDate).format(Formats.DATE_FORMAT) : null,
-      endDate: endDate ? dayjs(endDate).format(Formats.DATE_FORMAT) : null,
+      startDate: startDate ? dayjs(startDate as string | number | Date).format(Formats.DATE_FORMAT) : null,
+      endDate: endDate ? dayjs(endDate as string | number | Date).format(Formats.DATE_FORMAT) : null,
       name,
       city,
       stayReason,
@@ -80,36 +96,36 @@ class ListFilter extends Component {
     const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
 
     return (
-      <Collapse
+      <AntCollapse
         style={ContainerStyle}
         items={[
           {
             key: '1',
             label: 'Filter',
             children: (
-              <Form layout="horizontal" onFinish={this.handleFinish}>
-                <DateField
+              <AntForm layout="horizontal" onFinish={this.handleFinish}>
+                <FormDateField
                   fieldName="startDate"
                   fieldLabel="Start Date"
                   fieldLayout={formItemLayout}
                   required={false}
                   initialValue={mStartDate}
                 />
-                <DateField
+                <FormDateField
                   fieldName="endDate"
                   fieldLabel="End Date"
                   fieldLayout={formItemLayout}
                   required={false}
                   initialValue={mEndDate}
                 />
-                <InputTextField
+                <TextField
                   fieldName="name"
                   fieldLabel="Name"
                   required={false}
                   fieldLayout={formItemLayout}
                   initialValue={name}
                 />
-                <AutoCompleteField
+                <AutoComplete
                   fieldName="city"
                   fieldLabel="City"
                   fieldLayout={formItemLayout}
@@ -117,16 +133,16 @@ class ListFilter extends Component {
                   initialValue={city}
                   required={false}
                 />
-                <SelectField
+                <DropdownField
                   data={StayReasons}
-                  getDataValue={({ _id }) => _id}
-                  getDataText={({ name: _name }) => _name}
+                  getDataValue={({ _id }: SelectOption) => _id}
+                  getDataText={({ name: _name }: SelectOption) => _name}
                   initialValue={stayReason}
                   fieldName="stayReason"
                   fieldLabel="Stay Reason"
                   fieldLayout={formItemLayout}
                 />
-                <SelectField
+                <DropdownField
                   fieldName="additionalInfo"
                   fieldLabel="Additional Info"
                   required={false}
@@ -144,24 +160,24 @@ class ListFilter extends Component {
                       value: 'has-notes-or-criminal-record',
                     },
                   ]}
-                  getDataValue={({ value }) => value}
-                  getDataText={({ label }) => label}
+                  getDataValue={({ value }: SelectOption) => value}
+                  getDataText={({ label }: SelectOption) => label}
                   initialValue={additionalInfo}
                   fieldLayout={formItemLayout}
                 />
 
-                <Form.Item {...buttonItemLayout}>
-                  <Row type="flex" justify="end">
-                    <Button type="default" onClick={this.handleReset}>
+                <AntForm.Item {...buttonItemLayout}>
+                  <AntRow type="flex" justify="end">
+                    <AntButton type="default" onClick={this.handleReset}>
                       Reset
-                    </Button>
+                    </AntButton>
                     &nbsp;
-                    <Button type="primary" htmlType="submit">
+                    <AntButton type="primary" htmlType="submit">
                       Search
-                    </Button>
-                  </Row>
-                </Form.Item>
-              </Form>
+                    </AntButton>
+                  </AntRow>
+                </AntForm.Item>
+              </AntForm>
             ),
           },
         ]}
@@ -170,4 +186,4 @@ class ListFilter extends Component {
   }
 }
 
-export default WithDistinctCities()(ListFilter);
+export default WithDistinctCities()(ListFilter as any);

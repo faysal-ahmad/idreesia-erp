@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -23,6 +22,29 @@ import {
 } from '/imports/ui/modules/hr/common/composers';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
+const AntForm = Form as any;
+const AutoComplete = AutoCompleteField as any;
+const Cascader = CascaderField as any;
+const FormDateField = DateField as any;
+const DropdownField = SelectField as any;
+const SubmitButtons = FormButtonsSubmit as any;
+interface SelectOption { _id?: string; name?: string; }
+interface VisitorStay { _id: string; fromDate: string | number; toDate: string | number; stayReason?: string; stayAllowedBy?: string; dutyId?: string; shiftId?: string; }
+interface EditFormValues { fromDate: string | number | Date; toDate: string | number | Date; stayReason?: string; stayAllowedBy?: string; dutyIdShiftId?: string[]; }
+interface EditFormProps {
+  visitorStayId?: string;
+  handleSaveItem?(): void;
+  formDataLoading?: boolean;
+  visitorStayById?: VisitorStay | null;
+  allMSDutiesLoading?: boolean;
+  allDutyShiftsLoading?: boolean;
+  distinctStayAllowedByLoading?: boolean;
+  allMSDuties?: any[];
+  allDutyShifts?: any[];
+  distinctStayAllowedBy?: string[];
+}
+interface VisitorStayData { visitorStayById?: VisitorStay | null; }
+
 const EditForm = ({
   handleSaveItem,
   formDataLoading,
@@ -33,9 +55,9 @@ const EditForm = ({
   allMSDuties,
   allDutyShifts,
   distinctStayAllowedBy,
-}) => {
+}: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [updateVisitorStay] = useMutation(formMutation, {
+  const [updateVisitorStay] = useMutation(formMutation as any, {
     refetchQueries: ['pagedVisitorStays'],
   });
 
@@ -43,7 +65,8 @@ const EditForm = ({
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId }) => {
+  const handleFinish = ({ fromDate, toDate, stayReason, stayAllowedBy, dutyIdShiftId }: EditFormValues) => {
+    if (!visitorStayById) return;
     updateVisitorStay({
       variables: {
         _id: visitorStayById._id,
@@ -58,7 +81,7 @@ const EditForm = ({
       .then(() => {
         if (handleSaveItem) handleSaveItem();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -70,43 +93,44 @@ const EditForm = ({
     distinctStayAllowedByLoading
   )
     return null;
+  if (!visitorStayById) return null;
 
   const dutyShiftCascaderData = getDutyShiftCascaderData(
-    allMSDuties,
-    allDutyShifts
+    (allMSDuties ?? []) as any,
+    (allDutyShifts ?? []) as any
   );
 
   return (
-    <Form layout="horizontal"  onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <DateField
+    <AntForm layout="horizontal"  onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <FormDateField
         fieldName="fromDate"
         fieldLabel="From Date"
         initialValue={dayjs(Number(visitorStayById.fromDate))}
         required
         requiredMessage="Please select from date."
       />
-      <DateField
+      <FormDateField
         fieldName="toDate"
         fieldLabel="To Date"
         initialValue={dayjs(Number(visitorStayById.toDate))}
         required
         requiredMessage="Please select to date."
       />
-      <AutoCompleteField
+      <AutoComplete
         fieldName="stayAllowedBy"
         fieldLabel="Stay Allowed By"
         dataSource={distinctStayAllowedBy}
         initialValue={visitorStayById.stayAllowedBy}
       />
-      <SelectField
+      <DropdownField
         data={StayReasons}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
+        getDataValue={({ _id }: SelectOption) => _id}
+        getDataText={({ name }: SelectOption) => name}
         fieldName="stayReason"
         fieldLabel="Stay Reason"
         initialValue={visitorStayById.stayReason}
       />
-      <CascaderField
+      <Cascader
         data={dutyShiftCascaderData}
         changeOnSelect={false}
         fieldName="dutyIdShiftId"
@@ -114,11 +138,11 @@ const EditForm = ({
         initialValue={[visitorStayById.dutyId, visitorStayById.shiftId]}
       />
 
-      <FormButtonsSubmit
+      <SubmitButtons
         text="Update Stay"
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -170,9 +194,9 @@ const formMutation = gql`
   }
 `;
 
-const EditFormWithData = props => {
+const EditFormWithData = (props: EditFormProps) => {
   const { visitorStayId } = props;
-  const { data = {}, loading, ...queryResult } = useQuery(formQuery, {
+  const { data = {}, loading, ...queryResult } = useQuery(formQuery as any, {
     variables: { _id: visitorStayId },
   });
 
@@ -180,7 +204,7 @@ const EditFormWithData = props => {
     <EditForm
       {...props}
       {...queryResult}
-      {...data}
+      {...(data as VisitorStayData)}
       formDataLoading={loading}
     />
   );
@@ -203,4 +227,4 @@ export default flowRight(
   WithAllMSDuties(),
   WithAllDutyShifts(),
   WithDistinctStayAllowedBy()
-)(EditFormWithData);
+)(EditFormWithData as any);

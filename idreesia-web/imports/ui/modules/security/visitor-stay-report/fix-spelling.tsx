@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
@@ -8,7 +7,19 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class FixSpelling extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface FixSpellingProps {
+  spellingType: string;
+  existingSpelling: string;
+  onSave(spellingType: string, existingSpelling: string, newSpelling: string): void;
+  onCancel(): void;
+}
+interface FixSpellingState { isFieldsTouched: boolean; }
+interface FixSpellingValues { existingSpelling: string; newSpelling: string; }
+
+class FixSpelling extends Component<FixSpellingProps, FixSpellingState> {
   static propTypes = {
     spellingType: PropTypes.string,
     existingSpelling: PropTypes.string,
@@ -24,7 +35,7 @@ class FixSpelling extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ existingSpelling, newSpelling }) => {
+  handleFinish = ({ existingSpelling, newSpelling }: FixSpellingValues) => {
     const { spellingType, onSave } = this.props;
     onSave(spellingType, existingSpelling, newSpelling);
   };
@@ -34,25 +45,25 @@ class FixSpelling extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
+      <AntForm layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <TextField
           fieldName="existingSpelling"
           fieldLabel="Existing Spelling"
           initialValue={existingSpelling}
           disabled
         />
 
-        <InputTextField
+        <TextField
           fieldName="newSpelling"
           fieldLabel="New Spelling"
           required
         />
 
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={onCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }

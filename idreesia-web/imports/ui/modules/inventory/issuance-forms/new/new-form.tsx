@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
@@ -24,6 +23,17 @@ import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 
 import { CREATE_ISSUANCE_FORM } from '../gql';
 
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const ItemsListComponent = ItemsList as any;
+const IssueDateField = DateField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const TreeField = TreeSelectField as any;
+const KarkunSelectField = KarkunField as any;
+
 const FormStyle = {
   width: '800px',
 };
@@ -33,7 +43,30 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class NewForm extends Component {
+interface PhysicalStore { name: string; }
+interface HistoryLike { goBack(): void; }
+interface SelectOption { _id: string; name: string; }
+interface MutateFunction { (options: { variables: Record<string, unknown> }): Promise<unknown>; }
+interface IssuanceFormValues {
+  issueDate: string;
+  issuedBy: SelectOption;
+  issuedTo: SelectOption;
+  handedOverTo?: string;
+  locationId?: string;
+  items?: unknown[];
+  notes?: string;
+}
+interface NewFormProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  locationsLoading?: boolean;
+  locationsByPhysicalStoreId?: SelectOption[];
+  createIssuanceForm: MutateFunction;
+}
+interface NewFormState { isFieldsTouched: boolean; }
+
+class NewForm extends Component<NewFormProps, NewFormState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -49,7 +82,7 @@ class NewForm extends Component {
     isFieldsTouched: false,
   };
 
-  formRef = React.createRef();
+  formRef = React.createRef<any>();
 
   handleCancel = () => {
     const { history } = this.props;
@@ -68,7 +101,7 @@ class NewForm extends Component {
     locationId,
     items,
     notes,
-  }) => {
+  }: IssuanceFormValues) => {
     const { history, physicalStoreId, createIssuanceForm } = this.props;
     createIssuanceForm({
       variables: {
@@ -85,7 +118,7 @@ class NewForm extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -104,20 +137,20 @@ class NewForm extends Component {
     ];
 
     return (
-      <Form
+      <AntForm
         ref={this.formRef}
         layout="horizontal"
         style={FormStyle}
         onFinish={this.handleFinish}
         onFieldsChange={this.handleFieldsChange}
       >
-        <DateField
+        <IssueDateField
           fieldName="issueDate"
           fieldLabel="Issue Date"
           required
           requiredMessage="Please input an issue date."
         />
-        <KarkunField
+        <KarkunSelectField
           required
           requiredMessage="Please select a name for Issued By / Received By."
           fieldName="issuedBy"
@@ -128,7 +161,7 @@ class NewForm extends Component {
             PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
           }
         />
-        <KarkunField
+        <KarkunSelectField
           required
           requiredMessage="Please select a name for Issued To / Returned By."
           fieldName="issuedTo"
@@ -140,42 +173,42 @@ class NewForm extends Component {
           }
         />
 
-        <InputTextField
+        <TextField
           fieldName="handedOverTo"
           fieldLabel="Handed Over To / By"
           required={false}
         />
 
-        <TreeSelectField
-          data={locationsByPhysicalStoreId}
+        <TreeField
+          data={locationsByPhysicalStoreId ?? []}
           showSearch
           fieldName="locationId"
           fieldLabel="For Location"
           placeholder="Select a Location"
         />
 
-        <InputTextAreaField
+        <TextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
         />
 
-        <Divider orientation="left">Issued / Returned Items</Divider>
-        <Form.Item name="items" rules={rules} {...formItemExtendedLayout}>
-          <ItemsList
+        <AntDivider orientation="left">Issued / Returned Items</AntDivider>
+        <AntFormItem name="items" rules={rules} {...formItemExtendedLayout}>
+          <ItemsListComponent
             defaultLabel="Issued"
             inflowLabel="Returned"
             outflowLabel="Issued"
             physicalStoreId={physicalStoreId}
             refForm={this.formRef.current}
           />
-        </Form.Item>
+        </AntFormItem>
 
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }
@@ -195,10 +228,10 @@ export default flowRight(
       ],
     },
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Issuance Forms, New`;
     }
     return `Inventory, Issuance Forms, New`;
   })
-)(NewForm);
+)(NewForm as any);

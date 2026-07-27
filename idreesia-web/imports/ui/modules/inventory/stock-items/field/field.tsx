@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -19,6 +18,21 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
+const AntFormItem = Form.Item as any;
+const StockItemInput = Input as any;
+
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: Record<string, unknown> | null;
+  required?: boolean;
+  requiredMessage?: string;
+  disabled?: boolean;
+  physicalStoreId?: string;
+}
+
 const Field = ({
   fieldName,
   fieldLabel,
@@ -29,7 +43,7 @@ const Field = ({
   requiredMessage,
   disabled,
   physicalStoreId,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -38,15 +52,15 @@ const Field = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} rules={rules} initialValue={initialValue} {...fieldLayout}>
-      <Input
+    <AntFormItem name={fieldName} label={fieldLabel} rules={rules} initialValue={initialValue} {...fieldLayout}>
+      <StockItemInput
         placeholder={placeholder}
         disabled={disabled}
         physicalStoreId={physicalStoreId}
       />
-    </Form.Item>
+    </AntFormItem>
   );
-}
+};
 
 Field.propTypes = {
   fieldName: PropTypes.string,

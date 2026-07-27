@@ -1,13 +1,14 @@
-// @ts-nocheck
-import React from "react";
+import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { get } from "lodash";
 
-export default () => WrappedComponent => {
-  const WithMehfilId = props => {
+type AnyProps = Record<string, any>;
+
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithMehfilId = (props: AnyProps) => {
     const { match } = props;
     const mehfilId = get(match, ["params", "mehfilId"], null);
-    return <WrappedComponent mehfilId={mehfilId} {...props} />;
+    return React.createElement(WrappedComponent as any, { mehfilId, ...props });
   };
 
   WithMehfilId.propTypes = {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -21,12 +20,22 @@ const ControlsContainer = {
   width: '100%',
 };
 
-const PrintContainer = ({ history }) => {
+const AntButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const ReactToPrintComponent = ReactToPrint as any;
+const PrintFormComponent = PrintForm as any;
+interface RouteParams { formId: string; physicalStoreId: string; }
+interface HistoryLike { goBack(): void; }
+interface PrintContainerProps { history: HistoryLike; }
+interface IssuanceFormData { issuanceFormById: Record<string, unknown>; }
+
+const PrintContainer = ({ history }: PrintContainerProps) => {
   const dispatch = useDispatch();
-  const printFormRef = useRef(null);
-  const { formId, physicalStoreId } = useParams();
+  const printFormRef = useRef<any>(null);
+  const { formId, physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
+  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID as any, {
     skip: !formId,
     variables: {
       _id: formId,
@@ -42,25 +51,25 @@ const PrintContainer = ({ history }) => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'Print']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
   
   if (loading || !data) return null;
-  const { issuanceFormById } = data; 
+  const { issuanceFormById } = data as IssuanceFormData;
 
   return (
     <>
       <div style={ControlsContainer}>
         <div>
-          <ReactToPrint
+          <ReactToPrintComponent
             content={() => printFormRef.current}
             trigger={() => (
-              <Button size="large" type="primary" icon={<PrinterOutlined />}>
+              <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
                 Print
-              </Button>
+              </AntButton>
             )}
           />
           &nbsp;
-          <Button
+          <AntButton
             size="large"
             type="primary"
             onClick={() => {
@@ -68,11 +77,11 @@ const PrintContainer = ({ history }) => {
             }}
           >
             Back
-          </Button>
+          </AntButton>
         </div>
       </div>
-      <Divider />
-      <PrintForm
+      <AntDivider />
+      <PrintFormComponent
         ref={printFormRef}
         issuanceFormById={issuanceFormById}
         physicalStoreId={physicalStoreId}

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -19,7 +18,64 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_USERS } from '../gql';
 
-const List = ({ history, location }) => {
+const RouterLink = Link as any;
+const AntPagination = Pagination as any;
+const AntRow = Row as any;
+const AntTable = Table as any;
+const AntLockOutlined = LockOutlined as any;
+const PersonNameComponent = PersonName as any;
+const PermissionSelectionComponent = PermissionSelection as any;
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface LocationLike {
+  pathname: string;
+  search: string;
+}
+
+interface ListProps {
+  history: HistoryLike;
+  location: LocationLike;
+}
+
+interface QueryParams {
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface PersonRecord {
+  _id: string;
+  sharedData: {
+    name?: string;
+    imageId?: string;
+  };
+}
+
+interface SecurityUser {
+  _id: string;
+  username?: string;
+  locked?: boolean;
+  lastActiveAt?: string | number | null;
+  person?: PersonRecord | null;
+}
+
+interface PagedSecurityUsers {
+  data: SecurityUser[];
+  totalResults: number;
+}
+
+interface SecurityUsersData {
+  pagedSecurityUsers?: PagedSecurityUsers;
+}
+
+const emptyPagedSecurityUsers: PagedSecurityUsers = {
+  data: [],
+  totalResults: 0,
+};
+
+const List = ({ history, location }: ListProps) => {
   const dispatch = useDispatch();
   const { queryParams, setPageParams } = useQueryParams({
     history,
@@ -32,37 +88,37 @@ const List = ({ history, location }) => {
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['Security', 'User Accounts', 'List']));
-  }, [location]);
+  }, [dispatch, location]);
 
-  const { data, loading } = useQuery(PAGED_SECURITY_USERS, {
+  const { data, loading } = useQuery(PAGED_SECURITY_USERS as any, {
     variables: {
       filter: queryParams,
     },
   });
 
   if (loading) return null;
-  const { pagedSecurityUsers } = data;
+  const { pagedSecurityUsers = emptyPagedSecurityUsers } = (data ?? {}) as SecurityUsersData;
 
-  const onPaginationChange = (index, size) => {
+  const onPaginationChange = (index: number, size: number) => {
     setPageParams({
       pageIndex: index - 1,
       pageSize: size,
     });
   };
 
-  const { pageIndex, pageSize } = queryParams;
+  const { pageIndex, pageSize } = queryParams as QueryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
-  const columns = [
+  const columns: any[] = [
     {
       key: 'locked',
-      render: (text, record) => (record.locked ? <LockOutlined /> : null),
+      render: (_text: unknown, record: SecurityUser) => (record.locked ? <AntLockOutlined /> : null),
     },
     {
       title: 'Person Name',
       key: 'personName',
-      render: (text, record) => {
+      render: (_text: unknown, record: SecurityUser) => {
         if (!record.person) return null;
         const personData = {
           _id: record.person._id,
@@ -71,7 +127,7 @@ const List = ({ history, location }) => {
         };
 
         return (
-          <PersonName person={personData} />
+          <PersonNameComponent person={personData} />
         );
       },
     },
@@ -79,20 +135,20 @@ const List = ({ history, location }) => {
       title: 'User Login',
       dataIndex: 'username',
       key: 'username',
-      render: (text, record) => (
-        <Link to={paths.securityUsersEditFormPath(record._id)}>{text}</Link>
+      render: (text: string, record: SecurityUser) => (
+        <RouterLink to={paths.securityUsersEditFormPath(record._id)}>{text}</RouterLink>
       ),
     },
     {
       title: 'Last Active',
       dataIndex: 'lastActiveAt',
       key: 'lastActiveAt',
-      render: text => {
+      render: (text: string | number | null) => {
         if (!text) return '';
         return (
           <>
-            <Row>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</Row>
-            <Row>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</Row>
+            <AntRow>{dayjs(Number(text)).format(Formats.DATE_FORMAT)}</AntRow>
+            <AntRow>{dayjs(Number(text)).format(Formats.TIME_FORMAT)}</AntRow>
           </>
         );
       },
@@ -100,8 +156,8 @@ const List = ({ history, location }) => {
     {
       title: 'Permissions',
       key: 'permissions',
-      render: (text, record) => (
-        <PermissionSelection
+      render: (_text: unknown, record: SecurityUser) => (
+        <PermissionSelectionComponent
           readOnly
           permissions={[SecurityPermissionsData]}
           securityEntity={record}
@@ -112,7 +168,7 @@ const List = ({ history, location }) => {
   ];
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={pagedSecurityUsers.data}
       columns={columns}
@@ -120,11 +176,11 @@ const List = ({ history, location }) => {
       pagination={false}
       size="small"
       footer={() => (
-        <Pagination
+        <AntPagination
           current={numPageIndex + 1}
           pageSize={numPageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: number[]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onPaginationChange}

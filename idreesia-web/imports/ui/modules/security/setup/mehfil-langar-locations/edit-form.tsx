@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -41,17 +40,29 @@ const formMutation = gql`
   }
 `;
 
-const EditForm = ({ match, history }) => {
+const ReactFragment = Fragment as any;
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+interface HistoryLike { push(path: string): void; }
+interface MatchLike { params: { mehfilLangarLocationId: string } }
+interface EditFormProps { match: MatchLike; history: HistoryLike; }
+interface LangarLocation { _id: string; name: string; urduName: string; }
+interface FormData { securityMehfilLangarLocationById: LangarLocation; }
+interface FormValues { name: string; urduName: string; }
+
+const EditForm = ({ match, history }: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { mehfilLangarLocationId } = match.params;
-  const { loading, data } = useQuery(formQuery, {
+  const { loading, data } = useQuery(formQuery as any, {
     variables: { id: mehfilLangarLocationId },
   });
-  const [updateSecurityMehfilLangarLocation] = useMutation(formMutation, {
+  const [updateSecurityMehfilLangarLocation] = useMutation(formMutation as any, {
     refetchQueries: ['allSecurityMehfilLangarLocations'],
   });
   const securityMehfilLangarLocationById = data
-    ? data.securityMehfilLangarLocationById
+    ? (data as FormData).securityMehfilLangarLocationById
     : null;
 
   const handleCancel = () => {
@@ -62,7 +73,8 @@ const EditForm = ({ match, history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, urduName }) => {
+  const handleFinish = ({ name, urduName }: FormValues) => {
+    if (!securityMehfilLangarLocationById) return;
     updateSecurityMehfilLangarLocation({
       variables: {
         id: securityMehfilLangarLocationById._id,
@@ -73,37 +85,37 @@ const EditForm = ({ match, history }) => {
       .then(() => {
         history.push(paths.mehfilLangarLocationsPath);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading) return null;
+  if (loading || !securityMehfilLangarLocationById) return null;
 
   return (
-    <Fragment>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
+    <ReactFragment>
+      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           initialValue={securityMehfilLangarLocationById.name}
           required
           requiredMessage="Please input a name for the langar location."
         />
-        <InputTextField
+        <TextField
           fieldName="urduName"
           fieldLabel="Urdu Name"
           initialValue={securityMehfilLangarLocationById.urduName}
           required
           requiredMessage="Please input an urdu name for the langar location."
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={securityMehfilLangarLocationById} />
-    </Fragment>
+      </AntForm>
+      <AuditInfoComponent record={securityMehfilLangarLocationById} />
+    </ReactFragment>
   );
 };
 
@@ -113,4 +125,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Security', 'Mehfil Langar Locations', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['Security', 'Mehfil Langar Locations', 'Edit'])(EditForm as any);

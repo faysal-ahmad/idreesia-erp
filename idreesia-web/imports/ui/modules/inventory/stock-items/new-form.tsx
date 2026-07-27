@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
@@ -21,7 +20,58 @@ import {
 import { CREATE_STOCK_ITEM } from './gql';
 import allUnitOfMeasurements from './all-unit-of-measurements';
 
-class NewForm extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const NumberField = InputNumberField as any;
+const SelectInputField = SelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface ItemCategory {
+  _id: string;
+  name: string;
+}
+
+interface SelectOption {
+  _id: string;
+  name: string;
+}
+
+interface NewFormProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  itemCategoriesLoading?: boolean;
+  itemCategoriesByPhysicalStoreId?: ItemCategory[];
+  createStockItem: MutateFunction;
+}
+
+interface NewFormState {
+  isFieldsTouched: boolean;
+}
+
+interface StockItemFormValues {
+  name: string;
+  company?: string;
+  details?: string;
+  categoryId: string;
+  unitOfMeasurement: string;
+  minStockLevel?: number;
+  currentStockLevel: number;
+}
+
+class NewForm extends Component<NewFormProps, NewFormState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -55,7 +105,7 @@ class NewForm extends Component {
     unitOfMeasurement,
     minStockLevel,
     currentStockLevel,
-  }) => {
+  }: StockItemFormValues) => {
     const { history, physicalStoreId, createStockItem } = this.props;
     createStockItem({
       variables: {
@@ -72,7 +122,7 @@ class NewForm extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -84,60 +134,60 @@ class NewForm extends Component {
     if (itemCategoriesLoading) return null;
 
     return (
-      <Form
+      <AntForm
         layout="horizontal"
         onFinish={this.handleFinish}
         onFieldsChange={this.handleFieldsChange}
       >
-        <InputTextField
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the stock item."
         />
-        <InputTextField
+        <TextField
           fieldName="company"
           fieldLabel="Company"
           required={false}
         />
-        <InputTextField
+        <TextField
           fieldName="details"
           fieldLabel="Details"
           required={false}
         />
-        <SelectField
-          data={itemCategoriesByPhysicalStoreId}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
+        <SelectInputField
+          data={itemCategoriesByPhysicalStoreId ?? []}
+          getDataValue={({ _id }: SelectOption) => _id}
+          getDataText={({ name }: SelectOption) => name}
           fieldName="categoryId"
           fieldLabel="Category"
           required
           requiredMessage="Please select an item category."
         />
-        <SelectField
+        <SelectInputField
           data={allUnitOfMeasurements}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
+          getDataValue={({ _id }: SelectOption) => _id}
+          getDataText={({ name }: SelectOption) => name}
           fieldName="unitOfMeasurement"
           fieldLabel="Measurement Unit"
           required
           requiredMessage="Please select a unit of measurement."
         />
-        <InputNumberField
+        <NumberField
           required
           requiredMessage="Please set the current stock level."
           fieldName="currentStockLevel"
           fieldLabel="Current Stock Level"
         />
-        <InputNumberField
+        <NumberField
           fieldName="minStockLevel"
           fieldLabel="Min Stock Level"
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }
@@ -152,10 +202,10 @@ export default flowRight(
       refetchQueries: ['pagedStockItems'],
     },
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Stock Items, New`;
     }
     return `Inventory, Stock Items, New`;
   })
-)(NewForm);
+)(NewForm as any);

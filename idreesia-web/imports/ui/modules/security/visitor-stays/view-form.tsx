@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -9,13 +8,18 @@ import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { List } from 'antd';
 
-const ViewForm = ({ visitorStayId }) => {
-  const { data = {}, loading } = useQuery(formQuery, {
+const AntList = List as any;
+interface VisitorStay { fromDate: string | number; toDate: string | number; numOfDays: number; stayReason?: string; stayAllowedBy?: string; dutyShiftName?: string; }
+interface VisitorStayData { visitorStayById?: VisitorStay | null; }
+interface ViewFormProps { visitorStayId: string; }
+
+const ViewForm = ({ visitorStayId }: ViewFormProps) => {
+  const { data = {}, loading } = useQuery(formQuery as any, {
     variables: { _id: visitorStayId },
   });
-  const { visitorStayById } = data;
+  const { visitorStayById } = data as VisitorStayData;
   const formDataLoading = loading;
-  if (formDataLoading) return null;
+  if (formDataLoading || !visitorStayById) return null;
 
   const fromDate = dayjs(Number(visitorStayById.fromDate)).format('DD MMM, YYYY');
   const toDate = dayjs(Number(visitorStayById.toDate)).format('DD MMM, YYYY');
@@ -32,26 +36,26 @@ const ViewForm = ({ visitorStayId }) => {
   if (visitorStayById.stayReason) {
     const reason = find(
       StayReasons,
-      ({ _id }) => _id === visitorStayById.stayReason
+      ({ _id }: { _id: string }) => _id === visitorStayById.stayReason
     );
-    stayReason = reason.name;
+    stayReason = (reason as { name?: string } | undefined)?.name;
   }
 
   return (
-    <List>
-      <List.Item>
+    <AntList>
+      <AntList.Item>
         <b>Stay Detail:</b> {detail}
-      </List.Item>
-      <List.Item>
+      </AntList.Item>
+      <AntList.Item>
         <b>Stay Allowed By:</b> {visitorStayById.stayAllowedBy}
-      </List.Item>
-      <List.Item>
+      </AntList.Item>
+      <AntList.Item>
         <b>Stay Reason:</b> {stayReason}
-      </List.Item>
-      <List.Item>
+      </AntList.Item>
+      <AntList.Item>
         <b>Duty / Shift:</b> {visitorStayById.dutyShiftName}
-      </List.Item>
-    </List>
+      </AntList.Item>
+    </AntList>
   );
 };
 

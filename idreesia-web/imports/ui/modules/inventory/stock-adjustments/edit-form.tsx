@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -33,7 +32,73 @@ const FormStyle = {
   width: '800px',
 };
 
-class EditForm extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const AdjustmentDateField = DateField as any;
+const NumberField = InputNumberField as any;
+const RadioField = RadioGroupField as any;
+const KarkunSelectField = KarkunField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface MatchLike {
+  params: {
+    formId: string;
+  };
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface StockAdjustment {
+  _id: string;
+  physicalStoreId: string;
+  adjustmentDate: string;
+  quantity: number;
+  isInflow: boolean;
+  adjustmentReason?: string;
+  refStockItem: {
+    formattedName: string;
+  };
+  refAdjustedBy: {
+    _id: string;
+    name: string;
+  };
+}
+
+interface EditFormProps {
+  history: HistoryLike;
+  match: MatchLike;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  formDataLoading?: boolean;
+  stockAdjustmentById?: StockAdjustment;
+  updateStockAdjustment: MutateFunction;
+}
+
+interface EditFormState {
+  isFieldsTouched: boolean;
+}
+
+interface StockAdjustmentFormValues {
+  adjustmentDate: string;
+  adjustedBy: { _id: string };
+  quantity: number;
+  adjustment: 'inflow' | 'outflow';
+  adjustmentReason?: string;
+}
+
+class EditForm extends Component<EditFormProps, EditFormState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -64,12 +129,14 @@ class EditForm extends Component {
     quantity,
     adjustment,
     adjustmentReason,
-  }) => {
+  }: StockAdjustmentFormValues) => {
     const {
       history,
       updateStockAdjustment,
-      stockAdjustmentById: { _id, physicalStoreId },
+      stockAdjustmentById,
     } = this.props;
+    if (!stockAdjustmentById) return;
+    const { _id, physicalStoreId } = stockAdjustmentById;
 
     const isInflow = adjustment === 'inflow';
     updateStockAdjustment({
@@ -86,7 +153,7 @@ class EditForm extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -95,23 +162,23 @@ class EditForm extends Component {
     const { formDataLoading, stockAdjustmentById, physicalStoreId } =
       this.props;
     const isFieldsTouched = this.state.isFieldsTouched;
-    if (formDataLoading) return null;
+    if (formDataLoading || !stockAdjustmentById) return null;
 
     return (
       <>
-        <Form
+        <AntForm
           layout="horizontal"
           style={FormStyle}
           onFinish={this.handleFinish}
           onFieldsChange={this.handleFieldsChange}
         >
-          <InputTextField
+          <TextField
             fieldName="stockItemId"
             fieldLabel="Stock Item Name"
             initialValue={stockAdjustmentById.refStockItem.formattedName}
           />
 
-          <RadioGroupField
+          <RadioField
             fieldName="adjustment"
             fieldLabel="Adjustment"
             initialValue={stockAdjustmentById.isInflow ? 'inflow' : 'outflow'}
@@ -121,7 +188,7 @@ class EditForm extends Component {
             ]}
           />
 
-          <InputNumberField
+          <NumberField
             fieldName="quantity"
             fieldLabel="Quantity"
             initialValue={stockAdjustmentById.quantity}
@@ -130,14 +197,14 @@ class EditForm extends Component {
             minValue={0}
           />
 
-          <DateField
+          <AdjustmentDateField
             fieldName="adjustmentDate"
             fieldLabel="Adjustment Date"
             initialValue={dayjs(Number(stockAdjustmentById.adjustmentDate))}
             required
             requiredMessage="Please input an adjustment date."
           />
-          <KarkunField
+          <KarkunSelectField
             fieldName="adjustedBy"
             fieldLabel="Adjusted By"
             placeholder="Adjusted By"
@@ -150,19 +217,19 @@ class EditForm extends Component {
             }
           />
 
-          <InputTextAreaField
+          <TextAreaField
             fieldName="adjustmentReason"
             fieldLabel="Adjustment Reason"
             initialValue={stockAdjustmentById.adjustmentReason}
             required={false}
           />
 
-          <FormButtonsSaveCancel
+          <SaveCancelButtons
             handleCancel={this.handleCancel}
             isFieldsTouched={isFieldsTouched}
           />
-        </Form>
-        <AuditInfo record={stockAdjustmentById} />
+        </AntForm>
+        <AuditInfoComponent record={stockAdjustmentById} />
       </>
     );
   }
@@ -254,16 +321,26 @@ export default flowRight(
     },
   }),
   withQuery(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match, physicalStoreId }) => {
+    props: ({ data }: { data: Record<string, any> }) => ({
+      formDataLoading: data.loading,
+      ...data,
+    }),
+    options: ({
+      match,
+      physicalStoreId,
+    }: {
+      match?: MatchLike;
+      physicalStoreId?: string;
+    }) => {
+      if (!match) return { variables: { _id: '', physicalStoreId } };
       const { formId } = match.params;
       return { variables: { _id: formId, physicalStoreId } };
     },
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Stock Adjustments, Edit`;
     }
     return `Inventory, Stock Adjustments, Edit`;
   })
-)(EditForm);
+)(EditForm as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -77,7 +76,91 @@ const GroupNameDivStyle = {
   fontWeight: 'bold',
 };
 
-class List extends Component {
+const AntButton = Button as any;
+const AntDropdown = Dropdown as any;
+const AntModal = Modal as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const Icons = {
+  CalculatorOutlined: CalculatorOutlined as any,
+  DeleteOutlined: DeleteOutlined as any,
+  FileExcelOutlined: FileExcelOutlined as any,
+  MergeCellsOutlined: MergeCellsOutlined as any,
+  PlusCircleOutlined: PlusCircleOutlined as any,
+  ReconciliationOutlined: ReconciliationOutlined as any,
+  SettingOutlined: SettingOutlined as any,
+};
+const StockItemNameComponent = StockItemName as any;
+const ListFilterComponent = ListFilter as any;
+
+interface StockItemRow {
+  _id: string;
+  physicalStoreId?: string;
+  name: string;
+  company?: string;
+  details?: string;
+  categoryName?: string;
+  minStockLevel?: number;
+  currentStockLevel?: number | string;
+  unitOfMeasurement?: string;
+  verifiedOn?: string;
+  isGroup?: boolean;
+  noParent?: boolean;
+  imageId?: string;
+  purchaseFormsCount?: number;
+  issuanceFormsCount?: number;
+  stockAdjustmentsCount?: number;
+  children?: StockItemRow[];
+}
+
+interface PagedStockItems {
+  totalResults: number;
+  data: StockItemRow[];
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface PageParams {
+  pageIndex?: number;
+  pageSize?: number;
+  categoryId?: string | null;
+  name?: string | null;
+  verifyDuration?: string | null;
+  stockLevel?: string | null;
+}
+
+interface ListProps {
+  pageIndex?: number;
+  pageSize?: number;
+  physicalStoreId?: string;
+  name?: string | null;
+  categoryId?: string | null;
+  verifyDuration?: string | null;
+  stockLevel?: string | null;
+  setPageParams(params: PageParams): void;
+  handleItemSelected?(stockItem: StockItemRow): void;
+  showNewButton?: boolean;
+  showSelectionColumn?: boolean;
+  showActions?: boolean;
+  handleNewClicked?(): void;
+  removeStockItem: MutateFunction;
+  mergeStockItems: MutateFunction;
+  recalculateStockLevels: MutateFunction;
+  verifyStockItemLevel: MutateFunction;
+  loading?: boolean;
+  refetchListQuery?(): void;
+  pagedStockItems?: PagedStockItems;
+}
+
+interface ListState {
+  selectedRows: StockItemRow[];
+}
+
+class List extends Component<ListProps, ListState> {
   static propTypes = {
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
@@ -111,14 +194,14 @@ class List extends Component {
 
   getColumns = () => {
     const { showActions } = this.props;
-    const columns = [
+    const columns: any[] = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        onCell: record =>
+        onCell: (record: StockItemRow) =>
           record.isGroup ? { colSpan: showActions ? 7 : 6 } : { colSpan: 1 },
-        render: (text, record) => {
+        render: (_text: unknown, record: StockItemRow) => {
           if (record.isGroup) {
             return <div style={GroupNameDivStyle}>{record.name}</div>;
           }
@@ -127,7 +210,7 @@ class List extends Component {
           const paddingLeft = record.noParent ? 0 : 20;
           return (
             <div style={{ paddingLeft }}>
-              <StockItemName
+              <StockItemNameComponent
                 stockItem={record}
                 onStockItemNameClicked={this.props.handleItemSelected}
               />
@@ -139,26 +222,26 @@ class List extends Component {
         title: 'Company',
         dataIndex: 'company',
         key: 'company',
-        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
+        onCell: (record: StockItemRow) => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
       },
       {
         title: 'Details',
         dataIndex: 'details',
         key: 'details',
-        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
+        onCell: (record: StockItemRow) => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
       },
       {
         title: 'Category',
         dataIndex: 'categoryName',
         key: 'categoryName',
-        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
+        onCell: (record: StockItemRow) => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
       },
       {
         title: 'Min Stock',
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
-        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
-        render: (text, record) => {
+        onCell: (record: StockItemRow) => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
+        render: (text: number, record: StockItemRow) => {
           let stockLevel = text ? numeral(text).format('0.00') : '';
           if (stockLevel && record.unitOfMeasurement !== 'quantity') {
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
@@ -171,13 +254,13 @@ class List extends Component {
         title: 'Current Stock',
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
-        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
-        render: (text, record) => {
+        onCell: (record: StockItemRow) => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
+        render: (text: number, record: StockItemRow) => {
           let stockLevel = text ? numeral(text).format('0.00') : '';
           if (stockLevel && record.unitOfMeasurement !== 'quantity')
             stockLevel = `${stockLevel} ${record.unitOfMeasurement}`;
 
-          let style = StockLevelVerificationError;
+          let style: any = StockLevelVerificationError;
           let tooltip = `Stock level has never been verified.`;
 
           if (record.verifiedOn) {
@@ -195,9 +278,9 @@ class List extends Component {
           }
 
           return (
-            <Tooltip title={tooltip}>
+            <AntTooltip title={tooltip}>
               <div style={style}>{stockLevel}</div>
-            </Tooltip>
+            </AntTooltip>
           );
         },
       },
@@ -207,23 +290,23 @@ class List extends Component {
       columns.push({
         title: 'Actions',
         key: 'action',
-        onCell: record => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
-        render: (text, record) => {
+        onCell: (record: StockItemRow) => (record.isGroup ? { colSpan: 0 } : { colSpan: 1 }),
+        render: (_text: unknown, record: StockItemRow) => {
           const {
-            purchaseFormsCount,
-            issuanceFormsCount,
-            stockAdjustmentsCount,
+            purchaseFormsCount = 0,
+            issuanceFormsCount = 0,
+            stockAdjustmentsCount = 0,
           } = record;
 
           const verifyAction = (
-            <Tooltip title="Verify Stock Level">
-              <ReconciliationOutlined
+            <AntTooltip title="Verify Stock Level">
+              <Icons.ReconciliationOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.handleVerifyStockLevel(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           );
 
           let deleteAction;
@@ -233,7 +316,7 @@ class List extends Component {
             0
           ) {
             deleteAction = (
-              <Popconfirm
+              <AntPopconfirm
                 title="Are you sure you want to delete this stock item?"
                 onConfirm={() => {
                   this.handleDeleteClicked(record);
@@ -241,10 +324,10 @@ class List extends Component {
                 okText="Yes"
                 cancelText="No"
               >
-                <Tooltip title="Delete">
-                  <DeleteOutlined className="list-actions-icon" />
-                </Tooltip>
-              </Popconfirm>
+                <AntTooltip title="Delete">
+                  <Icons.DeleteOutlined className="list-actions-icon" />
+                </AntTooltip>
+              </AntPopconfirm>
             );
           }
 
@@ -263,16 +346,16 @@ class List extends Component {
 
   rowSelection = {
     checkStrictly: false,
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: StockItemRow[]) => {
       // Remove any group rows from the selection
-      const filteredRows = selectedRows.filter(item => !item.isGroup);
+      const filteredRows = selectedRows.filter((item: StockItemRow) => !item.isGroup);
       this.setState({
         selectedRows: filteredRows,
       });
     },
   };
 
-  handleDeleteClicked = stockItem => {
+  handleDeleteClicked = (stockItem: StockItemRow) => {
     const { physicalStoreId, removeStockItem } = this.props;
     removeStockItem({
       variables: {
@@ -283,7 +366,7 @@ class List extends Component {
       .then(() => {
         message.success('Stock item has been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -293,7 +376,7 @@ class List extends Component {
     const { physicalStoreId, mergeStockItems } = this.props;
     if (selectedRows.length <= 1) return;
 
-    const _ids = selectedRows.map(({ _id }) => _id);
+    const _ids = selectedRows.map(({ _id }: StockItemRow) => _id);
     mergeStockItems({
       variables: {
         _idToKeep: _ids[0],
@@ -304,7 +387,7 @@ class List extends Component {
       .then(() => {
         message.success('Stock items have been merged.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -314,7 +397,7 @@ class List extends Component {
     const { physicalStoreId, recalculateStockLevels } = this.props;
     if (selectedRows.length === 0) return;
 
-    const _ids = selectedRows.map(({ _id }) => _id);
+    const _ids = selectedRows.map(({ _id }: StockItemRow) => _id);
     recalculateStockLevels({
       variables: {
         _ids,
@@ -324,18 +407,18 @@ class List extends Component {
       .then(() => {
         message.success('Stock levels have been recalculated.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  handleVerifyStockLevel = record => {
+  handleVerifyStockLevel = (record: StockItemRow) => {
     const { physicalStoreId, verifyStockItemLevel } = this.props;
     let currentStockLevel = record.currentStockLevel;
     currentStockLevel = currentStockLevel
       ? numeral(currentStockLevel).format('0.00')
       : 0;
-    Modal.confirm({
+    AntModal.confirm({
       title: 'Stock Level Verification',
       content: `Have you verified that the current stock level of "${
         record.name
@@ -353,7 +436,7 @@ class List extends Component {
               5
             );
           })
-          .catch(error => {
+          .catch((error: Error) => {
             message.error(error.message, 5);
           });
       },
@@ -368,7 +451,7 @@ class List extends Component {
     window.open(url, '_blank');
   };
 
-  onChange = (pageIndex, pageSize) => {
+  onChange = (pageIndex: number, pageSize: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -376,7 +459,7 @@ class List extends Component {
     });
   };
 
-  onShowSizeChange = (pageIndex, pageSize) => {
+  onShowSizeChange = (pageIndex: number, pageSize: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -384,7 +467,7 @@ class List extends Component {
     });
   };
 
-  handleAction = ({ key }) => {
+  handleAction = ({ key }: { key: string }) => {
     const { selectedRows } = this.state;
     if (key === 'merge') {
       if (selectedRows.length <= 1) {
@@ -392,7 +475,7 @@ class List extends Component {
         return;
       }
 
-      Modal.confirm({
+      AntModal.confirm({
         title: 'Merge selected items',
         content:
           'Are you sure you want to merge these items? This cannot be undone.',
@@ -411,12 +494,12 @@ class List extends Component {
       {
         key: 'merge',
         label: 'Merge Selected',
-        icon: <MergeCellsOutlined />,
+        icon: <Icons.MergeCellsOutlined />,
       },
       {
         key: 'recalculate',
         label: 'Recalculate Selected',
-        icon: <CalculatorOutlined />,
+        icon: <Icons.CalculatorOutlined />,
       },
       {
         type: 'divider',
@@ -424,14 +507,14 @@ class List extends Component {
       {
         key: 'export',
         label: 'Export Current Stock Levels',
-        icon: <FileExcelOutlined />,
+        icon: <Icons.FileExcelOutlined />,
       },
     ];
 
     return (
-      <Dropdown menu={{ items, onClick: this.handleAction }}>
-        <Button icon={<SettingOutlined />} size="large" />
-      </Dropdown>
+      <AntDropdown menu={{ items, onClick: this.handleAction }}>
+        <AntButton icon={<Icons.SettingOutlined />} size="large" />
+      </AntDropdown>
     );
   };
 
@@ -451,14 +534,14 @@ class List extends Component {
     let newButton = null;
     if (showNewButton) {
       newButton = (
-        <Button
+        <AntButton
           size="large"
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<Icons.PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Stock Item
-        </Button>
+        </AntButton>
       );
     }
 
@@ -466,7 +549,7 @@ class List extends Component {
       <div className="list-table-header">
         {newButton}
         <div className="list-table-header-section">
-          <ListFilter
+          <ListFilterComponent
             name={name}
             physicalStoreId={physicalStoreId}
             categoryId={categoryId}
@@ -482,13 +565,13 @@ class List extends Component {
     );
   };
 
-  getTreeData = data => {
-    const treeData = [];
+  getTreeData = (data: StockItemRow[]) => {
+    const treeData: StockItemRow[] = [];
     // Convert the flat data received from the server into
     // appropriate shape for showing tree in the table
     const groupedData = groupBy(data, 'name');
     const itemNames = Object.keys(groupedData);
-    itemNames.forEach((itemName, index) => {
+    itemNames.forEach((itemName: string, index: number) => {
       // If there is only a single item against the item name
       // then we do not need to show this item in a hierarchy
       const items = groupedData[itemName];
@@ -519,15 +602,16 @@ class List extends Component {
       pageIndex,
       pageSize,
       showSelectionColumn,
-      pagedStockItems: { totalResults, data },
+      pagedStockItems = { totalResults: 0, data: [] },
     } = this.props;
+    const { totalResults, data } = pagedStockItems;
 
     const treeData = this.getTreeData(data);
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={treeData}
         columns={this.getColumns()}
@@ -538,13 +622,13 @@ class List extends Component {
         title={this.getTableHeader}
         rowSelection={showSelectionColumn ? this.rowSelection : null}
         footer={() => (
-          <Pagination
+          <AntPagination
             defaultCurrent={1}
             defaultPageSize={20}
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
-            showTotal={(total, range) =>
+            showTotal={(total: number, range: [number, number]) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
             onChange={this.onChange}
@@ -559,7 +643,10 @@ class List extends Component {
 
 export default flowRight(
   withQuery(PAGED_STOCK_ITEMS, {
-    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
+    props: ({ data }: { data: Record<string, any> }) => ({
+      refetchListQuery: data.refetch,
+      ...data,
+    }),
     options: ({
       physicalStoreId,
       categoryId,
@@ -568,7 +655,7 @@ export default flowRight(
       stockLevel,
       pageIndex,
       pageSize,
-    }) => ({
+    }: Partial<ListProps>) => ({
       variables: {
         physicalStoreId,
         queryString: `?categoryId=${categoryId || ''}&name=${
@@ -603,4 +690,4 @@ export default flowRight(
       refetchQueries: ['pagedStockItems'],
     },
   })
-)(List);
+)(List as any);

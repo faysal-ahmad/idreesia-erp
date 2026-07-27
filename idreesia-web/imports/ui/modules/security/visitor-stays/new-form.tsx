@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -22,6 +21,26 @@ import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { WithDistinctStayAllowedBy } from 'meteor/idreesia-common/composers/security';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 
+const AntForm = Form as any;
+const AutoComplete = AutoCompleteField as any;
+const Cascader = CascaderField as any;
+const NumberField = InputNumberField as any;
+const DropdownField = SelectField as any;
+const SubmitButtons = FormButtonsSubmit as any;
+interface SelectOption { _id?: string; name?: string; }
+interface VisitorStay { _id: string; }
+interface NewFormValues { numOfDays: number; stayReason?: string; stayAllowedBy?: string; dutyIdShiftId?: string[]; }
+interface NewFormProps {
+  visitorId: string;
+  handleAddItem?(visitorStay: VisitorStay): void;
+  allMSDutiesLoading?: boolean;
+  allDutyShiftsLoading?: boolean;
+  distinctStayAllowedByLoading?: boolean;
+  allMSDuties?: any[];
+  allDutyShifts?: any[];
+  distinctStayAllowedBy?: string[];
+}
+
 const NewForm = ({
   visitorId,
   handleAddItem,
@@ -31,12 +50,12 @@ const NewForm = ({
   allMSDuties,
   allDutyShifts,
   distinctStayAllowedBy,
-}) => {
-  const [createVisitorStay] = useMutation(formMutation, {
+}: NewFormProps) => {
+  const [createVisitorStay] = useMutation(formMutation as any, {
     refetchQueries: ['pagedVisitorStays'],
   });
 
-  const handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId }) => {
+  const handleFinish = ({ numOfDays, stayReason, stayAllowedBy, dutyIdShiftId }: NewFormValues) => {
     createVisitorStay({
       variables: {
         visitorId,
@@ -47,10 +66,11 @@ const NewForm = ({
         shiftId: dutyIdShiftId ? dutyIdShiftId[1] : null,
       },
     })
-      .then(({ data: { createVisitorStay: newVisitorStay } }) => {
+      .then(({ data }: any) => {
+        const newVisitorStay = data?.createVisitorStay;
         if (handleAddItem) handleAddItem(newVisitorStay);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -63,42 +83,42 @@ const NewForm = ({
     return null;
 
   const dutyShiftCascaderData = getDutyShiftCascaderData(
-    allMSDuties,
-    allDutyShifts
+    (allMSDuties ?? []) as any,
+    (allDutyShifts ?? []) as any
   );
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish}>
-      <InputNumberField
+    <AntForm layout="horizontal" onFinish={handleFinish}>
+      <NumberField
         fieldName="numOfDays"
         fieldLabel="Num of Days"
         initialValue={1}
         minValue={1}
       />
-      <AutoCompleteField
+      <AutoComplete
         fieldName="stayAllowedBy"
         fieldLabel="Stay Allowed By"
         dataSource={distinctStayAllowedBy}
       />
-      <SelectField
+      <DropdownField
         data={StayReasons}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
+        getDataValue={({ _id }: SelectOption) => _id}
+        getDataText={({ name }: SelectOption) => name}
         fieldName="stayReason"
         fieldLabel="Stay Reason"
       />
-      <CascaderField
+      <Cascader
         data={dutyShiftCascaderData}
         changeOnSelect={false}
         fieldName="dutyIdShiftId"
         fieldLabel="Duty Participation"
       />
 
-      <FormButtonsSubmit
+      <SubmitButtons
         text="Add Stay"
         isFieldsTouched
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -146,4 +166,4 @@ export default flowRight(
   WithAllMSDuties(),
   WithAllDutyShifts(),
   WithDistinctStayAllowedBy()
-)(NewForm);
+)(NewForm as any);

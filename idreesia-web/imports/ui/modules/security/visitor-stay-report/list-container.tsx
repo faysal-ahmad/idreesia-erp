@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -23,7 +22,20 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';
 
-class ListContainer extends Component {
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+type QueryParams = Record<string, string | number | undefined>;
+type PageParams = Record<string, string | number | null | undefined>;
+interface ListContainerProps {
+  history: HistoryLike;
+  location: LocationLike;
+  queryString?: string;
+  queryParams: QueryParams;
+}
+interface VisitorRecord { _id: string; }
+const ReportList = List as any;
+
+class ListContainer extends Component<ListContainerProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -31,7 +43,7 @@ class ListContainer extends Component {
     queryParams: PropTypes.object,
   };
 
-  setPageParams = newParams => {
+  setPageParams = (newParams: PageParams) => {
     const {
       startDate,
       endDate,
@@ -47,50 +59,50 @@ class ListContainer extends Component {
     const { queryParams, history } = this.props;
 
     let startDateVal;
-    if (newParams.hasOwnProperty('startDate'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'startDate'))
       startDateVal = startDate ?? '';
     else startDateVal = queryParams.startDate || '';
 
     let endDateVal;
-    if (newParams.hasOwnProperty('endDate'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'endDate'))
       endDateVal = endDate ?? '';
     else endDateVal = queryParams.endDate || '';
 
     let nameVal;
-    if (newParams.hasOwnProperty('name')) nameVal = name || '';
+    if (Object.prototype.hasOwnProperty.call(newParams, 'name')) nameVal = name || '';
     else nameVal = queryParams.name || '';
 
     let cityVal;
-    if (newParams.hasOwnProperty('city')) cityVal = city || '';
+    if (Object.prototype.hasOwnProperty.call(newParams, 'city')) cityVal = city || '';
     else cityVal = queryParams.city || '';
 
     let stayReasonVal;
-    if (newParams.hasOwnProperty('stayReason'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'stayReason'))
       stayReasonVal = stayReason || '';
     else stayReasonVal = queryParams.stayReason || '';
 
     let additionalInfoVal;
-    if (newParams.hasOwnProperty('additionalInfo'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'additionalInfo'))
       additionalInfoVal = additionalInfo || '';
     else additionalInfoVal = queryParams.additionalInfo || '';
 
     let sortByVal;
-    if (newParams.hasOwnProperty('sortBy'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'sortBy'))
       sortByVal = sortBy || DEFAULT_SORT_BY;
     else sortByVal = queryParams.sortByVal || DEFAULT_SORT_BY;
 
     let sortOrderVal;
-    if (newParams.hasOwnProperty('sortOrder'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'sortOrder'))
       sortOrderVal = sortOrder || DEFAULT_SORT_ORDER;
     else sortOrderVal = queryParams.sortOrderVal || DEFAULT_SORT_ORDER;
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty('pageIndex'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex'))
       pageIndexVal = pageIndex || DEFAULT_PAGE_INDEX_INT;
     else pageIndexVal = queryParams.pageIndex || DEFAULT_PAGE_INDEX_INT;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty('pageSize'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize'))
       pageSizeVal = pageSize || DEFAULT_PAGE_SIZE_INT;
     else pageSizeVal = queryParams.pageSize || DEFAULT_PAGE_SIZE_INT;
 
@@ -98,7 +110,7 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleItemSelected = visitor => {
+  handleItemSelected = (visitor: VisitorRecord) => {
     const { history } = this.props;
     history.push(paths.visitorRegistrationEditFormPath(visitor._id));
   };
@@ -114,7 +126,7 @@ class ListContainer extends Component {
       : DEFAULT_PAGE_SIZE_INT;
 
     return (
-      <List
+      <ReportList
         queryString={queryString}
         queryParams={queryParams || {}}
         sortBy={sortBy || DEFAULT_SORT_BY}
@@ -131,4 +143,4 @@ class ListContainer extends Component {
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['Security', "Visitor's Stay Report"])
-)(ListContainer);
+)(ListContainer as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -22,7 +21,46 @@ const EntityTypeDisplayNames = {
   [EntityType.VISITOR]: 'Visitor',
 };
 
-const List = ({ history, location }) => {
+const AuditLogsListComponent = AuditLogsList as any;
+const AuditLogsListFilterComponent = AuditLogsListFilter as any;
+const RouterLink = Link as any;
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface LocationLike {
+  pathname: string;
+  search: string;
+}
+
+interface ListProps {
+  history: HistoryLike;
+  location: LocationLike;
+}
+
+interface QueryParams {
+  entityId?: string;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface AuditLog {
+  entityId: string;
+  entityType: string;
+  operationType: keyof typeof OperationTypeDisplayName;
+}
+
+interface PagedAuditLogs {
+  data: AuditLog[];
+  totalResults: number;
+}
+
+interface PagedAuditLogsData {
+  pagedSecurityAuditLogs?: PagedAuditLogs;
+}
+
+const List = ({ history, location }: ListProps) => {
   const dispatch = useDispatch();
   const { queryParams, setPageParams } = useQueryParams({
     history,
@@ -30,21 +68,21 @@ const List = ({ history, location }) => {
     paramNames: ['entityId', 'pageIndex', 'pageSize'],
   });
 
-  const { data, refetch } = useQuery(PAGED_SECURITY_AUDIT_LOGS, {
+  const { data, refetch } = useQuery(PAGED_SECURITY_AUDIT_LOGS as any, {
     variables: { filter: queryParams },
   });
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['Security', 'Audit Logs', 'List']));
-  }, [location]);
+  }, [dispatch, location]);
 
-  const { entityId, pageIndex, pageSize } = queryParams;
+  const { entityId, pageIndex, pageSize } = queryParams as QueryParams;
 
   const getTableHeader = () => (
     <div className="list-table-header">
       <div />
       <div className="list-table-header-section">
-        <AuditLogsListFilter
+        <AuditLogsListFilterComponent
           entityId={entityId}
           setPageParams={setPageParams}
           refreshData={refetch}
@@ -53,13 +91,13 @@ const List = ({ history, location }) => {
     </div>
   );
 
-  const getAuditLogEntityRenderer = auditLog => {
+  const getAuditLogEntityRenderer = (auditLog: AuditLog) => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
     if (entityType === EntityType.VISITOR) {
       return (
-        <Link to={paths.visitorRegistrationEditFormPath(_entityId)}>
+        <RouterLink to={paths.visitorRegistrationEditFormPath(_entityId)}>
           {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
-        </Link>
+        </RouterLink>
       );
     }
 
@@ -67,7 +105,7 @@ const List = ({ history, location }) => {
   };
 
   const pagedSecurityAuditLogs = data
-    ? data.pagedSecurityAuditLogs
+    ? (data as PagedAuditLogsData).pagedSecurityAuditLogs
     : {
         data: [],
         totalResults: 0,
@@ -77,7 +115,7 @@ const List = ({ history, location }) => {
 
   return (
     <>
-      <AuditLogsList
+      <AuditLogsListComponent
         entityRenderer={getAuditLogEntityRenderer}
         listHeader={getTableHeader}
         setPageParams={setPageParams}

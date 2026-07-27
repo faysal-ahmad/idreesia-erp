@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
@@ -11,7 +10,31 @@ import {
   REMOVE_PURCHASE_FORM_ATTACHMENT,
 } from '../gql';
 
-class AttachmentsList extends Component {
+const AttachmentsListControlComponent = AttachmentsListControl as any;
+
+interface Attachment {
+  _id: string;
+  name: string;
+}
+
+interface PurchaseForm {
+  _id: string;
+  attachments?: Attachment[];
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface AttachmentsListProps {
+  physicalStoreId?: string;
+  purchaseFormId?: string;
+  purchaseFormById: PurchaseForm;
+  addPurchaseFormAttachment: MutateFunction;
+  removePurchaseFormAttachment: MutateFunction;
+}
+
+class AttachmentsList extends Component<AttachmentsListProps> {
   static propTypes = {
     match: PropTypes.object,
     history: PropTypes.object,
@@ -24,7 +47,7 @@ class AttachmentsList extends Component {
     removePurchaseFormAttachment: PropTypes.func,
   };
 
-  handleAttachmentAdded = attachmentId => {
+  handleAttachmentAdded = (attachmentId: string) => {
     const { addPurchaseFormAttachment, physicalStoreId, purchaseFormById } =
       this.props;
     addPurchaseFormAttachment({
@@ -33,12 +56,12 @@ class AttachmentsList extends Component {
         physicalStoreId,
         attachmentId,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  handleAttachmentRemoved = attachmentId => {
+  handleAttachmentRemoved = (attachmentId: string) => {
     const { removePurchaseFormAttachment, physicalStoreId, purchaseFormById } =
       this.props;
     removePurchaseFormAttachment({
@@ -47,7 +70,7 @@ class AttachmentsList extends Component {
         physicalStoreId,
         attachmentId,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
@@ -56,7 +79,7 @@ class AttachmentsList extends Component {
     const { purchaseFormById } = this.props;
 
     return (
-      <AttachmentsListControl
+      <AttachmentsListControlComponent
         canUploadDocument
         canEditAttachments
         attachments={purchaseFormById.attachments}
@@ -74,4 +97,4 @@ export default flowRight(
   withMutation(REMOVE_PURCHASE_FORM_ATTACHMENT, {
     name: 'removePurchaseFormAttachment',
   })
-)(AttachmentsList);
+)(AttachmentsList as any);

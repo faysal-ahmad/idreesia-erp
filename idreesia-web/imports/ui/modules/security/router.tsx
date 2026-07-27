@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
@@ -38,68 +37,71 @@ import { SecurityUsersList, SecurityUsersEditForm } from './security-users';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
 
+const RouterSwitch = Switch as any;
+const RouterRoute = Route as any;
+
 const Router = () => (
-  <Switch>
-    <Route path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
-    <Route path={paths.mehfilsKarkunPrintCardsPath()} component={MehfilKarkunsPrintCards} />
-    <Route path={paths.mehfilsKarkunPrintListPath()} component={MehfilKarkunsPrintList} />
-    <Route path={paths.mehfilsNewFormPath} component={MehfilsNewForm} />
-    <Route path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
-    <Route path={paths.mehfilsPath} component={MehfilsList} />
+  <RouterSwitch>
+    <RouterRoute path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
+    <RouterRoute path={paths.mehfilsKarkunPrintCardsPath()} component={MehfilKarkunsPrintCards} />
+    <RouterRoute path={paths.mehfilsKarkunPrintListPath()} component={MehfilKarkunsPrintList} />
+    <RouterRoute path={paths.mehfilsNewFormPath} component={MehfilsNewForm} />
+    <RouterRoute path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
+    <RouterRoute path={paths.mehfilsPath} component={MehfilsList} />
 
-    <Route path={paths.mehfilDutiesNewFormPath} component={MehfilDutiesNewForm} />
-    <Route path={paths.mehfilDutiesEditFormPath()} component={MehfilDutiesEditForm} />
-    <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
+    <RouterRoute path={paths.mehfilDutiesNewFormPath} component={MehfilDutiesNewForm} />
+    <RouterRoute path={paths.mehfilDutiesEditFormPath()} component={MehfilDutiesEditForm} />
+    <RouterRoute path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
 
-    <Route path={paths.mehfilLangarDishesNewFormPath} component={MehfilLangarDishesNewForm} />
-    <Route path={paths.mehfilLangarDishesEditFormPath()} component={MehfilLangarDishesEditForm} />
-    <Route path={paths.mehfilLangarDishesPath} component={MehfilLangarDishesList} />
+    <RouterRoute path={paths.mehfilLangarDishesNewFormPath} component={MehfilLangarDishesNewForm} />
+    <RouterRoute path={paths.mehfilLangarDishesEditFormPath()} component={MehfilLangarDishesEditForm} />
+    <RouterRoute path={paths.mehfilLangarDishesPath} component={MehfilLangarDishesList} />
 
-    <Route path={paths.mehfilLangarLocationsNewFormPath} component={MehfilLangarLocationsNewForm} />
-    <Route path={paths.mehfilLangarLocationsEditFormPath()} component={MehfilLangarLocationsEditForm} />
-    <Route path={paths.mehfilLangarLocationsPath} component={MehfilLangarLocationsList} />
+    <RouterRoute path={paths.mehfilLangarLocationsNewFormPath} component={MehfilLangarLocationsNewForm} />
+    <RouterRoute path={paths.mehfilLangarLocationsEditFormPath()} component={MehfilLangarLocationsEditForm} />
+    <RouterRoute path={paths.mehfilLangarLocationsPath} component={MehfilLangarLocationsList} />
 
-    <Route
+    <RouterRoute
       path={paths.mehfilCardVerificationPath}
       component={MehfilCardVerificationForm}
     />
-    <Route
+    <RouterRoute
       path={paths.karkunCardVerificationPath}
       component={KarkunVerificationForm}
     />
 
-    <Route
+    <RouterRoute
       path={paths.visitorRegistrationListPath}
       component={VisitorRegistrationList}
     />
-    <Route
+    <RouterRoute
       path={paths.visitorRegistrationNewFormPath}
       component={VisitorRegistrationNewForm}
     />
-    <Route
+    <RouterRoute
       path={paths.visitorRegistrationUploadFormPath}
       component={VisitorRegistrationUploadForm}
     />
-    <Route
+    <RouterRoute
       path={paths.visitorRegistrationEditFormPath()}
       component={VisitorRegistrationEditForm}
     />
-    <Route
+    <RouterRoute
       path={paths.visitorRegistrationPath}
       component={VisitorRegistrationScanForm}
     />
-    <Route
+    <RouterRoute
       path={paths.visitorCardVerificationPath}
       component={VisitorCardVerificationForm}
     />
-    <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
+    <RouterRoute path={paths.visitorStayReportPath} component={VisitorStayReport} />
 
-    <Route path={paths.securityUsersEditFormPath()} component={SecurityUsersEditForm} />
-    <Route path={paths.securityUsersPath} component={SecurityUsersList} />
+    <RouterRoute path={paths.securityUsersEditFormPath()} component={SecurityUsersEditForm} />
+    <RouterRoute path={paths.securityUsersPath} component={SecurityUsersList} />
 
-    <Route path={paths.auditLogsPath} component={AuditLogsList} />
+    <RouterRoute path={paths.auditLogsPath} component={AuditLogsList} />
 
-  </Switch>
+  </RouterSwitch>
 );
 
 export default Router;

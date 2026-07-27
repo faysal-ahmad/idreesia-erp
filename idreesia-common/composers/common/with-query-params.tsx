@@ -3,6 +3,7 @@ import { parse } from 'query-string';
 import { type RouteComponentProps, withRouter } from 'react-router';
 
 type AnyProps = Record<string, unknown>;
+const withRouterAny = withRouter as any;
 
 export default () => (WrappedComponent: ComponentType<AnyProps>) => {
   const WithQueryParams = (
@@ -23,7 +24,5 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
     );
   };
 
-  return withRouter(
-    WithQueryParams as unknown as ComponentType<RouteComponentProps & AnyProps>
-  ) as unknown as ComponentType<AnyProps>;
+  return withRouterAny(WithQueryParams) as ComponentType<AnyProps>;
 };

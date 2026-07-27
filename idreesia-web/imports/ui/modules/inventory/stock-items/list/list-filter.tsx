@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Collapse, Form, Row } from 'antd';
@@ -23,7 +22,45 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-class ListFilter extends Component {
+const AntButton = Button as any;
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const AntRow = Row as any;
+const TextField = InputTextField as any;
+const SelectInputField = SelectField as any;
+const RefreshButtonComponent = RefreshButton as any;
+
+interface ItemCategory {
+  _id: string;
+  name: string;
+}
+
+interface SelectOption {
+  label: string;
+  value: string;
+}
+
+interface PageParams {
+  pageIndex?: number;
+  categoryId?: string | null;
+  name?: string | null;
+  verifyDuration?: string | null;
+  stockLevel?: string | null;
+}
+
+interface ListFilterProps {
+  name?: string | null;
+  categoryId?: string | null;
+  verifyDuration?: string | null;
+  stockLevel?: string | null;
+  physicalStoreId?: string;
+  itemCategoriesByPhysicalStoreId?: ItemCategory[];
+  setPageParams(params: PageParams): void;
+  refreshData?(): void;
+}
+
+class ListFilter extends Component<ListFilterProps> {
   static propTypes = {
     name: PropTypes.string,
     categoryId: PropTypes.string,
@@ -35,7 +72,7 @@ class ListFilter extends Component {
     refreshData: PropTypes.func,
   };
 
-  formRef = React.createRef();
+  formRef = React.createRef<any>();
 
   handleReset = () => {
     const { setPageParams } = this.props;
@@ -49,7 +86,7 @@ class ListFilter extends Component {
     });
   };
 
-  handleFinish = ({ categoryId, name, verifyDuration, stockLevel }) => {
+  handleFinish = ({ categoryId, name, verifyDuration, stockLevel }: PageParams) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: 0,
@@ -60,7 +97,9 @@ class ListFilter extends Component {
     });
   };
 
-  refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
+  refreshButton = () => (
+    <RefreshButtonComponent refreshData={this.props.refreshData} />
+  );
 
   render() {
     const {
@@ -72,7 +111,7 @@ class ListFilter extends Component {
     } = this.props;
 
     return (
-      <Collapse
+      <AntCollapse
         style={ContainerStyle}
         items={[
           {
@@ -80,24 +119,24 @@ class ListFilter extends Component {
             label: 'Filter',
             extra: this.refreshButton(),
             children: (
-              <Form ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
-                <SelectField
-                  data={itemCategoriesByPhysicalStoreId}
-                  getDataValue={category => category._id}
-                  getDataText={category => category.name}
+              <AntForm ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
+                <SelectInputField
+                  data={itemCategoriesByPhysicalStoreId ?? []}
+                  getDataValue={(category: ItemCategory) => category._id}
+                  getDataText={(category: ItemCategory) => category.name}
                   fieldName="categoryId"
                   fieldLabel="Category"
                   fieldLayout={formItemLayout}
                   initialValue={categoryId}
                 />
-                <InputTextField
+                <TextField
                   fieldName="name"
                   fieldLabel="Name"
                   required={false}
                   fieldLayout={formItemLayout}
                   initialValue={name}
                 />
-                <SelectField
+                <SelectInputField
                   fieldName="stockLevel"
                   fieldLabel="Stock Level"
                   required={false}
@@ -111,12 +150,12 @@ class ListFilter extends Component {
                       value: 'less-than-min-stock-level',
                     },
                   ]}
-                  getDataValue={({ value }) => value}
-                  getDataText={({ label }) => label}
+                  getDataValue={({ value }: SelectOption) => value}
+                  getDataText={({ label }: SelectOption) => label}
                   fieldLayout={formItemLayout}
                   initialValue={stockLevel}
                 />
-                <SelectField
+                <SelectInputField
                   fieldName="verifyDuration"
                   fieldLabel="Stock Verified"
                   required={false}
@@ -134,23 +173,23 @@ class ListFilter extends Component {
                       value: 'more-than-6-months-ago',
                     },
                   ]}
-                  getDataValue={({ value }) => value}
-                  getDataText={({ label }) => label}
+                  getDataValue={({ value }: SelectOption) => value}
+                  getDataText={({ label }: SelectOption) => label}
                   fieldLayout={formItemLayout}
                   initialValue={verifyDuration}
                 />
-                <Form.Item {...buttonItemLayout}>
-                  <Row type="flex" justify="end">
-                    <Button type="default" onClick={this.handleReset}>
+                <AntFormItem {...buttonItemLayout}>
+                  <AntRow type="flex" justify="end">
+                    <AntButton type="default" onClick={this.handleReset}>
                       Reset
-                    </Button>
+                    </AntButton>
                     &nbsp;
-                    <Button type="primary" htmlType="submit">
+                    <AntButton type="primary" htmlType="submit">
                       Search
-                    </Button>
-                  </Row>
-                </Form.Item>
-              </Form>
+                    </AntButton>
+                  </AntRow>
+                </AntFormItem>
+              </AntForm>
             ),
           },
         ]}
@@ -159,4 +198,4 @@ class ListFilter extends Component {
   }
 }
 
-export default WithItemCategoriesByPhysicalStore()(ListFilter);
+export default WithItemCategoriesByPhysicalStore()(ListFilter as any);

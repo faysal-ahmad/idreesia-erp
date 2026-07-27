@@ -1,10 +1,13 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import List from './list';
 
-export default class ListContainer extends Component {
+const VisitorStayList = List as any;
+interface ListContainerProps { visitorId: string; showNewButton?: boolean; showDutyColumn?: boolean; showActionsColumn?: boolean; }
+interface ListContainerState { pageIndex: number; pageSize: number; }
+
+export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
   static propTypes = {
     visitorId: PropTypes.string,
     showNewButton: PropTypes.bool,
@@ -17,8 +20,8 @@ export default class ListContainer extends Component {
     pageSize: 20,
   };
 
-  setPageParams = pageParams => {
-    this.setState(pageParams);
+  setPageParams = (pageParams: Partial<ListContainerState>) => {
+    this.setState(pageParams as Pick<ListContainerState, keyof ListContainerState>);
   };
 
   render() {
@@ -31,13 +34,14 @@ export default class ListContainer extends Component {
     const { pageIndex, pageSize } = this.state;
 
     return (
-      <List
+      <VisitorStayList
         pageIndex={pageIndex}
         pageSize={pageSize}
         visitorId={visitorId}
         showNewButton={showNewButton}
         showDutyColumn={showDutyColumn}
         showActionsColumn={showActionsColumn}
+        setPageParams={this.setPageParams}
       />
     );
   }

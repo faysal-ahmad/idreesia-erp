@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
@@ -19,6 +18,18 @@ import { AuditInfo } from '/imports/ui/modules/common';
 import { ItemsList } from '../../common/items-list';
 import { UPDATE_PURCHASE_FORM } from '../gql';
 
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const ItemsListComponent = ItemsList as any;
+const PurchaseDateField = DateField as any;
+const SelectInputField = SelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const TextAreaField = InputTextAreaField as any;
+const TreeField = TreeSelectField as any;
+const KarkunSelectField = KarkunField as any;
+const AuditInfoComponent = AuditInfo as any;
+
 const FormStyle = {
   width: '900px',
 };
@@ -28,7 +39,65 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class PurchaseDetails extends Component {
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface SelectOption {
+  _id: string;
+  name: string;
+}
+
+interface PurchaseItem {
+  stockItemId: string;
+  quantity: number;
+  isInflow: boolean;
+  price?: number;
+}
+
+interface PurchaseForm {
+  _id: string;
+  purchaseDate: string;
+  physicalStoreId: string;
+  locationId?: string;
+  vendorId?: string;
+  refReceivedBy?: SelectOption;
+  refPurchasedBy?: SelectOption;
+  items: PurchaseItem[];
+  notes?: string;
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface PurchaseDetailsProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  locationsByPhysicalStoreId?: SelectOption[];
+  purchaseFormById: PurchaseForm;
+  vendorsByPhysicalStoreId?: SelectOption[];
+  updatePurchaseForm: MutateFunction;
+}
+
+interface PurchaseDetailsState {
+  isFieldsTouched: boolean;
+}
+
+interface PurchaseFormValues {
+  purchaseDate: string;
+  locationId?: string;
+  vendorId?: string;
+  receivedBy: SelectOption;
+  purchasedBy: SelectOption;
+  items: PurchaseItem[];
+  notes?: string;
+}
+
+class PurchaseDetails extends Component<
+  PurchaseDetailsProps,
+  PurchaseDetailsState
+> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -45,7 +114,7 @@ class PurchaseDetails extends Component {
     isFieldsTouched: false,
   };
 
-  formRef = React.createRef();
+  formRef = React.createRef<any>();
 
   handleCancel = () => {
     const { history } = this.props;
@@ -64,7 +133,7 @@ class PurchaseDetails extends Component {
     purchasedBy,
     items,
     notes,
-  }) => {
+  }: PurchaseFormValues) => {
     const {
       history,
       physicalStoreId,
@@ -73,7 +142,7 @@ class PurchaseDetails extends Component {
     } = this.props;
 
     const updatedItems = items.map(
-      ({ stockItemId, quantity, isInflow, price }) => ({
+      ({ stockItemId, quantity, isInflow, price }: PurchaseItem) => ({
         stockItemId,
         quantity,
         isInflow,
@@ -97,7 +166,7 @@ class PurchaseDetails extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -120,21 +189,21 @@ class PurchaseDetails extends Component {
 
     return (
       <>
-        <Form
+        <AntForm
           ref={this.formRef}
           layout="horizontal"
           style={FormStyle}
           onFinish={this.handleFinish}
           onFieldsChange={this.handleFieldsChange}
         >
-          <DateField
+          <PurchaseDateField
             fieldName="purchaseDate"
             fieldLabel="Purchase Date"
             initialValue={dayjs(Number(purchaseFormById.purchaseDate))}
             required
             requiredMessage="Please input a purchase date."
           />
-          <KarkunField
+          <KarkunSelectField
             required
             requiredMessage="Please select a name for Received By / Returned By."
             fieldName="receivedBy"
@@ -146,7 +215,7 @@ class PurchaseDetails extends Component {
               PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
             }
           />
-          <KarkunField
+          <KarkunSelectField
             required
             requiredMessage="Please select a name for Purchased By / Returned To."
             fieldName="purchasedBy"
@@ -158,17 +227,17 @@ class PurchaseDetails extends Component {
               PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO
             }
           />
-          <SelectField
-            data={vendorsByPhysicalStoreId}
-            getDataValue={({ _id }) => _id}
-            getDataText={({ name }) => name}
+          <SelectInputField
+            data={vendorsByPhysicalStoreId ?? []}
+            getDataValue={({ _id }: SelectOption) => _id}
+            getDataText={({ name }: SelectOption) => name}
             fieldName="vendorId"
             fieldLabel="Vendor"
             initialValue={purchaseFormById.vendorId}
           />
 
-          <TreeSelectField
-            data={locationsByPhysicalStoreId}
+          <TreeField
+            data={locationsByPhysicalStoreId ?? []}
             showSearch
             fieldName="locationId"
             fieldLabel="For Location"
@@ -176,21 +245,21 @@ class PurchaseDetails extends Component {
             initialValue={purchaseFormById.locationId}
           />
 
-          <InputTextAreaField
+          <TextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
             initialValue={purchaseFormById.notes}
           />
 
-          <Divider orientation="left">Purchased / Returned Items</Divider>
-          <Form.Item
+          <AntDivider orientation="left">Purchased / Returned Items</AntDivider>
+          <AntFormItem
             name="items"
             initialValue={purchaseFormById.items}
             rules={rules}
             {...formItemExtendedLayout}
           >
-            <ItemsList
+            <ItemsListComponent
               showPrice
               defaultLabel="Purchased"
               inflowLabel="Purchased"
@@ -198,14 +267,14 @@ class PurchaseDetails extends Component {
               physicalStoreId={physicalStoreId}
               refForm={this.formRef.current}
             />
-          </Form.Item>
+          </AntFormItem>
 
-          <FormButtonsSaveCancel
+          <SaveCancelButtons
             handleCancel={this.handleCancel}
             isFieldsTouched={isFieldsTouched}
           />
-        </Form>
-        <AuditInfo record={purchaseFormById} />
+        </AntForm>
+        <AuditInfoComponent record={purchaseFormById} />
       </>
     );
   }
@@ -224,4 +293,4 @@ export default flowRight(
       ],
     },
   })
-)(PurchaseDetails);
+)(PurchaseDetails as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Barcode from "react-barcode";
@@ -7,6 +6,9 @@ import { find } from "lodash";
 
 import { Card } from "antd";
 import { StayReasons } from "meteor/idreesia-common/constants/security";
+
+const BarcodeControl = Barcode as any;
+const AntCard = Card as any;
 
 const barcodeOptions = {
   width: 1,
@@ -36,7 +38,32 @@ const FooterStyle = {
   paddingTop: "4px",
 };
 
-export default class StayCard extends Component {
+interface Visitor {
+  name: string;
+  parentName?: string;
+  referenceName?: string;
+  city?: string;
+  cnicNumber?: string;
+  contactNumber1?: string;
+  criminalRecord?: string | null;
+}
+
+interface VisitorStay {
+  _id: string;
+  fromDate: string | number;
+  toDate: string | number;
+  stayReason?: string;
+  stayAllowedBy?: string;
+  dutyName?: string;
+  shiftName?: string;
+}
+
+interface StayCardProps {
+  visitor: Visitor;
+  visitorStay: VisitorStay;
+}
+
+export default class StayCard extends Component<StayCardProps> {
   static propTypes = {
     visitor: PropTypes.object,
     visitorStay: PropTypes.object,
@@ -45,7 +72,7 @@ export default class StayCard extends Component {
   getDutyDetails = () => {
     const { visitorStay } = this.props;
 
-    let dutyDetails = [];
+    let dutyDetails: React.ReactNode[] = [];
     if (visitorStay.dutyName) {
       dutyDetails = [
         <h2 className="stay_card_section" key="dutyHeader">
@@ -86,7 +113,7 @@ export default class StayCard extends Component {
     const toDate = dayjs(Number(visitorStay.toDate)).format("DD MMM, YYYY");
 
     return (
-      <Card
+        <AntCard
         size="small"
         title={title}
         headStyle={HeadStyle}
@@ -139,13 +166,13 @@ export default class StayCard extends Component {
         }
         {dutyDetails}
         <div className="stay_card_item">
-          <Barcode value={visitorStay._id} {...barcodeOptions} />
+          <BarcodeControl value={visitorStay._id} {...barcodeOptions} />
         </div>
-        <div style={FooterStyle}>
+        <div style={FooterStyle as any}>
           381 A-Block, Shah Rukn-e-Alam Colony, Multan<br />
           Ph: 061-111-111-381
         </div>
-      </Card>
+      </AntCard>
     );
   }
 }

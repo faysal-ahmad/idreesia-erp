@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -22,7 +21,71 @@ import NewForm from '../new-form';
 import EditForm from '../edit-form';
 import CardContainer from '../card/card-container';
 
-class List extends Component {
+const ReactFragment = Fragment as any;
+const AntButton = Button as any;
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntModal = Modal as any;
+const AntEditOutlined = EditOutlined as any;
+const AntIdcardOutlined = IdcardOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntSolutionOutlined = SolutionOutlined as any;
+const AntStopOutlined = StopOutlined as any;
+const NewFormComponent = NewForm as any;
+const EditFormComponent = EditForm as any;
+const CardContainerComponent = CardContainer as any;
+
+interface VisitorStay {
+  _id: string;
+  visitorId: string;
+  fromDate: string | number;
+  toDate: string | number;
+  numOfDays: number;
+  stayReason?: string;
+  dutyShiftName?: string;
+  cancelledDate?: string | number | null;
+}
+
+interface PagedVisitorStays {
+  totalResults: number;
+  data: VisitorStay[];
+}
+
+interface ListProps {
+  pageIndex?: number;
+  pageSize?: number;
+  visitorId: string;
+  showNewButton?: boolean;
+  showDutyColumn?: boolean;
+  showActionsColumn?: boolean;
+  setPageParams(params: Record<string, unknown>): void;
+  cancelVisitorStay(args: unknown): Promise<unknown>;
+  loading?: boolean;
+  pagedVisitorStays?: PagedVisitorStays;
+}
+
+interface ListState {
+  showNewFormModal: boolean;
+  showEditFormModal: boolean;
+  showCard: boolean;
+  cardType: string | null;
+  visitorStayId: string | null;
+}
+
+interface ListWithDataProps extends Omit<ListProps, 'cancelVisitorStay' | 'pagedVisitorStays'> {}
+
+interface VisitorStaysData {
+  pagedVisitorStays?: PagedVisitorStays;
+}
+
+const emptyPagedVisitorStays: PagedVisitorStays = {
+  data: [],
+  totalResults: 0,
+};
+
+class List extends Component<ListProps, ListState> {
   static propTypes = {
     pageIndex: PropTypes.number,
     pageSize: PropTypes.number,
@@ -51,7 +114,7 @@ class List extends Component {
   stayDetailsColumn = {
     title: 'Stay Details',
     key: 'stayDetails',
-    render: (text, record) => {
+    render: (_text: unknown, record: VisitorStay) => {
       const fromDate = dayjs(Number(record.fromDate));
       const toDate = dayjs(Number(record.toDate));
       const days = record.numOfDays;
@@ -68,10 +131,10 @@ class List extends Component {
     title: 'Stay Reason',
     key: 'stayReason',
     dataIndex: 'stayReason',
-    render: text => {
+    render: (text: string) => {
       if (!text) return null;
-      const reason = find(StayReasons, ({ _id }) => _id === text);
-      return reason.name;
+      const reason = find(StayReasons, ({ _id }: { _id: string }) => _id === text) as { name?: string } | undefined;
+      return reason?.name ?? '';
     },
   };
 
@@ -84,27 +147,27 @@ class List extends Component {
   actionsColumn = {
     key: 'action',
     width: 100,
-    render: (text, record) => {
+    render: (_text: unknown, record: VisitorStay) => {
       if (record.cancelledDate) {
         const title = `Cancelled on ${dayjs(
           Number(record.cancelledDate)
         ).format('DD MMM, YYYY')}`;
-        return <Tooltip title={title}>Cancelled</Tooltip>;
+        return <AntTooltip title={title}>Cancelled</AntTooltip>;
       }
 
       const editAction = (
-        <Tooltip title="Edit stay">
-          <EditOutlined
+        <AntTooltip title="Edit stay">
+          <AntEditOutlined
             className="list-actions-icon"
             onClick={() => {
               this.handleEditClicked(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       );
 
       const cancelAction = (
-        <Popconfirm
+        <AntPopconfirm
           title="Are you sure you want to cancel this stay entry?"
           onConfirm={() => {
             this.handleCancelClicked(record);
@@ -112,33 +175,33 @@ class List extends Component {
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Cancel">
-            <StopOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Cancel">
+            <AntStopOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       );
 
       const dutyCardAction = record.stayReason ? (
-        <Tooltip title="Duty Card">
-          <IdcardOutlined
+        <AntTooltip title="Duty Card">
+          <AntIdcardOutlined
             className="list-actions-icon"
             onClick={() => {
               this.handleDutyCardClicked(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ) : null;
 
       return (
         <div className="list-actions-column">
-          <Tooltip title="Night Stay Card">
-            <SolutionOutlined
+          <AntTooltip title="Night Stay Card">
+            <AntSolutionOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleNightStayCardClicked(record);
               }}
             />
-          </Tooltip>
+          </AntTooltip>
           {editAction}
           {cancelAction}
           {dutyCardAction}
@@ -147,9 +210,9 @@ class List extends Component {
     },
   };
 
-  getColumns = () => {
+  getColumns = (): any[] => {
     const { showDutyColumn, showActionsColumn } = this.props;
-    const columns = [this.stayDetailsColumn, this.stayReasonColumn];
+    const columns: any[] = [this.stayDetailsColumn, this.stayReasonColumn];
 
     if (showDutyColumn) {
       columns.push(this.dutyShiftNameColumn);
@@ -162,7 +225,7 @@ class List extends Component {
     return columns;
   };
 
-  onPaginationChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex: number, pageSize: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -170,18 +233,18 @@ class List extends Component {
     });
   };
 
-  handleCancelClicked = record => {
+  handleCancelClicked = (record: VisitorStay) => {
     const { cancelVisitorStay } = this.props;
     cancelVisitorStay({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  handleNightStayCardClicked = record => {
+  handleNightStayCardClicked = (record: VisitorStay) => {
     this.setState({
       showCard: true,
       cardType: 'stay-card',
@@ -189,7 +252,7 @@ class List extends Component {
     });
   };
 
-  handleDutyCardClicked = record => {
+  handleDutyCardClicked = (record: VisitorStay) => {
     this.setState({
       showCard: true,
       cardType: 'duty-card',
@@ -211,16 +274,16 @@ class List extends Component {
     });
   };
 
-  handleCloseNewForm = newVisitorStay => {
+  handleCloseNewForm = (newVisitorStay?: VisitorStay) => {
     this.setState({
       showNewFormModal: false,
-      showCard: true,
+      showCard: Boolean(newVisitorStay),
       cardType: 'stay-card',
-      visitorStayId: newVisitorStay._id,
+      visitorStayId: newVisitorStay?._id ?? null,
     });
   };
 
-  handleEditClicked = record => {
+  handleEditClicked = (record: VisitorStay) => {
     this.setState({
       showEditFormModal: true,
       visitorStayId: record._id,
@@ -238,13 +301,13 @@ class List extends Component {
     const { showNewButton } = this.props;
     if (showNewButton) {
       return (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={this.handleNewClicked}
         >
           Add New Stay
-        </Button>
+        </AntButton>
       );
     }
 
@@ -259,8 +322,9 @@ class List extends Component {
       pageIndex,
       pageSize,
       visitorId,
-      pagedVisitorStays: { totalResults, data },
+      pagedVisitorStays = emptyPagedVisitorStays,
     } = this.props;
+    const { totalResults, data } = pagedVisitorStays;
     const {
       showNewFormModal,
       showEditFormModal,
@@ -274,55 +338,55 @@ class List extends Component {
 
     const card =
       showCard && visitorStayId ? (
-        <Modal
+        <AntModal
           closable={false}
           open={showCard}
           width={cardType === 'stay-card' ? 400 : 265}
           footer={null}
         >
-          <CardContainer
+          <CardContainerComponent
             visitorId={visitorId}
             visitorStayId={visitorStayId}
             cardType={cardType}
             onCloseCard={this.handleCloseViewCard}
           />
-        </Modal>
+        </AntModal>
       ) : null;
 
     const newForm = showNewFormModal ? (
-      <Modal
+      <AntModal
         title="New Stay"
         open={showNewFormModal}
         width={600}
         footer={null}
         onCancel={this.handleCloseNewForm}
       >
-        <NewForm
+        <NewFormComponent
           visitorId={visitorId}
           handleAddItem={this.handleCloseNewForm}
         />
-      </Modal>
+      </AntModal>
     ) : null;
 
     const editForm =
       showEditFormModal && visitorStayId ? (
-        <Modal
+        <AntModal
           title="Edit Stay"
           open={showEditFormModal}
           width={600}
           footer={null}
           onCancel={this.handleCloseEditForm}
         >
-          <EditForm
+          <EditFormComponent
             visitorStayId={visitorStayId}
             handleSaveItem={this.handleCloseEditForm}
           />
-        </Modal>
+        </AntModal>
       ) : null;
 
     return (
-      <Fragment>
-        <Table
+      <ReactFragment>
+        <AntTable
           rowKey="_id"
           dataSource={data}
           columns={this.getColumns()}
@@ -331,11 +395,11 @@ class List extends Component {
           size="small"
           pagination={false}
           footer={() => (
-            <Pagination
+            <AntPagination
               current={numPageIndex}
               pageSize={numPageSize}
               showSizeChanger
-              showTotal={(total, range) =>
+              showTotal={(total: number, range: number[]) =>
                 `${range[0]}-${range[1]} of ${total} items`
               }
               onChange={this.onPaginationChange}
@@ -347,7 +411,7 @@ class List extends Component {
         {newForm}
         {editForm}
         {card}
-      </Fragment>
+      </ReactFragment>
     );
   }
 }
@@ -384,12 +448,12 @@ const formMutation = gql`
   }
 `;
 
-const ListWithData = props => {
+const ListWithData = (props: ListWithDataProps) => {
   const { visitorId, pageIndex, pageSize } = props;
-  const [cancelVisitorStay] = useMutation(formMutation, {
+  const [cancelVisitorStay] = useMutation(formMutation as any, {
     refetchQueries: ['pagedVisitorStays'],
   });
-  const { data = {}, loading, ...queryResult } = useQuery(listQuery, {
+  const { data = {}, loading, ...queryResult } = useQuery(listQuery as any, {
     variables: {
       queryString: `?visitorId=${visitorId ||
         ''}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
@@ -400,7 +464,7 @@ const ListWithData = props => {
     <List
       {...props}
       {...queryResult}
-      {...data}
+      {...(data as VisitorStaysData)}
       loading={loading}
       cancelVisitorStay={cancelVisitorStay}
     />

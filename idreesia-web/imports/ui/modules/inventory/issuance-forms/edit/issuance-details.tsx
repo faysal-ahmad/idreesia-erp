@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
@@ -19,6 +18,18 @@ import { AuditInfo } from '/imports/ui/modules/common';
 import { UPDATE_ISSUANCE_FORM } from '../gql';
 import { ItemsList } from '../../common/items-list';
 
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const IssueDateField = DateField as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const TextAreaField = InputTextAreaField as any;
+const TreeField = TreeSelectField as any;
+const KarkunSelectField = KarkunField as any;
+const AuditInfoComponent = AuditInfo as any;
+const ItemsListComponent = ItemsList as any;
+
 const FormStyle = {
   width: '800px',
 };
@@ -28,7 +39,39 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class IssuanceDetails extends Component {
+interface HistoryLike { goBack(): void; }
+interface SelectOption { _id: string; name: string; }
+interface IssuanceItem { stockItemId: string; quantity: number; isInflow: boolean; }
+interface IssuanceForm {
+  _id: string;
+  issueDate: string;
+  locationId?: string;
+  refIssuedBy?: SelectOption;
+  refIssuedTo?: SelectOption;
+  handedOverTo?: string;
+  items: IssuanceItem[];
+  notes?: string;
+}
+interface MutateFunction { (options: { variables: Record<string, unknown> }): Promise<unknown>; }
+interface IssuanceDetailsProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  locationsByPhysicalStoreId?: SelectOption[];
+  issuanceFormById: IssuanceForm;
+  updateIssuanceForm: MutateFunction;
+}
+interface IssuanceDetailsState { isFieldsTouched: boolean; }
+interface IssuanceFormValues {
+  issueDate: string;
+  issuedBy: SelectOption;
+  issuedTo: SelectOption;
+  handedOverTo?: string;
+  locationId?: string;
+  items: IssuanceItem[];
+  notes?: string;
+}
+
+class IssuanceDetails extends Component<IssuanceDetailsProps, IssuanceDetailsState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -44,7 +87,7 @@ class IssuanceDetails extends Component {
     isFieldsTouched: false,
   };
 
-  formRef = React.createRef();
+  formRef = React.createRef<any>();
 
   handleCancel = () => {
     const { history } = this.props;
@@ -63,14 +106,14 @@ class IssuanceDetails extends Component {
     locationId,
     items,
     notes,
-  }) => {
+  }: IssuanceFormValues) => {
     const {
       history,
       physicalStoreId,
       updateIssuanceForm,
       issuanceFormById: { _id },
     } = this.props;
-    const updatedItems = items.map(({ stockItemId, quantity, isInflow }) => ({
+    const updatedItems = items.map(({ stockItemId, quantity, isInflow }: IssuanceItem) => ({
       stockItemId,
       quantity,
       isInflow,
@@ -91,7 +134,7 @@ class IssuanceDetails extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -110,21 +153,21 @@ class IssuanceDetails extends Component {
 
     return (
       <>
-        <Form
+        <AntForm
           ref={this.formRef}
           layout="horizontal"
           style={FormStyle}
           onFinish={this.handleFinish}
           onFieldsChange={this.handleFieldsChange}
         >
-          <DateField
+          <IssueDateField
             fieldName="issueDate"
             fieldLabel="Issue Date"
             initialValue={dayjs(Number(issuanceFormById.issueDate))}
             required
             requiredMessage="Please input an issue date."
           />
-          <KarkunField
+          <KarkunSelectField
             required
             requiredMessage="Please select a name for Issued By / Received By."
             fieldName="issuedBy"
@@ -136,7 +179,7 @@ class IssuanceDetails extends Component {
               PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
             }
           />
-          <KarkunField
+          <KarkunSelectField
             required
             requiredMessage="Please select a name for Issued To / Returned By."
             fieldName="issuedTo"
@@ -148,14 +191,14 @@ class IssuanceDetails extends Component {
               PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_TO_RETURNED_BY
             }
           />
-          <InputTextField
+          <TextField
             fieldName="handedOverTo"
             fieldLabel="Handed Over To / By"
             required={false}
             initialValue={issuanceFormById.handedOverTo}
           />
-          <TreeSelectField
-            data={locationsByPhysicalStoreId}
+          <TreeField
+            data={locationsByPhysicalStoreId ?? []}
             showSearch
             fieldName="locationId"
             fieldLabel="For Location"
@@ -163,35 +206,35 @@ class IssuanceDetails extends Component {
             initialValue={issuanceFormById.locationId}
           />
 
-          <InputTextAreaField
+          <TextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
             initialValue={issuanceFormById.notes}
           />
 
-          <Divider orientation="left">Issued / Returned Items</Divider>
-          <Form.Item
+          <AntDivider orientation="left">Issued / Returned Items</AntDivider>
+          <AntFormItem
             name="items"
             initialValue={issuanceFormById.items}
             rules={rules}
             {...formItemExtendedLayout}
           >
-            <ItemsList
+            <ItemsListComponent
               defaultLabel="Issued"
               inflowLabel="Returned"
               outflowLabel="Issued"
               physicalStoreId={physicalStoreId}
               refForm={this.formRef.current}
             />
-          </Form.Item>
+          </AntFormItem>
 
-          <FormButtonsSaveCancel
+          <SaveCancelButtons
             handleCancel={this.handleCancel}
             isFieldsTouched={isFieldsTouched}
           />
-        </Form>
-        <AuditInfo record={issuanceFormById} />
+        </AntForm>
+        <AuditInfoComponent record={issuanceFormById} />
       </>
     );
   }
@@ -209,4 +252,4 @@ export default flowRight(
       ],
     },
   })
-)(IssuanceDetails);
+)(IssuanceDetails as any);

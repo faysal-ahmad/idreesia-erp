@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -28,7 +27,49 @@ const FormStyle = {
   width: '800px',
 };
 
-class NewForm extends Component {
+const AntForm = Form as any;
+const StockItemSelectField = StockItemField as any;
+const KarkunSelectField = KarkunField as any;
+const AdjustmentDateField = DateField as any;
+const NumberField = InputNumberField as any;
+const RadioField = RadioGroupField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface NewFormProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  loading?: boolean;
+  createStockAdjustment: MutateFunction;
+}
+
+interface NewFormState {
+  isFieldsTouched: boolean;
+}
+
+interface StockAdjustmentFormValues {
+  stockItem: { _id: string };
+  adjustmentDate: string;
+  adjustedBy: { _id: string };
+  quantity: number;
+  adjustment: 'inflow' | 'outflow';
+  adjustmentReason?: string;
+}
+
+class NewForm extends Component<NewFormProps, NewFormState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -59,7 +100,7 @@ class NewForm extends Component {
     quantity,
     adjustment,
     adjustmentReason,
-  }) => {
+  }: StockAdjustmentFormValues) => {
     const { history, physicalStoreId, createStockAdjustment } = this.props;
     const isInflow = adjustment === 'inflow';
     createStockAdjustment({
@@ -76,7 +117,7 @@ class NewForm extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -86,13 +127,13 @@ class NewForm extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form
+      <AntForm
         layout="horizontal"
         style={FormStyle}
         onFinish={this.handleFinish}
         onFieldsChange={this.handleFieldsChange}
       >
-        <StockItemField
+        <StockItemSelectField
           physicalStoreId={physicalStoreId}
           fieldName="stockItem"
           fieldLabel="Stock Item Name"
@@ -100,7 +141,7 @@ class NewForm extends Component {
           requiredMessage="Please select a stock item."
         />
 
-        <RadioGroupField
+        <RadioField
           fieldName="adjustment"
           fieldLabel="Adjustment"
           required
@@ -110,7 +151,7 @@ class NewForm extends Component {
           ]}
         />
 
-        <InputNumberField
+        <NumberField
           fieldName="quantity"
           fieldLabel="Quantity"
           required
@@ -118,13 +159,13 @@ class NewForm extends Component {
           minValue={0}
         />
 
-        <DateField
+        <AdjustmentDateField
           fieldName="adjustmentDate"
           fieldLabel="Adjustment Date"
           required
           requiredMessage="Please input an adjustment date."
         />
-        <KarkunField
+        <KarkunSelectField
           fieldName="adjustedBy"
           fieldLabel="Adjusted By"
           placeholder="Adjusted By"
@@ -136,17 +177,17 @@ class NewForm extends Component {
           }
         />
 
-        <InputTextAreaField
+        <TextAreaField
           fieldName="adjustmentReason"
           fieldLabel="Adjustment Reason"
           required={false}
         />
 
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }
@@ -195,10 +236,10 @@ export default flowRight(
       ],
     },
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Stock Adjustments, New`;
     }
     return `Inventory, Stock Adjustments, New`;
   })
-)(NewForm);
+)(NewForm as any);

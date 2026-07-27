@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -20,6 +19,19 @@ import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const AntMenu = Menu as any;
+const AntAuditOutlined = AuditOutlined as any;
+const AntBarcodeOutlined = BarcodeOutlined as any;
+const AntBarsOutlined = BarsOutlined as any;
+const AntBookOutlined = BookOutlined as any;
+const AntFlagOutlined = FlagOutlined as any;
+const AntIdcardOutlined = IdcardOutlined as any;
+const AntLaptopOutlined = LaptopOutlined as any;
+const AntTagsOutlined = TagsOutlined as any;
+const AntTeamOutlined = TeamOutlined as any;
+const AntToolOutlined = ToolOutlined as any;
+const AntUnlockOutlined = UnlockOutlined as any;
+
 const IconStyle = {
   fontSize: '20px',
 };
@@ -27,97 +39,112 @@ const IconStyle = {
 const menuItems = [
   {
     key: 'mehfil-management',
-    icon: <FlagOutlined style={IconStyle} />,
+    icon: <AntFlagOutlined style={IconStyle} />,
     label: 'Mehfil Management',
     children: [
       {
         key: 'mehfils',
-        icon: <BarsOutlined style={IconStyle} />,
+        icon: <AntBarsOutlined style={IconStyle} />,
         label: 'Mehfils',
       },
       {
         key: 'mehfil-card-verification',
-        icon: <BarcodeOutlined style={IconStyle} />,
+        icon: <AntBarcodeOutlined style={IconStyle} />,
         label: 'Scan Karkun Card',
       },
     ],
   },
   {
     key: 'karkuns',
-    icon: <TeamOutlined style={IconStyle} />,
+    icon: <AntTeamOutlined style={IconStyle} />,
     label: 'Karkuns',
     children: [
       {
         key: 'karkun-card-verification',
-        icon: <BarcodeOutlined style={IconStyle} />,
+        icon: <AntBarcodeOutlined style={IconStyle} />,
         label: 'Card Verification',
       },
     ],
   },
   {
     key: 'visitors',
-    icon: <TeamOutlined style={IconStyle} />,
+    icon: <AntTeamOutlined style={IconStyle} />,
     label: 'Visitors',
     children: [
       {
         key: 'visitor-registration',
-        icon: <IdcardOutlined style={IconStyle} />,
+        icon: <AntIdcardOutlined style={IconStyle} />,
         label: 'Registration',
       },
       {
         key: 'visitor-card-verification',
-        icon: <BarcodeOutlined style={IconStyle} />,
+        icon: <AntBarcodeOutlined style={IconStyle} />,
         label: 'Card Verification',
       },
       {
         key: 'visitor-stay-report',
-        icon: <BookOutlined style={IconStyle} />,
+        icon: <AntBookOutlined style={IconStyle} />,
         label: 'Visitor Stay Report',
       },
     ],
   },
   {
     key: 'setup',
-    icon: <LaptopOutlined style={IconStyle} />,
+    icon: <AntLaptopOutlined style={IconStyle} />,
     label: 'Setup',
     children: [
       {
         key: 'mehfil-duties',
-        icon: <TagsOutlined style={IconStyle} />,
+        icon: <AntTagsOutlined style={IconStyle} />,
         label: 'Mehfil Duties',
       },
       {
         key: 'mehfil-langar-dishes',
-        icon: <TagsOutlined style={IconStyle} />,
+        icon: <AntTagsOutlined style={IconStyle} />,
         label: 'Langar Dishes',
       },
       {
         key: 'mehfil-langar-locations',
-        icon: <TagsOutlined style={IconStyle} />,
+        icon: <AntTagsOutlined style={IconStyle} />,
         label: 'Langar Locations',
       },
     ],
   },
   {
     key: 'administration',
-    icon: <ToolOutlined style={IconStyle} />,
+    icon: <AntToolOutlined style={IconStyle} />,
     label: 'Administration',
     children: [
       {
         key: 'security-user-accounts',
-        icon: <UnlockOutlined style={IconStyle} />,
+        icon: <AntUnlockOutlined style={IconStyle} />,
         label: 'Security User Accounts',
       },
       {
         key: 'audit-logs',
-        icon: <AuditOutlined style={IconStyle} />,
+        icon: <AntAuditOutlined style={IconStyle} />,
         label: 'Audit Logs',
       },
     ],
   },
 ];
 
-class Sidebar extends Component {
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface SidebarProps {
+  history: HistoryLike;
+  activeModuleName?: string;
+  activeSubModuleName?: string;
+  setActiveSubModuleName(subModuleName: string): void;
+}
+
+interface MenuClickInfo {
+  key: string;
+}
+
+class Sidebar extends Component<SidebarProps> {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -125,7 +152,7 @@ class Sidebar extends Component {
     setActiveSubModuleName: PropTypes.func,
   };
 
-  handleMenuItemSelected = ({ key }) => {
+  handleMenuItemSelected = ({ key }: MenuClickInfo) => {
     const { history, setActiveSubModuleName } = this.props;
     switch (key) {
       case 'mehfils':
@@ -184,8 +211,8 @@ class Sidebar extends Component {
         break;
 
       case 'team-visit-report':
-        setActiveSubModuleName(SubModuleNames.teamVisitReport);
-        history.push(paths.teamVisitReportPath);
+        setActiveSubModuleName((SubModuleNames as any).teamVisitReport);
+        history.push((paths as any).teamVisitReportPath);
         break;
 
       default:
@@ -195,7 +222,7 @@ class Sidebar extends Component {
 
   render() {
     return (
-      <Menu
+      <AntMenu
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
@@ -205,5 +232,5 @@ class Sidebar extends Component {
   }
 }
 
-const SidebarContainer = WithActiveModule()(Sidebar);
+const SidebarContainer = WithActiveModule()(Sidebar as any) as any;
 export default SidebarContainer;

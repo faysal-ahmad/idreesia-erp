@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -22,9 +21,16 @@ const formMutation = gql`
   }
 `;
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { push(path: string): void; }
+interface NewFormProps { history: HistoryLike; }
+interface FormValues { name: string; urduName: string; }
+
+const NewForm = ({ history }: NewFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createSecurityMehfilDuty] = useMutation(formMutation, {
+  const [createSecurityMehfilDuty] = useMutation(formMutation as any, {
     refetchQueries: ['allSecurityMehfilDuties'],
   });
 
@@ -36,7 +42,7 @@ const NewForm = ({ history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = fieldsValue => {
+  const handleFinish = (fieldsValue: FormValues) => {
     createSecurityMehfilDuty({
       variables: {
         name: fieldsValue.name,
@@ -46,30 +52,30 @@ const NewForm = ({ history }) => {
       .then(() => {
         history.push(paths.mehfilDutiesPath);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the mehfil duty."
       />
-      <InputTextField
+      <TextField
         fieldName="urduName"
         fieldLabel="Urdu Name"
         required
         requiredMessage="Please input an urdu name for the mehfil duty."
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -78,4 +84,4 @@ NewForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Security', 'Mehfil Duties', 'New'])(NewForm);
+export default WithBreadcrumbs(['Security', 'Mehfil Duties', 'New'])(NewForm as any);

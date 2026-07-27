@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -25,7 +24,47 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class ViewForm extends Component {
+const ReactFragment = Fragment as any;
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const ItemsListComponent = ItemsList as any;
+const TextField = InputTextField as any;
+const PurchaseDateField = DateField as any;
+const CloseButton = FormButtonsClose as any;
+const TextAreaField = InputTextAreaField as any;
+const AuditInfoComponent = AuditInfo as any;
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface PurchaseForm {
+  _id: string;
+  purchaseDate: string;
+  refVendor?: { name: string };
+  refReceivedBy: { name: string };
+  refPurchasedBy: { name: string };
+  notes?: string;
+  items: unknown[];
+}
+
+interface MatchLike {
+  params: {
+    formId: string;
+  };
+}
+
+interface ViewFormProps {
+  history: HistoryLike;
+  match: MatchLike;
+  physicalStoreId?: string;
+  physicalStore?: { name: string };
+  formDataLoading?: boolean;
+  purchaseFormById?: PurchaseForm;
+}
+
+class ViewForm extends Component<ViewFormProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -43,7 +82,7 @@ class ViewForm extends Component {
 
   render() {
     const { formDataLoading, purchaseFormById, physicalStoreId } = this.props;
-    if (formDataLoading) {
+    if (formDataLoading || !purchaseFormById) {
       return null;
     }
 
@@ -55,30 +94,30 @@ class ViewForm extends Component {
     ];
 
     return (
-      <Fragment>
-        <Form layout="horizontal" style={FormStyle} onFinish={noop}>
-          <DateField
+      <ReactFragment>
+        <AntForm layout="horizontal" style={FormStyle} onFinish={noop}>
+          <PurchaseDateField
             fieldName="purchaseDate"
             fieldLabel="Purchase Date"
             initialValue={dayjs(Number(purchaseFormById.purchaseDate))}
             required
             requiredMessage="Please input a purchase date."
           />
-          <InputTextField
+          <TextField
             fieldName="vendorId"
             fieldLabel="Vendor"
             initialValue={
               purchaseFormById.refVendor ? purchaseFormById.refVendor.name : ''
             }
           />
-          <InputTextField
+          <TextField
             fieldName="receivedBy"
             fieldLabel="Received By"
             initialValue={purchaseFormById.refReceivedBy.name}
             required
             requiredMessage="Please input a name in received by."
           />
-          <InputTextField
+          <TextField
             fieldName="purchasedBy"
             fieldLabel="Purchased By"
             initialValue={purchaseFormById.refPurchasedBy.name}
@@ -86,21 +125,21 @@ class ViewForm extends Component {
             requiredMessage="Please input a name in purchased by."
           />
 
-          <InputTextAreaField
+          <TextAreaField
             fieldName="notes"
             fieldLabel="Notes"
             required={false}
             initialValue={purchaseFormById.notes}
           />
 
-          <Divider orientation="left">Purchased / Returned Items</Divider>
-          <Form.Item
+          <AntDivider orientation="left">Purchased / Returned Items</AntDivider>
+          <AntFormItem
             name="items"
             initialValue={purchaseFormById.items}
             rules={rules}
             {...formItemExtendedLayout}
           >
-            <ItemsList
+            <ItemsListComponent
               readOnly
               defaultLabel="Purchased"
               inflowLabel="Purchased"
@@ -108,12 +147,12 @@ class ViewForm extends Component {
               showPrice
               physicalStoreId={physicalStoreId}
             />
-          </Form.Item>
+          </AntFormItem>
 
-          <FormButtonsClose handleClose={this.handleClose} />
-        </Form>
-        <AuditInfo record={purchaseFormById} />
-      </Fragment>
+          <CloseButton handleClose={this.handleClose} />
+        </AntForm>
+        <AuditInfoComponent record={purchaseFormById} />
+      </ReactFragment>
     );
   }
 }
@@ -158,10 +197,14 @@ const formQuery = gql`
 
 export default flowRight(
   withQuery(formQuery, {
-    props: ({ data }) => ({ formDataLoading: data.loading, ...data }),
-    options: ({ match }) => {
+    props: ({ data }: { data: Record<string, any> }) => ({
+      formDataLoading: data.loading,
+      ...data,
+    }),
+    options: ({ match }: { match?: MatchLike }) => {
+      if (!match) return { variables: { _id: '' } };
       const { formId } = match.params;
       return { variables: { _id: formId } };
     },
   })
-)(ViewForm);
+)(ViewForm as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -25,7 +24,38 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-class ListFilter extends Component {
+const AntButton = Button as any;
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const AntRow = Row as any;
+const TreeField = TreeSelectField as any;
+const CheckboxField = CheckboxGroupField as any;
+const FilterDateField = DateField as any;
+const RefreshButtonComponent = RefreshButton as any;
+interface LocationRecord { _id: string; name: string; }
+interface QueryParams {
+  startDate?: string;
+  endDate?: string;
+  locationId?: string;
+  showApproved?: string;
+  showUnapproved?: string;
+}
+interface FilterValues {
+  approvalStatus?: string[];
+  locationId?: string;
+  startDate?: dayjs.Dayjs | null;
+  endDate?: dayjs.Dayjs | null;
+  pageIndex?: number;
+}
+interface ListFilterProps {
+  allLocations?: LocationRecord[];
+  refreshPage(params: FilterValues): void;
+  queryParams: QueryParams;
+  refreshData?(): void;
+}
+
+class ListFilter extends Component<ListFilterProps> {
   static propTypes = {
     allLocations: PropTypes.array,
     refreshPage: PropTypes.func,
@@ -33,7 +63,7 @@ class ListFilter extends Component {
     refreshData: PropTypes.func,
   };
 
-  handleFinish = ({ approvalStatus, locationId, startDate, endDate }) => {
+  handleFinish = ({ approvalStatus, locationId, startDate, endDate }: FilterValues) => {
     const { refreshPage } = this.props;
     refreshPage({
       approvalStatus,
@@ -55,7 +85,7 @@ class ListFilter extends Component {
     });
   };
 
-  refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
+  refreshButton = () => <RefreshButtonComponent refreshData={this.props.refreshData} />;
 
   render() {
     const { allLocations } = this.props;
@@ -71,12 +101,12 @@ class ListFilter extends Component {
 
     const mStartDate = startDate ? dayjs(startDate, Formats.DATE_FORMAT) : null;
     const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
-    const status = [];
+    const status: string[] = [];
     if (!showApproved || showApproved === 'true') status.push('approved');
     if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');
 
     return (
-      <Collapse
+      <AntCollapse
         style={ContainerStyle}
         items={[
           {
@@ -84,8 +114,8 @@ class ListFilter extends Component {
             label: 'Filter',
             extra: this.refreshButton(),
             children: (
-              <Form layout="horizontal" onFinish={this.handleFinish}>
-                <CheckboxGroupField
+              <AntForm layout="horizontal" onFinish={this.handleFinish}>
+                <CheckboxField
                   fieldName="approvalStatus"
                   fieldLabel="Status"
                   fieldLayout={formItemLayout}
@@ -95,40 +125,40 @@ class ListFilter extends Component {
                   ]}
                   initialValue={status}
                 />
-                <DateField
+                <FilterDateField
                   fieldName="startDate"
                   fieldLabel="Start Date"
                   fieldLayout={formItemLayout}
                   required={false}
-                  initialValue={mStartDate.isValid() ? mStartDate : null}
+                  initialValue={mStartDate?.isValid() ? mStartDate : null}
                 />
-                <DateField
+                <FilterDateField
                   fieldName="endDate"
                   fieldLabel="End Date"
                   fieldLayout={formItemLayout}
                   required={false}
-                  initialValue={mEndDate.isValid() ? mEndDate : null}
+                  initialValue={mEndDate?.isValid() ? mEndDate : null}
                 />
-                <TreeSelectField
-                  data={allLocations}
+                <TreeField
+                  data={allLocations ?? []}
                   fieldName="locationId"
                   fieldLabel="Location"
                   fieldLayout={formItemLayout}
                   initialValue={locationId}
                 />
 
-                <Form.Item {...buttonItemLayout}>
-                  <Row type="flex" justify="end">
-                    <Button type="default" onClick={this.handleReset}>
+                <AntFormItem {...buttonItemLayout}>
+                  <AntRow type="flex" justify="end">
+                    <AntButton type="default" onClick={this.handleReset}>
                       Reset
-                    </Button>
+                    </AntButton>
                     &nbsp;
-                    <Button type="primary" htmlType="submit">
+                    <AntButton type="primary" htmlType="submit">
                       Search
-                    </Button>
-                  </Row>
-                </Form.Item>
-              </Form>
+                    </AntButton>
+                  </AntRow>
+                </AntFormItem>
+              </AntForm>
             ),
           },
         ]}

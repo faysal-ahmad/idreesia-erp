@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -10,39 +9,54 @@ import { Button } from 'antd';
 import DutyCard from './duty-card';
 import StayCard from './stay-card';
 
+const ReactFragment = Fragment as any;
+const AntButton = Button as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const PrintControl = ReactToPrint as any;
+const DutyCardComponent = DutyCard as any;
+const StayCardComponent = StayCard as any;
+interface StayCardContainerProps {
+  cardType: string;
+  visitorId: string;
+  visitorStayId: string;
+  onCloseCard(): void;
+}
+interface VisitorData { securityVisitorById?: Record<string, unknown>; }
+interface VisitorStayData { visitorStayById?: Record<string, unknown>; }
+
 const StayCardContainer = ({
   cardType,
   visitorId,
   visitorStayId,
   onCloseCard,
-}) => {
-  const cardRef = useRef(null);
+}: StayCardContainerProps) => {
+  const cardRef = useRef<HTMLElement | null>(null);
   const { data: visitorData = {}, loading: visitorLoading } = useQuery(
-    formQueryVisitor,
+    formQueryVisitor as any,
     {
       variables: { _id: visitorId },
     }
   );
   const { data: visitorStayData = {}, loading: visitorStayLoading } = useQuery(
-    formQueryVisitorStay,
+    formQueryVisitorStay as any,
     {
       variables: { _id: visitorStayId },
     }
   );
-  const { securityVisitorById } = visitorData;
-  const { visitorStayById } = visitorStayData;
+  const { securityVisitorById } = visitorData as VisitorData;
+  const { visitorStayById } = visitorStayData as VisitorStayData;
 
   if (visitorLoading || visitorStayLoading) return null;
 
   const card =
     cardType === 'stay-card' ? (
-      <StayCard
+      <StayCardComponent
         ref={cardRef}
         visitor={securityVisitorById}
         visitorStay={visitorStayById}
       />
     ) : (
-      <DutyCard
+      <DutyCardComponent
         ref={cardRef}
         visitor={securityVisitorById}
         visitorStay={visitorStayById}
@@ -50,28 +64,28 @@ const StayCardContainer = ({
     );
 
   return (
-    <Fragment>
+    <ReactFragment>
       {card}
       <div style={{ paddingTop: '5px' }}>
-        <ReactToPrint
+        <PrintControl
           trigger={() => (
-            <Button type="primary" size="large">
-              <PrinterOutlined />
+            <AntButton type="primary" size="large">
+              <AntPrinterOutlined />
               Print
-            </Button>
+            </AntButton>
           )}
           content={() => cardRef.current}
         />
         &nbsp;
-        <Button
+        <AntButton
           size="large"
           type="default"
           onClick={() => onCloseCard()}
         >
           Close
-        </Button>
+        </AntButton>
       </div>
-    </Fragment>
+    </ReactFragment>
   );
 };
 

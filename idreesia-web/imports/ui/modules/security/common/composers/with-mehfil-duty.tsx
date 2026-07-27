@@ -1,8 +1,9 @@
-// @ts-nocheck
-import React from "react";
+import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { useQuery } from '@apollo/client/react';
 import gql from "graphql-tag";
+
+type AnyProps = Record<string, any>;
 
 const securityMehfilDutyByIdQuery = gql`
   query securityMehfilDutyById($_id: String!) {
@@ -18,9 +19,9 @@ const securityMehfilDutyByIdQuery = gql`
   }
 `;
 
-export const useMehfilDuty = mehfilDutyId => {
+export const useMehfilDuty = (mehfilDutyId?: string) => {
   const { loading, data = {}, ...queryProps } = useQuery(
-    securityMehfilDutyByIdQuery,
+    securityMehfilDutyByIdQuery as any,
     {
       variables: { _id: mehfilDutyId },
     }
@@ -28,24 +29,22 @@ export const useMehfilDuty = mehfilDutyId => {
 
   return {
     ...queryProps,
-    ...data,
+    ...(data as AnyProps),
     loading,
-    mehfilDutyById: data.securityMehfilDutyById,
+    mehfilDutyById: (data as any).securityMehfilDutyById,
     securityMehfilDutyByIdLoading: loading,
   };
 };
 
-export default () => WrappedComponent => {
-  const WithMehfilDuty = props => {
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithMehfilDuty = (props: AnyProps) => {
     const { mehfilDutyId, ...rest } = props;
     const mehfilDutyProps = useMehfilDuty(mehfilDutyId);
 
-    return (
-      <WrappedComponent
-        {...rest}
-        {...mehfilDutyProps}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...rest,
+      ...mehfilDutyProps,
+    });
   };
 
   WithMehfilDuty.propTypes = {

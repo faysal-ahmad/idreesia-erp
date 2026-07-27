@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -26,6 +25,17 @@ import {
 
 import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
 
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AntFormItem = Form.Item as any;
+const ItemsListComponent = ItemsList as any;
+const PurchaseDateField = DateField as any;
+const SelectInputField = SelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const TextAreaField = InputTextAreaField as any;
+const TreeField = TreeSelectField as any;
+const KarkunSelectField = KarkunField as any;
+
 const FormStyle = {
   width: '800px',
 };
@@ -35,7 +45,49 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-class NewForm extends Component {
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  goBack(): void;
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface SelectOption {
+  _id: string;
+  name: string;
+}
+
+interface PurchaseFormValues {
+  purchaseDate: string;
+  locationId?: string;
+  vendorId?: string;
+  receivedBy: { _id: string };
+  purchasedBy: { _id: string };
+  items?: unknown[];
+  notes?: string;
+}
+
+interface NewFormProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  vendorsLoading?: boolean;
+  vendorsByPhysicalStoreId?: SelectOption[];
+  locationsLoading?: boolean;
+  locationsByPhysicalStoreId?: SelectOption[];
+  createPurchaseForm: MutateFunction;
+}
+
+interface NewFormState {
+  isFieldsTouched: boolean;
+}
+
+class NewForm extends Component<NewFormProps, NewFormState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -53,7 +105,7 @@ class NewForm extends Component {
     isFieldsTouched: false,
   };
 
-  formRef = React.createRef();
+  formRef = React.createRef<any>();
 
   handleCancel = () => {
     const { history } = this.props;
@@ -72,7 +124,7 @@ class NewForm extends Component {
     purchasedBy,
     items,
     notes,
-  }) => {
+  }: PurchaseFormValues) => {
     const { history, physicalStoreId, createPurchaseForm } = this.props;
     createPurchaseForm({
       variables: {
@@ -89,7 +141,7 @@ class NewForm extends Component {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -113,20 +165,20 @@ class NewForm extends Component {
     ];
 
     return (
-      <Form
+      <AntForm
         ref={this.formRef}
         layout="horizontal"
         style={FormStyle}
         onFinish={this.handleFinish}
         onFieldsChange={this.handleFieldsChange}
       >
-        <DateField
+        <PurchaseDateField
           fieldName="purchaseDate"
           fieldLabel="Purchase Date"
           required
           requiredMessage="Please input a purchase date."
         />
-        <KarkunField
+        <KarkunSelectField
           required
           requiredMessage="Please select a name for Received By / Returned By."
           fieldName="receivedBy"
@@ -137,7 +189,7 @@ class NewForm extends Component {
             PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY
           }
         />
-        <KarkunField
+        <KarkunSelectField
           required
           requiredMessage="Please select a name for Purchased By / Returned To."
           fieldName="purchasedBy"
@@ -149,31 +201,31 @@ class NewForm extends Component {
           }
         />
 
-        <SelectField
-          data={vendorsByPhysicalStoreId}
-          getDataValue={({ _id }) => _id}
-          getDataText={({ name }) => name}
+        <SelectInputField
+          data={vendorsByPhysicalStoreId ?? []}
+          getDataValue={({ _id }: SelectOption) => _id}
+          getDataText={({ name }: SelectOption) => name}
           fieldName="vendorId"
           fieldLabel="Vendor"
         />
 
-        <TreeSelectField
-          data={locationsByPhysicalStoreId}
+        <TreeField
+          data={locationsByPhysicalStoreId ?? []}
           showSearch
           fieldName="locationId"
           fieldLabel="For Location"
           placeholder="Select a Location"
         />
 
-        <InputTextAreaField
+        <TextAreaField
           fieldName="notes"
           fieldLabel="Notes"
           required={false}
         />
 
-        <Divider orientation="left">Purchased / Returned Items</Divider>
-        <Form.Item name="items" rules={rules} {...formItemExtendedLayout}>
-          <ItemsList
+        <AntDivider orientation="left">Purchased / Returned Items</AntDivider>
+        <AntFormItem name="items" rules={rules} {...formItemExtendedLayout}>
+          <ItemsListComponent
             showPrice
             defaultLabel="Purchased"
             inflowLabel="Purchased"
@@ -181,13 +233,13 @@ class NewForm extends Component {
             physicalStoreId={physicalStoreId}
             refForm={this.formRef.current}
           />
-        </Form.Item>
+        </AntFormItem>
 
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }
@@ -254,10 +306,10 @@ export default flowRight(
       ],
     },
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Purchase Forms, New`;
     }
     return `Inventory, Purchase Forms, New`;
   })
-)(NewForm);
+)(NewForm as any);

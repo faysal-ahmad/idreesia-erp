@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -8,17 +7,26 @@ import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import Permissions from './permissions';
 
-const EditForm = props => {
+const AntTabs = Tabs as any;
+const AntTabPane = (Tabs as any).TabPane;
+const GeneralInfoComponent = GeneralInfo as any;
+const PermissionsComponent = Permissions as any;
+interface EditFormProps {
+  match?: { params?: { userId?: string } };
+  [key: string]: any;
+}
+
+const EditForm = (props: EditFormProps) => {
   const userId = get(props, ['match', 'params', 'userId'], null);
   return (
-    <Tabs defaultActiveKey="1">
-      <Tabs.TabPane tab="General Info" key="1">
-        <GeneralInfo userId={userId} {...props} />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Permissions" key="2">
-        <Permissions userId={userId} {...props} />
-      </Tabs.TabPane>
-    </Tabs>
+    <AntTabs defaultActiveKey="1">
+      <AntTabPane tab="General Info" key="1">
+        <GeneralInfoComponent userId={userId} {...props} />
+      </AntTabPane>
+      <AntTabPane tab="Permissions" key="2">
+        <PermissionsComponent userId={userId} {...props} />
+      </AntTabPane>
+    </AntTabs>
   );
 };
 
@@ -28,4 +36,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Security', 'User Accounts', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['Security', 'User Accounts', 'Edit'])(EditForm as any);

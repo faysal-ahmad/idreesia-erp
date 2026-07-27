@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -17,13 +16,29 @@ import PurchasDetails from './purchase-details';
 import AttachmentsList from './attachments-list';
 import { PURCHASE_FORM_BY_ID } from '../gql';
 
-const EditForm = props => {
+const AntTabs = Tabs as any;
+const AntTabPane = Tabs.TabPane as any;
+const PurchaseDetailsComponent = PurchasDetails as any;
+const AttachmentsListComponent = AttachmentsList as any;
+
+interface RouteParams {
+  formId: string;
+  physicalStoreId: string;
+}
+
+interface PurchaseFormData {
+  purchaseFormById: Record<string, unknown>;
+}
+
+type AnyProps = Record<string, any>;
+
+const EditForm = (props: AnyProps) => {
   const dispatch = useDispatch();
-  const { formId, physicalStoreId } = useParams();
+  const { formId, physicalStoreId } = useParams<RouteParams>();
   const { physicalStore, physicalStoreLoading } = usePhysicalStore(physicalStoreId);
   const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } = usePhysicalStoreLocations(physicalStoreId)
   const { vendorsByPhysicalStoreId, vendorsByPhysicalStoreIdLoading } = usePhysicalStoreVendors(physicalStoreId)
-  const { data, loading } = useQuery(PURCHASE_FORM_BY_ID, {
+  const { data, loading } = useQuery(PURCHASE_FORM_BY_ID as any, {
     skip: !formId || !physicalStoreId,
     variables: {
       _id: formId,
@@ -39,7 +54,7 @@ const EditForm = props => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Purchase Forms', 'Edit']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
 
   if (
     loading ||
@@ -48,12 +63,12 @@ const EditForm = props => {
     vendorsByPhysicalStoreIdLoading ||
     !data
   ) return null;
-  const { purchaseFormById } = data; 
+  const { purchaseFormById } = data as PurchaseFormData;
 
   return (
-    <Tabs defaultActiveKey="1">
-      <Tabs.TabPane tab="Purchase Details" key="1">
-        <PurchasDetails
+    <AntTabs defaultActiveKey="1">
+      <AntTabPane tab="Purchase Details" key="1">
+        <PurchaseDetailsComponent
           purchaseFormId={formId}
           purchaseFormById={purchaseFormById}
           physicalStoreId={physicalStoreId}
@@ -62,17 +77,17 @@ const EditForm = props => {
           vendorsByPhysicalStoreId={vendorsByPhysicalStoreId}
           {...props}
         />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Attachments" key="2">
-        <AttachmentsList
+      </AntTabPane>
+      <AntTabPane tab="Attachments" key="2">
+        <AttachmentsListComponent
           purchaseFormId={formId}
           purchaseFormById={purchaseFormById}
           physicalStoreId={physicalStoreId}
           physicalStore={physicalStore}
           {...props}
         />
-      </Tabs.TabPane>
-    </Tabs>
+      </AntTabPane>
+    </AntTabs>
   );
 };
 

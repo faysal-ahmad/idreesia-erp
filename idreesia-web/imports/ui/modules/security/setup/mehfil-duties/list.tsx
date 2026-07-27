@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -27,11 +26,22 @@ const removeSecurityMehfilDutyMutation = gql`
   }
 `;
 
-const List = ({ history }) => {
-  const { data = {} } = useQuery(listQuery);
-  const { allSecurityMehfilDuties } = data;
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const RouterLink = Link as any;
+interface HistoryLike { push(path: string): void; }
+interface ListProps { history: HistoryLike; }
+interface MehfilDuty { _id: string; name: string; urduName?: string; overallUsedCount?: number; }
+interface ListData { allSecurityMehfilDuties?: MehfilDuty[]; }
+
+const List = ({ history }: ListProps) => {
+  const { data = {} } = useQuery(listQuery as any);
+  const { allSecurityMehfilDuties = [] } = data as ListData;
   const [removeSecurityMehfilDuty] = useMutation(
-    removeSecurityMehfilDutyMutation,
+    removeSecurityMehfilDutyMutation as any,
     {
       refetchQueries: ['allSecurityMehfilDuties'],
     }
@@ -41,23 +51,23 @@ const List = ({ history }) => {
     history.push(paths.mehfilDutiesNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: MehfilDuty) => {
     removeSecurityMehfilDuty({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.mehfilDutiesPath}/${record._id}`}>{text}</Link>
+      render: (text: string, record: MehfilDuty) => (
+        <RouterLink to={`${paths.mehfilDutiesPath}/${record._id}`}>{text}</RouterLink>
       ),
     },
     {
@@ -67,17 +77,17 @@ const List = ({ history }) => {
     },
     {
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: MehfilDuty) => {
         if (record.overallUsedCount === 0) {
           return (
-            <Tooltip title="Delete">
-              <DeleteOutlined
+            <AntTooltip title="Delete">
+              <AntDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           );
         }
         return null;
@@ -86,20 +96,20 @@ const List = ({ history }) => {
   ];
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={allSecurityMehfilDuties}
       columns={columns}
       pagination={{ defaultPageSize: 20 }}
       bordered
       title={() => (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Mehfil Duty
-        </Button>
+        </AntButton>
       )}
     />
   );
@@ -110,4 +120,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Security', 'Mehfil Duties', 'List'])(List);
+export default WithBreadcrumbs(['Security', 'Mehfil Duties', 'List'])(List as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -49,7 +48,107 @@ import {
   REMOVE_PURCHASE_FORMS,
 } from '../gql';
 
-class List extends Component {
+const AntButton = Button as any;
+const AntDivider = Divider as any;
+const AntDropdown = Dropdown as any;
+const AntModal = Modal as any;
+const AntPagination = Pagination as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const Icons = {
+  CheckSquareOutlined: CheckSquareOutlined as any,
+  DeleteOutlined: DeleteOutlined as any,
+  EditOutlined: EditOutlined as any,
+  FileExcelOutlined: FileExcelOutlined as any,
+  FileOutlined: FileOutlined as any,
+  SettingOutlined: SettingOutlined as any,
+  PlusCircleOutlined: PlusCircleOutlined as any,
+  PrinterOutlined: PrinterOutlined as any,
+};
+const ListFilterComponent = ListFilter as any;
+
+interface PhysicalStore {
+  name: string;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface LocationLike {
+  pathname: string;
+}
+
+interface QueryParams {
+  showApproved?: string;
+  showUnapproved?: string;
+  startDateVal?: string;
+  endDateVal?: string;
+  vendorId?: string;
+  pageIndex?: string | number;
+  pageSize?: string | number;
+}
+
+interface PurchaseItem {
+  stockItemId: string;
+  quantity: number | string;
+  isInflow: boolean;
+  refStockItem: {
+    name: string;
+    unitOfMeasurement?: string;
+  };
+}
+
+interface Attachment {
+  _id: string;
+  name: string;
+}
+
+interface PurchaseForm {
+  _id: string;
+  purchaseDate: string;
+  approvedOn?: string;
+  items?: PurchaseItem[];
+  attachments?: Attachment[];
+}
+
+interface PagedPurchaseForms {
+  totalResults: number;
+  data: PurchaseForm[];
+}
+
+interface MutateFunction {
+  (options: { variables: Record<string, unknown> }): Promise<unknown>;
+}
+
+interface RefreshParams {
+  approvalStatus?: string[];
+  startDate?: dayjs.Dayjs | null;
+  endDate?: dayjs.Dayjs | null;
+  vendorId?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}
+
+interface ListProps {
+  history: HistoryLike;
+  location: LocationLike;
+  queryString?: string;
+  queryParams: QueryParams;
+  physicalStoreId?: string;
+  physicalStore?: PhysicalStore;
+  loading?: boolean;
+  refetchListQuery?(): void;
+  pagedPurchaseForms?: PagedPurchaseForms;
+  removePurchaseForms: MutateFunction;
+  approvePurchaseForms: MutateFunction;
+}
+
+interface ListState {
+  selectedRows: PurchaseForm[];
+}
+
+class List extends Component<ListProps, ListState> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -73,12 +172,12 @@ class List extends Component {
     selectedRows: [],
   };
 
-  columns = [
+  columns: any[] = [
     {
       title: 'Purchase Date',
       dataIndex: 'purchaseDate',
       key: 'purchaseDate',
-      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
+      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Purchased By',
@@ -93,11 +192,11 @@ class List extends Component {
     {
       title: 'Purchase Details',
       key: 'details',
-      render: (text, record) => {
+      render: (_text: unknown, record: PurchaseForm) => {
         const { items, attachments } = record;
-        const formattedItems = items?.map(item => {
+        const formattedItems = items?.map((item: PurchaseItem) => {
           const key = `${item.stockItemId}${item.isInflow}`;
-          let quantity = item.quantity;
+          let quantity: number | string = item.quantity;
           if (item.refStockItem.unitOfMeasurement !== 'quantity') {
             quantity = `${quantity} ${item.refStockItem.unitOfMeasurement}`;
           }
@@ -111,15 +210,15 @@ class List extends Component {
           );
         });
 
-        const formattedAttachments = attachments?.map(attachment => (
+        const formattedAttachments = attachments?.map((attachment: Attachment) => (
           <li key={attachment._id}>{attachment.name}</li>
         ));
 
-        if (formattedAttachments?.length > 0) {
+        if ((formattedAttachments?.length ?? 0) > 0) {
           return (
             <>
               <ul>{formattedItems}</ul>
-              <Divider>Attachments</Divider>
+              <AntDivider>Attachments</AntDivider>
               <ul>{formattedAttachments}</ul>
             </>
           );
@@ -131,48 +230,48 @@ class List extends Component {
     {
       title: 'Actions',
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: PurchaseForm) => {
         if (!record.approvedOn) {
           return (
             <div className="list-actions-column">
-              <Tooltip title="Edit">
-                <EditOutlined
+              <AntTooltip title="Edit">
+                <Icons.EditOutlined
                   className="list-actions-icon"
                   onClick={() => {
                     this.handleEditClicked(record);
                   }}
                 />
-              </Tooltip>
-              <Tooltip title="Print">
-                <PrinterOutlined
+              </AntTooltip>
+              <AntTooltip title="Print">
+                <Icons.PrinterOutlined
                   className="list-actions-icon"
                   onClick={() => {
                     this.handlePrintClicked(record);
                   }}
                 />
-              </Tooltip>
+              </AntTooltip>
             </div>
           );
         }
 
         return (
           <div className="list-actions-column">
-            <Tooltip title="View">
-              <FileOutlined
+            <AntTooltip title="View">
+              <Icons.FileOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.handleViewClicked(record);
                 }}
               />
-            </Tooltip>
-            <Tooltip title="Print">
-              <PrinterOutlined
+            </AntTooltip>
+            <AntTooltip title="Print">
+              <Icons.PrinterOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   this.handlePrintClicked(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           </div>
         );
       },
@@ -180,14 +279,14 @@ class List extends Component {
   ];
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: PurchaseForm[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  refreshPage = newParams => {
+  refreshPage = (newParams: RefreshParams) => {
     const {
       approvalStatus,
       startDate,
@@ -200,36 +299,36 @@ class List extends Component {
 
     let showApprovedVal;
     let showUnapprovedVal;
-    if (newParams.hasOwnProperty('approvalStatus')) {
+    if (Object.prototype.hasOwnProperty.call(newParams, 'approvalStatus')) {
       showApprovedVal =
-        approvalStatus.indexOf('approved') !== -1 ? 'true' : 'false';
+        approvalStatus?.indexOf('approved') !== -1 ? 'true' : 'false';
       showUnapprovedVal =
-        approvalStatus.indexOf('unapproved') !== -1 ? 'true' : 'false';
+        approvalStatus?.indexOf('unapproved') !== -1 ? 'true' : 'false';
     } else {
       showApprovedVal = queryParams.showApproved || 'true';
       showUnapprovedVal = queryParams.showUnapproved || 'true';
     }
 
     let startDateVal;
-    if (newParams.hasOwnProperty('startDate'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'startDate'))
       startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
     else startDateVal = queryParams.startDateVal || '';
 
     let endDateVal;
-    if (newParams.hasOwnProperty('endDate'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'endDate'))
       endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
     else endDateVal = queryParams.endDateVal || '';
 
     let vendorIdVal;
-    if (newParams.hasOwnProperty('vendorId')) vendorIdVal = vendorId || '';
+    if (Object.prototype.hasOwnProperty.call(newParams, 'vendorId')) vendorIdVal = vendorId || '';
     else vendorIdVal = queryParams.vendorId || '';
 
     let pageIndexVal;
-    if (newParams.hasOwnProperty('pageIndex')) pageIndexVal = pageIndex || 0;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')) pageIndexVal = pageIndex || 0;
     else pageIndexVal = queryParams.pageIndex || 0;
 
     let pageSizeVal;
-    if (newParams.hasOwnProperty('pageSize')) pageSizeVal = pageSize || 20;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize')) pageSizeVal = pageSize || 20;
     else pageSizeVal = queryParams.pageSize || 20;
 
     const path = `${location.pathname}?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&vendorId=${vendorIdVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
@@ -241,22 +340,22 @@ class List extends Component {
     history.push(paths.purchaseFormsNewFormPath(physicalStoreId));
   };
 
-  handleEditClicked = record => {
+  handleEditClicked = (record: PurchaseForm) => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.purchaseFormsEditFormPath(physicalStoreId, record._id));
   };
 
-  handlePrintClicked = record => {
+  handlePrintClicked = (record: PurchaseForm) => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.purchaseFormsPrintFormPath(physicalStoreId, record._id));
   };
 
-  handleViewClicked = record => {
+  handleViewClicked = (record: PurchaseForm) => {
     const { history, physicalStoreId } = this.props;
     history.push(paths.purchaseFormsViewFormPath(physicalStoreId, record._id));
   };
 
-  handleAction = ({ key }) => {
+  handleAction = ({ key }: { key: string }) => {
     const { selectedRows } = this.state;
     if (selectedRows.length === 0) return;
 
@@ -265,7 +364,7 @@ class List extends Component {
     } else if (key === 'export') {
       this.handleExportSelected();
     } else if (key === 'delete') {
-      Modal.confirm({
+      AntModal.confirm({
         title: 'Delete Purchase Forms',
         content: 'Are you sure you want to delete the selected issuance forms?',
         onOk: () => {
@@ -277,7 +376,7 @@ class List extends Component {
 
   handleDeleteSelected = () => {
     const { selectedRows } = this.state;
-    const _ids = selectedRows.map(row => row._id);
+    const _ids = selectedRows.map((row: PurchaseForm) => row._id);
     const { removePurchaseForms, physicalStoreId } = this.props;
     removePurchaseForms({
       variables: {
@@ -288,14 +387,14 @@ class List extends Component {
       .then(() => {
         message.success('Purchase forms have been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   handleApproveSelected = () => {
     const { selectedRows } = this.state;
-    const _ids = selectedRows.map(row => row._id);
+    const _ids = selectedRows.map((row: PurchaseForm) => row._id);
     const { approvePurchaseForms, physicalStoreId } = this.props;
 
     approvePurchaseForms({
@@ -307,7 +406,7 @@ class List extends Component {
       .then(() => {
         message.success('Purchase forms have been approved.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -316,7 +415,7 @@ class List extends Component {
     const { selectedRows } = this.state;
     if (selectedRows.length === 0) return;
 
-    const reportArgs = selectedRows.map(row => row._id);
+    const reportArgs = selectedRows.map((row: PurchaseForm) => row._id);
     const url = `${
       window.location.origin
     }/generate-report?reportName=PurchaseForms&reportArgs=${reportArgs.join(
@@ -325,14 +424,14 @@ class List extends Component {
     window.open(url, '_blank');
   };
 
-  onChange = (pageIndex, pageSize) => {
+  onChange = (pageIndex: number, pageSize: number) => {
     this.refreshPage({
       pageIndex: pageIndex - 1,
       pageSize,
     });
   };
 
-  onShowSizeChange = (pageIndex, pageSize) => {
+  onShowSizeChange = (pageIndex: number, pageSize: number) => {
     this.refreshPage({
       pageIndex: pageIndex - 1,
       pageSize,
@@ -344,12 +443,12 @@ class List extends Component {
       {
         key: 'approve',
         label: 'Approve Selected',
-        icon: <CheckSquareOutlined />,
+        icon: <Icons.CheckSquareOutlined />,
       },
       {
         key: 'export',
         label: 'Export Selected',
-        icon: <FileExcelOutlined />,
+        icon: <Icons.FileExcelOutlined />,
       },
       {
         type: 'divider',
@@ -357,14 +456,14 @@ class List extends Component {
       {
         key: 'delete',
         label: 'Delete Selected',
-        icon: <DeleteOutlined />,
+        icon: <Icons.DeleteOutlined />,
       },
     ];
 
     return (
-      <Dropdown menu={{ items, onClick: this.handleAction }}>
-        <Button icon={<SettingOutlined />} size="large" />
-      </Dropdown>
+      <AntDropdown menu={{ items, onClick: this.handleAction }}>
+        <AntButton icon={<Icons.SettingOutlined />} size="large" />
+      </AntDropdown>
     );
   };
 
@@ -373,15 +472,15 @@ class List extends Component {
 
     return (
       <div className="list-table-header">
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<Icons.PlusCircleOutlined />}
           onClick={this.handleNewClicked}
         >
           New Purchase Form
-        </Button>
+        </AntButton>
         <div className="list-table-header-section">
-          <ListFilter
+          <ListFilterComponent
             physicalStoreId={physicalStoreId}
             refreshPage={this.refreshPage}
             queryParams={queryParams}
@@ -400,14 +499,15 @@ class List extends Component {
 
     const {
       queryParams: { pageIndex, pageSize },
-      pagedPurchaseForms: { totalResults, data },
+      pagedPurchaseForms = { totalResults: 0, data: [] },
     } = this.props;
+    const { totalResults, data } = pagedPurchaseForms;
 
     const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
     const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={data}
         columns={this.columns}
@@ -417,13 +517,13 @@ class List extends Component {
         size="small"
         pagination={false}
         footer={() => (
-          <Pagination
+          <AntPagination
             defaultCurrent={1}
             defaultPageSize={20}
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
-            showTotal={(total, range) =>
+            showTotal={(total: number, range: [number, number]) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
             onChange={this.onChange}
@@ -462,15 +562,24 @@ export default flowRight(
     },
   }),
   withQuery(PAGED_PURCHASE_FORMS, {
-    props: ({ data }) => ({ refetchListQuery: data.refetch, ...data }),
-    options: ({ physicalStoreId, queryString }) => ({
+    props: ({ data }: { data: Record<string, any> }) => ({
+      refetchListQuery: data.refetch,
+      ...data,
+    }),
+    options: ({
+      physicalStoreId,
+      queryString,
+    }: {
+      physicalStoreId?: string;
+      queryString?: string;
+    }) => ({
       variables: { physicalStoreId, queryString },
     }),
   }),
-  WithDynamicBreadcrumbs(({ physicalStore }) => {
+  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
     if (physicalStore) {
       return `Inventory, ${physicalStore.name}, Purchase Forms, List`;
     }
     return `Inventory, Purchase Forms, List`;
   })
-)(List);
+)(List as any);

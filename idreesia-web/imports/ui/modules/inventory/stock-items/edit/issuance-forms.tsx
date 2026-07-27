@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -10,7 +9,40 @@ import { FileOutlined, EditOutlined } from '@ant-design/icons';
 import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
-class List extends Component {
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntFileOutlined = FileOutlined as any;
+const AntEditOutlined = EditOutlined as any;
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface FormItem {
+  stockItemId: string;
+  quantity: number;
+  isInflow: boolean;
+  refStockItem: {
+    name: string;
+  };
+}
+
+interface IssuanceForm {
+  _id: string;
+  issueDate: string;
+  approvedOn?: string;
+  items: FormItem[];
+}
+
+interface ListProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  stockItemId?: string;
+  loading?: boolean;
+  issuanceFormsByStockItem?: IssuanceForm[];
+}
+
+class List extends Component<ListProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -20,12 +52,12 @@ class List extends Component {
     issuanceFormsByStockItem: PropTypes.array,
   };
 
-  columns = [
+  columns: any[] = [
     {
       title: 'Issue Date',
       dataIndex: 'issueDate',
       key: 'issueDate',
-      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
+      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Issued To',
@@ -41,9 +73,10 @@ class List extends Component {
       title: 'Items',
       dataIndex: 'items',
       key: 'items',
-      render: items => {
+      render: (items: FormItem[]) => {
         const { stockItemId } = this.props;
-        const item = find(items, _item => _item.stockItemId === stockItemId);
+        const item = find(items, (_item: FormItem) => _item.stockItemId === stockItemId);
+        if (!item) return '';
         return `${item.refStockItem.name} [${item.quantity} ${
           item.isInflow ? 'Returned' : 'Issued'
         }]`;
@@ -52,14 +85,14 @@ class List extends Component {
     {
       title: 'Actions',
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: IssuanceForm) => {
         let tooltipTitle;
         let icon;
 
         if (!record.approvedOn) {
           tooltipTitle = 'Edit';
           icon = (
-            <EditOutlined
+            <AntEditOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
@@ -69,7 +102,7 @@ class List extends Component {
         } else {
           tooltipTitle = 'View';
           icon = (
-            <FileOutlined
+            <AntFileOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleViewClicked(record);
@@ -80,21 +113,21 @@ class List extends Component {
 
         return (
           <div className="list-actions-column">
-            <Tooltip title={tooltipTitle}>{icon}</Tooltip>
+            <AntTooltip title={tooltipTitle}>{icon}</AntTooltip>
           </div>
         );
       },
     },
   ];
 
-  handleViewClicked = issuanceForm => {
+  handleViewClicked = (issuanceForm: IssuanceForm) => {
     const { history, physicalStoreId } = this.props;
     history.push(
       paths.issuanceFormsViewFormPath(physicalStoreId, issuanceForm._id)
     );
   };
 
-  handleEditClicked = issuanceForm => {
+  handleEditClicked = (issuanceForm: IssuanceForm) => {
     const { history, physicalStoreId } = this.props;
     history.push(
       paths.issuanceFormsEditFormPath(physicalStoreId, issuanceForm._id)
@@ -106,7 +139,7 @@ class List extends Component {
     if (loading) return null;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={issuanceFormsByStockItem}
         columns={this.columns}
@@ -154,9 +187,15 @@ const listQuery = gql`
 
 export default flowRight(
   withQuery(listQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId, stockItemId }) => ({
+    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
+    options: ({
+      physicalStoreId,
+      stockItemId,
+    }: {
+      physicalStoreId?: string;
+      stockItemId?: string;
+    }) => ({
       variables: { physicalStoreId, stockItemId },
     }),
   })
-)(List);
+)(List as any);

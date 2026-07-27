@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -10,7 +9,33 @@ import { FileOutlined, EditOutlined } from '@ant-design/icons';
 import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
-class List extends Component {
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntFileOutlined = FileOutlined as any;
+const AntEditOutlined = EditOutlined as any;
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface Adjustment {
+  _id: string;
+  adjustmentDate: string;
+  quantity: number;
+  isInflow: boolean;
+  adjustmentReason?: string;
+  approvedOn?: string;
+}
+
+interface ListProps {
+  history: HistoryLike;
+  physicalStoreId?: string;
+  stockItemId?: string;
+  loading?: boolean;
+  stockAdjustmentsByStockItem?: Adjustment[];
+}
+
+class List extends Component<ListProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -19,12 +44,12 @@ class List extends Component {
     stockAdjustmentsByStockItem: PropTypes.array,
   };
 
-  columns = [
+  columns: any[] = [
     {
       title: 'Adjustment',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (text, record) => {
+      render: (text: number, record: Adjustment) => {
         if (record.isInflow) {
           return `Increased by ${text}`;
         }
@@ -35,7 +60,7 @@ class List extends Component {
       title: 'Adjustment Date',
       dataIndex: 'adjustmentDate',
       key: 'adjustmentDate',
-      render: text => dayjs(Number(text)).format('DD MMM, YYYY'),
+      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Adjusted By',
@@ -50,14 +75,14 @@ class List extends Component {
     {
       title: 'Actions',
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: Adjustment) => {
         let tooltipTitle;
         let icon;
 
         if (!record.approvedOn) {
           tooltipTitle = 'Edit';
           icon = (
-            <EditOutlined
+            <AntEditOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleEditClicked(record);
@@ -67,7 +92,7 @@ class List extends Component {
         } else {
           tooltipTitle = 'View';
           icon = (
-            <FileOutlined
+            <AntFileOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleViewClicked(record);
@@ -78,21 +103,21 @@ class List extends Component {
 
         return (
           <div className="list-actions-column">
-            <Tooltip title={tooltipTitle}>{icon}</Tooltip>
+            <AntTooltip title={tooltipTitle}>{icon}</AntTooltip>
           </div>
         );
       },
     },
   ];
 
-  handleViewClicked = adjustment => {
+  handleViewClicked = (adjustment: Adjustment) => {
     const { history, physicalStoreId } = this.props;
     history.push(
       paths.stockAdjustmentsViewFormPath(physicalStoreId, adjustment._id)
     );
   };
 
-  handleEditClicked = adjustment => {
+  handleEditClicked = (adjustment: Adjustment) => {
     const { history, physicalStoreId } = this.props;
     history.push(
       paths.stockAdjustmentsEditFormPath(physicalStoreId, adjustment._id)
@@ -104,7 +129,7 @@ class List extends Component {
     if (loading) return null;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={stockAdjustmentsByStockItem}
         columns={this.columns}
@@ -142,9 +167,15 @@ const listQuery = gql`
 
 export default flowRight(
   withQuery(listQuery, {
-    props: ({ data }) => ({ ...data }),
-    options: ({ physicalStoreId, stockItemId }) => ({
+    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
+    options: ({
+      physicalStoreId,
+      stockItemId,
+    }: {
+      physicalStoreId?: string;
+      stockItemId?: string;
+    }) => ({
       variables: { physicalStoreId, stockItemId },
     }),
   })
-)(List);
+)(List as any);

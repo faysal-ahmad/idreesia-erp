@@ -243,7 +243,8 @@ export default {
         approvedBy: { $exists: false },
       });
 
-      await existingAdjustments.forEachAsync(async (existingAdjustment: StockAdjustment) => {
+      await existingAdjustments.forEachAsync(async (existingAdjustmentRecord: unknown) => {
+        const existingAdjustment = existingAdjustmentRecord as unknown as StockAdjustment;
         // Undo the effect of this adjustment
         if (existingAdjustment.isInflow) {
           await StockItems.decrementCurrentLevel(

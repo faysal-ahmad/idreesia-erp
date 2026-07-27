@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -13,11 +12,19 @@ import { IssuanceDetails } from './issuance-details';
 import { AttachmentsList } from './attachments-list';
 import { ISSUANCE_FORM_BY_ID } from '../gql';
 
-const ViewForm = props => {
+const AntTabs = Tabs as any;
+const AntTabPane = Tabs.TabPane as any;
+const IssuanceDetailsComponent = IssuanceDetails as any;
+const AttachmentsListComponent = AttachmentsList as any;
+interface RouteParams { formId: string; physicalStoreId: string; }
+interface IssuanceFormData { issuanceFormById: Record<string, unknown>; }
+type AnyProps = Record<string, any>;
+
+const ViewForm = (props: AnyProps) => {
   const dispatch = useDispatch();
-  const { formId, physicalStoreId } = useParams();
+  const { formId, physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
+  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID as any, {
     skip: !formId,
     variables: {
       _id: formId,
@@ -33,28 +40,28 @@ const ViewForm = props => {
     } else {
       dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'View']));
     }
-  }, [physicalStore]);
+  }, [dispatch, physicalStore]);
   
   if (loading || !data) return null;
-  const { issuanceFormById } = data; 
+  const { issuanceFormById } = data as IssuanceFormData;
 
   return (
-    <Tabs defaultActiveKey="1">
-      <Tabs.TabPane tab="Issuance Details" key="1">
-        <IssuanceDetails
+    <AntTabs defaultActiveKey="1">
+      <AntTabPane tab="Issuance Details" key="1">
+        <IssuanceDetailsComponent
           physicalStoreId={physicalStoreId}
           issuanceFormById={issuanceFormById}
           {...props}
         />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Attachments" key="2">
-        <AttachmentsList
+      </AntTabPane>
+      <AntTabPane tab="Attachments" key="2">
+        <AttachmentsListComponent
           physicalStoreId={physicalStoreId}
           issuanceFormById={issuanceFormById}
           {...props}
         />
-      </Tabs.TabPane>
-    </Tabs>
+      </AntTabPane>
+    </AntTabs>
   );
 };
 

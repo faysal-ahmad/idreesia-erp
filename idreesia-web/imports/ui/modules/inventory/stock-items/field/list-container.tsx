@@ -1,10 +1,31 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import List from '../list/list';
 
-export default class ListContainer extends Component {
+interface StockItem {
+  _id: string;
+  formattedName?: string;
+}
+
+interface ListContainerProps {
+  physicalStoreId?: string;
+  setSelectedValue?(stockItem: StockItem): void;
+}
+
+interface ListContainerState {
+  pageIndex: number;
+  pageSize: number;
+  categoryId: string | null;
+  name: string | null;
+  verifyDuration: string | null;
+  stockLevel: string | null;
+}
+
+export default class ListContainer extends Component<
+  ListContainerProps,
+  ListContainerState
+> {
   static propTypes = {
     physicalStoreId: PropTypes.string,
     setSelectedValue: PropTypes.func,
@@ -19,8 +40,8 @@ export default class ListContainer extends Component {
     stockLevel: null,
   };
 
-  setPageParams = pageParams => {
-    this.setState(pageParams);
+  setPageParams = (pageParams: Partial<ListContainerState>) => {
+    this.setState(pageParams as Pick<ListContainerState, keyof ListContainerState>);
   };
 
   render() {

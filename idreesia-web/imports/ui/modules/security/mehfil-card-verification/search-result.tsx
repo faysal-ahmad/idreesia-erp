@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -9,14 +8,35 @@ import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 import { Card } from '../mehfil-karkuns/print/karkun-cards/named-cards';
 
-const SearchResult = props => {
+const AntRow = Row as any;
+const AntSpin = Spin as any;
+const KarkunCard = Card as any;
+
+interface Mehfil {
+  name: string;
+  mehfilDate: string | number;
+}
+
+interface MehfilKarkun {
+  mehfil: Mehfil;
+}
+
+interface MehfilKarkunData {
+  mehfilKarkunByBarcodeId?: MehfilKarkun | null;
+}
+
+interface SearchResultProps {
+  barcode?: string;
+}
+
+const SearchResult = (props: SearchResultProps) => {
   const { barcode } = props;
-  const { data = {}, loading } = useQuery(formQuery, {
+  const { data = {}, loading } = useQuery(formQuery as any, {
     variables: { barcode },
   });
-  const { mehfilKarkunByBarcodeId } = data;
+  const { mehfilKarkunByBarcodeId } = data as MehfilKarkunData;
   if (!barcode) return null;
-  if (loading) return <Spin size="large" />;
+  if (loading) return <AntSpin size="large" />;
 
   if (!mehfilKarkunByBarcodeId) {
     message.error(`No records found against scanned barcode ${barcode}`, 2);
@@ -31,7 +51,7 @@ const SearchResult = props => {
 
   return (
     <>
-      <Row type="flex" justify="center">
+      <AntRow type="flex" justify="center">
         <div
           style={{
             fontWeight: 'bold',
@@ -41,10 +61,10 @@ const SearchResult = props => {
         >
           {mehfilName}
         </div>
-      </Row>
-      <Row type="flex" justify="center">
-        <Card mehfilKarkun={mehfilKarkunByBarcodeId} />
-      </Row>
+      </AntRow>
+      <AntRow type="flex" justify="center">
+        <KarkunCard mehfilKarkun={mehfilKarkunByBarcodeId} />
+      </AntRow>
     </>
   );
 };

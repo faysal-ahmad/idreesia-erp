@@ -9,7 +9,7 @@ export async function getAttachments(attachmentIds: readonly string[]) {
     _id: { $in: attachmentIds },
   }).fetchAsync();
 
-  const attachmentsMap = keyBy(attachments, '_id') as Record<
+  const attachmentsMap = keyBy(attachments, '_id') as unknown as Record<
     string,
     LoaderRecord
   >;

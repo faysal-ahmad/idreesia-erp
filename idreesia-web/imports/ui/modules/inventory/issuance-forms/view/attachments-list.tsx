@@ -1,11 +1,15 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
 import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
 
-export const AttachmentsList = ({ issuanceFormById }) =>(
-  <AttachmentsListControl
+const AttachmentsListControlComponent = AttachmentsListControl as any;
+interface Attachment { _id: string; name: string; }
+interface IssuanceForm { attachments?: Attachment[]; }
+interface AttachmentsListProps { issuanceFormById: IssuanceForm; }
+
+export const AttachmentsList = ({ issuanceFormById }: AttachmentsListProps) =>(
+  <AttachmentsListControlComponent
     canEditAttachments={false}
     attachments={issuanceFormById.attachments}
   />

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -11,19 +10,25 @@ import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import CityMehfils from './city-mehfils';
 
-const EditForm = props => {
+const AntTabs = Tabs as any;
+const TabPane = (Tabs as any).TabPane;
+const GeneralInfoForm = GeneralInfo as any;
+const CityMehfilsList = CityMehfils as any;
+type AnyProps = Record<string, any>;
+
+const EditForm = (props: AnyProps) => {
   const { match, queryParams } = props;
   const cityId = get(match, 'params.cityId', null);
   const activeKey = queryParams['default-active-tab'] || '1';
   return (
-    <Tabs defaultActiveKey={activeKey}>
-      <Tabs.TabPane tab="General Info" key="1">
-        <GeneralInfo cityId={cityId} {...props} />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Mehfils" key="2">
-        <CityMehfils cityId={cityId} {...props} />
-      </Tabs.TabPane>
-    </Tabs>
+    <AntTabs defaultActiveKey={activeKey}>
+      <TabPane tab="General Info" key="1">
+        <GeneralInfoForm cityId={cityId} {...props} />
+      </TabPane>
+      <TabPane tab="Mehfils" key="2">
+        <CityMehfilsList cityId={cityId} {...props} />
+      </TabPane>
+    </AntTabs>
   );
 };
 
@@ -37,4 +42,4 @@ EditForm.propTypes = {
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'Edit'])
-)(EditForm);
+)(EditForm as any);

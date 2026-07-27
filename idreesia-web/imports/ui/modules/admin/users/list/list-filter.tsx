@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SyncOutlined } from '@ant-design/icons';
@@ -17,6 +16,20 @@ import {
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
 
+const AntSyncOutlined = SyncOutlined as any;
+const AntButton = Button as any;
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntFormItem = (Form as any).Item;
+const AntRow = Row as any;
+const AntTooltip = Tooltip as any;
+const CheckboxGroupInputField = CheckboxGroupField as any;
+const SelectInputField = SelectField as any;
+interface PageParams extends Record<string, string> { pageIndex: string; }
+interface Props { showLocked?: string; showUnlocked?: string; showActive?: string; showInactive?: string; moduleAccess?: string; setPageParams(params: PageParams): void; refreshData?: () => void; }
+interface FormValues { status?: string[]; moduleAccess?: string; }
+interface ModuleNameOption { value: string; text: string; }
+
 const ContainerStyle = {
   width: '500px',
 };
@@ -30,8 +43,8 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-const ListFilter = props => {
-  const handleFinish = ({ status, moduleAccess }) => {
+const ListFilter = (props: Props) => {
+  const handleFinish = ({ status = [], moduleAccess = '' }: FormValues) => {
     const { setPageParams } = props;
     setPageParams({
       showLocked: status.indexOf('locked') !== -1 ? 'true' : 'false',
@@ -60,14 +73,14 @@ const ListFilter = props => {
     if (!refreshData) return null;
 
     return (
-      <Tooltip title="Reload Data">
-        <SyncOutlined
-          onClick={event => {
+      <AntTooltip title="Reload Data">
+        <AntSyncOutlined
+          onClick={(event: React.MouseEvent<HTMLElement>) => {
             event.stopPropagation();
             refreshData();
           }}
         />
-      </Tooltip>
+      </AntTooltip>
     );
   };
 
@@ -79,29 +92,29 @@ const ListFilter = props => {
     moduleAccess,
   } = props;
 
-  const status = [];
+  const status: string[] = [];
   if (showLocked === 'true') status.push('locked');
   if (showUnlocked === 'true') status.push('unlocked');
   if (showActive === 'true') status.push('active');
   if (showInactive === 'true') status.push('inactive');
 
   const moduleNames = values(ModuleNames);
-  const moduleNamesData = moduleNames.map(name => ({
+  const moduleNamesData = moduleNames.map((name: string) => ({
     value: name,
     text: name,
   }));
 
   return (
-    <Collapse
-      style={ContainerStyle}
+    <AntCollapse
+      style={ContainerStyle as any}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <Form layout="horizontal" onFinish={handleFinish}>
-              <CheckboxGroupField
+            <AntForm layout="horizontal" onFinish={handleFinish}>
+              <CheckboxGroupInputField
                 fieldName="status"
                 fieldLabel="Status"
                 fieldLayout={formItemLayout}
@@ -113,27 +126,27 @@ const ListFilter = props => {
                 ]}
                 initialValue={status}
               />
-              <SelectField
+              <SelectInputField
                 data={moduleNamesData}
-                getDataValue={({ value }) => value}
-                getDataText={({ text }) => text}
+                getDataValue={({ value }: ModuleNameOption) => value}
+                getDataText={({ text }: ModuleNameOption) => text}
                 initialValue={moduleAccess}
                 fieldName="moduleAccess"
                 fieldLabel="Module Access"
                 fieldLayout={formItemLayout}
               />
-              <Form.Item {...buttonItemLayout}>
-                <Row type="flex" justify="end">
-                  <Button type="default" onClick={handleReset}>
+              <AntFormItem {...buttonItemLayout}>
+                <AntRow type="flex" justify="end">
+                  <AntButton type="default" onClick={handleReset}>
                     Reset
-                  </Button>
+                  </AntButton>
                   &nbsp;
-                  <Button type="primary" htmlType="submit">
+                  <AntButton type="primary" htmlType="submit">
                     Search
-                  </Button>
-                </Row>
-              </Form.Item>
-            </Form>
+                  </AntButton>
+                </AntRow>
+              </AntFormItem>
+            </AntForm>
           ),
         },
       ]}

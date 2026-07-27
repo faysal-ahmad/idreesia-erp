@@ -1,7 +1,10 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Cascader, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const CascaderInput = Cascader as any;
+interface FieldProps { data?: unknown[]; changeOnSelect?: boolean; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; disabled?: boolean; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -28,7 +31,7 @@ const CascaderField = ({
   required,
   requiredMessage,
   disabled,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -37,15 +40,15 @@ const CascaderField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-        <Cascader
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+        <CascaderInput
           disabled={disabled}
           options={data}
           placeholder={placeholder}
           expandTrigger="hover"
           changeOnSelect={changeOnSelect}
         />
-    </Form.Item>
+    </AntFormItem>
   );
 }
 

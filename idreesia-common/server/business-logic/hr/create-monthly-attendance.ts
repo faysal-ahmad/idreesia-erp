@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Random } from 'meteor/random';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
@@ -6,7 +5,7 @@ import {
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
 
-export async function createMonthlyAttendance(formattedMonth, user) {
+export async function createMonthlyAttendance(formattedMonth: string, user: { _id: string }) {
   let counter = 0;
   // Get all the people who are employees and have a job assigned to them
   const people = await People.find({

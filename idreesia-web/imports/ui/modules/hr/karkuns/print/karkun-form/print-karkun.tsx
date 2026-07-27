@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -20,36 +19,49 @@ const ControlsContainer = {
   width: '100%',
 };
 
-const PrintView = ({ history, match }) => {
-  const printViewRef = useRef(null);
+const ReactToPrintControl = ReactToPrint as any;
+const AntButton = Button as any;
+const AntCheckbox = Checkbox as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const DetailedKarkunForm = DetailedForm as any;
+const NonDetailedKarkunForm = NonDetailedForm as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { goBack(): void; }
+interface MatchLike { params: { karkunId: string; }; }
+interface QueryData { hrKarkunById?: AnyRecord | null; }
+interface Props { history: HistoryLike; match: MatchLike; }
+
+const PrintView = ({ history, match }: Props) => {
+  const printViewRef = useRef<HTMLDivElement | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
     variables: { _id: match.params.karkunId },
   });
 
   if (formDataLoading) return null;
 
-  const { hrKarkunById } = data;
+  const { hrKarkunById } = (data ?? {}) as QueryData;
   const form = showDetails ? (
-    <DetailedForm hrKarkunById={hrKarkunById} />
+    <DetailedKarkunForm hrKarkunById={hrKarkunById} />
   ) : (
-    <NonDetailedForm hrKarkunById={hrKarkunById} />
+    <NonDetailedKarkunForm hrKarkunById={hrKarkunById} />
   );
 
   return (
     <>
-      <div style={ControlsContainer}>
+      <div style={ControlsContainer as any}>
         <div>
-          <ReactToPrint
+          <ReactToPrintControl
             content={() => printViewRef.current}
             trigger={() => (
-              <Button size="large" type="primary" icon={<PrinterOutlined />}>
+              <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
                 Print
-              </Button>
+              </AntButton>
             )}
           />
           &nbsp;
-          <Button
+          <AntButton
             size="large"
             type="primary"
             onClick={() => {
@@ -57,16 +69,16 @@ const PrintView = ({ history, match }) => {
             }}
           >
             Back
-          </Button>
+          </AntButton>
         </div>
-        <Checkbox
+        <AntCheckbox
           checked={showDetails}
-          onChange={e => setShowDetails(e.target.checked)}
+          onChange={(e: any) => setShowDetails(e.target.checked)}
         >
           Show Detailed Form
-        </Checkbox>
+        </AntCheckbox>
       </div>
-      <Divider />
+      <AntDivider />
       <div className="form-print-view" ref={printViewRef}>
         {form}
       </div>
@@ -84,4 +96,4 @@ PrintView.propTypes = {
 
 export default flowRight(
   WithBreadcrumbs(['HR', 'Karkuns', 'Print Karkun'])
-)(PrintView);
+)(PrintView as any);

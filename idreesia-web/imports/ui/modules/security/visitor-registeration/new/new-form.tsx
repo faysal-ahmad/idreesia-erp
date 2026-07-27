@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
@@ -11,8 +10,14 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { CREATE_SECURITY_VISITOR } from '../gql';
 
-const NewForm = ({ history }) => {
-  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR, {
+const VisitorsNewFormComponent = VisitorsNewForm as any;
+interface HistoryLike { goBack(): void; push(path: string): void; }
+interface NewFormProps { history: HistoryLike; }
+interface VisitorValues { [key: string]: unknown; name?: string; parentName?: string; cnicNumber?: string; ehadDate?: string; birthDate?: string; referenceName?: string; contactNumber1?: string; contactNumber2?: string; city?: string; country?: string; currentAddress?: string; permanentAddress?: string; educationalQualification?: string; meansOfEarning?: string; }
+interface VisitorMutationResult { createSecurityVisitor?: { _id: string }; }
+
+const NewForm = ({ history }: NewFormProps) => {
+  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR as any, {
     refetchQueries: ['pagedSecurityVisitors'],
   });
 
@@ -35,7 +40,7 @@ const NewForm = ({ history }) => {
     permanentAddress,
     educationalQualification,
     meansOfEarning,
-  }) => {
+  }: VisitorValues) => {
     createSecurityVisitor({
       variables: {
         name,
@@ -54,18 +59,20 @@ const NewForm = ({ history }) => {
         meansOfEarning,
       },
     })
-      .then(({ data: { createSecurityVisitor: newVisitor } }) => {
+      .then((response: any) => {
+        const newVisitor = (response.data as VisitorMutationResult | undefined)?.createSecurityVisitor;
+        if (!newVisitor) return;
         history.push(
           `${paths.visitorRegistrationEditFormPath(newVisitor._id)}`
         );
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
-    <VisitorsNewForm
+    <VisitorsNewFormComponent
       handleFinish={handleFinish}
       handleCancel={handleCancel}
     />
@@ -79,4 +86,4 @@ NewForm.propTypes = {
 
 export default flowRight(
   WithBreadcrumbs(['Security', 'Visitor Registration', 'New'])
-)(NewForm);
+)(NewForm as any);

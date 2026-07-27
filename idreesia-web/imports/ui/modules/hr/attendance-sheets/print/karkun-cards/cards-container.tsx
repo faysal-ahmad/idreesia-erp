@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -36,64 +35,76 @@ const InputControlsContainer = {
   justifyContent: 'flex-start',
 };
 
+const PrintControl = ReactToPrint as any;
+const AntAutoComplete = AutoComplete as any;
+const AntInput = Input as any;
+const AntCheckbox = Checkbox as any;
+const PrintButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const CardsView = Cards as any;
+interface HistoryLike { goBack(): void; }
+interface ContainerProps { history: HistoryLike; queryParams: Record<string, string | undefined>; }
+interface QueryData { attendanceByBarcodeIds?: unknown[]; }
+
 const CardsContainer = ({
   history,
   queryParams,
-}) => {
+}: ContainerProps) => {
   const [cardHeading, setCardHeading] = useState(CardHeadings[0]);
-  const [cardSubHeading, setCardSubHeading] = useState(null);
+  const [cardSubHeading, setCardSubHeading] = useState<string | null>(null);
   const [showDutyInfo, setShowDutyInfo] = useState(false);
-  const meetingCardsRef = useRef(null);
-  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS, {
+  const meetingCardsRef = useRef<any>(null);
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS as any, {
     variables: { barcodeIds: queryParams.barcodeIds },
   });
 
   if (loading) return null;
 
   const cardHeadingInput = (
-    <AutoComplete
+    <AntAutoComplete
       style={{ width: '200px' }}
       defaultValue={cardHeading}
       dataSource={CardHeadings}
       allowClear={false}
-      onChange={value => {
+      onChange={(value: string) => {
         setCardHeading(value);
       }}
     />
   );
 
   const cardSubHeadingInput = (
-    <Input
+    <AntInput
       placeholder="Sub Heading"
-      onChange={event => {
+      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
         setCardSubHeading(event.target.value);
       }}
     />
   );
 
   const cardShowDutiesInput = (
-    <Checkbox
+    <AntCheckbox
       checked={showDutyInfo}
-      onChange={e => setShowDutyInfo(e.target.checked)}
+      onChange={(e: any) => setShowDutyInfo(e.target.checked)}
     >
       Show Duty Info
-    </Checkbox>
+    </AntCheckbox>
   );
 
   return (
     <>
-      <div style={ControlsContainer}>
+      <div style={ControlsContainer as any}>
         <div>
-          <ReactToPrint
+          <PrintControl
             content={() => meetingCardsRef.current}
             trigger={() => (
-              <Button size="large" type="primary" icon={<PrinterOutlined />}>
+              <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
                 Print Cards
-              </Button>
+              </PrintButton>
             )}
           />
           &nbsp;
-          <Button
+          <PrintButton
             size="large"
             type="primary"
             onClick={() => {
@@ -101,22 +112,22 @@ const CardsContainer = ({
             }}
           >
             Back
-          </Button>
+          </PrintButton>
         </div>
-        <div style={InputControlsContainer}>
+        <div style={InputControlsContainer as any}>
           {cardHeadingInput}
           {cardSubHeadingInput}
           {cardShowDutiesInput}
         </div>
       </div>
-      <Divider />
-      <Cards
+      <AntDivider />
+      <CardsView
         ref={meetingCardsRef}
         cardHeading={cardHeading}
         cardSubHeading={cardSubHeading}
         showDutyInfo={showDutyInfo}
         attendanceByBarcodeIds={
-          data ? data.attendanceByBarcodeIds : undefined
+          data ? (data as QueryData).attendanceByBarcodeIds : []
         }
       />
     </>
@@ -133,4 +144,4 @@ CardsContainer.propTypes = {
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'Karkun Cards'])
-)(CardsContainer);
+)(CardsContainer as any);

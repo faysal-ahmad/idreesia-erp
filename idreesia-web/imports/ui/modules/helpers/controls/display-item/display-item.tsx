@@ -1,9 +1,12 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Col, Row } from 'antd';
 
 import { isArray } from 'meteor/idreesia-common/utilities/lodash';
+
+const AntCol = Col as any;
+const AntRow = Row as any;
+interface Props { label: string; value?: React.ReactNode | React.ReactNode[]; children?: React.ReactNode; labelStyle?: Record<string, unknown>; dataStyle?: Record<string, unknown>; }
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -14,29 +17,29 @@ const DataStyle = {
   fontSize: 20,
 };
 
-const DisplayItem = ({ label, value, children, labelStyle, dataStyle }) => (
-  <Row type="flex" gutter={16}>
-    <Col order={1}>
-      <span style={labelStyle}>{label}:</span>
-    </Col>
+const DisplayItem = ({ label, value, children, labelStyle, dataStyle }: Props) => (
+  <AntRow type="flex" gutter={16}>
+    <AntCol order={1}>
+      <span style={labelStyle as any}>{label}:</span>
+    </AntCol>
     {value ? (
-      <Col order={2} flex='auto'>
+      <AntCol order={2} flex='auto'>
         {isArray(value) ? (
           value.map((val, index) => (
-            <Row key={index}>
-              <div style={dataStyle}>{val}</div>
-            </Row>
+            <AntRow key={index}>
+              <div style={dataStyle as any}>{val}</div>
+            </AntRow>
           ))
         ) : (
-          <div style={dataStyle}>{value}</div>
+          <div style={dataStyle as any}>{value}</div>
         )}
-      </Col>
+      </AntCol>
     ) : (
-      <Col order={2} style={dataStyle} flex='auto'>
+      <AntCol order={2} style={dataStyle as any} flex='auto'>
         {children}
-      </Col>
+      </AntCol>
     )}
-  </Row>
+  </AntRow>
 );
 
 DisplayItem.propTypes = {

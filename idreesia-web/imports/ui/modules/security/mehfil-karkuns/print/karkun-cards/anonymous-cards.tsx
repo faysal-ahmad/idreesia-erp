@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
@@ -6,6 +5,13 @@ import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { UserOutlined } from '@ant-design/icons';
 
 import { Avatar } from 'antd';
+
+const BarcodeControl = Barcode as any;
+const AntAvatar = Avatar as any;
+const AntUserOutlined = UserOutlined as any;
+interface MehfilDuty { name?: string; urduName?: string; }
+interface CardProps { dutyName?: string; }
+interface AnonymousCardsProps { mehfilDuty?: MehfilDuty | null; showDutyNameInUrdu?: boolean; }
 
 const barcodeOptions = {
   width: 1,
@@ -34,10 +40,10 @@ const ImageContainerStyle = {
   height: '100%',
 };
 
-export const Card = ({ dutyName }) => {
+export const Card = ({ dutyName }: CardProps) => {
   const karkunImage = (
-    <div style={ImageContainerStyle}>
-      <Avatar size={128} icon={<UserOutlined />} />
+    <div style={ImageContainerStyle as any}>
+      <AntAvatar size={128} icon={<AntUserOutlined />} />
     </div>
   );
 
@@ -49,7 +55,7 @@ export const Card = ({ dutyName }) => {
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">381 Karkun</h1>
       <div className="mehfil_card_barcode">
-        <Barcode value={formatDate(new Date(), 'DDMMYYYY')} {...barcodeOptions} />
+        <BarcodeControl value={formatDate(new Date(), 'DDMMYYYY')} {...barcodeOptions} />
       </div>
     </div>
   );
@@ -60,7 +66,7 @@ Card.propTypes = {
 };
 
 // eslint-disable-next-line react/prefer-stateless-function
-export class AnonymousCards extends Component {
+export class AnonymousCards extends Component<AnonymousCardsProps> {
   static propTypes = {
     mehfilDuty: PropTypes.object,
     showDutyNameInUrdu: PropTypes.bool,
@@ -68,13 +74,13 @@ export class AnonymousCards extends Component {
 
   render() {
     const { mehfilDuty, showDutyNameInUrdu } = this.props;
-    const dutyName = showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name;
+    const dutyName = showDutyNameInUrdu ? mehfilDuty?.urduName : mehfilDuty?.name;
 
-    const cards = [];
+    const cards: React.ReactNode[] = [];
     for (let i = 0; i < 9; i++) {
       cards.push(<Card key={i.toString()} dutyName={dutyName} />);
     }
 
-    return <div style={ContainerStyle}>{cards}</div>;
+    return <div style={ContainerStyle as any}>{cards}</div>;
   }
 }

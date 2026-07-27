@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Col, Form, Row } from 'antd';
@@ -9,8 +8,20 @@ import {
   InputNumberField,
 } from '/imports/ui/modules/helpers/fields';
 
-const EditForm = ({ attendance, handleSave, handleCancel }) => {
-  const handleFinish = ({ attendanceDetails, presentCount, absentCount, percentage }) => {
+const AntButton = Button as any;
+const AntCol = Col as any;
+const AntForm = Form as any;
+const AntRow = Row as any;
+const AntCloseCircleOutlined = CloseCircleOutlined as any;
+const AntSaveOutlined = SaveOutlined as any;
+const AttendanceDetails = AttendanceDetailField as any;
+const NumberField = InputNumberField as any;
+interface AttendanceRecord { _id: string; month?: string; attendanceDetails?: string; presentCount?: number; absentCount?: number; percentage?: number; }
+interface EditFormProps { attendance: AttendanceRecord; handleSave(values: Record<string, unknown>): void; handleCancel(): void; }
+interface FormValues { attendanceDetails?: unknown; presentCount?: number; absentCount?: number; percentage?: number; }
+
+const EditForm = ({ attendance, handleSave, handleCancel }: EditFormProps) => {
+  const handleFinish = ({ attendanceDetails, presentCount, absentCount, percentage }: FormValues) => {
     handleSave({
       _id: attendance._id,
       attendanceDetails: JSON.stringify(attendanceDetails),
@@ -21,8 +32,8 @@ const EditForm = ({ attendance, handleSave, handleCancel }) => {
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish}>
-      <AttendanceDetailField
+    <AntForm layout="horizontal" onFinish={handleFinish}>
+      <AttendanceDetails
         fieldName="attendanceDetails"
         fieldLabel="Attendance Details"
         initialValue={
@@ -32,21 +43,21 @@ const EditForm = ({ attendance, handleSave, handleCancel }) => {
         }
         forMonth={attendance.month}
       />
-      <InputNumberField
+      <NumberField
         fieldName="presentCount"
         fieldLabel="Present Days"
         initialValue={attendance.presentCount || 0}
         minValue={0}
         maxValue={31}
       />
-      <InputNumberField
+      <NumberField
         fieldName="absentCount"
         fieldLabel="Absent Days"
         initialValue={attendance.absentCount || 0}
         minValue={0}
         maxValue={31}
       />
-      <InputNumberField
+      <NumberField
         fieldName="percentage"
         fieldLabel="Percentage"
         initialValue={attendance.percentage || 0}
@@ -54,23 +65,23 @@ const EditForm = ({ attendance, handleSave, handleCancel }) => {
         maxValue={100}
       />
 
-      <Row type="flex" justify="start">
-        <Col offset={10}>
-          <Button
+      <AntRow type="flex" justify="start">
+        <AntCol offset={10}>
+          <AntButton
             size="large"
             type="default"
-            icon={<CloseCircleOutlined />}
+            icon={<AntCloseCircleOutlined />}
             onClick={handleCancel}
           >
             Cancel
-          </Button>
+          </AntButton>
           &nbsp;
-          <Button size="large" type="primary" icon={<SaveOutlined />} htmlType="submit">
+          <AntButton size="large" type="primary" icon={<AntSaveOutlined />} htmlType="submit">
             Save
-          </Button>
-        </Col>
-      </Row>
-    </Form>
+          </AntButton>
+        </AntCol>
+      </AntRow>
+    </AntForm>
   );
 }
 

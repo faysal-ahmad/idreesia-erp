@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Collapse, Form, Row } from 'antd';
@@ -12,6 +11,19 @@ import {
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
+
+const AntButton = Button as any;
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntFormItem = (Form as any).Item;
+const AntRow = Row as any;
+const TextField = InputTextField as any;
+const CnicField = InputCnicField as any;
+const MobileField = InputMobileField as any;
+const SelectInputField = SelectField as any;
+const RefreshControl = RefreshButton as any;
+interface PageParams { pageIndex: string; name?: string; cnicNumber?: string; phoneNumber?: string; city?: string; }
+interface Props { setPageParams(params: PageParams): void; refreshData?: () => void; name?: string; cnicNumber?: string; phoneNumber?: string; city?: string; distinctCitiesLoading?: boolean; distinctCities?: string[]; }
 
 const ContainerStyle = {
   width: '500px',
@@ -34,8 +46,8 @@ const ListFilter = ({
   phoneNumber,
   city,
   distinctCities,
-}) => {
-  const [form] = Form.useForm();
+}: Props) => {
+  const [form] = AntForm.useForm();
 
   const handleReset = () => {
     form.resetFields();
@@ -48,7 +60,7 @@ const ListFilter = ({
     });
   };
 
-  const handleFinish = values => {
+  const handleFinish = (values: Partial<PageParams>) => {
     setPageParams({
       pageIndex: '0',
       name: values.name,
@@ -58,26 +70,26 @@ const ListFilter = ({
     });
   };
 
-  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
+  const refreshButton = () => <RefreshControl refreshData={refreshData} />;
 
   return (
-    <Collapse
-      style={ContainerStyle}
+    <AntCollapse
+      style={ContainerStyle as any}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <Form form={form} layout="horizontal" onFinish={handleFinish}>
-              <InputTextField
+            <AntForm form={form} layout="horizontal" onFinish={handleFinish}>
+              <TextField
                 fieldName="name"
                 fieldLabel="Name"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={name}
               />
-              <InputCnicField
+              <CnicField
                 fieldName="cnicNumber"
                 fieldLabel="CNIC Number"
                 required={false}
@@ -85,34 +97,34 @@ const ListFilter = ({
                 fieldLayout={formItemLayout}
                 initialValue={cnicNumber}
               />
-              <InputMobileField
+              <MobileField
                 fieldName="phoneNumber"
                 fieldLabel="Phone Number"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={phoneNumber}
               />
-              <SelectField
+              <SelectInputField
                 data={distinctCities}
-                getDataValue={cityName => cityName}
-                getDataText={cityName => cityName}
+                getDataValue={(cityName: string) => cityName}
+                getDataText={(cityName: string) => cityName}
                 initialValue={city}
                 fieldName="city"
                 fieldLabel="City"
                 fieldLayout={formItemLayout}
               />
-              <Form.Item {...buttonItemLayout}>
-                <Row type="flex" justify="end">
-                  <Button type="default" onClick={handleReset}>
+              <AntFormItem {...buttonItemLayout}>
+                <AntRow type="flex" justify="end">
+                  <AntButton type="default" onClick={handleReset}>
                     Reset
-                  </Button>
+                  </AntButton>
                   &nbsp;
-                  <Button type="primary" htmlType="submit">
+                  <AntButton type="primary" htmlType="submit">
                     Search
-                  </Button>
-                </Row>
-              </Form.Item>
-            </Form>
+                  </AntButton>
+                </AntRow>
+              </AntFormItem>
+            </AntForm>
           ),
         },
       ]}
@@ -142,4 +154,4 @@ ListFilter.defaultProps = {
   distinctCities: [],
 };
 
-export default WithDistinctCities()(ListFilter);
+export default WithDistinctCities()(ListFilter as any);

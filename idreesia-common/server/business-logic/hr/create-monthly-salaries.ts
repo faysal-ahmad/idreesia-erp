@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { differenceInCalendarDays, startOfDay, startOfMonth } from 'date-fns';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 
-export function getMonthlySalaryValues(prevMonthSalary) {
+export function getMonthlySalaryValues(prevMonthSalary?: Record<string, number> | null) {
   if (!prevMonthSalary) {
     return {
       salary: 0,
@@ -42,9 +41,9 @@ export function getMonthlySalaryValues(prevMonthSalary) {
 }
 
 export async function createMonthlySalaries(
-  formattedCurrentMonth,
-  formattedPreviousMonth,
-  user
+  formattedCurrentMonth: string,
+  formattedPreviousMonth: string,
+  user: { _id: string }
 ) {
   let counter = 0;
   // Get all the people who are employees and have a job assigned to them
@@ -84,7 +83,7 @@ export async function createMonthlySalaries(
         });
 
         const salaryValues = getMonthlySalaryValues(
-          existingPreviousMonthSalary
+          existingPreviousMonthSalary as Record<string, number> | null | undefined
         );
         await Salaries.insertAsync({
           karkunId: _id,

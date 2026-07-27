@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { EditOutlined } from '@ant-design/icons';
@@ -14,7 +13,18 @@ const ContainerStyle = {
   width: '100%',
 };
 
-export default class CustomInput extends Component {
+const ReactFragment = Fragment as any;
+const AntTabs = Tabs as any;
+const AntTabPane = (Tabs as any).TabPane;
+const AntDrawer = Drawer as any;
+const AntInput = Input as any;
+const AntEditOutlined = EditOutlined as any;
+const KarkunListContainer = ListContainer as any;
+interface SelectionValue { _id?: string; name?: string; sharedData?: { name?: string }; }
+interface CustomInputProps { value?: SelectionValue | null; disabled?: boolean; placeholder?: string; onChange?(value: SelectionValue): void; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
+interface CustomInputState { showSelectionForm: boolean; }
+
+export default class CustomInput extends Component<CustomInputProps, CustomInputState> {
   static propTypes = {
     value: PropTypes.object,
     disabled: PropTypes.bool,
@@ -42,7 +52,7 @@ export default class CustomInput extends Component {
     });
   };
 
-  setSelectedValue = itemType => {
+  setSelectedValue = (itemType: SelectionValue) => {
     const { onChange } = this.props;
     this.handleClose();
     if (onChange) {
@@ -50,7 +60,7 @@ export default class CustomInput extends Component {
     }
   };
 
-  setSelectedValueFromQuickSelection = item => {
+  setSelectedValueFromQuickSelection = (item: SelectionValue) => {
     const { onChange } = this.props;
     this.handleClose();
     if (onChange) {
@@ -64,44 +74,44 @@ export default class CustomInput extends Component {
     let containersNode;
     if (predefinedFilterName) {
       containersNode = (
-        <Tabs>
-          <Tabs.TabPane tab="Recently Used" key="1">
-            <ListContainer
+        <AntTabs>
+          <AntTabPane tab="Recently Used" key="1">
+            <KarkunListContainer
               setSelectedValue={this.setSelectedValue}
               predefinedFilterName={predefinedFilterName}
             />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="All Karkuns" key="2">
-            <ListContainer setSelectedValue={this.setSelectedValue} />
-          </Tabs.TabPane>
-        </Tabs>
+          </AntTabPane>
+          <AntTabPane tab="All Karkuns" key="2">
+            <KarkunListContainer setSelectedValue={this.setSelectedValue} />
+          </AntTabPane>
+        </AntTabs>
       );
     } else {
       containersNode = (
-        <ListContainer setSelectedValue={this.setSelectedValue} />
+        <KarkunListContainer setSelectedValue={this.setSelectedValue} />
       );
     }
 
     return (
-      <Fragment>
-        <Drawer
+      <ReactFragment>
+        <AntDrawer
           title="Select a Karkun"
           width={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
           {containersNode}
-        </Drawer>
-        <div style={ContainerStyle}>
-          <Input
+        </AntDrawer>
+        <div style={ContainerStyle as any}>
+          <AntInput
             type="text"
             value={value ? value.name : ''}
             readOnly
-            addonAfter={<EditOutlined onClick={this.handleEditClick} />}
+            addonAfter={<AntEditOutlined onClick={this.handleEditClick} />}
             placeholder={placeholder}
           />
         </div>
-      </Fragment>
+      </ReactFragment>
     );
   }
 }

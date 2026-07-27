@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -34,9 +33,17 @@ const formMutation = gql`
   }
 `;
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { goBack(): void; }
+interface NewFormProps { history: HistoryLike; }
+interface FormValues { name: string; description?: string; attendanceSheet?: string; }
+
+const NewForm = ({ history }: NewFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createDuty] = useMutation(formMutation, {
+  const [createDuty] = useMutation(formMutation as any, {
     refetchQueries: ['allMSDuties'],
   });
 
@@ -48,7 +55,7 @@ const NewForm = ({ history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, description, attendanceSheet }) => {
+  const handleFinish = ({ name, description, attendanceSheet }: FormValues) => {
     createDuty({
       variables: {
         name,
@@ -60,32 +67,32 @@ const NewForm = ({ history }) => {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Duty Name"
         required
         requiredMessage="Please input a name for the duty."
       />
-      <InputTextAreaField
+      <TextAreaField
         fieldName="description"
         fieldLabel="Description"
       />
-      <InputTextField
+      <TextField
         fieldName="attendanceSheet"
         fieldLabel="Attendance Sheet"
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -93,4 +100,4 @@ NewForm.propTypes = {
   history: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['HR', 'Duties & Shifts', 'New'])(NewForm);
+export default WithBreadcrumbs(['HR', 'Duties & Shifts', 'New'])(NewForm as any);

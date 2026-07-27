@@ -1,9 +1,13 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import InputMask from 'react-input-mask';
 
 import { Input, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const TextInput = Input as any;
+const MaskedInput = InputMask as any;
+interface FieldProps { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; disabled?: boolean; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -28,7 +32,7 @@ const InputMobileField = ({
   required = false,
   requiredMessage,
   disabled,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -38,15 +42,15 @@ const InputMobileField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       {
         disabled ? (
-          <Input disabled />
+          <TextInput disabled />
         ) : (
-          <InputMask mask="9999-9999999" placeholder={placeholder} />
+          <MaskedInput mask="9999-9999999" placeholder={placeholder} />
         )
       }
-    </Form.Item>
+    </AntFormItem>
   );
 }
 

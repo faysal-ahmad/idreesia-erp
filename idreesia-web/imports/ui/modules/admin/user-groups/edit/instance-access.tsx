@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -8,29 +7,41 @@ import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
-const InstanceAccess = ({ groupId, history }) => {
-  const instanceSelection = useRef(null);
-  const { data: groupData, loading: groupLoading } = useQuery(formQuery, {
+const ReactFragment = Fragment as any;
+const AntButton = Button as any;
+const AntRow = Row as any;
+const AntCloseCircleOutlined = CloseCircleOutlined as any;
+const AntSaveOutlined = SaveOutlined as any;
+const InstanceSelectionControl = InstanceSelection as any;
+interface HistoryLike { goBack(): void; }
+interface UserGroup { _id: string; permissions?: string[]; instances?: string[]; }
+interface QueryData { userGroupById?: UserGroup | null; }
+interface PhysicalStoresData { allPhysicalStores?: unknown[] | null; }
+interface Props { groupId?: string | null; history: HistoryLike; }
+
+const InstanceAccess = ({ groupId, history }: Props) => {
+  const instanceSelection = useRef<any>(null);
+  const { data: groupData, loading: groupLoading } = useQuery(formQuery as any, {
     variables: { _id: groupId },
   });
-  const { data: physicalStoresData, loading: physicalStoresListLoading } = useQuery(physicalStoresListQuery);
-  const [setUserGroupInstanceAccess] = useMutation(formMutation);
-  const { userGroupById } = groupData || {};
-  const { allPhysicalStores } = physicalStoresData || {};
+  const { data: physicalStoresData, loading: physicalStoresListLoading } = useQuery(physicalStoresListQuery as any);
+  const [setUserGroupInstanceAccess] = useMutation(formMutation as any);
+  const { userGroupById } = (groupData ?? {}) as QueryData;
+  const { allPhysicalStores } = (physicalStoresData ?? {}) as PhysicalStoresData;
 
-  const handleSave = e => {
+  const handleSave = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    const instances = instanceSelection.current.getSelectedInstances();
+    const instances = instanceSelection.current?.getSelectedInstances() ?? [];
     setUserGroupInstanceAccess({
       variables: {
-        _id: userGroupById._id,
+        _id: userGroupById?._id,
         instances,
       },
     })
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -42,34 +53,34 @@ const InstanceAccess = ({ groupId, history }) => {
   if (groupLoading || physicalStoresListLoading) return null;
 
   return (
-    <Fragment>
-      <InstanceSelection
+    <ReactFragment>
+      <InstanceSelectionControl
         securityEntity={userGroupById}
         allPhysicalStores={allPhysicalStores}
         ref={instanceSelection}
       />
       <br />
       <br />
-      <Row type="flex" justify="start">
-        <Button
+      <AntRow type="flex" justify="start">
+        <AntButton
           size="large"
-          icon={<CloseCircleOutlined />}
+          icon={<AntCloseCircleOutlined />}
           type="default"
           onClick={handleCancel}
         >
           Cancel
-        </Button>
+        </AntButton>
         &nbsp;
-        <Button
+        <AntButton
           size="large"
-          icon={<SaveOutlined />}
+          icon={<AntSaveOutlined />}
           type="primary"
           onClick={handleSave}
         >
           Save
-        </Button>
-      </Row>
-    </Fragment>
+        </AntButton>
+      </AntRow>
+    </ReactFragment>
   );
 };
 

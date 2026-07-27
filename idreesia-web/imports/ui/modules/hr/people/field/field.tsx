@@ -1,9 +1,12 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
 import { Form } from "antd";
 import Input from "./input";
+
+const AntFormItem = (Form as any).Item;
+const SelectionInput = Input as any;
+interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; placeholder?: string; disabled?: boolean; required?: boolean; requiredMessage?: string; initialValue?: unknown; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -29,7 +32,7 @@ const Field = ({
   requiredMessage,
   initialValue,
   predefinedFilterName,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -38,13 +41,13 @@ const Field = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Input
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <SelectionInput
         placeholder={placeholder}
         disabled={disabled}
         predefinedFilterName={predefinedFilterName}
       />
-      </Form.Item>
+      </AntFormItem>
   );
 }
 

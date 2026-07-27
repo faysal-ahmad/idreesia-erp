@@ -1,9 +1,8 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from 'antd';
-import Input from './input';
+import CustomInput from './input';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -18,6 +17,10 @@ const formItemLayout = {
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
  */
+const AntFormItem = (Form as any).Item;
+const DurationInput = CustomInput as any;
+interface Props { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: string | null; required?: boolean; requiredMessage?: string; }
+
 const Field = ({
   fieldName,
   fieldLabel,
@@ -25,7 +28,7 @@ const Field = ({
   initialValue,
   required,
   requiredMessage,
-}) => {
+}: Props) => {
   const rules = [
     {
       required,
@@ -34,9 +37,9 @@ const Field = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Input />
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <DurationInput />
+    </AntFormItem>
   );
 }
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -20,6 +19,24 @@ import {
 import { AuditInfo } from '/imports/ui/modules/common';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
 
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AgeInputField = AgeField as any;
+const CascaderInputField = CascaderField as any;
+const DateInputField = DateField as any;
+const EhadDurationInputField = EhadDurationField as any;
+const CnicField = InputCnicField as any;
+const MobileField = InputMobileField as any;
+const TextField = InputTextField as any;
+const SelectInputField = SelectField as any;
+const SwitchInputField = SwitchField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+type AnyRecord = Record<string, any>;
+interface Props { karkun: AnyRecord; handleFinish(values: AnyRecord): void; handleCancel?(): void; cities?: AnyRecord[]; cityMehfils?: AnyRecord[]; showCityMehfilField?: boolean; allowEhadInfoUpdation?: boolean; }
+interface LabelValue { label: string; value: string; }
+
 const GeneralInfo = ({
   karkun,
   handleFinish,
@@ -28,15 +45,15 @@ const GeneralInfo = ({
   cityMehfils,
   showCityMehfilField,
   allowEhadInfoUpdation,
-}) => {
-  const [form] = Form.useForm();
+}: Props) => {
+  const [form] = AntForm.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
   }
 
-  const _handleFinish = values => {
+  const _handleFinish = (values: AnyRecord) => {
     const { cnicNumber, contactNumber1 } = values;
     if (!cnicNumber && !contactNumber1) {
       form.setFields([
@@ -56,8 +73,8 @@ const GeneralInfo = ({
 
   return (
     <>
-      <Form form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
+      <AntForm form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           initialValue={karkun.name}
@@ -65,7 +82,7 @@ const GeneralInfo = ({
           requiredMessage="Please input the name for the karkun."
         />
 
-        <InputTextField
+        <TextField
           fieldName="parentName"
           fieldLabel="S/O"
           initialValue={karkun.parentName}
@@ -73,7 +90,7 @@ const GeneralInfo = ({
           requiredMessage="Please input the parent name for the karkun."
         />
 
-        <AgeField
+        <AgeInputField
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
@@ -81,7 +98,7 @@ const GeneralInfo = ({
           }
         />
 
-        <EhadDurationField
+        <EhadDurationInputField
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
           initialValue={
@@ -91,7 +108,7 @@ const GeneralInfo = ({
           requiredMessage="Please specify the Ehad duration for the karkun."
         />
 
-        <DateField
+        <DateInputField
           fieldName="deathDate"
           fieldLabel="Date of Death"
           initialValue={
@@ -99,7 +116,7 @@ const GeneralInfo = ({
           }
         />
 
-        <InputTextField
+        <TextField
           fieldName="referenceName"
           fieldLabel="R/O"
           initialValue={karkun.referenceName}
@@ -107,21 +124,21 @@ const GeneralInfo = ({
           requiredMessage="Please input the reference name for the karkun."
         />
 
-        <InputCnicField
+        <CnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={karkun.cnicNumber || ''}
         />
 
-        <InputMobileField
+        <MobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           initialValue={karkun.contactNumber1 || ''}
         />
 
         {showCityMehfilField ? (
-          <CascaderField
-            data={getCityMehfilCascaderData(cities, cityMehfils)}
+          <CascaderInputField
+            data={getCityMehfilCascaderData(cities as any, cityMehfils as any)}
             fieldName="cityIdMehfilId"
             fieldLabel="City/Mehfil"
             initialValue={[karkun.cityId, karkun.cityMehfilId]}
@@ -130,16 +147,16 @@ const GeneralInfo = ({
           />
         ) : null}
 
-        <Divider />
+        <AntDivider />
 
-        <SwitchField
+        <SwitchInputField
           fieldName="ehadKarkun"
           fieldLabel="Ehad Karkun"
           disabled={!allowEhadInfoUpdation}
           initialValue={karkun.ehadKarkun}
         />
 
-        <DateField
+        <DateInputField
           fieldName="ehadPermissionDate"
           fieldLabel="Ehad Permission Date"
           disabled={!allowEhadInfoUpdation}
@@ -150,16 +167,16 @@ const GeneralInfo = ({
           }
         />
 
-        <Divider />
+        <AntDivider />
 
-        <InputTextField
+        <TextField
           fieldName="contactNumber2"
           fieldLabel="Home Number"
           initialValue={karkun.contactNumber2}
           required={false}
         />
 
-        <SelectField
+        <SelectInputField
           fieldName="bloodGroup"
           fieldLabel="Blood Group"
           required={false}
@@ -173,52 +190,52 @@ const GeneralInfo = ({
             { label: 'O-', value: 'O-' },
             { label: 'O+', value: 'O+' },
           ]}
-          getDataValue={({ value }) => value}
-          getDataText={({ label }) => label}
+          getDataValue={({ value }: LabelValue) => value}
+          getDataText={({ label }: LabelValue) => label}
           initialValue={karkun.bloodGroup}
         />
 
-        <InputTextField
+        <TextField
           fieldName="emailAddress"
           fieldLabel="Email"
           initialValue={karkun.emailAddress}
           required={false}
         />
 
-        <InputTextAreaField
+        <TextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
           initialValue={karkun.currentAddress}
           required={false}
         />
 
-        <InputTextAreaField
+        <TextAreaField
           fieldName="permanentAddress"
           fieldLabel="Permanent Address"
           initialValue={karkun.permanentAddress}
           required={false}
         />
 
-        <InputTextField
+        <TextField
           fieldName="educationalQualification"
           fieldLabel="Education"
           initialValue={karkun.educationalQualification}
           required={false}
         />
 
-        <InputTextAreaField
+        <TextAreaField
           fieldName="meansOfEarning"
           fieldLabel="Means of Earning"
           initialValue={karkun.meansOfEarning}
           required={false}
         />
 
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={karkun} />
+      </AntForm>
+      <AuditInfoComponent record={karkun} />
     </>
   );
 };

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -39,16 +38,28 @@ const formMutation = gql`
   }
 `;
 
-const EditForm = ({ match, history }) => {
+const ReactFragment = Fragment as any;
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+interface HistoryLike { push(path: string): void; }
+interface MatchLike { params: Record<string, string>; }
+interface EditFormProps { match: MatchLike; history: HistoryLike; }
+interface RecordData { _id: string; name: string; description?: string; }
+interface QueryData { dutyLocationById?: RecordData | null; }
+interface FormValues { name: string; description?: string; }
+
+const EditForm = ({ match, history }: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { dutyLocationId } = match.params;
-  const { data, loading } = useQuery(formQuery, {
+  const { data, loading } = useQuery(formQuery as any, {
     variables: { id: dutyLocationId },
   });
-  const [updateDutyLocation] = useMutation(formMutation, {
+  const [updateDutyLocation] = useMutation(formMutation as any, {
     refetchQueries: ['allDutyLocations'],
   });
-  const { dutyLocationById } = data || {};
+  const { dutyLocationById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
     history.push(paths.dutyLocationsPath);
@@ -58,7 +69,8 @@ const EditForm = ({ match, history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name }) => {
+  const handleFinish = ({ name }: FormValues) => {
+    if (!dutyLocationById) return;
     updateDutyLocation({
       variables: {
         id: dutyLocationById._id,
@@ -68,7 +80,7 @@ const EditForm = ({ match, history }) => {
       .then(() => {
         history.push(paths.dutyLocationsPath);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -76,22 +88,22 @@ const EditForm = ({ match, history }) => {
   if (loading || !dutyLocationById) return null;
 
   return (
-    <Fragment>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
+    <ReactFragment>
+      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           initialValue={dutyLocationById.name}
           required
           requiredMessage="Please input a name for the duty location."
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={dutyLocationById} />
-    </Fragment>
+      </AntForm>
+      <AuditInfoComponent record={dutyLocationById} />
+    </ReactFragment>
   );
 };
 
@@ -101,4 +113,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['HR', 'Duty Locations', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['HR', 'Duty Locations', 'Edit'])(EditForm as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
@@ -16,30 +15,33 @@ import {
 } from './physical-stores';
 import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 
+const RouterSwitch = Switch as any;
+const RouterRoute = Route as any;
+
 const Router = () => (
-  <Switch>
-    <Route path={paths.usersNewFormPath} component={UsersNewForm} />
-    <Route path={paths.usersEditFormPath} component={UsersEditForm} />
-    <Route path={paths.usersPath} component={UsersList} />
+  <RouterSwitch>
+    <RouterRoute path={paths.usersNewFormPath} component={UsersNewForm} />
+    <RouterRoute path={paths.usersEditFormPath} component={UsersEditForm} />
+    <RouterRoute path={paths.usersPath} component={UsersList} />
 
-    <Route path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
-    <Route path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
-    <Route path={paths.userGroupsPath} component={UserGroupsList} />
+    <RouterRoute path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
+    <RouterRoute path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
+    <RouterRoute path={paths.userGroupsPath} component={UserGroupsList} />
 
-    <Route
+    <RouterRoute
       path={paths.physicalStoresNewFormPath}
       component={PhysicalStoresNewForm}
     />
-    <Route
+    <RouterRoute
       path={paths.physicalStoresEditFormPath}
       component={PhysicalStoresEditForm}
     />
-    <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
+    <RouterRoute path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
-    <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
-    <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />
-    <Route path={paths.citiesPath} component={CitiesList} />
-  </Switch>
+    <RouterRoute path={paths.citiesNewFormPath} component={CitiesNewForm} />
+    <RouterRoute path={paths.citiesEditFormPath()} component={CitiesEditForm} />
+    <RouterRoute path={paths.citiesPath} component={CitiesList} />
+  </RouterSwitch>
 );
 
 export default Router;

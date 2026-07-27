@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -22,28 +21,36 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import List from './list';
 import EditForm from './edit-form';
 
+const AntModal = Modal as any;
+const AttendanceList = List as any;
+const AttendanceEditForm = EditForm as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+interface ListContainerProps { history: HistoryLike; location: LocationLike; queryParams: AnyRecord; }
+
 const mutationOptions = {
   refetchQueries: ['attendanceByMonth'],
 };
 
-const ListContainer = ({ history, location, queryParams }) => {
+const ListContainer = ({ history, location, queryParams }: ListContainerProps) => {
   const [showEditForm, setShowEditForm] = useState(false);
-  const [attendance, setAttendance] = useState(null);
+  const [attendance, setAttendance] = useState<AnyRecord | null>(null);
 
   const { allJobs, allJobsLoading } = useAllJobs();
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
   const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
 
-  const [createAttendances] = useMutation(createMutation, mutationOptions);
-  const [updateAttendance] = useMutation(updateMutation, mutationOptions);
-  const [deleteAttendances] = useMutation(deleteMutation, mutationOptions);
+  const [createAttendances] = useMutation(createMutation as any, mutationOptions);
+  const [updateAttendance] = useMutation(updateMutation as any, mutationOptions);
+  const [deleteAttendances] = useMutation(deleteMutation as any, mutationOptions);
   const [deleteAllAttendances] = useMutation(
-    deleteAllMutation,
+    deleteAllMutation as any,
     mutationOptions
   );
-  const [importAttendances] = useMutation(importMutation, mutationOptions);
+  const [importAttendances] = useMutation(importMutation as any, mutationOptions);
 
-  const setPageParams = newParams => {
+  const setPageParams = (newParams: AnyRecord) => {
     const {
       selectedCategoryId,
       selectedSubCategoryId,
@@ -51,25 +58,25 @@ const ListContainer = ({ history, location, queryParams }) => {
     } = newParams;
 
     let selectedCategoryIdVal;
-    if (newParams.hasOwnProperty('selectedCategoryId'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'selectedCategoryId'))
       selectedCategoryIdVal = selectedCategoryId || '';
     else selectedCategoryIdVal = queryParams.selectedCategoryId || '';
 
     let selectedSubCategoryIdVal;
-    if (newParams.hasOwnProperty('selectedSubCategoryId'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'selectedSubCategoryId'))
       selectedSubCategoryIdVal = selectedSubCategoryId || '';
     else selectedSubCategoryIdVal = queryParams.selectedSubCategoryId || '';
 
     let selectedMonthVal;
-    if (newParams.hasOwnProperty('selectedMonth'))
-      selectedMonthVal = selectedMonth.format('MM-YYYY');
+    if (Object.prototype.hasOwnProperty.call(newParams, 'selectedMonth'))
+      selectedMonthVal = selectedMonth ? selectedMonth.format('MM-YYYY') : '';
     else selectedMonthVal = queryParams.selectedMonth || '';
 
     const path = `${location.pathname}?selectedMonth=${selectedMonthVal}&selectedCategoryId=${selectedCategoryIdVal}&selectedSubCategoryId=${selectedSubCategoryIdVal}`;
     history.push(path);
   };
 
-  const handleEditAttendance = selectedAttendance => {
+  const handleEditAttendance = (selectedAttendance: AnyRecord) => {
     setShowEditForm(true);
     setAttendance(selectedAttendance);
   };
@@ -79,13 +86,13 @@ const ListContainer = ({ history, location, queryParams }) => {
     setAttendance(null);
   };
 
-  const handleEditAttendanceSave = values => {
+  const handleEditAttendanceSave = (values: AnyRecord) => {
     setShowEditForm(false);
     setAttendance(null);
 
     updateAttendance({
       variables: values,
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
@@ -105,7 +112,7 @@ const ListContainer = ({ history, location, queryParams }) => {
         .then(() => {
           // show message regarding what was imported
         })
-        .catch(error => {
+        .catch((error: Error) => {
           message.error(error.message, 5);
         });
     }
@@ -123,18 +130,18 @@ const ListContainer = ({ history, location, queryParams }) => {
         month: _selectedMonth,
       },
     })
-      .then(({ data }) => {
+      .then(({ data }: AnyRecord) => {
         message.success(
           `${data.createAttendances} missing attendance records have been created.`,
           5
         );
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const handleViewMeetingCards = (selectedRows, cardType) => {
+  const handleViewMeetingCards = (selectedRows: AnyRecord[], cardType: string) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
@@ -143,7 +150,7 @@ const ListContainer = ({ history, location, queryParams }) => {
     history.push(path);
   };
 
-  const handleViewKarkunCards = selectedRows => {
+  const handleViewKarkunCards = (selectedRows: AnyRecord[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const barcodeIds = selectedRows.map(row => row.meetingCardBarcodeId);
@@ -152,7 +159,7 @@ const ListContainer = ({ history, location, queryParams }) => {
     history.push(path);
   };
 
-  const handlePrintKarkunsList = selectedRows => {
+  const handlePrintKarkunsList = (selectedRows: AnyRecord[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const karkunIds = selectedRows.map(row => row.karkunId);
@@ -172,7 +179,7 @@ const ListContainer = ({ history, location, queryParams }) => {
     history.push(path);
   };
 
-  const handleDeleteSelectedAttendances = selectedAttendances => {
+  const handleDeleteSelectedAttendances = (selectedAttendances: AnyRecord[]) => {
     if (!selectedAttendances || selectedAttendances.length === 0) return;
 
     const { selectedMonth } = queryParams;
@@ -191,7 +198,7 @@ const ListContainer = ({ history, location, queryParams }) => {
       .then(() => {
         message.success('Selected attendance records have been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -218,13 +225,13 @@ const ListContainer = ({ history, location, queryParams }) => {
             5
           );
         })
-        .catch(error => {
+        .catch((error: Error) => {
           message.error(error.message, 5);
         });
     }
   };
 
-  const handleItemSelected = karkun => {
+  const handleItemSelected = (karkun: AnyRecord) => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
@@ -240,7 +247,7 @@ const ListContainer = ({ history, location, queryParams }) => {
 
   return (
     <>
-      <List
+      <AttendanceList
         selectedCategoryId={selectedCategoryId}
         selectedSubCategoryId={selectedSubCategoryId}
         selectedMonth={_selectedMonth}
@@ -260,19 +267,19 @@ const ListContainer = ({ history, location, queryParams }) => {
         allDutyShifts={allDutyShifts}
       />
       {showEditForm ? (
-        <Modal
+        <AntModal
           title="Update Attendance"
           open={showEditForm}
           onCancel={handleEditAttendanceCancel}
           width={500}
           footer={null}
         >
-          <EditForm
+          <AttendanceEditForm
             attendance={attendance}
             handleSave={handleEditAttendanceSave}
             handleCancel={handleEditAttendanceCancel}
           />
-        </Modal>
+        </AntModal>
       ) : null}
     </>
   );
@@ -349,4 +356,4 @@ const importMutation = gql`
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'List'])
-)(ListContainer);
+)(ListContainer as any);

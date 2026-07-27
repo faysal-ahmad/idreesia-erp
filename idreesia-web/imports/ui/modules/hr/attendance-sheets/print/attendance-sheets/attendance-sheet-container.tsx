@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -13,12 +12,22 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { ATTENDANCE_BY_MONTH } from '../../gql';
 import AttendanceSheet from './attendance-sheet';
 
-const AttendanceSheetContainer = ({ history, location }) => {
-  const attendanceSheet = useRef(null);
-  const dispatch = useDispatch();
+const PrintControl = ReactToPrint as any;
+const PrintButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const AttendanceSheetView = AttendanceSheet as any;
+interface HistoryLike { goBack(): void; push(path: string): void; }
+interface LocationLike { pathname: string; search: string; }
+interface ContainerProps { history: HistoryLike; location: LocationLike; }
+interface QueryData { attendanceByMonth?: unknown[]; }
+
+const AttendanceSheetContainer = ({ history, location }: ContainerProps) => {
+  const attendanceSheet = useRef<any>(null);
+  const dispatch = useDispatch<any>();
   const { queryParams } = useQueryParams({ history, location });
 
-  const { data, loading, error } = useQuery(ATTENDANCE_BY_MONTH, {
+  const { data, loading, error } = useQuery(ATTENDANCE_BY_MONTH as any, {
     variables: {
       month: `01-${queryParams.selectedMonth}`,
       categoryId: queryParams.selectedCategoryId,
@@ -32,19 +41,19 @@ const AttendanceSheetContainer = ({ history, location }) => {
 
   if (loading || error) return null;
 
-  const { attendanceByMonth } = data;
+  const { attendanceByMonth = [] } = (data ?? {}) as QueryData;
   return (
     <>
-      <ReactToPrint
+      <PrintControl
         content={() => attendanceSheet.current}
         trigger={() => (
-          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
             Print Data
-          </Button>
+          </PrintButton>
         )}
       />
       &nbsp;
-      <Button
+      <PrintButton
         size="large"
         type="primary"
         onClick={() => {
@@ -52,9 +61,9 @@ const AttendanceSheetContainer = ({ history, location }) => {
         }}
       >
         Back
-      </Button>
-      <Divider />
-      <AttendanceSheet ref={attendanceSheet} month={queryParams.selectedMonth} attendanceByMonth={attendanceByMonth} />
+      </PrintButton>
+      <AntDivider />
+      <AttendanceSheetView ref={attendanceSheet} month={queryParams.selectedMonth} attendanceByMonth={attendanceByMonth} />
     </>
   );
 };

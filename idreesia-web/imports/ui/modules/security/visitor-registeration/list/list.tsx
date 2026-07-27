@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -28,17 +27,78 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
 
+const AntButton = Button as any;
+const AntDrawer = Drawer as any;
+const AntDropdown = Dropdown as any;
+const AntDownloadOutlined = DownloadOutlined as any;
+const AntUploadOutlined = UploadOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntSettingOutlined = SettingOutlined as any;
+const AntScanOutlined = ScanOutlined as any;
+const VisitorsListComponent = VisitorsList as any;
+const VisitorsListFilterComponent = VisitorsListFilter as any;
+const VisitorStaysListComponent = VisitorStaysList as any;
+
 const ButtonGroupStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
 };
 
-const List = ({ history, location }) => {
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface LocationLike {
+  pathname: string;
+  search: string;
+}
+
+interface ListProps {
+  history: HistoryLike;
+  location: LocationLike;
+}
+
+interface QueryParams {
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  city?: string;
+  ehadDuration?: string;
+  additionalInfo?: string;
+  dataSource?: string;
+  updatedBetween?: string;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface VisitorRecord {
+  _id: string;
+}
+
+interface VisitorsListRef {
+  getSelectedRows(): VisitorRecord[];
+}
+
+interface PagedVisitors {
+  data: VisitorRecord[];
+  totalResults: number;
+}
+
+interface VisitorsData {
+  pagedSecurityVisitors?: PagedVisitors;
+}
+
+const emptyPagedVisitors: PagedVisitors = {
+  data: [],
+  totalResults: 0,
+};
+
+const List = ({ history, location }: ListProps) => {
   const dispatch = useDispatch();
-  const visitorsList = useRef(null);
+  const visitorsList = useRef<VisitorsListRef | null>(null);
   const [showStayList, setShowStayList] = useState(false);
-  const [visitorIdForList, setVisitorIdForList] = useState(null);
+  const [visitorIdForList, setVisitorIdForList] = useState<string | null>(null);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -56,17 +116,17 @@ const List = ({ history, location }) => {
     ],
   });
 
-  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
+  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR as any);
   const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
     'cache-first'
   );
-  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
+  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS as any, {
     variables: { filter: queryParams },
   });
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['Security', 'Visitor Registration', 'List']));
-  }, [location]);
+  }, [dispatch, location]);
 
   const {
     name,
@@ -79,18 +139,18 @@ const List = ({ history, location }) => {
     updatedBetween,
     pageIndex,
     pageSize,
-  } = queryParams;
+  } = queryParams as QueryParams;
 
   const refreshData = () => {
     refetch();
     distinctCitiesRefetch();
   };
 
-  const handleSelectItem = visitor => {
+  const handleSelectItem = (visitor: VisitorRecord) => {
     history.push(paths.visitorRegistrationEditFormPath(visitor._id));
   };
 
-  const handleDeleteItem = record => {
+  const handleDeleteItem = (record: VisitorRecord) => {
     deleteSecurityVisitor({
       variables: {
         _id: record._id,
@@ -99,7 +159,7 @@ const List = ({ history, location }) => {
       .then(() => {
         refetch();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -116,11 +176,11 @@ const List = ({ history, location }) => {
     history.push(paths.visitorRegistrationPath);
   };
 
-  const handleAuditLogsAction = visitor => {
+  const handleAuditLogsAction = (visitor: VisitorRecord) => {
     history.push(`${paths.auditLogsPath}?entityId=${visitor._id}`);
   };
 
-  const handleStayHistoryAction = visitor => {
+  const handleStayHistoryAction = (visitor: VisitorRecord) => {
     setShowStayList(true);
     setVisitorIdForList(visitor._id);
   };
@@ -131,10 +191,10 @@ const List = ({ history, location }) => {
   };
 
   const handleDownloadSelectedAsCSV = () => {
-    const selectedRows = visitorsList.current.getSelectedRows();
+    const selectedRows = visitorsList.current?.getSelectedRows() ?? [];
     if (selectedRows.length === 0) return;
 
-    const reportArgs = selectedRows.map(row => row._id);
+    const reportArgs = selectedRows.map((row: VisitorRecord) => row._id);
     const url = `${
       window.location.origin
     }/generate-report?reportName=Visitors&reportArgs=${reportArgs.join(',')}`;
@@ -152,7 +212,7 @@ const List = ({ history, location }) => {
         key: '1',
         label: (
           <>
-            <DownloadOutlined />&nbsp;
+            <AntDownloadOutlined />&nbsp;
             Download Selected
           </>
         ),
@@ -162,7 +222,7 @@ const List = ({ history, location }) => {
         key: '2',
         label: (
           <>
-            <UploadOutlined />&nbsp;
+            <AntUploadOutlined />&nbsp;
             Download All
           </>
         ),
@@ -173,7 +233,7 @@ const List = ({ history, location }) => {
         key: '3',
         label: (
           <>
-            <UploadOutlined />&nbsp;
+            <AntUploadOutlined />&nbsp;
             Upload CSV Data
           </>
         ),
@@ -182,30 +242,30 @@ const List = ({ history, location }) => {
     ];
 
     return (
-      <Dropdown menu={{ items: menuItems }}>
-        <Button icon={<SettingOutlined />} size="large" />
-      </Dropdown>
+      <AntDropdown menu={{ items: menuItems }}>
+        <AntButton icon={<AntSettingOutlined />} size="large" />
+      </AntDropdown>
     );
   };
 
   const getTableHeader = () => (
     <div className="list-table-header">
       <div style={ButtonGroupStyle}>
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           size="large"
           onClick={handleNewClicked}
         >
           New Visitor
-        </Button>
+        </AntButton>
         &nbsp;&nbsp;
-        <Button icon={<ScanOutlined />} size="large" onClick={handleScanClicked}>
+        <AntButton icon={<AntScanOutlined />} size="large" onClick={handleScanClicked}>
           Scan CNIC
-        </Button>
+        </AntButton>
       </div>
       <div className="list-table-header-section">
-        <VisitorsListFilter
+        <VisitorsListFilterComponent
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
@@ -227,17 +287,14 @@ const List = ({ history, location }) => {
   );
 
   const pagedSecurityVisitors = data
-    ? data.pagedSecurityVisitors
-    : {
-        data: [],
-        totalResults: 0,
-      };
+    ? (data as VisitorsData).pagedSecurityVisitors ?? emptyPagedVisitors
+    : emptyPagedVisitors;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
     <>
-      <VisitorsList
+      <VisitorsListComponent
         ref={visitorsList}
         showSelectionColumn
         showStatusColumn
@@ -257,18 +314,18 @@ const List = ({ history, location }) => {
         pageSize={numPageSize}
         pagedData={pagedSecurityVisitors}
       />
-      <Drawer
+      <AntDrawer
         title="Stay History"
         width={600}
         onClose={handleStayListClose}
         open={showStayList}
       >
-        <VisitorStaysList
+        <VisitorStaysListComponent
           showNewButton
           showActionsColumn
           visitorId={visitorIdForList}
         />
-      </Drawer>
+      </AntDrawer>
     </>
   );
 };

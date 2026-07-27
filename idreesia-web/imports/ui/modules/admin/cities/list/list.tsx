@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -25,15 +24,30 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import ListFilter from './list-filter';
 import { PAGED_CITIES, REMOVE_CITY } from '../gql';
 
+const RouterLink = Link as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntButton = Button as any;
+const AntPagination = Pagination as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; search: string; }
+interface PagedCities { totalResults: number; data: AnyRecord[]; }
+interface QueryData { pagedCities?: PagedCities | null; }
+interface DistinctRegionsData { distinctRegions?: string[] | null; }
+interface Props { history: HistoryLike; location: LocationLike; }
+
 const DISTINCT_REGIONS = gql`
   query distinctRegions {
     distinctRegions
   }
 `;
 
-const List = ({ history, location }) => {
-  const dispatch = useDispatch();
-  const [removeCity] = useMutation(REMOVE_CITY);
+const List = ({ history, location }: Props) => {
+  const dispatch = useDispatch<any>();
+  const [removeCity] = useMutation(REMOVE_CITY as any);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -42,12 +56,12 @@ const List = ({ history, location }) => {
 
   const { allCitiesLoading, allCities } = useAllCities();
   const { data: distinctRegionsData, loading: distinctRegionsLoading } = useQuery(
-    DISTINCT_REGIONS
+    DISTINCT_REGIONS as any
   );
   const distinctRegions = distinctRegionsData
-    ? distinctRegionsData.distinctRegions
+    ? (distinctRegionsData as DistinctRegionsData).distinctRegions
     : null;
-  const { data, loading, refetch } = useQuery(PAGED_CITIES, {
+  const { data, loading, refetch } = useQuery(PAGED_CITIES as any, {
     variables: {
       filter: queryParams,
     },
@@ -61,44 +75,44 @@ const List = ({ history, location }) => {
     history.push(paths.citiesNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: AnyRecord) => {
     removeCity({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const onPaginationChange = (pageIndex, pageSize) => {
+  const onPaginationChange = (pageIndex: number, pageSize?: number) => {
     setPageParams({
       pageIndex: pageIndex - 1,
-      pageSize,
+      pageSize: pageSize ?? 20,
     });
   };
 
   if (loading || allCitiesLoading || distinctRegionsLoading) return null;
-  const { pagedCities } = data;
+  const { pagedCities } = (data ?? {}) as QueryData;
   const { peripheryOf, region, pageIndex, pageSize } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: 150,
-      render: (text, record) => (
-        <Link to={`${paths.citiesEditFormPath(record._id)}`}>{text}</Link>
+      render: (text: string, record: AnyRecord) => (
+        <RouterLink to={`${paths.citiesEditFormPath(record._id)}`}>{text}</RouterLink>
       ),
     },
     {
       title: 'Periphery Of',
       key: 'peripheryOf',
       width: 150,
-      render: (text, record) => record?.peripheryOfCity?.name,
+      render: (_text: unknown, record: AnyRecord) => record?.peripheryOfCity?.name,
     },
     {
       title: 'Region',
@@ -110,9 +124,9 @@ const List = ({ history, location }) => {
       title: 'Mehfils',
       dataIndex: 'mehfils',
       key: 'mehfils',
-      render: (text, record) => {
+      render: (_text: unknown, record: AnyRecord) => {
         if (!record.mehfils || record.mehfils.length === 0) return null;
-        const mehfilNames = record.mehfils.map(mehfil => (
+        const mehfilNames = record.mehfils.map((mehfil: AnyRecord) => (
           <li>{mehfil.name}</li>
         ));
         return <ul>{mehfilNames}</ul>;
@@ -133,15 +147,15 @@ const List = ({ history, location }) => {
     {
       key: 'action',
       width: 50,
-      render: (text, record) => (
-        <Tooltip key="delete" title="Delete">
-          <DeleteOutlined
+      render: (text: string, record: AnyRecord) => (
+        <AntTooltip key="delete" title="Delete">
+          <AntDeleteOutlined
             className="list-actions-icon"
             onClick={() => {
               handleDeleteClicked(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ),
     },
   ];
@@ -149,21 +163,21 @@ const List = ({ history, location }) => {
   const getTableHeader = () => (
     <div className="list-table-header">
       <div>
-        <Button
+        <AntButton
           size="large"
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New City
-        </Button>
+        </AntButton>
       </div>
       <div className="list-table-header-section">
         <ListFilter
-          allCities={allCities}
-          distinctRegions={distinctRegions}
-          peripheryOf={peripheryOf}
-          region={region}
+          allCities={(allCities ?? []) as any}
+          distinctRegions={distinctRegions ?? []}
+          peripheryOf={typeof peripheryOf === 'string' ? peripheryOf : null}
+          region={typeof region === 'string' ? region : null}
           setPageParams={setPageParams}
           refreshData={refetch}
         />
@@ -172,25 +186,25 @@ const List = ({ history, location }) => {
   );
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
-      dataSource={pagedCities.data}
-      columns={columns}
+      dataSource={pagedCities?.data ?? []}
+      columns={columns as any}
       bordered
       size="small"
       pagination={false}
       title={getTableHeader}
       footer={() => (
-        <Pagination
+        <AntPagination
           current={numPageIndex}
           pageSize={numPageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: [number, number]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onPaginationChange}
           onShowSizeChange={onPaginationChange}
-          total={pagedCities.totalResults}
+          total={pagedCities?.totalResults ?? 0}
         />
       )}
     />

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Random } from "meteor/random";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -6,7 +5,13 @@ import Barcode from "react-barcode";
 
 import { Button, Col, Row } from "antd";
 
-export default class DisplayBarcode extends Component {
+const BarcodeView = Barcode as any;
+const AntButton = Button as any;
+const AntCol = Col as any;
+const AntRow = Row as any;
+interface Props { value?: string; onChange?(value: string): void; disabled?: boolean; }
+
+export default class DisplayBarcode extends Component<Props> {
   static propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func,
@@ -32,22 +37,22 @@ export default class DisplayBarcode extends Component {
   render() {
     const { value, disabled } = this.props;
     const barcodeNode = value ? (
-      <Barcode value={value} {...this.options} />
+      <BarcodeView value={value} {...this.options} />
     ) : null;
 
     if (!disabled) {
       return (
-        <Row type="flex" justify="start" align="middle" gutter={16}>
-          <Col order={1}>{barcodeNode}</Col>
-          <Col order={2}>
-            <Button type="default" onClick={this.handleGenerate}>
+        <AntRow type="flex" justify="start" align="middle" gutter={16}>
+          <AntCol order={1}>{barcodeNode}</AntCol>
+          <AntCol order={2}>
+            <AntButton type="default" onClick={this.handleGenerate}>
               Generate
-            </Button>
-          </Col>
-        </Row>
+            </AntButton>
+          </AntCol>
+        </AntRow>
       );
     }
 
-    return <Barcode value={value} />;
+    return <BarcodeView value={value} />;
   }
 }

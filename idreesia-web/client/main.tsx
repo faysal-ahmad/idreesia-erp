@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { render } from 'react-dom';
 import { Meteor } from 'meteor/meteor';
@@ -25,16 +24,18 @@ import './stay-cards.css';
 import App from '../imports/ui/app';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';
 
+const Router = BrowserRouter as any;
+const ApolloProviderAny = ApolloProvider as any;
 const store = createStore(combinedReducer);
 
 const httpLink = new HttpLink({ uri: '/graphql' });
 
-const authLink = new SetContextLink(({ headers }) => ({
+const authLink = new SetContextLink(((prevContext: any) => ({
   headers: {
-    ...headers,
-    authorization: Accounts._storedLoginToken(),
+    ...prevContext.headers,
+    authorization: (Accounts as any)._storedLoginToken(),
   },
-}));
+})) as any);
 
 const client = new ApolloClient({
   link: ApolloLink.from([authLink, httpLink]),
@@ -43,13 +44,13 @@ const client = new ApolloClient({
 
 Meteor.startup(() => {
   render(
-    <BrowserRouter>
+    <Router>
       <Provider store={store}>
-        <ApolloProvider client={client}>
+        <ApolloProviderAny client={client}>
           <App />
-        </ApolloProvider>
+        </ApolloProviderAny>
       </Provider>
-    </BrowserRouter>,
-    document.getElementById('render-target')
+    </Router>,
+    document.getElementById('render-target') as Element
   );
 });

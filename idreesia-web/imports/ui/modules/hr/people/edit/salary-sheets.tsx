@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -13,12 +12,19 @@ import {
 
 import { PAGED_SALARIES_BY_KARKUN } from '../gql';
 
-const columns = [
+const AntTable = Table as any;
+const AntPagination = Pagination as any;
+type AnyRecord = Record<string, any>;
+interface PagedData { totalResults: number; salaries: AnyRecord[]; }
+interface QueryData { pagedSalariesByKarkun?: PagedData | null; }
+interface Props { karkunId?: string | null; }
+
+const columns: any[] = [
   {
     title: 'Month',
     dataIndex: 'month',
     key: 'month',
-    render: text => {
+    render: (text: string) => {
       const date = parseDate(`01-${text}`, Formats.DATE_FORMAT);
       return formatDate(date, 'MMM, YYYY');
     },
@@ -74,46 +80,46 @@ const columns = [
     key: 'netPayment',
   },
 ];
-const getQueryString = (karkunId, pageIndex, pageSize) =>
+const getQueryString = (karkunId: string | null | undefined, pageIndex: number, pageSize: number) =>
   `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
-const SalarySheets = ({ karkunId }) => {
+const SalarySheets = ({ karkunId }: Props) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(PAGED_SALARIES_BY_KARKUN, {
+  const { data, loading } = useQuery(PAGED_SALARIES_BY_KARKUN as any, {
     variables: {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },
   });
-  const onChange = (index, size) => {
+  const onChange = (index: number, size: number) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
 
-  const onShowSizeChange = (index, size) => {
+  const onShowSizeChange = (index: number, size: number) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
   if (loading) return null;
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       size="small"
-      columns={columns}
-      dataSource={data.pagedSalariesByKarkun.salaries}
+      columns={columns as any}
+      dataSource={((data ?? {}) as QueryData).pagedSalariesByKarkun?.salaries ?? []}
       pagination={false}
       bordered
       footer={() => (
-        <Pagination
+        <AntPagination
           current={pageIndex + 1}
           pageSize={pageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: [number, number]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={data.pagedSalariesByKarkun.totalResults}
+          total={((data ?? {}) as QueryData).pagedSalariesByKarkun?.totalResults ?? 0}
         />
       )}
     />

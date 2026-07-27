@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -37,16 +36,27 @@ const formMutation = gql`
   }
 `;
 
-const EditForm = ({ match, history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { push(path: string): void; }
+interface FormValues { name: string; address?: string; }
+interface MatchLike { params: { physicalStoreId: string; }; }
+interface PhysicalStore { _id: string; name?: string; address?: string; }
+interface QueryData { physicalStoreById?: PhysicalStore | null; }
+interface Props { match: MatchLike; history: HistoryLike; }
+
+const EditForm = ({ match, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { physicalStoreId } = match.params;
-  const { data, loading } = useQuery(formQuery, {
+  const { data, loading } = useQuery(formQuery as any, {
     variables: { id: physicalStoreId },
   });
-  const [updatePhysicalStore] = useMutation(formMutation, {
+  const [updatePhysicalStore] = useMutation(formMutation as any, {
     refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
   });
-  const { physicalStoreById } = data || {};
+  const { physicalStoreById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
     history.push(paths.physicalStoresPath);
@@ -56,10 +66,10 @@ const EditForm = ({ match, history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = fieldsValue => {
+  const handleFinish = (fieldsValue: FormValues) => {
     updatePhysicalStore({
       variables: {
-        id: physicalStoreById._id,
+        id: physicalStoreById?._id,
         name: fieldsValue.name,
         address: fieldsValue.address,
       },
@@ -67,7 +77,7 @@ const EditForm = ({ match, history }) => {
       .then(() => {
         history.push(paths.physicalStoresPath);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -75,25 +85,25 @@ const EditForm = ({ match, history }) => {
   if (loading) return null;
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Name"
-        initialValue={physicalStoreById.name}
+        initialValue={physicalStoreById?.name}
         required
         requiredMessage="Please input a name for the physical store."
       />
-      <InputTextAreaField
+      <TextAreaField
         fieldName="address"
         fieldLabel="Address"
-        initialValue={physicalStoreById.address}
+        initialValue={physicalStoreById?.address}
         required={false}
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -103,4 +113,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])(EditForm as any);

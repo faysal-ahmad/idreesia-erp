@@ -1,10 +1,17 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Col, Form, Row } from 'antd';
+
+const AntButton = Button as any;
+const AntCol = Col as any;
+const AntFormItem = (Form as any).Item;
+const AntRow = Row as any;
+const AntCloseCircleOutlined = CloseCircleOutlined as any;
+const AntSaveOutlined = SaveOutlined as any;
+interface Props { allowSubmit?: boolean; extraText?: string; handleExtra?(): void; handleCancel?(): void; itemLayout?: Record<string, unknown>; isFieldsTouched?: boolean; }
 
 const buttonItemLayout = {
   wrapperCol: { span: 20, offset: 0 },
@@ -20,36 +27,36 @@ const FormButtonsSaveCancelExtra = ({
   handleCancel,
   itemLayout,
   isFieldsTouched,
-}) => (
-  <Form.Item {...itemLayout}>
-    <Row type="flex" justify="space-between">
-      <Col>
-        <Button size="large" type="default" onClick={handleExtra}>
+}: Props) => (
+  <AntFormItem {...itemLayout}>
+    <AntRow type="flex" justify="space-between">
+      <AntCol>
+        <AntButton size="large" type="default" onClick={handleExtra}>
           {extraText}
-        </Button>
-      </Col>
-      <Col>
-        <Button
+        </AntButton>
+      </AntCol>
+      <AntCol>
+        <AntButton
           size="large"
           type="default"
-          icon={<CloseCircleOutlined />}
+          icon={<AntCloseCircleOutlined />}
           onClick={handleCancel}
         >
           Cancel
-        </Button>
+        </AntButton>
         &nbsp;
-        <Button
+        <AntButton
           size="large"
           type="primary"
-          icon={<SaveOutlined />}
+          icon={<AntSaveOutlined />}
           htmlType="submit"
           disabled={!allowSubmit || !isFieldsTouched}
         >
           Save
-        </Button>
-      </Col>
-    </Row>
-  </Form.Item>
+        </AntButton>
+      </AntCol>
+    </AntRow>
+  </AntFormItem>
 );
 
 FormButtonsSaveCancelExtra.propTypes = {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -13,7 +12,14 @@ const ContainerStyle = {
   width: '100%',
 };
 
-export default class SelectionButton extends Component {
+const AntButton = Button as any;
+const AntDrawer = Drawer as any;
+const PeopleSelectionList = PeopleList as any;
+type SelectionValue = Record<string, any>;
+interface Props { icon?: unknown; label?: string; disabled?: boolean; onSelection?(value: SelectionValue): void; }
+interface State { showSelectionForm: boolean; }
+
+export default class SelectionButton extends Component<Props, State> {
   static propTypes = {
     icon: PropTypes.any,
     label: PropTypes.string,
@@ -45,7 +51,7 @@ export default class SelectionButton extends Component {
     });
   };
 
-  setSelectedValue = itemType => {
+  setSelectedValue = (itemType: SelectionValue) => {
     const { onSelection } = this.props;
     if (onSelection) {
       onSelection(itemType);
@@ -55,23 +61,23 @@ export default class SelectionButton extends Component {
   render() {
     return (
       <>
-        <Drawer
+        <AntDrawer
           title="Select Karkuns"
           width={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <PeopleList handleSelectItem={this.setSelectedValue} />
-        </Drawer>
-        <div style={ContainerStyle}>
-          <Button
+          <PeopleSelectionList handleSelectItem={this.setSelectedValue} />
+        </AntDrawer>
+        <div style={ContainerStyle as any}>
+          <AntButton
             size="large"
             onClick={this.handleClick}
             disabled={this.props.disabled}
             icon={this.props.icon}
           >
             {this.props.label}
-          </Button>
+          </AntButton>
         </div>
       </>
     );

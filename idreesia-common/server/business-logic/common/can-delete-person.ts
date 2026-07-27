@@ -1,11 +1,10 @@
-// @ts-nocheck
 import {
   IssuanceForms,
   PurchaseForms,
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
-export async function canDeletePerson(personId) {
+export async function canDeletePerson(personId: string) {
   const issuedByCount = await IssuanceForms.find({
     issuedBy: { $eq: personId },
   }).countAsync();

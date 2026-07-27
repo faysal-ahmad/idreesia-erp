@@ -1,7 +1,10 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const CheckboxInput = Checkbox as any;
+interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: boolean; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -20,10 +23,10 @@ const CheckboxField = ({
   fieldName,
   fieldLabel,
   fieldLayout = formItemLayout,
-  initialValue = [],
+  initialValue = false,
   required,
   requiredMessage,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -32,9 +35,9 @@ const CheckboxField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Checkbox />
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <CheckboxInput />
+    </AntFormItem>
   );
 }
 

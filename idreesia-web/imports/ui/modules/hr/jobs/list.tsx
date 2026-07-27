@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -17,9 +16,20 @@ const removeJobMutation = gql`
   }
 `;
 
-const List = ({ history }) => {
+const RouterLink = Link as any;
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+interface HistoryLike { push(path: string): void; }
+interface ListProps { history: HistoryLike; }
+interface ListRecord { _id: string; name: string; description?: string; usedCount?: number; }
+interface ListData { allJobs?: ListRecord[]; }
+
+const List = ({ history }: ListProps) => {
   const { allJobs, allJobsLoading } = useAllJobs();
-  const [removeJob] = useMutation(removeJobMutation, {
+  const [removeJob] = useMutation(removeJobMutation as any, {
     refetchQueries: ['allJobs'],
   });
 
@@ -27,23 +37,23 @@ const List = ({ history }) => {
     history.push(paths.jobsNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: ListRecord) => {
     removeJob({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.jobsEditFormPath(record._id)}`}>{text}</Link>
+      render: (text: string, record: ListRecord) => (
+        <RouterLink to={`${paths.jobsEditFormPath(record._id)}`}>{text}</RouterLink>
       ),
     },
     {
@@ -58,17 +68,17 @@ const List = ({ history }) => {
     },
     {
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: ListRecord) => {
         if (record.usedCount === 0) {
           return (
-            <Tooltip key="delete" title="Delete">
-              <DeleteOutlined
+            <AntTooltip key="delete" title="Delete">
+              <AntDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           );
         }
 
@@ -80,20 +90,20 @@ const List = ({ history }) => {
   if (allJobsLoading) return null;
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={allJobs}
       columns={columns}
       bordered
       pagination={{ defaultPageSize: 20 }}
       title={() => (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Job
-        </Button>
+        </AntButton>
       )}
     />
   );
@@ -104,4 +114,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['HR', 'Jobs', 'List'])(List);
+export default WithBreadcrumbs(['HR', 'Jobs', 'List'])(List as any);

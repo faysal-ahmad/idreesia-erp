@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
@@ -24,7 +23,40 @@ import {
   REMOVE_MEHFIL_KARKUN,
 } from './gql';
 
-class ListContainer extends Component {
+const AntModal = Modal as any;
+const KarkunsList = List as any;
+const DutyEditForm = EditForm as any;
+
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+interface MatchLike { params: { mehfilId: string }; }
+interface QueryParams { dutyId?: string; }
+interface MehfilKarkun { _id: string; }
+interface MehfilRecord { name?: string; }
+type MutationFn = (args: unknown) => Promise<unknown>;
+
+interface ListContainerProps {
+  addMehfilKarkun: MutationFn;
+  setDutyDetail: MutationFn;
+  removeMehfilKarkun: MutationFn;
+  mehfilLoading?: boolean;
+  mehfilById?: MehfilRecord | null;
+  allSecurityMehfilDutiesLoading?: boolean;
+  allSecurityMehfilDuties?: unknown[];
+  refetchAllSecurityMehfilDuties(): void;
+  match: MatchLike;
+  history: HistoryLike;
+  location: LocationLike;
+  queryString?: string;
+  queryParams: QueryParams;
+}
+
+interface ListContainerState {
+  showEditForm: boolean;
+  mehfilKarkuns: MehfilKarkun[];
+}
+
+class ListContainer extends Component<ListContainerProps, ListContainerState> {
   static propTypes = {
     addMehfilKarkun: PropTypes.func,
     setDutyDetail: PropTypes.func,
@@ -47,19 +79,19 @@ class ListContainer extends Component {
     mehfilKarkuns: [],
   };
 
-  setPageParams = newParams => {
+  setPageParams = (newParams: QueryParams) => {
     const { queryParams, history, location } = this.props;
     const { dutyId } = newParams;
 
     let dutyIdVal;
-    if (newParams.hasOwnProperty('dutyId')) dutyIdVal = dutyId || '';
+    if (Object.prototype.hasOwnProperty.call(newParams, 'dutyId')) dutyIdVal = dutyId || '';
     else dutyIdVal = queryParams.dutyId || '';
 
     const path = `${location.pathname}?dutyId=${dutyIdVal}`;
     history.push(path);
   };
 
-  handleAddMehfilKarkun = (karkunId, refetchQuery) => {
+  handleAddMehfilKarkun = (karkunId: string, refetchQuery: () => void) => {
     const {
       match,
       addMehfilKarkun,
@@ -80,12 +112,12 @@ class ListContainer extends Component {
         refetchQuery();
         refetchAllSecurityMehfilDuties();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  handleRemoveMehfilKarkun = (mehfilKarkunId, refetchQuery) => {
+  handleRemoveMehfilKarkun = (mehfilKarkunId: string, refetchQuery: () => void) => {
     const { removeMehfilKarkun, refetchAllSecurityMehfilDuties } = this.props;
     removeMehfilKarkun({
       variables: {
@@ -96,19 +128,19 @@ class ListContainer extends Component {
         refetchQuery();
         refetchAllSecurityMehfilDuties();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  handleViewPrintCards = selectedRows => {
+  handleViewPrintCards = (selectedRows: MehfilKarkun[]) => {
     const {
       history,
       match,
       queryParams: { dutyId },
     } = this.props;
     const { mehfilId } = match.params;
-    const ids = selectedRows.map(row => row._id);
+    const ids = selectedRows.map((row: MehfilKarkun) => row._id);
     const idsString = ids.join(',');
     const path = `${paths.mehfilsKarkunPrintCardsPath(
       mehfilId
@@ -116,14 +148,14 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleViewPrintList = selectedRows => {
+  handleViewPrintList = (selectedRows: MehfilKarkun[]) => {
     const {
       history,
       match,
       queryParams: { dutyId },
     } = this.props;
     const { mehfilId } = match.params;
-    const ids = selectedRows.map(row => row._id);
+    const ids = selectedRows.map((row: MehfilKarkun) => row._id);
     const idsString = ids.join(',');
     const path = `${paths.mehfilsKarkunPrintListPath(
       mehfilId
@@ -131,7 +163,7 @@ class ListContainer extends Component {
     history.push(path);
   };
 
-  handleEditMehfilKarkun = selectedRows => {
+  handleEditMehfilKarkun = (selectedRows: MehfilKarkun[]) => {
     if (selectedRows.length > 0) {
       this.setState({
         mehfilKarkuns: selectedRows,
@@ -140,17 +172,17 @@ class ListContainer extends Component {
     }
   };
 
-  handleEditMehfilKarkunSave = dutyDetail => {
+  handleEditMehfilKarkunSave = (dutyDetail?: string) => {
     const { mehfilKarkuns } = this.state;
     const { setDutyDetail } = this.props;
 
-    const ids = mehfilKarkuns.map(({ _id }) => _id);
+    const ids = mehfilKarkuns.map(({ _id }: MehfilKarkun) => _id);
     setDutyDetail({
       variables: {
         ids,
         dutyDetail,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
 
@@ -190,7 +222,7 @@ class ListContainer extends Component {
 
     return (
       <>
-        <List
+        <KarkunsList
           dutyId={dutyId}
           mehfilId={mehfilId}
           mehfilById={mehfilById}
@@ -202,7 +234,7 @@ class ListContainer extends Component {
           handleViewPrintCards={this.handleViewPrintCards}
           handleViewPrintList={this.handleViewPrintList}
         />
-        <Modal
+        <AntModal
           title="Edit Duty Details"
           open={showEditForm}
           onCancel={this.handleEditMehfilKarkunClose}
@@ -210,16 +242,16 @@ class ListContainer extends Component {
           footer={null}
         >
           <div>{editForm}</div>
-        </Modal>
+        </AntModal>
       </>
     );
   }
 }
 
-const ListContainerWithData = props => {
-  const [addMehfilKarkun] = useMutation(ADD_MEHFIL_KARKUN);
-  const [setDutyDetail] = useMutation(SET_DUTY_DETAIL);
-  const [removeMehfilKarkun] = useMutation(REMOVE_MEHFIL_KARKUN);
+const ListContainerWithData = (props: any) => {
+  const [addMehfilKarkun] = useMutation(ADD_MEHFIL_KARKUN as any);
+  const [setDutyDetail] = useMutation(SET_DUTY_DETAIL as any);
+  const [removeMehfilKarkun] = useMutation(REMOVE_MEHFIL_KARKUN as any);
 
   return (
     <ListContainer
@@ -236,10 +268,10 @@ export default flowRight(
   WithMehfilId(),
   WithMehfil(),
   WithAllMehfilDuties(),
-  WithDynamicBreadcrumbs(({ mehfilById }) => {
+  WithDynamicBreadcrumbs(({ mehfilById }: { mehfilById?: MehfilRecord }) => {
     if (mehfilById) {
       return `Security, Mehfils, ${mehfilById.name}, Karkun Duties`;
     }
     return `Security, Mehfils, Karkun Duties`;
   })
-)(ListContainerWithData);
+)(ListContainerWithData as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client/react';
@@ -12,47 +11,57 @@ import {
 
 import { SECURITY_VISITOR_BY_ID, SET_SECURITY_VISITOR_IMAGE } from '../gql';
 
-const Picture = ({ loading, visitorId, securityVisitorById }) => {
-  const [setSecurityVisitorImage] = useMutation(SET_SECURITY_VISITOR_IMAGE, {
+const ReactFragment = Fragment as any;
+const AntRow = Row as any;
+const AntCol = Col as any;
+const TakePictureControl = TakePicture as any;
+const UploadAttachmentControl = UploadAttachment as any;
+interface VisitorRecord { imageId?: string; name?: string; }
+interface PictureProps { loading?: boolean; visitorId: string; securityVisitorById?: VisitorRecord | null; }
+interface PictureWithDataProps { match: { params: { visitorId: string } }; [key: string]: any; }
+interface VisitorData { securityVisitorById?: VisitorRecord | null; }
+
+const Picture = ({ loading, visitorId, securityVisitorById }: PictureProps) => {
+  const [setSecurityVisitorImage] = useMutation(SET_SECURITY_VISITOR_IMAGE as any, {
     refetchQueries: ['pagedSecurityVisitors'],
   });
 
-  const updateImageId = imageId => {
+  const updateImageId = (imageId: string) => {
     setSecurityVisitorImage({
       variables: {
         _id: visitorId,
         imageId,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  if (loading) return null;
+  if (loading || !securityVisitorById) return null;
   const url = getDownloadUrl(securityVisitorById.imageId);
 
   return (
-    <Fragment>
-      <Row>
-        <Col span={16}>
-          <img style={{ maxWidth: '400px' }} src={url} />
-        </Col>
-      </Row>
+    <ReactFragment>
+      <AntRow>
+        <AntCol span={16}>
+          <img style={{ maxWidth: '400px' }} src={url ?? undefined} alt={securityVisitorById.name ?? 'Visitor'} />
+        </AntCol>
+      </AntRow>
       <br />
-      <Row>
-        <Col span={16}>
-          <UploadAttachment onUploadFinish={updateImageId} />
-          <TakePicture onPictureTaken={updateImageId} />
-        </Col>
-      </Row>
-    </Fragment>
+      <AntRow>
+        <AntCol span={16}>
+          <UploadAttachmentControl onUploadFinish={updateImageId} />
+          <TakePictureControl onPictureTaken={updateImageId} />
+        </AntCol>
+      </AntRow>
+    </ReactFragment>
   );
 };
 
-const PictureWithData = props => {
+const PictureWithData = (props: PictureWithDataProps) => {
   const { match } = props;
   const { visitorId } = match.params;
-  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID, {
+  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID as any, {
     variables: { _id: visitorId },
   });
 
@@ -60,7 +69,7 @@ const PictureWithData = props => {
     <Picture
       {...props}
       {...queryResult}
-      {...data}
+      {...(data as VisitorData)}
       visitorId={visitorId}
       loading={loading}
     />

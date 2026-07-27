@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
@@ -10,14 +9,28 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class NewForm extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SwitchInputField = SwitchField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface MehfilValues { name?: string; address?: string; mehfilStartYear?: string; timingDetails?: string; lcdAvailability?: boolean; tabAvailability?: boolean; otherMehfilDetails?: string; }
+interface CityMehfil extends MehfilValues { _id: string; cityId?: string; }
+interface Props { cityMehfil?: CityMehfil | null; handleSave?(values: Record<string, unknown>): void; handleCancel?(): void; }
+interface State { isFieldsTouched: boolean; }
+
+class NewForm extends Component<Props, State> {
   static propTypes = {
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
 
-  state = {
+  state: State = {
     isFieldsTouched: false,
+  };
+
+  handleFieldsChange = () => {
+    this.setState({ isFieldsTouched: true });
   };
 
   handleFinish = ({
@@ -28,9 +41,9 @@ class NewForm extends Component {
     lcdAvailability,
     tabAvailability,
     otherMehfilDetails,
-  }) => {
+  }: MehfilValues) => {
     const { handleSave } = this.props;
-    handleSave({
+    handleSave?.({
       name,
       address,
       mehfilStartYear,
@@ -45,42 +58,42 @@ class NewForm extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
+      <AntForm layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the mehfil."
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="address"
           fieldLabel="Address"
         />
-        <InputTextField
+        <TextField
           fieldName="mehfilStartYear"
           fieldLabel="Start Year"
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="timingDetails"
           fieldLabel="Timings"
         />
-        <SwitchField
+        <SwitchInputField
           fieldName="lcdAvailability"
           fieldLabel="LCD Available"
         />
-        <SwitchField
+        <SwitchInputField
           fieldName="tabAvailability"
           fieldLabel="Tablet Available"
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="otherMehfilDetails"
           fieldLabel="Other Details"
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.props.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }

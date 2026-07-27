@@ -1,8 +1,12 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
 import { Radio, Form } from "antd";
+
+const AntFormItem = (Form as any).Item;
+const RadioInput = Radio as any;
+interface Option { label: string; value: string; }
+interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: string | null; options?: Option[]; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -26,11 +30,11 @@ const RadioGroupField = ({
   options,
   required,
   requiredMessage,
-}) => {
-  const radioOptions = options.map(option => (
-    <Radio key={option.value} value={option.value}>
+}: FieldProps) => {
+  const radioOptions = (options ?? []).map(option => (
+    <RadioInput key={option.value} value={option.value}>
       {option.label}
-    </Radio>
+    </RadioInput>
   ));
 
   const rules = [
@@ -41,9 +45,9 @@ const RadioGroupField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Radio.Group options={options}>{radioOptions}</Radio.Group>
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <RadioInput.Group options={options}>{radioOptions}</RadioInput.Group>
+    </AntFormItem>
   );
 }
 

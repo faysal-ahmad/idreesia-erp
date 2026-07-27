@@ -1,7 +1,11 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+
+const AntSortAscendingOutlined = SortAscendingOutlined as any;
+const AntSortDescendingOutlined = SortDescendingOutlined as any;
+type SortOrder = 'asc' | 'desc';
+interface Props { headerKey: string; title?: React.ReactNode; sortBy?: string; sortOrder?: SortOrder; handleSortChange?(key: string, order: SortOrder): void; }
 
 const HeaderStyle = {
   display: 'flex',
@@ -18,15 +22,15 @@ const IconsContainerStyle = {
   fontSize: 16,
 };
 
-const Header = ({ headerKey, title, sortBy, sortOrder, handleSortChange }) => {
-  const sortAscendingStyle = {};
+const Header = ({ headerKey, title, sortBy, sortOrder, handleSortChange }: Props) => {
+  const sortAscendingStyle: Record<string, string> = {};
   if (headerKey === sortBy && sortOrder === 'asc') {
     sortAscendingStyle.color = '#1890FF';
   } else {
     sortAscendingStyle.cursor = 'pointer';
   }
 
-  const sortDescendingStyle = {};
+  const sortDescendingStyle: Record<string, string> = {};
   if (headerKey === sortBy && sortOrder === 'desc') {
     sortDescendingStyle.color = '#1890FF';
   } else {
@@ -44,15 +48,15 @@ const Header = ({ headerKey, title, sortBy, sortOrder, handleSortChange }) => {
   };
 
   return (
-    <div style={HeaderStyle}>
+    <div style={HeaderStyle as any}>
       <span>{title}</span>
-      <div style={IconsContainerStyle}>
-        <SortAscendingOutlined
-          style={sortAscendingStyle}
+      <div style={IconsContainerStyle as any}>
+        <AntSortAscendingOutlined
+          style={sortAscendingStyle as any}
           onClick={handleSortAscendingClicked}
         />
-        <SortDescendingOutlined
-          style={sortDescendingStyle}
+        <AntSortDescendingOutlined
+          style={sortDescendingStyle as any}
           onClick={handleSortDescendingClicked}
         />
       </div>

@@ -44,8 +44,11 @@ Meteor.startup(() => {
         typeof reportName === 'string'
           ? ReportGenerators[reportName as ReportName]
           : undefined;
+      const normalizedReportArgs = Array.isArray(reportArgs)
+        ? String(reportArgs[0] ?? '')
+        : String(reportArgs ?? '');
       if (reportGenerator) {
-        const report = await reportGenerator(reportArgs);
+        const report = await reportGenerator(normalizedReportArgs);
         res.writeHead(200, {
           'Content-Type': 'application/vnd.ms-excel',
           'Content-Disposition': `attachment; filename=${kebabCase(

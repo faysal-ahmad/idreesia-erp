@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -12,31 +11,37 @@ import {
   REMOVE_HR_KARKUN_ATTACHMENT,
 } from '../gql';
 
-const AttachmentsList = ({ karkunId, match }) => {
-  const { data, loading } = useQuery(HR_KARKUN_BY_ID, {
+const AttachmentsListControlComponent = AttachmentsListControl as any;
+type AnyRecord = Record<string, any>;
+interface MatchLike { params: { karkunId: string; }; }
+interface QueryData { hrKarkunById?: AnyRecord | null; }
+interface Props { match: MatchLike; karkunId?: string | null; }
+
+const AttachmentsList = ({ karkunId, match }: Props) => {
+  const { data, loading } = useQuery(HR_KARKUN_BY_ID as any, {
     variables: { _id: match.params.karkunId },
   });
-  const [addHrKarkunAttachment] = useMutation(ADD_HR_KARKUN_ATTACHMENT);
-  const [removeHrKarkunAttachment] = useMutation(REMOVE_HR_KARKUN_ATTACHMENT);
+  const [addHrKarkunAttachment] = useMutation(ADD_HR_KARKUN_ATTACHMENT as any);
+  const [removeHrKarkunAttachment] = useMutation(REMOVE_HR_KARKUN_ATTACHMENT as any);
 
-  const handleAttachmentAdded = attachmentId => {
+  const handleAttachmentAdded = (attachmentId: string) => {
     addHrKarkunAttachment({
       variables: {
         _id: karkunId,
         attachmentId,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const handleAttachmentRemoved = attachmentId => {
+  const handleAttachmentRemoved = (attachmentId: string) => {
     removeHrKarkunAttachment({
       variables: {
         _id: karkunId,
         attachmentId,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
@@ -44,10 +49,10 @@ const AttachmentsList = ({ karkunId, match }) => {
   if (loading) return null;
 
   return (
-    <AttachmentsListControl
+    <AttachmentsListControlComponent
       canUploadDocument
       canEditAttachments
-      attachments={data.hrKarkunById.attachments}
+      attachments={(data as QueryData)?.hrKarkunById?.attachments ?? []}
       handleAttachmentAdded={handleAttachmentAdded}
       handleAttachmentRemoved={handleAttachmentRemoved}
     />

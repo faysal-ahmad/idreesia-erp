@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -15,7 +14,13 @@ import { PersonName } from '/imports/ui/modules/helpers/controls';
 import PermissionsChangedRenderer from './permissions-changed-renderer';
 import InstanceAccessChangedRenderer from './instance-access-changed-renderer';
 
-class AuditLogsList extends Component {
+const AntPagination = Pagination as any;
+const AntTable = Table as any;
+const PersonNameControl = PersonName as any;
+type AnyRecord = Record<string, any>;
+interface PagedData { totalResults: number; data: AnyRecord[]; }
+interface Props { entityRenderer?(record: AnyRecord): React.ReactNode; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; setPageParams(params: { pageIndex: number; pageSize?: number; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; allPhysicalStoresLoading?: boolean; allPhysicalStores?: AnyRecord[]; }
+class AuditLogsList extends Component<Props> {
   static propTypes = {
     entityRenderer: PropTypes.func,
     listHeader: PropTypes.func,
@@ -34,15 +39,15 @@ class AuditLogsList extends Component {
   };
 
   static defaultProps = {
-    entityRenderer: record => record.entityId,
+    entityRenderer: (record: AnyRecord) => record.entityId,
   };
 
   columns = [
     {
       title: 'User',
       key: 'userId',
-      render: (text, record) => (
-        <PersonName
+      render: (_text: unknown, record: AnyRecord) => (
+        <PersonNameControl
           person={{
             name: record.userName,
             imageId: record.userImageId,
@@ -55,7 +60,7 @@ class AuditLogsList extends Component {
       dataIndex: 'operationTime',
       key: 'operationTime',
       width: 110,
-      render: text => {
+      render: (text: string | number) => {
         const date = dayjs(Number(text));
         return (
           <span>
@@ -69,8 +74,8 @@ class AuditLogsList extends Component {
     {
       title: 'Operation By',
       key: 'operationBy',
-      render: (text, record) => (
-        <PersonName
+      render: (_text: unknown, record: AnyRecord) => (
+        <PersonNameControl
           person={{
             name: record.operationByName,
             imageId: record.operationByImageId,
@@ -82,14 +87,14 @@ class AuditLogsList extends Component {
       title: 'Operation Details',
       dataIndex: 'auditValues',
       key: 'auditValues',
-      render: (values, record) => {
+      render: (values: string[] | undefined, record: AnyRecord) => {
         const { operationType } = record;
         if (operationType === SecurityOperationType.PERMISSIONS_CHANGED) {
-          return <PermissionsChangedRenderer record={record} />;
+          return <PermissionsChangedRenderer record={record as any} />;
         } else if (
           operationType === SecurityOperationType.INSTANCE_ACCESS_CHANGED
         ) {
-          return <InstanceAccessChangedRenderer record={record} />;
+          return <InstanceAccessChangedRenderer record={record as any} />;
         }
 
         return SecurityOperationTypeDisplayName[operationType];
@@ -97,7 +102,7 @@ class AuditLogsList extends Component {
     },
   ];
 
-  onPaginationChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex: number, pageSize?: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: pageIndex - 1,
@@ -110,27 +115,29 @@ class AuditLogsList extends Component {
       listHeader,
       pageIndex,
       pageSize,
-      pagedData: { totalResults, data },
+      pagedData = { totalResults: 0, data: [] },
     } = this.props;
+
+    const { totalResults, data } = pagedData;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={data}
-        columns={this.columns}
+        columns={this.columns as any}
         bordered
         title={listHeader}
         size="small"
         pagination={false}
         footer={() => (
-          <Pagination
+          <AntPagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
-            showTotal={(total, range) =>
+            showTotal={(total: number, range: [number, number]) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
             onChange={this.onPaginationChange}
@@ -143,4 +150,4 @@ class AuditLogsList extends Component {
   }
 }
 
-export default flowRight()(AuditLogsList);
+export default flowRight()(AuditLogsList as any);

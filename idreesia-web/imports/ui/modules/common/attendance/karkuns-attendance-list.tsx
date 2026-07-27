@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -29,7 +28,27 @@ const AttendanceContainer = {
   alignItems: 'center',
 };
 
-export default class KarkunsAttendanceList extends Component {
+const AntButton = Button as any;
+const AntCascader = Cascader as any;
+const AntDatePicker = DatePicker as any;
+const MonthPicker = (DatePicker as any).MonthPicker;
+const AntDropdown = Dropdown as any;
+const AntModal = Modal as any;
+const AntTable = Table as any;
+const AntCloseCircleOutlined = CloseCircleOutlined as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntLeftOutlined = LeftOutlined as any;
+const AntRightOutlined = RightOutlined as any;
+const AntSaveOutlined = SaveOutlined as any;
+const AntSettingOutlined = SettingOutlined as any;
+const PersonNameControl = PersonName as any;
+type AttendanceValue = 'pr' | 'ab' | null | undefined;
+type AttendanceDetails = Record<string, AttendanceValue>;
+type AnyRecord = Record<string, any>;
+interface Props extends Record<string, any> { readOnly?: boolean; setPageParams(params: AnyRecord): void; handleKarkunSelected?(record: AnyRecord): void; handleCreateMissingAttendances?(): void; handleDeleteSelectedAttendances?(records: AnyRecord[]): void; handleDeleteAllAttendances?(): void; handleUpdateAttendanceDetails?(attendances: Record<string, AttendanceDetails>): void; cities?: AnyRecord[]; cityMehfils?: AnyRecord[]; month?: string; cityId?: string; cityMehfilId?: string; attendance?: AnyRecord[]; }
+interface State { isEditing: boolean; selectedRows: AnyRecord[]; updatedAttendances: Record<string, AttendanceDetails>; }
+
+export default class KarkunsAttendanceList extends Component<Props, State> {
   static propTypes = {
     readOnly: PropTypes.bool,
     setPageParams: PropTypes.func,
@@ -48,7 +67,7 @@ export default class KarkunsAttendanceList extends Component {
   };
 
   static defaultProps = {
-    reaOnly: false,
+    readOnly: false,
     setPageParams: noop,
     handleKarkunSelected: noop,
     handleCreateMissingAttendances: noop,
@@ -62,7 +81,7 @@ export default class KarkunsAttendanceList extends Component {
     attendance: [],
   };
 
-  state = {
+  state: State = {
     isEditing: false,
     selectedRows: [],
     updatedAttendances: {},
@@ -74,27 +93,27 @@ export default class KarkunsAttendanceList extends Component {
     none: 'ant-calendar-cell attendance-date-linear attendance-none',
   };
 
-  getAttendanceStyle = val => {
+  getAttendanceStyle = (val: AttendanceValue) => {
     if (!val) return this.attendanceStyles.none;
-    return this.attendanceStyles[val];
+    return this.attendanceStyles[val] ?? this.attendanceStyles.none;
   };
 
   getColumns = () => {
     const { readOnly } = this.props;
-    const columns = [
+    const columns: any[] = [
       {
         title: 'Name',
         dataIndex: 'karkun.name',
         key: 'karkun.name',
         fixed: 'left',
         width: 220,
-        render: (text, record) => {
+        render: (text: string | undefined, record: AnyRecord) => {
           const { handleKarkunSelected } = this.props;
           return (
-            <PersonName
+            <PersonNameControl
               person={record.karkun}
               onPersonNameClicked={() => {
-                handleKarkunSelected(record);
+                handleKarkunSelected?.(record);
               }}
             />
           );
@@ -105,16 +124,16 @@ export default class KarkunsAttendanceList extends Component {
         dataIndex: 'attendanceDetails',
         key: 'attendanceDetails',
         width: 1100,
-        render: (text, record) => {
+        render: (text: string | undefined, record: AnyRecord) => {
           const { readOnly } = this.props;
           const { updatedAttendances } = this.state;
           let attendanceDetails = updatedAttendances[record._id];
           if (!attendanceDetails) {
-            attendanceDetails = text ? JSON.parse(text) : {};
+            attendanceDetails = text ? (JSON.parse(text) as AttendanceDetails) : {};
           }
 
           const month = dayjs(`01-${record.month}`, Formats.DATE_FORMAT);
-          const days = [];
+          const days: React.ReactNode[] = [];
           for (let d = 1; d <= month.daysInMonth(); d++) {
             const day = d.toString();
             const val = attendanceDetails[day];
@@ -138,7 +157,7 @@ export default class KarkunsAttendanceList extends Component {
             );
           }
 
-          return <div style={AttendanceContainer}>{days}</div>;
+          return <div style={AttendanceContainer as any}>{days}</div>;
         },
       },
       {
@@ -147,7 +166,7 @@ export default class KarkunsAttendanceList extends Component {
         key: 'presentCount',
         fixed: 'right',
         width: 70,
-        render: text => text || '0',
+        render: (text: string | number) => text || '0',
       },
       {
         title: 'Absent',
@@ -155,7 +174,7 @@ export default class KarkunsAttendanceList extends Component {
         key: 'absentCount',
         fixed: 'right',
         width: 70,
-        render: text => text || '0',
+        render: (text: string | number) => text || '0',
       },
       {
         title: '%age',
@@ -163,7 +182,7 @@ export default class KarkunsAttendanceList extends Component {
         key: 'percentage',
         fixed: 'right',
         width: 70,
-        render: text => `${text}%`,
+        render: (text: string | number) => `${text}%`,
       },
     ];
 
@@ -189,7 +208,7 @@ export default class KarkunsAttendanceList extends Component {
   };
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
       this.setState({
         selectedRows,
       });
@@ -197,12 +216,12 @@ export default class KarkunsAttendanceList extends Component {
   };
 
   handleAttendanceDetailClicked = (
-    record,
-    attendanceDetails,
-    day,
-    curentVal
+    record: AnyRecord,
+    attendanceDetails: AttendanceDetails,
+    day: string,
+    curentVal: AttendanceValue
   ) => {
-    let newAttendanceValue;
+    let newAttendanceValue: AttendanceValue;
     if (!curentVal) newAttendanceValue = 'pr';
     else if (curentVal === 'pr') newAttendanceValue = 'ab';
     else if (curentVal === 'ab') newAttendanceValue = null;
@@ -219,7 +238,7 @@ export default class KarkunsAttendanceList extends Component {
     });
   };
 
-  handleSelectionChange = value => {
+  handleSelectionChange = (value: string[]) => {
     const { setPageParams } = this.props;
     setPageParams({
       cityId: value[0],
@@ -227,14 +246,14 @@ export default class KarkunsAttendanceList extends Component {
     });
   };
 
-  handleMonthChange = value => {
+  handleMonthChange = (value: any) => {
     const { setPageParams } = this.props;
     setPageParams({
       month: value.format(Formats.MONTH_FORMAT),
     });
   };
 
-  handleMonthGoBack = value => {
+  handleMonthGoBack = (value: any) => {
     const { setPageParams } = this.props;
     setPageParams({
       month: value
@@ -244,7 +263,7 @@ export default class KarkunsAttendanceList extends Component {
     });
   };
 
-  handleMonthGoForward = value => {
+  handleMonthGoForward = (value: any) => {
     const { setPageParams } = this.props;
     setPageParams({
       month: value
@@ -257,7 +276,7 @@ export default class KarkunsAttendanceList extends Component {
   handleSaveAttendances = () => {
     const { updatedAttendances } = this.state;
     const { handleUpdateAttendanceDetails } = this.props;
-    handleUpdateAttendanceDetails(updatedAttendances);
+    handleUpdateAttendanceDetails?.(updatedAttendances);
     this.setState({
       isEditing: false,
       updatedAttendances: {},
@@ -273,15 +292,15 @@ export default class KarkunsAttendanceList extends Component {
 
   getCityMehfilSelector = () => {
     const { cityId, cityMehfilId, cities, cityMehfils } = this.props;
-    const citiesData = cities.map(city => {
+    const citiesData = (cities ?? []).map((city: AnyRecord) => {
       const mehfils = filter(
         cityMehfils,
-        cityMehfil => cityMehfil.cityId === city._id
+        (cityMehfil: AnyRecord) => cityMehfil.cityId === city._id
       );
       const dataItem = {
         label: city.name,
         value: city._id,
-        children: mehfils.map(mehfil => ({
+        children: mehfils.map((mehfil: AnyRecord) => ({
           value: mehfil._id,
           label: mehfil.name,
         })),
@@ -291,7 +310,7 @@ export default class KarkunsAttendanceList extends Component {
     });
 
     return (
-      <Cascader
+      <AntCascader
         style={{ width: '300px' }}
         onChange={this.handleSelectionChange}
         defaultValue={[cityId, cityMehfilId]}
@@ -302,7 +321,7 @@ export default class KarkunsAttendanceList extends Component {
     );
   };
 
-  handleAction = ({ key }) => {
+  handleAction = ({ key }: { key: string }) => {
     const {
       handleDeleteAllAttendances,
       handleDeleteSelectedAttendances,
@@ -311,21 +330,21 @@ export default class KarkunsAttendanceList extends Component {
     if (key === 'delete-selected') {
       const { selectedRows } = this.state;
       if (selectedRows.length === 0) return;
-      Modal.confirm({
+      AntModal.confirm({
         title: 'Delete Selected Attendances',
         content:
           'Are you sure you want to delete the selected attendances?',
         onOk: () => {
-          handleDeleteSelectedAttendances(selectedRows);
+          handleDeleteSelectedAttendances?.(selectedRows);
         },
       });
     } else if (key === 'delete-all') {
-      Modal.confirm({
+      AntModal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendances for this month?',
         onOk: () => {
-          handleDeleteAllAttendances();
+          handleDeleteAllAttendances?.();
         },
       });
     }
@@ -339,17 +358,17 @@ export default class KarkunsAttendanceList extends Component {
     if (isEditing) {
       return (
         <div>
-          <Button icon={<CloseCircleOutlined />} onClick={this.handleCancelAttendances}>
+          <AntButton icon={<AntCloseCircleOutlined />} onClick={this.handleCancelAttendances}>
             Cancel
-          </Button>
+          </AntButton>
           &nbsp;
-          <Button
+          <AntButton
             type="primary"
-            icon={<SaveOutlined />}
+            icon={<AntSaveOutlined />}
             onClick={this.handleSaveAttendances}
           >
             Save
-          </Button>
+          </AntButton>
         </div>
       );
     }
@@ -358,19 +377,19 @@ export default class KarkunsAttendanceList extends Component {
       {
         key: 'delete-selected',
         label: 'Delete Selected Attendances',
-        icon: <DeleteOutlined />,
+        icon: <AntDeleteOutlined />,
       },
       {
         key: 'delete-all',
         label: 'Delete All Attendances',
-        icon: <DeleteOutlined />,
+        icon: <AntDeleteOutlined />,
       },
     ];
 
     return (
-      <Dropdown menu={{ items, onClick: this.handleAction }}>
-        <Button icon={<SettingOutlined />}>Actions</Button>
-      </Dropdown>
+      <AntDropdown menu={{ items, onClick: this.handleAction }}>
+        <AntButton icon={<AntSettingOutlined />}>Actions</AntButton>
+      </AntDropdown>
     );
   };
 
@@ -382,26 +401,26 @@ export default class KarkunsAttendanceList extends Component {
         <div className="list-table-header-section">
           {this.getCityMehfilSelector()}
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             type="primary"
             shape="circle"
-            icon={<LeftOutlined />}
+            icon={<AntLeftOutlined />}
             onClick={() => {
               this.handleMonthGoBack(_month);
             }}
           />
           &nbsp;&nbsp;
-          <DatePicker.MonthPicker
+          <MonthPicker
             allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
             value={_month}
           />
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             type="primary"
             shape="circle"
-            icon={<RightOutlined />}
+            icon={<AntRightOutlined />}
             onClick={() => {
               this.handleMonthGoForward(_month);
             }}
@@ -412,19 +431,19 @@ export default class KarkunsAttendanceList extends Component {
     );
   };
 
-  sortedAttendance = attendance => sortBy(attendance, 'karkun.name');
+  sortedAttendance = (attendance: AnyRecord[] = []) => sortBy(attendance, 'karkun.name');
 
   render() {
     const { attendance, readOnly } = this.props;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
-        columns={this.getColumns()}
+        columns={this.getColumns() as any}
         rowSelection={readOnly ? null : this.rowSelection}
-        dataSource={this.sortedAttendance(attendance)}
+        dataSource={this.sortedAttendance(attendance ?? [])}
         pagination={false}
         scroll={{ x: 1000 }}
         bordered

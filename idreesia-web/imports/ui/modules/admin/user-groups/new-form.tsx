@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
@@ -16,9 +15,19 @@ import {
 
 import { CREATE_USER_GROUP } from './gql';
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SelectInputField = SelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { goBack(): void; }
+interface FormValues { name: string; moduleName: string; description?: string; }
+interface ModuleNameOption { value: string; text: string; }
+interface Props { history: HistoryLike; }
+
+const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createUserGroup] = useMutation(CREATE_USER_GROUP, {
+  const [createUserGroup] = useMutation(CREATE_USER_GROUP as any, {
     refetchQueries: ['pagedUserGroups'],
   });
 
@@ -30,7 +39,7 @@ const NewForm = ({ history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, moduleName, description }) => {
+  const handleFinish = ({ name, moduleName, description }: FormValues) => {
     createUserGroup({
       variables: {
         name,
@@ -41,46 +50,46 @@ const NewForm = ({ history }) => {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   const moduleNames = values(ModuleNames);
-  const moduleNamesData = moduleNames.map(name => ({
+  const moduleNamesData = moduleNames.map((name: string) => ({
     value: name,
     text: name,
   }));
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Group name"
         required
         requiredMessage="Please input a name for the group."
       />
 
-      <SelectField
+      <SelectInputField
         data={moduleNamesData}
-        getDataValue={({ value }) => value}
-        getDataText={({ text }) => text}
+        getDataValue={({ value }: ModuleNameOption) => value}
+        getDataText={({ text }: ModuleNameOption) => text}
         fieldName="moduleName"
         fieldLabel="Module Name"
         required
         requiredMessage="Please select a module for the group."
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="description"
         fieldLabel="Description"
       />
 
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -89,4 +98,4 @@ NewForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'User Groups', 'New'])(NewForm);
+export default WithBreadcrumbs(['Admin', 'User Groups', 'New'])(NewForm as any);

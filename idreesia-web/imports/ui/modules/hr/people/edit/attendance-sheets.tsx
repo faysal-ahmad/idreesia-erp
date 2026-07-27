@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client/react';
 
@@ -15,15 +14,22 @@ import {
 
 import { PAGED_ATTENDANCE_BY_KARKUN } from '../gql';
 
-const getQueryString = (karkunId, pageIndex, pageSize) =>
+const getQueryString = (karkunId: string | null | undefined, pageIndex: number, pageSize: number) =>
   `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
-const columns = [
+const AntTable = Table as any;
+const AntPagination = Pagination as any;
+type AnyRecord = Record<string, any>;
+interface PagedData { totalResults: number; attendance: AnyRecord[]; }
+interface QueryData { pagedAttendanceByKarkun?: PagedData | null; }
+interface Props { karkunId?: string | null; }
+
+const columns: any[] = [
   {
     title: 'Month',
     dataIndex: 'month',
     key: 'month',
-    render: text => {
+    render: (text: string) => {
       const date = parseDate(`01-${text}`, Formats.DATE_FORMAT);
       return formatDate(date, 'MMM, YYYY');
     },
@@ -31,7 +37,7 @@ const columns = [
   {
     title: 'Job / Duty / Shift',
     key: 'shift.name',
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       let name;
       if (record.job) {
         name = record.job.name;
@@ -59,25 +65,25 @@ const columns = [
     title: 'Percentage',
     dataIndex: 'percentage',
     key: 'percentage',
-    render: text => `${text}%`,
+    render: (text: string | number) => `${text}%`,
   },
 ];
 
-const AttendanceSheets = ({ karkunId }) => {
+const AttendanceSheets = ({ karkunId }: Props) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(PAGED_ATTENDANCE_BY_KARKUN, {
+  const { data, loading } = useQuery(PAGED_ATTENDANCE_BY_KARKUN as any, {
     variables: {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },
   });
 
-  const onChange = (index, size) => {
+  const onChange = (index: number, size: number) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
 
-  const onShowSizeChange = (index, size) => {
+  const onShowSizeChange = (index: number, size: number) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
@@ -85,24 +91,24 @@ const AttendanceSheets = ({ karkunId }) => {
   if (loading) return null;
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       size="small"
-      columns={columns}
-      dataSource={data.pagedAttendanceByKarkun.attendance}
+      columns={columns as any}
+      dataSource={((data ?? {}) as QueryData).pagedAttendanceByKarkun?.attendance ?? []}
       pagination={false}
       bordered
       footer={() => (
-        <Pagination
+        <AntPagination
           current={pageIndex + 1}
           pageSize={pageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: [number, number]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={data.pagedAttendanceByKarkun.totalResults}
+          total={((data ?? {}) as QueryData).pagedAttendanceByKarkun?.totalResults ?? 0}
         />
       )}
     />

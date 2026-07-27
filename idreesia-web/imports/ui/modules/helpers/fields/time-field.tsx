@@ -1,9 +1,12 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 
 import { TimePicker, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const TimeInput = TimePicker as any;
+interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -26,7 +29,7 @@ const TimeField = ({
   initialValue = dayjs(),
   required,
   requiredMessage,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -35,9 +38,9 @@ const TimeField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <TimePicker use12Hours format="h:mm a" />
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <TimeInput use12Hours format="h:mm a" />
+    </AntFormItem>
   );
 }
 

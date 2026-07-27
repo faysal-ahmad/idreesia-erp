@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -12,43 +11,53 @@ import {
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_PROFILE_IMAGE } from '../gql';
 
-const ProfilePicture = ({ karkunId, match }) => {
-  const { data, loading } = useQuery(HR_KARKUN_BY_ID, {
+const ReactFragment = Fragment as any;
+const AntRow = Row as any;
+const AntCol = Col as any;
+const TakePictureControl = TakePicture as any;
+const UploadAttachmentControl = UploadAttachment as any;
+type AnyRecord = Record<string, any>;
+interface MatchLike { params: { karkunId: string; }; }
+interface QueryData { hrKarkunById?: AnyRecord | null; }
+interface Props { match: MatchLike; karkunId?: string | null; }
+
+const ProfilePicture = ({ karkunId, match }: Props) => {
+  const { data, loading } = useQuery(HR_KARKUN_BY_ID as any, {
     variables: { _id: match.params.karkunId },
   });
-  const [setHrKarkunProfileImage] = useMutation(SET_HR_KARKUN_PROFILE_IMAGE, {
+  const [setHrKarkunProfileImage] = useMutation(SET_HR_KARKUN_PROFILE_IMAGE as any, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
-  const updateImageId = imageId => {
+  const updateImageId = (imageId: string) => {
     setHrKarkunProfileImage({
       variables: {
         _id: karkunId,
         imageId,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
   if (loading) return null;
-  const url = getDownloadUrl(data.hrKarkunById.imageId);
+  const url = getDownloadUrl((data as QueryData)?.hrKarkunById?.imageId);
 
   return (
-    <Fragment>
-      <Row>
-        <Col span={16}>
-          <img style={{ maxWidth: '400px' }} src={url} />
-        </Col>
-      </Row>
+    <ReactFragment>
+      <AntRow>
+        <AntCol span={16}>
+          {url ? <img style={{ maxWidth: '400px' }} src={url} alt="Profile" /> : null}
+        </AntCol>
+      </AntRow>
       <br />
-      <Row>
-        <Col span={16}>
-          <UploadAttachment onUploadFinish={updateImageId} />
-          <TakePicture onPictureTaken={updateImageId} />
-        </Col>
-      </Row>
-    </Fragment>
+      <AntRow>
+        <AntCol span={16}>
+          <UploadAttachmentControl onUploadFinish={updateImageId} />
+          <TakePictureControl onPictureTaken={updateImageId} />
+        </AntCol>
+      </AntRow>
+    </ReactFragment>
   );
 };
 

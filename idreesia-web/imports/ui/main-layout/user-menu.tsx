@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -22,18 +21,26 @@ const ContainerStyle = {
   alignItems: 'center',
 };
 
-const UserMenu = ({ history }) => {
-  const dispatch = useDispatch();
+const AntAvatar = Avatar as any;
+const AntDropdown = Dropdown as any;
+const AntUserOutlined = UserOutlined as any;
+const ChangePassword = ChangePasswordForm as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { push(path: string): void; }
+interface Props { history: HistoryLike; }
+
+const UserMenu = ({ history }: Props) => {
+  const dispatch = useDispatch<any>();
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
   const { user, userLoading } = useLoggedInUser();
 
-  if (userLoading) return null;
+  if (userLoading || !user) return null;
 
-  const handleMenuItemClicked = ({ key }) => {
+  const handleMenuItemClicked = ({ key }: { key: string }) => {
     switch (key) {
       case 'logout':
-        Meteor.logoutOtherClients();
-        Meteor.logout(error => {
+        (Meteor as any).logoutOtherClients();
+        (Meteor as any).logout((error?: Error) => {
           if (error) {
             // eslint-disable-next-line no-console
             console.log(error);
@@ -64,10 +71,10 @@ const UserMenu = ({ history }) => {
 
   const userName = user.karkun ? user.karkun.name : user.displayName;
 
-  let avatar = <Avatar size="large" icon={<UserOutlined />} />;
+  let avatar = <AntAvatar size="large" icon={<AntUserOutlined />} />;
   if (user.karkun && user.karkun.imageId) {
     const url = getDownloadUrl(user.karkun.imageId);
-    avatar = <Avatar size="large" src={url} />;
+    avatar = <AntAvatar size="large" src={url} />;
   }
 
   const menuItems = [
@@ -78,17 +85,17 @@ const UserMenu = ({ history }) => {
 
   return (
     <>
-      <Dropdown
+      <AntDropdown
         menu={{ items: menuItems, onClick: handleMenuItemClicked }}
         placement="bottomLeft"
       >
-        <div style={ContainerStyle}>
+        <div style={ContainerStyle as any}>
           <div style={{ color: '#FFFFFF' }}>{userName}</div>
           &nbsp; &nbsp;
           {avatar}
         </div>
-      </Dropdown>
-      <ChangePasswordForm 
+      </AntDropdown>
+      <ChangePassword 
         showForm={showChangePasswordForm}
         handlePasswordChanged={handleChangePasswordSuccess}
         handlePasswordChangeCancelled={handleChangePasswordCancelled}

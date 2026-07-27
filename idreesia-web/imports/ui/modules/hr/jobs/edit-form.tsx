@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -42,16 +41,29 @@ const formMutation = gql`
   }
 `;
 
-const EditForm = ({ match, history }) => {
+const ReactFragment = Fragment as any;
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+interface HistoryLike { push(path: string): void; }
+interface MatchLike { params: Record<string, string>; }
+interface EditFormProps { match: MatchLike; history: HistoryLike; }
+interface RecordData { _id: string; name: string; description?: string; }
+interface QueryData { jobById?: RecordData | null; }
+interface FormValues { name: string; description?: string; }
+
+const EditForm = ({ match, history }: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { jobId } = match.params;
-  const { loading, data } = useQuery(formQuery, {
+  const { loading, data } = useQuery(formQuery as any, {
     variables: { id: jobId },
   });
-  const [updateJob] = useMutation(formMutation, {
+  const [updateJob] = useMutation(formMutation as any, {
     refetchQueries: ['allJobs'],
   });
-  const jobById = data ? data.jobById : null;
+  const jobById = data ? (data as QueryData).jobById : null;
 
   const handleCancel = () => {
     history.push(paths.jobsPath);
@@ -61,7 +73,8 @@ const EditForm = ({ match, history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, description }) => {
+  const handleFinish = ({ name, description }: FormValues) => {
+    if (!jobById) return;
     updateJob({
       variables: {
         id: jobById._id,
@@ -72,36 +85,36 @@ const EditForm = ({ match, history }) => {
       .then(() => {
         history.push(paths.jobsPath);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading) return null;
+  if (loading || !jobById) return null;
 
   return (
-    <Fragment>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
+    <ReactFragment>
+      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Job Name"
           initialValue={jobById.name}
           required
           requiredMessage="Please input a name for the job."
         />
-        <InputTextAreaField
+        <TextAreaField
           disabled
           fieldName="description"
           fieldLabel="Description"
           initialValue={jobById.description}
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={jobById} />
-    </Fragment>
+      </AntForm>
+      <AuditInfoComponent record={jobById} />
+    </ReactFragment>
   );
 };
 
@@ -111,4 +124,4 @@ EditForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['HR', 'Jobs', 'Edit'])(EditForm);
+export default WithBreadcrumbs(['HR', 'Jobs', 'Edit'])(EditForm as any);

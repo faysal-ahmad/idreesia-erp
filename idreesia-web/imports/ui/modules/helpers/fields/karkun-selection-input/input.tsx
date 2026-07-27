@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { EditOutlined } from '@ant-design/icons';
@@ -14,7 +13,18 @@ const ContainerStyle = {
   width: '100%',
 };
 
-export default class CustomInput extends Component {
+const ReactFragment = Fragment as any;
+const AntDrawer = Drawer as any;
+const TextInput = Input as any;
+const AntTabs = Tabs as any;
+const TabPane = (Tabs as any).TabPane;
+const AntEditOutlined = EditOutlined as any;
+const MSKarkunsSelectionList = MSKarkunsList as any;
+interface KarkunValue { _id?: string; name?: string; }
+interface Props { value?: KarkunValue | null; disabled?: boolean; placeholder?: string; onChange?(karkun: KarkunValue): void; showMsKarkunsList?: boolean; }
+interface State { showSelectionForm: boolean; }
+
+export default class CustomInput extends Component<Props, State> {
   static propTypes = {
     value: PropTypes.object,
     disabled: PropTypes.bool,
@@ -43,7 +53,7 @@ export default class CustomInput extends Component {
     });
   };
 
-  setSelectedValue = karkun => {
+  setSelectedValue = (karkun: KarkunValue) => {
     const { onChange } = this.props;
     this.handleClose();
     if (onChange) {
@@ -54,36 +64,36 @@ export default class CustomInput extends Component {
   render() {
     const { placeholder, value, showMsKarkunsList } = this.props;
 
-    const containersNode = [];
+    const containersNode: React.ReactNode[] = [];
 
     if (showMsKarkunsList) {
       containersNode.push(
-        <Tabs.TabPane tab="MS Karkuns" key="1">
-          <MSKarkunsList handleSelectItem={this.setSelectedValue} />
-        </Tabs.TabPane>
+        <TabPane tab="MS Karkuns" key="1">
+          <MSKarkunsSelectionList handleSelectItem={this.setSelectedValue} />
+        </TabPane>
       );
     }
 
     return (
-      <Fragment>
-        <Drawer
+      <ReactFragment>
+        <AntDrawer
           title="Select a Karkun"
           width={800}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <Tabs>{containersNode}</Tabs>
-        </Drawer>
-        <div style={ContainerStyle}>
-          <Input
+          <AntTabs>{containersNode}</AntTabs>
+        </AntDrawer>
+        <div style={ContainerStyle as any}>
+          <TextInput
             type="text"
             value={value ? value.name : ''}
             readOnly
-            addonAfter={<EditOutlined onClick={this.handleEditClick} />}
+            addonAfter={<AntEditOutlined onClick={this.handleEditClick} />}
             placeholder={placeholder}
           />
         </div>
-      </Fragment>
+      </ReactFragment>
     );
   }
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -16,14 +15,27 @@ import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
-const EmploymentInfo = ({ history, karkunId, match }) => {
+const AntForm = Form as any;
+const DateInputField = DateField as any;
+const TextAreaField = typeof InputTextAreaField !== 'undefined' ? (InputTextAreaField as any) : undefined;
+const SelectInputField = SelectField as any;
+const SwitchInputField = SwitchField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { goBack(): void; }
+interface MatchLike { params: { karkunId: string; }; }
+interface QueryData { hrKarkunById?: AnyRecord | null; }
+interface Props { match: MatchLike; history: HistoryLike; karkunId?: string | null; }
+interface FormValues extends AnyRecord { isEmployee?: boolean; jobId?: string | null; employmentStartDate?: unknown; employmentEndDate?: unknown; bankAccountDetails?: string; }
+
+const EmploymentInfo = ({ history, karkunId, match }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { allJobs, allJobsLoading } = useAllJobs();
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
     variables: { _id: match.params.karkunId },
   });
   const [setHrKarkunEmploymentInfo] = useMutation(
-    SET_HR_KARKUN_EMPLOYMENT_INFO,
+    SET_HR_KARKUN_EMPLOYMENT_INFO as any,
     {
       refetchQueries: ['pagedHrKarkuns', 'allJobs'],
     }
@@ -43,7 +55,7 @@ const EmploymentInfo = ({ history, karkunId, match }) => {
     employmentStartDate,
     employmentEndDate,
     bankAccountDetails,
-  }) => {
+  }: FormValues) => {
     setHrKarkunEmploymentInfo({
       variables: {
         _id: karkunId,
@@ -57,38 +69,38 @@ const EmploymentInfo = ({ history, karkunId, match }) => {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (formDataLoading || allJobsLoading) return null;
+  const { hrKarkunById } = (data ?? {}) as QueryData;
 
-  const { hrKarkunById } = data;
+  if (formDataLoading || allJobsLoading || !hrKarkunById) return null;
 
   return (
-    <Form
+    <AntForm
       layout="horizontal"
       onFinish={handleFinish}
       onFieldsChange={handleFieldsChange}
     >
-      <SwitchField
+      <SwitchInputField
         fieldName="isEmployee"
         fieldLabel="Is Employee"
         initialValue={hrKarkunById.isEmployee || false}
       />
 
-      <SelectField
+      <SelectInputField
         fieldName="jobId"
         fieldLabel="Current Job"
         required={false}
         data={allJobs}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
+        getDataValue={({ _id }: AnyRecord) => _id}
+        getDataText={({ name }: AnyRecord) => name}
         initialValue={hrKarkunById.jobId}
       />
 
-      <DateField
+      <DateInputField
         fieldName="employmentStartDate"
         fieldLabel="Start Date"
         initialValue={
@@ -98,7 +110,7 @@ const EmploymentInfo = ({ history, karkunId, match }) => {
         }
       />
 
-      <DateField
+      <DateInputField
         fieldName="employmentEndDate"
         fieldLabel="End Date"
         initialValue={
@@ -108,18 +120,18 @@ const EmploymentInfo = ({ history, karkunId, match }) => {
         }
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="bankAccountDetails"
         fieldLabel="Bank Account Details"
         initialValue={hrKarkunById.bankAccountDetails}
         required={false}
       />
 
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 

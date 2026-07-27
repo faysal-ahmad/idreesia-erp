@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -18,6 +17,20 @@ import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
+const AntMenu = Menu as any;
+const AntAuditOutlined = AuditOutlined as any;
+const AntDollarOutlined = DollarOutlined as any;
+const AntEnvironmentOutlined = EnvironmentOutlined as any;
+const AntLaptopOutlined = LaptopOutlined as any;
+const AntSolutionOutlined = SolutionOutlined as any;
+const AntTagOutlined = TagOutlined as any;
+const AntTagsOutlined = TagsOutlined as any;
+const AntTeamOutlined = TeamOutlined as any;
+const AntToolOutlined = ToolOutlined as any;
+interface HistoryLike { push(path: string): void; }
+interface SidebarProps { history: HistoryLike; activeModuleName?: string; activeSubModuleName?: string; setActiveSubModuleName(name: string): void; }
+interface MenuSelectInfo { key: string; }
+
 const IconStyle = {
   fontSize: '20px',
 };
@@ -25,61 +38,61 @@ const IconStyle = {
 const menuItems = [
   {
     key: 'people',
-    icon: <TeamOutlined style={IconStyle} />,
+    icon: <AntTeamOutlined style={IconStyle} />,
     label: 'People',
   },
   {
     key: 'karkuns',
-    icon: <TeamOutlined style={IconStyle} />,
+    icon: <AntTeamOutlined style={IconStyle} />,
     label: 'Karkuns',
   },
   {
     key: 'salary-sheets',
-    icon: <DollarOutlined style={IconStyle} />,
+    icon: <AntDollarOutlined style={IconStyle} />,
     label: 'Salary Sheets',
   },
   {
     key: 'attendance-sheets',
-    icon: <SolutionOutlined style={IconStyle} />,
+    icon: <AntSolutionOutlined style={IconStyle} />,
     label: 'Attendance Sheets',
   },
   {
     key: 'setup',
-    icon: <LaptopOutlined style={IconStyle} />,
+    icon: <AntLaptopOutlined style={IconStyle} />,
     label: 'Setup',
     children: [
       {
         key: 'jobs',
-        icon: <TagOutlined style={IconStyle} />,
+        icon: <AntTagOutlined style={IconStyle} />,
         label: 'Jobs',
       },
       {
         key: 'ms-duties',
-        icon: <TagsOutlined style={IconStyle} />,
+        icon: <AntTagsOutlined style={IconStyle} />,
         label: 'Duties & Shifts',
       },
       {
         key: 'duty-locations',
-        icon: <EnvironmentOutlined style={IconStyle} />,
+        icon: <AntEnvironmentOutlined style={IconStyle} />,
         label: 'Duty Locations',
       },
     ],
   },
   {
     key: 'administration',
-    icon: <ToolOutlined style={IconStyle} />,
+    icon: <AntToolOutlined style={IconStyle} />,
     label: 'Administration',
     children: [
       {
         key: 'audit-logs',
-        icon: <AuditOutlined style={IconStyle} />,
+        icon: <AntAuditOutlined style={IconStyle} />,
         label: 'Audit Logs',
       },
     ],
   },
 ];
 
-class Sidebar extends Component {
+class Sidebar extends Component<SidebarProps> {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -87,7 +100,7 @@ class Sidebar extends Component {
     setActiveSubModuleName: PropTypes.func,
   };
 
-  handleMenuItemSelected = ({ key }) => {
+  handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
@@ -138,7 +151,7 @@ class Sidebar extends Component {
 
   render() {
     return (
-      <Menu
+      <AntMenu
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
@@ -148,5 +161,5 @@ class Sidebar extends Component {
   }
 }
 
-const SidebarContainer = WithActiveModule()(Sidebar);
+const SidebarContainer = WithActiveModule()(Sidebar as any);
 export default SidebarContainer;

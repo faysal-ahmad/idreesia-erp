@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Collapse, Form } from 'antd';
@@ -21,6 +20,12 @@ import {
   getUpdatedBetweenFilterField,
   getFormButtons,
 } from '../field-helpers';
+
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+type AnyRecord = Record<string, any>;
+interface PageParams extends AnyRecord { pageIndex: string; }
+interface Props extends AnyRecord { setPageParams(params: PageParams): void; refreshData?: () => Promise<unknown>; mehfilDuties?: AnyRecord[]; cities?: AnyRecord[]; cityMehfils?: AnyRecord[]; regions?: string[]; }
 
 const ContainerStyle = {
   width: '500px',
@@ -61,7 +66,7 @@ const ListFilter = ({
   cities,
   cityMehfils,
   regions,
-}) => {
+}: Props) => {
   const handleReset = () => {
     setPageParams({
       pageIndex: '0',
@@ -83,7 +88,7 @@ const ListFilter = ({
     });
   };
 
-  const handleFinish = values => {
+  const handleFinish = (values: AnyRecord) => {
     setPageParams({
       pageIndex: '0',
       name: values.name,
@@ -101,11 +106,11 @@ const ListFilter = ({
       cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
       region: values.region,
       updatedBetween: JSON.stringify([
-        values.updatedBetween[0]
-          ? values.updatedBetween[0].format(Formats.DATE_FORMAT)
+        values.updatedBetween?.[0]
+          ? values.updatedBetween?.[0].format(Formats.DATE_FORMAT)
           : '',
-        values.updatedBetween[1]
-          ? values.updatedBetween[1].format(Formats.DATE_FORMAT)
+        values.updatedBetween?.[1]
+          ? values.updatedBetween?.[1].format(Formats.DATE_FORMAT)
           : '',
       ]),
     });
@@ -114,15 +119,15 @@ const ListFilter = ({
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   return (
-    <Collapse
-      style={ContainerStyle}
+    <AntCollapse
+      style={ContainerStyle as any}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <Form layout="horizontal" onFinish={handleFinish}>
+            <AntForm layout="horizontal" onFinish={handleFinish}>
               {showNameFilter ? getNameFilterField(name) : null}
               {showCnicFilter
                 ? getCnicNumberFilterField(cnicNumber)
@@ -143,7 +148,7 @@ const ListFilter = ({
                 ? getUserAccountFilterField(userAccount)
                 : null}
               {showMehfilDutyFilter
-                ? getMehfilDutyFilterField(dutyId, mehfilDuties)
+                ? getMehfilDutyFilterField(dutyId, mehfilDuties ?? [])
                 : null}
               {showEhadKarkunFilter
                 ? getEhadKarkunFilterField(ehadKarkun)
@@ -151,19 +156,19 @@ const ListFilter = ({
               {showCityMehfilFilter
                 ? getCityMehfilFilterField(
                     [cityId, cityMehfilId],
-                    cities,
-                    cityMehfils
+                    cities ?? [],
+                    cityMehfils ?? []
                   )
                 : null}
               {showRegionFilter
-                ? getRegionFilterField(region, regions)
+                ? getRegionFilterField(region, regions ?? [])
                 : null}
 
               {showUpdatedBetweenFilter
                 ? getUpdatedBetweenFilterField(updatedBetween)
                 : null}
               {getFormButtons(handleReset)}
-            </Form>
+            </AntForm>
           ),
         },
       ]}

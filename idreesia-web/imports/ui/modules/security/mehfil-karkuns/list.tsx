@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -12,11 +11,79 @@ import { PersonName, PeopleSelectionButton } from '/imports/ui/modules/helpers/c
 
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
 
+const AntButton = Button as any;
+const AntRow = Row as any;
+const AntSelect = Select as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntEditOutlined = EditOutlined as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const AntUsergroupAddOutlined = UsergroupAddOutlined as any;
+const AntUsergroupDeleteOutlined = UsergroupDeleteOutlined as any;
+const PersonNameComponent = PersonName as any;
+const PeopleSelectionButtonComponent = PeopleSelectionButton as any;
+
 const SelectStyle = {
   width: '300px',
 };
 
-export class List extends Component {
+interface SharedData {
+  name?: string;
+  imageId?: string;
+  image?: unknown;
+  cnicNumber?: string;
+  contactNumber1?: string;
+  contactNumber2?: string;
+}
+
+interface KarkunRecord {
+  sharedData: SharedData;
+  isKarkun?: boolean;
+  karkunData?: { city?: { name?: string } };
+  visitorData?: { city?: string };
+}
+
+interface MehfilKarkun {
+  _id: string;
+  karkun: KarkunRecord;
+  dutyId?: string;
+  dutyDetail?: string;
+}
+
+interface MehfilDuty {
+  _id: string;
+  name?: string;
+  mehfilUsedCount?: number;
+}
+
+interface MehfilRecord {
+  mehfilDate: string | number;
+}
+
+interface ListProps {
+  dutyId?: string;
+  mehfilId: string;
+  mehfilById: MehfilRecord;
+  allSecurityMehfilDuties: MehfilDuty[];
+  setPageParams(params: Record<string, unknown>): void;
+  mehfilKarkunsLoading?: boolean;
+  mehfilKarkunsByMehfilId?: MehfilKarkun[];
+  refetchMehfilKarkuns(): void;
+  handleAddMehfilKarkun(karkunId: string, refetchQuery: () => void): void;
+  handleEditMehfilKarkun(selectedRows: MehfilKarkun[]): void;
+  handleRemoveMehfilKarkun(mehfilKarkunId: string, refetchQuery: () => void): void;
+  handleViewPrintCards(selectedRows: MehfilKarkun[]): void;
+  handleViewPrintList(selectedRows: MehfilKarkun[]): void;
+}
+
+interface ListState {
+  selectedRows: MehfilKarkun[];
+}
+
+interface ListWithDataProps extends Omit<ListProps, 'mehfilKarkunsByMehfilId' | 'refetchMehfilKarkuns'> {}
+interface MehfilKarkunsData { mehfilKarkunsByMehfilId?: MehfilKarkun[]; }
+
+export class List extends Component<ListProps, ListState> {
   static propTypes = {
     dutyId: PropTypes.string,
     mehfilId: PropTypes.string,
@@ -38,7 +105,7 @@ export class List extends Component {
     selectedRows: [],
   };
 
-  getIsPastMehfil = mehfilById => {
+  getIsPastMehfil = (mehfilById: MehfilRecord) => {
     const mehfilDate = dayjs(Number(mehfilById.mehfilDate));
     return dayjs().diff(
       dayjs(mehfilDate, Formats.DATE_FORMAT),
@@ -46,12 +113,12 @@ export class List extends Component {
       ) > 30;
   }
 
-  getColumns = (isPastMehfil, allSecurityMehfilDuties) => {
-    const columns = [
+  getColumns = (isPastMehfil: boolean, allSecurityMehfilDuties: MehfilDuty[]): any[] => {
+    const columns: any[] = [
       {
         title: 'Name',
         key: 'karkun.name',
-        render: (text, record) => {
+        render: (_text: unknown, record: MehfilKarkun) => {
           const personNameData = {
             _id: record._id,
             name: record.karkun.sharedData.name,
@@ -60,7 +127,7 @@ export class List extends Component {
           };
     
           return (
-            <PersonName
+            <PersonNameComponent
               person={personNameData}
               onPersonNameClicked={() => {}}
             />
@@ -70,7 +137,7 @@ export class List extends Component {
       {
         title: 'City',
         key: 'cityCountry',
-        render: (text, record) => {
+        render: (_text: unknown, record: MehfilKarkun) => {
           if (record.karkun.isKarkun && record.karkun.karkunData?.city) {
             return record.karkun.karkunData.city.name;
           } else if (record.karkun.visitorData?.city) {
@@ -83,17 +150,17 @@ export class List extends Component {
       {
         title: 'CNIC',
         key: 'cnicNumber',
-        render: (text, record) => record.karkun.sharedData?.cnicNumber,
+        render: (_text: unknown, record: MehfilKarkun) => record.karkun.sharedData?.cnicNumber,
       },
       {
         title: 'Contact No.',
         key: 'contactNumbers',
-        render: (text, record) => {
-          const numbers = [];
+        render: (_text: unknown, record: MehfilKarkun) => {
+          const numbers: React.ReactNode[] = [];
           if (record.karkun.sharedData?.contactNumber1)
-            numbers.push(<Row key="1">{record.karkun.sharedData?.contactNumber1}</Row>);
+            numbers.push(<AntRow key="1">{record.karkun.sharedData?.contactNumber1}</AntRow>);
           if (record.karkun.sharedData.contactNumber2)
-            numbers.push(<Row key="2">{record.karkun.sharedData?.contactNumber2}</Row>);
+            numbers.push(<AntRow key="2">{record.karkun.sharedData?.contactNumber2}</AntRow>);
     
           if (numbers.length === 0) return '';
           return <>{numbers}</>;
@@ -103,8 +170,8 @@ export class List extends Component {
         title: 'Duty Name',
         dataIndex: 'dutyId',
         key: 'dutyId',
-        render: text => {
-          const duty = allSecurityMehfilDuties.find(mehfilDuty => mehfilDuty._id === text);
+        render: (text: string) => {
+          const duty = allSecurityMehfilDuties.find((mehfilDuty: MehfilDuty) => mehfilDuty._id === text);
           return duty?.name;
         },
       },
@@ -118,10 +185,10 @@ export class List extends Component {
     if (!isPastMehfil) {
       columns.push({
         key: 'action',
-        render: (text, record) => (
+        render: (_text: unknown, record: MehfilKarkun) => (
           <div className="list-actions-column">
-            <Tooltip key="delete" title="Remove Karkun">
-              <UsergroupDeleteOutlined
+            <AntTooltip key="delete" title="Remove Karkun">
+              <AntUsergroupDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   const {
@@ -131,7 +198,7 @@ export class List extends Component {
                   handleRemoveMehfilKarkun(record._id, refetchMehfilKarkuns);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           </div>
         ),
       });
@@ -140,14 +207,14 @@ export class List extends Component {
   };
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: MehfilKarkun[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  handleSelectionChange = value => {
+  handleSelectionChange = (value?: string) => {
     const { setPageParams } = this.props;
     setPageParams({
       dutyId: value,
@@ -181,7 +248,7 @@ export class List extends Component {
     }
   };
 
-  onKarkunSelection = karkun => {
+  onKarkunSelection = (karkun: { _id: string }) => {
     const { handleAddMehfilKarkun, refetchMehfilKarkuns } = this.props;
     handleAddMehfilKarkun(karkun._id, refetchMehfilKarkuns);
   };
@@ -192,13 +259,13 @@ export class List extends Component {
     const isPastMehfil = this.getIsPastMehfil(mehfilById);
 
     const options = allSecurityMehfilDuties.map(duty => (
-      <Select.Option key={duty._id} value={duty._id}>
+      <AntSelect.Option key={duty._id} value={duty._id}>
         {`${duty.name} - ${duty.mehfilUsedCount}`}
-      </Select.Option>
+      </AntSelect.Option>
     ));
 
     const dutySelector = (
-      <Select
+      <AntSelect
         defaultValue={dutyId}
         style={SelectStyle}
         onChange={this.handleSelectionChange}
@@ -206,44 +273,44 @@ export class List extends Component {
         dropdownMatchSelectWidth
       >
         {options}
-      </Select>
+      </AntSelect>
     );
 
     const actions = (
       <div className="list-table-header-section">
-        <PeopleSelectionButton
-          icon={<UsergroupAddOutlined />}
+        <PeopleSelectionButtonComponent
+          icon={<AntUsergroupAddOutlined />}
           label="Add Karkuns"
           onSelection={this.onKarkunSelection}
           disabled={isPastMehfil || !dutyId}
         />
         &nbsp;&nbsp;
-        <Button
+        <AntButton
           disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
-          icon={<EditOutlined />}
+          icon={<AntEditOutlined />}
           size="large"
           onClick={this.handleEditDutyDetails}
         >
           Edit Duty Detail
-        </Button>
+        </AntButton>
         &nbsp;&nbsp;
-        <Button
+        <AntButton
           disabled={isPastMehfil}
-          icon={<PrinterOutlined />}
+          icon={<AntPrinterOutlined />}
           size="large"
           onClick={this.handleViewPrintCards}
         >
           Print Cards
-        </Button>
+        </AntButton>
         &nbsp;&nbsp;
-        <Button
+        <AntButton
           disabled={isPastMehfil}
-          icon={<PrinterOutlined />}
+          icon={<AntPrinterOutlined />}
           size="large"
           onClick={this.handleViewPrintList}
         >
           Print List
-        </Button>
+        </AntButton>
       </div>
     );
 
@@ -265,10 +332,10 @@ export class List extends Component {
     if (mehfilKarkunsLoading) return null;
 
     const isPastMehfil = this.getIsPastMehfil(mehfilById);
-    const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId, 'karkun.sharedData.name');
+    const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId ?? [], 'karkun.sharedData.name');
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
@@ -282,10 +349,10 @@ export class List extends Component {
   }
 }
 
-const ListWithData = props => {
+const ListWithData = (props: ListWithDataProps) => {
   const { mehfilId, dutyId } = props;
   const { data = {}, loading, refetch, ...queryResult } = useQuery(
-    MEHFIL_KARKUNS_BY_MEHFIL_ID,
+    MEHFIL_KARKUNS_BY_MEHFIL_ID as any,
     {
       fetchPolicy: "cache-and-network",
       variables: {
@@ -299,7 +366,7 @@ const ListWithData = props => {
     <List
       {...props}
       {...queryResult}
-      {...data}
+      {...(data as MehfilKarkunsData)}
       mehfilKarkunsLoading={loading}
       refetchMehfilKarkuns={refetch}
     />

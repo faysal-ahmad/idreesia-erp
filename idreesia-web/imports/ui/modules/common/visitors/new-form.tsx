@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Divider, Form } from 'antd';
@@ -18,8 +17,21 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const NewForm = ({ handleFinish, handleCancel }) => {
-  const [form] = Form.useForm();
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AgeInputField = AgeField as any;
+const AutoCompleteInputField = AutoCompleteField as any;
+const EhadDurationInputField = EhadDurationField as any;
+const CnicField = InputCnicField as any;
+const MobileField = InputMobileField as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+type AnyRecord = Record<string, any>;
+interface Props { visitor?: AnyRecord; handleFinish(values: AnyRecord): void; handleCancel?(): void; }
+
+const NewForm = ({ handleFinish, handleCancel }: Props) => {
+  const [form] = AntForm.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { distinctCities, distinctCitiesLoading } = useDistinctCities();
   const {
@@ -31,7 +43,7 @@ const NewForm = ({ handleFinish, handleCancel }) => {
     setIsFieldsTouched(true);
   }
 
-  const _handleFinish = values => {
+  const _handleFinish = (values: AnyRecord) => {
       const { cnicNumber, contactNumber1 } = values;
       if (!cnicNumber && !contactNumber1) {
         form.setFields({
@@ -58,27 +70,27 @@ const NewForm = ({ handleFinish, handleCancel }) => {
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
 
   return (
-    <Form form={form} layout="horizontal" onFinish={_handleFinish}  onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm form={form} layout="horizontal" onFinish={_handleFinish}  onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input the name for the person."
       />
 
-      <InputTextField
+      <TextField
         fieldName="parentName"
         fieldLabel="S/O"
         required
         requiredMessage="Please input the parent name for the person."
       />
 
-      <AgeField
+      <AgeInputField
         fieldName="birthDate"
         fieldLabel="Age (years)"
       />
 
-      <AutoCompleteField
+      <AutoCompleteInputField
         fieldName="city"
         fieldLabel="City"
         dataSource={distinctCities}
@@ -86,7 +98,7 @@ const NewForm = ({ handleFinish, handleCancel }) => {
         requiredMessage="Please input the city for the person."
       />
 
-      <AutoCompleteField
+      <AutoCompleteInputField
         fieldName="country"
         fieldLabel="Country"
         dataSource={distinctCountries}
@@ -95,69 +107,69 @@ const NewForm = ({ handleFinish, handleCancel }) => {
         requiredMessage="Please input the country for the person."
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="currentAddress"
         fieldLabel="Current Address"
         required={false}
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="permanentAddress"
         fieldLabel="Permanent Address"
         required={false}
       />
 
-      <Divider />
+      <AntDivider />
 
-      <EhadDurationField
+      <EhadDurationInputField
         fieldName="ehadDate"
         fieldLabel="Ehad Duration"
         required
         requiredMessage="Please specify the Ehad duration for the person."
       />
 
-      <InputTextField
+      <TextField
         fieldName="referenceName"
         fieldLabel="R/O"
         required
         requiredMessage="Please input the reference name for the person."
       />
 
-      <InputCnicField
+      <CnicField
         fieldName="cnicNumber"
         fieldLabel="CNIC Number"
       />
 
-      <InputMobileField
+      <MobileField
         fieldName="contactNumber1"
         fieldLabel="Mobile Number"
       />
 
-      <InputTextField
+      <TextField
         fieldName="contactNumber2"
         fieldLabel="Home Number"
         required={false}
       />
 
-      <Divider />
+      <AntDivider />
 
-      <InputTextField
+      <TextField
         fieldName="educationalQualification"
         fieldLabel="Education"
         required={false}
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="meansOfEarning"
         fieldLabel="Means of Earning"
         required={false}
       />
 
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 

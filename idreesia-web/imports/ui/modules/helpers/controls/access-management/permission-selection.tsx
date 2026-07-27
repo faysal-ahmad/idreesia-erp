@@ -1,5 +1,4 @@
-// @ts-nocheck
-import React, { useState, useEffect } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Tree } from 'antd';
 
@@ -7,33 +6,44 @@ import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
 import { AllModulePermissions } from './all-module-permissions';
 
-const PermissionSelection = ({ permissions, securityEntity, onChange, readOnly }) => {
+const AntTree = Tree as any;
+type TreeKey = string;
+interface SecurityEntity { permissions?: TreeKey[]; }
+interface Props { permissions?: unknown[]; securityEntity?: SecurityEntity | null; onChange?(permissions: TreeKey[]): void; readOnly?: boolean; }
+export interface PermissionSelectionHandle { getSelectedPermissions(): TreeKey[]; }
+
+const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({ permissions, securityEntity, onChange, readOnly }: Props, ref) => {
   const [initDone, setInitDone] = useState(false);
-  const [expandedKeys, setExpandedKeys] = useState([]);
-  const [checkedKeys, setCheckedKeys] = useState([]);
+  const [expandedKeys, setExpandedKeys] = useState<TreeKey[]>([]);
+  const [checkedKeys, setCheckedKeys] = useState<TreeKey[]>([]);
 
   useEffect(() => {
     if (securityEntity && !initDone) {
       setInitDone(true);
-      setCheckedKeys(securityEntity.permissions);
-      setExpandedKeys(securityEntity.permissions);
+      setCheckedKeys(securityEntity.permissions ?? []);
+      setExpandedKeys(securityEntity.permissions ?? []);
     }
   }, [securityEntity]);
 
-  const onExpand = keys => {
+  useImperativeHandle(ref, () => ({
+    getSelectedPermissions: () => filter(checkedKeys, (key: TreeKey) => !key.startsWith('module-')),
+  }), [checkedKeys]);
+
+  const onExpand = (keys: TreeKey[]) => {
     setExpandedKeys(keys);
   };
 
-  const onCheck = keys => {
+  const onCheck = (keys: TreeKey[] | { checked: TreeKey[] }) => {
+    const selectedKeys = Array.isArray(keys) ? keys : keys.checked;
     if (!readOnly) {
-      setCheckedKeys(keys);
-      const selectedPermissions = filter(keys, key => !key.startsWith('module-'));
-      onChange(selectedPermissions);
+      setCheckedKeys(selectedKeys);
+      const selectedPermissions = filter(selectedKeys, (key: TreeKey) => !key.startsWith('module-'));
+      onChange?.(selectedPermissions);
     }
   };
   
   return (
-    <Tree
+    <AntTree
       checkable
       autoExpandParent
       onExpand={onExpand}
@@ -43,7 +53,7 @@ const PermissionSelection = ({ permissions, securityEntity, onChange, readOnly }
       treeData={permissions}
     />
   );
-}
+});
 
 PermissionSelection.propTypes = {
   readOnly: PropTypes.bool,

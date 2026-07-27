@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -8,6 +7,15 @@ import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Divider, Row } from 'antd';
 
 import { Item } from './item';
+
+const AntCol = Col as any;
+const AntDivider = Divider as any;
+const AntRow = Row as any;
+const ReceiptItem = Item as any;
+interface Karkun { name: string; parentName?: string; cnicNumber?: string; contactNumber1?: string; image?: { data?: string }; }
+interface Job { name: string; }
+interface SalaryReceiptRecord { _id: string; month: string; karkun: Karkun; job: Job; salary?: number; openingLoan?: number; loanDeduction?: number; otherDeduction?: number; newLoan?: number; closingLoan?: number; arrears?: number; netPayment?: number; rashanMadad?: number; }
+interface ReceiptsProps { salariesByIds?: SalaryReceiptRecord[]; }
 
 const ContainerStyle = {
   display: 'flex',
@@ -22,22 +30,23 @@ const HeaderStyle = {
   border: 'solid',
 };
 
-export default class SalaryReceipts extends Component {
+export default class SalaryReceipts extends Component<ReceiptsProps> {
   static propTypes = {
     salariesByIds: PropTypes.array,
   };
 
-  getImageColumn = karkun =>
+  getImageColumn = (karkun: Karkun) =>
     karkun.image ? (
-      <Col order={1}>
+      <AntCol order={1}>
         <img
           src={`data:image/jpeg;base64,${karkun.image.data}`}
           style={{ width: '100px' }}
+          alt={karkun.name}
         />
-      </Col>
+      </AntCol>
     ) : null;
 
-  getSalaryReceipts = salary => {
+  getSalaryReceipts = (salary: SalaryReceiptRecord) => {
     const { karkun, job } = salary;
     const imageColumn = this.getImageColumn(karkun);
     const displayMonth = formatDate(
@@ -47,33 +56,33 @@ export default class SalaryReceipts extends Component {
 
     return (
       <div key={salary._id} className="form-print-view">
-        <Row type="flex" justify="center" style={HeaderStyle}>
+        <AntRow type="flex" justify="center" style={HeaderStyle as any}>
           <div>Salary Receipt - {displayMonth}</div>
-        </Row>
-        <Row type="flex" justify="start" gutter={10}>
+        </AntRow>
+        <AntRow type="flex" justify="start" gutter={10}>
           {imageColumn}
-          <Col order={2} style={{ minWidth: '150px' }}>
-            <Item label="Name" value={karkun.name} />
-            <Item label="S/O" value={karkun.parentName} />
-            <Item label="CNIC" value={karkun.cnicNumber || ''} />
-            <Item label="Phone" value={karkun.contactNumber1 || ''} />
-            <Item label="Dept." value={job.name} />
-          </Col>
-          <Col order={3} style={{ minWidth: '150px' }}>
-            <Item label="Salary" value={salary.salary} />
-            <Item label="L/OB" value={salary.openingLoan || 0} />
-            <Item label="Loan Ded." value={salary.loanDeduction || 0} />
-            <Item label="Other Ded." value={salary.otherDeduction || 0} />
-            <Item label="New Loan" value={salary.newLoan || 0} />
-          </Col>
-          <Col order={4} style={{ minWidth: '150px' }}>
-            <Item label="L/CB" value={salary.closingLoan || 0} />
-            <Item label="Arrears" value={salary.arrears || 0} />
-            <Item label="Net Payment" value={salary.netPayment || 0} />
-            <Item label="Signature" value="" />
-          </Col>
-        </Row>
-        <Divider style={{ margin: '10px' }} />
+          <AntCol order={2} style={{ minWidth: '150px' }}>
+            <ReceiptItem label="Name" value={karkun.name} />
+            <ReceiptItem label="S/O" value={karkun.parentName} />
+            <ReceiptItem label="CNIC" value={karkun.cnicNumber || ''} />
+            <ReceiptItem label="Phone" value={karkun.contactNumber1 || ''} />
+            <ReceiptItem label="Dept." value={job.name} />
+          </AntCol>
+          <AntCol order={3} style={{ minWidth: '150px' }}>
+            <ReceiptItem label="Salary" value={salary.salary} />
+            <ReceiptItem label="L/OB" value={salary.openingLoan || 0} />
+            <ReceiptItem label="Loan Ded." value={salary.loanDeduction || 0} />
+            <ReceiptItem label="Other Ded." value={salary.otherDeduction || 0} />
+            <ReceiptItem label="New Loan" value={salary.newLoan || 0} />
+          </AntCol>
+          <AntCol order={4} style={{ minWidth: '150px' }}>
+            <ReceiptItem label="L/CB" value={salary.closingLoan || 0} />
+            <ReceiptItem label="Arrears" value={salary.arrears || 0} />
+            <ReceiptItem label="Net Payment" value={salary.netPayment || 0} />
+            <ReceiptItem label="Signature" value="" />
+          </AntCol>
+        </AntRow>
+        <AntDivider style={{ margin: '10px' }} />
       </div>
     );
   };
@@ -82,12 +91,12 @@ export default class SalaryReceipts extends Component {
     const { salariesByIds } = this.props;
     // Filter out records where the net payment amount is zero.
     const filteredSalaries = filter(
-      salariesByIds,
-      salary => salary.netPayment !== 0
+      salariesByIds ?? [],
+      (salary: SalaryReceiptRecord) => salary.netPayment !== 0
     );
     const sortedSalariesByMonth = sortBy(filteredSalaries, 'karkun.name');
 
-    const receipts = sortedSalariesByMonth.map(salary =>
+    const receipts = sortedSalariesByMonth.map((salary: SalaryReceiptRecord) =>
       this.getSalaryReceipts(salary)
     );
 
@@ -96,7 +105,7 @@ export default class SalaryReceipts extends Component {
     while (receipts.length > 0) {
       const receiptsForPage = receipts.splice(0, 4);
       receiptContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle}>
+        <div key={`container_${index}`} style={ContainerStyle as any}>
           {receiptsForPage}
         </div>
       );

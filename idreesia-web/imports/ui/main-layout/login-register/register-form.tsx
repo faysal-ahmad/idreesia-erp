@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Card, Divider, Flex, Form, Input, Typography, message } from 'antd';
@@ -6,7 +5,19 @@ import { useMutation } from '@apollo/client/react';
 
 import { REGISTER_USER } from '../gql';
 
-const { Link } = Typography;
+const AntButton = Button as any;
+const AntCard = Card as any;
+const AntDivider = Divider as any;
+const AntFlex = Flex as any;
+const AntForm = Form as any;
+const AntFormItem = (Form as any).Item;
+const TextInput = Input as any;
+const AntTypography = Typography as any;
+const { Link } = AntTypography;
+type ShowForm = 'login' | 'register' | 'forgot';
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+interface BaseProps { history?: HistoryLike; location?: LocationLike; setShowForm(form: ShowForm): void; }
 
 const FormStyle = {
   maxWidth: '300px',
@@ -16,11 +27,11 @@ const LoginFormButtonStyle = {
   marginBottom: '10px',
 };
 
-export const RegisterForm = ({ setShowForm }) => {
+export const RegisterForm = ({ setShowForm }: BaseProps) => {
   const [form] = Form.useForm();
-  const [registerUser] = useMutation(REGISTER_USER);
+  const [registerUser] = useMutation(REGISTER_USER as any);
 
-  const handleFinish = values => {
+  const handleFinish = (values: Record<string, string>) => {
     const { displayName, email } = values;
     return registerUser({
       variables: {
@@ -32,16 +43,16 @@ export const RegisterForm = ({ setShowForm }) => {
       form.resetFields();
       message.success('An email has been sent to the specified email address with further instructions.', 5);
     })
-    .catch(error => {
-      message.error(error.message, 5);
+    .catch((error?: Error) => {
+      message.error(error?.message ?? 'Registration failed.', 5);
     });
   };
 
   return (
-    <Card title="Register" style={{ minWidth: 400 }}>
-      <Flex justify='center'>
-        <Form form={form} style={FormStyle} onFinish={handleFinish}>
-          <Form.Item
+    <AntCard title="Register" style={{ minWidth: 400 }}>
+      <AntFlex justify='center'>
+        <AntForm form={form} style={FormStyle as any} onFinish={handleFinish}>
+          <AntFormItem
             name="displayName"
             rules={[
               {
@@ -50,9 +61,9 @@ export const RegisterForm = ({ setShowForm }) => {
               },
             ]}
           >
-            <Input placeholder="Name" />
-          </Form.Item>
-          <Form.Item
+            <TextInput placeholder="Name" />
+          </AntFormItem>
+          <AntFormItem
             name="email"
             rules={[
               {
@@ -61,20 +72,20 @@ export const RegisterForm = ({ setShowForm }) => {
               },
             ]}
           >
-            <Input placeholder="Email" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" style={LoginFormButtonStyle} block>
+            <TextInput placeholder="Email" />
+          </AntFormItem>
+          <AntFormItem>
+            <AntButton type="primary" htmlType="submit" style={LoginFormButtonStyle as any} block>
               Register
-            </Button>
-          </Form.Item>
-        </Form>
-      </Flex>
-      <Divider style={{ marginTop: 0 }} />
-      <Flex justify='center'>
+            </AntButton>
+          </AntFormItem>
+        </AntForm>
+      </AntFlex>
+      <AntDivider style={{ marginTop: 0 }} />
+      <AntFlex justify='center'>
         <Link onClick={() => { setShowForm('login')}}>Already registered? Login</Link>
-      </Flex>
-    </Card>
+      </AntFlex>
+    </AntCard>
   );
 };
 

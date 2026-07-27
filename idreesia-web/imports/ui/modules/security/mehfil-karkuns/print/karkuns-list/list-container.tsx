@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -19,6 +18,12 @@ import {
 import { List } from './list';
 import { MEHFIL_KARKUNS_BY_IDS } from '../../gql'
 
+const PrintControl = ReactToPrint as any;
+const AntButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const PrintList = List as any;
+
 const ControlsContainer = {
   display: 'flex',
   flexFlow: 'row wrap',
@@ -26,9 +31,14 @@ const ControlsContainer = {
   width: '100%',
 };
 
-const ListContainer = ({ queryParams: { ids }, history }) => {
-  const listRef = useRef(null);
-  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS, {
+interface HistoryLike { goBack(): void; }
+interface QueryParams { ids?: string; }
+interface ListData { mehfilKarkunsByIds?: unknown[]; }
+interface ListContainerProps { queryParams: QueryParams; history: HistoryLike; }
+
+const ListContainer = ({ queryParams: { ids }, history }: ListContainerProps) => {
+  const listRef = useRef<HTMLElement | null>(null);
+  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS as any, {
     variables: { ids },
   });
 
@@ -36,18 +46,18 @@ const ListContainer = ({ queryParams: { ids }, history }) => {
 
   return (
     <>
-      <div style={ControlsContainer}>
+      <div style={ControlsContainer as any}>
         <div>
-          <ReactToPrint
+          <PrintControl
             content={() => listRef.current}
             trigger={() => (
-              <Button size="large" type="primary" icon={<PrinterOutlined />}>
+              <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
                 Print List
-              </Button>
+              </AntButton>
             )}
           />
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             size="large"
             type="primary"
             onClick={() => {
@@ -55,13 +65,13 @@ const ListContainer = ({ queryParams: { ids }, history }) => {
             }}
           >
             Back
-          </Button>
+          </AntButton>
         </div>
       </div>
-      <Divider />
-      <List
+      <AntDivider />
+      <PrintList
         ref={listRef}
-        karkuns={data.mehfilKarkunsByIds}
+        karkuns={(data as ListData | undefined)?.mehfilKarkunsByIds ?? []}
       />
     </>
   );
@@ -78,10 +88,10 @@ export const MehfilKarkunsPrintList = flowRight(
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),
-  WithDynamicBreadcrumbs(({ mehfil }) => {
+  WithDynamicBreadcrumbs(({ mehfil }: { mehfil?: { name?: string } }) => {
     if (mehfil) {
       return `Security, Mehfils, ${mehfil.name}, Print Karkun List`;
     }
     return `Security, Mehfils, Print Karkun List`;
   })
-)(ListContainer);
+)(ListContainer as any);

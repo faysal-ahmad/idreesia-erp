@@ -1,9 +1,12 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 import dayjs from "dayjs";
 
 import { DatePicker, Form } from "antd";
+
+const AntFormItem = (Form as any).Item;
+const DateInput = DatePicker as any;
+interface FieldProps { allowClear?: boolean; fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; format?: string; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -28,7 +31,7 @@ const MonthField = ({
   format = "MM-YYYY",
   required,
   requiredMessage,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -37,9 +40,9 @@ const MonthField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <DatePicker.MonthPicker allowClear={allowClear} format={format} />
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <DateInput.MonthPicker allowClear={allowClear} format={format} />
+    </AntFormItem>
   );
 }
 

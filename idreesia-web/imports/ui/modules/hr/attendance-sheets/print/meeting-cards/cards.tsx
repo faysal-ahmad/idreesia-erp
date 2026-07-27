@@ -1,11 +1,17 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
 import { addMonths, format, startOfMonth } from 'date-fns';
 
-import { CardTypes } from 'meteor/idreesia-common/constants/hr';
+import { CardTypes as ImportedCardTypes } from 'meteor/idreesia-common/constants/hr';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
+
+const BarcodeView = Barcode as any;
+const CardTypes = ImportedCardTypes as Record<string, string>;
+interface Karkun { name: string; bloodGroup?: string; contactNumber1Subscribed?: boolean; contactNumber2Subscribed?: boolean; image?: { data?: string }; }
+interface NamedRecord { name: string; }
+interface AttendanceRecord { _id: string; month?: string; percentage?: number; meetingCardBarcodeId: string; karkun: Karkun; duty?: NamedRecord | null; job?: NamedRecord | null; shift?: NamedRecord | null; }
+interface CardsProps { cardType?: string; cardHeading?: string; cardSubHeading?: string | null; showDutyInfo?: boolean; attendanceByBarcodeIds?: AttendanceRecord[]; }
 
 const barcodeOptions = {
   width: 1,
@@ -25,7 +31,7 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-const MonthTranslations = {
+const MonthTranslations: Record<string, string> = {
   Jan: 'جنوری',
   Feb: 'فروری',
   Mar: 'مارچ',
@@ -40,7 +46,7 @@ const MonthTranslations = {
   Dec: 'دسمبر',
 };
 
-const HeadingMapping = {
+const HeadingMapping: Record<string, boolean> = {
   [CardTypes.NAAM_I_MUBARIK_MEETING]: true,
   [CardTypes.RABI_UL_AWAL_LANGAR]: true,
   [CardTypes.SPECIAL_SECURITY]: false,
@@ -49,26 +55,26 @@ const HeadingMapping = {
   [CardTypes.INTERCOM_DUTY]: false,
 };
 
-export default class Cards extends Component {
+export default class Cards extends Component<CardsProps> {
   static propTypes = {
     cardType: PropTypes.string,
     attendanceByBarcodeIds: PropTypes.array,
   };
 
   getHeadingImage = () => {
-    const { cardType } = this.props;
+    const { cardType = '' } = this.props;
     const headingImageUrl = '/images/heading.png';
     const headingImage = HeadingMapping[cardType] ? (
       <div className="heading_card_k">
-        <img src={headingImageUrl} />
+        <img src={headingImageUrl} alt="heading" />
       </div>
     ) : null;
 
     return headingImage;
   };
 
-  getSubHeading = attendance => {
-    const { cardType } = this.props;
+  getSubHeading = (attendance: AttendanceRecord) => {
+    const { cardType = '' } = this.props;
     let subHeading = '';
     let className = 'subheading_card_k';
 
@@ -99,13 +105,13 @@ export default class Cards extends Component {
     return <div className={className}>{subHeading}</div>;
   };
 
-  getKarkunImage = attendance => {
-    const { cardType } = this.props;
+  getKarkunImage = (attendance: AttendanceRecord) => {
+    const { cardType = '' } = this.props;
     const subscribed =
       attendance.karkun.contactNumber1Subscribed ||
       attendance.karkun.contactNumber2Subscribed;
     const percentageClass =
-      attendance.percentage > 0 ? 'info_box' : 'info_box hidden';
+      (attendance.percentage ?? 0) > 0 ? 'info_box' : 'info_box hidden';
     const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
     const bloodGroupClass = attendance.karkun.bloodGroup
       ? 'info_box'
@@ -115,6 +121,7 @@ export default class Cards extends Component {
       <img
         src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
+        alt={attendance.karkun.name}
       />
     ) : (
       <div style={{ height: '100%', width: 'auto' }} />
@@ -135,8 +142,8 @@ export default class Cards extends Component {
     );
   };
 
-  getDutyShiftInfo = attendance => {
-    const { cardType } = this.props;
+  getDutyShiftInfo = (attendance: AttendanceRecord) => {
+    const { cardType = '' } = this.props;
     const dutyShiftNode = HeadingMapping[cardType] ? (
       <p className="duty_shift_job">
         {attendance.duty ? attendance.duty.name : ''}
@@ -149,7 +156,7 @@ export default class Cards extends Component {
     return dutyShiftNode;
   };
 
-  getCardMarkup(attendance) {
+  getCardMarkup(attendance: AttendanceRecord) {
     const headingImage = this.getHeadingImage();
     const subHeading = this.getSubHeading(attendance);
     const karkunImage = this.getKarkunImage(attendance);
@@ -163,7 +170,7 @@ export default class Cards extends Component {
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
         {dutyShiftInfo}
         <div className="barcode_card_k">
-          <Barcode
+          <BarcodeView
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}
           />
@@ -174,7 +181,7 @@ export default class Cards extends Component {
 
   render() {
     const { attendanceByBarcodeIds } = this.props;
-    const cards = attendanceByBarcodeIds.map(attendance =>
+    const cards = (attendanceByBarcodeIds ?? []).map((attendance: AttendanceRecord) =>
       this.getCardMarkup(attendance)
     );
 
@@ -183,7 +190,7 @@ export default class Cards extends Component {
     while (cards.length > 0) {
       const cardsForPage = cards.splice(0, 12);
       cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle}>
+        <div key={`container_${index}`} style={ContainerStyle as any}>
           {cardsForPage}
         </div>
       );

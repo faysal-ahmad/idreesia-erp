@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -31,35 +30,47 @@ const removeDutyMutation = gql`
   }
 `;
 
-const List = ({ history }) => {
-  const { data } = useQuery(listQuery);
-  const [removeDuty] = useMutation(removeDutyMutation, {
+const RouterLink = Link as any;
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+interface HistoryLike { push(path: string): void; }
+interface ListProps { history: HistoryLike; }
+interface DutyShiftSummary { _id: string; name: string; }
+interface DutyRecord { _id: string; name: string; description?: string; canDelete?: boolean; shifts?: DutyShiftSummary[]; usedCount?: number; }
+interface ListData { allMSDuties?: DutyRecord[]; }
+
+const List = ({ history }: ListProps) => {
+  const { data } = useQuery(listQuery as any);
+  const [removeDuty] = useMutation(removeDutyMutation as any, {
     refetchQueries: ['allMSDuties'],
   });
-  const { allMSDuties } = data || {};
+  const { allMSDuties = [] } = (data ?? {}) as ListData;
 
   const handleNewClicked = () => {
     history.push(paths.msDutiesNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: DutyRecord) => {
     removeDuty({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: 200,
-      render: (text, record) => (
-        <Link to={`${paths.msDutiesEditFormPath(record._id)}`}>{text}</Link>
+      render: (text: string, record: DutyRecord) => (
+        <RouterLink to={`${paths.msDutiesEditFormPath(record._id)}`}>{text}</RouterLink>
       ),
     },
     {
@@ -72,7 +83,7 @@ const List = ({ history }) => {
       title: 'Shifts',
       dataIndex: 'shifts',
       key: 'shifts',
-      render: (text, record) => {
+      render: (_text: unknown, record: DutyRecord) => {
         if (!record.shifts || record.shifts.length === 0) return null;
         const shiftNames = record.shifts.map(shift => shift.name);
         return shiftNames.join(', ');
@@ -85,17 +96,17 @@ const List = ({ history }) => {
     },
     {
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: DutyRecord) => {
         if (record.canDelete) {
           return (
-            <Tooltip key="delete" title="Delete">
-              <DeleteOutlined
+            <AntTooltip key="delete" title="Delete">
+              <AntDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           );
         }
 
@@ -105,7 +116,7 @@ const List = ({ history }) => {
   ];
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={allMSDuties}
       columns={columns}
@@ -113,13 +124,13 @@ const List = ({ history }) => {
       bordered
       size="small"
       title={() => (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Duty
-        </Button>
+        </AntButton>
       )}
     />
   );
@@ -129,4 +140,4 @@ List.propTypes = {
   history: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['HR', 'Duties & Shifts', 'List'])(List);
+export default WithBreadcrumbs(['HR', 'Duties & Shifts', 'List'])(List as any);

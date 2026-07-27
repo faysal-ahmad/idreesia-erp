@@ -1,15 +1,18 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
 import { AutoComplete, Form } from "antd";
+
+const AntFormItem = (Form as any).Item;
+const AutoCompleteInput = AutoComplete as any;
+interface FieldProps { dataSource?: string[]; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; initialValue?: string | null; filterOption?(inputValue: string, option: any): boolean; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
 
-const filterOptionFunc = (_inputValue, option) => {
+const filterOptionFunc = (_inputValue: string, option: any) => {
   const key = option.key.toLowerCase();
   const inputValue = _inputValue.toLowerCase();
   if (key.startsWith(inputValue)) return true;
@@ -34,7 +37,7 @@ const AutoCompleteField = ({
   requiredMessage,
   initialValue = null,
   filterOption = filterOptionFunc,
-}) => {
+}: FieldProps) => {
   const rules = required
     ? [
         {
@@ -45,14 +48,14 @@ const AutoCompleteField = ({
     : null;
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <AutoComplete
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <AutoCompleteInput
         placeholder={placeholder}
         dataSource={dataSource}
         backfill
         filterOption={filterOption}
       />
-    </Form.Item>
+    </AntFormItem>
   );
 }
 

@@ -1,9 +1,14 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import { TreeSelect, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const AntTreeSelect = TreeSelect as any;
+type DataRecord = Record<string, any>;
+type FieldValue = string | number;
+interface FieldProps { data?: DataRecord[]; getDataValue?(data: DataRecord): FieldValue; getParentValue?(data: DataRecord): FieldValue | null; getDataText?(data: DataRecord): React.ReactNode; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; required?: boolean; showSearch?: boolean; requiredMessage?: string; initialValue?: string | null; skipValue?: FieldValue; onChange?(value: unknown): void; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -38,30 +43,30 @@ const TreeSelectField = ({
   initialValue = null,
   skipValue,
   onChange,
-}) => {
-  const getTreeNodes = (_data, parent) => {
-    const filteredData = filter(_data, node => {
+}: FieldProps) => {
+  const getTreeNodes = (_data: DataRecord[], parent: FieldValue | null): React.ReactNode[] => {
+    const filteredData = filter(_data, (node: DataRecord) => {
       const parentId = getParentValue(node);
       return parentId === parent;
     });
 
-    const treeNodes = [];
-    filteredData.forEach(node => {
+    const treeNodes: React.ReactNode[] = [];
+    filteredData.forEach((node: DataRecord) => {
       const id = getDataValue(node);
       if (!skipValue || id !== skipValue) {
         const text = getDataText(node);
         const children = getTreeNodes(_data, id);
         treeNodes.push(
-          <TreeSelect.TreeNode value={id} title={text} key={id}>
+          <AntTreeSelect.TreeNode value={id} title={text} key={id}>
             {children}
-          </TreeSelect.TreeNode>
+          </AntTreeSelect.TreeNode>
         );
       }
     });
     return treeNodes;
   };
 
-  const filterTreeNode = (_inputValue, treeNode) => {
+  const filterTreeNode = (_inputValue: string, treeNode: any) => {
     const title = treeNode.props.title.toLowerCase();
     const inputValue = _inputValue.toLowerCase();
     if (title.indexOf(inputValue) !== -1) return true;
@@ -79,8 +84,8 @@ const TreeSelectField = ({
     : null;
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <TreeSelect
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <AntTreeSelect
         placeholder={placeholder}
         onChange={onChange}
         allowClear
@@ -89,8 +94,8 @@ const TreeSelectField = ({
         filterTreeNode={filterTreeNode}
       >
         {treeNodes}
-      </TreeSelect>
-    </Form.Item>
+      </AntTreeSelect>
+    </AntFormItem>
   );
 }
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -21,6 +20,14 @@ import { NamedCards } from './named-cards';
 import { AnonymousCards } from './anonymous-cards';
 import { MEHFIL_KARKUNS_BY_IDS } from '../../gql'
 
+const PrintControl = ReactToPrint as any;
+const AntButton = Button as any;
+const AntCheckbox = Checkbox as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const NamedCardsComponent = NamedCards as any;
+const AnonymousCardsComponent = AnonymousCards as any;
+
 const ControlsContainer = {
   display: 'flex',
   flexFlow: 'row wrap',
@@ -34,10 +41,21 @@ const InputControlsContainer = {
   justifyContent: 'flex-start',
 };
 
-const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehfilDutiesLoading, allSecurityMehfilDuties }) => {
-  const cardsRef = useRef(null);
+interface HistoryLike { goBack(): void; }
+interface QueryParams { ids?: string; dutyId?: string; }
+interface MehfilDuty { _id: string; name?: string; urduName?: string; }
+interface CardsData { mehfilKarkunsByIds?: unknown[]; }
+interface CardsContainerProps {
+  queryParams: QueryParams;
+  history: HistoryLike;
+  allSecurityMehfilDutiesLoading?: boolean;
+  allSecurityMehfilDuties?: MehfilDuty[];
+}
+
+const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehfilDutiesLoading, allSecurityMehfilDuties = [] }: CardsContainerProps) => {
+  const cardsRef = useRef<HTMLElement | null>(null);
   const [showDutyNameInUrdu, setShowDutyNameInUrdu] = useState(false);
-  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS, {
+  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS as any, {
     variables: { ids },
   });
 
@@ -45,13 +63,13 @@ const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehf
   const mehfilDuty = allSecurityMehfilDuties.find(duty => duty._id === dutyId);
 
   const cards = ids ? (
-    <NamedCards
+    <NamedCardsComponent
       ref={cardsRef}
-      mehfilKarkunsByIds={data.mehfilKarkunsByIds}
+      mehfilKarkunsByIds={(data as CardsData | undefined)?.mehfilKarkunsByIds ?? []}
       showDutyNameInUrdu={showDutyNameInUrdu}
     />
   ) : (
-    <AnonymousCards
+    <AnonymousCardsComponent
       ref={cardsRef}
       mehfilDuty={mehfilDuty}
       showDutyNameInUrdu={showDutyNameInUrdu}
@@ -59,28 +77,28 @@ const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehf
   );
 
   const cardShowDutyNameInUrdu = (
-    <Checkbox
+    <AntCheckbox
       checked={showDutyNameInUrdu}
-      onChange={e => setShowDutyNameInUrdu(e.target.checked)}
+      onChange={(e: any) => setShowDutyNameInUrdu(e.target.checked)}
     >
       Show Urdu Duty Name
-    </Checkbox>
+    </AntCheckbox>
   );
 
   return (
     <>
-      <div style={ControlsContainer}>
+      <div style={ControlsContainer as any}>
         <div>
-          <ReactToPrint
+          <PrintControl
             content={() => cardsRef.current}
             trigger={() => (
-              <Button size="large" type="primary" icon={<PrinterOutlined />}>
+              <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
                 Print Cards
-              </Button>
+              </AntButton>
             )}
           />
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             size="large"
             type="primary"
             onClick={() => {
@@ -88,13 +106,13 @@ const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehf
             }}
           >
             Back
-          </Button>
+          </AntButton>
         </div>
-        <div style={InputControlsContainer}>
+        <div style={InputControlsContainer as any}>
           {cardShowDutyNameInUrdu}
         </div>
       </div>
-      <Divider />
+      <AntDivider />
       {cards}
     </>
   );
@@ -114,10 +132,10 @@ export const MehfilKarkunsPrintCards = flowRight(
   WithQueryParams(),
   WithMehfilId(),
   WithMehfil(),
-  WithDynamicBreadcrumbs(({ mehfil }) => {
+  WithDynamicBreadcrumbs(({ mehfil }: { mehfil?: { name?: string } }) => {
     if (mehfil) {
       return `Security, Mehfils, ${mehfil.name}, Print Karkun Cards`;
     }
     return `Security, Mehfils, Print Karkun Cards`;
   })
-)(CardsContainer);
+)(CardsContainer as any);

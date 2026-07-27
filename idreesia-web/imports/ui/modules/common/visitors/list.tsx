@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
@@ -17,7 +16,24 @@ const StatusStyle = {
   fontSize: 20,
 };
 
-export default class VisitorsList extends Component {
+const AntAuditOutlined = AuditOutlined as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntHistoryOutlined = HistoryOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntWalletOutlined = WalletOutlined as any;
+const AntWarningTwoTone = WarningTwoTone as any;
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const AntRow = Row as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const PersonNameControl = PersonName as any;
+type AnyRecord = Record<string, any>;
+interface PagedData { totalResults: number; data: AnyRecord[]; }
+interface Props extends Record<string, any> { listHeader?: () => React.ReactNode; setPageParams(params: { pageIndex: string; pageSize: string; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; }
+interface State { selectedRows: AnyRecord[]; }
+
+export default class VisitorsList extends Component<Props, State> {
   static propTypes = {
     showSelectionColumn: PropTypes.bool,
     showStatusColumn: PropTypes.bool,
@@ -70,18 +86,18 @@ export default class VisitorsList extends Component {
   statusColumn = {
     title: '',
     key: 'status',
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       if (record.criminalRecord) {
         return (
-          <WarningTwoTone
-            style={StatusStyle}
+          <AntWarningTwoTone
+            style={StatusStyle as any}
             twoToneColor="red"
           />
         );
       } else if (record.otherNotes) {
         return (
-          <WarningTwoTone
-            style={StatusStyle}
+          <AntWarningTwoTone
+            style={StatusStyle as any}
             twoToneColor="orange"
           />
         );
@@ -95,8 +111,8 @@ export default class VisitorsList extends Component {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => (
-      <PersonName
+    render: (_text: unknown, record: AnyRecord) => (
+      <PersonNameControl
         person={record}
         onPersonNameClicked={this.props.handleSelectItem}
       />
@@ -112,12 +128,12 @@ export default class VisitorsList extends Component {
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (text, record) => {
-      const numbers = [];
+    render: (_text: unknown, record: AnyRecord) => {
+      const numbers: React.ReactNode[] = [];
       if (record.contactNumber1)
-        numbers.push(<Row key="1">{record.contactNumber1}</Row>);
+        numbers.push(<AntRow key="1">{record.contactNumber1}</AntRow>);
       if (record.contactNumber2)
-        numbers.push(<Row key="2">{record.contactNumber2}</Row>);
+        numbers.push(<AntRow key="2">{record.contactNumber2}</AntRow>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -127,7 +143,7 @@ export default class VisitorsList extends Component {
   cityCountryColumn = {
     title: 'City / Country',
     key: 'cityCountry',
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       if (record.city) {
         return `${record.city}, ${record.country}`;
       }
@@ -138,7 +154,7 @@ export default class VisitorsList extends Component {
   actionsColumn = {
     key: 'action',
     width: 80,
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       const {
         showDeleteAction,
         showStayHistoryAction,
@@ -153,67 +169,67 @@ export default class VisitorsList extends Component {
       } = this.props;
 
       const stayHistoryAction = showStayHistoryAction ? (
-        <Tooltip title="Stay History">
-          <HistoryOutlined
+        <AntTooltip title="Stay History">
+          <AntHistoryOutlined
             className="list-actions-icon"
             onClick={() => {
-              handleStayHistoryAction(record);
+              handleStayHistoryAction?.(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ) : null;
 
       const imdadRequestsAction = showImdadRequestsAction ? (
-        <Tooltip title="Imdad Requests">
-          <WalletOutlined
+        <AntTooltip title="Imdad Requests">
+          <AntWalletOutlined
             className="list-actions-icon"
             onClick={() => {
-              handleImdadRequestsAction(record);
+              handleImdadRequestsAction?.(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ) : null;
 
       const auditLogsAction = showAuditLogsAction ? (
-        <Tooltip title="Audit Logs">
-          <AuditOutlined
+        <AntTooltip title="Audit Logs">
+          <AntAuditOutlined
             className="list-actions-icon"
             onClick={() => {
-              handleAuditLogsAction(record);
+              handleAuditLogsAction?.(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ) : null;
 
       const createAction =
         showKarkunCreateAction && !record.isKarkun ? (
-          <Popconfirm
+          <AntPopconfirm
             title="Are you sure you want to add this person to karkuns?"
             onConfirm={() => {
-              handleKarkunCreateAction(record);
+              handleKarkunCreateAction?.(record);
             }}
             okText="Yes"
             cancelText="No"
           >
-          <Tooltip title="Add to karkuns">
-            <PlusCircleOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Add to karkuns">
+            <AntPlusCircleOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
         ) : null;
 
       const deleteAction = showDeleteAction ? (
-        <Popconfirm
+        <AntPopconfirm
           title="Are you sure you want to delete the data for this person?"
           onConfirm={() => {
-            handleDeleteItem(record);
+            handleDeleteItem?.(record);
           }}
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Delete">
+            <AntDeleteOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       ) : null;
 
       return (
@@ -240,7 +256,7 @@ export default class VisitorsList extends Component {
       showKarkunCreateAction,
     } = this.props;
 
-    const columns = [];
+    const columns: any[] = [];
     if (showStatusColumn) {
       columns.push(this.statusColumn);
     }
@@ -272,18 +288,18 @@ export default class VisitorsList extends Component {
   };
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  onPaginationChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex: number, pageSize?: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: (pageIndex - 1).toString(),
-      pageSize: pageSize.toString(),
+      pageSize: (pageSize ?? 20).toString(),
     });
   };
 
@@ -295,28 +311,30 @@ export default class VisitorsList extends Component {
       pageSize,
       listHeader,
       showSelectionColumn,
-      pagedData: { totalResults, data },
+      pagedData = { totalResults: 0, data: [] },
     } = this.props;
+
+    const { totalResults, data } = pagedData;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={data}
-        columns={this.getColumns()}
+        columns={this.getColumns() as any}
         title={listHeader}
         rowSelection={showSelectionColumn ? this.rowSelection : null}
         bordered
         size="small"
         pagination={false}
         footer={() => (
-          <Pagination
+          <AntPagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
-            showTotal={(total, range) =>
+            showTotal={(total: number, range: [number, number]) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
             onChange={this.onPaginationChange}

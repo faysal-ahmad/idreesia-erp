@@ -1,8 +1,10 @@
-// @ts-nocheck
-import React from "react";
+import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
 import { useQuery } from '@apollo/client/react';
+
+type AnyProps = Record<string, any>;
+interface QueryData { allJobs?: unknown[] | null; }
 
 const ALL_JOBS_QUERY = gql`
   query allJobs {
@@ -16,20 +18,20 @@ const ALL_JOBS_QUERY = gql`
 `;
 
 export const useAllJobs = () => {
-  const { data, loading, ...queryResult } = useQuery(ALL_JOBS_QUERY);
+  const { data, loading, ...queryResult } = useQuery(ALL_JOBS_QUERY as any);
 
   return {
     ...queryResult,
     loading,
     allJobsLoading: loading,
-    allJobs: data ? data.allJobs : null,
+    allJobs: data ? (data as QueryData).allJobs : null,
   };
 };
 
-export default () => WrappedComponent => {
-  const WithAllJobs = props => {
+export default () => (WrappedComponent: ComponentType<AnyProps>) => {
+  const WithAllJobs = (props: AnyProps) => {
     const allJobsProps = useAllJobs();
-    return <WrappedComponent {...props} {...allJobsProps} />;
+    return React.createElement(WrappedComponent as any, { ...props, ...allJobsProps} as any);
   };
 
   WithAllJobs.propTypes = {

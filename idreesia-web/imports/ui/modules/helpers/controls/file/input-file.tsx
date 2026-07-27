@@ -1,11 +1,15 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Upload } from 'antd';
 
-export default class InputFile extends Component {
+const AntButton = Button as any;
+const AntUpload = Upload as any;
+const AntUploadOutlined = UploadOutlined as any;
+interface Props { label?: string; accept?: string; value?: string; onChange?(value: string | ArrayBuffer | null): void; showUploadList?: boolean; }
+
+export default class InputFile extends Component<Props> {
   static propTypes = {
     label: PropTypes.string,
     accept: PropTypes.string,
@@ -19,32 +23,32 @@ export default class InputFile extends Component {
     showUploadList: true,
   };
 
-  handleChange = info => {
+  handleChange = (info: any) => {
     const { onChange } = this.props;
     if (info.file.status === 'removed') {
-      onChange(null);
+      onChange?.(null);
     } else if (info.file.status !== 'uploading') {
       const reader = new FileReader();
-      reader.onload = e => {
-        onChange(e.target.result);
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        onChange?.(e.target?.result ?? null);
       };
-      reader.readAsText(info.file.originFileObj);
+      if (info.file.originFileObj) reader.readAsText(info.file.originFileObj);
     }
   };
 
   render() {
     const { accept } = this.props;
     return (
-      <Upload
+      <AntUpload
         accept={accept}
         onChange={this.handleChange}
         showUploadList={this.props.showUploadList}
       >
-        <Button type="default" size="large">
-          <UploadOutlined />
+        <AntButton type="default" size="large">
+          <AntUploadOutlined />
           {this.props.label || null}
-        </Button>
-      </Upload>
+        </AntButton>
+      </AntUpload>
     );
   }
 }

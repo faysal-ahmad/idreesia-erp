@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client/react';
@@ -8,8 +7,16 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { UPDATE_SECURITY_VISITOR, SECURITY_VISITOR_BY_ID } from '../gql';
 
-const GeneralInfo = ({ history, formDataLoading, securityVisitorById }) => {
-  const [updateSecurityVisitor] = useMutation(UPDATE_SECURITY_VISITOR, {
+const VisitorsGeneralInfoComponent = VisitorsGeneralInfo as any;
+interface HistoryLike { push(path: string): void; }
+interface VisitorRecord { _id: string; [key: string]: unknown; }
+interface VisitorValues { [key: string]: unknown; }
+interface GeneralInfoProps { history: HistoryLike; formDataLoading?: boolean; securityVisitorById?: VisitorRecord | null; }
+interface GeneralInfoWithDataProps { match: { params: { visitorId: string } }; history: HistoryLike; [key: string]: any; }
+interface VisitorData { securityVisitorById?: VisitorRecord | null; }
+
+const GeneralInfo = ({ history, formDataLoading, securityVisitorById }: GeneralInfoProps) => {
+  const [updateSecurityVisitor] = useMutation(UPDATE_SECURITY_VISITOR as any, {
     refetchQueries: ['pagedSecurityVisitors'],
   });
 
@@ -32,10 +39,10 @@ const GeneralInfo = ({ history, formDataLoading, securityVisitorById }) => {
     permanentAddress,
     educationalQualification,
     meansOfEarning,
-  }) => {
+  }: VisitorValues) => {
     updateSecurityVisitor({
       variables: {
-        _id: securityVisitorById._id,
+        _id: securityVisitorById?._id,
         name,
         parentName,
         cnicNumber,
@@ -55,15 +62,15 @@ const GeneralInfo = ({ history, formDataLoading, securityVisitorById }) => {
       .then(() => {
         history.push(`${paths.visitorRegistrationListPath}`);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (formDataLoading) return null;
+  if (formDataLoading || !securityVisitorById) return null;
 
   return (
-    <VisitorsGeneralInfo
+    <VisitorsGeneralInfoComponent
       visitor={securityVisitorById}
       handleFinish={handleFinish}
       handleCancel={handleCancel}
@@ -71,10 +78,10 @@ const GeneralInfo = ({ history, formDataLoading, securityVisitorById }) => {
   );
 };
 
-const GeneralInfoWithData = props => {
+const GeneralInfoWithData = (props: GeneralInfoWithDataProps) => {
   const { match } = props;
   const { visitorId } = match.params;
-  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID, {
+  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID as any, {
     variables: { _id: visitorId },
   });
 
@@ -82,7 +89,7 @@ const GeneralInfoWithData = props => {
     <GeneralInfo
       {...props}
       {...queryResult}
-      {...data}
+      {...(data as VisitorData)}
       formDataLoading={loading}
     />
   );

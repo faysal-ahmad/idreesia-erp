@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
@@ -10,14 +9,24 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class EditForm extends Component {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SwitchInputField = SwitchField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface MehfilValues { name?: string; address?: string; mehfilStartYear?: string; timingDetails?: string; lcdAvailability?: boolean; tabAvailability?: boolean; otherMehfilDetails?: string; }
+interface CityMehfil extends MehfilValues { _id: string; cityId?: string; }
+interface Props { cityMehfil?: CityMehfil | null; handleSave?(values: Record<string, unknown>): void; handleCancel?(): void; }
+interface State { isFieldsTouched: boolean; }
+
+class EditForm extends Component<Props, State> {
   static propTypes = {
     cityMehfil: PropTypes.object,
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
   };
 
-  state = {
+  state: State = {
     isFieldsTouched: false,
   };
 
@@ -33,11 +42,11 @@ class EditForm extends Component {
     lcdAvailability,
     tabAvailability,
     otherMehfilDetails,
-  }) => {
+  }: MehfilValues) => {
     const { cityMehfil, handleSave } = this.props;
-    handleSave({
-      _id: cityMehfil._id,
-      cityId: cityMehfil.cityId,
+    handleSave?.({
+      _id: cityMehfil?._id,
+      cityId: cityMehfil?.cityId,
       name,
       address,
       mehfilStartYear,
@@ -53,49 +62,49 @@ class EditForm extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
+      <AntForm layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={cityMehfil.name}
+          initialValue={cityMehfil?.name}
           required
           requiredMessage="Please input a name for the mehfil."
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="address"
           fieldLabel="Address"
-          initialValue={cityMehfil.address}
+          initialValue={cityMehfil?.address}
         />
-        <InputTextField
+        <TextField
           fieldName="mehfilStartYear"
           fieldLabel="Start Year"
-          initialValue={cityMehfil.mehfilStartYear}
+          initialValue={cityMehfil?.mehfilStartYear}
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="timingDetails"
           fieldLabel="Timings"
-          initialValue={cityMehfil.timingDetails}
+          initialValue={cityMehfil?.timingDetails}
         />
-        <SwitchField
+        <SwitchInputField
           fieldName="lcdAvailability"
           fieldLabel="LCD Available"
-          initialValue={cityMehfil.lcdAvailability}
+          initialValue={cityMehfil?.lcdAvailability}
         />
-        <SwitchField
+        <SwitchInputField
           fieldName="tabAvailability"
           fieldLabel="Tablet Available"
-          initialValue={cityMehfil.tabAvailability}
+          initialValue={cityMehfil?.tabAvailability}
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="otherMehfilDetails"
           fieldLabel="Other Details"
-          initialValue={cityMehfil.otherMehfilDetails}
+          initialValue={cityMehfil?.otherMehfilDetails}
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.props.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -13,6 +12,13 @@ import {
 
 import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 
+const KarkunsGeneralInfoForm = KarkunsGeneralInfo as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { goBack(): void; }
+interface MatchLike { params: { karkunId: string; }; }
+interface QueryData { hrKarkunById?: AnyRecord | null; }
+interface Props { allCities?: AnyRecord[]; allCitiesLoading?: boolean; allCityMehfils?: AnyRecord[]; allCityMehfilsLoading?: boolean; history: HistoryLike; karkunId?: string | null; match: MatchLike; }
+
 const GeneralInfo = ({
   match,
   history,
@@ -21,14 +27,14 @@ const GeneralInfo = ({
   allCitiesLoading,
   allCityMehfils,
   allCityMehfilsLoading,
-}) => {
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
+}: Props) => {
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
     variables: { _id: match.params.karkunId },
   });
-  const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
+  const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN as any, {
     refetchQueries: ['pagedHrKarkuns'],
   });
-  const { hrKarkunById } = data || {};
+  const { hrKarkunById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
     history.goBack();
@@ -51,7 +57,7 @@ const GeneralInfo = ({
     birthDate,
     deathDate,
     referenceName,
-  }) => {
+  }: AnyRecord) => {
     updateHrKarkun({
       variables: {
         _id: karkunId,
@@ -63,8 +69,8 @@ const GeneralInfo = ({
         emailAddress,
         currentAddress,
         permanentAddress,
-        cityId: cityIdMehfilId[0],
-        cityMehfilId: cityIdMehfilId[1],
+        cityId: cityIdMehfilId?.[0],
+        cityMehfilId: cityIdMehfilId?.[1],
         bloodGroup: bloodGroup || null,
         educationalQualification,
         meansOfEarning,
@@ -77,7 +83,7 @@ const GeneralInfo = ({
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -85,13 +91,13 @@ const GeneralInfo = ({
   if (formDataLoading || allCitiesLoading || allCityMehfilsLoading) return null;
 
   return (
-    <KarkunsGeneralInfo
+    <KarkunsGeneralInfoForm
       karkun={hrKarkunById}
       handleFinish={handleFinish}
       handleCancel={handleCancel}
       showCityMehfilField
-      cities={allCities}
-      cityMehfils={allCityMehfils}
+      cities={allCities ?? []}
+      cityMehfils={allCityMehfils ?? []}
     />
   );
 };
@@ -110,4 +116,4 @@ GeneralInfo.propTypes = {
 export default flowRight(
   WithAllCities(),
   WithAllCityMehfils()
-)(GeneralInfo);
+)(GeneralInfo as any);

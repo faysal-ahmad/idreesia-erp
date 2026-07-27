@@ -1,8 +1,11 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Switch, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const SwitchInput = Switch as any;
+interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: boolean; disabled?: boolean; handleChange?(checked: boolean): void; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -22,17 +25,17 @@ const SwitchField = ({
   initialValue = false,
   disabled = false,
   handleChange,
-}) => (
-    <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} {...fieldLayout}>
-      <Switch
+}: FieldProps) => (
+    <AntFormItem name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} {...fieldLayout}>
+      <SwitchInput
         disabled={disabled}
-        onChange={checked => {
+        onChange={(checked: boolean) => {
           if (handleChange) {
             handleChange(checked);
           }
         }}
       />
-    </Form.Item>
+    </AntFormItem>
   );
 
 SwitchField.propTypes = {

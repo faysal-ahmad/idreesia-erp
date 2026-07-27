@@ -1,8 +1,10 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function getClassNamesForAttendance(attendanceValue) {
+type AttendanceValue = 'pr' | 'la' | 'ab' | 'ms' | null | undefined;
+interface Props { day: string; attendanceValue?: AttendanceValue; onChange(day: string, value: AttendanceValue): void; }
+
+function getClassNamesForAttendance(attendanceValue: AttendanceValue) {
   if (attendanceValue === 'pr') return 'attendance-date attendance-present';
   if (attendanceValue === 'la') return 'attendance-date attendance-late';
   if (attendanceValue === 'ab') return 'attendance-date attendance-absent';
@@ -11,13 +13,13 @@ function getClassNamesForAttendance(attendanceValue) {
   return 'attendance-date';
 }
 
-const AttendanceDay = ({ day, attendanceValue, onChange }) => {
+const AttendanceDay = ({ day, attendanceValue, onChange }: Props) => {
   const [currentAttendanceValue, setCurrentAttendanceValue] = useState(
     attendanceValue
   );
 
   const handleClick = () => {
-    let newAttendanceValue;
+    let newAttendanceValue: AttendanceValue;
     if (!currentAttendanceValue) newAttendanceValue = 'pr';
     if (currentAttendanceValue === 'pr') newAttendanceValue = 'la';
     if (currentAttendanceValue === 'la') newAttendanceValue = 'ab';

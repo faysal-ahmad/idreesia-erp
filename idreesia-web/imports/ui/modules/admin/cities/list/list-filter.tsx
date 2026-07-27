@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Collapse, Form, Row } from 'antd';
@@ -10,6 +9,18 @@ import {
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
+
+const AntButton = Button as any;
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntFormItem = (Form as any).Item;
+const AntRow = Row as any;
+const AutoCompleteInputField = AutoCompleteField as any;
+const SelectInputField = SelectField as any;
+const RefreshControl = RefreshButton as any;
+interface City { _id: string; name?: string; peripheryOf?: string | null; }
+interface Props { allCities?: City[]; distinctRegions?: string[]; peripheryOf?: string | null; region?: string | null; setPageParams(params: Record<string, unknown>): void; refreshData?: () => Promise<unknown>; }
+interface FormValues { peripheryOf?: string | null; region?: string | null; }
 
 const ContainerStyle = {
   width: '500px',
@@ -24,8 +35,8 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-const ListFilter = props => {
-  const [form] = Form.useForm();
+const ListFilter = (props: Props) => {
+  const [form] = AntForm.useForm();
   const { refreshData } = props;
 
   const handleReset = () => {
@@ -38,7 +49,7 @@ const ListFilter = props => {
     });
   };
 
-  const handleFinish = ({ peripheryOf, region }) => {
+  const handleFinish = ({ peripheryOf, region }: FormValues) => {
     const { setPageParams } = props;
     setPageParams({
       pageIndex: 0,
@@ -47,7 +58,7 @@ const ListFilter = props => {
     });
   };
 
-  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
+  const refreshButton = () => <RefreshControl refreshData={refreshData} />;
 
   const {
     region,
@@ -55,28 +66,28 @@ const ListFilter = props => {
     distinctRegions,
   } = props;
 
-  const nonPeripheryCities = filter(allCities, city => !city.peripheryOf);
+  const nonPeripheryCities = filter(allCities ?? [], (city: City) => !city.peripheryOf);
 
   return (
-    <Collapse
-      style={ContainerStyle}
+    <AntCollapse
+      style={ContainerStyle as any}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <Form form={form} layout="horizontal" onFinish={handleFinish}>
-              <SelectField
+            <AntForm form={form} layout="horizontal" onFinish={handleFinish}>
+              <SelectInputField
                 fieldName="peripheryOf"
                 fieldLabel="Periphery Of"
                 required={false}
                 data={nonPeripheryCities}
-                getDataValue={({ _id }) => _id}
-                getDataText={({ name: _name }) => _name}
+                getDataValue={({ _id }: City) => _id}
+                getDataText={({ name: _name }: City) => _name}
                 fieldLayout={formItemLayout}
               />
-              <AutoCompleteField
+              <AutoCompleteInputField
                 fieldName="region"
                 fieldLabel="Region"
                 fieldLayout={formItemLayout}
@@ -84,18 +95,18 @@ const ListFilter = props => {
                 initialValue={region}
                 required={false}
               />
-              <Form.Item {...buttonItemLayout}>
-                <Row type="flex" justify="end">
-                  <Button type="default" onClick={handleReset}>
+              <AntFormItem {...buttonItemLayout}>
+                <AntRow type="flex" justify="end">
+                  <AntButton type="default" onClick={handleReset}>
                     Reset
-                  </Button>
+                  </AntButton>
                   &nbsp;
-                  <Button type="primary" htmlType="submit">
+                  <AntButton type="primary" htmlType="submit">
                     Search
-                  </Button>
-                </Row>
-              </Form.Item>
-            </Form>
+                  </AntButton>
+                </AntRow>
+              </AntFormItem>
+            </AntForm>
           ),
         },
       ]}

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -30,6 +29,28 @@ import ListFilter from './list-filter';
 
 import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
 
+const RouterLink = Link as any;
+const AntAuditOutlined = AuditOutlined as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntDownloadOutlined = DownloadOutlined as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const AntSettingOutlined = SettingOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntBarcodeOutlined = BarcodeOutlined as any;
+const AntButton = Button as any;
+const AntDropdown = Dropdown as any;
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const AntRow = Row as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const KarkunNameControl = KarkunName as any;
+const KarkunListFilter = ListFilter as any;
+type AnyRecord = Record<string, any>;
+interface PagedKarkuns { totalResults: number; karkuns: AnyRecord[]; }
+interface QueryData { pagedHrKarkuns?: PagedKarkuns | null; }
+interface Props extends Record<string, any> { pageIndex: number; pageSize: number; setPageParams(params: AnyRecord): void; handleItemSelected?(record: AnyRecord): void; handlePrintClicked?(record: AnyRecord): void; handleAuditLogClicked?(record: AnyRecord): void; handleNewClicked?(): void; handleScanClicked?(): void; handlePrintSelected?(records: AnyRecord[]): void; }
+
 const ContactNumberSubscribed = {
   color: 'green',
 };
@@ -38,8 +59,8 @@ const ContactNumberNotSubscribed = {
   color: 'red',
 };
 
-const List = props => {
-  const [selectedRows, setSelectedRows] = useState([]);
+const List = (props: Props) => {
+  const [selectedRows, setSelectedRows] = useState<AnyRecord[]>([]);
   const {
     pageIndex,
     pageSize,
@@ -69,7 +90,7 @@ const List = props => {
     handleScanClicked,
     handlePrintSelected,
   } = props;
-  const { data, loading, refetch: refetchListQuery } = useQuery(PAGED_HR_KARKUNS, {
+  const { data, loading, refetch: refetchListQuery } = useQuery(PAGED_HR_KARKUNS as any, {
     variables: {
       filter: {
         name,
@@ -89,16 +110,16 @@ const List = props => {
       },
     },
   });
-  const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN, {
+  const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN as any, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: AnyRecord) => {
     deleteHrKarkun({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
@@ -106,7 +127,7 @@ const List = props => {
   const handleExportSelected = () => {
     if (selectedRows.length === 0) return;
 
-    const reportArgs = selectedRows.map(row => row._id);
+    const reportArgs = selectedRows.map((row: AnyRecord) => row._id);
     const url = `${
       window.location.origin
     }/generate-report?reportName=Karkuns&reportArgs=${reportArgs.join(',')}`;
@@ -115,17 +136,17 @@ const List = props => {
 
   const handlePrintSelectedClick = () => {
     if (selectedRows.length === 0) return;
-    handlePrintSelected(selectedRows);
+    handlePrintSelected?.(selectedRows);
   };
 
   const nameColumn = {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => (
-      <KarkunName
+    render: (_text: unknown, record: AnyRecord) => (
+      <KarkunNameControl
         karkun={record}
-        onKarkunNameClicked={handleItemSelected}
+        onKarkunNameClicked={handleItemSelected ?? noop}
       />
     ),
   };
@@ -139,9 +160,9 @@ const List = props => {
   const phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (text, record) => {
-      const numbers = [];
-      let style = {};
+    render: (_text: unknown, record: AnyRecord) => {
+      const numbers: React.ReactNode[] = [];
+      let style: Record<string, string> = {};
       if (record.contactNumber1) {
         if (record.contactNumber1Subscribed === true) {
           style = ContactNumberSubscribed;
@@ -150,9 +171,9 @@ const List = props => {
         }
 
         numbers.push(
-          <Row key="1">
-            <span style={style}>{record.contactNumber1}</span>
-          </Row>
+          <AntRow key="1">
+            <span style={style as any}>{record.contactNumber1}</span>
+          </AntRow>
         );
       }
 
@@ -165,9 +186,9 @@ const List = props => {
         }
 
         numbers.push(
-          <Row key="2">
-            <span style={style}>{record.contactNumber2}</span>
-          </Row>
+          <AntRow key="2">
+            <span style={style as any}>{record.contactNumber2}</span>
+          </AntRow>
         );
       }
 
@@ -180,18 +201,18 @@ const List = props => {
     title: 'Job / Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: (duties, record) => {
-      let jobName = [];
-      let dutyNames = [];
+    render: (duties: AnyRecord[] = [], record: AnyRecord) => {
+      let jobName: React.ReactNode[] = [];
+      let dutyNames: React.ReactNode[] = [];
 
       if (record.job) {
         const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=7`;
-        jobName = [<Link to={jobTabLink}>{record.job.name}</Link>];
+        jobName = [<RouterLink to={jobTabLink}>{record.job.name}</RouterLink>];
       }
 
       if (duties.length > 0) {
         const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=4`;
-        dutyNames = duties.map(duty => {
+        dutyNames = duties.map((duty: AnyRecord) => {
           let dutyName = duty.dutyName;
           if (duty.shiftName) {
             dutyName = `${duty.dutyName} - ${duty.shiftName}`;
@@ -201,7 +222,7 @@ const List = props => {
             dutyName = `(CO) - ${dutyName}`;
           }
 
-          return <Link to={dutyTabLink}>{dutyName}</Link>;
+          return <RouterLink to={dutyTabLink}>{dutyName}</RouterLink>;
         });
       }
 
@@ -214,7 +235,7 @@ const List = props => {
       return (
         <>
           {links.map((link, index) => (
-            <Row key={index}>{link}</Row>
+            <AntRow key={index}>{link}</AntRow>
           ))}
         </>
       );
@@ -223,25 +244,25 @@ const List = props => {
 
   const actionsColumn = {
     key: 'action',
-    render: (text, record) => (
+    render: (_text: unknown, record: AnyRecord) => (
       <div className="list-actions-column">
-        <Tooltip title="Print">
-          <PrinterOutlined
+        <AntTooltip title="Print">
+          <AntPrinterOutlined
             className="list-actions-icon"
             onClick={() => {
-              handlePrintClicked(record);
+              handlePrintClicked?.(record);
             }}
           />
-        </Tooltip>
-        <Tooltip title="Audit Log">
-          <AuditOutlined
+        </AntTooltip>
+        <AntTooltip title="Audit Log">
+          <AntAuditOutlined
             className="list-actions-icon"
             onClick={() => {
-              handleAuditLogClicked(record);
+              handleAuditLogClicked?.(record);
             }}
           />
-        </Tooltip>
-        <Popconfirm
+        </AntTooltip>
+        <AntPopconfirm
           title="Are you sure you want to delete this karkun?"
           onConfirm={() => {
             handleDeleteClicked(record);
@@ -249,16 +270,16 @@ const List = props => {
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Delete">
+            <AntDeleteOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       </div>
     ),
   };
 
   const getColumns = () => {
-    const columns = [nameColumn, cnicColumn];
+    const columns: any[] = [nameColumn, cnicColumn];
 
     if (showPhoneNumbersColumn) {
       columns.push(phoneNumberColumn);
@@ -276,22 +297,22 @@ const List = props => {
   };
 
   const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
       setSelectedRows(selectedRows);
     },
   };
 
-  const onChange = (pageIndex, pageSize) => {
+  const onChange = (pageIndex: number, pageSize?: number) => {
     setPageParams({
       pageIndex: pageIndex - 1,
-      pageSize,
+      pageSize: pageSize ?? 20,
     });
   };
 
-  const onShowSizeChange = (pageIndex, pageSize) => {
+  const onShowSizeChange = (pageIndex: number, pageSize?: number) => {
     setPageParams({
       pageIndex: pageIndex - 1,
-      pageSize,
+      pageSize: pageSize ?? 20,
     });
   };
 
@@ -303,7 +324,7 @@ const List = props => {
         key: '1',
         label: (
           <>
-            <PrinterOutlined />&nbsp;
+            <AntPrinterOutlined />&nbsp;
             Print Selected
           </>
         ),
@@ -314,7 +335,7 @@ const List = props => {
         key: '2',
         label: (
           <>
-            <DownloadOutlined />&nbsp;
+            <AntDownloadOutlined />&nbsp;
             Download Selected
           </>
         ),
@@ -323,9 +344,9 @@ const List = props => {
     ];
 
     return (
-      <Dropdown menu={{ items: menuItems }}>
-        <Button icon={<SettingOutlined />} size="large" />
-      </Dropdown>
+      <AntDropdown menu={{ items: menuItems }}>
+        <AntButton icon={<AntSettingOutlined />} size="large" />
+      </AntDropdown>
     );
   };
 
@@ -334,23 +355,23 @@ const List = props => {
     if (showNewButton) {
       newButton = (
         <div>
-          <Button
+          <AntButton
             size="large"
             type="primary"
-            icon={<PlusCircleOutlined />}
+            icon={<AntPlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Karkun
-          </Button>
+          </AntButton>
           &nbsp;
-          <Button
+          <AntButton
             size="large"
             type="secondary"
-            icon={<BarcodeOutlined />}
+            icon={<AntBarcodeOutlined />}
             onClick={handleScanClicked}
           >
             Scan Card
-          </Button>
+          </AntButton>
         </div>
       );
     }
@@ -358,7 +379,7 @@ const List = props => {
     let listFilter = null;
     if (!predefinedFilterName) {
       listFilter = (
-        <ListFilter
+        <KarkunListFilter
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
@@ -390,27 +411,27 @@ const List = props => {
 
   if (loading) return null;
 
-  const { totalResults, karkuns } = data.pagedHrKarkuns;
+  const { totalResults, karkuns } = (data as QueryData).pagedHrKarkuns ?? { totalResults: 0, karkuns: [] };
 
   const numPageIndex = pageIndex ? pageIndex + 1 : 1;
   const numPageSize = pageSize || 20;
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={karkuns}
-      columns={getColumns()}
+      columns={getColumns() as any}
       title={getTableHeader}
-      rowSelection={showSelectionColumn ? rowSelection : null}
+      rowSelection={showSelectionColumn ? rowSelection : undefined}
       bordered
       size="small"
       pagination={false}
       footer={() => (
-        <Pagination
+        <AntPagination
           current={numPageIndex}
           pageSize={numPageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: [number, number]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onChange}

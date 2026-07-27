@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -14,25 +13,34 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import EidReceipts from './eid-receipts';
 
-const EidReceiptsContainer = ({ history, queryParams }) => {
-  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery, {
+const PrintButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const PrintControl = ReactToPrint as any;
+const ReceiptsView = EidReceipts as any;
+interface HistoryLike { goBack(): void; }
+interface ContainerProps { history: HistoryLike; queryParams: { ids: string; }; }
+interface QueryData { salariesByIds?: unknown[]; }
+
+const EidReceiptsContainer = ({ history, queryParams }: ContainerProps) => {
+  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery as any, {
     variables: { ids: queryParams.ids },
   });
-  const eidReceiptsRef = useRef(null);
+  const eidReceiptsRef = useRef<any>(null);
   if (salariesLoading) return null;
 
   return (
     <>
-      <ReactToPrint
+      <PrintControl
         content={() => eidReceiptsRef.current}
         trigger={() => (
-          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
             Print Receipts
-          </Button>
+          </PrintButton>
         )}
       />
       &nbsp;
-      <Button
+      <PrintButton
         size="large"
         type="primary"
         onClick={() => {
@@ -40,11 +48,11 @@ const EidReceiptsContainer = ({ history, queryParams }) => {
         }}
       >
         Back
-      </Button>
-      <Divider />
-      <EidReceipts
+      </PrintButton>
+      <AntDivider />
+      <ReceiptsView
         ref={eidReceiptsRef}
-        salariesByIds={data && data.salariesByIds}
+        salariesByIds={data ? (data as QueryData).salariesByIds : []}
       />
     </>
   );
@@ -87,4 +95,4 @@ const salariesByIdsQuery = gql`
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Salary Sheets', 'Eid Receipts'])
-)(EidReceiptsContainer);
+)(EidReceiptsContainer as any);

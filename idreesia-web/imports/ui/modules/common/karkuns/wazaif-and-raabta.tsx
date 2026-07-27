@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -11,7 +10,15 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { AuditInfo } from '/imports/ui/modules/common';
 
-const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
+const AntForm = Form as any;
+const DateInputField = DateField as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+type AnyRecord = Record<string, any>;
+interface Props { karkun: AnyRecord; handleFinish(values: AnyRecord): void; handleCancel?(): void; }
+
+const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
 
   const handleFieldsChange = () => {
@@ -20,8 +27,8 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
 
   return (
     <>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <DateField
+      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <DateInputField
           fieldName="lastTarteebDate"
           fieldLabel="Last Tarteeb"
           initialValue={
@@ -31,21 +38,21 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
           }
         />
 
-        <InputTextField
+        <TextField
           fieldName="mehfilRaabta"
           fieldLabel="Mehfil Visits"
           placeholder="e.g. 3 days a week"
           initialValue={karkun.mehfilRaabta}
         />
 
-        <InputTextField
+        <TextField
           fieldName="msRaabta"
           fieldLabel="Multan Shareef Visits"
           placeholder="e.g. Once every month"
           initialValue={karkun.msRaabta}
         />
 
-        <DateField
+        <DateInputField
           fieldName="msLastVisitDate"
           fieldLabel="Last MS Visit"
           initialValue={
@@ -55,12 +62,12 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }) => {
           }
         />
 
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={karkun} />
+      </AntForm>
+      <AuditInfoComponent record={karkun} />
     </>
   );
 };

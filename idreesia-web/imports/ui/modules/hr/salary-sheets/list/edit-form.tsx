@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Col, Form, Row } from 'antd';
@@ -11,7 +10,18 @@ const formItemLayout = {
   wrapperCol: { span: 6 },
 };
 
-class EditForm extends Component {
+const AntButton = Button as any;
+const AntCol = Col as any;
+const AntForm = Form as any;
+const AntRow = Row as any;
+const AntCloseCircleOutlined = CloseCircleOutlined as any;
+const AntSaveOutlined = SaveOutlined as any;
+const NumberField = InputNumberField as any;
+interface SalaryRecord { _id: string; salary?: number; rashanMadad?: number; openingLoan?: number; loanDeduction?: number; newLoan?: number; otherDeduction?: number; arrears?: number; }
+interface SalaryValues extends Omit<SalaryRecord, '_id'> {}
+interface EditFormProps { salary: SalaryRecord; handleSave(values: SalaryRecord): void; handleCancel(): void; }
+
+class EditForm extends Component<EditFormProps> {
   static propTypes = {
     salary: PropTypes.object,
     handleSave: PropTypes.func,
@@ -26,7 +36,7 @@ class EditForm extends Component {
     newLoan,
     otherDeduction,
     arrears,
-  }) => {
+  }: SalaryValues) => {
     const { salary: salaryObj, handleSave } = this.props;
     handleSave({
       _id: salaryObj._id,
@@ -44,80 +54,80 @@ class EditForm extends Component {
     const { salary } = this.props;
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish}>
-        <Row>
-          <Col span={10}>
-            <InputNumberField
+      <AntForm layout="horizontal" onFinish={this.handleFinish}>
+        <AntRow>
+          <AntCol span={10}>
+            <NumberField
               fieldName="salary"
               fieldLabel="Salary"
               minValue={0}
               initialValue={salary.salary}
               fieldLayout={formItemLayout}
             />
-            <InputNumberField
+            <NumberField
               fieldName="rashanMadad"
               fieldLabel="Rashan"
               minValue={0}
               initialValue={salary.rashanMadad}
               fieldLayout={formItemLayout}
             />
-            <InputNumberField
+            <NumberField
               fieldName="otherDeduction"
               fieldLabel="Other Deduction"
               minValue={0}
               initialValue={salary.otherDeduction}
               fieldLayout={formItemLayout}
             />
-            <InputNumberField
+            <NumberField
               fieldName="arrears"
               fieldLabel="Arrears"
               minValue={0}
               initialValue={salary.arrears}
               fieldLayout={formItemLayout}
             />
-          </Col>
-          <Col span={10}>
-            <InputNumberField
+          </AntCol>
+          <AntCol span={10}>
+            <NumberField
               fieldName="openingLoan"
               fieldLabel="Opening Loan"
               minValue={0}
               initialValue={salary.openingLoan}
               fieldLayout={formItemLayout}
             />
-            <InputNumberField
+            <NumberField
               fieldName="loanDeduction"
               fieldLabel="Loan Deduction"
               minValue={0}
               initialValue={salary.loanDeduction}
               fieldLayout={formItemLayout}
             />
-            <InputNumberField
+            <NumberField
               fieldName="newLoan"
               fieldLabel="New Loan"
               minValue={0}
               initialValue={salary.newLoan}
               fieldLayout={formItemLayout}
             />
-          </Col>
-        </Row>
+          </AntCol>
+        </AntRow>
 
-        <Row type="flex" justify="start">
-          <Col offset={10}>
-            <Button
+        <AntRow type="flex" justify="start">
+          <AntCol offset={10}>
+            <AntButton
               size="large"
               type="default"
-              icon={<CloseCircleOutlined />}
+              icon={<AntCloseCircleOutlined />}
               onClick={this.props.handleCancel}
             >
               Cancel
-            </Button>
+            </AntButton>
             &nbsp;
-            <Button size="large" type="primary" icon={<SaveOutlined />} htmlType="submit">
+            <AntButton size="large" type="primary" icon={<AntSaveOutlined />} htmlType="submit">
               Save
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+            </AntButton>
+          </AntCol>
+        </AntRow>
+      </AntForm>
     );
   }
 }

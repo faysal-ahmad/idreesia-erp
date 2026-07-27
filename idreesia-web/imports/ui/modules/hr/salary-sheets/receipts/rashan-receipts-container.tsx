@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -14,28 +13,37 @@ import {
 } from 'meteor/idreesia-common/composers/common';
 import RashanReceipts from './rashan-receipts';
 
+const PrintButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const PrintControl = ReactToPrint as any;
+const ReceiptsView = RashanReceipts as any;
+interface HistoryLike { goBack(): void; }
+interface ContainerProps { history: HistoryLike; queryParams: { ids: string; }; }
+interface QueryData { salariesByIds?: unknown[]; }
+
 const RashanReceiptsContainer = ({
   history,
   queryParams,
-}) => {
-  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery, {
+}: ContainerProps) => {
+  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery as any, {
     variables: { ids: queryParams.ids },
   });
-  const rashanReceiptsRef = useRef(null);
+  const rashanReceiptsRef = useRef<any>(null);
   if (salariesLoading) return null;
 
   return (
     <>
-      <ReactToPrint
+      <PrintControl
         content={() => rashanReceiptsRef.current}
         trigger={() => (
-          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
             Print Receipts
-          </Button>
+          </PrintButton>
         )}
       />
       &nbsp;
-      <Button
+      <PrintButton
         size="large"
         type="primary"
         onClick={() => {
@@ -43,11 +51,11 @@ const RashanReceiptsContainer = ({
         }}
       >
         Back
-      </Button>
-      <Divider />
-      <RashanReceipts
+      </PrintButton>
+      <AntDivider />
+      <ReceiptsView
         ref={rashanReceiptsRef}
-        salariesByIds={data && data.salariesByIds}
+        salariesByIds={data ? (data as QueryData).salariesByIds : []}
       />
     </>
   );
@@ -90,4 +98,4 @@ const salariesByIdsQuery = gql`
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Salary Sheets', 'Rashan Receipts'])
-)(RashanReceiptsContainer);
+)(RashanReceiptsContainer as any);

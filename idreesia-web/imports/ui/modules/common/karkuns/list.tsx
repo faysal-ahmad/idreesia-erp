@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -17,7 +16,21 @@ import {
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-export default class KarkunsList extends Component {
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const AntRow = Row as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntAuditOutlined = AuditOutlined as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntMinusCircleOutlined = MinusCircleOutlined as any;
+const PersonNameControl = PersonName as any;
+type AnyRecord = Record<string, any>;
+interface PagedData { totalResults: number; karkuns: AnyRecord[]; }
+interface Props { showSelectionColumn?: boolean; showCnicColumn?: boolean; showPhoneNumbersColumn?: boolean; showDutiesColumn?: boolean; showMehfilCityColumn?: boolean; showDeleteAction?: boolean; showAuditLogsAction?: boolean; showRemoveAction?: boolean; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; handleRemoveItem?(record: AnyRecord): void; handleAuditLogsAction?(record: AnyRecord): void; setPageParams(params: { pageIndex: string; pageSize: string; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; }
+interface State { selectedRows: AnyRecord[]; }
+
+export default class KarkunsList extends Component<Props, State> {
   static propTypes = {
     showSelectionColumn: PropTypes.bool,
     showCnicColumn: PropTypes.bool,
@@ -67,8 +80,8 @@ export default class KarkunsList extends Component {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => (
-      <PersonName
+    render: (_text: unknown, record: AnyRecord) => (
+      <PersonNameControl
         person={record}
         onPersonNameClicked={this.props.handleSelectItem}
       />
@@ -84,21 +97,21 @@ export default class KarkunsList extends Component {
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (text, record) => {
-      const numbers = [];
+    render: (_text: unknown, record: AnyRecord) => {
+      const numbers: React.ReactNode[] = [];
       if (record.contactNumber1) {
         numbers.push(
-          <Row key="1">
+          <AntRow key="1">
             <span>{record.contactNumber1}</span>
-          </Row>
+          </AntRow>
         );
       }
 
       if (record.contactNumber2) {
         numbers.push(
-          <Row key="2">
+          <AntRow key="2">
             <span>{record.contactNumber2}</span>
-          </Row>
+          </AntRow>
         );
       }
 
@@ -110,16 +123,16 @@ export default class KarkunsList extends Component {
   mehfilCityColumn = {
     title: 'City / Mehfil',
     key: 'cityMehfil',
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       const { city, cityMehfil } = record;
-      const cityMehfilInfo = [];
+      const cityMehfilInfo: React.ReactNode[] = [];
 
       if (cityMehfil) {
-        cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
+        cityMehfilInfo.push(<AntRow key="1">{cityMehfil.name}</AntRow>);
       }
       if (city) {
         cityMehfilInfo.push(
-          <Row key="2">{`${city.name}, ${city.country}`}</Row>
+          <AntRow key="2">{`${city.name}, ${city.country}`}</AntRow>
         );
       }
 
@@ -132,10 +145,10 @@ export default class KarkunsList extends Component {
     title: 'Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: duties => {
-      let dutyNames = [];
+    render: (duties: AnyRecord[] = []) => {
+      let dutyNames: React.ReactNode[] = [];
       if (duties.length > 0) {
-        dutyNames = duties.map(duty => {
+        dutyNames = duties.map((duty: AnyRecord) => {
           const dutyName = duty.dutyName;
           return <span>{dutyName}</span>;
         });
@@ -149,7 +162,7 @@ export default class KarkunsList extends Component {
       return (
         <>
           {dutyNames.map((dutyName, index) => (
-            <Row key={index}>{dutyName}</Row>
+            <AntRow key={index}>{dutyName}</AntRow>
           ))}
         </>
       );
@@ -158,7 +171,7 @@ export default class KarkunsList extends Component {
 
   actionsColumn = {
     key: 'action',
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       const {
         showAuditLogsAction,
         showDeleteAction,
@@ -170,44 +183,44 @@ export default class KarkunsList extends Component {
       } = this.props;
 
       const auditLogsAction = showAuditLogsAction ? (
-        <Tooltip title="Audit Logs">
-          <AuditOutlined
+        <AntTooltip title="Audit Logs">
+          <AntAuditOutlined
             className="list-actions-icon"
             onClick={() => {
-              handleAuditLogsAction(record);
+              handleAuditLogsAction?.(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ) : null;
 
       const deleteAction = showDeleteAction ? (
-        <Popconfirm
+        <AntPopconfirm
           title="Are you sure you want to delete the data for this karkun?"
           onConfirm={() => {
-            handleDeleteItem(record);
+            handleDeleteItem?.(record);
           }}
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Delete">
+            <AntDeleteOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       ) : null;
 
       const removeAction = showRemoveAction ? (
-        <Popconfirm
+        <AntPopconfirm
           title="Are you sure you want to remove this person from karkuns?"
           onConfirm={() => {
-            handleRemoveItem(record);
+            handleRemoveItem?.(record);
           }}
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Remove from karkuns">
-            <MinusCircleOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Remove from karkuns">
+            <AntMinusCircleOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       ) : null;
 
       return (
@@ -229,7 +242,7 @@ export default class KarkunsList extends Component {
       showAuditLogsAction,
       showDeleteAction,
     } = this.props;
-    const columns = [this.nameColumn];
+    const columns: any[] = [this.nameColumn];
 
     if (showCnicColumn) {
       columns.push(this.cnicColumn);
@@ -255,18 +268,18 @@ export default class KarkunsList extends Component {
   };
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  onPaginationChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex: number, pageSize?: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: (pageIndex - 1).toString(),
-      pageSize: pageSize.toString(),
+      pageSize: (pageSize ?? 20).toString(),
     });
   };
 
@@ -278,28 +291,30 @@ export default class KarkunsList extends Component {
       pageSize,
       listHeader,
       showSelectionColumn,
-      pagedData: { totalResults, karkuns },
+      pagedData = { totalResults: 0, karkuns: [] },
     } = this.props;
+
+    const { totalResults, karkuns } = pagedData;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={karkuns}
-        columns={this.getColumns()}
+        columns={this.getColumns() as any}
         title={listHeader}
         rowSelection={showSelectionColumn ? this.rowSelection : null}
         bordered
         size="small"
         pagination={false}
         footer={() => (
-          <Pagination
+          <AntPagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
-            showTotal={(total, range) =>
+            showTotal={(total: number, range: [number, number]) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
             onChange={this.onPaginationChange}

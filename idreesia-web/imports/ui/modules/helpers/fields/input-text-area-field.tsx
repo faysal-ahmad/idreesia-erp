@@ -1,8 +1,11 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
 import { Input, Form } from "antd";
+
+const AntFormItem = (Form as any).Item;
+const TextInput = Input as any;
+interface FieldProps { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -26,7 +29,7 @@ const InputTextAreaField = ({
   initialValue = null,
   required,
   requiredMessage,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -35,9 +38,9 @@ const InputTextAreaField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Input.TextArea placeholder={placeholder} />
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <TextInput.TextArea placeholder={placeholder} />
+    </AntFormItem>
   );
 }
 

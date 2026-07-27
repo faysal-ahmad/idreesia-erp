@@ -1,4 +1,3 @@
-// @ts-nocheck
 import dayjs from 'dayjs';
 
 import {
@@ -8,7 +7,7 @@ import {
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
-function getFormattedName(stockItem) {
+function getFormattedName(stockItem: any) {
   const { name, company, details } = stockItem;
   let formattedName = name;
   if (company) {
@@ -21,23 +20,23 @@ function getFormattedName(stockItem) {
   return formattedName;
 }
 
-export async function exportStockAdjustmentForms(stockAdjustmentFormIdsString) {
+export async function exportStockAdjustmentForms(stockAdjustmentFormIdsString: string) {
   const stockAdjustmentFormIds = stockAdjustmentFormIdsString.split(',');
   const stockAdjustmentForms = await StockAdjustments.find({
     _id: { $in: stockAdjustmentFormIds },
   }).fetchAsync();
 
   const sheetData = await Promise.all(
-    stockAdjustmentForms.map(async stockAdjustmentForm => {
+    stockAdjustmentForms.map(async (stockAdjustmentForm: any) => {
       const adjustmentDate = dayjs(
         Number(stockAdjustmentForm.adjustmentDate)
       ).format('DD MMM, YYYY');
 
-      const stockItem = await StockItems.findOneAsync(
+      const stockItem = (await StockItems.findOneAsync(
         stockAdjustmentForm.stockItemId
-      );
-      const person = await People.findOneAsync(stockAdjustmentForm.adjustedBy);
-      const adjustedBy = person.sharedData.name;
+      )) as any;
+      const person = (await People.findOneAsync(stockAdjustmentForm.adjustedBy)) as any;
+      const adjustedBy = person?.sharedData?.name ?? '';
 
       const adjustment = stockAdjustmentForm.isInflow
         ? `Increased by ${stockAdjustmentForm.quantity}`

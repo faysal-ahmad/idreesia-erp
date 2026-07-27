@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -20,17 +19,26 @@ const listQuery = gql`
   }
 `;
 
-const List = ({ history }) => {
-  const { data } = useQuery(listQuery);
-  const { allPhysicalStores } = data || {};
+const RouterLink = Link as any;
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+interface HistoryLike { push(path: string): void; }
+interface PhysicalStore { _id: string; name?: string; address?: string; }
+interface QueryData { allPhysicalStores?: PhysicalStore[] | null; }
+interface Props { history: HistoryLike; }
 
-  const columns = [
+const List = ({ history }: Props) => {
+  const { data } = useQuery(listQuery as any);
+  const { allPhysicalStores } = (data ?? {}) as QueryData;
+
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
+      render: (text: string, record: PhysicalStore) => (
+        <RouterLink to={`${paths.physicalStoresPath}/${record._id}`}>{text}</RouterLink>
       ),
     },
     {
@@ -45,19 +53,19 @@ const List = ({ history }) => {
   };
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
-      dataSource={allPhysicalStores}
-      columns={columns}
+      dataSource={allPhysicalStores ?? []}
+      columns={columns as any}
       bordered
       title={() => (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Physical Store
-        </Button>
+        </AntButton>
       )}
     />
   );
@@ -68,4 +76,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])(List);
+export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])(List as any);

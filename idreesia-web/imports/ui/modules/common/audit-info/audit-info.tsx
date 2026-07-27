@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -8,17 +7,23 @@ import dayjs from 'dayjs';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { List, Typography } from 'antd';
 
+const AntList = List as any;
+const AntTypography = Typography as any;
+interface AuditRecord { createdAt?: string | number | null; createdBy?: string | null; updatedAt?: string | number | null; updatedBy?: string | null; approvedOn?: string | number | null; approvedBy?: string | null; }
+interface Props { record: AuditRecord; }
+interface QueryData { userNames?: string[] | null; }
+
 const ListStyle = {
   backgroundColor: '#F0F2F5',
 };
 
-const AuditInfo = ({ record }) => {
-  const { data, loading } = useQuery(userNamesQuery, {
+const AuditInfo = ({ record }: Props) => {
+  const { data, loading } = useQuery(userNamesQuery as any, {
     variables: {
       ids: [record.createdBy, record.updatedBy, record.approvedBy],
     },
   });
-  const userNames = data ? data.userNames : null;
+  const userNames = data ? (data as QueryData).userNames : null;
   const userNamesLoading = loading;
 
   if (userNamesLoading || !userNames || userNames.length === 0) return null;
@@ -37,28 +42,28 @@ const AuditInfo = ({ record }) => {
   let approvalNode = null;
   if (strApprovedOn) {
     approvalNode = (
-      <List.Item>
-        <Typography.Text type="secondary">
+      <AntList.Item>
+        <AntTypography.Text type="secondary">
           {`Approved by ${userNames[2]} on ${strApprovedOn}`}
-        </Typography.Text>
-      </List.Item>
+        </AntTypography.Text>
+      </AntList.Item>
     );
   }
 
   return (
-    <List size="small" bordered style={ListStyle}>
+    <AntList size="small" bordered style={ListStyle as any}>
       {approvalNode}
-      <List.Item>
-        <Typography.Text type="secondary">
+      <AntList.Item>
+        <AntTypography.Text type="secondary">
           {`Last Updated by ${userNames[1]} on ${strUpdatedAt}`}
-        </Typography.Text>
-      </List.Item>
-      <List.Item>
-        <Typography.Text type="secondary">
+        </AntTypography.Text>
+      </AntList.Item>
+      <AntList.Item>
+        <AntTypography.Text type="secondary">
           {`Created by ${userNames[0]} on ${strCreatedAt}`}
-        </Typography.Text>
-      </List.Item>
-    </List>
+        </AntTypography.Text>
+      </AntList.Item>
+    </AntList>
   );
 };
 

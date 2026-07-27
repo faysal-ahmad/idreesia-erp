@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client/react';
@@ -12,10 +11,20 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { SECURITY_VISITOR_BY_ID, UPDATE_SECURITY_VISITOR_NOTES } from '../gql';
 
-const Notes = ({ history, loading, securityVisitorById }) => {
+const AntForm = Form as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { push(path: string): void; }
+interface VisitorRecord { _id: string; criminalRecord?: string; otherNotes?: string; }
+interface NotesValues { criminalRecord?: string; otherNotes?: string; }
+interface NotesProps { history: HistoryLike; loading?: boolean; securityVisitorById?: VisitorRecord | null; }
+interface NotesWithDataProps { match: { params: { visitorId: string } }; history: HistoryLike; [key: string]: any; }
+interface VisitorData { securityVisitorById?: VisitorRecord | null; }
+
+const Notes = ({ history, loading, securityVisitorById }: NotesProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [updateSecurityVisitorNotes] = useMutation(
-    UPDATE_SECURITY_VISITOR_NOTES,
+    UPDATE_SECURITY_VISITOR_NOTES as any,
     {
       refetchQueries: ['pagedSecurityVisitors'],
     }
@@ -29,7 +38,8 @@ const Notes = ({ history, loading, securityVisitorById }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ criminalRecord, otherNotes }) => {
+  const handleFinish = ({ criminalRecord, otherNotes }: NotesValues) => {
+    if (!securityVisitorById) return;
     updateSecurityVisitorNotes({
       variables: {
         _id: securityVisitorById._id,
@@ -40,41 +50,41 @@ const Notes = ({ history, loading, securityVisitorById }) => {
       .then(() => {
         history.push(`${paths.visitorRegistrationPath}`);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading) return null;
+  if (loading || !securityVisitorById) return null;
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextAreaField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextAreaField
         fieldName="criminalRecord"
         fieldLabel="Criminal Record"
         initialValue={securityVisitorById.criminalRecord}
         required={false}
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="otherNotes"
         fieldLabel="Other Notes"
         initialValue={securityVisitorById.otherNotes}
         required={false}
       />
 
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
-const NotesWithData = props => {
+const NotesWithData = (props: NotesWithDataProps) => {
   const { match } = props;
   const { visitorId } = match.params;
-  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID, {
+  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID as any, {
     variables: { _id: visitorId },
   });
 
@@ -82,7 +92,7 @@ const NotesWithData = props => {
     <Notes
       {...props}
       {...queryResult}
-      {...data}
+      {...(data as VisitorData)}
       loading={loading}
     />
   );

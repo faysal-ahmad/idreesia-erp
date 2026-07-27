@@ -1,8 +1,7 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
-import { withTracker } from 'meteor/react-meteor-data';
+const withTracker = (require('meteor/react-meteor-data') as any).withTracker;
 import { useDispatch } from 'react-redux';
 
 /**
@@ -32,26 +31,30 @@ import {
   SetInitialPasswordForm,
 } from './main-layout';
 
-const App = ({ userId }) => {
-  const dispatch = useDispatch();
+const RouterSwitch = Switch as any;
+const RouterRoute = Route as any;
+interface Props { userId?: string | null; isOnline?: boolean; }
+
+const App = ({ userId }: Props) => {
+  const dispatch = useDispatch<any>();
   useEffect(() => {
     dispatch(setLoggedInUserId(userId || null));
   });
 
   if (userId) {
     return (
-      <Switch>
-        <Route path="/" component={LoggedInRoute} />
-      </Switch>
+      <RouterSwitch>
+        <RouterRoute path="/" component={LoggedInRoute} />
+      </RouterSwitch>
     );
   }
 
   return (
-    <Switch>
-      <Route path="/set-initial-password/:token" component={SetInitialPasswordForm} />
-      <Route path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
-      <Route path="/" component={LoginRegisterForm} />
-    </Switch>
+    <RouterSwitch>
+      <RouterRoute path="/set-initial-password/:token" component={SetInitialPasswordForm} />
+      <RouterRoute path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
+      <RouterRoute path="/" component={LoginRegisterForm} />
+    </RouterSwitch>
   );
 };
 
@@ -62,5 +65,5 @@ App.propTypes = {
 
 export default withTracker(() => ({
   userId: Meteor.userId(),
-  isOnline: Meteor.status().connected,
-}))(App);
+  isOnline: (Meteor as any).status().connected,
+}))(App as any);

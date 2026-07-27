@@ -1,16 +1,19 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SyncOutlined } from '@ant-design/icons';
 
 import { Tooltip, message } from 'antd';
 
-const RefreshButton = ({ refreshData }) => {
+const AntTooltip = Tooltip as any;
+const AntSyncOutlined = SyncOutlined as any;
+interface Props { refreshData?(): Promise<unknown>; }
+
+const RefreshButton = ({ refreshData }: Props) => {
   if (!refreshData) return null;
   return (
-    <Tooltip title="Reload Data">
-      <SyncOutlined
-        onClick={event => {
+    <AntTooltip title="Reload Data">
+      <AntSyncOutlined
+        onClick={(event: React.MouseEvent) => {
           event.stopPropagation();
           if (refreshData) {
             refreshData().then(() => {
@@ -19,7 +22,7 @@ const RefreshButton = ({ refreshData }) => {
           }
         }}
       />
-    </Tooltip>
+    </AntTooltip>
   );
 };
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -26,49 +25,60 @@ const removeDutyLocationMutation = gql`
   }
 `;
 
-const List = ({ history }) => {
-  const { data } = useQuery(listQuery);
-  const [removeDutyLocation] = useMutation(removeDutyLocationMutation, {
+const RouterLink = Link as any;
+const AntButton = Button as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+interface HistoryLike { push(path: string): void; }
+interface ListProps { history: HistoryLike; }
+interface ListRecord { _id: string; name: string; description?: string; usedCount?: number; }
+interface ListData { allDutyLocations?: ListRecord[]; }
+
+const List = ({ history }: ListProps) => {
+  const { data } = useQuery(listQuery as any);
+  const [removeDutyLocation] = useMutation(removeDutyLocationMutation as any, {
     refetchQueries: ['allDutyLocations'],
   });
-  const { allDutyLocations } = data || {};
+  const { allDutyLocations = [] } = (data ?? {}) as ListData;
 
   const handleNewClicked = () => {
     history.push(paths.dutyLocationsNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: ListRecord) => {
     removeDutyLocation({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
-        <Link to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</Link>
+      render: (text: string, record: ListRecord) => (
+        <RouterLink to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</RouterLink>
       ),
     },
     {
       key: 'action',
-      render: (text, record) => {
+      render: (_text: unknown, record: ListRecord) => {
         if (record.usedCount === 0) {
           return (
-            <Tooltip title="Delete">
-              <DeleteOutlined
+            <AntTooltip title="Delete">
+              <AntDeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </Tooltip>
+            </AntTooltip>
           );
         }
         return null;
@@ -77,20 +87,20 @@ const List = ({ history }) => {
   ];
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
       dataSource={allDutyLocations}
       columns={columns}
       pagination={{ defaultPageSize: 20 }}
       bordered
       title={() => (
-        <Button
+        <AntButton
           type="primary"
-          icon={<PlusCircleOutlined />}
+          icon={<AntPlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Duty Location
-        </Button>
+        </AntButton>
       )}
     />
   );
@@ -101,4 +111,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['HR', 'Duty Locations', 'List'])(List);
+export default WithBreadcrumbs(['HR', 'Duty Locations', 'List'])(List as any);

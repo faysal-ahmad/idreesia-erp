@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -26,47 +25,55 @@ import {
   UPDATE_SALARY,
 } from '../gql';
 
+const AntModal = Modal as any;
+const SalariesList = List as any;
+const SalaryEditForm = EditForm as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+interface ListContainerProps { history: HistoryLike; location: LocationLike; queryParams: AnyRecord; }
+
 const mutationOptions = {
   refetchQueries: ['salariesByMonth'],
 };
 
-const ListContainer = ({ history, location, queryParams }) => {
+const ListContainer = ({ history, location, queryParams }: ListContainerProps) => {
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedSalary, setSelectedSalary] = useState(null);
+  const [selectedSalary, setSelectedSalary] = useState<AnyRecord | null>(null);
 
   const { allJobs, allJobsLoading } = useAllJobs();
 
-  const [createSalaries] = useMutation(CREATE_SALARIES, mutationOptions);
-  const [updateSalary] = useMutation(UPDATE_SALARY, mutationOptions);
-  const [approveSalaries] = useMutation(APPROVE_SALARIES, mutationOptions);
+  const [createSalaries] = useMutation(CREATE_SALARIES as any, mutationOptions);
+  const [updateSalary] = useMutation(UPDATE_SALARY as any, mutationOptions);
+  const [approveSalaries] = useMutation(APPROVE_SALARIES as any, mutationOptions);
   const [approveAllSalaries] = useMutation(
-    APPROVE_ALL_SALARIES,
+    APPROVE_ALL_SALARIES as any,
     mutationOptions
   );
-  const [deleteSalaries] = useMutation(DELETE_SALARIES, mutationOptions);
+  const [deleteSalaries] = useMutation(DELETE_SALARIES as any, mutationOptions);
   const [deleteAllSalaries] = useMutation(
-    DELETE_ALL_SALARIES,
+    DELETE_ALL_SALARIES as any,
     mutationOptions
   );
 
-  const setPageParams = newParams => {
+  const setPageParams = (newParams: AnyRecord) => {
     const { selectedJobId, selectedMonth } = newParams;
 
     let selectedJobIdVal;
-    if (newParams.hasOwnProperty('selectedJobId'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'selectedJobId'))
       selectedJobIdVal = selectedJobId || '';
     else selectedJobIdVal = queryParams.selectedJobId || '';
 
     let selectedMonthVal;
-    if (newParams.hasOwnProperty('selectedMonth'))
-      selectedMonthVal = selectedMonth.format('MM-YYYY');
+    if (Object.prototype.hasOwnProperty.call(newParams, 'selectedMonth'))
+      selectedMonthVal = selectedMonth ? selectedMonth.format('MM-YYYY') : '';
     else selectedMonthVal = queryParams.selectedMonth || '';
 
     const path = `${location.pathname}?selectedMonth=${selectedMonthVal}&selectedJobId=${selectedJobIdVal}`;
     history.push(path);
   };
 
-  const handleEditSalary = salary => {
+  const handleEditSalary = (salary: AnyRecord) => {
     setShowEditForm(true);
     setSelectedSalary(salary);
   };
@@ -85,7 +92,7 @@ const ListContainer = ({ history, location, queryParams }) => {
     otherDeduction,
     arrears,
     rashanMadad,
-  }) => {
+  }: AnyRecord) => {
     setShowEditForm(false);
     setSelectedSalary(null);
 
@@ -100,12 +107,12 @@ const ListContainer = ({ history, location, queryParams }) => {
         arrears,
         rashanMadad,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const handleViewSalaryReceipts = selectedRows => {
+  const handleViewSalaryReceipts = (selectedRows: AnyRecord[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const ids = selectedRows.map(row => row._id);
@@ -114,7 +121,7 @@ const ListContainer = ({ history, location, queryParams }) => {
     history.push(path);
   };
 
-  const handleViewRashanReceipts = selectedRows => {
+  const handleViewRashanReceipts = (selectedRows: AnyRecord[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const ids = selectedRows.map(row => row._id);
@@ -123,7 +130,7 @@ const ListContainer = ({ history, location, queryParams }) => {
     history.push(path);
   };
 
-  const handleViewEidReceipts = selectedRows => {
+  const handleViewEidReceipts = (selectedRows: AnyRecord[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const ids = selectedRows.map(row => row._id);
@@ -144,18 +151,18 @@ const ListContainer = ({ history, location, queryParams }) => {
         month: _selectedMonth,
       },
     })
-      .then(({ data }) => {
+      .then(({ data }: AnyRecord) => {
         message.success(
           `${data.createSalaries} missing salary records have been created.`,
           5
         );
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const handleApproveSelectedSalaries = selectedSalaries => {
+  const handleApproveSelectedSalaries = (selectedSalaries: AnyRecord[]) => {
     if (!selectedSalaries || selectedSalaries.length === 0) return;
 
     const { selectedMonth } = queryParams;
@@ -174,7 +181,7 @@ const ListContainer = ({ history, location, queryParams }) => {
       .then(() => {
         message.success('Selected salary records have been approved.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -197,12 +204,12 @@ const ListContainer = ({ history, location, queryParams }) => {
           5
         );
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const handleDeleteSelectedSalaries = selectedSalaries => {
+  const handleDeleteSelectedSalaries = (selectedSalaries: AnyRecord[]) => {
     if (!selectedSalaries || selectedSalaries.length === 0) return;
 
     const { selectedMonth } = queryParams;
@@ -221,7 +228,7 @@ const ListContainer = ({ history, location, queryParams }) => {
       .then(() => {
         message.success('Selected salary records have been deleted.', 5);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -244,12 +251,12 @@ const ListContainer = ({ history, location, queryParams }) => {
           5
         );
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  const handleItemSelected = karkun => {
+  const handleItemSelected = (karkun: AnyRecord) => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
@@ -263,7 +270,7 @@ const ListContainer = ({ history, location, queryParams }) => {
 
   return (
     <>
-      <List
+      <SalariesList
         selectedJobId={selectedJobId}
         selectedMonth={_selectedMonth}
         setPageParams={setPageParams}
@@ -280,19 +287,19 @@ const ListContainer = ({ history, location, queryParams }) => {
         allJobs={allJobs}
       />
       {showEditForm ? (
-        <Modal
+        <AntModal
           title="Update Salary"
           open={showEditForm}
           onCancel={handleEditSalaryCancel}
           width={520}
           footer={null}
         >
-          <EditForm
+          <SalaryEditForm
             salary={selectedSalary}
             handleSave={handleEditSalarySave}
             handleCancel={handleEditSalaryCancel}
           />
-        </Modal>
+        </AntModal>
       ) : null}
     </>
   );
@@ -309,4 +316,4 @@ ListContainer.propTypes = {
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Salary Sheets', 'List'])
-)(ListContainer);
+)(ListContainer as any);

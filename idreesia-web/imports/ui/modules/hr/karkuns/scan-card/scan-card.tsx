@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
@@ -12,7 +11,15 @@ import { Divider, Row } from 'antd';
 import { ScanBarcode } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
 
-class ScanCard extends Component {
+const ReactFragment = Fragment as any;
+const AntDivider = Divider as any;
+const AntRow = Row as any;
+const ScanBarcodeControl = ScanBarcode as any;
+const ScanSearchResult = SearchResult as any;
+interface HistoryLike { push(path: string): void; }
+interface ScanCardProps { history: HistoryLike; location?: unknown; queryString?: string; queryParams: { cardId?: string }; }
+
+class ScanCard extends Component<ScanCardProps> {
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -20,7 +27,7 @@ class ScanCard extends Component {
     queryParams: PropTypes.object,
   };
 
-  onBarcodeCaptured = code => {
+  onBarcodeCaptured = (code: string) => {
     const { history } = this.props;
     history.push(`${paths.karkunsScanCardPath}?cardId=${code}`);
   };
@@ -31,15 +38,15 @@ class ScanCard extends Component {
     } = this.props;
 
     return (
-      <Fragment>
-        <Row>
-          <ScanBarcode onBarcodeCaptured={this.onBarcodeCaptured} />
-        </Row>
-        <Row>
-          <Divider />
-        </Row>
-        <Row>{cardId ? <SearchResult barcode={cardId} /> : null}</Row>
-      </Fragment>
+      <ReactFragment>
+        <AntRow>
+          <ScanBarcodeControl onBarcodeCaptured={this.onBarcodeCaptured} />
+        </AntRow>
+        <AntRow>
+          <AntDivider />
+        </AntRow>
+        <AntRow>{cardId ? <ScanSearchResult barcode={cardId} /> : null}</AntRow>
+      </ReactFragment>
     );
   }
 }
@@ -47,4 +54,4 @@ class ScanCard extends Component {
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Karkuns', 'Scan Card'])
-)(ScanCard);
+)(ScanCard as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import dayjs from 'dayjs';
 
@@ -16,6 +15,20 @@ import {
 
 import { getCityMehfilCascaderData } from './utilities';
 
+const AntButton = Button as any;
+const AntFormItem = (Form as any).Item;
+const AntRow = Row as any;
+const TextField = InputTextField as any;
+const CnicField = InputCnicField as any;
+const SelectInputField = SelectField as any;
+const CascaderInputField = CascaderField as any;
+const DateRangeInputField = DateRangeField as any;
+const AttendanceInputField = AttendanceFilterField as any;
+const LastTarteebInputField = LastTarteebFilterField as any;
+type FieldValue = unknown;
+type AnyRecord = Record<string, any>;
+interface LabelValue { label: string; value: string; }
+
 const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 12 },
@@ -25,9 +38,9 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-export function getNameFilterField(fieldValue) {
+export function getNameFilterField(fieldValue: FieldValue) {
   return (
-    <InputTextField
+    <TextField
       fieldName="name"
       fieldLabel="Name"
       required={false}
@@ -37,9 +50,9 @@ export function getNameFilterField(fieldValue) {
   );
 }
 
-export function getCnicNumberFilterField(fieldValue) {
+export function getCnicNumberFilterField(fieldValue: FieldValue) {
   return (
-    <InputCnicField
+    <CnicField
       fieldName="cnicNumber"
       fieldLabel="CNIC Number"
       required={false}
@@ -50,9 +63,9 @@ export function getCnicNumberFilterField(fieldValue) {
   );
 }
 
-export function getPhoneNumberFilterField(fieldValue) {
+export function getPhoneNumberFilterField(fieldValue: FieldValue) {
   return (
-    <InputTextField
+    <TextField
       fieldName="phoneNumber"
       fieldLabel="Phone Number"
       required={false}
@@ -62,9 +75,9 @@ export function getPhoneNumberFilterField(fieldValue) {
   );
 }
 
-export function getBloodGroupFilterField(fieldValue) {
+export function getBloodGroupFilterField(fieldValue: FieldValue) {
   return (
-    <SelectField
+    <SelectInputField
       fieldName="bloodGroup"
       fieldLabel="Blood Group"
       required={false}
@@ -78,17 +91,17 @@ export function getBloodGroupFilterField(fieldValue) {
         { label: 'O-', value: 'O-' },
         { label: 'O+', value: 'Oplus' },
       ]}
-      getDataValue={({ value }) => value}
-      getDataText={({ label }) => label}
+      getDataValue={({ value }: LabelValue) => value}
+      getDataText={({ label }: LabelValue) => label}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
   );
 }
 
-export function getUserAccountFilterField(fieldValue) {
+export function getUserAccountFilterField(fieldValue: FieldValue) {
   return (
-    <SelectField
+    <SelectInputField
       fieldName="userAccount"
       fieldLabel="User Account"
       required={false}
@@ -96,17 +109,17 @@ export function getUserAccountFilterField(fieldValue) {
         { label: 'Yes', value: 'true' },
         { label: 'No', value: 'false' },
       ]}
-      getDataValue={({ value }) => value}
-      getDataText={({ label }) => label}
+      getDataValue={({ value }: LabelValue) => value}
+      getDataText={({ label }: LabelValue) => label}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
   );
 }
 
-export function getEhadKarkunFilterField(fieldValue) {
+export function getEhadKarkunFilterField(fieldValue: FieldValue) {
   return (
-    <SelectField
+    <SelectInputField
       fieldName="ehadKarkun"
       fieldLabel="Ehad Karkun"
       required={false}
@@ -114,17 +127,17 @@ export function getEhadKarkunFilterField(fieldValue) {
         { label: 'Yes', value: 'true' },
         { label: 'No', value: 'false' },
       ]}
-      getDataValue={({ value }) => value}
-      getDataText={({ label }) => label}
+      getDataValue={({ value }: LabelValue) => value}
+      getDataText={({ label }: LabelValue) => label}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
   );
 }
 
-export function getAttendanceFilterField(fieldValue) {
+export function getAttendanceFilterField(fieldValue: FieldValue) {
   return (
-    <AttendanceFilterField
+    <AttendanceInputField
       fieldName="attendance"
       fieldLabel="Attendance"
       required={false}
@@ -134,9 +147,9 @@ export function getAttendanceFilterField(fieldValue) {
   );
 }
 
-export function getLastTarteebFilterField(fieldValue) {
+export function getLastTarteebFilterField(fieldValue: FieldValue) {
   return (
-    <LastTarteebFilterField
+    <LastTarteebInputField
       fieldName="lastTarteeb"
       fieldLabel="Last Tarteeb"
       required={false}
@@ -146,26 +159,26 @@ export function getLastTarteebFilterField(fieldValue) {
   );
 }
 
-export function getMehfilDutyFilterField(fieldValue, duties) {
+export function getMehfilDutyFilterField(fieldValue: FieldValue, duties: AnyRecord[]) {
   return (
-    <SelectField
+    <SelectInputField
       fieldName="dutyId"
       fieldLabel="Duty"
       required={false}
       data={duties}
-      getDataValue={({ _id }) => _id}
-      getDataText={({ name: _name }) => _name}
+      getDataValue={({ _id }: AnyRecord) => _id}
+      getDataText={({ name: _name }: AnyRecord) => _name}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
   );
 }
 
-export function getCityMehfilFilterField(fieldValue, cities, cityMehfils) {
-  const cityMehfilCascaderData = getCityMehfilCascaderData(cities, cityMehfils);
+export function getCityMehfilFilterField(fieldValue: FieldValue, cities: AnyRecord[], cityMehfils: AnyRecord[]) {
+  const cityMehfilCascaderData = getCityMehfilCascaderData(cities as any, cityMehfils as any);
 
   return (
-    <CascaderField
+    <CascaderInputField
       data={cityMehfilCascaderData}
       fieldName="cityIdMehfilId"
       fieldLabel="City/Mehfil"
@@ -175,25 +188,25 @@ export function getCityMehfilFilterField(fieldValue, cities, cityMehfils) {
   );
 }
 
-export function getRegionFilterField(fieldValue, regions) {
+export function getRegionFilterField(fieldValue: FieldValue, regions: string[]) {
   return (
-    <SelectField
+    <SelectInputField
       fieldName="region"
       fieldLabel="Region"
       required={false}
       data={regions}
-      getDataValue={item => item}
-      getDataText={item => item}
+      getDataValue={(item: string) => item}
+      getDataText={(item: string) => item}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
   );
 }
 
-export function getUpdatedBetweenFilterField(fieldValue) {
+export function getUpdatedBetweenFilterField(fieldValue: FieldValue) {
   let initialValue;
   if (fieldValue) {
-    const dates = JSON.parse(fieldValue);
+    const dates = JSON.parse(fieldValue as string);
     initialValue = [
       dates[0] ? dayjs(dates[0], Formats.DATE_FORMAT) : null,
       dates[1] ? dayjs(dates[1], Formats.DATE_FORMAT) : null,
@@ -203,7 +216,7 @@ export function getUpdatedBetweenFilterField(fieldValue) {
   }
 
   return (
-    <DateRangeField
+    <DateRangeInputField
       fieldName="updatedBetween"
       fieldLabel="Updated"
       fieldLayout={formItemLayout}
@@ -212,18 +225,18 @@ export function getUpdatedBetweenFilterField(fieldValue) {
   );
 }
 
-export function getFormButtons(handleReset) {
+export function getFormButtons(handleReset: () => void) {
   return (
-    <Form.Item {...buttonItemLayout}>
-      <Row type="flex" justify="end">
-        <Button type="default" onClick={handleReset}>
+    <AntFormItem {...buttonItemLayout}>
+      <AntRow type="flex" justify="end">
+        <AntButton type="default" onClick={handleReset}>
           Reset
-        </Button>
+        </AntButton>
         &nbsp;
-        <Button type="primary" htmlType="submit">
+        <AntButton type="primary" htmlType="submit">
           Search
-        </Button>
-      </Row>
-    </Form.Item>
+        </AntButton>
+      </AntRow>
+    </AntFormItem>
   );
 }

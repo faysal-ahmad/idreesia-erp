@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -20,31 +19,46 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import ListFilter from './list-filter';
 import { PAGED_USERS } from '../gql';
 
-const columns = [
+const RouterLink = Link as any;
+const AntLockOutlined = LockOutlined as any;
+const AntButton = Button as any;
+const AntFlex = Flex as any;
+const AntPagination = Pagination as any;
+const AntTable = Table as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const KarkunNameControl = KarkunName as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; search: string; }
+interface PagedUsers { totalResults: number; data: AnyRecord[]; }
+interface QueryData { pagedUsers?: PagedUsers | null; }
+interface Props { history: HistoryLike; location: LocationLike; }
+
+const columns: any[] = [
   {
     key: 'locked',
-    render: (text, record) => (record.locked ? <LockOutlined /> : null),
+    render: (_text: unknown, record: AnyRecord) => (record.locked ? <AntLockOutlined /> : null),
   },
   {
     title: 'Email / User Name / Display Name',
     key: 'username',
-    render: (text, record) => (
-      <Flex vertical>
-        <Link to={`${paths.usersPath}/${record._id}`}>
+    render: (_text: unknown, record: AnyRecord) => (
+      <AntFlex vertical>
+        <RouterLink to={`${paths.usersPath}/${record._id}`}>
           <span>{record.email}</span>
-        </Link>
-        <Link to={`${paths.usersPath}/${record._id}`}>
+        </RouterLink>
+        <RouterLink to={`${paths.usersPath}/${record._id}`}>
           <span>{record.username}</span>
-        </Link>
+        </RouterLink>
         <span>{record.displayName}</span>
-      </Flex>
+      </AntFlex>
     ),
   },
   {
     title: 'Last Active',
     dataIndex: 'lastActiveAt',
     key: 'lastActiveAt',
-    render: text => {
+    render: (text: string | number) => {
       if (!text) return '';
       return dayjs(Number(text)).format(Formats.DATE_TIME_FORMAT);
     },
@@ -52,17 +66,17 @@ const columns = [
   {
     title: 'Karkun Name',
     key: 'karkun.name',
-    render: (text, record) =>
+    render: (_text: unknown, record: AnyRecord) =>
       record.karkun ? (
-        <KarkunName karkun={record.karkun} onKarkunNameClicked={noop} />
+        <KarkunNameControl karkun={record.karkun} onKarkunNameClicked={noop} />
       ) : (
         ''
       ),
   },
 ];
 
-const List = ({ history, location }) => {
-  const dispatch = useDispatch();
+const List = ({ history, location }: Props) => {
+  const dispatch = useDispatch<any>();
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -87,19 +101,19 @@ const List = ({ history, location }) => {
     dispatch(setBreadcrumbs(['Admin', 'Users', 'List']));
   }, [location]);
 
-  const { data, loading, refetch } = useQuery(PAGED_USERS, {
+  const { data, loading, refetch } = useQuery(PAGED_USERS as any, {
     variables: {
       filter: queryParams,
     },
   });
 
   if (loading) return null;
-  const { pagedUsers } = data;
+  const { pagedUsers } = (data ?? {}) as QueryData;
 
-  const onPaginationChange = (index, size) => {
+  const onPaginationChange = (index: number, size?: number) => {
     setPageParams({
       pageIndex: index - 1,
-      pageSize: size,
+      pageSize: size ?? 20,
     });
   };
 
@@ -116,25 +130,26 @@ const List = ({ history, location }) => {
     pageIndex,
     pageSize,
   } = queryParams;
+  const asString = (value: unknown, fallback = '') => (typeof value === 'string' ? value : fallback);
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button
+      <AntButton
         size="large"
         type="primary"
-        icon={<PlusCircleOutlined />}
+        icon={<AntPlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New User
-      </Button>
+      </AntButton>
       <ListFilter
-        showLocked={showLocked}
-        showUnlocked={showUnlocked}
-        showActive={showActive}
-        showInactive={showInactive}
-        moduleAccess={moduleAccess}
+        showLocked={asString(showLocked)}
+        showUnlocked={asString(showUnlocked)}
+        showActive={asString(showActive)}
+        showInactive={asString(showInactive)}
+        moduleAccess={asString(moduleAccess)}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -142,25 +157,25 @@ const List = ({ history, location }) => {
   );
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
-      dataSource={pagedUsers.data}
-      columns={columns}
+      dataSource={pagedUsers?.data ?? []}
+      columns={columns as any}
       bordered
       pagination={false}
       size="small"
       title={getTableHeader}
       footer={() => (
-        <Pagination
+        <AntPagination
           current={numPageIndex + 1}
           pageSize={numPageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: [number, number]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onPaginationChange}
           onShowSizeChange={onPaginationChange}
-          total={pagedUsers.totalResults}
+          total={pagedUsers?.totalResults ?? 0}
         />
       )}
     />

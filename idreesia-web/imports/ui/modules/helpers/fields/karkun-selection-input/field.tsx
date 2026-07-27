@@ -1,14 +1,17 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from 'antd';
-import Input from './input';
+import CustomInput from './input';
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
+
+const AntFormItem = (Form as any).Item;
+const KarkunInput = CustomInput as any;
+interface Props { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; disabled?: boolean; showMsKarkunsList?: boolean; }
 
 const Field = ({
   fieldName,
@@ -21,7 +24,7 @@ const Field = ({
   disabled,
 
   showMsKarkunsList,
-}) => {
+}: Props) => {
   const rules = [
     {
       required,
@@ -30,13 +33,13 @@ const Field = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Input
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <KarkunInput
         placeholder={placeholder}
         disabled={disabled}
         showMsKarkunsList={showMsKarkunsList}
       />
-    </Form.Item>
+    </AntFormItem>
   );
 }
 

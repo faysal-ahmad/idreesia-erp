@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import InputMask from 'react-input-mask';
@@ -10,7 +9,24 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import { ScanCnic } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
 
-class Form extends Component {
+const ReactFragment = Fragment as any;
+const MaskedInput = InputMask as any;
+const AntButton = Button as any;
+const AntDivider = Divider as any;
+const AntRow = Row as any;
+const AntCol = Col as any;
+const AntSearchOutlined = SearchOutlined as any;
+const AntUnorderedListOutlined = UnorderedListOutlined as any;
+const AntUserAddOutlined = UserAddOutlined as any;
+const ScanCnicControl = ScanCnic as any;
+const SearchResultComponent = SearchResult as any;
+interface HistoryLike { push(path: string): void; }
+interface FormProps { history: HistoryLike; }
+interface FormState { cnicNumbers: string[]; }
+
+class Form extends Component<FormProps, FormState> {
+  manualCnic: any;
+  scanCnic: any;
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object,
@@ -20,7 +36,7 @@ class Form extends Component {
     cnicNumbers: [],
   };
 
-  onCnicCaptured = cnicNumbers => {
+  onCnicCaptured = (cnicNumbers: string[]) => {
     this.manualCnic.value = '';
     if (cnicNumbers.length === 0) {
       message.error('CNIC number was not recognized.', 3);
@@ -45,25 +61,25 @@ class Form extends Component {
     const { cnicNumbers } = this.state;
     const searchResults =
       cnicNumbers.length > 0 ? (
-        <SearchResult cnicNumbers={cnicNumbers} />
+        <SearchResultComponent cnicNumbers={cnicNumbers} />
       ) : null;
     return (
-      <Fragment>
-        <Row type="flex" justify="space-between">
-          <Col order={1}>
-            <Row type="flex" justify="start" align="middle" gutter={16}>
-              <Col order={1}>Manual CNIC</Col>
-              <Col order={2}>
-                <InputMask
+      <ReactFragment>
+        <AntRow type="flex" justify="space-between">
+          <AntCol order={1}>
+            <AntRow type="flex" justify="start" align="middle" gutter={16}>
+              <AntCol order={1}>Manual CNIC</AntCol>
+              <AntCol order={2}>
+                <MaskedInput
                   mask="99999-9999999-9"
-                  ref={manualCnic => {
+                  ref={(manualCnic: any) => {
                     this.manualCnic = manualCnic;
                   }}
                 />
-              </Col>
-              <Col order={2}>
-                <Button
-                  icon={<SearchOutlined />}
+              </AntCol>
+              <AntCol order={2}>
+                <AntButton
+                  icon={<AntSearchOutlined />}
                   onClick={() => {
                     if (this.manualCnic.value) {
                       this.scanCnic.resetState();
@@ -73,42 +89,42 @@ class Form extends Component {
                     }
                   }}
                 />
-              </Col>
-            </Row>
-            <Divider />
-            <ScanCnic
+              </AntCol>
+            </AntRow>
+            <AntDivider />
+            <ScanCnicControl
               onCnicCaptured={this.onCnicCaptured}
-              ref={scanCnic => {
+              ref={(scanCnic: any) => {
                 this.scanCnic = scanCnic;
               }}
             />
-          </Col>
-          <Col order={2}>
-            <Button
+          </AntCol>
+          <AntCol order={2}>
+            <AntButton
               size="large"
-              icon={<UnorderedListOutlined />}
+              icon={<AntUnorderedListOutlined />}
               onClick={this.handleSearch}
             >
               Visitors List
-            </Button>
+            </AntButton>
             &nbsp;
-            <Button
+            <AntButton
               size="large"
-              icon={<UserAddOutlined />}
+              icon={<AntUserAddOutlined />}
               type="primary"
               onClick={this.handleNewVisitor}
             >
               New Visitor Registration
-            </Button>
-          </Col>
-        </Row>
-        <Row>
-          <Divider />
-        </Row>
-        <Row>{searchResults}</Row>
-      </Fragment>
+            </AntButton>
+          </AntCol>
+        </AntRow>
+        <AntRow>
+          <AntDivider />
+        </AntRow>
+        <AntRow>{searchResults}</AntRow>
+      </ReactFragment>
     );
   }
 }
 
-export default WithBreadcrumbs(['Security', 'Visitor Registration'])(Form);
+export default WithBreadcrumbs(['Security', 'Visitor Registration'])(Form as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -6,6 +5,11 @@ import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
 import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
+
+const AntMenu = Menu as any;
+interface HistoryLike { push(path: string): void; }
+interface Props { history: HistoryLike; activeModuleName?: string; activeSubModuleName?: string; setActiveSubModuleName(name: string): void; }
+interface MenuSelectInfo { key: string; }
 
 const menuItems = [
   {
@@ -28,7 +32,7 @@ const menuItems = [
   },
 ];
 
-class Sidebar extends Component {
+class Sidebar extends Component<Props> {
   static propTypes = {
     history: PropTypes.object,
     activeModuleName: PropTypes.string,
@@ -36,7 +40,7 @@ class Sidebar extends Component {
     setActiveSubModuleName: PropTypes.func,
   };
 
-  handleMenuItemSelected = ({ key }) => {
+  handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
     const { history, setActiveSubModuleName } = this.props;
 
     switch (key) {
@@ -67,7 +71,7 @@ class Sidebar extends Component {
 
   render() {
     return (
-      <Menu
+      <AntMenu
         mode="inline"
         style={{ height: '100%', borderRight: 0 }}
         onClick={this.handleMenuItemSelected}
@@ -77,5 +81,5 @@ class Sidebar extends Component {
   }
 }
 
-const SidebarContainer = WithActiveModule()(Sidebar);
+const SidebarContainer = WithActiveModule()(Sidebar as any);
 export default SidebarContainer;

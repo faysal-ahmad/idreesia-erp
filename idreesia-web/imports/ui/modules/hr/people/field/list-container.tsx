@@ -1,10 +1,14 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import List from '../list/list';
 
-export default class ListContainer extends Component {
+const KarkunList = List as any;
+interface SelectionValue { _id?: string; name?: string; sharedData?: { name?: string }; }
+interface ListContainerProps { setSelectedValue?(value: SelectionValue): void; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
+interface ListContainerState { pageIndex: number; pageSize: number; name: string | null; cnicNumber: string | null; phoneNumber: string | null; bloodGroup: string | null; jobId: string | null; dutyId: string | null; dutyShiftId: string | null; karkunType: string[]; }
+
+export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
   static propTypes = {
     setSelectedValue: PropTypes.func,
     predefinedFilterName: PropTypes.string,
@@ -23,8 +27,8 @@ export default class ListContainer extends Component {
     karkunType: ['volunteers', 'employees'],
   };
 
-  setPageParams = pageParams => {
-    this.setState(pageParams);
+  setPageParams = (pageParams: Partial<ListContainerState>) => {
+    this.setState(pageParams as any);
   };
 
   render() {
@@ -48,7 +52,7 @@ export default class ListContainer extends Component {
       karkunType.indexOf('employees') !== -1 ? 'true' : 'false';
 
     return (
-      <List
+      <KarkunList
         pageIndex={pageIndex}
         pageSize={pageSize}
         name={name}

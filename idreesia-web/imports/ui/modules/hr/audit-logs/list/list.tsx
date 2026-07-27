@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -22,15 +21,26 @@ const EntityTypeDisplayNames = {
   [EntityType.KARKUN]: 'Karkun',
 };
 
-const List = ({ history, location }) => {
-  const dispatch = useDispatch();
+const RouterLink = Link as any;
+const CommonAuditLogsList = AuditLogsList as any;
+const CommonAuditLogsListFilter = AuditLogsListFilter as any;
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { search: string; pathname: string; }
+interface ListProps { history: HistoryLike; location: LocationLike; }
+interface QueryParams { entityId?: string; pageIndex?: string | number; pageSize?: string | number; [key: string]: unknown; }
+interface AuditLog { entityId: string; entityType: string; operationType: string; }
+interface PagedAuditLogs { data: AuditLog[]; totalResults: number; }
+interface QueryData { pagedHrAuditLogs?: PagedAuditLogs; }
+
+const List = ({ history, location }: ListProps) => {
+  const dispatch = useDispatch<any>();
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: ['entityId', 'pageIndex', 'pageSize'],
   });
 
-  const { data, refetch } = useQuery(PAGED_HR_AUDIT_LOGS, {
+  const { data, refetch } = useQuery(PAGED_HR_AUDIT_LOGS as any, {
     variables: { filter: queryParams },
   });
 
@@ -38,13 +48,13 @@ const List = ({ history, location }) => {
     dispatch(setBreadcrumbs(['HR', 'Audit Logs', 'List']));
   }, [location]);
 
-  const { entityId, pageIndex, pageSize } = queryParams;
+  const { entityId, pageIndex, pageSize } = queryParams as QueryParams;
 
   const getTableHeader = () => (
     <div className="list-table-header">
       <div />
       <div className="list-table-header-section">
-        <AuditLogsListFilter
+        <CommonAuditLogsListFilter
           entityId={entityId}
           setPageParams={setPageParams}
           refreshData={refetch}
@@ -53,13 +63,13 @@ const List = ({ history, location }) => {
     </div>
   );
 
-  const getAuditLogEntityRenderer = auditLog => {
+  const getAuditLogEntityRenderer = (auditLog: AuditLog) => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
     if (entityType === EntityType.KARKUN) {
       return (
-        <Link to={paths.karkunsEditFormPath(_entityId)}>
+        <RouterLink to={paths.karkunsEditFormPath(_entityId)}>
           {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
-        </Link>
+        </RouterLink>
       );
     }
 
@@ -67,7 +77,7 @@ const List = ({ history, location }) => {
   };
 
   const pagedHrAuditLogs = data
-    ? data.pagedHrAuditLogs
+    ? (data as QueryData).pagedHrAuditLogs
     : {
         data: [],
         totalResults: 0,
@@ -77,7 +87,7 @@ const List = ({ history, location }) => {
 
   return (
     <>
-      <AuditLogsList
+      <CommonAuditLogsList
         entityRenderer={getAuditLogEntityRenderer}
         listHeader={getTableHeader}
         setPageParams={setPageParams}

@@ -1,9 +1,12 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Form } from 'antd';
 import { AttendanceDetail } from '../controls';
+
+const AntFormItem = (Form as any).Item;
+const AttendanceDetailInput = AttendanceDetail as any;
+interface FieldProps { forMonth?: string; initialValue?: Record<string, unknown>; fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -25,7 +28,7 @@ const AttendanceDetailField = ({
   fieldLayout = formItemLayout,
   required,
   requiredMessage,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -34,14 +37,14 @@ const AttendanceDetailField = ({
   ];
 
   return (
-    <Form.Item
+    <AntFormItem
       name={fieldName}
       label={fieldLabel}
       {...fieldLayout}
       rules={rules}
     >
-      <AttendanceDetail forMonth={forMonth} initialValue={initialValue} />
-    </Form.Item>
+      <AttendanceDetailInput forMonth={forMonth} initialValue={initialValue} />
+    </AntFormItem>
   );
 }
 

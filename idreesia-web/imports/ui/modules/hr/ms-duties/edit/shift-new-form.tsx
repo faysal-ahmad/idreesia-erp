@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
@@ -9,7 +8,15 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class NewForm extends Component {
+const AntForm = Form as any;
+const TimeInputField = TimeField as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface ShiftValues { name: string; startTime?: unknown; endTime?: unknown; attendanceSheet?: string; }
+interface NewFormProps { handleSave(values: ShiftValues): void; handleCancel(): void; }
+interface NewFormState { isFieldsTouched: boolean; }
+
+class NewForm extends Component<NewFormProps, NewFormState> {
   static propTypes = {
     handleSave: PropTypes.func,
     handleCancel: PropTypes.func,
@@ -23,7 +30,7 @@ class NewForm extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ name, startTime, endTime, attendanceSheet }) => {
+  handleFinish = ({ name, startTime, endTime, attendanceSheet }: ShiftValues) => {
     const { handleSave } = this.props;
     handleSave({
       name,
@@ -37,30 +44,30 @@ class NewForm extends Component {
     const isFieldsTouched = this.state.isFieldsTouched;
 
     return (
-      <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <InputTextField
+      <AntForm layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Name"
           required
           requiredMessage="Please input a name for the duty shift."
         />
-        <TimeField
+        <TimeInputField
           fieldName="startTime"
           fieldLabel="Start Time"
         />
-        <TimeField
+        <TimeInputField
           fieldName="endTime"
           fieldLabel="End Time"
         />
-        <InputTextField
+        <TextField
           fieldName="attendanceSheet"
           fieldLabel="Attendance Sheet"
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={this.props.handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
+      </AntForm>
     );
   }
 }

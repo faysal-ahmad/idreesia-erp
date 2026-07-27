@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -23,9 +22,17 @@ const formMutation = gql`
   }
 `;
 
-const NewForm = ({ history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { push(path: string): void; }
+interface FormValues { name: string; address?: string; }
+interface Props { history: HistoryLike; }
+
+const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createPhysicalStore] = useMutation(formMutation, {
+  const [createPhysicalStore] = useMutation(formMutation as any, {
     refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
   });
 
@@ -37,7 +44,7 @@ const NewForm = ({ history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = fieldsValue => {
+  const handleFinish = (fieldsValue: FormValues) => {
     createPhysicalStore({
       variables: {
         name: fieldsValue.name,
@@ -47,29 +54,29 @@ const NewForm = ({ history }) => {
       .then(() => {
         history.push(paths.physicalStoresPath);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the physical store."
       />
-      <InputTextAreaField
+      <TextAreaField
         fieldName="address"
         fieldLabel="Address"
         required={false}
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -78,4 +85,4 @@ NewForm.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New'])(NewForm);
+export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New'])(NewForm as any);

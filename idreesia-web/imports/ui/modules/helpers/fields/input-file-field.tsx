@@ -1,9 +1,12 @@
-// @ts-nocheck
 import React from "react";
 import PropTypes from "prop-types";
 
 import { Form } from "antd";
 import { InputFile } from "../controls";
+
+const AntFormItem = (Form as any).Item;
+const FileInput = InputFile as any;
+interface FieldProps { accept?: string; fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -24,7 +27,7 @@ const InputFileField = ({
   fieldLayout = formItemLayout,
   required,
   requiredMessage,
-}) => {
+}: FieldProps) => {
   const rules = [
     {
       required,
@@ -33,9 +36,9 @@ const InputFileField = ({
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} rules={rules} {...fieldLayout}>
-      <InputFile accept={accept} />
-    </Form.Item>
+    <AntFormItem name={fieldName} label={fieldLabel} rules={rules} {...fieldLayout}>
+      <FileInput accept={accept} />
+    </AntFormItem>
   );
 }
 

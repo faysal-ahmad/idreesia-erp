@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -11,15 +10,25 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const GeneralInfo = ({ groupId, history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { goBack(): void; }
+interface UserGroup { _id: string; name?: string; description?: string; }
+interface QueryData { userGroupById?: UserGroup | null; }
+interface Props { groupId?: string | null; history: HistoryLike; }
+interface FormValues { name: string; description?: string; }
+
+const GeneralInfo = ({ groupId, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(formQuery, {
+  const { data, loading } = useQuery(formQuery as any, {
     variables: { _id: groupId },
   });
-  const [updateUserGroup] = useMutation(formMutation, {
+  const [updateUserGroup] = useMutation(formMutation as any, {
     refetchQueries: ['pagedUserGroups'],
   });
-  const { userGroupById } = data || {};
+  const { userGroupById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
     history.goBack();
@@ -29,10 +38,10 @@ const GeneralInfo = ({ groupId, history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, description }) => {
+  const handleFinish = ({ name, description }: FormValues) => {
     updateUserGroup({
       variables: {
-        _id: userGroupById._id,
+        _id: userGroupById?._id,
         name,
         description,
       },
@@ -40,7 +49,7 @@ const GeneralInfo = ({ groupId, history }) => {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -48,24 +57,24 @@ const GeneralInfo = ({ groupId, history }) => {
   if (loading || !userGroupById) return null;
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         initialValue={userGroupById.name}
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="description"
         fieldLabel="Description"
         initialValue={userGroupById.description}
       />
 
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 

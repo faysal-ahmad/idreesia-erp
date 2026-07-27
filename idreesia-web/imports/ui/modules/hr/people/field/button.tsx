@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -13,7 +12,14 @@ const ContainerStyle = {
   width: '100%',
 };
 
-export default class SelectionButton extends Component {
+const AntButton = Button as any;
+const AntDrawer = Drawer as any;
+const KarkunListContainer = ListContainer as any;
+interface SelectionValue { _id?: string; name?: string; sharedData?: { name?: string }; }
+interface SelectionButtonProps { icon?: unknown; label?: string; disabled?: boolean; onSelection?(value: SelectionValue): void; }
+interface SelectionButtonState { showSelectionForm: boolean; }
+
+export default class SelectionButton extends Component<SelectionButtonProps, SelectionButtonState> {
   static propTypes = {
     icon: PropTypes.string,
     label: PropTypes.string,
@@ -43,7 +49,7 @@ export default class SelectionButton extends Component {
     });
   };
 
-  setSelectedValue = itemType => {
+  setSelectedValue = (itemType: SelectionValue) => {
     const { onSelection } = this.props;
     if (onSelection) {
       onSelection(itemType);
@@ -53,23 +59,23 @@ export default class SelectionButton extends Component {
   render() {
     return (
       <>
-        <Drawer
+        <AntDrawer
           title="Select Karkuns"
           width={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <ListContainer setSelectedValue={this.setSelectedValue} />
-        </Drawer>
-        <div style={ContainerStyle}>
-          <Button
+          <KarkunListContainer setSelectedValue={this.setSelectedValue} />
+        </AntDrawer>
+        <div style={ContainerStyle as any}>
+          <AntButton
             size="large"
             onClick={this.handleClick}
             disabled={this.props.disabled}
             icon={this.props.icon}
           >
             {this.props.label}
-          </Button>
+          </AntButton>
         </div>
       </>
     );

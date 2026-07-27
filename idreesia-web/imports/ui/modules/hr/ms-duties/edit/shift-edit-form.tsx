@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -10,7 +9,16 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-class EditForm extends Component {
+const AntForm = Form as any;
+const TimeInputField = TimeField as any;
+const TextField = InputTextField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface ShiftValues { name: string; startTime?: unknown; endTime?: unknown; attendanceSheet?: string; }
+interface DutyShift { _id: string; dutyId: string; name: string; startTime?: string | Date | null; endTime?: string | Date | null; attendanceSheet?: string; }
+interface EditFormProps { dutyShift: DutyShift; handleSave(values: ShiftValues & Pick<DutyShift, '_id' | 'dutyId'>): void; handleCancel(): void; }
+interface EditFormState { isFieldsTouched: boolean; }
+
+class EditForm extends Component<EditFormProps, EditFormState> {
   static propTypes = {
     dutyShift: PropTypes.object,
     handleSave: PropTypes.func,
@@ -25,7 +33,7 @@ class EditForm extends Component {
     this.setState({ isFieldsTouched: true });
   }
 
-  handleFinish = ({ name, startTime, endTime, attendanceSheet }) => {
+  handleFinish = ({ name, startTime, endTime, attendanceSheet }: ShiftValues) => {
     const { dutyShift, handleSave } = this.props;
     handleSave({
       _id: dutyShift._id,
@@ -43,36 +51,36 @@ class EditForm extends Component {
 
     return (
       <>
-        <Form layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-          <InputTextField
+        <AntForm layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
+          <TextField
             fieldName="name"
             fieldLabel="Name"
             initialValue={dutyShift.name}
             required
             requiredMessage="Please input a name for the duty location."
           />
-          <TimeField
+          <TimeInputField
             fieldName="startTime"
             fieldLabel="Start Time"
             initialValue={
               dutyShift.startTime ? dayjs(dutyShift.startTime) : null
             }
           />
-          <TimeField
+          <TimeInputField
             fieldName="endTime"
             fieldLabel="End Time"
             initialValue={dutyShift.endTime ? dayjs(dutyShift.endTime) : null}
           />
-          <InputTextField
+          <TextField
             fieldName="attendanceSheet"
             fieldLabel="Attendance Sheet"
             initialValue={dutyShift.attendanceSheet}
           />
-          <FormButtonsSaveCancel
+          <SaveCancelButtons
             handleCancel={this.props.handleCancel}
             isFieldsTouched={isFieldsTouched}
           />
-        </Form>
+        </AntForm>
       </>
     );
   }

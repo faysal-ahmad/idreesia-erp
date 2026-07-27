@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint "no-script-url": "off" */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -28,23 +27,40 @@ import {
   REMOVE_KARKUN_DUTY,
 } from '../gql';
 
-const DutyParticipation = props => {
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntEditOutlined = EditOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntButton = Button as any;
+const AntDivider = Divider as any;
+const AntForm = Form as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntModal = Modal as any;
+const AntPopconfirm = Popconfirm as any;
+const DutyEditForm = DutyForm as any;
+type AnyRecord = Record<string, any>;
+interface MatchLike { params: { karkunId: string; }; }
+interface QueryData { karkunDutiesByKarkunId?: AnyRecord[] | null; }
+interface Props { match: MatchLike; karkunId?: string | null; }
+interface DutyValues { dutyIdShiftId?: string[]; locationId?: string; role?: string; weekDays?: string[]; }
+
+const DutyParticipation = (props: Props) => {
   const [showNewForm, setShowNewForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
-  const [defaultValues, setDefaultValues] = useState({});
-  const [newDutyForm] = Form.useForm();
-  const [editDutyForm] = Form.useForm();
+  const [defaultValues, setDefaultValues] = useState<AnyRecord>({});
+  const [newDutyForm] = AntForm.useForm();
+  const [editDutyForm] = AntForm.useForm();
   const { karkunId } = props;
-  const { data } = useQuery(KARKUN_DUTIES_BY_KARKUN_ID, {
+  const { data } = useQuery(KARKUN_DUTIES_BY_KARKUN_ID as any, {
     variables: { karkunId: props.match.params.karkunId },
   });
-  const [createKarkunDuty] = useMutation(CREATE_KARKUN_DUTY, {
+  const [createKarkunDuty] = useMutation(CREATE_KARKUN_DUTY as any, {
     refetchQueries: ['karkunDutiesByKarkunId'],
   });
-  const [updateKarkunDuty] = useMutation(UPDATE_KARKUN_DUTY, {
+  const [updateKarkunDuty] = useMutation(UPDATE_KARKUN_DUTY as any, {
     refetchQueries: ['karkunDutiesByKarkunId'],
   });
-  const [removeKarkunDuty] = useMutation(REMOVE_KARKUN_DUTY, {
+  const [removeKarkunDuty] = useMutation(REMOVE_KARKUN_DUTY as any, {
     refetchQueries: [
       'pagedHrKarkuns',
       'karkunDutiesByKarkunId',
@@ -59,17 +75,17 @@ const DutyParticipation = props => {
     setShowNewForm(true);
   };
 
-  const handleEditClicked = record => {
+  const handleEditClicked = (record: AnyRecord) => {
     setShowEditForm(true);
     setDefaultValues(record);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: AnyRecord) => {
     removeKarkunDuty({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
@@ -83,19 +99,19 @@ const DutyParticipation = props => {
   };
 
   const handleNewDutyFormSaved = () => {
-    newDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }) => {
+    newDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }: DutyValues) => {
       setShowNewForm(false);
       createKarkunDuty({
         variables: {
           karkunId,
-          dutyId: dutyIdShiftId[0],
-          shiftId: dutyIdShiftId[1],
+          dutyId: dutyIdShiftId?.[0],
+          shiftId: dutyIdShiftId?.[1],
           locationId,
           role,
           daysOfWeek: weekDays,
         },
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
     });
@@ -103,31 +119,31 @@ const DutyParticipation = props => {
 
   const handleEditDutyFormSaved = () => {
     const { _id } = defaultValues;
-    editDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }) => {
+    editDutyForm.validateFields().then(({ dutyIdShiftId, locationId, role, weekDays }: DutyValues) => {
       setShowEditForm(false);
       updateKarkunDuty({
         variables: {
           _id,
           karkunId,
-          dutyId: dutyIdShiftId[0],
-          shiftId: dutyIdShiftId[1],
+          dutyId: dutyIdShiftId?.[0],
+          shiftId: dutyIdShiftId?.[1],
           locationId,
           role,
           daysOfWeek: weekDays,
         },
       })
-        .catch(error => {
+        .catch((error: Error) => {
           message.error(error.message, 5);
         });
       });
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: 'Duty Name',
       dataIndex: 'dutyName',
       key: 'dutyName',
-      render: (text, record) => {
+      render: (text: string, record: AnyRecord) => {
         if (record.role) {
           return `${text} (${record.role})`;
         }
@@ -148,22 +164,22 @@ const DutyParticipation = props => {
       title: 'Days of Week',
       dataIndex: 'daysOfWeek',
       key: 'daysOfWeek',
-      render: textArray => (textArray ? textArray.join() : null),
+      render: (textArray: string[] | undefined) => (textArray ? textArray.join() : null),
     },
     {
       key: 'action',
-      render: (text, record) => (
+      render: (_text: unknown, record: AnyRecord) => (
         <span>
-          <Tooltip title="Edit">
-            <EditOutlined
+          <AntTooltip title="Edit">
+            <AntEditOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleEditClicked(record);
               }}
             />
-          </Tooltip>
-          <Divider type="vertical" />
-          <Popconfirm
+          </AntTooltip>
+          <AntDivider type="vertical" />
+          <AntPopconfirm
             title="Are you sure you want to delete this duty?"
             onConfirm={() => {
               handleDeleteClicked(record);
@@ -171,36 +187,36 @@ const DutyParticipation = props => {
             okText="Yes"
             cancelText="No"
           >
-            <Tooltip title="Delete">
-              <DeleteOutlined className="list-actions-icon" />
-            </Tooltip>
-          </Popconfirm>
+            <AntTooltip title="Delete">
+              <AntDeleteOutlined className="list-actions-icon" />
+            </AntTooltip>
+          </AntPopconfirm>
         </span>
       ),
     },
   ];
 
-  const karkunDutiesByKarkunId = data ? data.karkunDutiesByKarkunId : null;
+  const { karkunDutiesByKarkunId } = (data ?? {}) as QueryData;
 
   return (
     <>
-      <Table
+      <AntTable
         rowKey="_id"
-        dataSource={karkunDutiesByKarkunId}
-        columns={columns}
+        dataSource={karkunDutiesByKarkunId ?? []}
+        columns={columns as any}
         bordered
         title={() => (
-          <Button
+          <AntButton
             type="primary"
-            icon={<PlusCircleOutlined />}
+            icon={<AntPlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Duty
-          </Button>
+          </AntButton>
         )}
       />
 
-      <Modal
+      <AntModal
         open={showNewForm}
         title="Add Duty"
         okText="Save"
@@ -209,16 +225,16 @@ const DutyParticipation = props => {
         onOk={handleNewDutyFormSaved}
         onCancel={handleNewDutyFormCancelled}
       >
-        <DutyForm
+        <DutyEditForm
           form={newDutyForm}
           defaultValues={defaultValues}
           allMSDuties={allMSDuties}
           allDutyShifts={allDutyShifts}
           allDutyLocations={allDutyLocations}
         />
-      </Modal>
+      </AntModal>
 
-      <Modal
+      <AntModal
         open={showEditForm}
         title="Edit Duty"
         okText="Save"
@@ -227,14 +243,14 @@ const DutyParticipation = props => {
         onOk={handleEditDutyFormSaved}
         onCancel={handleEditDutyFormCancelled}
       >
-        <DutyForm
+        <DutyEditForm
           form={editDutyForm}
           defaultValues={defaultValues}
           allMSDuties={allMSDuties}
           allDutyShifts={allDutyShifts}
           allDutyLocations={allDutyLocations}
         />
-      </Modal>
+      </AntModal>
     </>
   );
 };

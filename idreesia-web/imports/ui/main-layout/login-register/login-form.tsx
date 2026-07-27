@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -9,22 +8,34 @@ import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import { UPDATE_LOGIN_TIME } from '../gql';
 
-const { Link } = Typography;
+const AntButton = Button as any;
+const AntCard = Card as any;
+const AntDivider = Divider as any;
+const AntFlex = Flex as any;
+const AntForm = Form as any;
+const AntFormItem = (Form as any).Item;
+const TextInput = Input as any;
+const AntTypography = Typography as any;
+const { Link } = AntTypography;
+type ShowForm = 'login' | 'register' | 'forgot';
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+interface BaseProps { history?: HistoryLike; location?: LocationLike; setShowForm(form: ShowForm): void; }
 
 const LoginFormButtonStyle = {
   marginBottom: '10px',
   width: '100%',
 };
 
-export const LoginForm = ({ history, location, setShowForm }) => {
-  const dispatch = useDispatch();
-  const [updateLoginTime] = useMutation(UPDATE_LOGIN_TIME);
+export const LoginForm = ({ history, location, setShowForm }: BaseProps) => {
+  const dispatch = useDispatch<any>();
+  const [updateLoginTime] = useMutation(UPDATE_LOGIN_TIME as any);
 
-  const handleFinish = values => {
+  const handleFinish = (values: Record<string, string>) => {
     const { userName, password } = values;
-    Meteor.loginWithPassword(userName, password, error => {
+    (Meteor as any).loginWithPassword(userName, password, (error?: Error) => {
       if (!error) {
-        history.push(location.pathname);
+        history?.push(location?.pathname ?? '/');
         dispatch(setLoggedInUserId(Meteor.userId()));
         updateLoginTime();
       } else {
@@ -34,10 +45,10 @@ export const LoginForm = ({ history, location, setShowForm }) => {
   };
 
   return (
-    <Card title="Login to Idreesia" style={{ minWidth: 400 }}>
-      <Flex justify='center'>
-        <Form onFinish={handleFinish}>
-          <Form.Item
+    <AntCard title="Login to Idreesia" style={{ minWidth: 400 }}>
+      <AntFlex justify='center'>
+        <AntForm onFinish={handleFinish}>
+          <AntFormItem
             name="userName"
             rules={[
               {
@@ -46,9 +57,9 @@ export const LoginForm = ({ history, location, setShowForm }) => {
               },
             ]}
           >
-            <Input placeholder="Email / Username" />
-          </Form.Item>
-          <Form.Item
+            <TextInput placeholder="Email / Username" />
+          </AntFormItem>
+          <AntFormItem
             name="password"
             rules={[
               {
@@ -57,25 +68,25 @@ export const LoginForm = ({ history, location, setShowForm }) => {
               },
             ]}
           >
-            <Input type="password" placeholder="Password" />
-          </Form.Item>
-          <Form.Item>
-            <Flex justify='space-between' gap='small'>
-              <Button type="primary" htmlType="submit" style={LoginFormButtonStyle} block>
+            <TextInput type="password" placeholder="Password" />
+          </AntFormItem>
+          <AntFormItem>
+            <AntFlex justify='space-between' gap='small'>
+              <AntButton type="primary" htmlType="submit" style={LoginFormButtonStyle as any} block>
                 Log in
-              </Button>
-              <Button onClick={() => { setShowForm('forgot')}} style={LoginFormButtonStyle} block>
+              </AntButton>
+              <AntButton onClick={() => { setShowForm('forgot')}} style={LoginFormButtonStyle as any} block>
                 Forgot Password
-              </Button>
-            </Flex>
-          </Form.Item>
-        </Form>
-      </Flex>
-      <Divider style={{ marginTop: 0 }} />
-      <Flex justify='center'>
+              </AntButton>
+            </AntFlex>
+          </AntFormItem>
+        </AntForm>
+      </AntFlex>
+      <AntDivider style={{ marginTop: 0 }} />
+      <AntFlex justify='center'>
         <Link onClick={() => { setShowForm('register')}}>Don't have an account? Register</Link>
-      </Flex>
-    </Card>
+      </AntFlex>
+    </AntCard>
   );
 };
 

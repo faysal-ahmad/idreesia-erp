@@ -1,11 +1,16 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { debounce } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Input, Row } from 'antd';
 
-export default class ScanCnic extends Component {
+const AntCol = Col as any;
+const TextInput = Input as any;
+const AntRow = Row as any;
+interface Props { onCnicCaptured?(codes: string[]): void; }
+interface State { codes: string[]; }
+
+export default class ScanCnic extends Component<Props, State> {
   static propTypes = {
     onCnicCaptured: PropTypes.func,
   };
@@ -14,7 +19,7 @@ export default class ScanCnic extends Component {
     codes: [],
   };
 
-  keyBuffer = [];
+  keyBuffer: string[] = [];
 
   componentDidMount = () => {
     window.addEventListener('keypress', this.handleKeyPress);
@@ -28,7 +33,7 @@ export default class ScanCnic extends Component {
     this.setState({ codes: [] });
   };
 
-  formatCnicNumber = cnicString =>
+  formatCnicNumber = (cnicString: string) =>
     `${cnicString.slice(0, 5)}-${cnicString.slice(5, 12)}-${cnicString.slice(
       12,
       13
@@ -97,7 +102,7 @@ export default class ScanCnic extends Component {
     { trailing: true, maxWait: 2000 }
   );
 
-  handleKeyPress = event => {
+  handleKeyPress = (event: KeyboardEvent) => {
     this.keyBuffer.push(event.key);
     this.sendBarcode();
   };
@@ -106,18 +111,18 @@ export default class ScanCnic extends Component {
     const { codes } = this.state;
 
     return (
-      <Row type="flex" justify="start" align="middle" gutter={16}>
-        <Col order={1}>Scan CNIC</Col>
-        <Col order={2}>
+      <AntRow type="flex" justify="start" align="middle" gutter={16}>
+        <AntCol order={1}>Scan CNIC</AntCol>
+        <AntCol order={2}>
           {codes.length > 0 ? (
             this.state.codes.map((code, index) => (
-              <Input key={index} readOnly value={code} />
+              <TextInput key={index} readOnly value={code} />
             ))
           ) : (
-            <Input readOnly />
+            <TextInput readOnly />
           )}
-        </Col>
-      </Row>
+        </AntCol>
+      </AntRow>
     );
   }
 }

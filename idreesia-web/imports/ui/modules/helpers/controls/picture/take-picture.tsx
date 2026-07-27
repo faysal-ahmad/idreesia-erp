@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -8,7 +7,16 @@ import { getUploadUrl } from 'meteor/idreesia-common/utilities';
 import { Button, Modal, message } from 'antd';
 import TakePictureForm from './take-picture-form';
 
-export default class TakePicture extends Component {
+const ReactFragment = Fragment as any;
+const AntButton = Button as any;
+const AntModal = Modal as any;
+const AntInstagramOutlined = InstagramOutlined as any;
+const TakePictureFormControl = TakePictureForm as any;
+interface Props { disabled?: boolean; buttonText?: string; onPictureTaken?(attachmentId: string): void; }
+interface State { showForm: boolean; }
+interface UploadPayload { name: string; mimeType: string; data: string; }
+
+export default class TakePicture extends Component<Props, State> {
   static propTypes = {
     disabled: PropTypes.bool,
     buttonText: PropTypes.string,
@@ -24,7 +32,7 @@ export default class TakePicture extends Component {
     showForm: false,
   };
 
-  pictureForm;
+  pictureForm: any;
 
   updatePicture = () => {
     this.setState({ showForm: true });
@@ -34,7 +42,7 @@ export default class TakePicture extends Component {
     this.setState({ showForm: false });
   };
 
-  uploadAttachment = ({ name, mimeType, data }) =>
+  uploadAttachment = ({ name, mimeType, data }: UploadPayload) =>
     fetch(getUploadUrl(), {
       method: 'POST',
       headers: {
@@ -45,7 +53,7 @@ export default class TakePicture extends Component {
         mimeType,
         data,
       }),
-    }).then(response => response.json());
+    }).then((response: Response) => response.json());
 
   handlePictureFormSaved = () => {
     const { onPictureTaken } = this.props;
@@ -65,9 +73,9 @@ export default class TakePicture extends Component {
       data,
     })
       .then(({ attachmentId }) => {
-        onPictureTaken(attachmentId);
+        onPictureTaken?.(attachmentId);
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -77,13 +85,13 @@ export default class TakePicture extends Component {
     const { showForm } = this.state;
 
     return (
-      <Fragment>
-        <Button type="default" disabled={disabled} onClick={this.updatePicture}>
-          <InstagramOutlined />
+      <ReactFragment>
+        <AntButton type="default" disabled={disabled} onClick={this.updatePicture}>
+          <AntInstagramOutlined />
           {buttonText}
-        </Button>
+        </AntButton>
 
-        <Modal
+        <AntModal
           open={showForm}
           title={buttonText}
           width={750}
@@ -92,13 +100,13 @@ export default class TakePicture extends Component {
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >
-          <TakePictureForm
-            ref={f => {
+          <TakePictureFormControl
+            ref={(f: any) => {
               this.pictureForm = f;
             }}
           />
-        </Modal>
-      </Fragment>
+        </AntModal>
+      </ReactFragment>
     );
   }
 }

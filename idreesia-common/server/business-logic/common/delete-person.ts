@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   KarkunDuties,
@@ -8,16 +7,16 @@ import {
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/security';
 
-export async function deletePerson(personId) {
+export async function deletePerson(personId: string) {
   const existingKarkun = await People.findOneAsync(personId);
-  const promises = [];
+  const promises: Promise<unknown>[] = [];
 
   // Remove the image for the karkun
-  if (existingKarkun.sharedData.imageId) {
+  if (existingKarkun?.sharedData?.imageId) {
     promises.push(Attachments.removeAsync(existingKarkun.sharedData.imageId));
   }
   // Remove any file attachments
-  if (existingKarkun.karkunData.attachmentIds) {
+  if (existingKarkun?.karkunData?.attachmentIds) {
     promises.push(
       Attachments.removeAsync({
         _id: { $in: existingKarkun.karkunData.attachmentIds },

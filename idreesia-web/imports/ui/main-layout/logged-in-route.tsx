@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -9,21 +8,29 @@ import HeaderContent from './header-content';
 import SidebarContent from './sidebar-content';
 import MainContent from './main-content';
 
-export const LoggedInRoute = ({ location, history }) => {
-  const breadcrumbs = useSelector(state => state.breadcrumbs);
+const AntLayout = Layout as any;
+const AntBreadcrumb = Breadcrumb as any;
+const Header = HeaderContent as any;
+const Sidebar = SidebarContent as any;
+const Main = MainContent as any;
+type AnyRecord = Record<string, any>;
+interface Props { location: AnyRecord; history: AnyRecord; }
+
+export const LoggedInRoute = ({ location, history }: Props) => {
+  const breadcrumbs = useSelector((state: AnyRecord) => state.breadcrumbs ?? []);
   const { user, userLoading } = useLoggedInUser();
   if (userLoading) return null;
 
   const getBreadcrumbs = () => {
     let retVal = null;
-    const breadcrumbItems = [];
+    const breadcrumbItems: any[] = [];
     if (breadcrumbs.length > 0) {
-      breadcrumbs.forEach(breadcrumb => {
+      breadcrumbs.forEach((breadcrumb: string) => {
         breadcrumbItems.push({title: breadcrumb});
       });
 
       retVal = (
-        <Breadcrumb style={{ margin: '16px 0' }} items={breadcrumbItems} />
+        <AntBreadcrumb style={{ margin: '16px 0' }} items={breadcrumbItems} />
       );
     }
 
@@ -31,16 +38,16 @@ export const LoggedInRoute = ({ location, history }) => {
   };
 
   return (
-    <Layout>
-      <HeaderContent location={location} history={history} user={user} />
-      <Layout>
-        <SidebarContent location={location} history={history} />
-        <Layout style={{ padding: '0 24px 24px' }}>
+    <AntLayout>
+      <Header location={location} history={history} user={user} />
+      <AntLayout>
+        <Sidebar location={location} history={history} />
+        <AntLayout style={{ padding: '0 24px 24px' }}>
           {getBreadcrumbs()}
-          <MainContent location={location} history={history} />
-        </Layout>
-      </Layout>
-    </Layout>
+          <Main location={location} history={history} />
+        </AntLayout>
+      </AntLayout>
+    </AntLayout>
   );
 };
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
@@ -52,25 +51,38 @@ const formMutation = gql`
   }
 `;
 
-const EditForm = ({ dutyId, history }) => {
+const ReactFragment = Fragment as any;
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+const AuditInfoComponent = AuditInfo as any;
+interface HistoryLike { goBack(): void; }
+interface EditFormProps { dutyId?: string | null; history?: HistoryLike; }
+interface DutyRecord { _id: string; name: string; description?: string; attendanceSheet?: string; }
+interface QueryData { dutyById?: DutyRecord | null; }
+interface FormValues { name: string; description?: string; attendanceSheet?: string; }
+
+const EditForm = ({ dutyId, history }: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(formQuery, {
+  const { data, loading } = useQuery(formQuery as any, {
     variables: { id: dutyId },
   });
-  const [updateDuty] = useMutation(formMutation, {
+  const [updateDuty] = useMutation(formMutation as any, {
     refetchQueries: ['allMSDuties'],
   });
-  const { dutyById } = data || {};
+  const { dutyById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
-    history.goBack();
+    history?.goBack();
   };
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, description, attendanceSheet }) => {
+  const handleFinish = ({ name, description, attendanceSheet }: FormValues) => {
+    if (!dutyById) return;
     updateDuty({
       variables: {
         id: dutyById._id,
@@ -80,9 +92,9 @@ const EditForm = ({ dutyId, history }) => {
       },
     })
       .then(() => {
-        history.goBack();
+        history?.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
@@ -90,32 +102,32 @@ const EditForm = ({ dutyId, history }) => {
   if (loading || !dutyById) return null;
 
   return (
-    <Fragment>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
+    <ReactFragment>
+      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <TextField
           fieldName="name"
           fieldLabel="Duty Name"
           initialValue={dutyById.name}
           required
           requiredMessage="Please input a name for the duty."
         />
-        <InputTextAreaField
+        <TextAreaField
           fieldName="description"
           fieldLabel="Description"
           initialValue={dutyById.description}
         />
-        <InputTextField
+        <TextField
           fieldName="attendanceSheet"
           fieldLabel="Attendance Sheet"
           initialValue={dutyById.attendanceSheet}
         />
-        <FormButtonsSaveCancel
+        <SaveCancelButtons
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </Form>
-      <AuditInfo record={dutyById} />
-    </Fragment>
+      </AntForm>
+      <AuditInfoComponent record={dutyById} />
+    </ReactFragment>
   );
 };
 

@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
-export async function exportVisitors(visitorIdsString) {
+export async function exportVisitors(visitorIdsString: string) {
   let people;
 
   if (visitorIdsString === 'all') {
@@ -16,7 +15,7 @@ export async function exportVisitors(visitorIdsString) {
   }
 
   let index = 1;
-  const sheetData = people.map(person => ({
+  const sheetData = people.map((person: any) => ({
     'No.': index++,
     Name: person.sharedData.name,
     'S/O': person.sharedData.parentName,

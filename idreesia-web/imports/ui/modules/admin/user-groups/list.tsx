@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -41,16 +40,31 @@ const formMutation = gql`
   }
 `;
 
-const getQueryString = ({ pageIndex, pageSize }) =>
+const RouterLink = Link as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntTeamOutlined = TeamOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntButton = Button as any;
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+interface HistoryLike { push(path: string): void; }
+interface UserGroup { _id: string; name?: string; description?: string; }
+interface PagedUserGroups { totalResults: number; data: UserGroup[]; }
+interface QueryData { pagedUserGroups?: PagedUserGroups | null; }
+interface Props { history: HistoryLike; }
+
+const getQueryString = ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number; }) =>
   `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
-const getColumns = ({ handleDeleteClicked }) => [
+const getColumns = ({ handleDeleteClicked }: { handleDeleteClicked(record: UserGroup): void }) : any[] => [
   {
     title: 'Group name',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => (
-      <Link to={`${paths.userGroupsPath}/${record._id}`}>{text}</Link>
+    render: (text: string, record: UserGroup) => (
+      <RouterLink to={`${paths.userGroupsPath}/${record._id}`}>{text}</RouterLink>
     ),
   },
   {
@@ -60,12 +74,12 @@ const getColumns = ({ handleDeleteClicked }) => [
   },
   {
     key: 'action',
-    render: (text, record) => (
+    render: (text: string, record: UserGroup) => (
       <div className="list-actions-column">
-        <Tooltip title="Add Users">
-          <TeamOutlined className="list-actions-icon" />
-        </Tooltip>
-        <Popconfirm
+        <AntTooltip title="Add Users">
+          <AntTeamOutlined className="list-actions-icon" />
+        </AntTooltip>
+        <AntPopconfirm
           title="Are you sure you want to delete this group?"
           onConfirm={() => {
             handleDeleteClicked(record);
@@ -73,34 +87,34 @@ const getColumns = ({ handleDeleteClicked }) => [
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Delete">
+            <AntDeleteOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       </div>
     ),
   },
 ];
 
-const List = ({ history }) => {
+const List = ({ history }: Props) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const [deleteUserGroup] = useMutation(formMutation);
-  const { data, loading } = useQuery(listQuery, {
+  const [deleteUserGroup] = useMutation(formMutation as any);
+  const { data, loading } = useQuery(listQuery as any, {
     variables: {
       queryString: getQueryString({ pageIndex, pageSize }),
     },
   });
 
   if (loading) return null;
-  const { pagedUserGroups } = data;
+  const { pagedUserGroups } = (data ?? {}) as QueryData;
 
-  const onChange = (index, size) => {
+  const onChange = (index: number, size: number) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
 
-  const onShowSizeChange = (index, size) => {
+  const onShowSizeChange = (index: number, size: number) => {
     setPageIndex(index - 1);
     setPageSize(size);
   };
@@ -109,40 +123,40 @@ const List = ({ history }) => {
     history.push(paths.userGroupsNewFormPath);
   };
 
-  const handleDeleteClicked = record => {
+  const handleDeleteClicked = (record: UserGroup) => {
     deleteUserGroup({
       variables: {
         _id: record._id,
       },
-    }).catch(error => {
+    }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
   return (
-    <Table
+    <AntTable
       rowKey="_id"
-      dataSource={pagedUserGroups.data}
-      columns={getColumns({ handleDeleteClicked })}
+      dataSource={pagedUserGroups?.data ?? []}
+      columns={getColumns({ handleDeleteClicked }) as any}
       bordered
       size="small"
       pagination={false}
       title={() => (
-        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
+        <AntButton type="primary" icon={<AntPlusCircleOutlined />} onClick={handleNewClicked}>
           New User Group
-        </Button>
+        </AntButton>
       )}
       footer={() => (
-        <Pagination
+        <AntPagination
           current={pageIndex + 1}
           pageSize={pageSize}
           showSizeChanger
-          showTotal={(total, range) =>
+          showTotal={(total: number, range: [number, number]) =>
             `${range[0]}-${range[1]} of ${total} items`
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={pagedUserGroups.totalResults}
+          total={pagedUserGroups?.totalResults ?? 0}
         />
       )}
     />
@@ -154,4 +168,4 @@ List.propTypes = {
   location: PropTypes.object,
 };
 
-export default WithBreadcrumbs(['Admin', 'User Groups', 'List'])(List);
+export default WithBreadcrumbs(['Admin', 'User Groups', 'List'])(List as any);

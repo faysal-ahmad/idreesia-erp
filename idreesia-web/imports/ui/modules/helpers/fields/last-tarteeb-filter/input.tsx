@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Input, InputNumber, Select } from 'antd';
@@ -14,67 +13,75 @@ const ContainerStyle = {
 
 const DEFAULT_VALUE = JSON.stringify({ scale: 'months' });
 
-export default class CustomInput extends Component {
+const TextInput = Input as any;
+const NumberInput = InputNumber as any;
+const AntSelect = Select as any;
+interface FilterValue { scale?: string; duration?: number | null; }
+interface CustomInputProps { value?: string; disabled?: boolean; onChange?(value: string): void; }
+
+export default class CustomInput extends Component<CustomInputProps> {
+  scaleSelect: React.RefObject<any>;
+  durationInput: React.RefObject<any>;
   static propTypes = {
     value: PropTypes.string,
     disabled: PropTypes.bool,
     onChange: PropTypes.func,
   };
 
-  constructor(props) {
+  constructor(props: CustomInputProps) {
     super(props);
-    this.scaleSelect = React.createRef();
-    this.durationInput = React.createRef();
+    this.scaleSelect = React.createRef<any>();
+    this.durationInput = React.createRef<any>();
   }
 
   getScaleOptions = () => {
     const monthOptions = ['days', 'months', 'years'];
-    return monthOptions.map(option => (
-      <Select.Option key={option} value={option}>
+    return monthOptions.map((option: string) => (
+      <AntSelect.Option key={option} value={option}>
         {startCase(option)}
-      </Select.Option>
+      </AntSelect.Option>
     ));
   };
 
-  handleScaleChange = scale => {
+  handleScaleChange = (scale: string) => {
     const { onChange } = this.props;
     const duration = this.durationInput.current.props.value;
     const newValue = JSON.stringify({
       scale,
       duration,
     });
-    onChange(newValue);
+    onChange?.(newValue);
   };
 
-  handleDurationChange = duration => {
+  handleDurationChange = (duration: number | null) => {
     const { onChange } = this.props;
     const scale = this.scaleSelect.current.props.value;
     const newValue = JSON.stringify({
       scale,
       duration,
     });
-    onChange(newValue);
+    onChange?.(newValue);
   };
 
   render() {
     const { value } = this.props;
-    const { scale, duration } = JSON.parse(value || DEFAULT_VALUE);
+    const { scale, duration } = JSON.parse(value || DEFAULT_VALUE) as FilterValue;
 
     const scaleSelect = (
-      <Select
+      <AntSelect
         ref={this.scaleSelect}
         style={{ width: '100px' }}
         onChange={this.handleScaleChange}
         value={scale}
       >
         {this.getScaleOptions()}
-      </Select>
+      </AntSelect>
     );
 
     return (
-      <Input.Group>
-        <div style={ContainerStyle}>
-          <Input
+      <TextInput.Group>
+        <div style={ContainerStyle as any}>
+          <TextInput
             style={{
               width: 100,
               border: 0,
@@ -84,14 +91,14 @@ export default class CustomInput extends Component {
             placeholder="More Than"
             disabled
           />
-          <InputNumber
+          <NumberInput
             ref={this.durationInput}
             value={duration}
             onChange={this.handleDurationChange}
           />
           {scaleSelect}
         </div>
-      </Input.Group>
+      </TextInput.Group>
     );
   }
 }

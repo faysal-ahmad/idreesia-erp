@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -12,6 +11,17 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import { ATTENDANCE_BY_BARCODE_ID } from '../gql';
 
+const RouterLink = Link as any;
+const AntRow = Row as any;
+const AntCol = Col as any;
+const AntSpin = Spin as any;
+interface SearchResultRowProps { label: string; value?: string | number | null; linkTo?: string; }
+interface SearchResultProps { barcode?: string; }
+interface Karkun { _id: string; name: string; imageId?: string; cnicNumber?: string; contactNumber1?: string; }
+interface NamedRecord { name: string; }
+interface AttendanceRecord { month: string; percentage: number; karkun: Karkun; duty?: NamedRecord | null; shift?: NamedRecord | null; job?: NamedRecord | null; }
+interface QueryData { attendanceByBarcodeId?: AttendanceRecord | null; }
+
 const LabelStyle = {
   fontWeight: 'bold',
   fontSize: 26,
@@ -21,21 +31,21 @@ const DataStyle = {
   fontSize: 26,
 };
 
-const SearchResultRow = ({ label, value, linkTo }) => (
-  <Row type="flex" gutter={16}>
-    <Col order={1}>
-      <span style={LabelStyle}>{label}:</span>
-    </Col>
-    <Col order={2}>
+const SearchResultRow = ({ label, value, linkTo }: SearchResultRowProps) => (
+  <AntRow gutter={16}>
+    <AntCol order={1}>
+      <span style={LabelStyle as any}>{label}:</span>
+    </AntCol>
+    <AntCol order={2}>
       {linkTo ? (
-        <Link style={DataStyle} to={linkTo}>
+        <RouterLink style={DataStyle as any} to={linkTo}>
           {value}
-        </Link>
+        </RouterLink>
       ) : (
-        <span style={DataStyle}>{value}</span>
+        <span style={DataStyle as any}>{value}</span>
       )}
-    </Col>
-  </Row>
+    </AntCol>
+  </AntRow>
 );
 
 SearchResultRow.propTypes = {
@@ -44,17 +54,16 @@ SearchResultRow.propTypes = {
   linkTo: PropTypes.string,
 };
 
-const SearchResult = props => {
-  const { barcode } = props;
-  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_ID, {
+const SearchResult = ({ barcode }: SearchResultProps) => {
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_ID as any, {
     variables: { barcodeId: barcode },
     skip: !barcode,
   });
 
   if (!barcode) return null;
-  if (loading) return <Spin size="large" />;
+  if (loading) return <AntSpin size="large" />;
 
-  const attendanceByBarcodeId = data ? data.attendanceByBarcodeId : null;
+  const attendanceByBarcodeId = data ? (data as QueryData).attendanceByBarcodeId : null;
   if (!attendanceByBarcodeId) {
     message.error(`No records found against scanned barcode ${barcode}`, 2);
     return null;
@@ -64,9 +73,9 @@ const SearchResult = props => {
 
   const url = getDownloadUrl(karkun.imageId);
   const imageColumn = url ? (
-    <Col order={1}>
-      <img src={url} style={{ width: '250px' }} />
-    </Col>
+    <AntCol order={1}>
+      <img src={url} style={{ width: '250px' }} alt={karkun.name} />
+    </AntCol>
   ) : null;
 
   const displayMonth = startOfMonth(
@@ -74,9 +83,9 @@ const SearchResult = props => {
   );
 
   return (
-    <Row type="flex" gutter={16}>
+    <AntRow gutter={16}>
       {imageColumn}
-      <Col order={2}>
+      <AntCol order={2}>
         <SearchResultRow
           label="Name"
           value={karkun.name}
@@ -92,8 +101,8 @@ const SearchResult = props => {
           value={formatDate(displayMonth, 'D MMM YYYY')}
         />
         <SearchResultRow label="Attendance" value={`${percentage}%`} />
-      </Col>
-    </Row>
+      </AntCol>
+    </AntRow>
   );
 };
 

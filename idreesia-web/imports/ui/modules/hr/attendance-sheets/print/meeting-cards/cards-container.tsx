@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -15,9 +14,18 @@ import {
 import Cards from './cards';
 import { ATTENDANCE_BY_BARCODE_IDS } from '../../gql';
 
-const CardsContainer = ({ history, queryParams }) => {
-  const meetingCardsRef = useRef(null);
-  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS, {
+const PrintControl = ReactToPrint as any;
+const PrintButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const CardsView = Cards as any;
+interface HistoryLike { goBack(): void; }
+interface ContainerProps { history: HistoryLike; queryParams: Record<string, string | undefined>; }
+interface QueryData { attendanceByBarcodeIds?: unknown[]; }
+
+const CardsContainer = ({ history, queryParams }: ContainerProps) => {
+  const meetingCardsRef = useRef<any>(null);
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS as any, {
     variables: { barcodeIds: queryParams.barcodeIds },
   });
 
@@ -28,16 +36,16 @@ const CardsContainer = ({ history, queryParams }) => {
 
   return (
     <>
-      <ReactToPrint
+      <PrintControl
         content={() => meetingCardsRef.current}
         trigger={() => (
-          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
             Print Cards
-          </Button>
+          </PrintButton>
         )}
       />
       &nbsp;
-      <Button
+      <PrintButton
         size="large"
         type="primary"
         onClick={() => {
@@ -45,13 +53,13 @@ const CardsContainer = ({ history, queryParams }) => {
         }}
       >
         Back
-      </Button>
-      <Divider />
-      <Cards
+      </PrintButton>
+      <AntDivider />
+      <CardsView
         ref={meetingCardsRef}
         cardType={cardType}
         attendanceByBarcodeIds={
-          data ? data.attendanceByBarcodeIds : undefined
+          data ? (data as QueryData).attendanceByBarcodeIds : []
         }
       />
     </>
@@ -68,4 +76,4 @@ CardsContainer.propTypes = {
 export default flowRight(
   WithQueryParams(),
   WithBreadcrumbs(['HR', 'Attendance Sheets', 'Meeting Cards'])
-)(CardsContainer);
+)(CardsContainer as any);

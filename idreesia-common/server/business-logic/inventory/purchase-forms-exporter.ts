@@ -1,4 +1,3 @@
-// @ts-nocheck
 import dayjs from 'dayjs';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -9,30 +8,30 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
-export async function exportPurchaseForms(purchaseFormIdsString) {
+export async function exportPurchaseForms(purchaseFormIdsString: string) {
   const purchaseFormIds = purchaseFormIdsString.split(',');
   const purchaseForms = await PurchaseForms.find({
     _id: { $in: purchaseFormIds },
   }).fetchAsync();
 
   const sheetData = await Promise.all(
-    purchaseForms.map(async purchaseForm => {
+    purchaseForms.map(async (purchaseForm: any) => {
       const purchaseDate = dayjs(Number(purchaseForm.purchaseDate)).format(
         'DD MMM, YYYY'
       );
 
-      const person = await People.findOneAsync(purchaseForm.purchasedBy);
-      const purchasedBy = person.sharedData.name;
+      const person = (await People.findOneAsync(purchaseForm.purchasedBy)) as any;
+      const purchasedBy = person?.sharedData?.name ?? '';
 
       let locationName = '';
       if (purchaseForm.locationId) {
-        const location = await Locations.findOneAsync(purchaseForm.locationId);
-        locationName = location.name;
+        const location = (await Locations.findOneAsync(purchaseForm.locationId)) as any;
+        locationName = location?.name ?? '';
       }
 
       const formattedItems = await Promise.all(
-        purchaseForm.items.map(async item => {
-          const stockItem = await StockItems.findOneAsync(item.stockItemId);
+        purchaseForm.items.map(async (item: any) => {
+          const stockItem = (await StockItems.findOneAsync(item.stockItemId)) as any;
           let quantity = item.quantity;
           if (stockItem.unitOfMeasurement !== 'quantity') {
             quantity = `${quantity} ${stockItem.unitOfMeasurement}`;

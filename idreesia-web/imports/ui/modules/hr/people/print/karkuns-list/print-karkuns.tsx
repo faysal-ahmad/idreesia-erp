@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -13,12 +12,23 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { HR_KARKUNS_BY_ID } from '../../gql';
 import KarkunsList from './karkuns-list';
 
-const PrintView = ({ history, location }) => {
-  const karkunsList = useRef(null);
-  const dispatch = useDispatch();
+const ReactToPrintControl = ReactToPrint as any;
+const AntButton = Button as any;
+const AntDivider = Divider as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const KarkunsPrintList = KarkunsList as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { goBack(): void; push(path: string): void; }
+interface LocationLike { pathname: string; search: string; }
+interface QueryData { hrKarkunsById?: AnyRecord[] | null; }
+interface Props { history: HistoryLike; location: LocationLike; }
+
+const PrintView = ({ history, location }: Props) => {
+  const karkunsList = useRef<HTMLDivElement | null>(null);
+  const dispatch = useDispatch<any>();
   const { queryParams } = useQueryParams({ history, location });
 
-  const { data, loading } = useQuery(HR_KARKUNS_BY_ID, {
+  const { data, loading } = useQuery(HR_KARKUNS_BY_ID as any, {
     variables: {
       _ids: queryParams.karkunIds,
     },
@@ -30,19 +40,19 @@ const PrintView = ({ history, location }) => {
 
   if (loading) return null;
 
-  const { hrKarkunsById } = data;
+  const { hrKarkunsById } = (data ?? {}) as QueryData;
   return (
     <>
-      <ReactToPrint
+      <ReactToPrintControl
         content={() => karkunsList.current}
         trigger={() => (
-          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+          <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
             Print Data
-          </Button>
+          </AntButton>
         )}
       />
       &nbsp;
-      <Button
+      <AntButton
         size="large"
         type="primary"
         onClick={() => {
@@ -50,9 +60,9 @@ const PrintView = ({ history, location }) => {
         }}
       >
         Back
-      </Button>
-      <Divider />
-      <KarkunsList ref={karkunsList} karkuns={hrKarkunsById} />
+      </AntButton>
+      <AntDivider />
+      <KarkunsPrintList ref={karkunsList} karkuns={hrKarkunsById ?? []} />
     </>
   );
 };

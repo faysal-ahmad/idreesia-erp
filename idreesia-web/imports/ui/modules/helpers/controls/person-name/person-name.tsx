@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { UserOutlined } from '@ant-design/icons';
@@ -6,6 +5,12 @@ import { UserOutlined } from '@ant-design/icons';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
+
+const AntAvatar = Avatar as any;
+const AntModal = Modal as any;
+const AntUserOutlined = UserOutlined as any;
+interface Person { _id: string; name: string; imageId?: string; image?: { data?: string }; }
+interface Props { person?: Person | null; onPersonNameClicked?(person: Person): void; showLargeImage?: boolean; }
 
 const NameDivStyle = {
   display: 'flex',
@@ -17,7 +22,7 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const PersonName = ({ person, onPersonNameClicked, showLargeImage }) => {
+const PersonName = ({ person, onPersonNameClicked, showLargeImage }: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   if (!person) return null;
 
@@ -33,23 +38,23 @@ const PersonName = ({ person, onPersonNameClicked, showLargeImage }) => {
     <span>{person.name}</span>
   );
 
-  let imageUrl;
+  let imageUrl: string | undefined;
   let avatarNode = (
-    <Avatar
+    <AntAvatar
       shape="square"
       size="large"
-      style={
+      style={(
         showLargeImage
           ? { height: '80px', width: '80px', fontSize: '60px' }
           : {}
-      }
-      icon={<UserOutlined />}
+      ) as any}
+      icon={<AntUserOutlined />}
     />
   );
   if (person.imageId) {
-    imageUrl = getDownloadUrl(person.imageId);
+    imageUrl = getDownloadUrl(person.imageId) ?? undefined;
     avatarNode = (
-      <Avatar
+      <AntAvatar
         shape="square"
         size="large"
         src={imageUrl}
@@ -64,30 +69,31 @@ const PersonName = ({ person, onPersonNameClicked, showLargeImage }) => {
     avatarNode = (
       <img
         src={`data:image/jpeg;base64,${person.image.data}`}
-        style={
+        style={(
           showLargeImage
             ? { height: '80px', width: '80px', borderRadius: '10%' }
             : { height: '40px', width: '40px', borderRadius: '10%' }
-        }
+        ) as any}
+        alt={person.name}
       />
     );
   }
 
   return (
     <>
-      <div style={NameDivStyle}>
+      <div style={NameDivStyle as any}>
         {avatarNode}
         &nbsp;&nbsp;
         {nameNode}
       </div>
-      <Modal
+      <AntModal
         title={person.name}
         open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
-        <img src={imageUrl} style={{ maxWidth: '470px' }} />
-      </Modal>
+        {imageUrl ? <img src={imageUrl} style={{ maxWidth: '470px' }} alt={person.name} /> : null}
+      </AntModal>
     </>
   );
 };

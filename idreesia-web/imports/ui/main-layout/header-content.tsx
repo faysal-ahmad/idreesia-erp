@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout, Menu } from 'antd';
@@ -14,6 +13,16 @@ import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
 import { setActiveModuleName } from 'meteor/idreesia-common/action-creators';
 import UserMenu from './user-menu';
 import { UPDATE_LAST_ACTIVE_TIME } from './gql';
+
+const AntLayout = Layout as any;
+const AntMenu = Menu as any;
+const UserMenuControl = UserMenu as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { push(path: string): void; }
+interface LocationLike { pathname: string; }
+interface UserLike { permissions?: string[]; }
+interface Props { history: HistoryLike; location: LocationLike; user?: UserLike | null; }
+interface MenuSelectInfo { key: string; }
 
 const ContainerStyle = {
   display: 'flex',
@@ -34,13 +43,13 @@ const modulePathsMapping = {
   // ***********************************************
 };
 
-const isModuleAccessible = (user, moduleName) => {
+const isModuleAccessible = (user: UserLike, moduleName: string) => {
   // For a module to be accessible to the user, the user needs to have at least
   // one permission for that module.
-  const { permissions } = user;
+  const { permissions = [] } = user;
   const lcModuleName = kebabCase(moduleName);
   let isAccessible = false;
-  forEach(permissions, permission => {
+  forEach(permissions, (permission: string) => {
     if (permission.startsWith(lcModuleName)) {
       isAccessible = true;
     }
@@ -49,9 +58,9 @@ const isModuleAccessible = (user, moduleName) => {
   return isAccessible;
 };
 
-const HeaderContent = ({ history, location, user }) => {
-  const dispatch = useDispatch();
-  const [updateLastActiveTime] = useMutation(UPDATE_LAST_ACTIVE_TIME);
+const HeaderContent = ({ history, location, user }: Props) => {
+  const dispatch = useDispatch<any>();
+  const [updateLastActiveTime] = useMutation(UPDATE_LAST_ACTIVE_TIME as any);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -64,7 +73,7 @@ const HeaderContent = ({ history, location, user }) => {
     const { pathname } = location;
     if (pathname !== '/') {
       const moduleNames = keys(modulePathsMapping);
-      forEach(moduleNames, moduleName => {
+      forEach(moduleNames, (moduleName: string) => {
         const modulePath = modulePathsMapping[moduleName];
         if (pathname.startsWith(modulePath)) {
           dispatch(setActiveModuleName(moduleName));
@@ -73,15 +82,15 @@ const HeaderContent = ({ history, location, user }) => {
     }
   }, [ user ]);
 
-  const handleMenuItemSelected = ({ key }) => {
+  const handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
     const modulePath = modulePathsMapping[key];
     history.push(modulePath);
     dispatch(setActiveModuleName(key));
   };
 
-  const menuItems = [];
-  const childMenuItems = [];
-  const selectedMenuItemKey = [];
+  const menuItems: any[] = [];
+  const childMenuItems: any[] = [];
+  const selectedMenuItemKey: string[] = [];
 
   if (user) {
     const { pathname } = location;
@@ -99,7 +108,7 @@ const HeaderContent = ({ history, location, user }) => {
     // Add the 381-a operations node if any child of it are
     // accessible to the user 
     const moduleNames = keys(modulePathsMapping);
-    moduleNames.forEach((moduleName) => {
+    moduleNames.forEach((moduleName: string) => {
       if(moduleName !== ModuleNames.admin) {
         if (isModuleAccessible(user, moduleName)) {
           childMenuItems.push({ key: moduleName, label: moduleName });
@@ -121,9 +130,9 @@ const HeaderContent = ({ history, location, user }) => {
   }
 
   return (
-    <Layout.Header>
-      <div style={ContainerStyle}>
-        <Menu
+    <AntLayout.Header>
+      <div style={ContainerStyle as any}>
+        <AntMenu
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={selectedMenuItemKey}
@@ -131,9 +140,9 @@ const HeaderContent = ({ history, location, user }) => {
           items={menuItems}
           style={{ width: "50%" }}
         />
-        <UserMenu history={history} location={location} />
+        <UserMenuControl history={history} location={location} />
       </div>
-    </Layout.Header>
+    </AntLayout.Header>
   );
 };
 

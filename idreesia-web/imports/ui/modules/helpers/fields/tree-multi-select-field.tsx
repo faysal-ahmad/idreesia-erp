@@ -1,8 +1,11 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { TreeSelect, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const AntTreeSelect = TreeSelect as any;
+interface FieldProps { data?: unknown[]; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; initialValue?: unknown[] | null; onChange?(value: unknown): void; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -30,7 +33,12 @@ const TreeMultiSelectField = ({
   requiredMessage,
   initialValue = null,
   onChange,
-}) => {
+}: FieldProps) => {
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    const title = String(treeNode?.title ?? treeNode?.props?.title ?? '').toLowerCase();
+    return title.includes(inputValue.toLowerCase());
+  };
+
   const rules = required
   ? [
       {
@@ -41,18 +49,18 @@ const TreeMultiSelectField = ({
   : null;
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <TreeSelect
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <AntTreeSelect
         treeData={data}
         placeholder={placeholder}
         onChange={onChange}
         allowClear
         treeCheckable
         treeDefaultExpandAll
-        showCheckedStrategy={TreeSelect.SHOW_PARENT}
-        filterTreeNode={this.filterTreeNode}
+        showCheckedStrategy={AntTreeSelect.SHOW_PARENT}
+        filterTreeNode={filterTreeNode}
       />
-    </Form.Item>
+    </AntFormItem>
   );
 }
 

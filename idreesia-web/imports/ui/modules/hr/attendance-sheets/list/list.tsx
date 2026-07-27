@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -35,11 +34,34 @@ import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 import { ATTENDANCE_BY_MONTH } from '../gql';
 
+const AntButton = Button as any;
+const AntCascader = Cascader as any;
+const AntDatePicker = DatePicker as any;
+const AntDropdown = Dropdown as any;
+const AntModal = Modal as any;
+const AntPopconfirm = Popconfirm as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntDownloadOutlined = DownloadOutlined as any;
+const AntEditOutlined = EditOutlined as any;
+const AntImportOutlined = ImportOutlined as any;
+const AntPlusCircleOutlined = PlusCircleOutlined as any;
+const AntSettingOutlined = SettingOutlined as any;
+const AntPrinterOutlined = PrinterOutlined as any;
+const AntLeftOutlined = LeftOutlined as any;
+const AntRightOutlined = RightOutlined as any;
+const KarkunNameDisplay = KarkunName as any;
+type AnyRecord = Record<string, any>;
+interface ListProps extends AnyRecord { selectedMonth: any; selectedCategoryId?: string; selectedSubCategoryId?: string; allJobs: AnyRecord[]; allMSDuties: AnyRecord[]; allDutyShifts: AnyRecord[]; attendanceByMonth?: AnyRecord[]; setPageParams(params: AnyRecord): void; }
+interface ListState { selectedRows: AnyRecord[]; }
+interface QueryData { attendanceByMonth?: AnyRecord[]; }
+
 const CascaderStyle = {
   width: '300px',
 };
 
-export class List extends Component {
+export class List extends Component<ListProps, ListState> {
   static propTypes = {
     selectedMonth: PropTypes.object,
     selectedCategoryId: PropTypes.string,
@@ -72,8 +94,8 @@ export class List extends Component {
       title: 'Name',
       dataIndex: 'karkun.name',
       key: 'karkun.name',
-      render: (text, record) => (
-        <KarkunName
+      render: (_text: any, record: AnyRecord) => (
+        <KarkunNameDisplay
           karkun={record.karkun}
           onKarkunNameClicked={this.props.handleItemSelected}
         />
@@ -82,7 +104,7 @@ export class List extends Component {
     {
       title: 'Job / Duty / Shift',
       key: 'shift.name',
-      render: (text, record) => {
+      render: (text: any, record: AnyRecord) => {
         let name;
         if (record.job) {
           name = record.job.name;
@@ -100,38 +122,38 @@ export class List extends Component {
       title: 'Present',
       dataIndex: 'presentCount',
       key: 'presentCount',
-      render: text => text || '0',
+      render: (text: any) => text || '0',
     },
     {
       title: 'Absent',
       dataIndex: 'absentCount',
       key: 'absentCount',
-      render: text => text || '0',
+      render: (text: any) => text || '0',
     },
     {
       title: 'Percentage',
       dataIndex: 'percentage',
       key: 'percentage',
-      render: text => `${text}%`,
+      render: (text: any) => `${text}%`,
     },
     {
       key: 'action',
-      render: (text, record) => {
+      render: (text: any, record: AnyRecord) => {
         const {
           handleEditAttendance,
           handleDeleteSelectedAttendances,
         } = this.props;
         return (
           <div className="list-actions-column">
-            <Tooltip key="edit" title="Edit">
-              <EditOutlined
+            <AntTooltip key="edit" title="Edit">
+              <AntEditOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleEditAttendance(record);
                 }}
               />
-            </Tooltip>
-            <Popconfirm
+            </AntTooltip>
+            <AntPopconfirm
               title="Are you sure you want to delete this attendance record?"
               onConfirm={() => {
                 handleDeleteSelectedAttendances([record]);
@@ -139,10 +161,10 @@ export class List extends Component {
               okText="Yes"
               cancelText="No"
             >
-              <Tooltip key="delete" title="Delete">
-                <DeleteOutlined className="list-actions-icon" />
-              </Tooltip>
-            </Popconfirm>
+              <AntTooltip key="delete" title="Delete">
+                <AntDeleteOutlined className="list-actions-icon" />
+              </AntTooltip>
+            </AntPopconfirm>
           </div>
         );
       },
@@ -150,14 +172,14 @@ export class List extends Component {
   ];
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  handleMonthChange = value => {
+  handleMonthChange = (value: any) => {
     const { setPageParams } = this.props;
     setPageParams({
       selectedMonth: value,
@@ -178,7 +200,7 @@ export class List extends Component {
     });
   };
 
-  handleSelectionChange = value => {
+  handleSelectionChange = (value: string[]) => {
     const { setPageParams } = this.props;
     setPageParams({
       selectedCategoryId: value[0],
@@ -186,7 +208,7 @@ export class List extends Component {
     });
   };
 
-  handleViewMeetingCards = cardType => {
+  handleViewMeetingCards = (cardType: string) => {
     const { handleViewMeetingCards } = this.props;
     const { selectedRows } = this.state;
     if (handleViewMeetingCards) {
@@ -213,11 +235,11 @@ export class List extends Component {
 
   handleDownloadAsCSV = () => {
     const { attendanceByMonth } = this.props;
-    const sortedAttendanceByMonth = sortBy(attendanceByMonth, 'karkun.name');
+    const sortedAttendanceByMonth = sortBy(attendanceByMonth ?? [], 'karkun.name');
 
     const header = 'Name, CNIC, Phone No., Present, Absent, Percetage \r\n';
     const rows = sortedAttendanceByMonth.map(
-      attendance =>
+      (attendance: AnyRecord) =>
         `${attendance.karkun.name}, ${attendance.karkun.cnicNumber ||
           ''}, ${attendance.karkun.contactNumber1 || ''}, ${
           attendance.presentCount
@@ -235,7 +257,7 @@ export class List extends Component {
     const { selectedRows } = this.state;
     const { handleDeleteSelectedAttendances } = this.props;
     if (handleDeleteSelectedAttendances) {
-      Modal.confirm({
+      AntModal.confirm({
         title: 'Delete Attendances',
         content:
           'Are you sure you want to delete the selected attendance records?',
@@ -249,7 +271,7 @@ export class List extends Component {
   _handleDeleteAllAttendances = () => {
     const { handleDeleteAllAttendances } = this.props;
     if (handleDeleteAllAttendances) {
-      Modal.confirm({
+      AntModal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendance records for the selected duty/shift/job in the month?',
@@ -272,21 +294,21 @@ export class List extends Component {
     const jobsItem = {
       label: 'All Jobs',
       value: 'all_jobs',
-      children: allJobs.map(job => ({
+      children: allJobs.map((job: AnyRecord) => ({
         value: job._id,
         label: job.name,
       })),
     };
 
-    const dutiesData = allMSDuties.map(duty => {
+    const dutiesData = allMSDuties.map((duty: AnyRecord) => {
       const dutyShifts = filter(
         allDutyShifts,
-        dutyShift => dutyShift.dutyId === duty._id
+        (dutyShift: AnyRecord) => dutyShift.dutyId === duty._id
       );
       const dataItem = {
         label: duty.name,
         value: duty._id,
-        children: dutyShifts.map(dutyShift => ({
+        children: dutyShifts.map((dutyShift: AnyRecord) => ({
           value: dutyShift._id,
           label: dutyShift.name,
         })),
@@ -297,7 +319,7 @@ export class List extends Component {
 
     const data = [jobsItem].concat(dutiesData);
     return (
-      <Cascader
+      <AntCascader
         style={CascaderStyle}
         onChange={this.handleSelectionChange}
         defaultValue={[selectedCategoryId, selectedSubCategoryId]}
@@ -319,7 +341,7 @@ export class List extends Component {
         key: '1',
         label: (
           <>
-            <PlusCircleOutlined />&nbsp;
+            <AntPlusCircleOutlined />&nbsp;
             Create Missing Attendances
           </>
         ),
@@ -329,7 +351,7 @@ export class List extends Component {
         key: '2',
         label: (
           <>
-            <DownloadOutlined />&nbsp;
+            <AntDownloadOutlined />&nbsp;
             Download as CSV
           </>
         ),
@@ -339,7 +361,7 @@ export class List extends Component {
         key: '4',
         label: (
           <>
-            <ImportOutlined />&nbsp;
+            <AntImportOutlined />&nbsp;
             Import from Google Sheets
           </>
         ),
@@ -349,7 +371,7 @@ export class List extends Component {
       {
         key: '5',
         label: 'Print',
-        icon: <PrinterOutlined />,
+        icon: <AntPrinterOutlined />,
         children: [
           {
             key: '5-1',
@@ -382,7 +404,7 @@ export class List extends Component {
         key: '6',
         label: (
           <>
-            <DeleteOutlined />&nbsp;
+            <AntDeleteOutlined />&nbsp;
             Delete Selected Attendances
           </>
         ),
@@ -392,7 +414,7 @@ export class List extends Component {
         key: '7',
         label: (
           <>
-            <DeleteOutlined />&nbsp;
+            <AntDeleteOutlined />&nbsp;
             Delete All Attendances
           </>
         ),
@@ -401,9 +423,9 @@ export class List extends Component {
     ];
 
     return (
-      <Dropdown menu={{ items: menuItems }}>
-        <Button icon={<SettingOutlined />}>Actions</Button>
-      </Dropdown>
+      <AntDropdown menu={{ items: menuItems }}>
+        <AntButton icon={<AntSettingOutlined />}>Actions</AntButton>
+      </AntDropdown>
     );
   };
 
@@ -414,24 +436,24 @@ export class List extends Component {
         <div className="list-table-header-section">
           {this.getDutyShiftSelector()}
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             type="primary"
             shape="circle"
-            icon={<LeftOutlined />}
+            icon={<AntLeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
-          <DatePicker.MonthPicker
+          <AntDatePicker.MonthPicker
             allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
             value={selectedMonth}
           />
           &nbsp;&nbsp;
-          <Button
+          <AntButton
             type="primary"
             shape="circle"
-            icon={<RightOutlined />}
+            icon={<AntRightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>
@@ -446,7 +468,7 @@ export class List extends Component {
     const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, 'karkun.name');
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
@@ -460,9 +482,9 @@ export class List extends Component {
   }
 }
 
-const ListWithAttendance = props => {
+const ListWithAttendance = (props: ListProps) => {
   const { selectedMonth, selectedCategoryId, selectedSubCategoryId } = props;
-  const { data, loading, ...queryResult } = useQuery(ATTENDANCE_BY_MONTH, {
+  const { data, loading, ...queryResult } = useQuery(ATTENDANCE_BY_MONTH as any, {
     variables: {
       month: selectedMonth.format(Formats.DATE_FORMAT),
       categoryId: selectedCategoryId,

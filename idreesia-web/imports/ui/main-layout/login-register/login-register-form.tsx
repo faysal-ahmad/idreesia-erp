@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -16,20 +15,26 @@ const FormWrapperStyle = {
   marginLeft: "-150px",
 };
 
-export const LoginRegisterForm = props => {
-  const [showForm, setShowForm] = useState('login');
+type ShowForm = 'login' | 'register' | 'forgot';
+type AnyProps = Record<string, any>;
+const Login = LoginForm as any;
+const Register = RegisterForm as any;
+const ForgotPassword = ForgotPasswordForm as any;
+
+export const LoginRegisterForm = (props: AnyProps) => {
+  const [showForm, setShowForm] = useState<ShowForm>('login');
   let form = <div />;
 
   if (showForm === 'login') {
-    form = <LoginForm setShowForm={setShowForm} {...props} />;  
+    form = <Login setShowForm={setShowForm} {...props} />;  
   } else if (showForm === 'register') {
-    form = <RegisterForm setShowForm={setShowForm} {...props} />; 
+    form = <Register setShowForm={setShowForm} {...props} />; 
   } else if (showForm === 'forgot'){
-    form = <ForgotPasswordForm setShowForm={setShowForm} {...props} />; 
+    form = <ForgotPassword setShowForm={setShowForm} {...props} />; 
   }
 
   return (
-    <div style={FormWrapperStyle}>
+    <div style={FormWrapperStyle as any}>
       {form}
     </div>
   );

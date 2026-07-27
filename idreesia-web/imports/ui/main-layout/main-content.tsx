@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
@@ -7,7 +6,12 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 
-const routersMap = {
+const AntLayout = Layout as any;
+const ReactSuspense = Suspense as any;
+type ModuleKey = string;
+type AnyRecord = Record<string, any>;
+
+const routersMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
   [ModuleNames.admin]: React.lazy(() =>
     import('/imports/ui/modules/admin/router')
   ),
@@ -21,30 +25,30 @@ const routersMap = {
 };
 
 const MainContent = () => {
-  const activeModuleName = useSelector(state => state.activeModuleName);
+  const activeModuleName = useSelector((state: AnyRecord) => state.activeModuleName) as ModuleKey;
   const Router = routersMap[activeModuleName];
 
   let main = <div />;
   if (Router) {
     main = (
-      <Suspense fallback={<div />}>
-        <ErrorBoundary fallbackRender={({ resetErrorBoundary}) => {
+      <ReactSuspense fallback={<div />}>
+        <ErrorBoundary fallbackRender={({ resetErrorBoundary}: { resetErrorBoundary(): void }) => {
           resetErrorBoundary();
           return <div />;
         }}
         >
-          <Router />
+          {React.createElement(Router as any)}
         </ErrorBoundary>
-      </Suspense>
+      </ReactSuspense>
     );
   }
 
   return (
-    <Layout.Content
+    <AntLayout.Content
       style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}
     >
       {main}
-    </Layout.Content>
+    </AntLayout.Content>
   );
 };
 

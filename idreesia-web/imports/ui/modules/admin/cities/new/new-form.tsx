@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
@@ -15,10 +14,21 @@ import { WithAllCities } from 'meteor/idreesia-common/composers/common';
 
 import { PAGED_CITIES, CREATE_CITY } from '../gql';
 
-const NewForm = ({ history, allCitiesLoading, allCities }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SelectInputField = SelectField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+type AnyRecord = Record<string, any>;
+interface City { _id: string; name?: string; peripheryOf?: string | null; country?: string; region?: string; }
+interface HistoryLike { goBack(): void; }
+interface FormValues { name: string; peripheryOf?: string | null; region?: string; country?: string; }
+interface Props { history: HistoryLike; cityId?: string | null; allCitiesLoading?: boolean; allCities?: City[]; }
+interface QueryData { cityById?: City | null; }
+
+const NewForm = ({ history, allCitiesLoading, allCities }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createCity] = useMutation(CREATE_CITY, {
-    refetchQueries: [{ query: PAGED_CITIES }],
+  const [createCity] = useMutation(CREATE_CITY as any, {
+    refetchQueries: [{ query: PAGED_CITIES as any }],
   });
 
   const handleCancel = () => {
@@ -29,7 +39,7 @@ const NewForm = ({ history, allCitiesLoading, allCities }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, peripheryOf, region, country }) => {
+  const handleFinish = ({ name, peripheryOf, region, country }: FormValues) => {
     createCity({
       variables: {
         name,
@@ -41,49 +51,49 @@ const NewForm = ({ history, allCitiesLoading, allCities }) => {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
   const getNonPeripheryCities = () => {
-    return filter(allCities, city => !city.peripheryOf);
+    return filter(allCities ?? [], (city: City) => !city.peripheryOf);
   };
 
   if (allCitiesLoading) return null;
   const nonPeripheryCities = getNonPeripheryCities();
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="name"
         fieldLabel="City Name"
         required
         requiredMessage="Please input a name for the city."
       />
-      <SelectField
+      <SelectInputField
         data={nonPeripheryCities}
-        getDataValue={({ _id }) => _id}
-        getDataText={({ name }) => name}
+        getDataValue={({ _id }: City) => _id}
+        getDataText={({ name }: City) => name}
         fieldName="peripheryOf"
         fieldLabel="Periphery Of"
       />
-      <InputTextField
+      <TextField
         fieldName="region"
         fieldLabel="Region"
       />
-      <InputTextField
+      <TextField
         fieldName="country"
         fieldLabel="Country"
         initialValue="Pakistan"
         required
         requiredMessage="Please input a name for the country."
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -97,4 +107,4 @@ NewForm.propTypes = {
 export default flowRight(
   WithAllCities(),
   WithBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'New'])
-)(NewForm);
+)(NewForm as any);

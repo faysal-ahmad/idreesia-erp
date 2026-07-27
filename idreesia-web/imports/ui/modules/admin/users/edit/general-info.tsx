@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -13,15 +12,26 @@ import {
 
 import { USER_BY_ID, PAGED_USERS, UPDATE_USER } from '../gql';
 
-const GeneralInfo = ({ userId, history }) => {
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const SwitchInputField = SwitchField as any;
+const KarkunSelectionField = KarkunSelectionInputField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+type AnyRecord = Record<string, any>;
+interface HistoryLike { goBack(): void; }
+interface QueryData { userById?: AnyRecord | null; }
+interface Props { userId?: string | null; history: HistoryLike; }
+interface FormValues { password?: string; email?: string; displayName?: string; locked?: boolean; }
+
+const GeneralInfo = ({ userId, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(USER_BY_ID, {
+  const { data, loading } = useQuery(USER_BY_ID as any, {
     variables: { _id: userId },
   });
-  const [updateUser] = useMutation(UPDATE_USER, {
-    refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
+  const [updateUser] = useMutation(UPDATE_USER as any, {
+    refetchQueries: [{ query: PAGED_USERS as any, variables: { filter: {} } }],
   });
-  const { userById } = data || {};
+  const { userById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
     history.goBack();
@@ -31,7 +41,7 @@ const GeneralInfo = ({ userId, history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ password, email, displayName, locked }) => {
+  const handleFinish = ({ password, email, displayName, locked }: FormValues) => {
     if (email && !email.includes('@gmail.com')) {
       message.error('This is not a valid Google Email.', 5);
       return;
@@ -39,7 +49,7 @@ const GeneralInfo = ({ userId, history }) => {
 
     updateUser({
       variables: {
-        userId: userById._id,
+        userId: userById?._id,
         password,
         email,
         displayName,
@@ -49,22 +59,22 @@ const GeneralInfo = ({ userId, history }) => {
       .then(() => {
         history.goBack();
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading) return null;
+  if (loading || !userById) return null;
 
   const karkunField = userById.personId ? (
-    <InputTextField
+    <TextField
       fieldName="karkunName"
       fieldLabel="Karkun Name"
       disabled
       initialValue={userById.karkun ? userById.karkun.name : ''}
     />
   ) : (
-    <KarkunSelectionInputField
+    <KarkunSelectionField
       fieldName="karkun"
       fieldLabel="Karkun Name"
       showMsKarkunsList
@@ -72,33 +82,33 @@ const GeneralInfo = ({ userId, history }) => {
   );
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <TextField
         fieldName="userName"
         fieldLabel="User name"
         disabled
         initialValue={userById.username}
       />
 
-      <SwitchField
+      <SwitchInputField
         fieldName="locked"
         fieldLabel="Locked"
         initialValue={userById.locked}
       />
 
-      <InputTextField
+      <TextField
         fieldName="password"
         fieldLabel="Password"
         type="password"
       />
 
-      <InputTextField
+      <TextField
         fieldName="email"
         fieldLabel="Google Email"
         initialValue={userById.email}
       />
 
-      <InputTextField
+      <TextField
         fieldName="displayName"
         fieldLabel="Display Name"
         initialValue={userById.displayName}
@@ -106,11 +116,11 @@ const GeneralInfo = ({ userId, history }) => {
 
       {karkunField}
 
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 

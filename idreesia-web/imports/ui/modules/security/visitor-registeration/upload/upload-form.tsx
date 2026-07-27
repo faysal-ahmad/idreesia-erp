@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
@@ -13,10 +12,18 @@ import {
 
 import { IMPORT_SECURITY_VISITORS_CSV_DATA } from '../gql';
 
-const UploadForm = ({ history }) => {
+const AntForm = Form as any;
+const FileField = InputFileField as any;
+const SaveCancelButtons = FormButtonsSaveCancel as any;
+interface HistoryLike { goBack(): void; }
+interface UploadFormProps { history: HistoryLike; }
+interface UploadValues { csv: string; }
+interface ImportResult { imported: number; ignored: number; }
+
+const UploadForm = ({ history }: UploadFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [importSecurityVisitorsCsvData] = useMutation(
-    IMPORT_SECURITY_VISITORS_CSV_DATA,
+    IMPORT_SECURITY_VISITORS_CSV_DATA as any,
     {
       refetchQueries: ['pagedSecurityVisitors'],
     }
@@ -30,19 +37,19 @@ const UploadForm = ({ history }) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ csv }) => {
+  const handleFinish = ({ csv }: UploadValues) => {
     importSecurityVisitorsCsvData({
       variables: {
         csvData: csv,
       },
     })
-      .then(response => {
-        const result = JSON.parse(response.data.importCsvData);
+      .then((response: any) => {
+        const result = JSON.parse(response.data.importCsvData) as ImportResult;
         message.success(
           `${result.imported} records were imported. ${result.ignored} were ignored.`
         );
       })
-      .catch(error => {
+      .catch((error: Error) => {
         message.error(error.message, 5);
       })
       .finally(() => {
@@ -51,19 +58,19 @@ const UploadForm = ({ history }) => {
   };
 
   return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputFileField
+    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <FileField
         accept=".csv"
         fieldName="csv"
         fieldLabel="Visitors Data"
         required
         requiredMessage="Select CSV file containing visitor data for upload."
       />
-      <FormButtonsSaveCancel
+      <SaveCancelButtons
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </Form>
+    </AntForm>
   );
 };
 
@@ -75,4 +82,4 @@ UploadForm.propTypes = {
 
 export default flowRight(
   WithBreadcrumbs(['Security', 'Visitor Registration', 'Upload'])
-)(UploadForm);
+)(UploadForm as any);

@@ -1,8 +1,13 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Select, Form } from 'antd';
+
+const AntFormItem = (Form as any).Item;
+const AntSelect = Select as any;
+type OptionValue = string | number;
+type DataRecord = Record<string, any>;
+interface FieldProps { allowClear?: boolean; dropdownMatchSelectWidth?: boolean; mode?: string; data?: DataRecord[]; getDataValue?(data: DataRecord): OptionValue; getDataText?(data: DataRecord): React.ReactNode; initialValue?: string | string[] | null; fieldLayout?: Record<string, unknown>; fieldName: string; fieldLabel?: string; placeholder?: string; required?: boolean; requiredMessage?: string; onChange?(value: unknown): void; }
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -37,15 +42,15 @@ const SelectField = ({
   required,
   requiredMessage,
   onChange,
-}) => {
-  const options = [];
-  data.forEach(dataObj => {
+}: FieldProps) => {
+  const options: React.ReactNode[] = [];
+  data.forEach((dataObj: DataRecord) => {
     const value = getDataValue(dataObj);
     const text = getDataText(dataObj);
     options.push(
-      <Select.Option key={value} value={value}>
+      <AntSelect.Option key={value} value={value}>
         {text}
-      </Select.Option>
+      </AntSelect.Option>
     );
   });
 
@@ -59,8 +64,8 @@ const SelectField = ({
     : null;
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Select
+    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <AntSelect
         placeholder={placeholder}
         onChange={onChange}
         allowClear={allowClear}
@@ -68,8 +73,8 @@ const SelectField = ({
         dropdownMatchSelectWidth={dropdownMatchSelectWidth}
       >
         {options}
-      </Select>
-    </Form.Item>
+      </AntSelect>
+    </AntFormItem>
   );
 }
 

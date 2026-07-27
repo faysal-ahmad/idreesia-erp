@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
@@ -18,7 +17,15 @@ const barcodeOptions = {
   margin: 5,
 };
 
-export class NonDetailedForm extends Component {
+const BarcodeView = Barcode as any;
+const AntCol = Col as any;
+const AntDivider = Divider as any;
+const AntRow = Row as any;
+const DisplayItemControl = DisplayItem as any;
+type AnyRecord = Record<string, any>;
+interface Props { hrKarkunById: AnyRecord; }
+
+export class NonDetailedForm extends Component<Props> {
   static propTypes = {
     hrKarkunById: PropTypes.object,
   };
@@ -27,22 +34,22 @@ export class NonDetailedForm extends Component {
     const { hrKarkunById } = this.props;
     const url = getDownloadUrl(hrKarkunById.imageId);
     return url ? (
-      <Col order={2}>
-        <img src={url} style={{ width: '200px' }} />
-      </Col>
+      <AntCol order={2}>
+        <img src={url} style={{ width: '200px' }} alt="Karkun" />
+      </AntCol>
     ) : null;
   };
 
-  getJobDetails = (job, duties) => {
-    let jobName = [];
-    let dutyNames = [];
+  getJobDetails = (job: AnyRecord | null | undefined, duties: AnyRecord[] = []) => {
+    let jobName: React.ReactNode[] = [];
+    let dutyNames: React.ReactNode[] = [];
 
     if (job) {
       jobName = [job.name];
     }
 
     if (duties.length > 0) {
-      dutyNames = duties.map(duty => {
+      dutyNames = duties.map((duty: AnyRecord) => {
         let dutyName = duty.dutyName;
         if (duty.shiftName) {
           dutyName = `${dutyName} - ${duty.shiftName}`;
@@ -64,20 +71,20 @@ export class NonDetailedForm extends Component {
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
       hrKarkunById.job,
-      hrKarkunById.duties
+      hrKarkunById.duties ?? []
     );
     const timestamp = formatDate(new Date(), 'DD MMM, YYYY');
 
     return (
-      <div className="form-print-view" ref={this.printViewRef}>
-        <Row type="flex" justify="start" gutter={40}>
-          <Col order={1}>
-            <Barcode value={hrKarkunById._id} {...barcodeOptions} />
-            <DisplayItem label="Generated On" value={timestamp} />
-            <DisplayItem label="Name" value={hrKarkunById.name} />
-            <DisplayItem label="S/O" value={hrKarkunById.parentName} />
-            <DisplayItem label="CNIC" value={hrKarkunById.cnicNumber} />
-            <DisplayItem
+      <div className="form-print-view">
+        <AntRow type="flex" justify="start" gutter={40}>
+          <AntCol order={1}>
+            <BarcodeView value={hrKarkunById._id} {...barcodeOptions} />
+            <DisplayItemControl label="Generated On" value={timestamp} />
+            <DisplayItemControl label="Name" value={hrKarkunById.name} />
+            <DisplayItemControl label="S/O" value={hrKarkunById.parentName} />
+            <DisplayItemControl label="CNIC" value={hrKarkunById.cnicNumber} />
+            <DisplayItemControl
               label="Mobile No."
               value={`${hrKarkunById.contactNumber1} - ${
                 hrKarkunById.contactNumber1Subscribed
@@ -86,7 +93,7 @@ export class NonDetailedForm extends Component {
               }`}
             />
             {hrKarkunById.contactNumber2 ? (
-              <DisplayItem
+              <DisplayItemControl
                 label="Home No."
                 value={`${hrKarkunById.contactNumber2} - ${
                   hrKarkunById.contactNumber2Subscribed
@@ -95,45 +102,45 @@ export class NonDetailedForm extends Component {
                 }`}
               />
             ) : (
-              <DisplayItem label="Home No." value="" />
+              <DisplayItemControl label="Home No." value="" />
             )}
-            <DisplayItem label="Email" value={hrKarkunById.emailAddress} />
-            <DisplayItem label="Blood Group" value={hrKarkunById.bloodGroup} />
-            <DisplayItem
+            <DisplayItemControl label="Email" value={hrKarkunById.emailAddress} />
+            <DisplayItemControl label="Blood Group" value={hrKarkunById.bloodGroup} />
+            <DisplayItemControl
               label="Education"
               value={hrKarkunById.educationalQualification}
             />
-          </Col>
+          </AntCol>
           {imageColumn}
-        </Row>
-        <Row type="flex" justify="start" gutter={20}>
-          <Col order={1}>
-            <DisplayItem
+        </AntRow>
+        <AntRow type="flex" justify="start" gutter={20}>
+          <AntCol order={1}>
+            <DisplayItemControl
               label="Means of Earning"
               value={hrKarkunById.meansOfEarning}
             />
-            <DisplayItem
+            <DisplayItemControl
               label="Current Address"
               value={hrKarkunById.currentAddress}
             />
-            <DisplayItem
+            <DisplayItemControl
               label="Permanent Address"
               value={hrKarkunById.permanentAddress}
             />
-          </Col>
-        </Row>
-        <DisplayItem label="Job / Duties" value={jobDetails} />
-        <Divider>Family Details</Divider>
-        <DisplayItem label="Married/Single" value="" />
-        <DisplayItem label="Dependent Family Members" value="" />
-        <Divider>Emergency Contact</Divider>
-        <DisplayItem label="Name" value="" />
-        <DisplayItem label="Phone" value="" />
-        <DisplayItem label="Relationship" value="" />
-        <Divider>If not originally from Multan</Divider>
-        <DisplayItem label="Date Shifted to Multan" value="" />
-        <DisplayItem label="Permission Granted By" value="" />
-        <DisplayItem label="Address before Shifting" value="" />
+          </AntCol>
+        </AntRow>
+        <DisplayItemControl label="Job / Duties" value={jobDetails} />
+        <AntDivider>Family Details</AntDivider>
+        <DisplayItemControl label="Married/Single" value="" />
+        <DisplayItemControl label="Dependent Family Members" value="" />
+        <AntDivider>Emergency Contact</AntDivider>
+        <DisplayItemControl label="Name" value="" />
+        <DisplayItemControl label="Phone" value="" />
+        <DisplayItemControl label="Relationship" value="" />
+        <AntDivider>If not originally from Multan</AntDivider>
+        <DisplayItemControl label="Date Shifted to Multan" value="" />
+        <DisplayItemControl label="Permission Granted By" value="" />
+        <DisplayItemControl label="Address before Shifting" value="" />
       </div>
     );
   }

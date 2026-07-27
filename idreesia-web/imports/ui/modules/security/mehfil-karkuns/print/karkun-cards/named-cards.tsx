@@ -1,7 +1,13 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
+
+const BarcodeControl = Barcode as any;
+interface MehfilDuty { name?: string; urduName?: string; }
+interface SharedData { name?: string; imageId?: string; image?: { data?: string }; }
+interface MehfilKarkun { _id: string; dutyCardBarcodeId?: string; dutyDetail?: string; duty?: MehfilDuty | null; karkun: { sharedData: SharedData }; }
+interface CardProps { mehfilKarkun: MehfilKarkun; showDutyNameInUrdu?: boolean; }
+interface NamedCardsProps { mehfilKarkunsByIds?: MehfilKarkun[]; showDutyNameInUrdu?: boolean; }
 
 const barcodeOptions = {
   width: 1,
@@ -21,17 +27,18 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-export const Card = ({ mehfilKarkun, showDutyNameInUrdu }) => {
+export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
   const mehfilDuty = mehfilKarkun.duty;
   let cardHeading = '';
   if (mehfilDuty) {
-    cardHeading = showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name;
+    cardHeading = (showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name) ?? '';
   }
 
   const karkunImage = mehfilKarkun.karkun.sharedData.image ? (
     <img
       src={`data:image/jpeg;base64,${mehfilKarkun.karkun.sharedData.image.data}`}
       style={{ maxHeight: '100%', width: 'auto' }}
+      alt={mehfilKarkun.karkun.sharedData.name ?? 'Karkun'}
     />
   ) : (
     <div style={{ height: '100%', width: 'auto' }} />
@@ -48,7 +55,7 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }) => {
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">{mehfilKarkun.karkun.sharedData.name}</h1>
       <div className="mehfil_card_barcode">
-        <Barcode value={mehfilKarkun.dutyCardBarcodeId} {...barcodeOptions} />
+        <BarcodeControl value={mehfilKarkun.dutyCardBarcodeId ?? mehfilKarkun._id} {...barcodeOptions} />
       </div>
     </div>
   );
@@ -60,7 +67,7 @@ Card.propTypes = {
 };
 
 // eslint-disable-next-line react/prefer-stateless-function
-export class NamedCards extends Component {
+export class NamedCards extends Component<NamedCardsProps> {
   static propTypes = {
     mehfilKarkunsByIds: PropTypes.array,
     showDutyNameInUrdu: PropTypes.bool,
@@ -70,16 +77,16 @@ export class NamedCards extends Component {
     const { mehfilKarkunsByIds, showDutyNameInUrdu } = this.props;
     if (!mehfilKarkunsByIds) return null;
 
-    const cards = mehfilKarkunsByIds.map((mehfilKarkun, index) => (
+    const cards = mehfilKarkunsByIds.map((mehfilKarkun: MehfilKarkun, index: number) => (
       <Card key={index} mehfilKarkun={mehfilKarkun} showDutyNameInUrdu={showDutyNameInUrdu} />
     ));
 
     let index = 0;
-    const cardContainers = [];
+    const cardContainers: React.ReactNode[] = [];
     while (cards.length > 0) {
       const cardsForPage = cards.splice(0, 9);
       cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle}>
+        <div key={`container_${index}`} style={ContainerStyle as any}>
           {cardsForPage}
         </div>
       );

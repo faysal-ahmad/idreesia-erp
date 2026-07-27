@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -18,7 +17,14 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const KarkunName = ({ karkun, onKarkunNameClicked }) => {
+const AntAvatar = Avatar as any;
+const AntModal = Modal as any;
+const AntUserOutlined = UserOutlined as any;
+const RouterLink = Link as any;
+interface Karkun { _id: string; name: string; imageId?: string; }
+interface KarkunNameProps { karkun?: Karkun | null; onKarkunNameClicked?(karkun: Karkun): void; }
+
+const KarkunName = ({ karkun, onKarkunNameClicked }: KarkunNameProps) => {
   const [showDialog, setShowDialog] = useState(false);
   if (!karkun) return null;
 
@@ -31,15 +37,15 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
       {karkun.name}
     </div>
   ) : (
-    <Link to={`${paths.karkunsPath}/${karkun._id}`}>{karkun.name}</Link>
+    <RouterLink to={`${paths.karkunsPath}/${karkun._id}`}>{karkun.name}</RouterLink>
   );
 
-  let imageUrl;
-  let avatarNode = <Avatar shape="square" size="large" icon={<UserOutlined />} />;
+  let imageUrl: string | undefined;
+  let avatarNode = <AntAvatar shape="square" size="large" icon={<AntUserOutlined />} />;
   if (karkun.imageId) {
-    imageUrl = getDownloadUrl(karkun.imageId);
+    imageUrl = getDownloadUrl(karkun.imageId) ?? undefined;
     avatarNode = (
-      <Avatar
+      <AntAvatar
         shape="square"
         size="large"
         src={imageUrl}
@@ -52,19 +58,19 @@ const KarkunName = ({ karkun, onKarkunNameClicked }) => {
 
   return (
     <>
-      <div style={NameDivStyle}>
+      <div style={NameDivStyle as any}>
         {avatarNode}
         &nbsp;&nbsp;
         {nameNode}
       </div>
-      <Modal
+      <AntModal
         title={karkun.name}
         open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
-        <img src={imageUrl} style={{ maxWidth: '470px' }} />
-      </Modal>
+        {imageUrl ? <img src={imageUrl} style={{ maxWidth: '470px' }} alt={karkun.name} /> : null}
+      </AntModal>
     </>
   );
 };

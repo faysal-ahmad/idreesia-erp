@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
@@ -8,23 +7,28 @@ import {
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
-const AttachmentForm = props => {
-  const { form, defaultValues } = props;
+const AntForm = Form as any;
+const TextField = InputTextField as any;
+const TextAreaField = InputTextAreaField as any;
+interface AttachmentValues { name?: string; description?: string; }
+interface Props { form?: unknown; defaultValues?: AttachmentValues; }
+
+const AttachmentForm = ({ form, defaultValues = {} }: Props) => {
 
   return (
-    <Form form={form} layout="horizontal">
-      <InputTextField
+    <AntForm form={form} layout="horizontal">
+      <TextField
         fieldName="name"
         fieldLabel="Name"
         initialValue={defaultValues.name}
       />
 
-      <InputTextAreaField
+      <TextAreaField
         fieldName="description"
         fieldLabel="Description"
         initialValue={defaultValues.description}
       />
-    </Form>
+    </AntForm>
   );
 };
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -10,6 +9,14 @@ import { Col, Row, Spin, Tabs } from 'antd';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 import { SECURITY_VISITOR_BY_CNIC } from '../gql';
+
+const AntExclamationCircleTwoTone = ExclamationCircleTwoTone as any;
+const AntCol = Col as any;
+const AntRow = Row as any;
+const AntSpin = Spin as any;
+const AntTabs = Tabs as any;
+const AntTabPane = (Tabs as any).TabPane;
+const VisitorStaysListComponent = VisitorStaysList as any;
 
 const LabelStyle = {
   fontWeight: 'bold',
@@ -35,15 +42,21 @@ const NoRecordFoundStyle = {
   fontSize: 36,
 };
 
-const SearchResultRow = ({ label, text, dataStyle }) => (
-  <Row type="flex" gutter={16}>
-    <Col order={1}>
+interface SearchResultRowProps {
+  label: string;
+  text?: string;
+  dataStyle: Record<string, string | number>;
+}
+
+const SearchResultRow = ({ label, text, dataStyle }: SearchResultRowProps) => (
+  <AntRow type="flex" gutter={16}>
+    <AntCol order={1}>
       <span style={LabelStyle}>{label}:</span>
-    </Col>
-    <Col order={2}>
+    </AntCol>
+    <AntCol order={2}>
       <span style={dataStyle}>{text}</span>
-    </Col>
-  </Row>
+    </AntCol>
+  </AntRow>
 );
 
 SearchResultRow.propTypes = {
@@ -52,31 +65,54 @@ SearchResultRow.propTypes = {
   dataStyle: PropTypes.object,
 };
 
-const SearchResult = props => {
+interface SecurityVisitor {
+  _id: string;
+  name?: string;
+  parentName?: string;
+  cnicNumber?: string;
+  ehadDate?: string | number;
+  referenceName?: string;
+  contactNumber1?: string;
+  city?: string;
+  country?: string;
+  imageId?: string;
+  criminalRecord?: string | null;
+  otherNotes?: string | null;
+}
+
+interface SecurityVisitorData {
+  securityVisitorByCnic?: SecurityVisitor | null;
+}
+
+interface SearchResultProps {
+  cnicNumbers: string[];
+}
+
+const SearchResult = (props: SearchResultProps) => {
   const { cnicNumbers } = props;
-  const { data = {}, loading } = useQuery(SECURITY_VISITOR_BY_CNIC, {
+  const { data = {}, loading } = useQuery(SECURITY_VISITOR_BY_CNIC as any, {
     variables: { cnicNumbers },
     fetchPolicy: 'network-only',
   });
-  const { securityVisitorByCnic } = data;
+  const { securityVisitorByCnic } = data as SecurityVisitorData;
   if (cnicNumbers.length === 0) return null;
-  if (loading) return <Spin size="large" />;
+  if (loading) return <AntSpin size="large" />;
 
   if (!securityVisitorByCnic) {
     return (
-      <Row type="flex" justify="start" align="middle" gutter={16}>
-        <Col>
-          <ExclamationCircleTwoTone
+      <AntRow type="flex" justify="start" align="middle" gutter={16}>
+        <AntCol>
+          <AntExclamationCircleTwoTone
             style={NoRecordFoundStyle}
             twoToneColor={NoRecordFoundStyle.color}
           />
-        </Col>
-        <Col>
+        </AntCol>
+        <AntCol>
           <div style={NoRecordFoundStyle}>
             {'No records found against scanned CNIC.'}
           </div>
-        </Col>
-      </Row>
+        </AntCol>
+      </AntRow>
     );
   }
 
@@ -96,15 +132,15 @@ const SearchResult = props => {
   } = securityVisitorByCnic;
 
   const url = getDownloadUrl(imageId);
-  const image = url ? <img src={url} style={{ width: '250px' }} /> : null;
+  const image = url ? <img src={url} style={{ width: '250px' }} alt={name} /> : null;
 
   let dataStyle = DataStyle;
   if (otherNotes) dataStyle = WarningDataStyle;
   if (criminalRecord) dataStyle = ErrorDataStyle;
 
   return (
-    <Row type="flex" justify="space-between" gutter={16}>
-      <Col order={1}>
+    <AntRow type="flex" justify="space-between" gutter={16}>
+      <AntCol order={1}>
         {image}
         <SearchResultRow label="Name" text={name} dataStyle={dataStyle} />
         <SearchResultRow label="CNIC" text={cnicNumber} dataStyle={dataStyle} />
@@ -126,20 +162,20 @@ const SearchResult = props => {
         />
         <SearchResultRow label="City" text={city} dataStyle={dataStyle} />
         <SearchResultRow label="Country" text={country} dataStyle={dataStyle} />
-      </Col>
-      <Col order={2} span={16}>
-        <Tabs defaultActiveKey="1">
-          <Tabs.TabPane tab="Stay History" key="1">
-            <VisitorStaysList
+      </AntCol>
+      <AntCol order={2} span={16}>
+        <AntTabs defaultActiveKey="1">
+          <AntTabPane tab="Stay History" key="1">
+            <VisitorStaysListComponent
               visitorId={_id}
               showDutyColumn
               showNewButton
               showActionsColumn
             />
-          </Tabs.TabPane>
-        </Tabs>
-      </Col>
-    </Row>
+          </AntTabPane>
+        </AntTabs>
+      </AntCol>
+    </AntRow>
   );
 };
 

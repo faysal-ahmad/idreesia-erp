@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { AuditOutlined, DeleteOutlined, DollarOutlined, StarOutlined } from '@ant-design/icons';
@@ -13,7 +12,22 @@ import {
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-export default class PeopleList extends Component {
+const AntAuditOutlined = AuditOutlined as any;
+const AntDeleteOutlined = DeleteOutlined as any;
+const AntDollarOutlined = DollarOutlined as any;
+const AntStarOutlined = StarOutlined as any;
+const AntPagination = Pagination as any;
+const AntPopconfirm = Popconfirm as any;
+const AntRow = Row as any;
+const AntTable = Table as any;
+const AntTooltip = Tooltip as any;
+const PersonNameControl = PersonName as any;
+type AnyRecord = Record<string, any>;
+interface PagedData { totalResults: number; data: AnyRecord[]; }
+interface Props { showSelectionColumn?: boolean; showCategoryColumn?: boolean; showCnicColumn?: boolean; showPhoneNumbersColumn?: boolean; showCityCountryColumn?: boolean; showDeleteAction?: boolean; showAuditLogsAction?: boolean; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; handleAuditLogsAction?(record: AnyRecord): void; setPageParams(params: { pageIndex: string; pageSize: string; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; }
+interface State { selectedRows: AnyRecord[]; }
+
+export default class PeopleList extends Component<Props, State> {
   static propTypes = {
     showSelectionColumn: PropTypes.bool,
     showCategoryColumn: PropTypes.bool,
@@ -59,13 +73,13 @@ export default class PeopleList extends Component {
   categoryColumn = {
     title: '',
     key: 'status',
-    render: (text, record) => {
-      const icons = [];
+    render: (_text: unknown, record: AnyRecord) => {
+      const icons: React.ReactNode[] = [];
       if (record.isKarkun) {
-        icons.push(<StarOutlined key="1" className="list-actions-icon" />);
+        icons.push(<AntStarOutlined key="1" className="list-actions-icon" />);
       }
       if (record.isEmployee) {
-        icons.push(<DollarOutlined key="2" className="list-actions-icon" />);
+        icons.push(<AntDollarOutlined key="2" className="list-actions-icon" />);
       }
 
       if (icons.length === 0) return '';
@@ -76,7 +90,7 @@ export default class PeopleList extends Component {
   nameColumn = {
     title: 'Name',
     key: 'name',
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       const personNameData = {
         _id: record._id,
         name: record.sharedData.name,
@@ -85,7 +99,7 @@ export default class PeopleList extends Component {
       };
 
       return (
-        <PersonName
+        <PersonNameControl
           person={personNameData}
           onPersonNameClicked={this.props.handleSelectItem}
         />
@@ -96,18 +110,18 @@ export default class PeopleList extends Component {
   cnicColumn = {
     title: 'CNIC Number',
     key: 'cnicNumber',
-    render: (text, record) => record.sharedData.cnicNumber,
+    render: (_text: unknown, record: AnyRecord) => record.sharedData.cnicNumber,
   };
 
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (text, record) => {
-      const numbers = [];
+    render: (_text: unknown, record: AnyRecord) => {
+      const numbers: React.ReactNode[] = [];
       if (record.sharedData?.contactNumber1)
-        numbers.push(<Row key="1">{record.sharedData?.contactNumber1}</Row>);
+        numbers.push(<AntRow key="1">{record.sharedData?.contactNumber1}</AntRow>);
       if (record.sharedData.contactNumber2)
-        numbers.push(<Row key="2">{record.sharedData?.contactNumber2}</Row>);
+        numbers.push(<AntRow key="2">{record.sharedData?.contactNumber2}</AntRow>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -117,19 +131,19 @@ export default class PeopleList extends Component {
   cityCountryColumn = {
     title: 'City / Country',
     key: 'cityCountry',
-    render: (text, record) => {
-      const cityCountry = [];
+    render: (_text: unknown, record: AnyRecord) => {
+      const cityCountry: React.ReactNode[] = [];
       if (record.isKarkun) {
         if (record.karkunData?.city) {
-          cityCountry.push(<Row key="1">{record.karkunData.city.name}</Row>);
-          cityCountry.push(<Row key="2">{record.visitorData.city.country}</Row>);
+          cityCountry.push(<AntRow key="1">{record.karkunData.city.name}</AntRow>);
+          cityCountry.push(<AntRow key="2">{record.visitorData.city.country}</AntRow>);
         }
       } else {
         if (record.visitorData?.city) {
-          cityCountry.push(<Row key="1">{record.visitorData?.city}</Row>);
+          cityCountry.push(<AntRow key="1">{record.visitorData?.city}</AntRow>);
         }
         if (record.visitorData?.country) {
-          cityCountry.push(<Row key="2">{record.visitorData?.country}</Row>);
+          cityCountry.push(<AntRow key="2">{record.visitorData?.country}</AntRow>);
         }
       }
       return <>{cityCountry}</>;
@@ -139,7 +153,7 @@ export default class PeopleList extends Component {
   actionsColumn = {
     key: 'action',
     width: 80,
-    render: (text, record) => {
+    render: (_text: unknown, record: AnyRecord) => {
       const {
         showDeleteAction,
         showAuditLogsAction,
@@ -148,29 +162,29 @@ export default class PeopleList extends Component {
       } = this.props;
 
       const auditLogsAction = showAuditLogsAction ? (
-        <Tooltip title="Audit Logs">
-          <AuditOutlined
+        <AntTooltip title="Audit Logs">
+          <AntAuditOutlined
             className="list-actions-icon"
             onClick={() => {
-              handleAuditLogsAction(record);
+              handleAuditLogsAction?.(record);
             }}
           />
-        </Tooltip>
+        </AntTooltip>
       ) : null;
 
       const deleteAction = showDeleteAction ? (
-        <Popconfirm
+        <AntPopconfirm
           title="Are you sure you want to delete the data for this person?"
           onConfirm={() => {
-            handleDeleteItem(record);
+            handleDeleteItem?.(record);
           }}
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
+          <AntTooltip title="Delete">
+            <AntDeleteOutlined className="list-actions-icon" />
+          </AntTooltip>
+        </AntPopconfirm>
       ) : null;
 
       return (
@@ -192,7 +206,7 @@ export default class PeopleList extends Component {
       showAuditLogsAction,
     } = this.props;
 
-    const columns = [];
+    const columns: any[] = [];
     if (showCategoryColumn) {
       columns.push(this.categoryColumn);
     }
@@ -219,18 +233,18 @@ export default class PeopleList extends Component {
   };
 
   rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  onPaginationChange = (pageIndex, pageSize) => {
+  onPaginationChange = (pageIndex: number, pageSize?: number) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: (pageIndex - 1).toString(),
-      pageSize: pageSize.toString(),
+      pageSize: (pageSize ?? 20).toString(),
     });
   };
 
@@ -242,28 +256,30 @@ export default class PeopleList extends Component {
       pageSize,
       listHeader,
       showSelectionColumn,
-      pagedData: { totalResults, data },
+      pagedData = { totalResults: 0, data: [] },
     } = this.props;
+
+    const { totalResults, data } = pagedData;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
     return (
-      <Table
+      <AntTable
         rowKey="_id"
         dataSource={data}
-        columns={this.getColumns()}
+        columns={this.getColumns() as any}
         title={listHeader}
         rowSelection={showSelectionColumn ? this.rowSelection : null}
         bordered
         size="small"
         pagination={false}
         footer={() => (
-          <Pagination
+          <AntPagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
-            showTotal={(total, range) =>
+            showTotal={(total: number, range: [number, number]) =>
               `${range[0]}-${range[1]} of ${total} items`
             }
             onChange={this.onPaginationChange}

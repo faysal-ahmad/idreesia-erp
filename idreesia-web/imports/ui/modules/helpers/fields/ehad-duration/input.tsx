@@ -1,11 +1,10 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 
 import { Input, Select, Row, Col } from 'antd';
 
-const getYearMonthValue = dateValue => {
+const getYearMonthValue = (dateValue: any) => {
   const currentDate = dayjs().startOf('day');
   const diffInMonths = currentDate.diff(dateValue, 'months');
   const yearValue =
@@ -17,31 +16,38 @@ const getYearMonthValue = dateValue => {
   };
 }
 
+const TextInput = Input as any;
+const AntSelect = Select as any;
+const AntRow = Row as any;
+const AntCol = Col as any;
+interface CustomInputProps { value?: any; disabled?: boolean; onChange?(value: any): void; }
+interface CustomInputState { years: number; months: number; }
+
 const getYearOptions = () => {
-  const yearOptions = [];
+  const yearOptions: React.ReactNode[] = [];
   for (let i = 0; i <= 40; i++) {
     yearOptions.push(
-      <Select.Option key={i} value={i}>
+      <AntSelect.Option key={i} value={i}>
         {i}
-      </Select.Option>
+      </AntSelect.Option>
     );
   }
   return yearOptions;
 };
 
 const getMonthOptions = () => {
-  const monthOptions = [];
+  const monthOptions: React.ReactNode[] = [];
   for (let i = 0; i <= 11; i++) {
     monthOptions.push(
-      <Select.Option key={i} value={i}>
+      <AntSelect.Option key={i} value={i}>
         {i}
-      </Select.Option>
+      </AntSelect.Option>
     );
   }
   return monthOptions;
 };
 
-export default class CustomInput extends Component {
+export default class CustomInput extends Component<CustomInputProps, CustomInputState> {
   static propTypes = {
     value: PropTypes.object,
     disabled: PropTypes.bool,
@@ -50,7 +56,7 @@ export default class CustomInput extends Component {
 
   state = getYearMonthValue(this.props.value);
 
-  handleYearChange = years => {
+  handleYearChange = (years: number) => {
     const months = this.state.months;
     this.setState({
       months,
@@ -60,10 +66,10 @@ export default class CustomInput extends Component {
     const totalMonths = years * 12 + months;
     let newDateValue = dayjs().startOf('day');
     newDateValue = newDateValue.subtract(totalMonths, 'months');
-    this.props.onChange(newDateValue);
+    this.props.onChange?.(newDateValue);
   };
 
-  handleMonthChange = months => {
+  handleMonthChange = (months: number) => {
     const years = this.state.years;
     this.setState({
       months,
@@ -73,35 +79,35 @@ export default class CustomInput extends Component {
     const totalMonths = years * 12 + months;
     let newDateValue = dayjs().startOf('day');
     newDateValue = newDateValue.subtract(totalMonths, 'months');
-    this.props.onChange(newDateValue);
+    this.props.onChange?.(newDateValue);
   };
 
   render() {
     return (
-      <Input.Group>
-        <Row type="flex" align="middle" gutter={10}>
-          <Col span={5}>
-            <Select
+      <TextInput.Group>
+        <AntRow type="flex" align="middle" gutter={10}>
+          <AntCol span={5}>
+            <AntSelect
               style={{ width: '100%' }}
               onChange={this.handleYearChange}
               value={this.state.years}
             >
               {getYearOptions()}
-            </Select>
-          </Col>
-          <Col>years</Col>
-          <Col span={5}>
-            <Select
+            </AntSelect>
+          </AntCol>
+          <AntCol>years</AntCol>
+          <AntCol span={5}>
+            <AntSelect
               style={{ width: '100%' }}
               onChange={this.handleMonthChange}
               value={this.state.months}
             >
               {getMonthOptions()}
-            </Select>
-          </Col>
-          <Col>months</Col>
-        </Row>
-      </Input.Group>
+            </AntSelect>
+          </AntCol>
+          <AntCol>months</AntCol>
+        </AntRow>
+      </TextInput.Group>
     );
   }
 }

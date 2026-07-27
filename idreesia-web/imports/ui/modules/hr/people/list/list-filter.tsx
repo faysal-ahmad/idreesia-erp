@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Collapse, Form, Row } from 'antd';
@@ -20,6 +19,23 @@ import {
   WithAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 
+const AntButton = Button as any;
+const AntCollapse = Collapse as any;
+const AntForm = Form as any;
+const AntFormItem = (Form as any).Item;
+const AntRow = Row as any;
+const CheckboxGroupInputField = CheckboxGroupField as any;
+const CnicField = InputCnicField as any;
+const TextField = InputTextField as any;
+const CascaderInputField = CascaderField as any;
+const SelectInputField = SelectField as any;
+const LastTarteebInputField = LastTarteebFilterField as any;
+const RefreshControl = RefreshButton as any;
+type AnyRecord = Record<string, any>;
+interface LabelValue { label: string; value: string; }
+interface Props extends AnyRecord { setPageParams(params: AnyRecord): void; refreshData?: () => Promise<unknown>; }
+interface FilterValues extends AnyRecord { dutyIdShiftId?: string[]; karkunType?: string[]; }
+
 const ContainerStyle = {
   width: '500px',
 };
@@ -33,7 +49,7 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-class ListFilter extends Component {
+class ListFilter extends Component<Props> {
   static propTypes = {
     allJobs: PropTypes.array,
     allMSDuties: PropTypes.array,
@@ -59,11 +75,11 @@ class ListFilter extends Component {
     cnicNumber: '',
   };
 
-  formRef = React.createRef();
+  formRef = React.createRef<any>();
 
   handleReset = () => {
     const { setPageParams } = this.props;
-    this.formRef.current.resetFields();
+    this.formRef.current?.resetFields();
     setPageParams({
       pageIndex: 0,
       name: null,
@@ -87,7 +103,7 @@ class ListFilter extends Component {
     jobId,
     dutyIdShiftId,
     karkunType,
-  }) => {
+  }: FilterValues) => {
     const { setPageParams } = this.props;
     setPageParams({
       pageIndex: 0,
@@ -97,13 +113,13 @@ class ListFilter extends Component {
       bloodGroup,
       lastTarteeb,
       jobId,
-      dutyId: dutyIdShiftId[0],
-      dutyShiftId: dutyIdShiftId[1],
+      dutyId: dutyIdShiftId?.[0],
+      dutyShiftId: dutyIdShiftId?.[1],
       karkunType,
     });
   };
 
-  refreshButton = () => <RefreshButton refreshData={this.props.refreshData} />;
+  refreshButton = () => <RefreshControl refreshData={this.props.refreshData} />;
 
   render() {
     const {
@@ -128,31 +144,31 @@ class ListFilter extends Component {
       return null;
 
     const dutyShiftCascaderData = getDutyShiftCascaderData(
-      allMSDuties,
-      allDutyShifts
+      (allMSDuties ?? []) as any,
+      (allDutyShifts ?? []) as any
     );
 
-    const karkunTypes = [];
+    const karkunTypes: string[] = [];
     if (!showVolunteers || showVolunteers === 'true')
       karkunTypes.push('volunteers');
     if (!showEmployees || showEmployees === 'true')
       karkunTypes.push('employees');
 
     return (
-      <Collapse
-        style={ContainerStyle}
+      <AntCollapse
+        style={ContainerStyle as any}
         items={[
           {
             key: '1',
             label: 'Filter',
             extra: this.refreshButton(),
             children: (
-              <Form
+              <AntForm
                 ref={this.formRef}
                 layout="horizontal"
                 onFinish={this.handleFinish}
               >
-                <CheckboxGroupField
+                <CheckboxGroupInputField
                   fieldName="karkunType"
                   fieldLabel="Karkun Type"
                   fieldLayout={formItemLayout}
@@ -162,14 +178,14 @@ class ListFilter extends Component {
                   ]}
                   initialValue={karkunTypes}
                 />
-                <InputTextField
+                <TextField
                   fieldName="name"
                   fieldLabel="Name"
                   required={false}
                   fieldLayout={formItemLayout}
                   initialValue={name}
                 />
-                <InputCnicField
+                <CnicField
                   fieldName="cnicNumber"
                   fieldLabel="CNIC Number"
                   required={false}
@@ -177,14 +193,14 @@ class ListFilter extends Component {
                   fieldLayout={formItemLayout}
                   initialValue={cnicNumber}
                 />
-                <InputTextField
+                <TextField
                   fieldName="phoneNumber"
                   fieldLabel="Phone Number"
                   required={false}
                   fieldLayout={formItemLayout}
                   initialValue={phoneNumber}
                 />
-                <SelectField
+                <SelectInputField
                   fieldName="bloodGroup"
                   fieldLabel="Blood Group"
                   required={false}
@@ -198,29 +214,29 @@ class ListFilter extends Component {
                     { label: 'O-', value: 'O-' },
                     { label: 'O+', value: 'Oplus' },
                   ]}
-                  getDataValue={({ value }) => value}
-                  getDataText={({ label }) => label}
+                  getDataValue={({ value }: LabelValue) => value}
+                  getDataText={({ label }: LabelValue) => label}
                   fieldLayout={formItemLayout}
                   initialValue={bloodGroup}
                 />
-                <LastTarteebFilterField
+                <LastTarteebInputField
                   fieldName="lastTarteeb"
                   fieldLabel="Last Tarteeb"
                   required={false}
                   fieldLayout={formItemLayout}
                   initialValue={lastTarteeb}
                 />
-                <SelectField
+                <SelectInputField
                   fieldName="jobId"
                   fieldLabel="Job"
                   required={false}
                   data={allJobs}
-                  getDataValue={({ _id }) => _id}
-                  getDataText={({ name: _name }) => _name}
+                  getDataValue={({ _id }: AnyRecord) => _id}
+                  getDataText={({ name: _name }: AnyRecord) => _name}
                   fieldLayout={formItemLayout}
                   initialValue={jobId}
                 />
-                <CascaderField
+                <CascaderInputField
                   data={dutyShiftCascaderData}
                   fieldName="dutyIdShiftId"
                   fieldLabel="Duty/Shift"
@@ -228,18 +244,18 @@ class ListFilter extends Component {
                   initialValue={[dutyId, dutyShiftId]}
                   required={false}
                 />
-                <Form.Item {...buttonItemLayout}>
-                  <Row type="flex" justify="end">
-                    <Button type="default" onClick={this.handleReset}>
+                <AntFormItem {...buttonItemLayout}>
+                  <AntRow type="flex" justify="end">
+                    <AntButton type="default" onClick={this.handleReset}>
                       Reset
-                    </Button>
+                    </AntButton>
                     &nbsp;
-                    <Button type="primary" htmlType="submit">
+                    <AntButton type="primary" htmlType="submit">
                       Search
-                    </Button>
-                  </Row>
-                </Form.Item>
-              </Form>
+                    </AntButton>
+                  </AntRow>
+                </AntFormItem>
+              </AntForm>
             ),
           },
         ]}
@@ -252,4 +268,4 @@ export default flowRight(
   WithAllJobs(),
   WithAllMSDuties(),
   WithAllDutyShifts()
-)(ListFilter);
+)(ListFilter as any);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
@@ -9,24 +8,30 @@ import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 
 import { PAGED_HR_KARKUNS } from './gql';
 
-const List = ({ handleSelectItem }) => {
-  const [name, setName] = useState(null);
-  const [cnicNumber, setCnicNumber] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState(null);
+const DataList = KarkunsList as any;
+const DataListFilter = KarkunsListFilter as any;
+type AnyRecord = Record<string, any>;
+interface Props { handleSelectItem?(item: AnyRecord): void; }
+interface QueryData { pagedHrKarkuns?: unknown; }
+
+const List = ({ handleSelectItem }: Props) => {
+  const [name, setName] = useState<string | null>(null);
+  const [cnicNumber, setCnicNumber] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
   const [pageIndex, setPageIndex] = useState('0');
   const [pageSize, setPageSize] = useState('20');
 
-  const setPageParams = values => {
-    if (values.hasOwnProperty('name')) setName(values.name);
-    if (values.hasOwnProperty('cnicNumber')) setCnicNumber(values.cnicNumber);
-    if (values.hasOwnProperty('phoneNumber'))
+  const setPageParams = (values: AnyRecord) => {
+    if (Object.prototype.hasOwnProperty.call(values, 'name')) setName(values.name);
+    if (Object.prototype.hasOwnProperty.call(values, 'cnicNumber')) setCnicNumber(values.cnicNumber);
+    if (Object.prototype.hasOwnProperty.call(values, 'phoneNumber'))
       setPhoneNumber(values.phoneNumber);
-    if (values.hasOwnProperty('pageIndex')) setPageIndex(values.pageIndex);
-    if (values.hasOwnProperty('pageSize')) setPageSize(values.pageSize);
+    if (Object.prototype.hasOwnProperty.call(values, 'pageIndex')) setPageIndex(values.pageIndex);
+    if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize);
   };
 
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { data, loading, refetch } = useQuery(PAGED_HR_KARKUNS, {
+  const { data, loading, refetch } = useQuery(PAGED_HR_KARKUNS as any, {
     variables: {
       filter: {
         name,
@@ -39,7 +44,7 @@ const List = ({ handleSelectItem }) => {
   });
 
   if (loading) return null;
-  const { pagedHrKarkuns } = data;
+  const { pagedHrKarkuns } = (data ?? {}) as QueryData;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -49,7 +54,7 @@ const List = ({ handleSelectItem }) => {
     }
 
     return (
-      <KarkunsListFilter
+      <DataListFilter
         showBloodGroupFilter={false}
         showAttendanceFilter={false}
         showLastTarteebFilter={false}
@@ -71,7 +76,7 @@ const List = ({ handleSelectItem }) => {
   );
 
   return (
-    <KarkunsList
+    <DataList
       showSelectionColumn={false}
       showCnicColumn
       showPhoneNumbersColumn

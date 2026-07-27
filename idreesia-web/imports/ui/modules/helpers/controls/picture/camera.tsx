@@ -1,9 +1,11 @@
-// @ts-nocheck
 /* eslint-disable jsx-a11y/media-has-caption */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-export default class Camera extends Component {
+interface Props { showCrop?: boolean; cropTop?: number; cropLeft?: number; cropWidth?: number; cropHeight?: number; width?: number; height?: number; }
+interface State { mediaStream?: MediaStream; }
+
+export default class Camera extends Component<Props, State> {
   static propTypes = {
     showCrop: PropTypes.bool,
     cropTop: PropTypes.number,
@@ -14,14 +16,20 @@ export default class Camera extends Component {
     height: PropTypes.number,
   };
 
+  state: State = {};
+  video: HTMLVideoElement | null = null;
+  canvas?: HTMLCanvasElement;
+
   componentWillMount() {
     if (navigator.mediaDevices) {
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: false })
         .then(mediaStream => {
           this.setState({ mediaStream });
-          this.video.srcObject = mediaStream;
-          this.video.play();
+          if (this.video) {
+            this.video.srcObject = mediaStream;
+            this.video.play();
+          }
         })
         .catch(error => error);
     }
@@ -29,7 +37,7 @@ export default class Camera extends Component {
 
   componentWillUnmount() {
     const { mediaStream } = this.state;
-    mediaStream.getVideoTracks().map(track => track.stop());
+    mediaStream?.getVideoTracks().forEach((track: MediaStreamTrack) => track.stop());
   }
 
   getCanvas = () => {
@@ -55,23 +63,23 @@ export default class Camera extends Component {
     let canvas2dContext;
 
     if (!showCrop) {
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = width ?? 0;
+      canvas.height = height ?? 0;
       canvas2dContext = canvas.getContext('2d');
-      canvas2dContext.drawImage(this.video, 0, 0, width, height);
+      if (canvas2dContext && this.video) canvas2dContext.drawImage(this.video, 0, 0, width ?? 0, height ?? 0);
     } else {
-      const scaleX = this.video.videoWidth / width;
-      const scaleY = this.video.videoHeight / height;
+      const scaleX = this.video ? this.video.videoWidth / (width ?? 1) : 1;
+      const scaleY = this.video ? this.video.videoHeight / (height ?? 1) : 1;
 
-      canvas.width = cropWidth;
-      canvas.height = cropHeight;
+      canvas.width = cropWidth ?? 0;
+      canvas.height = cropHeight ?? 0;
       canvas2dContext = canvas.getContext('2d');
-      canvas2dContext.drawImage(
+      if (canvas2dContext && this.video) canvas2dContext.drawImage(
         this.video,
-        cropLeft * scaleX,
-        cropTop * scaleY,
-        cropWidth * scaleX,
-        cropHeight * scaleY,
+        (cropLeft ?? 0) * scaleX,
+        (cropTop ?? 0) * scaleY,
+        (cropWidth ?? 0) * scaleX,
+        (cropHeight ?? 0) * scaleY,
         0,
         0,
         canvas.width,
@@ -117,7 +125,7 @@ export default class Camera extends Component {
         {cropRect}
         <video
           style={{ height, width }}
-          ref={video => {
+          ref={(video: HTMLVideoElement | null) => {
             this.video = video;
           }}
         />

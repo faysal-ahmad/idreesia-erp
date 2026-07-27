@@ -1,7 +1,12 @@
-// @ts-nocheck
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
+
+const BarcodeView = Barcode as any;
+interface Karkun { name: string; bloodGroup?: string; contactNumber1Subscribed?: boolean; contactNumber2Subscribed?: boolean; image?: { data?: string }; }
+interface NamedRecord { name: string; }
+interface AttendanceRecord { _id: string; month?: string; percentage?: number; meetingCardBarcodeId: string; karkun: Karkun; duty?: NamedRecord | null; job?: NamedRecord | null; shift?: NamedRecord | null; }
+interface CardsProps { cardType?: string; cardHeading?: string; cardSubHeading?: string | null; showDutyInfo?: boolean; attendanceByBarcodeIds?: AttendanceRecord[]; }
 
 const barcodeOptions = {
   width: 1,
@@ -21,7 +26,7 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-export default class Cards extends Component {
+export default class Cards extends Component<CardsProps> {
   static propTypes = {
     cardHeading: PropTypes.string,
     cardSubHeading: PropTypes.string,
@@ -29,11 +34,12 @@ export default class Cards extends Component {
     attendanceByBarcodeIds: PropTypes.array,
   };
 
-  getKarkunImage = attendance => {
+  getKarkunImage = (attendance: AttendanceRecord) => {
     const karkunImage = attendance.karkun.image ? (
       <img
         src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
+        alt={attendance.karkun.name}
       />
     ) : (
       <div style={{ height: '100%', width: 'auto' }} />
@@ -42,7 +48,7 @@ export default class Cards extends Component {
     return <div className="mehfil_card_picture">{karkunImage}</div>;
   };
 
-  getDutyShiftInfo = attendance => {
+  getDutyShiftInfo = (attendance: AttendanceRecord) => {
     const { showDutyInfo } = this.props;
     const dutyShiftNode = showDutyInfo ? (
       <p className="mehfil_card_duty_shift_job">
@@ -56,7 +62,7 @@ export default class Cards extends Component {
     return dutyShiftNode;
   };
 
-  getCardMarkup(attendance) {
+  getCardMarkup(attendance: AttendanceRecord) {
     const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
     const karkunImage = this.getKarkunImage(attendance);
     const dutyShiftInfo = this.getDutyShiftInfo(attendance);
@@ -78,7 +84,7 @@ export default class Cards extends Component {
         <h1 className="mehfil_card_name">{attendance.karkun.name}</h1>
         {dutyShiftInfo}
         <div className="mehfil_card_barcode">
-          <Barcode
+          <BarcodeView
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}
           />
@@ -89,7 +95,7 @@ export default class Cards extends Component {
 
   render() {
     const { attendanceByBarcodeIds } = this.props;
-    const cards = attendanceByBarcodeIds.map(attendance =>
+    const cards = (attendanceByBarcodeIds ?? []).map((attendance: AttendanceRecord) =>
       this.getCardMarkup(attendance)
     );
 
@@ -98,7 +104,7 @@ export default class Cards extends Component {
     while (cards.length > 0) {
       const cardsForPage = cards.splice(0, 9);
       cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle}>
+        <div key={`container_${index}`} style={ContainerStyle as any}>
           {cardsForPage}
         </div>
       );

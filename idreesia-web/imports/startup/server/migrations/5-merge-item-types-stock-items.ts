@@ -54,7 +54,8 @@ Migrations.add({
     const itemTypes = await ItemTypes.find({}).fetchAsync();
     const physicalStores = await PhysicalStores.find({}).fetchAsync();
     for (const physicalStore of physicalStores) {
-      for (const itemType of itemTypes) {
+      for (const itemTypeRecord of itemTypes) {
+      const itemType = itemTypeRecord as Record<string, any>;
         const stockItem = await StockItems.findOneAsync({
           physicalStoreId: physicalStore._id,
           itemTypeId: itemType._id,

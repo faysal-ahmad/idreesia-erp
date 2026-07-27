@@ -32,15 +32,13 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
       }
     );
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...queryResult}
-        loading={loading}
-        allCitiesLoading={loading}
-        allCities={data ? data.allCities : null}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...queryResult,
+      loading,
+      allCitiesLoading: loading,
+      allCities: data ? data.allCities : null,
+    });
   };
 
   WithAllCities.propTypes = {

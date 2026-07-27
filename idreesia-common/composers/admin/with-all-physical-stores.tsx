@@ -27,15 +27,13 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
       allPhysicalStoresQuery
     );
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...queryResult}
-        loading={loading}
-        allPhysicalStoresLoading={loading}
-        allPhysicalStores={data ? data.allPhysicalStores : null}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...queryResult,
+      loading,
+      allPhysicalStoresLoading: loading,
+      allPhysicalStores: data ? data.allPhysicalStores : null,
+    });
   };
 
   WithAllPhysicalStores.propTypes = {

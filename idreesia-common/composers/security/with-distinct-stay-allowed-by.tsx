@@ -24,15 +24,13 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
       }
     );
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...queryResult}
-        loading={loading}
-        distinctStayAllowedByLoading={loading}
-        distinctStayAllowedBy={data ? data.distinctStayAllowedBy : null}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...queryResult,
+      loading,
+      distinctStayAllowedByLoading: loading,
+      distinctStayAllowedBy: data ? data.distinctStayAllowedBy : null,
+    });
   };
 
   WithDistinctStayAllowedBy.propTypes = {

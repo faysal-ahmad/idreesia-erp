@@ -17,7 +17,7 @@ interface ActiveModuleState {
 
 export default () => (WrappedComponent: ComponentType<AnyProps>) => {
   const WithActiveModule = (props: AnyProps): React.ReactElement => (
-    <WrappedComponent {...props} />
+    React.createElement(WrappedComponent as any, props)
   );
 
   WithActiveModule.propTypes = {

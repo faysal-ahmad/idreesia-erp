@@ -12,16 +12,14 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
     const { location, history, match } = props;
     const queryString = location.search;
     const queryParams = parse(queryString);
-    return (
-      <WrappedComponent
-        {...props}
-        queryString={queryString}
-        queryParams={queryParams}
-        location={location}
-        history={history}
-        match={match}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      queryString,
+      queryParams,
+      location,
+      history,
+      match,
+    });
   };
 
   return withRouterAny(WithQueryParams) as ComponentType<AnyProps>;

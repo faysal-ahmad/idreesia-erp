@@ -25,7 +25,7 @@ export default (breadcrumbs: unknown[]) => (
     }
 
     render() {
-      return <WrappedComponent {...this.props} />;
+      return React.createElement(WrappedComponent as any, this.props);
     }
   }
 

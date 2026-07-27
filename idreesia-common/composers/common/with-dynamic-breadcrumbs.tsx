@@ -38,7 +38,7 @@ export default (getBreadcrumbs: (props: AnyProps) => string) => (
     }
 
     render() {
-      return <WrappedComponent {...this.props} />;
+      return React.createElement(WrappedComponent as any, this.props);
     }
   }
 

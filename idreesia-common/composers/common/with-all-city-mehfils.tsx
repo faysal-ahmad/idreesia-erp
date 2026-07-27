@@ -31,15 +31,13 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
       withAllCityMehfilsQuery
     );
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...queryResult}
-        loading={loading}
-        allCityMehfilsLoading={loading}
-        allCityMehfils={data ? data.allCityMehfils : null}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...queryResult,
+      loading,
+      allCityMehfilsLoading: loading,
+      allCityMehfils: data ? data.allCityMehfils : null,
+    });
   };
 
   WithAllCityMehfils.propTypes = {

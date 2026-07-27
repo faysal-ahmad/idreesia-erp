@@ -29,16 +29,14 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
       formQuery
     );
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...queryResult}
-        loading={loading}
-        userLoading={loading}
-        user={data ? data.currentUser : null}
-        currentUser={data ? data.currentUser : null}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...queryResult,
+      loading,
+      userLoading: loading,
+      user: data ? data.currentUser : null,
+      currentUser: data ? data.currentUser : null,
+    });
   };
 
   WithLoggedInUser.propTypes = {

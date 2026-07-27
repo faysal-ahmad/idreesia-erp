@@ -24,15 +24,13 @@ export default () => (WrappedComponent: ComponentType<AnyProps>) => {
       }
     );
 
-    return (
-      <WrappedComponent
-        {...props}
-        {...queryResult}
-        loading={loading}
-        distinctCountriesLoading={loading}
-        distinctCountries={data ? data.distinctCountries : null}
-      />
-    );
+    return React.createElement(WrappedComponent as any, {
+      ...props,
+      ...queryResult,
+      loading,
+      distinctCountriesLoading: loading,
+      distinctCountries: data ? data.distinctCountries : null,
+    });
   };
 
   WithDistinctCountries.propTypes = {

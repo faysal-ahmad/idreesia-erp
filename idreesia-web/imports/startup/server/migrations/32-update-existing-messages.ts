@@ -7,8 +7,11 @@ Migrations.add({
   async up() {
     const messages = await Messages.find({}).fetchAsync();
     for (const message of messages) {
-      const { recepientFilters } = message;
-      const recepientFilter = recepientFilters[0];
+      const { recepientFilters } = message as { recepientFilters?: Record<string, any>[] };
+      const recepientFilter = recepientFilters?.[0];
+      if (!recepientFilter) {
+        continue;
+      }
       if (recepientFilter.jobId) {
         recepientFilter.jobIds = [recepientFilter.jobId];
         delete recepientFilter.jobId;

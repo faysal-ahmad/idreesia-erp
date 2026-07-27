@@ -220,7 +220,7 @@ class List extends Component {
     }
 
     let locationIdVal;
-    if (newParams.hasOwnProperty('locationId')) locationIdVal = locationId;
+    if (newParams.hasOwnProperty('locationId')) locationIdVal = locationId ?? '';
     else locationIdVal = queryParams.locationId || '';
 
     let startDateVal;

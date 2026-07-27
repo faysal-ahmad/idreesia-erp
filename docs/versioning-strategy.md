@@ -33,6 +33,8 @@ There are two release channels:
 
 PRs into `master` must come from the `develop` branch in this repository. The build workflow fails master-targeted PRs from any other branch, and the release workflow also refuses to publish direct-to-master PR releases as a backstop.
 
+After a successful `master` release, the release workflow records `master` back into `develop` history with a `[skip ci]` merge commit that keeps `develop`'s file contents unchanged. This is a history-only merge: it advances the merge base so future `develop` to `master` PRs do not repeatedly conflict on package version files, but it never replaces `develop`'s release candidate versions with stable `master` versions.
+
 ## Develop: Release Candidates
 
 When a PR is merged into `develop`, the workflow computes the next release candidate version.
@@ -48,13 +50,7 @@ Examples:
 
 Once the release candidate base has moved up, lower labels do not reduce it. For example, after `2.0.0-rc.1`, another `patch` PR into `develop` produces `2.0.0-rc.2`.
 
-Release candidate Docker images are tagged only with the release candidate version:
-
-```text
-ghcr.io/<owner>/idreesia-web:1.2.0-rc.1
-```
-
-Release candidates are not tagged as `latest`.
+Release candidates are tagged in Git, but Docker images are not built or pushed for `develop` releases. Docker images are published only from `master`.
 
 ## Master: Stable Releases
 

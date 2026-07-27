@@ -147,6 +147,7 @@ jobs:
         working-directory: ./idreesia-web
 
       - name: Build Docker Container
+        if: ${{ github.ref_name == 'master' }}
         env:
           IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/idreesia-web
           DOCKER_TAGS: ${{ steps.release-version.outputs.docker_tags }}
@@ -159,9 +160,11 @@ jobs:
           docker build "${BUILD_ARGS[@]}" idreesia-web
 
       - name: Login to GHCR
+        if: ${{ github.ref_name == 'master' }}
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
 
       - name: Push Docker Container
+        if: ${{ github.ref_name == 'master' }}
         env:
           IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/idreesia-web
           DOCKER_TAGS: ${{ steps.release-version.outputs.docker_tags }}
@@ -170,3 +173,17 @@ jobs:
           for tag in "${TAGS[@]}"; do
             docker push "$IMAGE_NAME:$tag"
           done
+
+      - name: Record Master Release In Develop History
+        if: ${{ github.ref_name == 'master' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin master develop
+          git checkout -B develop origin/develop
+          if git merge-base --is-ancestor origin/master HEAD; then
+            echo "Master is already recorded in develop history."
+          else
+            git merge --no-ff -s ours origin/master -m "chore(release): record master release in develop history [skip ci]"
+            git push origin HEAD:develop
+          fi

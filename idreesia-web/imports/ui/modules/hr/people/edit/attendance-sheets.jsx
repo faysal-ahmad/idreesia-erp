@@ -88,7 +88,7 @@ const AttendanceSheets = ({ karkunId }) => {
       rowKey="_id"
       size="small"
       columns={columns}
-      dataSource={data.pagedAttendanceByKarkun.attendance}
+      dataSource={data.pagedAttendanceByKarkun.data}
       pagination={false}
       bordered
       footer={() => (

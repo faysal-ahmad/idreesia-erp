@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 const INITIAL_VERSION = '1.0.0';
@@ -83,21 +82,6 @@ function formatBase(version) {
   return `${version.major}.${version.minor}.${version.patch}`;
 }
 
-function formatVersion(version) {
-  const base = formatBase(version);
-
-  return version.rc ? `${base}-rc.${version.rc}` : base;
-}
-
-function compareBase(left, right) {
-  for (const key of ['major', 'minor', 'patch']) {
-    if (left[key] > right[key]) return 1;
-    if (left[key] < right[key]) return -1;
-  }
-
-  return 0;
-}
-
 function bumpBase(version, bump) {
   if (bump === 'major') {
     return { major: version.major + 1, minor: 0, patch: 0, rc: null };
@@ -136,64 +120,24 @@ function writePackageVersions(version) {
   }
 }
 
-function getGitTags() {
-  const result = spawnSync('git', ['tag', '--list', 'v[0-9]*'], {
-    encoding: 'utf8',
-  });
-
-  if (result.status !== 0) {
-    return [];
-  }
-
-  return result.stdout
-    .split('\n')
-    .map((tag) => tag.trim())
-    .filter(Boolean)
-    .map((tag) => tag.replace(/^v/, ''));
-}
-
-function latestStableVersion(tags) {
-  const stableTags = tags
-    .filter((tag) => !tag.includes('-'))
-    .map(parseVersion)
-    .sort(compareBase);
-
-  return stableTags.at(-1) ?? parseVersion(INITIAL_VERSION);
-}
-
-function resolveDevelopVersion({ currentVersion, bump, hasReleaseTags, latestStable }) {
-  const current = parseVersion(currentVersion);
-
-  if (current.rc === null) {
-    if (!hasReleaseTags && currentVersion === INITIAL_VERSION) {
-      return `${INITIAL_VERSION}-rc.1`;
-    }
-
-    return formatVersion({ ...bumpBase(current, bump), rc: 1 });
-  }
-
-  const targetBase = bumpBase(latestStable, bump);
-  const currentBase = { ...current, rc: null };
-
-  if (compareBase(targetBase, currentBase) > 0) {
-    return formatVersion({ ...targetBase, rc: 1 });
-  }
-
-  return formatVersion({ ...currentBase, rc: current.rc + 1 });
-}
-
-function resolveMasterVersion({ currentVersion, bump, hasStableTags }) {
+function resolveDevelopVersion({ currentVersion, bump }) {
   const current = parseVersion(currentVersion);
 
   if (current.rc !== null) {
     return formatBase(current);
   }
 
-  if (!hasStableTags && currentVersion === INITIAL_VERSION) {
-    return INITIAL_VERSION;
+  return formatBase(bumpBase(current, bump));
+}
+
+function resolveMasterVersion({ currentVersion }) {
+  const current = parseVersion(currentVersion);
+
+  if (current.rc !== null) {
+    throw new Error(`Master releases require a stable package version, received ${currentVersion}`);
   }
 
-  return formatBase(bumpBase(current, bump));
+  return formatBase(current);
 }
 
 function dockerTagsFor(version, branch) {
@@ -231,13 +175,13 @@ if (!VALID_BRANCHES.has(branch)) {
 
 if (args['resolved-version']) {
   const version = args['resolved-version'];
-  const channel = branch === 'develop' ? 'rc' : 'stable';
+  const channel = branch === 'develop' ? 'develop' : 'stable';
   const dockerTags = dockerTagsFor(version, branch);
   const outputs = {
     version,
     bump: 'none',
     channel,
-    is_stable: channel === 'stable',
+    is_stable: branch === 'master',
     docker_tags: dockerTags.join(','),
   };
 
@@ -249,15 +193,10 @@ if (args['resolved-version']) {
 const labels = parseLabels(args.labels);
 const bump = resolveBump(labels);
 const currentVersion = args['current-version'] ?? readPackageVersions();
-const gitTags = args['has-release-tags'] ? [] : getGitTags();
-const hasReleaseTags = args['has-release-tags'] ? args['has-release-tags'] === 'true' : gitTags.length > 0;
-const stableTags = gitTags.filter((tag) => !tag.includes('-'));
-const hasStableTags = args['has-stable-tags'] ? args['has-stable-tags'] === 'true' : stableTags.length > 0;
-const latestStable = args['latest-stable'] ? parseVersion(args['latest-stable']) : latestStableVersion(gitTags);
 const version = branch === 'develop'
-  ? resolveDevelopVersion({ currentVersion, bump, hasReleaseTags, latestStable })
-  : resolveMasterVersion({ currentVersion, bump, hasStableTags });
-const channel = branch === 'develop' ? 'rc' : 'stable';
+  ? resolveDevelopVersion({ currentVersion, bump })
+  : resolveMasterVersion({ currentVersion });
+const channel = branch === 'develop' ? 'develop' : 'stable';
 const dockerTags = dockerTagsFor(version, branch);
 
 if (args.write) {
@@ -268,7 +207,7 @@ const outputs = {
   version,
   bump,
   channel,
-  is_stable: channel === 'stable',
+  is_stable: branch === 'master',
   docker_tags: dockerTags.join(','),
 };
 

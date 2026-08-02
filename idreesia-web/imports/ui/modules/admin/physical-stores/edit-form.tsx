@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
@@ -12,51 +11,29 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const formQuery = gql`
-  query adminPhysicalStoreById($id: String!) {
-    physicalStoreById(id: $id) {
-      _id
-      name
-      address
-    }
-  }
-`;
+import {
+  ADMIN_PHYSICAL_STORE_BY_ID,
+  UPDATE_PHYSICAL_STORE,
+} from './gql';
 
-const formMutation = gql`
-  mutation updatePhysicalStore(
-    $id: String!
-    $name: String!
-    $address: String!
-  ) {
-    updatePhysicalStore(id: $id, name: $name, address: $address) {
-      _id
-      name
-      address
-    }
-  }
-`;
+interface FormValues {
+  name: string;
+  address?: string;
+}
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { push(path: string): void; }
-interface FormValues { name: string; address?: string; }
-interface MatchLike { params: { physicalStoreId: string; }; }
-interface PhysicalStore { _id: string; name?: string; address?: string; }
-interface QueryData { physicalStoreById?: PhysicalStore | null; }
-interface Props { match: MatchLike; history: HistoryLike; }
+type Props = RouteComponentProps<{ physicalStoreId: string }>;
 
 const EditForm = ({ match, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { physicalStoreId } = match.params;
-  const { data, loading } = useQuery(formQuery as any, {
+  useBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit']);
+  const { data, loading } = useQuery(ADMIN_PHYSICAL_STORE_BY_ID, {
     variables: { id: physicalStoreId },
   });
-  const [updatePhysicalStore] = useMutation(formMutation as any, {
+  const [updatePhysicalStore] = useMutation(UPDATE_PHYSICAL_STORE, {
     refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
   });
-  const { physicalStoreById } = (data ?? {}) as QueryData;
+  const physicalStoreById = data?.physicalStoreById;
 
   const handleCancel = () => {
     history.push(paths.physicalStoresPath);
@@ -69,9 +46,9 @@ const EditForm = ({ match, history }: Props) => {
   const handleFinish = (fieldsValue: FormValues) => {
     updatePhysicalStore({
       variables: {
-        id: physicalStoreById?._id,
+        id: physicalStoreId,
         name: fieldsValue.name,
-        address: fieldsValue.address,
+        address: fieldsValue.address ?? '',
       },
     })
       .then(() => {
@@ -85,32 +62,26 @@ const EditForm = ({ match, history }: Props) => {
   if (loading) return null;
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         initialValue={physicalStoreById?.name}
         required
         requiredMessage="Please input a name for the physical store."
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="address"
         fieldLabel="Address"
         initialValue={physicalStoreById?.address}
         required={false}
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit'])(EditForm as any);
+export default EditForm;

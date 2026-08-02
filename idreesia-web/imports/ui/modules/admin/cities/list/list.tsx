@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useMutation, useQuery } from '@apollo/client/react';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { type History } from 'history';
 import {
   Button,
   Pagination,
@@ -13,41 +13,48 @@ import {
   message,
 } from 'antd';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
+  useBreadcrumbs,
   useQueryParams,
   useAllCities,
 } from 'meteor/idreesia-common/hooks/common';
+import type {
+  DistinctRegionsQuery,
+  DistinctRegionsQueryVariables,
+  PagedCitiesQuery,
+} from 'meteor/idreesia-common/types/client-operations';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 import ListFilter from './list-filter';
 import { PAGED_CITIES, REMOVE_CITY } from '../gql';
 
 const RouterLink = Link as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntButton = Button as any;
-const AntPagination = Pagination as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; search: string; }
-interface PagedCities { totalResults: number; data: AnyRecord[]; }
-interface QueryData { pagedCities?: PagedCities | null; }
-interface DistinctRegionsData { distinctRegions?: string[] | null; }
-interface Props { history: HistoryLike; location: LocationLike; }
 
-const DISTINCT_REGIONS = gql`
+const DISTINCT_REGIONS: TypedDocumentNode<
+  DistinctRegionsQuery,
+  DistinctRegionsQueryVariables
+> = gql`
   query distinctRegions {
     distinctRegions
   }
 `;
 
-const List = ({ history, location }: Props) => {
-  const dispatch = useDispatch<any>();
-  const [removeCity] = useMutation(REMOVE_CITY as any);
+type CityRow = NonNullable<
+  NonNullable<NonNullable<PagedCitiesQuery['pagedCities']>['data']>[number]
+> & { _id: string };
+
+interface ListProps {
+  history: History;
+  location: {
+    pathname: string;
+    search: string;
+  };
+}
+
+const List = ({ history, location }: ListProps) => {
+  useBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'List']);
+  const [removeCity] = useMutation(REMOVE_CITY);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -56,26 +63,22 @@ const List = ({ history, location }: Props) => {
 
   const { allCitiesLoading, allCities } = useAllCities();
   const { data: distinctRegionsData, loading: distinctRegionsLoading } = useQuery(
-    DISTINCT_REGIONS as any
+    DISTINCT_REGIONS
   );
-  const distinctRegions = distinctRegionsData
-    ? (distinctRegionsData as DistinctRegionsData).distinctRegions
-    : null;
-  const { data, loading, refetch } = useQuery(PAGED_CITIES as any, {
+  const distinctRegions = (distinctRegionsData?.distinctRegions ?? []).filter(
+    (region): region is string => region != null
+  );
+  const { data, loading, refetch } = useQuery(PAGED_CITIES, {
     variables: {
       filter: queryParams,
     },
   });
 
-  useEffect(() => {
-    dispatch(setBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'List']));
-  }, [location]);
-
   const handleNewClicked = () => {
     history.push(paths.citiesNewFormPath);
   };
 
-  const handleDeleteClicked = (record: AnyRecord) => {
+  const handleDeleteClicked = (record: CityRow) => {
     removeCity({
       variables: {
         _id: record._id,
@@ -93,10 +96,14 @@ const List = ({ history, location }: Props) => {
   };
 
   if (loading || allCitiesLoading || distinctRegionsLoading) return null;
-  const { pagedCities } = (data ?? {}) as QueryData;
+  const pagedCities = data?.pagedCities;
   const { peripheryOf, region, pageIndex, pageSize } = queryParams;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) + 1 : 1;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+
+  const cityRows: CityRow[] = (pagedCities?.data ?? []).filter(
+    (row): row is CityRow => row != null && row._id != null
+  );
 
   const columns: any[] = [
     {
@@ -104,7 +111,7 @@ const List = ({ history, location }: Props) => {
       dataIndex: 'name',
       key: 'name',
       width: 150,
-      render: (text: string, record: AnyRecord) => (
+      render: (text: string, record: CityRow) => (
         <RouterLink to={`${paths.citiesEditFormPath(record._id)}`}>{text}</RouterLink>
       ),
     },
@@ -112,7 +119,7 @@ const List = ({ history, location }: Props) => {
       title: 'Periphery Of',
       key: 'peripheryOf',
       width: 150,
-      render: (_text: unknown, record: AnyRecord) => record?.peripheryOfCity?.name,
+      render: (_text: unknown, record: CityRow) => record?.peripheryOfCity?.name,
     },
     {
       title: 'Region',
@@ -124,11 +131,13 @@ const List = ({ history, location }: Props) => {
       title: 'Mehfils',
       dataIndex: 'mehfils',
       key: 'mehfils',
-      render: (_text: unknown, record: AnyRecord) => {
+      render: (_text: unknown, record: CityRow) => {
         if (!record.mehfils || record.mehfils.length === 0) return null;
-        const mehfilNames = record.mehfils.map((mehfil: AnyRecord) => (
-          <li>{mehfil.name}</li>
-        ));
+        const mehfilNames = record.mehfils
+          .filter((mehfil) => mehfil != null)
+          .map((mehfil) => (
+            <li key={mehfil._id ?? mehfil.name}>{mehfil.name}</li>
+          ));
         return <ul>{mehfilNames}</ul>;
       },
     },
@@ -147,15 +156,15 @@ const List = ({ history, location }: Props) => {
     {
       key: 'action',
       width: 50,
-      render: (text: string, record: AnyRecord) => (
-        <AntTooltip key="delete" title="Delete">
-          <AntDeleteOutlined
+      render: (_text: unknown, record: CityRow) => (
+        <Tooltip key="delete" title="Delete">
+          <DeleteOutlined
             className="list-actions-icon"
             onClick={() => {
               handleDeleteClicked(record);
             }}
           />
-        </AntTooltip>
+        </Tooltip>
       ),
     },
   ];
@@ -163,19 +172,19 @@ const List = ({ history, location }: Props) => {
   const getTableHeader = () => (
     <div className="list-table-header">
       <div>
-        <AntButton
+        <Button
           size="large"
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New City
-        </AntButton>
+        </Button>
       </div>
       <div className="list-table-header-section">
         <ListFilter
-          allCities={(allCities ?? []) as any}
-          distinctRegions={distinctRegions ?? []}
+          allCities={allCities ?? []}
+          distinctRegions={distinctRegions}
           peripheryOf={typeof peripheryOf === 'string' ? peripheryOf : null}
           region={typeof region === 'string' ? region : null}
           setPageParams={setPageParams}
@@ -186,16 +195,16 @@ const List = ({ history, location }: Props) => {
   );
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
-      dataSource={pagedCities?.data ?? []}
+      dataSource={cityRows}
       columns={columns as any}
       bordered
       size="small"
       pagination={false}
       title={getTableHeader}
       footer={() => (
-        <AntPagination
+        <Pagination
           current={numPageIndex}
           pageSize={numPageSize}
           showSizeChanger
@@ -209,11 +218,6 @@ const List = ({ history, location }: Props) => {
       )}
     />
   );
-};
-
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default List;

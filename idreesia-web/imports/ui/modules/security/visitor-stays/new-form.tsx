@@ -6,7 +6,7 @@ import { useDistinctStayAllowedBy } from 'meteor/idreesia-common/hooks/security'
 import {
   useAllMSDuties,
   useAllDutyShifts,
-} from '/imports/ui/modules/hr/common/composers';
+} from '/imports/ui/modules/hr/common/hooks';
 import type {
   AllDutyShiftsQuery,
   ComposerAllMsDutiesQuery,

@@ -1,32 +1,44 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { type History } from 'history';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { filter } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  useBreadcrumbs,
+  useAllCities,
+} from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
   SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { WithAllCities } from 'meteor/idreesia-common/composers/common';
 
 import { PAGED_CITIES, CREATE_CITY } from '../gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SelectInputField = SelectField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface City { _id: string; name?: string; peripheryOf?: string | null; country?: string; region?: string; }
-interface HistoryLike { goBack(): void; }
-interface FormValues { name: string; peripheryOf?: string | null; region?: string; country?: string; }
-interface Props { history: HistoryLike; cityId?: string | null; allCitiesLoading?: boolean; allCities?: City[]; }
+interface CityOption {
+  _id: string;
+  name?: string | null;
+  peripheryOf?: string | null;
+}
 
-const NewForm = ({ history, allCitiesLoading, allCities }: Props) => {
+interface FormValues {
+  name: string;
+  peripheryOf?: string | null;
+  region?: string;
+  country?: string;
+}
+
+interface Props {
+  history: History;
+}
+
+const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createCity] = useMutation(CREATE_CITY as any, {
-    refetchQueries: [{ query: PAGED_CITIES as any }],
+  const { allCitiesLoading, allCities } = useAllCities();
+  useBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'New']);
+  const [createCity] = useMutation(CREATE_CITY, {
+    refetchQueries: [{ query: PAGED_CITIES }],
   });
 
   const handleCancel = () => {
@@ -43,7 +55,7 @@ const NewForm = ({ history, allCitiesLoading, allCities }: Props) => {
         name,
         peripheryOf,
         region,
-        country,
+        country: country!,
       },
     })
       .then(() => {
@@ -55,54 +67,44 @@ const NewForm = ({ history, allCitiesLoading, allCities }: Props) => {
   };
 
   const getNonPeripheryCities = () => {
-    return filter(allCities ?? [], (city: City) => !city.peripheryOf);
+    return filter(allCities ?? [], (city: CityOption) => !city.peripheryOf);
   };
 
   if (allCitiesLoading) return null;
   const nonPeripheryCities = getNonPeripheryCities();
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="City Name"
         required
         requiredMessage="Please input a name for the city."
       />
-      <SelectInputField
+      <SelectField
         data={nonPeripheryCities}
-        getDataValue={({ _id }: City) => _id}
-        getDataText={({ name }: City) => name}
+        getDataValue={({ _id }: CityOption) => _id}
+        getDataText={({ name }: CityOption) => name}
         fieldName="peripheryOf"
         fieldLabel="Periphery Of"
       />
-      <TextField
+      <InputTextField
         fieldName="region"
         fieldLabel="Region"
       />
-      <TextField
+      <InputTextField
         fieldName="country"
         fieldLabel="Country"
         initialValue="Pakistan"
         required
         requiredMessage="Please input a name for the country."
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-  allCitiesLoading: PropTypes.bool,
-  allCities: PropTypes.array,
-};
-
-export default flowRight(
-  WithAllCities(),
-  WithBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'New'])
-)(NewForm as any);
+export default NewForm;

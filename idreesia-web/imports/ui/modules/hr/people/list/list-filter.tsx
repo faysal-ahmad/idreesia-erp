@@ -16,7 +16,7 @@ import {
   useAllJobs,
   useAllMSDuties,
   useAllDutyShifts,
-} from '/imports/ui/modules/hr/common/composers';
+} from '/imports/ui/modules/hr/common/hooks';
 
 interface LabelValue {
   label: string;

@@ -1,41 +1,48 @@
 import React, { Fragment, useRef } from 'react';
-import PropTypes from 'prop-types';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithAllPhysicalStores } from 'meteor/idreesia-common/composers/admin';
+import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
 
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
 import { USER_BY_ID, SET_INSTANCE_ACCESS } from '../gql';
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntRow = Row as any;
-const AntCloseCircleOutlined = CloseCircleOutlined as any;
-const AntSaveOutlined = SaveOutlined as any;
-const InstanceSelectionControl = InstanceSelection as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface QueryData { userById?: AnyRecord | null; }
-interface Props extends Record<string, any> { userId?: string | null; history: HistoryLike; allPhysicalStoresLoading?: boolean; allPhysicalStores?: AnyRecord[]; }
+interface InstanceSelectionRef {
+  getSelectedInstances(): string[];
+}
 
-const InstanceAccess = ({
-  userId,
-  history,
-  allPhysicalStoresLoading,
-  allPhysicalStores,
-}: Props) => {
-  const instanceSelection = useRef<any>(null);
-  const { data, loading: userLoading } = useQuery(USER_BY_ID as any, {
+interface PhysicalStoreOption {
+  _id: string;
+  name: string;
+}
+
+interface Props {
+  userId: string;
+  history: History;
+}
+
+const InstanceAccess = ({ userId, history }: Props) => {
+  const instanceSelection = useRef<InstanceSelectionRef>(null);
+  const { allPhysicalStoresLoading, allPhysicalStores } = useAllPhysicalStores();
+  const { data, loading: userLoading } = useQuery(USER_BY_ID, {
     variables: { _id: userId },
   });
-  const [setInstanceAccess] = useMutation(SET_INSTANCE_ACCESS as any, {
-    refetchQueries: ['pagedUser'],
+  const [setInstanceAccess] = useMutation(SET_INSTANCE_ACCESS, {
+    refetchQueries: ['pagedUsers'],
   });
-  const { userById } = (data ?? {}) as QueryData;
+  const userById = data?.userById;
+
+  const physicalStores: PhysicalStoreOption[] = (allPhysicalStores ?? [])
+    .filter(
+      (
+        store
+      ): store is NonNullable<typeof store> & { _id: string; name: string } =>
+        store != null && store._id != null && store.name != null
+    )
+    .map((store) => ({ _id: store._id, name: store.name }));
 
   const handleSave = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -43,7 +50,7 @@ const InstanceAccess = ({
 
     setInstanceAccess({
       variables: {
-        userId: userById?._id,
+        userId: userById?._id ?? userId,
         instances,
       },
     })
@@ -64,47 +71,35 @@ const InstanceAccess = ({
   }
 
   return (
-    <ReactFragment>
-      <InstanceSelectionControl
+    <Fragment>
+      <InstanceSelection
         securityEntity={userById}
-        allPhysicalStores={allPhysicalStores}
+        allPhysicalStores={physicalStores}
         ref={instanceSelection}
       />
       <br />
       <br />
-      <AntRow type="flex" justify="start">
-        <AntButton
+      <Row justify="start">
+        <Button
           size="large"
-          icon={<AntCloseCircleOutlined />}
+          icon={<CloseCircleOutlined />}
           type="default"
           onClick={handleCancel}
         >
           Cancel
-        </AntButton>
+        </Button>
         &nbsp;
-        <AntButton
+        <Button
           size="large"
-          icon={<AntSaveOutlined />}
+          icon={<SaveOutlined />}
           type="primary"
           onClick={handleSave}
         >
           Save
-        </AntButton>
-      </AntRow>
-    </ReactFragment>
+        </Button>
+      </Row>
+    </Fragment>
   );
 };
 
-InstanceAccess.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  userId: PropTypes.string,
-  allPhysicalStoresLoading: PropTypes.bool,
-  allPhysicalStores: PropTypes.array,
-};
-
-export default flowRight(
-  WithAllPhysicalStores()
-)(InstanceAccess as any);
+export default InstanceAccess;

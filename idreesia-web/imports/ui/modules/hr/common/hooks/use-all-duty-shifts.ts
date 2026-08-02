@@ -1,4 +1,3 @@
-import React, { ComponentType } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
@@ -32,15 +31,3 @@ export const useAllDutyShifts = () => {
     allDutyShifts: data?.allDutyShifts ?? null,
   };
 };
-
-type InjectedProps = ReturnType<typeof useAllDutyShifts>;
-
-export default <P extends object>() =>
-  (WrappedComponent: ComponentType<P & InjectedProps>) => {
-    const WithAllDutyShifts = (props: P) => {
-      const allDutyShiftsProps = useAllDutyShifts();
-      return <WrappedComponent {...props} {...allDutyShiftsProps} />;
-    };
-
-    return WithAllDutyShifts;
-  };

@@ -12,7 +12,7 @@ import {
   SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
+import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 import type { AllJobsQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';

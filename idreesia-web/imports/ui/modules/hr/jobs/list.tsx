@@ -15,7 +15,7 @@ import type {
 } from 'meteor/idreesia-common/types/client-operations';
 import { Button, Table, Tooltip, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
+import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 
 const REMOVE_JOB: TypedDocumentNode<
   RemoveJobMutation,

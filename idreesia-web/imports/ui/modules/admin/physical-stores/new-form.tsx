@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { type History } from 'history';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
@@ -12,27 +11,21 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const formMutation = gql`
-  mutation createPhysicalStore($name: String!, $address: String) {
-    createPhysicalStore(name: $name, address: $address) {
-      _id
-      name
-      address
-    }
-  }
-`;
+import { CREATE_PHYSICAL_STORE } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { push(path: string): void; }
-interface FormValues { name: string; address?: string; }
-interface Props { history: HistoryLike; }
+interface FormValues {
+  name: string;
+  address?: string;
+}
+
+interface Props {
+  history: History;
+}
 
 const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createPhysicalStore] = useMutation(formMutation as any, {
+  useBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New']);
+  const [createPhysicalStore] = useMutation(CREATE_PHYSICAL_STORE, {
     refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
   });
 
@@ -60,29 +53,24 @@ const NewForm = ({ history }: Props) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the physical store."
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="address"
         fieldLabel="Address"
         required={false}
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New'])(NewForm as any);
+export default NewForm;

@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import { SyncOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -16,21 +15,37 @@ import {
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
 
-const AntSyncOutlined = SyncOutlined as any;
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const AntTooltip = Tooltip as any;
-const CheckboxGroupInputField = CheckboxGroupField as any;
-const SelectInputField = SelectField as any;
-interface PageParams extends Record<string, string> { pageIndex: string; }
-interface Props { showLocked?: string; showUnlocked?: string; showActive?: string; showInactive?: string; moduleAccess?: string; setPageParams(params: PageParams): void; refreshData?: () => void; }
-interface FormValues { status?: string[]; moduleAccess?: string; }
-interface ModuleNameOption { value: string; text: string; }
+export interface PageParams {
+  showLocked?: string;
+  showUnlocked?: string;
+  showActive?: string;
+  showInactive?: string;
+  moduleAccess?: string;
+  pageIndex?: string | number;
+  pageSize?: string | number;
+}
 
-const ContainerStyle = {
+interface Props {
+  showLocked?: string;
+  showUnlocked?: string;
+  showActive?: string;
+  showInactive?: string;
+  moduleAccess?: string;
+  setPageParams(params: PageParams): void;
+  refreshData?: () => void;
+}
+
+interface FormValues {
+  status?: string[];
+  moduleAccess?: string;
+}
+
+interface ModuleNameOption {
+  value: string;
+  text: string;
+}
+
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -73,14 +88,14 @@ const ListFilter = (props: Props) => {
     if (!refreshData) return null;
 
     return (
-      <AntTooltip title="Reload Data">
-        <AntSyncOutlined
+      <Tooltip title="Reload Data">
+        <SyncOutlined
           onClick={(event: React.MouseEvent<HTMLElement>) => {
             event.stopPropagation();
             refreshData();
           }}
         />
-      </AntTooltip>
+      </Tooltip>
     );
   };
 
@@ -105,16 +120,16 @@ const ListFilter = (props: Props) => {
   }));
 
   return (
-    <AntCollapse
-      style={ContainerStyle as any}
+    <Collapse
+      style={ContainerStyle}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <AntForm layout="horizontal" onFinish={handleFinish}>
-              <CheckboxGroupInputField
+            <Form layout="horizontal" onFinish={handleFinish}>
+              <CheckboxGroupField
                 fieldName="status"
                 fieldLabel="Status"
                 fieldLayout={formItemLayout}
@@ -126,7 +141,7 @@ const ListFilter = (props: Props) => {
                 ]}
                 initialValue={status}
               />
-              <SelectInputField
+              <SelectField
                 data={moduleNamesData}
                 getDataValue={({ value }: ModuleNameOption) => value}
                 getDataText={({ text }: ModuleNameOption) => text}
@@ -135,33 +150,23 @@ const ListFilter = (props: Props) => {
                 fieldLabel="Module Access"
                 fieldLayout={formItemLayout}
               />
-              <AntFormItem {...buttonItemLayout}>
-                <AntRow type="flex" justify="end">
-                  <AntButton type="default" onClick={handleReset}>
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
                     Reset
-                  </AntButton>
+                  </Button>
                   &nbsp;
-                  <AntButton type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit">
                     Search
-                  </AntButton>
-                </AntRow>
-              </AntFormItem>
-            </AntForm>
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
           ),
         },
       ]}
     />
   );
-};
-
-ListFilter.propTypes = {
-  showLocked: PropTypes.string,
-  showUnlocked: PropTypes.string,
-  showActive: PropTypes.string,
-  showInactive: PropTypes.string,
-  moduleAccess: PropTypes.string,
-  setPageParams: PropTypes.func,
-  refreshData: PropTypes.func,
 };
 
 export default ListFilter;

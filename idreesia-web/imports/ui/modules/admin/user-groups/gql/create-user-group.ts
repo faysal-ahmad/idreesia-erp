@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  CreateUserGroupMutation,
+  CreateUserGroupMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const CREATE_USER_GROUP = gql`
+const CREATE_USER_GROUP: TypedDocumentNode<
+  CreateUserGroupMutation,
+  CreateUserGroupMutationVariables
+> = gql`
   mutation createUserGroup(
     $name: String!
     $moduleName: String!

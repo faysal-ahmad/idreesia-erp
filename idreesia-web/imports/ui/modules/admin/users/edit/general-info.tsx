@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
@@ -12,26 +12,27 @@ import {
 
 import { USER_BY_ID, PAGED_USERS, UPDATE_USER } from '../gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SwitchInputField = SwitchField as any;
-const KarkunSelectionField = KarkunSelectionInputField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface QueryData { userById?: AnyRecord | null; }
-interface Props { userId?: string | null; history: HistoryLike; }
-interface FormValues { password?: string; email?: string; displayName?: string; locked?: boolean; }
+interface Props {
+  userId: string;
+  history: History;
+}
+
+interface FormValues {
+  password?: string;
+  email?: string;
+  displayName?: string;
+  locked?: boolean;
+}
 
 const GeneralInfo = ({ userId, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(USER_BY_ID as any, {
+  const { data, loading } = useQuery(USER_BY_ID, {
     variables: { _id: userId },
   });
-  const [updateUser] = useMutation(UPDATE_USER as any, {
-    refetchQueries: [{ query: PAGED_USERS as any, variables: { filter: {} } }],
+  const [updateUser] = useMutation(UPDATE_USER, {
+    refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
   });
-  const { userById } = (data ?? {}) as QueryData;
+  const userById = data?.userById;
 
   const handleCancel = () => {
     history.goBack();
@@ -41,7 +42,12 @@ const GeneralInfo = ({ userId, history }: Props) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ password, email, displayName, locked }: FormValues) => {
+  const handleFinish = ({
+    password,
+    email,
+    displayName,
+    locked,
+  }: FormValues) => {
     if (email && !email.includes('@gmail.com')) {
       message.error('This is not a valid Google Email.', 5);
       return;
@@ -49,7 +55,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
 
     updateUser({
       variables: {
-        userId: userById?._id,
+        userId: userById?._id ?? userId,
         password,
         email,
         displayName,
@@ -67,14 +73,14 @@ const GeneralInfo = ({ userId, history }: Props) => {
   if (loading || !userById) return null;
 
   const karkunField = userById.personId ? (
-    <TextField
+    <InputTextField
       fieldName="karkunName"
       fieldLabel="Karkun Name"
       disabled
       initialValue={userById.karkun ? userById.karkun.name : ''}
     />
   ) : (
-    <KarkunSelectionField
+    <KarkunSelectionInputField
       fieldName="karkun"
       fieldLabel="Karkun Name"
       showMsKarkunsList
@@ -82,33 +88,37 @@ const GeneralInfo = ({ userId, history }: Props) => {
   );
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={handleFieldsChange}
+    >
+      <InputTextField
         fieldName="userName"
         fieldLabel="User name"
         disabled
         initialValue={userById.username}
       />
 
-      <SwitchInputField
+      <SwitchField
         fieldName="locked"
         fieldLabel="Locked"
-        initialValue={userById.locked}
+        initialValue={userById.locked ?? undefined}
       />
 
-      <TextField
+      <InputTextField
         fieldName="password"
         fieldLabel="Password"
         type="password"
       />
 
-      <TextField
+      <InputTextField
         fieldName="email"
         fieldLabel="Google Email"
         initialValue={userById.email}
       />
 
-      <TextField
+      <InputTextField
         fieldName="displayName"
         fieldLabel="Display Name"
         initialValue={userById.displayName}
@@ -116,20 +126,12 @@ const GeneralInfo = ({ userId, history }: Props) => {
 
       {karkunField}
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
-};
-
-GeneralInfo.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  userId: PropTypes.string,
 };
 
 export default GeneralInfo;

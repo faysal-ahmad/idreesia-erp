@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
   InputTextAreaField,
@@ -13,22 +13,26 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-import { CREATE_USER_GROUP } from './gql';
+import { CREATE_USER_GROUP, PAGED_USER_GROUPS } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SelectInputField = SelectField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; }
-interface FormValues { name: string; moduleName: string; description?: string; }
-interface ModuleNameOption { value: string; text: string; }
-interface Props { history: HistoryLike; }
+interface FormValues {
+  name: string;
+  moduleName: string;
+  description?: string;
+}
+
+interface ModuleNameOption {
+  value: string;
+  text: string;
+}
+
+type Props = RouteComponentProps;
 
 const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createUserGroup] = useMutation(CREATE_USER_GROUP as any, {
-    refetchQueries: ['pagedUserGroups'],
+  useBreadcrumbs(['Admin', 'User Groups', 'New']);
+  const [createUserGroup] = useMutation(CREATE_USER_GROUP, {
+    refetchQueries: [{ query: PAGED_USER_GROUPS }],
   });
 
   const handleCancel = () => {
@@ -62,15 +66,15 @@ const NewForm = ({ history }: Props) => {
   }));
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Group name"
         required
         requiredMessage="Please input a name for the group."
       />
 
-      <SelectInputField
+      <SelectField
         data={moduleNamesData}
         getDataValue={({ value }: ModuleNameOption) => value}
         getDataText={({ text }: ModuleNameOption) => text}
@@ -80,22 +84,14 @@ const NewForm = ({ history }: Props) => {
         requiredMessage="Please select a module for the group."
       />
 
-      <TextAreaField
-        fieldName="description"
-        fieldLabel="Description"
-      />
+      <InputTextAreaField fieldName="description" fieldLabel="Description" />
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Admin', 'User Groups', 'New'])(NewForm as any);
+export default NewForm;

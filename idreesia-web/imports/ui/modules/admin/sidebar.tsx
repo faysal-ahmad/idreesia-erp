@@ -1,15 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { type History } from 'history';
 
-import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
+import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
-
-const AntMenu = Menu as any;
-interface HistoryLike { push(path: string): void; }
-interface Props { history: HistoryLike; activeModuleName?: string; activeSubModuleName?: string; setActiveSubModuleName(name: string): void; }
-interface MenuSelectInfo { key: string; }
 
 const menuItems = [
   {
@@ -32,17 +27,18 @@ const menuItems = [
   },
 ];
 
-class Sidebar extends Component<Props> {
-  static propTypes = {
-    history: PropTypes.object,
-    activeModuleName: PropTypes.string,
-    activeSubModuleName: PropTypes.string,
-    setActiveSubModuleName: PropTypes.func,
-  };
+interface SidebarProps {
+  history: History;
+}
 
-  handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
-    const { history, setActiveSubModuleName } = this.props;
+interface MenuSelectInfo {
+  key: string;
+}
 
+const Sidebar = ({ history }: SidebarProps) => {
+  const { setActiveSubModuleName } = useActiveModule();
+
+  const handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
     switch (key) {
       case 'users':
         setActiveSubModuleName(SubModuleNames.users);
@@ -69,17 +65,14 @@ class Sidebar extends Component<Props> {
     }
   };
 
-  render() {
-    return (
-      <AntMenu
-        mode="inline"
-        style={{ height: '100%', borderRight: 0 }}
-        onClick={this.handleMenuItemSelected}
-        items={menuItems}
-      />
-    );
-  }
-}
+  return (
+    <Menu
+      mode="inline"
+      style={{ height: '100%', borderRight: 0 }}
+      onClick={handleMenuItemSelected}
+      items={menuItems}
+    />
+  );
+};
 
-const SidebarContainer = WithActiveModule()(Sidebar as any);
-export default SidebarContainer;
+export default Sidebar;

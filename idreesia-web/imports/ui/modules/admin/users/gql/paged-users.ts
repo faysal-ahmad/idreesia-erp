@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  PagedUsersQuery,
+  PagedUsersQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const PAGED_USERS = gql`
+const PAGED_USERS: TypedDocumentNode<
+  PagedUsersQuery,
+  PagedUsersQueryVariables
+> = gql`
   query pagedUsers($filter: UserFilter) {
     pagedUsers(filter: $filter) {
       totalResults

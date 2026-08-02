@@ -12,7 +12,7 @@ import type {
   MehfilKarkunsByMehfilIdQuery,
 } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName, PeopleSelectionButton } from '/imports/ui/modules/helpers/controls';
-import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/composers';
+import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/hooks';
 
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
 

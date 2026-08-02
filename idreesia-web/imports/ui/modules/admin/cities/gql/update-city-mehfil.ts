@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateCityMehfilMutation,
+  UpdateCityMehfilMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const UPDATE_CITY_MEHFIL = gql`
+const UPDATE_CITY_MEHFIL: TypedDocumentNode<
+  UpdateCityMehfilMutation,
+  UpdateCityMehfilMutationVariables
+> = gql`
   mutation updateCityMehfil(
     $_id: String!
     $name: String!

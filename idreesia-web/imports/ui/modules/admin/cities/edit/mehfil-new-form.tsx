@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Form } from 'antd';
 
+import type { CreateCityMehfilMutationVariables } from 'meteor/idreesia-common/types/client-operations';
 import {
   InputTextField,
   InputTextAreaField,
@@ -9,31 +9,23 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SwitchInputField = SwitchField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface MehfilValues { name?: string; address?: string; mehfilStartYear?: string; timingDetails?: string; lcdAvailability?: boolean; tabAvailability?: boolean; otherMehfilDetails?: string; }
-interface CityMehfil extends MehfilValues { _id: string; cityId?: string; }
-interface Props { cityMehfil?: CityMehfil | null; handleSave?(values: Record<string, unknown>): void; handleCancel?(): void; }
-interface State { isFieldsTouched: boolean; }
+import type { MehfilFormValues } from './mehfil-edit-form';
 
-class NewForm extends Component<Props, State> {
-  static propTypes = {
-    handleSave: PropTypes.func,
-    handleCancel: PropTypes.func,
+interface Props {
+  handleSave?(
+    values: Omit<CreateCityMehfilMutationVariables, 'cityId'>
+  ): void;
+  handleCancel?(): void;
+}
+
+const NewForm = ({ handleSave, handleCancel }: Props) => {
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+
+  const handleFieldsChange = () => {
+    setIsFieldsTouched(true);
   };
 
-  state: State = {
-    isFieldsTouched: false,
-  };
-
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  };
-
-  handleFinish = ({
+  const handleFinish = ({
     name,
     address,
     mehfilStartYear,
@@ -41,10 +33,9 @@ class NewForm extends Component<Props, State> {
     lcdAvailability,
     tabAvailability,
     otherMehfilDetails,
-  }: MehfilValues) => {
-    const { handleSave } = this.props;
+  }: MehfilFormValues) => {
     handleSave?.({
-      name,
+      name: name!,
       address,
       mehfilStartYear,
       timingDetails,
@@ -54,48 +45,44 @@ class NewForm extends Component<Props, State> {
     });
   };
 
-  render() {
-    const isFieldsTouched = this.state.isFieldsTouched;
-
-    return (
-      <AntForm layout="horizontal" onFinish={this.handleFinish} onFieldsChange={this.handleFieldsChange}>
-        <TextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input a name for the mehfil."
-        />
-        <TextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-        />
-        <TextField
-          fieldName="mehfilStartYear"
-          fieldLabel="Start Year"
-        />
-        <TextAreaField
-          fieldName="timingDetails"
-          fieldLabel="Timings"
-        />
-        <SwitchInputField
-          fieldName="lcdAvailability"
-          fieldLabel="LCD Available"
-        />
-        <SwitchInputField
-          fieldName="tabAvailability"
-          fieldLabel="Tablet Available"
-        />
-        <TextAreaField
-          fieldName="otherMehfilDetails"
-          fieldLabel="Other Details"
-        />
-        <SaveCancelButtons
-          handleCancel={this.props.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </AntForm>
-    );
-  }
-}
+  return (
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        required
+        requiredMessage="Please input a name for the mehfil."
+      />
+      <InputTextAreaField
+        fieldName="address"
+        fieldLabel="Address"
+      />
+      <InputTextField
+        fieldName="mehfilStartYear"
+        fieldLabel="Start Year"
+      />
+      <InputTextAreaField
+        fieldName="timingDetails"
+        fieldLabel="Timings"
+      />
+      <SwitchField
+        fieldName="lcdAvailability"
+        fieldLabel="LCD Available"
+      />
+      <SwitchField
+        fieldName="tabAvailability"
+        fieldLabel="Tablet Available"
+      />
+      <InputTextAreaField
+        fieldName="otherMehfilDetails"
+        fieldLabel="Other Details"
+      />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
 
 export default NewForm;

@@ -1,4 +1,3 @@
-import React, { ComponentType } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
@@ -29,15 +28,3 @@ export const useAllDutyLocations = () => {
     allDutyLocations: data?.allDutyLocations ?? null,
   };
 };
-
-type InjectedProps = ReturnType<typeof useAllDutyLocations>;
-
-export default <P extends object>() =>
-  (WrappedComponent: ComponentType<P & InjectedProps>) => {
-    const WithAllDutyLocations = (props: P) => {
-      const allDutyLocationsProps = useAllDutyLocations();
-      return <WrappedComponent {...props} {...allDutyLocationsProps} />;
-    };
-
-    return WithAllDutyLocations;
-  };

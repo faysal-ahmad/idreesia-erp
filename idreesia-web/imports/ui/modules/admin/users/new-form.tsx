@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
+import type { FormInstance } from 'antd';
 import { Form, message } from 'antd';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
   KarkunSelectionInputField,
@@ -12,20 +13,26 @@ import {
 
 import { CREATE_USER, PAGED_USERS } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const KarkunSelectionField = KarkunSelectionInputField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; }
-interface KarkunValue { _id?: string; }
-interface FormValues { karkun?: KarkunValue | null; userName?: string; password?: string; email?: string; displayName?: string; }
-interface Props { history: HistoryLike; }
+interface KarkunValue {
+  _id?: string;
+}
+
+interface FormValues {
+  karkun?: KarkunValue | null;
+  userName?: string;
+  password?: string;
+  email?: string;
+  displayName?: string;
+}
+
+type Props = RouteComponentProps;
 
 const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const formRef = useRef<any>(null);
-  const [createUser] = useMutation(CREATE_USER as any, {
-    refetchQueries: [{ query: PAGED_USERS as any, variables: { filter: {} } }],
+  const formRef = useRef<FormInstance>(null);
+  useBreadcrumbs(['Admin', 'Users', 'New']);
+  const [createUser] = useMutation(CREATE_USER, {
+    refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
   });
 
   const handleCancel = () => {
@@ -36,7 +43,13 @@ const NewForm = ({ history }: Props) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ karkun, userName, password, email, displayName }: FormValues) => {
+  const handleFinish = ({
+    karkun,
+    userName,
+    password,
+    email,
+    displayName,
+  }: FormValues) => {
     if ((userName && password) || (email && email.includes('@gmail.com'))) {
       createUser({
         variables: {
@@ -57,60 +70,57 @@ const NewForm = ({ history }: Props) => {
       formRef.current?.setFields([
         {
           name: 'userName',
-          errors: ['Either user name and password, or google email is required to create an account.'],
+          errors: [
+            'Either user name and password, or google email is required to create an account.',
+          ],
         },
         {
           name: 'password',
-          errors: ['Either user name and password, or google email is required to create an account.'],
+          errors: [
+            'Either user name and password, or google email is required to create an account.',
+          ],
         },
         {
           name: 'email',
-          errors: ['Either user name and password, or google email is required to create an account.'],
+          errors: [
+            'Either user name and password, or google email is required to create an account.',
+          ],
         },
       ]);
     }
   };
 
   return (
-    <AntForm ref={formRef} layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
-        fieldName="userName"
-        fieldLabel="User name"
-      />
+    <Form
+      ref={formRef}
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={handleFieldsChange}
+    >
+      <InputTextField fieldName="userName" fieldLabel="User name" />
 
-      <TextField
+      <InputTextField
         fieldName="password"
         fieldLabel="Password"
         type="password"
       />
 
-      <TextField
-        fieldName="email"
-        fieldLabel="Google Email"
-      />
+      <InputTextField fieldName="email" fieldLabel="Google Email" />
 
-      <TextField
-        fieldName="displayName"
-        fieldLabel="Display name"
-      />
+      <InputTextField fieldName="displayName" fieldLabel="Display name" />
 
-      <KarkunSelectionField
+      <KarkunSelectionInputField
         fieldName="karkun"
         fieldLabel="Karkun Name"
         showMsKarkunsList
       />
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Admin', 'Users', 'New'])(NewForm as any);
+export default NewForm;

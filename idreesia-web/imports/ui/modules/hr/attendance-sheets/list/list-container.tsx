@@ -28,7 +28,7 @@ import {
   useAllJobs,
   useAllMSDuties,
   useAllDutyShifts,
-} from '/imports/ui/modules/hr/common/composers';
+} from '/imports/ui/modules/hr/common/hooks';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List, {

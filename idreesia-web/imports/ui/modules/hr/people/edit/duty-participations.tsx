@@ -17,7 +17,7 @@ import {
   useAllMSDuties,
   useAllDutyShifts,
   useAllDutyLocations,
-} from '/imports/ui/modules/hr/common/composers';
+} from '/imports/ui/modules/hr/common/hooks';
 import type { KarkunDutiesByKarkunIdQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import DutyForm from './duty-form';

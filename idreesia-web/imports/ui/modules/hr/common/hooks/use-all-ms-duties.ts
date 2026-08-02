@@ -1,4 +1,3 @@
-import React, { ComponentType } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
@@ -29,15 +28,3 @@ export const useAllMSDuties = () => {
     allMSDuties: data?.allMSDuties ?? null,
   };
 };
-
-type InjectedProps = ReturnType<typeof useAllMSDuties>;
-
-export default <P extends object>() =>
-  (WrappedComponent: ComponentType<P & InjectedProps>) => {
-    const WithAllMSDuties = (props: P) => {
-      const allMSDutiesProps = useAllMSDuties();
-      return <WrappedComponent {...props} {...allMSDutiesProps} />;
-    };
-
-    return WithAllMSDuties;
-  };

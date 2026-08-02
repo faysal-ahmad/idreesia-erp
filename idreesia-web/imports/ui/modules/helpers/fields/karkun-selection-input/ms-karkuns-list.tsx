@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import { useAllMSDuties } from 'meteor/idreesia-common/hooks/hr';
+import { useAllMSDuties } from '/imports/ui/modules/hr/common/hooks';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 
 import { PAGED_HR_KARKUNS } from './gql';

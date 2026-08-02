@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
@@ -10,19 +9,34 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const AutoCompleteInputField = AutoCompleteField as any;
-const SelectInputField = SelectField as any;
-const RefreshControl = RefreshButton as any;
-interface City { _id: string; name?: string; peripheryOf?: string | null; }
-interface Props { allCities?: City[]; distinctRegions?: string[]; peripheryOf?: string | null; region?: string | null; setPageParams(params: Record<string, unknown>): void; refreshData?: () => Promise<unknown>; }
-interface FormValues { peripheryOf?: string | null; region?: string | null; }
+interface City {
+  _id: string;
+  name?: string | null;
+  peripheryOf?: string | null;
+}
 
-const ContainerStyle = {
+export interface CityListPageParams {
+  pageIndex?: number;
+  pageSize?: number;
+  peripheryOf?: string | null;
+  region?: string | null;
+}
+
+interface FormValues {
+  peripheryOf?: string | null;
+  region?: string | null;
+}
+
+interface Props {
+  allCities?: City[];
+  distinctRegions?: string[];
+  peripheryOf?: string | null;
+  region?: string | null;
+  setPageParams(params: CityListPageParams): void;
+  refreshData?: () => Promise<unknown>;
+}
+
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -36,8 +50,8 @@ const buttonItemLayout = {
 };
 
 const ListFilter = (props: Props) => {
-  const [form] = AntForm.useForm();
-  const { refreshData } = props;
+  const [form] = Form.useForm();
+  const { refreshData, region, allCities, distinctRegions } = props;
 
   const handleReset = () => {
     const { setPageParams } = props;
@@ -49,45 +63,39 @@ const ListFilter = (props: Props) => {
     });
   };
 
-  const handleFinish = ({ peripheryOf, region }: FormValues) => {
+  const handleFinish = ({ peripheryOf, region: regionValue }: FormValues) => {
     const { setPageParams } = props;
     setPageParams({
       pageIndex: 0,
       peripheryOf,
-      region,
+      region: regionValue,
     });
   };
 
-  const refreshButton = () => <RefreshControl refreshData={refreshData} />;
-
-  const {
-    region,
-    allCities,
-    distinctRegions,
-  } = props;
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const nonPeripheryCities = filter(allCities ?? [], (city: City) => !city.peripheryOf);
 
   return (
-    <AntCollapse
-      style={ContainerStyle as any}
+    <Collapse
+      style={ContainerStyle}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <AntForm form={form} layout="horizontal" onFinish={handleFinish}>
-              <SelectInputField
+            <Form form={form} layout="horizontal" onFinish={handleFinish}>
+              <SelectField
                 fieldName="peripheryOf"
                 fieldLabel="Periphery Of"
                 required={false}
                 data={nonPeripheryCities}
                 getDataValue={({ _id }: City) => _id}
-                getDataText={({ name: _name }: City) => _name}
+                getDataText={({ name: cityName }: City) => cityName}
                 fieldLayout={formItemLayout}
               />
-              <AutoCompleteInputField
+              <AutoCompleteField
                 fieldName="region"
                 fieldLabel="Region"
                 fieldLayout={formItemLayout}
@@ -95,32 +103,23 @@ const ListFilter = (props: Props) => {
                 initialValue={region}
                 required={false}
               />
-              <AntFormItem {...buttonItemLayout}>
-                <AntRow type="flex" justify="end">
-                  <AntButton type="default" onClick={handleReset}>
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
                     Reset
-                  </AntButton>
+                  </Button>
                   &nbsp;
-                  <AntButton type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit">
                     Search
-                  </AntButton>
-                </AntRow>
-              </AntFormItem>
-            </AntForm>
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
           ),
         },
       ]}
     />
   );
-};
-
-ListFilter.propTypes = {
-  allCities: PropTypes.array,
-  distinctRegions: PropTypes.array,
-  peripheryOf: PropTypes.string,
-  region: PropTypes.string,
-  setPageParams: PropTypes.func,
-  refreshData: PropTypes.func,
 };
 
 export default ListFilter;

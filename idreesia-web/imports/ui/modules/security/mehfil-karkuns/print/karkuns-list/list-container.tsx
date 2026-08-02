@@ -11,7 +11,7 @@ import {
   useQueryParams,
 } from 'meteor/idreesia-common/hooks/common';
 import type { MehfilKarkunsByIdsQuery } from 'meteor/idreesia-common/types/client-operations';
-import { useMehfil } from '/imports/ui/modules/security/common/composers';
+import { useMehfil } from '/imports/ui/modules/security/common/hooks';
 
 import { List } from './list';
 import { MEHFIL_KARKUNS_BY_IDS } from '../../gql';

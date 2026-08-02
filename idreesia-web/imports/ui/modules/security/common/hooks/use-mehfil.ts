@@ -1,4 +1,3 @@
-import React, { ComponentType } from 'react';
 import { useQuery } from '@apollo/client/react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
@@ -24,11 +23,6 @@ const mehfilByIdQuery: TypedDocumentNode<
   }
 `;
 
-type InjectedProps = {
-  mehfilLoading: boolean;
-  mehfilById?: MehfilByIdQuery['mehfilById'];
-};
-
 export const useMehfil = (mehfilId?: string) => {
   const { loading, data, refetch } = useQuery(mehfilByIdQuery, {
     variables: { _id: mehfilId ?? '' },
@@ -42,22 +36,3 @@ export const useMehfil = (mehfilId?: string) => {
     refetchMehfil: refetch,
   };
 };
-
-export default <P extends { mehfilId?: string }>() =>
-  (WrappedComponent: ComponentType<P & InjectedProps>) => {
-    const WithMehfil = (props: P) => {
-      const { mehfilId, ...rest } = props;
-      const mehfilProps = useMehfil(mehfilId);
-
-      return (
-        <WrappedComponent
-          {...(rest as P)}
-          mehfilId={mehfilId}
-          mehfilLoading={mehfilProps.mehfilLoading}
-          mehfilById={mehfilProps.mehfilById}
-        />
-      );
-    };
-
-    return WithMehfil;
-  };

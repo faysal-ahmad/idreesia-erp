@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateUserMutation,
+  UpdateUserMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const UPDATE_USER = gql`
+const UPDATE_USER: TypedDocumentNode<
+  UpdateUserMutation,
+  UpdateUserMutationVariables
+> = gql`
   mutation updateUser(
     $userId: String!
     $password: String

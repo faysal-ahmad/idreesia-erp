@@ -136,7 +136,7 @@ Then every consumer just does `useQuery(HR_KARKUN_BY_ID, { variables: { _id } })
 
 **Where this hits hard:** typing the query for real makes its `QueryVariables` strict (e.g. `_id: string`, not `string | undefined`). Any consumer that was passing a possibly-`undefined`/`null` value straight through (because the untyped query never checked) becomes a genuine compile error — this is a feature, not a regression: it caught a real bug in `wazaif-and-raabta.tsx`, which was passing an optional `karkunId` straight into `_id` (see pattern #10 — the actual fix there was to make `karkunId` correctly required, not to paper over it with `?? ''`).
 
-**Status:** done for **all** of `ui/modules/{hr,inventory,security}/**/gql/` (plus extracted visitor-stays/setup gql folders, inventory common hooks, security mehfil composers/hooks), HR common lookup hooks, and inline gql cleaned under those modules. Still needed outside cleaned modules — apply the same `TypedDocumentNode` + `meteor/idreesia-common/types/client-operations` pattern when touching the next module (see also pattern #13).
+**Status:** done for **all** of `ui/modules/{hr,inventory,security,admin}/**/gql/` (plus extracted visitor-stays/setup/physical-stores/user-groups gql folders and related common hooks), HR/security/admin lookup hooks, and inline gql cleaned under those modules. Still needed outside cleaned modules — apply the same `TypedDocumentNode` + `meteor/idreesia-common/types/client-operations` pattern when touching the next module (see also pattern #13).
 
 ### 10. Keep prop optionality honest — don't default a required value to `null`/`""` to dodge a type error
 
@@ -183,7 +183,7 @@ Plain style consts (`const ContainerStyle = { width: '500px' }`) often needed `s
 
 **Do not** reintroduce `AnyRecord` to silence a type error — fix the upstream type (pattern #9 / #10) or add a narrow cast at the true mismatch.
 
-**Status:** done for entire `ui/modules/{hr,inventory,security}` and all of `ui/modules/common`. Apply when sweeping the next top-level module (`admin`, …).
+**Status:** done for entire `ui/modules/{hr,inventory,security,admin}` and all of `ui/modules/common`. Apply when sweeping the next top-level module.
 
 ## Work log
 
@@ -260,7 +260,7 @@ Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/hr/` (n
 - [x] `hr/karkuns/**` beyond edit — list/new/field/scan-card/print cleaned
 - [x] `hr/salary-sheets/**`, `hr/attendance-sheets/**` (list + print), `hr/ms-duties/**`, `hr/jobs/**`, `hr/duty-locations/**`, `hr/audit-logs/**`
 - [x] `sidebar.tsx` → functional + `useActiveModule`; `router.tsx` keeps narrow `Switch`/`Route` `as any` aliases (react-router-dom JSX boundary)
-- [x] `hr/common/composers` HOC wrappers cleaned (hooks already TypedDocumentNode); PropTypes/`as any` removed
+- [x] `hr/common/hooks` — lookup hooks (`useAllJobs`, `useAllMSDuties`, `useAllDutyShifts`, `useAllDutyLocations`) extracted from former `hr/common/composers` (HOCs removed; all call sites import from hooks)
 - [x] Zero `PropTypes`, `AnyRecord`, `Record<string, any>`, or `flowRight` + breadcrumb/query-params composers left under `modules/hr/`
 
 **Legitimate remaining `as any` / loose typing under `hr/`:** `Link as RouterLink`, `ReactToPrint` / `Barcode` third-party, antd `columns as any`, attachment control vs nullable GraphQL lists, `useRef<any>` for print refs, `router` Switch/Route.
@@ -275,7 +275,7 @@ Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/invento
 - [x] Inventory common hooks (`usePhysicalStore`, `usePhysicalStoreItemCategories`, `usePhysicalStoreLocations`, `usePhysicalStoreVendors`) typed as TypedDocumentNode
 - [x] Created `useDynamicBreadcrumbs` and migrated all store-scoped screens off `WithDynamicBreadcrumbs`
 - [x] stock-items, issuance-forms, purchase-forms, stock-adjustments, vendors, locations, item-categories, status-dashboard, issuance-report, purchasing-report, sidebar, common items-list/controls
-- [x] Composer HOCs under `inventory/common/composers` thinned to typed wrappers (call sites prefer hooks); PropTypes/`as any` removed
+- [x] `inventory/common/hooks` — lookup hooks (`usePhysicalStore`, `usePhysicalStoreItemCategories`, `usePhysicalStoreLocations`, `usePhysicalStoreVendors`); former `inventory/common/composers` HOC wrappers + `apollo-hooks` removed (all call sites already used hooks)
 - [x] Zero `PropTypes`, `AnyRecord`, `flowRight` consumer usage left under `modules/inventory/`
 
 **Legitimate remaining `as any` / loose typing:** `Link as RouterLink`, `router` Switch/Route, antd `columns: any[]`.
@@ -288,26 +288,39 @@ Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/securit
 
 - [x] All existing `*/gql/*.ts` docs typed as `TypedDocumentNode`; new gql folders extracted for `visitor-stays/` and `setup/{mehfil-duties,mehfil-langar-dishes,mehfil-langar-locations}/`
 - [x] visitor-registeration, visitor-stays, visitor-stay-report, mehfils, mehfil-karkuns (+ print), mehfil-card-verification, karkun-verification, security-users, setup/*, audit-logs, sidebar, common composers/controls
-- [x] Security composers thinned; call sites use `useMehfil` / `useAllSecurityMehfilDuties` / `useParams` + `useBreadcrumbs` / `useQueryParams` / `useDynamicBreadcrumbs`
+- [x] `security/common/hooks` — `useMehfil`, `useMehfilIdParam`, `useAllSecurityMehfilDuties` (+ `SecurityMehfilDuty`), `useMehfilDuty`; former `security/common/composers` HOCs removed
 - [x] Zero `PropTypes`, `AnyRecord`, `flowRight`, or breadcrumb/query-params composers left under `modules/security/`
 
 **Legitimate remaining `as any` / loose typing:** `Link as RouterLink`, `Barcode`, `router` Switch/Route, antd `columns` looseness, occasional ReactToPrint refs.
 
 **Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — **zero errors** project-wide (including all of `modules/security/`).
 
+### `ui/modules/admin` (entire module — done)
+
+Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/admin/`.
+
+- [x] All existing `*/gql/*.ts` docs typed as `TypedDocumentNode`; new gql folders for `physical-stores/` and remaining `user-groups/` ops; `distinctRegions` typed in cities list
+- [x] Created `useAllPhysicalStores` (`idreesia-common/hooks/admin`) replacing `WithAllPhysicalStores` at call sites
+- [x] cities, physical-stores, users, user-groups, sidebar cleaned (composers → `useBreadcrumbs` / `useQueryParams` / `useAllCities` / `useAllPhysicalStores` / `useActiveModule`)
+- [x] Zero `PropTypes`, `AnyRecord`, `flowRight`, or breadcrumb/query-params composers left under `modules/admin/`
+
+**Legitimate remaining `as any` / loose typing:** `Link as RouterLink`, `router` Switch/Route, antd `columns` looseness.
+
+**Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — **zero errors** project-wide (including all of `modules/admin/`).
+
 ### Other use-cases (not started)
 
 Apply the same treatment (patterns #1–#13) when we get to these:
 
-- `admin/cities/edit`, `admin/user-groups/edit`, `admin/users/edit` (and rest of `modules/admin`)
-- Any other remaining top-level UI modules (accounts, communication, imdad, outstation, portals, …) still using `flowRight` + composers, `PropTypes`, or `as any` gql casts
+- Remaining top-level UI modules (accounts, communication, imdad, outstation, portals, …) still using `flowRight` + composers, `PropTypes`, or `as any` gql casts
 
-**RESUME POINT:** `ui/modules/{common,hr,inventory,security}` done. Next: `ui/modules/admin` (or another remaining module).
+**RESUME POINT:** `ui/modules/{common,hr,inventory,security,admin}` done. Next: another remaining top-level module (accounts / communication / imdad / outstation / portals / …).
 
 ### Codebase-wide follow-ups
 
 - [ ] Sweep for other `X as any` casts on `useQuery`/`useMutation` document arguments outside cleaned modules now that the `graphql` dedupe fix applies repo-wide
 - [x] Create a `useDynamicBreadcrumbs` hook (mirroring `useBreadcrumbs`) — done; reused in inventory + security
+- [x] Create `useAllPhysicalStores` hook — done for admin; composer HOC may still exist unused
 
 ## How to verify a fix
 

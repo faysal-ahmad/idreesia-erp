@@ -18,7 +18,7 @@ import {
   useMehfil,
   useAllSecurityMehfilDuties,
   type SecurityMehfilDuty,
-} from '/imports/ui/modules/security/common/composers';
+} from '/imports/ui/modules/security/common/hooks';
 
 import List, { type PageParams } from './list';
 import EditForm from './edit-form';

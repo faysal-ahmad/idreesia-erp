@@ -1,43 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client/react';
+import { type History } from 'history';
 import { Button, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
+import type { AdminAllPhysicalStoresQuery } from 'meteor/idreesia-common/types/client-operations';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-const listQuery = gql`
-  query adminAllPhysicalStores {
-    allPhysicalStores {
-      _id
-      name
-      address
-    }
-  }
-`;
-
 const RouterLink = Link as any;
-const AntButton = Button as any;
-const AntTable = Table as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-interface HistoryLike { push(path: string): void; }
-interface PhysicalStore { _id: string; name?: string; address?: string; }
-interface QueryData { allPhysicalStores?: PhysicalStore[] | null; }
-interface Props { history: HistoryLike; }
+
+type PhysicalStoreRow = NonNullable<
+  NonNullable<AdminAllPhysicalStoresQuery['allPhysicalStores']>[number]
+> & { _id: string };
+
+interface Props {
+  history: History;
+}
 
 const List = ({ history }: Props) => {
-  const { data } = useQuery(listQuery as any);
-  const { allPhysicalStores } = (data ?? {}) as QueryData;
+  useBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List']);
+  const { allPhysicalStores } = useAllPhysicalStores();
+
+  const physicalStores: PhysicalStoreRow[] = (allPhysicalStores ?? []).filter(
+    (store): store is PhysicalStoreRow => store != null && store._id != null
+  );
 
   const columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: PhysicalStore) => (
+      render: (text: string, record: PhysicalStoreRow) => (
         <RouterLink to={`${paths.physicalStoresPath}/${record._id}`}>{text}</RouterLink>
       ),
     },
@@ -53,27 +48,22 @@ const List = ({ history }: Props) => {
   };
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
-      dataSource={allPhysicalStores ?? []}
+      dataSource={physicalStores}
       columns={columns as any}
       bordered
       title={() => (
-        <AntButton
+        <Button
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Physical Store
-        </AntButton>
+        </Button>
       )}
     />
   );
 };
 
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List'])(List as any);
+export default List;

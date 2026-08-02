@@ -1,4 +1,3 @@
-import React, { ComponentType } from 'react';
 import { useQuery } from '@apollo/client/react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
@@ -24,12 +23,6 @@ const securityMehfilDutyByIdQuery: TypedDocumentNode<
   }
 `;
 
-type InjectedProps = {
-  securityMehfilDutyByIdLoading: boolean;
-  securityMehfilDutyById?: ComposerSecurityMehfilDutyByIdQuery['securityMehfilDutyById'];
-  mehfilDutyById?: ComposerSecurityMehfilDutyByIdQuery['securityMehfilDutyById'];
-};
-
 export const useMehfilDuty = (mehfilDutyId?: string) => {
   const { loading, data, refetch } = useQuery(securityMehfilDutyByIdQuery, {
     variables: { id: mehfilDutyId ?? '' },
@@ -44,23 +37,3 @@ export const useMehfilDuty = (mehfilDutyId?: string) => {
     refetchMehfilDuty: refetch,
   };
 };
-
-export default <P extends { mehfilDutyId?: string }>() =>
-  (WrappedComponent: ComponentType<P & InjectedProps>) => {
-    const WithMehfilDuty = (props: P) => {
-      const { mehfilDutyId, ...rest } = props;
-      const mehfilDutyProps = useMehfilDuty(mehfilDutyId);
-
-      return (
-        <WrappedComponent
-          {...(rest as P)}
-          mehfilDutyId={mehfilDutyId}
-          mehfilDutyById={mehfilDutyProps.mehfilDutyById}
-          securityMehfilDutyById={mehfilDutyProps.securityMehfilDutyById}
-          securityMehfilDutyByIdLoading={mehfilDutyProps.securityMehfilDutyByIdLoading}
-        />
-      );
-    };
-
-    return WithMehfilDuty;
-  };

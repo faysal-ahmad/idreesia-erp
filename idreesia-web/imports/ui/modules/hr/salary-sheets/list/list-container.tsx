@@ -16,7 +16,7 @@ import type {
   UpdateSalaryMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import { Modal, message } from 'antd';
-import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
+import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List, { type SalaryListRow } from './list';

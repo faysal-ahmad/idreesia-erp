@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { type RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client/react';
-import { LockOutlined } from '@ant-design/icons';
+import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Button, Flex, Pagination, Table } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { noop, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
+import {
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type { PagedUsersQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
@@ -20,30 +21,24 @@ import ListFilter from './list-filter';
 import { PAGED_USERS } from '../gql';
 
 const RouterLink = Link as any;
-const AntLockOutlined = LockOutlined as any;
-const AntButton = Button as any;
-const AntFlex = Flex as any;
-const AntPagination = Pagination as any;
-const AntTable = Table as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const KarkunNameControl = KarkunName as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; search: string; }
-interface PagedUsers { totalResults: number; data: AnyRecord[]; }
-interface QueryData { pagedUsers?: PagedUsers | null; }
-interface Props { history: HistoryLike; location: LocationLike; }
+
+type UserRow = NonNullable<
+  NonNullable<NonNullable<PagedUsersQuery['pagedUsers']>['data']>[number]
+>;
+
+type Props = RouteComponentProps;
 
 const columns: any[] = [
   {
     key: 'locked',
-    render: (_text: unknown, record: AnyRecord) => (record.locked ? <AntLockOutlined /> : null),
+    render: (_text: unknown, record: UserRow) =>
+      record.locked ? <LockOutlined /> : null,
   },
   {
     title: 'Email / User Name / Display Name',
     key: 'username',
-    render: (_text: unknown, record: AnyRecord) => (
-      <AntFlex vertical>
+    render: (_text: unknown, record: UserRow) => (
+      <Flex vertical>
         <RouterLink to={`${paths.usersPath}/${record._id}`}>
           <span>{record.email}</span>
         </RouterLink>
@@ -51,7 +46,7 @@ const columns: any[] = [
           <span>{record.username}</span>
         </RouterLink>
         <span>{record.displayName}</span>
-      </AntFlex>
+      </Flex>
     ),
   },
   {
@@ -66,9 +61,9 @@ const columns: any[] = [
   {
     title: 'Karkun Name',
     key: 'karkun.name',
-    render: (_text: unknown, record: AnyRecord) =>
+    render: (_text: unknown, record: UserRow) =>
       record.karkun ? (
-        <KarkunNameControl karkun={record.karkun} onKarkunNameClicked={noop} />
+        <KarkunName karkun={record.karkun} onKarkunNameClicked={noop} />
       ) : (
         ''
       ),
@@ -76,7 +71,6 @@ const columns: any[] = [
 ];
 
 const List = ({ history, location }: Props) => {
-  const dispatch = useDispatch<any>();
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -97,18 +91,19 @@ const List = ({ history, location }: Props) => {
     },
   });
 
-  useEffect(() => {
-    dispatch(setBreadcrumbs(['Admin', 'Users', 'List']));
-  }, [location]);
+  useBreadcrumbs(['Admin', 'Users', 'List']);
 
-  const { data, loading, refetch } = useQuery(PAGED_USERS as any, {
+  const { data, loading, refetch } = useQuery(PAGED_USERS, {
     variables: {
       filter: queryParams,
     },
   });
 
   if (loading) return null;
-  const { pagedUsers } = (data ?? {}) as QueryData;
+  const pagedUsers = data?.pagedUsers;
+  const users = (pagedUsers?.data ?? []).filter(
+    (row): row is UserRow => row != null
+  );
 
   const onPaginationChange = (index: number, size?: number) => {
     setPageParams({
@@ -130,20 +125,21 @@ const List = ({ history, location }: Props) => {
     pageIndex,
     pageSize,
   } = queryParams;
-  const asString = (value: unknown, fallback = '') => (typeof value === 'string' ? value : fallback);
+  const asString = (value: unknown, fallback = '') =>
+    typeof value === 'string' ? value : fallback;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <AntButton
+      <Button
         size="large"
         type="primary"
-        icon={<AntPlusCircleOutlined />}
+        icon={<PlusCircleOutlined />}
         onClick={handleNewClicked}
       >
         New User
-      </AntButton>
+      </Button>
       <ListFilter
         showLocked={asString(showLocked)}
         showUnlocked={asString(showUnlocked)}
@@ -157,16 +153,16 @@ const List = ({ history, location }: Props) => {
   );
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
-      dataSource={pagedUsers?.data ?? []}
+      dataSource={users}
       columns={columns as any}
       bordered
       pagination={false}
       size="small"
       title={getTableHeader}
       footer={() => (
-        <AntPagination
+        <Pagination
           current={numPageIndex + 1}
           pageSize={numPageSize}
           showSizeChanger
@@ -180,11 +176,6 @@ const List = ({ history, location }: Props) => {
       )}
     />
   );
-};
-
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default List;

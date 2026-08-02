@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
@@ -8,27 +8,23 @@ import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
 
 import { USER_BY_ID, SET_PERMISSIONS } from '../gql';
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntRow = Row as any;
-const AntCloseCircleOutlined = CloseCircleOutlined as any;
-const AntSaveOutlined = SaveOutlined as any;
-const PermissionSelectionControl = PermissionSelection as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface QueryData { userById?: AnyRecord | null; }
-interface Props extends Record<string, any> { userId?: string | null; history: HistoryLike; allPhysicalStoresLoading?: boolean; allPhysicalStores?: AnyRecord[]; }
+interface Props {
+  userId: string;
+  history: History;
+}
 
 const Permissions = ({ userId, history }: Props) => {
   const [permissionsChanged, setPermissionsChanged] = useState(false);
-  const [selectedPermissions, setSelectedPermissions] = useState<string[] | null>(null);
-  const { data, loading } = useQuery(USER_BY_ID as any, {
+  const [selectedPermissions, setSelectedPermissions] = useState<string[] | null>(
+    null
+  );
+  const { data, loading } = useQuery(USER_BY_ID, {
     variables: { _id: userId },
   });
-  const [setPermissions] = useMutation(SET_PERMISSIONS as any, {
+  const [setPermissions] = useMutation(SET_PERMISSIONS, {
     refetchQueries: ['pagedUsers'],
   });
-  const { userById } = (data ?? {}) as QueryData;
+  const userById = data?.userById;
 
   const handlePermissionSelectionChange = (updatedPermissions: string[]) => {
     setPermissionsChanged(true);
@@ -43,7 +39,7 @@ const Permissions = ({ userId, history }: Props) => {
     e.preventDefault();
     setPermissions({
       variables: {
-        userId: userById?._id,
+        userId: userById?._id ?? userId,
         permissions: selectedPermissions ?? [],
       },
     })
@@ -57,44 +53,44 @@ const Permissions = ({ userId, history }: Props) => {
 
   if (loading) return null;
 
+  const securityEntity = userById
+    ? {
+        permissions: (userById.permissions ?? []).filter(
+          (permission): permission is string => permission != null
+        ),
+      }
+    : null;
+
   return (
-    <ReactFragment>
-      <PermissionSelectionControl
-        securityEntity={userById}
+    <Fragment>
+      <PermissionSelection
+        securityEntity={securityEntity}
         onChange={handlePermissionSelectionChange}
       />
       <br />
       <br />
-      <AntRow type="flex" justify="start">
-        <AntButton
+      <Row justify="start">
+        <Button
           size="large"
-          icon={<AntCloseCircleOutlined />}
+          icon={<CloseCircleOutlined />}
           type="default"
           onClick={handleCancel}
         >
           Cancel
-        </AntButton>
+        </Button>
         &nbsp;
-        <AntButton
+        <Button
           size="large"
-          icon={<AntSaveOutlined />}
+          icon={<SaveOutlined />}
           type="primary"
           disabled={!permissionsChanged}
           onClick={handleSave}
         >
           Save
-        </AntButton>
-      </AntRow>
-    </ReactFragment>
+        </Button>
+      </Row>
+    </Fragment>
   );
-};
-
-Permissions.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  userId: PropTypes.string,
 };
 
 export default Permissions;

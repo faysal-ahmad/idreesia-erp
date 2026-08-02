@@ -1,40 +1,61 @@
 import React, { Fragment, useRef } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
+import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
+
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntRow = Row as any;
-const AntCloseCircleOutlined = CloseCircleOutlined as any;
-const AntSaveOutlined = SaveOutlined as any;
-const InstanceSelectionControl = InstanceSelection as any;
-interface HistoryLike { goBack(): void; }
-interface UserGroup { _id: string; permissions?: string[]; instances?: string[]; }
-interface QueryData { userGroupById?: UserGroup | null; }
-interface PhysicalStoresData { allPhysicalStores?: unknown[] | null; }
-interface Props { groupId?: string | null; history: HistoryLike; }
+import {
+  USER_GROUP_INSTANCE_ACCESS_BY_ID,
+  SET_USER_GROUP_INSTANCE_ACCESS,
+} from '../gql';
+
+interface InstanceSelectionRef {
+  getSelectedInstances(): string[];
+}
+
+interface PhysicalStoreOption {
+  _id: string;
+  name: string;
+}
+
+interface Props {
+  groupId: string;
+  history: History;
+}
 
 const InstanceAccess = ({ groupId, history }: Props) => {
-  const instanceSelection = useRef<any>(null);
-  const { data: groupData, loading: groupLoading } = useQuery(formQuery as any, {
-    variables: { _id: groupId },
-  });
-  const { data: physicalStoresData, loading: physicalStoresListLoading } = useQuery(physicalStoresListQuery as any);
-  const [setUserGroupInstanceAccess] = useMutation(formMutation as any);
-  const { userGroupById } = (groupData ?? {}) as QueryData;
-  const { allPhysicalStores } = (physicalStoresData ?? {}) as PhysicalStoresData;
+  const instanceSelection = useRef<InstanceSelectionRef>(null);
+  const { allPhysicalStoresLoading, allPhysicalStores } = useAllPhysicalStores();
+  const { data: groupData, loading: groupLoading } = useQuery(
+    USER_GROUP_INSTANCE_ACCESS_BY_ID,
+    {
+      variables: { _id: groupId },
+    }
+  );
+  const [setUserGroupInstanceAccess] = useMutation(
+    SET_USER_GROUP_INSTANCE_ACCESS
+  );
+  const userGroupById = groupData?.userGroupById;
+
+  const physicalStores: PhysicalStoreOption[] = (allPhysicalStores ?? [])
+    .filter(
+      (
+        store
+      ): store is NonNullable<typeof store> & { _id: string; name: string } =>
+        store != null && store._id != null && store.name != null
+    )
+    .map((store) => ({ _id: store._id, name: store.name }));
 
   const handleSave = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     const instances = instanceSelection.current?.getSelectedInstances() ?? [];
     setUserGroupInstanceAccess({
       variables: {
-        _id: userGroupById?._id,
+        _id: userGroupById?._id ?? groupId,
         instances,
       },
     })
@@ -50,73 +71,38 @@ const InstanceAccess = ({ groupId, history }: Props) => {
     history.goBack();
   };
 
-  if (groupLoading || physicalStoresListLoading) return null;
+  if (groupLoading || allPhysicalStoresLoading) return null;
 
   return (
-    <ReactFragment>
-      <InstanceSelectionControl
+    <Fragment>
+      <InstanceSelection
         securityEntity={userGroupById}
-        allPhysicalStores={allPhysicalStores}
+        allPhysicalStores={physicalStores}
         ref={instanceSelection}
       />
       <br />
       <br />
-      <AntRow type="flex" justify="start">
-        <AntButton
+      <Row justify="start">
+        <Button
           size="large"
-          icon={<AntCloseCircleOutlined />}
+          icon={<CloseCircleOutlined />}
           type="default"
           onClick={handleCancel}
         >
           Cancel
-        </AntButton>
+        </Button>
         &nbsp;
-        <AntButton
+        <Button
           size="large"
-          icon={<AntSaveOutlined />}
+          icon={<SaveOutlined />}
           type="primary"
           onClick={handleSave}
         >
           Save
-        </AntButton>
-      </AntRow>
-    </ReactFragment>
+        </Button>
+      </Row>
+    </Fragment>
   );
 };
-
-InstanceAccess.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  groupId: PropTypes.string,
-};
-
-const formMutation = gql`
-  mutation setUserGroupInstanceAccess($_id: String!, $instances: [String]!) {
-    setUserGroupInstanceAccess(_id: $_id, instances: $instances) {
-      _id
-      instances
-    }
-  }
-`;
-
-const formQuery = gql`
-  query userGroupInstanceAccessById($_id: String!) {
-    userGroupById(_id: $_id) {
-      _id
-      instances
-    }
-  }
-`;
-
-const physicalStoresListQuery = gql`
-  query userGroupInstanceAllPhysicalStores {
-    allPhysicalStores {
-      _id
-      name
-    }
-  }
-`;
 
 export default InstanceAccess;

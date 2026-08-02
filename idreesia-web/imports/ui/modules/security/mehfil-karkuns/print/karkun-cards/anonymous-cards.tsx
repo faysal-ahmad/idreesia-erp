@@ -4,7 +4,7 @@ import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { UserOutlined } from '@ant-design/icons';
 
 import { Avatar } from 'antd';
-import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/composers';
+import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/hooks';
 
 const BarcodeControl = Barcode as any;
 

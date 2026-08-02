@@ -14,7 +14,7 @@ import type { MehfilKarkunsByIdsQuery } from 'meteor/idreesia-common/types/clien
 import {
   useMehfil,
   useAllSecurityMehfilDuties,
-} from '/imports/ui/modules/security/common/composers';
+} from '/imports/ui/modules/security/common/hooks';
 
 import { NamedCards } from './named-cards';
 import { AnonymousCards } from './anonymous-cards';

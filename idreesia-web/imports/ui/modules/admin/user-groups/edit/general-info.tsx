@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
@@ -10,25 +9,31 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; }
-interface UserGroup { _id: string; name?: string; description?: string; }
-interface QueryData { userGroupById?: UserGroup | null; }
-interface Props { groupId?: string | null; history: HistoryLike; }
-interface FormValues { name: string; description?: string; }
+import {
+  USER_GROUP_GENERAL_INFO_BY_ID,
+  UPDATE_USER_GROUP,
+  PAGED_USER_GROUPS,
+} from '../gql';
+
+interface Props {
+  groupId: string;
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  description?: string;
+}
 
 const GeneralInfo = ({ groupId, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(formQuery as any, {
+  const { data, loading } = useQuery(USER_GROUP_GENERAL_INFO_BY_ID, {
     variables: { _id: groupId },
   });
-  const [updateUserGroup] = useMutation(formMutation as any, {
-    refetchQueries: ['pagedUserGroups'],
+  const [updateUserGroup] = useMutation(UPDATE_USER_GROUP, {
+    refetchQueries: [{ query: PAGED_USER_GROUPS }],
   });
-  const { userGroupById } = (data ?? {}) as QueryData;
+  const userGroupById = data?.userGroupById;
 
   const handleCancel = () => {
     history.goBack();
@@ -41,7 +46,7 @@ const GeneralInfo = ({ groupId, history }: Props) => {
   const handleFinish = ({ name, description }: FormValues) => {
     updateUserGroup({
       variables: {
-        _id: userGroupById?._id,
+        _id: userGroupById?._id ?? groupId,
         name,
         description,
       },
@@ -57,57 +62,29 @@ const GeneralInfo = ({ groupId, history }: Props) => {
   if (loading || !userGroupById) return null;
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={handleFieldsChange}
+    >
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         initialValue={userGroupById.name}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="description"
         fieldLabel="Description"
         initialValue={userGroupById.description}
       />
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
-
-GeneralInfo.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  groupId: PropTypes.string,
-};
-
-const formQuery = gql`
-  query userGroupGeneralInfoById($_id: String!) {
-    userGroupById(_id: $_id) {
-      _id
-      name
-      description
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation updateUserGroup(
-    $_id: String!
-    $name: String!
-    $description: String
-  ) {
-    updateUserGroup(_id: $_id, name: $name, description: $description) {
-      _id
-      name
-      description
-    }
-  }
-`;
 
 export default GeneralInfo;

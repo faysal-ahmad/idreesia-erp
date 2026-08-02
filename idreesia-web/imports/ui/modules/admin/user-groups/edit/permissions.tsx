@@ -1,30 +1,29 @@
 import React, { Fragment, useRef } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Button, Row, message } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
+import type { PermissionSelectionHandle } from '/imports/ui/modules/helpers/controls/access-management/permission-selection';
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntRow = Row as any;
-const AntCloseCircleOutlined = CloseCircleOutlined as any;
-const AntSaveOutlined = SaveOutlined as any;
-const PermissionSelectionControl = PermissionSelection as any;
-interface HistoryLike { goBack(): void; }
-interface UserGroup { _id: string; permissions?: string[]; instances?: string[]; }
-interface QueryData { userGroupById?: UserGroup | null; }
-interface Props { groupId?: string | null; history: HistoryLike; }
+import {
+  USER_GROUP_PERMISSIONS_BY_ID,
+  SET_USER_GROUP_PERMISSIONS,
+} from '../gql';
+
+interface Props {
+  groupId: string;
+  history: History;
+}
 
 const Permissions = ({ groupId, history }: Props) => {
-  const permissionSelection = useRef<any>(null);
-  const { data, loading } = useQuery(formQuery as any, {
+  const permissionSelection = useRef<PermissionSelectionHandle>(null);
+  const { data, loading } = useQuery(USER_GROUP_PERMISSIONS_BY_ID, {
     variables: { _id: groupId },
   });
-  const [setUserGroupPermissions] = useMutation(formMutation as any);
-  const { userGroupById } = (data ?? {}) as QueryData;
+  const [setUserGroupPermissions] = useMutation(SET_USER_GROUP_PERMISSIONS);
+  const userGroupById = data?.userGroupById;
 
   const handleCancel = () => {
     history.goBack();
@@ -32,11 +31,12 @@ const Permissions = ({ groupId, history }: Props) => {
 
   const handleSave = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    const permissions = permissionSelection.current?.getSelectedPermissions() ?? [];
+    const permissions =
+      permissionSelection.current?.getSelectedPermissions() ?? [];
 
     setUserGroupPermissions({
       variables: {
-        _id: userGroupById?._id,
+        _id: userGroupById?._id ?? groupId,
         permissions,
       },
     })
@@ -50,61 +50,43 @@ const Permissions = ({ groupId, history }: Props) => {
 
   if (loading) return null;
 
+  const securityEntity = userGroupById
+    ? {
+        permissions: (userGroupById.permissions ?? []).filter(
+          (permission): permission is string => permission != null
+        ),
+      }
+    : null;
+
   return (
-    <ReactFragment>
-      <PermissionSelectionControl
-        securityEntity={userGroupById}
+    <Fragment>
+      <PermissionSelection
+        securityEntity={securityEntity}
         ref={permissionSelection}
       />
       <br />
       <br />
-      <AntRow type="flex" justify="start">
-        <AntButton
+      <Row justify="start">
+        <Button
           size="large"
-          icon={<AntCloseCircleOutlined />}
+          icon={<CloseCircleOutlined />}
           type="default"
           onClick={handleCancel}
         >
           Cancel
-        </AntButton>
+        </Button>
         &nbsp;
-        <AntButton
+        <Button
           size="large"
-          icon={<AntSaveOutlined />}
+          icon={<SaveOutlined />}
           type="primary"
           onClick={handleSave}
         >
           Save
-        </AntButton>
-      </AntRow>
-    </ReactFragment>
+        </Button>
+      </Row>
+    </Fragment>
   );
 };
-
-Permissions.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  groupId: PropTypes.string,
-};
-
-const formQuery = gql`
-  query userGroupPermissionsById($_id: String!) {
-    userGroupById(_id: $_id) {
-      _id
-      permissions
-    }
-  }
-`;
-
-const formMutation = gql`
-  mutation setUserGroupPermissions($_id: String!, $permissions: [String]!) {
-    setUserGroupPermissions(_id: $_id, permissions: $permissions) {
-      _id
-      permissions
-    }
-  }
-`;
 
 export default Permissions;
